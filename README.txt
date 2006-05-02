@@ -1,1 +1,1 @@
-The Open JPA podling of the Apache incubator
+The Open JPA podling of the Apache incubator.
