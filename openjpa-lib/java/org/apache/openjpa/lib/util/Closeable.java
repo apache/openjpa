@@ -21,7 +21,6 @@ package org.apache.openjpa.lib.util;
  *	can treate them in a generic way.</p>
  *
  *	@author		Abe White
- *	@published
  */
 public interface Closeable
 {
