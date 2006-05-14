@@ -19,8 +19,6 @@ package org.apache.openjpa.lib.log;
 import java.io.*;
 import java.util.*;
 
-import org.apache.openjpa.lib.log.*;
-
 
 /**
  *	<p>Many standard components log to {@link OutputStream}s.

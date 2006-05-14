@@ -16,8 +16,6 @@
 package org.apache.openjpa.lib.log;
 
 
-import java.util.*;
-
 import org.apache.log4j.*;
 
 

@@ -16,9 +16,6 @@
 package org.apache.openjpa.lib.log;
 
 
-import java.util.*;
-
-
 /**
  *	{@link LogFactory} implementation that delegates to the commons logging
  *	framework.

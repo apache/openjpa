@@ -18,9 +18,6 @@ package org.apache.openjpa.lib.rop;
 
 import java.io.*;
 import java.util.*;
-import java.util.NoSuchElementException;	// for javadoc; bug #4330419
-
-import org.apache.openjpa.lib.util.*;
 import org.apache.openjpa.lib.util.Closeable;
 
 

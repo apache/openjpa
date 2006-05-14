@@ -17,8 +17,6 @@ package org.apache.openjpa.lib.jdbc;
 
 
 import java.sql.*;
-import java.util.*;
-import javax.sql.*;
 
 import org.apache.openjpa.lib.log.*;
 
