@@ -20,7 +20,6 @@ import java.io.*;
 import java.sql.*;
 import javax.sql.*;
 
-import org.apache.openjpa.lib.util.*;
 import org.apache.openjpa.lib.util.Closeable; 
 
 

@@ -17,7 +17,6 @@ package org.apache.openjpa.lib.util;
 
 
 import java.lang.reflect.*;
-import java.util.*;
 
 
 /**

@@ -23,7 +23,6 @@ import java.sql.*;
 import java.sql.Date;		
 import java.util.*;
 
-import org.apache.openjpa.lib.util.*;
 import org.apache.openjpa.lib.util.Closeable; 
 
 
