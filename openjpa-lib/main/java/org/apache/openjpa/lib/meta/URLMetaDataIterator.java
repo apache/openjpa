@@ -1,0 +1,81 @@
+/*
+ * Copyright 2006 The Apache Software Foundation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.openjpa.lib.meta;
+
+import java.io.*;
+
+import java.net.*;
+
+
+/**
+ *  <p>Iterator over the metadata resource represented by a URL.</p>
+ *
+ *  @author Abe White
+ *  @nojavadoc */
+public class URLMetaDataIterator implements MetaDataIterator {
+    private final URL _url;
+    private boolean _iterated = false;
+
+    /**
+     *  Constructor; supply resource URL.
+     */
+    public URLMetaDataIterator(URL url) {
+        _url = url;
+    }
+
+    public boolean hasNext() {
+        return (_url != null) && !_iterated;
+    }
+
+    public Object next() throws IOException {
+        if (!hasNext()) {
+            throw new IllegalStateException();
+        }
+
+        _iterated = true;
+
+        return _url;
+    }
+
+    public InputStream getInputStream() throws IOException {
+        if (!_iterated) {
+            throw new IllegalStateException();
+        }
+
+        if (_url == null) {
+            return null;
+        }
+
+        return _url.openStream();
+    }
+
+    public File getFile() {
+        if (!_iterated) {
+            throw new IllegalStateException();
+        }
+
+        if (_url == null) {
+            return null;
+        }
+
+        File file = new File(URLDecoder.decode(_url.getPath()));
+
+        return (file.exists()) ? file : null;
+    }
+
+    public void close() {
+    }
+}
