@@ -1,0 +1,139 @@
+<html>
+<body>
+	<p><strong>Bytecode Manipuation</strong></p>
+	<p>
+		This package contains a framework for Java bytecode manipulation.
+	</p>
+	<p>
+		Bytecode manipulation is a powerful tool in the arsenal of the Java
+		developer.  It can be used for tasks from compiling alternative 
+		programming languages to run in a JVM, to creating new classes on the
+		fly at runtime, to instrumenting classes for performance analysis, to
+		debugging, to altering or enhancing the capabilities of existing
+		compiled classes.  Traditionally, however, this power has come at a
+		price: modifying bytecode has required an in-depth knowledge of the
+		class file structure and has necessitated very low-level programming
+		techniques.  These costs have proven too much for most developers, and 
+	 	bytecode manipulation has been largely ignored by the mainstream.
+	</p>
+	<p>
+		The goal of the serp bytecode framework is to tap the full power of
+		bytecode modification while lowering its associated costs.
+		The framework provides a set of high-level APIs for manipulating all 
+		aspects of bytecode, from large-scale structures like class member 
+		fields to the individual instructions that comprise the code of 
+		methods.  While in order to perform any advanced manipulation, some 
+		understanding of the 
+		<a href="http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html">
+		class file format</a> and especially of the 
+		<a href="http://java.sun.com/docs/books/vmspec/2nd-edition/html/Instructions.doc.html">
+		JVM instruction set</a> is necessary, the framework makes it as easy
+		as possible to enter the world of bytecode development.
+	</p>
+	<p>
+		There are several other excellent bytecode frameworks available.   Serp
+		excels, however, in the following areas:
+		<ul>
+			<li>
+				<em>Ease of use.</em>  Serp provides very high-level APIs for 
+				all normal bytecode modification functionality.   Additionally,
+				the framework contains a large set of convenience methods to 
+				make code that uses it as clean as possible.  From overloading
+				its methods to prevent you from having to make type 
+				conversions, to making shortcuts for operations like adding 
+				default constructors, serp tries to take the pain out of 
+				bytecode development.
+			</li>
+			<li>
+				<em>Power.</em>  Serp does not hide any of the power of
+				bytecode manipulation behind a limited set of high-level 
+				functions.  In addition to its available high-level APIs, which
+				themselves cover the functionality all but the most advanced
+				users will ever need, serp gives you direct access to the 
+				low-level details of the class file and constant pool.  You 
+				can even switch back and
+				forth between low-level and high-level operations;
+				serp maintains complete consistency of the class structure
+				at all times.  A change to a method descriptor in the constant
+				pool, for example, will immediately change the return values
+				of all the high-level APIs that describe that method.
+			</li>
+			<li>
+				<em>Constant pool management.</em>  In the class file format,
+				all constant values are stored in a constant pool of shared
+				entries to minimize the size of class structures.  Serp gives
+				you access to the constant pool directly, but most of you
+				will never use it; serp's high-level APIs completely
+				abstract management of the constant pool.
+				Any time a new constant is needed, serp will automatically add
+				it to the pool while ensuring that no duplicates ever exist.
+				Serp also does its best to manipulate the pool so that the
+				effects of changing a constant are as expected: i.e. changing
+				one instruction to use the string "bar" instead of "foo" 
+				will not affect other instructions that use the string "foo",
+				but changing the name of a class field will instantly change
+				all instructions that reference that field to use the new name.
+			</li>
+			<li>
+				<em>Instruction morphing.</em>  Dealing with the individual
+				instructions that make up method code is the most difficult
+				part of bytecode manipulation.  To facilitate this process,
+				most serp instruction representations have the ability to
+				change their underlying low-level opcodes on the fly as the
+				you modify the parameters of the instruction.  For 
+				example, accessing the constant integer value 0 requires the
+				opcode <code>iconst0</code>, while accessing the string 
+				constant "foo" requires a different opcode, <code>ldc</code>,
+				followed by the constant pool index of "foo".  In serp, however,
+				there is only one instruction, <code>constant</code>.  This
+				instruction has <code>setValue</code> methods which use the
+				given value to automatically determine the correct opcodes and
+				arguments -- <code>iconst0</code> for a value of 0 and 
+				<code>ldc</code> plus the proper constant pool index for the
+				value of "foo".
+			</li>
+		</ul> 
+	</p>
+	<p>
+		Serp is not ideally suited to all applications.  Here are a few
+		disadvantages of serp:
+		<ul>
+			<li>
+				<em>Speed.</em>  Serp is not built for speed.  Though there
+				are plans for performing incremental parsing, serp currently
+				fully parses class files when a class is loaded, which is a 
+				slow process.
+				Also, serp's insistence on full-time consistency between the
+				low and high level class structures slows down both access and
+				mutator methods.  These factors are less of a concern, though,
+				when creating new classes at runtime (rather than modifying 
+				existing code), or when using serp as part of the compilation
+				process.  Serp excels in both of these scenarios.
+			</li>
+			<li>
+				<em>Memory.</em>  Serp's high-level structures for representing
+				class bytecode are very memory-hungry.
+			</li>
+			<li>
+				<em>Multi-threaded modifications.</em>  The serp toolkit is
+				not threadsafe.  Multiple threads cannot safely make
+				modifications to the same classes the same time.
+			</li>
+			<li>
+				<em>Project-level modifications.</em>  Changes made in one
+				class in a serp project are not yet automatically propogated
+				to other classes.  However, there are plans to implement this,
+				as well as plans to allow operations to modify bytecode based
+				on specified patterns, similar to aspect-oriented programming.
+			</li>
+		</ul>
+	</p>
+	<p>
+		The first class that you should study in this package is the 
+		{@link serp.bytecode.Project} type.  From there, move onto the 
+		{@link serp.bytecode.BCClass}, and trace its APIs into 
+		{@link serp.bytecode.BCField}s, {@link serp.bytecode.BCMethod}s,
+		and finally into actual {@link serp.bytecode.Code}. 
+	</p>
+</body>
+</html>
