@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,25 +14,25 @@ package org.apache.openjpa.lib.rop;
 
 import java.util.*;
 
-
 /**
- *  <p>A basic {@link ResultList} implementation that wraps a normal list.</p>
- *
- *  @author Abe White
- *  @nojavadoc */
+ * A basic {@link ResultList} implementation that wraps a normal list.
+ * 
+ * @author Abe White
+ * @nojavadoc
+ */
 public class ListResultList extends AbstractResultList {
     private final List _list;
     private boolean _closed = false;
 
     /**
-     *  Constructor.  Supply delegate.
+     * Constructor. Supply delegate.
      */
     public ListResultList(List list) {
         _list = list;
     }
 
     /**
-     *  Return the wrapped list.
+     * Return the wrapped list.
      */
     public List getDelegate() {
         return _list;
@@ -55,43 +52,36 @@ public class ListResultList extends AbstractResultList {
 
     public boolean contains(Object o) {
         assertOpen();
-
         return _list.contains(o);
     }
 
     public boolean containsAll(Collection c) {
         assertOpen();
-
         return _list.containsAll(c);
     }
 
     public Object get(int index) {
         assertOpen();
-
         return _list.get(index);
     }
 
     public int indexOf(Object o) {
         assertOpen();
-
         return _list.indexOf(o);
     }
 
     public int lastIndexOf(Object o) {
         assertOpen();
-
         return _list.lastIndexOf(o);
     }
 
     public int size() {
         assertOpen();
-
         return _list.size();
     }
 
     public boolean isEmpty() {
         assertOpen();
-
         return _list.isEmpty();
     }
 
@@ -109,13 +99,11 @@ public class ListResultList extends AbstractResultList {
 
     public Object[] toArray() {
         assertOpen();
-
         return _list.toArray();
     }
 
     public Object[] toArray(Object[] a) {
         assertOpen();
-
         return _list.toArray(a);
     }
 

@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,28 +12,22 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
+import java.io.*;
+import java.math.*;
+import java.net.*;
+import java.sql.*;
+import java.sql.Date;
+import java.util.*;
 import org.apache.openjpa.lib.util.*;
 import org.apache.openjpa.lib.util.Closeable;
 
-import java.io.*;
-
-import java.math.*;
-
-import java.net.*;
-
-import java.sql.*;
-import java.sql.Date;
-
-import java.util.*;
-
-
 /**
- *  <p>Wrapper around an existing result set.  Subclasses can override the
- *  methods whose behavior they mean to change.  The <code>equals</code> and
- *  <code>hashCode</code> methods pass through to the base underlying data
- *  store statement.</p>
- *
- *  @author Marc Prud'hommeaux
+ * Wrapper around an existing result set. Subclasses can override the
+ * methods whose behavior they mean to change. The <code>equals</code> and
+ * <code>hashCode</code> methods pass through to the base underlying data
+ * store statement.
+ * 
+ * @author Marc Prud'hommeaux
  */
 public class DelegatingResultSet implements ResultSet, Closeable {
     private final ResultSet _rs;
@@ -44,32 +35,29 @@ public class DelegatingResultSet implements ResultSet, Closeable {
     private final Statement _stmnt;
 
     public DelegatingResultSet(ResultSet rs, Statement stmnt) {
-        if (rs == null) {
+        if (rs == null)
             throw new IllegalArgumentException();
-        }
 
         _stmnt = stmnt;
         _rs = rs;
-
-        if (_rs instanceof DelegatingResultSet) {
+        if (_rs instanceof DelegatingResultSet)
             _del = (DelegatingResultSet) _rs;
-        } else {
+        else
             _del = null;
-        }
     }
 
     /**
-     *  Return the wrapped result set.
+     * Return the wrapped result set.
      */
     public ResultSet getDelegate() {
         return _rs;
     }
 
     /**
-     *  Return the inner-most wrapped delegate.
+     * Return the inner-most wrapped delegate.
      */
     public ResultSet getInnermostDelegate() {
-        return (_del == null) ? _rs : _del.getInnermostDelegate();
+        return(_del == null) ? _rs : _del.getInnermostDelegate();
     }
 
     public int hashCode() {
@@ -77,28 +65,22 @@ public class DelegatingResultSet implements ResultSet, Closeable {
     }
 
     public boolean equals(Object other) {
-        if (other == this) {
+        if (other == this)
             return true;
-        }
-
-        if (other instanceof DelegatingResultSet) {
+        if (other instanceof DelegatingResultSet)
             other = ((DelegatingResultSet) other).getInnermostDelegate();
-        }
-
         return getInnermostDelegate().equals(other);
     }
 
     public String toString() {
         StringBuffer buf = new StringBuffer("resultset ").append(hashCode());
         appendInfo(buf);
-
         return buf.toString();
     }
 
     protected void appendInfo(StringBuffer buf) {
-        if (_del != null) {
+        if (_del != null)
             _del.appendInfo(buf);
-        }
     }
 
     public boolean next() throws SQLException {
@@ -480,8 +462,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         _rs.updateDouble(a, b);
     }
 
-    public void updateBigDecimal(String a, BigDecimal b)
-        throws SQLException {
+    public void updateBigDecimal(String a, BigDecimal b) throws SQLException {
         _rs.updateBigDecimal(a, b);
     }
 
@@ -501,8 +482,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         _rs.updateTime(a, b);
     }
 
-    public void updateTimestamp(String a, Timestamp b)
-        throws SQLException {
+    public void updateTimestamp(String a, Timestamp b) throws SQLException {
         _rs.updateTimestamp(a, b);
     }
 
@@ -521,8 +501,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         _rs.updateCharacterStream(a, reader, b);
     }
 
-    public void updateObject(String a, Object ob, int b)
-        throws SQLException {
+    public void updateObject(String a, Object ob, int b) throws SQLException {
         _rs.updateObject(a, ob, b);
     }
 
@@ -622,13 +601,13 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         return _rs.getTimestamp(a, b);
     }
 
-    public Timestamp getTimestamp(String a, Calendar b)
-        throws SQLException {
+    public Timestamp getTimestamp(String a, Calendar b) throws SQLException {
         return _rs.getTimestamp(a, b);
     }
 
-    // JDBC 3.0 (unsupported) method follow; these are required to be able 
+    // JDBC 3.0 (unsupported) method follow; these are required to be able
     // to compile against JDK 1.4
+
     public URL getURL(int column) throws SQLException {
         throw new UnsupportedOperationException();
     }
@@ -649,8 +628,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         throw new UnsupportedOperationException();
     }
 
-    public void updateBlob(String columnName, Blob blob)
-        throws SQLException {
+    public void updateBlob(String columnName, Blob blob) throws SQLException {
         throw new UnsupportedOperationException();
     }
 
@@ -658,8 +636,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         throw new UnsupportedOperationException();
     }
 
-    public void updateClob(String columnName, Clob clob)
-        throws SQLException {
+    public void updateClob(String columnName, Clob clob) throws SQLException {
         throw new UnsupportedOperationException();
     }
 
@@ -667,8 +644,8 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         throw new UnsupportedOperationException();
     }
 
-    public void updateArray(String columnName, Array array)
-        throws SQLException {
+    public void updateArray(String columnName, Array array) throws SQLException {
         throw new UnsupportedOperationException();
     }
 }
+

@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,25 +12,22 @@
  */
 package org.apache.openjpa.lib.util;
 
+import java.util.*;
 import junit.framework.*;
-
 import junit.textui.*;
 
-import java.util.*;
-
-
 /**
- *  <p>Tests the {@link Options} type.</p>
- *
- *  @author Abe White
+ * Tests the {@link Options} type.
+ * 
+ * @author Abe White
  */
 public class TestOptions extends TestCase {
     private Options _opts = null;
+
     private String[] _args = new String[] {
-            "-int", "10", "-boolean", "-string", "STR,STR2", "-range1", "10,100",
-            "-range2", "10", "-fieldVal", "20", "-FieldVal2", "30",
-            "-inner.nullInner.range1", "10,100", "arg1", "arg2", "arg3"
-        };
+        "-int", "10", "-boolean", "-string", "STR,STR2", "-range1", "10,100",
+        "-range2", "10", "-fieldVal", "20", "-FieldVal2", "30",
+        "-inner.nullInner.range1", "10,100", "arg1", "arg2", "arg3" };
 
     public TestOptions(String test) {
         super(test);
@@ -44,10 +38,11 @@ public class TestOptions extends TestCase {
         defs.setProperty("default", "value");
         _opts = new Options(defs);
         _args = _opts.setFromCmdLine(_args);
+
     }
 
     /**
-     *  Test command-line parsing.
+     * Test command-line parsing.
      */
     public void testCmdLineParsing() {
         assertEquals(3, _args.length);
@@ -71,7 +66,7 @@ public class TestOptions extends TestCase {
     }
 
     /**
-     *  Tests the setting of option values into bean objects.
+     * Tests the setting of option values into bean objects.
      */
     public void testSetObject() {
         Inner inner = new Inner();
@@ -92,7 +87,6 @@ public class TestOptions extends TestCase {
         assertEquals(100, inner.getInner().getNullInner().getRange1()[1]);
 
         inner = new Inner();
-
         Options opts = new Options();
         opts.setProperty("inner", Inner2.class.getName());
         opts.setInto(inner);
@@ -104,6 +98,7 @@ public class TestOptions extends TestCase {
         opts.setInto(inner);
         assertEquals(1, inner.getInt());
         assertEquals("STR", inner.getString());
+
     }
 
     public static Test suite() {
@@ -115,12 +110,12 @@ public class TestOptions extends TestCase {
     }
 
     /**
-     *  Used internally for testing; must be public so Options can
-     *  construct it.
+     * Used internally for testing; must be public so Options can construct it.
      */
     public static class Inner {
         public int fieldVal = 0;
         public int fieldVal2 = 0;
+
         private int _int = 0;
         private boolean _boolean = false;
         private String _string = null;
@@ -189,10 +184,8 @@ public class TestOptions extends TestCase {
         }
 
         public Inner getInner() {
-            if (_inner == null) {
+            if (_inner == null)
                 _inner = new Inner();
-            }
-
             return _inner;
         }
 
@@ -210,8 +203,7 @@ public class TestOptions extends TestCase {
     }
 
     /**
-     *  Used internally for testing; must be public so Options can
-     *  construct it.
+     * Used internally for testing; must be public so Options can construct it.
      */
     public static class Inner2 extends Inner {
     }

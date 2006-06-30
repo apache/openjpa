@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,19 +12,15 @@
  */
 package serp.bytecode;
 
+import java.io.*;
 import junit.framework.*;
-
 import junit.textui.*;
 
-import java.io.*;
-
-
 /**
- *  <p>Tests the {@link BCClass} type.</p>
- *
+ * Tests the {@link BCClass} type.
  *  UNFINISHED
- *
- *  @author Abe White
+ * 
+ * @author Abe White
  */
 public class TestBCClass extends TestCase {
     private Project _project = new Project();
@@ -38,7 +31,7 @@ public class TestBCClass extends TestCase {
     }
 
     /**
-     *  Test accessing the class project.
+     * Test accessing the class project.
      */
     public void testProject() {
         assertTrue(_project == _bc.getProject());
@@ -48,20 +41,18 @@ public class TestBCClass extends TestCase {
     }
 
     /**
-     *  Test read/write.
+     * Test read/write.
      */
-    public void testReadWrite() throws IOException {
+    public void testReadWrite  () throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         InputStream in = Integer.class.getResourceAsStream("Integer.class");
         int ch;
-
         while ((ch = in.read()) != -1)
             out.write(ch);
 
         byte[] origBytes = out.toByteArray();
         byte[] bytes = _bc.toByteArray();
         assertEquals(origBytes.length, bytes.length);
-
         for (int i = 0; i < origBytes.length; i++)
             assertEquals(origBytes[i], bytes[i]);
 
@@ -69,13 +60,12 @@ public class TestBCClass extends TestCase {
         BCClass bc2 = new Project().loadClass(_bc);
         bytes = bc2.toByteArray();
         assertEquals(origBytes.length, bytes.length);
-
         for (int i = 0; i < origBytes.length; i++)
             assertEquals(origBytes[i], bytes[i]);
     }
 
     /**
-     *  Test basics -- magic number, major version, minor version.
+     * Test basics -- magic number, major version, minor version.
      */
     public void testBasics() {
         assertEquals(Constants.VALID_MAGIC, _bc.getMagic());
@@ -97,27 +87,27 @@ public class TestBCClass extends TestCase {
     }
 
     /**
-     *  Test access flags.
+     * Test access flags.
      */
     public void testAccessFlags() {
-        assertEquals(Constants.ACCESS_PUBLIC | Constants.ACCESS_SUPER |
-            Constants.ACCESS_FINAL, _bc.getAccessFlags());
+        assertEquals(Constants.ACCESS_PUBLIC | Constants.ACCESS_SUPER
+            | Constants.ACCESS_FINAL, _bc.getAccessFlags());
         assertTrue(_bc.isPublic());
         assertTrue(!_bc.isPackage());
         assertTrue(_bc.isFinal());
         assertTrue(!_bc.isInterface());
         assertTrue(!_bc.isAbstract());
 
-        _bc.setAccessFlags(Constants.ACCESS_ABSTRACT |
-            Constants.ACCESS_INTERFACE);
+        _bc.setAccessFlags(Constants.ACCESS_ABSTRACT
+            | Constants.ACCESS_INTERFACE);
         assertTrue(!_bc.isPublic());
         assertTrue(_bc.isPackage());
         assertTrue(!_bc.isFinal());
         assertTrue(_bc.isInterface());
         assertTrue(_bc.isAbstract());
 
-        _bc.setAccessFlags(Constants.ACCESS_PUBLIC | Constants.ACCESS_SUPER |
-            Constants.ACCESS_FINAL);
+        _bc.setAccessFlags(Constants.ACCESS_PUBLIC
+            | Constants.ACCESS_SUPER | Constants.ACCESS_FINAL);
 
         _bc.makePackage();
         assertTrue(!_bc.isPublic());
@@ -144,7 +134,7 @@ public class TestBCClass extends TestCase {
     }
 
     /**
-      *  Test class type operations.
+     * Test class type operations.
      */
     public void testType() {
         assertEquals(Integer.class.getName(), _bc.getName());
@@ -157,14 +147,14 @@ public class TestBCClass extends TestCase {
     }
 
     /**
-      *  Test superclass operations.
+     * Test superclass operations.
      */
     public void testSuperclass() {
         assertEquals(Number.class.getName(), _bc.getSuperclassName());
         assertEquals(Number.class, _bc.getSuperclassType());
         assertEquals(Number.class.getName(), _bc.getSuperclassBC().getName());
-        assertEquals(null,
-            _bc.getSuperclassBC().getSuperclassBC().getSuperclassBC());
+        assertEquals(null, _bc.getSuperclassBC().getSuperclassBC().
+            getSuperclassBC());
 
         _bc.setSuperclass(String.class);
         assertEquals(String.class.getName(), _bc.getSuperclassName());
@@ -180,7 +170,7 @@ public class TestBCClass extends TestCase {
     }
 
     /**
-     *  Test operations on interfaces.
+     * Test operations on interfaces.
      */
     public void testInterfaces() {
         Object[] interfaces = _bc.getInterfaceNames();
@@ -253,8 +243,8 @@ public class TestBCClass extends TestCase {
         assertEquals(1, interfaces.length);
         assertEquals(Comparable.class, ((BCClass) interfaces[0]).getType());
 
-        assertTrue(_bc.removeDeclaredInterface(_project.loadClass(
-                    Comparable.class)));
+        assertTrue(_bc.removeDeclaredInterface
+            (_project.loadClass(Comparable.class)));
         interfaces = _bc.getDeclaredInterfaceNames();
         assertEquals(0, interfaces.length);
     }

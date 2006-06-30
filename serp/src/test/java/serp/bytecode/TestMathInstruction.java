@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,14 +13,12 @@
 package serp.bytecode;
 
 import junit.framework.*;
-
 import junit.textui.*;
 
-
 /**
- *  <p>Tests the {@link MathInstruction} type.</p>
- *
- *  @author Abe White
+ * Tests the {@link MathInstruction} type.
+ * 
+ * @author Abe White
  */
 public class TestMathInstruction extends TestCase {
     private Code _code = new Code();
@@ -33,7 +28,7 @@ public class TestMathInstruction extends TestCase {
     }
 
     /**
-     *  Test that the instruction intitializes correctly when generated.
+     * Test that the instruction intitializes correctly when generated.
      */
     public void testInitialize() {
         assertEquals(Constants.NOP, _code.math().getOpcode());
@@ -88,7 +83,7 @@ public class TestMathInstruction extends TestCase {
     }
 
     /**
-     *  Test that the instruction returns its type correctly.
+     * Test that the instruction returns its type correctly.
      */
     public void testGetType() {
         MathInstruction ins = _code.math();
@@ -253,8 +248,8 @@ public class TestMathInstruction extends TestCase {
     }
 
     /**
-     *  Test that the opcode is morphed correctly when the type and operation
-     *  of the instruction are changed.
+     * Test that the opcode is morphed correctly when the type and operation
+     * of the instruction are changed.
      */
     public void testOpcodeMorph() {
         MathInstruction math = _code.math();

@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,20 +13,20 @@
 package org.apache.openjpa.lib.rop;
 
 import java.io.*;
-
 import java.util.*;
 
-
 /**
- *  <p>Lazy forward-only result list.</p>
- *
- *  @author Abe White
- *  @nojavadoc */
+ * Lazy forward-only result list.
+ * 
+ * @author Abe White
+ * @nojavadoc
+ */
 public class LazyForwardResultList extends AbstractSequentialResultList
     implements ResultList {
     private static final int OPEN = 0;
     private static final int CLOSED = 1;
     private static final int FREED = 2;
+
     private ResultObjectProvider _rop = null;
     private final List _list = new ArrayList();
     private int _state = OPEN;
@@ -37,7 +34,6 @@ public class LazyForwardResultList extends AbstractSequentialResultList
 
     public LazyForwardResultList(ResultObjectProvider rop) {
         _rop = rop;
-
         try {
             _rop.open();
         } catch (RuntimeException re) {
@@ -68,35 +64,26 @@ public class LazyForwardResultList extends AbstractSequentialResultList
         assertOpen();
 
         // optimization for getting sequntially
-        if (index == _list.size()) {
+        if (index == _list.size())
             addNext();
-        }
-
-        if (index < _list.size()) {
+        if (index < _list.size())
             return _list.get(index);
-        }
 
         return super.get(index);
     }
 
     protected ListIterator itr(int index) {
-        return (_state != OPEN) ? _list.listIterator(index) : new Itr(index);
+        return(_state != OPEN) ? _list.listIterator(index) : new Itr(index);
     }
 
     public int size() {
         assertOpen();
-
-        if (_size != -1) {
+        if (_size != -1)
             return _size;
-        }
-
-        if (_state != OPEN) {
+        if (_state != OPEN)
             return _list.size();
-        }
-
         try {
             _size = _rop.size();
-
             return _size;
         } catch (RuntimeException re) {
             close();
@@ -104,7 +91,6 @@ public class LazyForwardResultList extends AbstractSequentialResultList
         } catch (Exception e) {
             close();
             _rop.handleCheckedException(e);
-
             return -1;
         }
     }
@@ -113,12 +99,9 @@ public class LazyForwardResultList extends AbstractSequentialResultList
         try {
             if (!_rop.next()) {
                 free();
-
                 return false;
             }
-
             _list.add(_rop.getResultObject());
-
             return true;
         } catch (RuntimeException re) {
             close();
@@ -126,34 +109,27 @@ public class LazyForwardResultList extends AbstractSequentialResultList
         } catch (Exception e) {
             close();
             _rop.handleCheckedException(e);
-
             return false;
         }
     }
 
     private void free() {
         if (_state == OPEN) {
-            try {
-                _rop.close();
-            } catch (Exception e) {
-            }
-
+            try { _rop.close(); } catch (Exception e) {}
             _state = FREED;
         }
     }
 
     public Object writeReplace() throws ObjectStreamException {
         // fully traverse results
-        if (_state == OPEN) {
+        if (_state == OPEN)
             for (Iterator itr = itr(_list.size()); itr.hasNext();)
                 itr.next();
-        }
-
         return _list;
     }
 
     public int hashCode() {
-        // superclass tries to traverses entire list for hashcode 
+        // superclass tries to traverses entire list for hashcode
         return System.identityHashCode(this);
     }
 
@@ -167,7 +143,6 @@ public class LazyForwardResultList extends AbstractSequentialResultList
 
         public Itr(int index) {
             _idx = Math.min(index, _list.size());
-
             while (_idx < index)
                 next();
         }
@@ -181,14 +156,10 @@ public class LazyForwardResultList extends AbstractSequentialResultList
         }
 
         public boolean hasNext() {
-            if (_list.size() > _idx) {
+            if (_list.size() > _idx)
                 return true;
-            }
-
-            if (_state != OPEN) {
+            if (_state != OPEN)
                 return false;
-            }
-
             return addNext();
         }
 
@@ -197,18 +168,14 @@ public class LazyForwardResultList extends AbstractSequentialResultList
         }
 
         public Object previous() {
-            if (_idx == 0) {
+            if (_idx == 0)
                 throw new NoSuchElementException();
-            }
-
             return _list.get(--_idx);
         }
 
         public Object next() {
-            if (!hasNext()) {
+            if (!hasNext())
                 throw new NoSuchElementException();
-            }
-
             return _list.get(_idx++);
         }
     }

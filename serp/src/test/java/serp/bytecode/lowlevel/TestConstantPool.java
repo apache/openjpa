@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,14 +13,12 @@
 package serp.bytecode.lowlevel;
 
 import junit.framework.*;
-
 import junit.textui.*;
 
-
 /**
- *  <p>Tests the {@link ConstantPool} type.</p>
- *
- *  @author Abe White
+ * Tests the {@link ConstantPool} type.
+ * 
+ * @author Abe White
  */
 public class TestConstantPool extends TestCase {
     private ConstantPool _pool = new ConstantPool();
@@ -36,7 +31,7 @@ public class TestConstantPool extends TestCase {
     }
 
     /**
-     *  Tests adding entries.
+     * Tests adding entries.
      */
     public void testAdd() {
         assertEquals(0, _pool.size());
@@ -60,13 +55,11 @@ public class TestConstantPool extends TestCase {
 
         // cannot add to another pool
         ConstantPool pool = new ConstantPool();
-
         try {
             pool.addEntry(_intEntry);
             fail("Entry already in another pool");
         } catch (IllegalStateException ise) {
         }
-
         assertEquals(0, pool.size());
 
         _pool.removeEntry(_intEntry);
@@ -78,7 +71,7 @@ public class TestConstantPool extends TestCase {
     }
 
     /**
-     *  Tests removing entries.
+     * Tests removing entries.
      */
     public void testRemove() {
         _pool.addEntry(_intEntry);
@@ -104,18 +97,16 @@ public class TestConstantPool extends TestCase {
 
         assertTrue(_pool.removeEntry(_utf8Entry));
         assertEquals(0, _pool.size());
-
         try {
             _pool.getEntry(1);
             fail("Invalid index");
         } catch (IndexOutOfBoundsException ioobe) {
         }
-
         assertEquals(0, _pool.findUTF8Entry("4", false));
     }
 
     /**
-     *  Tests mutating entries.
+     * Tests mutating entries.
      */
     public void testMutate() {
         _intEntry.setValue(2);
@@ -137,7 +128,7 @@ public class TestConstantPool extends TestCase {
     }
 
     /**
-     *  Tests finding the index of entries.
+     * Tests finding the index of entries.
      */
     public void testIndexOf() {
         _pool.addEntry(_intEntry);
@@ -155,7 +146,7 @@ public class TestConstantPool extends TestCase {
     }
 
     /**
-     *  Tests getting all entries.
+     * Tests getting all entries.
      */
     public void testGetEntries() {
         _pool.addEntry(_intEntry);
@@ -173,7 +164,7 @@ public class TestConstantPool extends TestCase {
     }
 
     /**
-     *  Tests getting entries by index.
+     * Tests getting entries by index.
      */
     public void testGetEntry() {
         _pool.addEntry(_intEntry);
@@ -204,7 +195,7 @@ public class TestConstantPool extends TestCase {
     }
 
     /**
-     *  Test clearing the pool.
+     * Test clearing the pool.
      */
     public void testClear() {
         // make sure clearing empty pool OK
@@ -222,7 +213,7 @@ public class TestConstantPool extends TestCase {
     }
 
     /**
-     *  Test finding entry indexes.
+     * Test finding entry indexes.
      */
     public void testFind() {
         int double1 = _pool.addEntry(new DoubleEntry(1D));
@@ -304,50 +295,52 @@ public class TestConstantPool extends TestCase {
         assertEquals(name2, _pool.findNameAndTypeEntry("2", "1", false));
         assertEquals(name1, _pool.findNameAndTypeEntry("1", "2", true));
         assertEquals(name2, _pool.findNameAndTypeEntry("2", "1", true));
-        assertEquals(_pool.size() + 1,
-            _pool.findNameAndTypeEntry("0", "1", true));
-        assertEquals(_pool.size() + 2,
-            _pool.findNameAndTypeEntry("2", "3", true));
-        assertEquals(_pool.size() + 3,
-            _pool.findNameAndTypeEntry("ccc", "ddd", true));
+        assertEquals(_pool.size() + 1, _pool.findNameAndTypeEntry
+            ("0", "1", true));
+        assertEquals(_pool.size() + 2, _pool.findNameAndTypeEntry
+            ("2", "3", true));
+        assertEquals(_pool.size() + 3, _pool.findNameAndTypeEntry
+            ("ccc", "ddd", true));
 
         assertEquals(0, _pool.findFieldEntry("0", "1", "2", false));
         assertEquals(field1, _pool.findFieldEntry("1", "1", "2", false));
         assertEquals(field2, _pool.findFieldEntry("2", "2", "1", false));
         assertEquals(field1, _pool.findFieldEntry("1", "1", "2", true));
         assertEquals(field2, _pool.findFieldEntry("2", "2", "1", true));
-        assertEquals(_pool.size() + 1, _pool.findFieldEntry("1", "2", "1", true));
-        assertEquals(_pool.size() + 3, _pool.findFieldEntry("1", "3", "4", true));
-        assertEquals(_pool.size() + 6,
-            _pool.findFieldEntry("eee", "fff", "ggg", true));
+        assertEquals(_pool.size() + 1, _pool.findFieldEntry
+            ("1", "2", "1", true));
+        assertEquals(_pool.size() + 3, _pool.findFieldEntry
+            ("1", "3", "4", true));
+        assertEquals(_pool.size() + 6, _pool.findFieldEntry
+            ("eee", "fff", "ggg", true));
 
         assertEquals(0, _pool.findMethodEntry("0", "1", "2", false));
         assertEquals(method1, _pool.findMethodEntry("1", "1", "2", false));
         assertEquals(method2, _pool.findMethodEntry("2", "2", "1", false));
         assertEquals(method1, _pool.findMethodEntry("1", "1", "2", true));
         assertEquals(method2, _pool.findMethodEntry("2", "2", "1", true));
-        assertEquals(_pool.size() + 1,
-            _pool.findMethodEntry("1", "2", "1", true));
-        assertEquals(_pool.size() + 3,
-            _pool.findMethodEntry("1", "3", "5", true));
-        assertEquals(_pool.size() + 6,
-            _pool.findMethodEntry("hhh", "iii", "jjj", true));
+        assertEquals(_pool.size() + 1, _pool.findMethodEntry
+            ("1", "2", "1", true));
+        assertEquals(_pool.size() + 3, _pool.findMethodEntry
+            ("1", "3", "5", true));
+        assertEquals(_pool.size() + 6, _pool.findMethodEntry
+            ("hhh", "iii", "jjj", true));
 
         assertEquals(0, _pool.findInterfaceMethodEntry("0", "1", "2", false));
-        assertEquals(imethod1,
-            _pool.findInterfaceMethodEntry("1", "1", "2", false));
-        assertEquals(imethod2,
-            _pool.findInterfaceMethodEntry("2", "2", "1", false));
-        assertEquals(imethod1,
-            _pool.findInterfaceMethodEntry("1", "1", "2", true));
-        assertEquals(imethod2,
-            _pool.findInterfaceMethodEntry("2", "2", "1", true));
-        assertEquals(_pool.size() + 1,
-            _pool.findInterfaceMethodEntry("1", "2", "1", true));
-        assertEquals(_pool.size() + 3,
-            _pool.findInterfaceMethodEntry("1", "3", "6", true));
-        assertEquals(_pool.size() + 6,
-            _pool.findInterfaceMethodEntry("kkk", "lll", "mmm", true));
+        assertEquals(imethod1, _pool.findInterfaceMethodEntry
+            ("1", "1", "2", false));
+        assertEquals(imethod2, _pool.findInterfaceMethodEntry
+            ("2", "2", "1", false));
+        assertEquals(imethod1, _pool.findInterfaceMethodEntry
+            ("1", "1", "2", true));
+        assertEquals(imethod2, _pool.findInterfaceMethodEntry
+            ("2", "2", "1", true));
+        assertEquals(_pool.size() + 1, _pool.findInterfaceMethodEntry
+            ("1", "2", "1", true));
+        assertEquals(_pool.size() + 3, _pool.findInterfaceMethodEntry
+            ("1", "3", "6", true));
+        assertEquals(_pool.size() + 6, _pool.findInterfaceMethodEntry
+            ("kkk", "lll", "mmm", true));
     }
 
     public static Test suite() {

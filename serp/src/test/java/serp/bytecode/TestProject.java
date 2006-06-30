@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,17 +12,14 @@
  */
 package serp.bytecode;
 
+import java.io.*;
 import junit.framework.*;
-
 import junit.textui.*;
 
-import java.io.*;
-
-
 /**
- *  <p>Tests the {@link Project} type.</p>
- *
- *  @author Abe White
+ * Tests the {@link Project} type.
+ * 
+ * @author Abe White
  */
 public class TestProject extends TestCase {
     private Project _project = new Project();
@@ -35,7 +29,7 @@ public class TestProject extends TestCase {
     }
 
     /**
-     *  Test the project name.
+     * Test the project name.
      */
     public void testName() {
         assertNull(_project.getName());
@@ -44,19 +38,15 @@ public class TestProject extends TestCase {
     }
 
     /**
-     *  Test loading classes by name.
+     * Test loading classes by name.
      */
     public void testLoadByName() {
-        BCClass bc;
-        BCClass bc2;
-        String[] names;
-        String[] names2;
+        BCClass bc, bc2;
+        String[] names, names2;
 
         // test primitive types
-        names = new String[] {
-                "boolean", "byte", "char", "double", "float", "int", "long",
-                "short", "void"
-            };
+        names = new String[] { "boolean", "byte", "char", "double", "float",
+            "int", "long", "short", "void" };
         names2 = new String[] { "Z", "B", "C", "D", "F", "I", "J", "S", "V" };
 
         for (int i = 0; i < names.length; i++) {
@@ -68,11 +58,9 @@ public class TestProject extends TestCase {
         }
 
         // test primitive array types
-        names = new String[] {
-                "boolean[]", "byte[]", "char[]", "double[]", "float[]", "int[]",
-                "long[]", "short[]"
-            };
-        names2 = new String[] { "[Z", "[B", "[C", "[D", "[F", "[I", "[J", "[S" };
+        names = new String[] { "boolean[]", "byte[]", "char[]", "double[]",
+            "float[]", "int[]", "long[]", "short[]" };
+        names2 = new String[] { "[Z", "[B", "[C", "[D", "[F", "[I", "[J", "[S"};
 
         for (int i = 0; i < names.length; i++) {
             bc = _project.loadClass(names[i]);
@@ -115,19 +103,17 @@ public class TestProject extends TestCase {
     }
 
     /**
-     *  Test loading classes by type.
+     * Test loading classes by type.
      */
     public void testLoadByType() {
-        BCClass bc;
-        BCClass bc2;
+        BCClass bc, bc2;
         Class[] types;
         String[] names;
 
         // test primitive types
-        types = new Class[] {
-                boolean.class, byte.class, char.class, double.class, float.class,
-                int.class, long.class, short.class, void.class
-            };
+        types = new Class[] { boolean.class, byte.class, char.class,
+            double.class, float.class, int.class, long.class, short.class,
+            void.class };
         names = new String[] { "Z", "B", "C", "D", "F", "I", "J", "S", "V" };
 
         for (int i = 0; i < names.length; i++) {
@@ -139,11 +125,10 @@ public class TestProject extends TestCase {
         }
 
         // test primitive array types
-        types = new Class[] {
-                boolean[].class, byte[].class, char[].class, double[].class,
-                float[].class, int[].class, long[].class, short[].class,
-            };
-        names = new String[] { "[Z", "[B", "[C", "[D", "[F", "[I", "[J", "[S" };
+        types = new Class[] { boolean[].class, byte[].class, char[].class,
+            double[].class, float[].class, int[].class, long[].class,
+            short[].class, };
+        names = new String[] { "[Z", "[B", "[C", "[D", "[F", "[I", "[J", "[S"};
 
         for (int i = 0; i < names.length; i++) {
             bc = _project.loadClass(types[i]);
@@ -171,11 +156,11 @@ public class TestProject extends TestCase {
     }
 
     /**
-     *  Test loading classes by file.
+     * Test loading classes by file.
      */
     public void testLoadByFile() {
-        File file = new File(getClass().getResource("TestProject.class")
-                                 .getFile());
+        File file = new File(getClass().getResource
+            ("TestProject.class").getFile());
 
         BCClass bc = _project.loadClass(file);
         BCClass bc2 = _project.loadClass(file);
@@ -187,7 +172,7 @@ public class TestProject extends TestCase {
     }
 
     /**
-     *  Test loading classes by stream.
+     * Test loading classes by stream.
      */
     public void testLoadByStream() {
         InputStream in = getClass().getResourceAsStream("TestProject.class");
@@ -203,7 +188,7 @@ public class TestProject extends TestCase {
     }
 
     /**
-     *  Test retrieving all loaded classes.
+     * Test retrieving all loaded classes.
      */
     public void testGetClasses() {
         BCClass[] bcs = _project.getClasses();
@@ -218,21 +203,18 @@ public class TestProject extends TestCase {
         assertEquals(3, bcs.length);
 
         int matches;
-
         for (int i = 0; i < added.length; i++) {
             matches = 0;
-
             for (int j = 0; j < bcs.length; j++)
-                if (added[i] == bcs[j]) {
+                if (added[i] == bcs[j])
                     matches++;
-                }
 
             assertEquals(1, matches);
         }
     }
 
     /**
-     *  Test renaming classes within the project.
+     * Test renaming classes within the project.
      */
     public void testRename() {
         BCClass str = _project.loadClass(String.class);
@@ -248,7 +230,6 @@ public class TestProject extends TestCase {
             fail("Set to existing name");
         } catch (IllegalStateException ise) {
         }
-
         assertEquals("java.lang.String2", str.getName());
 
         try {
@@ -256,7 +237,6 @@ public class TestProject extends TestCase {
             fail("Set to existing name");
         } catch (IllegalStateException ise) {
         }
-
         assertEquals("serp.Foo2", foo.getName());
 
         str.setName("serp.Foo");
@@ -270,7 +250,7 @@ public class TestProject extends TestCase {
     }
 
     /**
-     *  Test clearing classes.
+     * Test clearing classes.
      */
     public void testClear() {
         _project.clear();
@@ -294,7 +274,7 @@ public class TestProject extends TestCase {
     }
 
     /**
-     *  Test removing a class.
+     * Test removing a class.
      */
     public void testRemove() {
         assertTrue(!_project.removeClass((String) null));

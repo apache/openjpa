@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,17 +12,14 @@
  */
 package org.apache.openjpa.lib.util;
 
+import java.util.*;
 import junit.framework.*;
-
 import junit.textui.*;
 
-import java.util.*;
-
-
 /**
- *  <p>Tests the {@link AbstractEventManager}.</p>
- *
- *  @author Abe White
+ * Tests the {@link AbstractEventManager}.
+ * 
+ * @author Abe White
  */
 public class TestAbstractEventManager extends TestCase {
     private EventManager _em = new EventManager();
@@ -75,6 +69,7 @@ public class TestAbstractEventManager extends TestCase {
         public static final int NONE = 0;
         public static final int ADD = 1;
         public static final int REMOVE = 2;
+
         public boolean fired;
         private final int _action;
 
@@ -84,12 +79,11 @@ public class TestAbstractEventManager extends TestCase {
 
         public void fire() {
             fired = true;
-
-            if (_action == ADD) {
+            if (_action == ADD)
                 _em.addListener(new Listener(NONE));
-            } else if (_action == REMOVE) {
+            else if (_action == REMOVE)
                 assertTrue(_em.removeListener(this));
-            }
         }
     }
 }
+

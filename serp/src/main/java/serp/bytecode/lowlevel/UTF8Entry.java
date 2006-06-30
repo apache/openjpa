@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,29 +12,27 @@
  */
 package serp.bytecode.lowlevel;
 
+import java.io.*;
 import serp.bytecode.visitor.*;
 
-import java.io.*;
-
-
 /**
- *  <p>A unicode string value in the constant pool.</p>
- *
- *  @author Abe White
+ * A unicode string value in the constant pool.
+ * 
+ * @author Abe White
  */
 public class UTF8Entry extends Entry implements ConstantEntry {
     private String _value = "";
 
     /**
-     *  Default constructor.
+     * Default constructor.
      */
     public UTF8Entry() {
     }
 
     /**
-     *  Constructor.
-     *
-     *  @param value        the constant string value of this entry
+     * Constructor.
+     * 
+     * @param value the constant string value of this entry
      */
     public UTF8Entry(String value) {
         _value = value;
@@ -48,19 +43,18 @@ public class UTF8Entry extends Entry implements ConstantEntry {
     }
 
     /**
-     *  Return the value of the entry.
+     * Return the value of the entry.
      */
     public String getValue() {
         return _value;
     }
 
     /**
-     *  Set the value of the entry.
+     * Set the value of the entry.
      */
     public void setValue(String value) {
-        if (value == null) {
+        if (value == null)
             throw new NullPointerException("value = null");
-        }
 
         Object key = beforeModify();
         _value = value;

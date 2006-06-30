@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,24 +12,21 @@
  */
 package org.apache.openjpa.lib.rop;
 
+import java.util.*;
 import org.apache.commons.lang.exception.*;
-
 import org.apache.openjpa.lib.util.*;
 
-import java.util.*;
-
-
 /**
- *  <p>A result object provider wrapped around a normal list.</p>
- *
- *  @author Abe White
+ * A result object provider wrapped around a normal list.
+ * 
+ * @author Abe White
  */
 public class ListResultObjectProvider implements ResultObjectProvider {
     private final List _list;
     private int _idx = -1;
 
     /**
-     *  Constructor.  Supply delegate.
+     * Constructor. Supply delegate.
      */
     public ListResultObjectProvider(List list) {
         _list = list;
@@ -58,12 +52,10 @@ public class ListResultObjectProvider implements ResultObjectProvider {
     }
 
     public boolean absolute(int pos) throws Exception {
-        if ((pos >= 0) && (pos < _list.size())) {
+        if (pos >= 0 && pos < _list.size()) {
             _idx = pos;
-
             return true;
         }
-
         return false;
     }
 
@@ -76,12 +68,8 @@ public class ListResultObjectProvider implements ResultObjectProvider {
     }
 
     public void close() throws Exception {
-        if (_list instanceof Closeable) {
-            try {
-                ((Closeable) _list).close();
-            } catch (Exception e) {
-            }
-        }
+        if (_list instanceof Closeable)
+            try { ((Closeable) _list).close(); } catch (Exception e) {}
     }
 
     public void handleCheckedException(Exception e) {

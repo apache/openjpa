@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,12 +12,11 @@
  */
 package org.apache.openjpa.lib.log;
 
-
 /**
- *  A log factory implementation that does not do any logging, as
- *  quickly as possible.
- *
- *  @author Patrick Linskey
+ * A log factory implementation that does not do any logging, as
+ * quickly as possible.
+ * 
+ * @author Patrick Linskey
  */
 public class NoneLogFactory implements LogFactory {
     public final Log getLog(String channel) {
@@ -28,7 +24,7 @@ public class NoneLogFactory implements LogFactory {
     }
 
     /**
-     *  No-op log.
+     * No-op log.
      */
     public static class NoneLog implements Log {
         private static final NoneLog s_log = new NoneLog();
@@ -98,3 +94,4 @@ public class NoneLogFactory implements LogFactory {
         }
     }
 }
+

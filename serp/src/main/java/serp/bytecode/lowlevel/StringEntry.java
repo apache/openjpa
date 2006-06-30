@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,31 +12,29 @@
  */
 package serp.bytecode.lowlevel;
 
+import java.io.*;
 import serp.bytecode.visitor.*;
 
-import java.io.*;
-
-
 /**
- *  <p>A String constant in the constant pool.  String constants
- *  hold a reference to a {@link UTF8Entry} that stores the actual value.</p>
- *
- *  @author Abe White
+ * A String constant in the constant pool. String constants
+ * hold a reference to a {@link UTF8Entry} that stores the actual value.
+ * 
+ * @author Abe White
  */
 public class StringEntry extends Entry implements ConstantEntry {
     private int _stringIndex = -1;
 
     /**
-     *  Default constructor.
+     * Default constructor.
      */
     public StringEntry() {
     }
 
     /**
-     *  Constructor.
-     *
-     *  @param stringIndex        the constant pool index of the {@link UTF8Entry}
-     *                                          containing the value of this string
+     * Constructor.
+     * 
+     * @param stringIndex the constant pool index of the {@link UTF8Entry}
+     * containing the value of this string
      */
     public StringEntry(int stringIndex) {
         _stringIndex = stringIndex;
@@ -50,16 +45,16 @@ public class StringEntry extends Entry implements ConstantEntry {
     }
 
     /**
-     *  Return the constant pool index of the {@link UTF8Entry}
-     *  storing the        value of this string.
+     * Return the constant pool index of the {@link UTF8Entry}
+     * storing the value of this string.
      */
     public int getStringIndex() {
         return _stringIndex;
     }
 
     /**
-     *  Set the constant pool index of the {@link UTF8Entry}
-     *  storing the        value of this string.
+     * Set the constant pool index of the {@link UTF8Entry}
+     * storing the value of this string.
      */
     public void setStringIndex(int stringIndex) {
         Object key = beforeModify();
@@ -68,11 +63,11 @@ public class StringEntry extends Entry implements ConstantEntry {
     }
 
     /**
-     *  Return the referenced {@link UTF8Entry}.  This method can only
-     *  be run for entries that have been added to a constant pool.
+     * Return the referenced {@link UTF8Entry}. This method can only
+     * be run for entries that have been added to a constant pool.
      */
     public UTF8Entry getStringEntry() {
-        return (UTF8Entry) getPool().getEntry(_stringIndex);
+        return(UTF8Entry) getPool().getEntry(_stringIndex);
     }
 
     public Object getConstant() {

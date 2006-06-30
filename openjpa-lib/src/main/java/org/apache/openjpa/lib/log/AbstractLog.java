@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,25 +14,24 @@ package org.apache.openjpa.lib.log;
 
 import java.io.*;
 
-
 /**
- *  A simple implementation of the {@link Log} interface. Writes
- *  output to stdout.
- *
- *  @author Patrick Linskey
+ * A simple implementation of the {@link Log} interface. Writes
+ * output to stdout.
+ * 
+ * @author Patrick Linskey
  */
 public abstract class AbstractLog implements Log {
     /**
-     *  Check to see if the specified logging level is enabled.
+     * Check to see if the specified logging level is enabled.
      */
     protected abstract boolean isEnabled(short level);
 
     /**
-     *  Send the specified log message to the handler.
-     *
-     *  @param level        the level of the log message
-     *  @param message        the message to send
-     *  @param t                the Throwable, or null if this is not an error
+     * Send the specified log message to the handler.
+     * 
+     * @param level the level of the log message
+     * @param message the message to send
+     * @param t the Throwable, or null if this is not an error
      */
     protected abstract void log(short level, String message, Throwable t);
 
@@ -68,9 +64,8 @@ public abstract class AbstractLog implements Log {
     }
 
     public void trace(Object message, Throwable t) {
-        if (isTraceEnabled()) {
+        if (isTraceEnabled())
             log(TRACE, toString(message), throwableParam(message, t));
-        }
     }
 
     public void debug(Object message) {
@@ -78,9 +73,8 @@ public abstract class AbstractLog implements Log {
     }
 
     public void debug(Object message, Throwable t) {
-        if (isDebugEnabled()) {
+        if (isDebugEnabled())
             log(DEBUG, toString(message), throwableParam(message, t));
-        }
     }
 
     public void info(Object message) {
@@ -88,9 +82,8 @@ public abstract class AbstractLog implements Log {
     }
 
     public void info(Object message, Throwable t) {
-        if (isInfoEnabled()) {
+        if (isInfoEnabled())
             log(INFO, toString(message), throwableParam(message, t));
-        }
     }
 
     public void warn(Object message) {
@@ -98,9 +91,8 @@ public abstract class AbstractLog implements Log {
     }
 
     public void warn(Object message, Throwable t) {
-        if (isWarnEnabled()) {
+        if (isWarnEnabled())
             log(WARN, toString(message), throwableParam(message, t));
-        }
     }
 
     public void error(Object message) {
@@ -108,9 +100,8 @@ public abstract class AbstractLog implements Log {
     }
 
     public void error(Object message, Throwable t) {
-        if (isErrorEnabled()) {
+        if (isErrorEnabled())
             log(ERROR, toString(message), throwableParam(message, t));
-        }
     }
 
     public void fatal(Object message) {
@@ -118,42 +109,37 @@ public abstract class AbstractLog implements Log {
     }
 
     public void fatal(Object message, Throwable t) {
-        if (isFatalEnabled()) {
+        if (isFatalEnabled())
             log(FATAL, toString(message), throwableParam(message, t));
-        }
     }
 
     /**
-     *  Utility method to obtain a stack trace as a String.
+     * Utility method to obtain a stack trace as a String.
      */
     protected static String getStackTrace(Throwable t) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw, true);
         t.printStackTrace(pw);
         pw.close();
-
         return sw.toString();
     }
 
     /**
-     *  If either given instance is a throwable, return it.
+     * If either given instance is a throwable, return it.
      */
     private static Throwable throwableParam(Object message, Throwable t) {
-        if (t != null) {
+        if (t != null)
             return t;
-        }
-
-        if (message instanceof Throwable) {
-            return (Throwable) message;
-        }
+        if (message instanceof Throwable)
+            return(Throwable)message;
 
         return null;
     }
 
     /**
-     *  Efficiently turn the given object into a string.
-      */
+     * Efficiently turn the given object into a string.
+     */
     private static String toString(Object o) {
-        return (o == null) ? "null" : o.toString();
+        return(o == null) ? "null" : o.toString();
     }
 }

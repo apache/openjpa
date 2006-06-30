@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,16 +13,14 @@
 package serp.bytecode;
 
 import junit.framework.*;
-
 import junit.textui.*;
 
-
 /**
- *  <p>Base class for testing the handling of the {@link PrimitiveState} and
- *  {@link ArrayState}.  Subclasses should set the {@link #_bc} member in
- *  their {@link TestCase#setUp} method.</p>
- *
- *  @author Abe White
+ * Base class for testing the handling of the {@link PrimitiveState} and
+ * {@link ArrayState}. Subclasses should set the {@link #_bc} member in
+ * their {@link TestCase#setUp} method.
+ * 
+ * @author Abe White
  */
 public abstract class AbstractStateTest extends TestCase {
     protected Project _project = new Project();
@@ -36,26 +31,25 @@ public abstract class AbstractStateTest extends TestCase {
     }
 
     /**
-     *  Test the name and type operations.
+     * Test the name and type operations.
      */
     public abstract void testType();
 
     /**
-     *  Test operations on the superclass.
+     * Test operations on the superclass.
      */
     public abstract void testSuperclass();
 
     /**
-     *  Test operations on the component type.
+     * Test operations on the component type.
      */
     public abstract void testComponent();
 
     /**
-     *  Test the basics -- magic number, etc.
+     * Test the basics -- magic number, etc.
      */
     public void testBasics() {
         assertEquals(Constants.VALID_MAGIC, _bc.getMagic());
-
         try {
             _bc.setMagic(1);
             fail("Allowed set magic");
@@ -63,7 +57,6 @@ public abstract class AbstractStateTest extends TestCase {
         }
 
         assertEquals(Constants.MAJOR_VERSION, _bc.getMajorVersion());
-
         try {
             _bc.setMajorVersion(1);
             fail("Allowed set major version");
@@ -71,7 +64,6 @@ public abstract class AbstractStateTest extends TestCase {
         }
 
         assertEquals(Constants.MINOR_VERSION, _bc.getMinorVersion());
-
         try {
             _bc.setMinorVersion(1);
             fail("Allowed set minor version");
@@ -80,7 +72,6 @@ public abstract class AbstractStateTest extends TestCase {
 
         assertEquals(Constants.ACCESS_PUBLIC | Constants.ACCESS_FINAL,
             _bc.getAccessFlags());
-
         try {
             _bc.setAccessFlags(1);
             fail("Allowed set access flags");
@@ -95,12 +86,11 @@ public abstract class AbstractStateTest extends TestCase {
     }
 
     /**
-     *  Test operations on interfaces.
+     * Test operations on interfaces.
      */
     public void testInterfaces() {
         assertEquals(0, _bc.getDeclaredInterfaceNames().length);
         assertEquals(0, _bc.getInterfaceNames().length);
-
         try {
             _bc.declareInterface("foo");
             fail("Allowed declare interface");
@@ -116,12 +106,11 @@ public abstract class AbstractStateTest extends TestCase {
     }
 
     /**
-     *  Test operations on fields.
+     * Test operations on fields.
      */
     public void testFields() {
         assertEquals(0, _bc.getDeclaredFields().length);
         assertEquals(0, _bc.getFields().length);
-
         try {
             _bc.declareField("foo", int.class);
             fail("Allowed declare field");
@@ -134,11 +123,10 @@ public abstract class AbstractStateTest extends TestCase {
     }
 
     /**
-     *  Test operations on methods.
+     * Test operations on methods.
      */
     public void testMethods() {
         assertEquals(0, _bc.getDeclaredMethods().length);
-
         try {
             _bc.declareMethod("foo", int.class, null);
             fail("Allowed declare method");
@@ -157,11 +145,10 @@ public abstract class AbstractStateTest extends TestCase {
     }
 
     /**
-     *  Test operations on attributes.
+     * Test operations on attributes.
      */
     public void testAttributes() {
         assertNull(_bc.getSourceFile(false));
-
         try {
             _bc.getSourceFile(true);
             fail("Allowed add source file");
@@ -169,7 +156,6 @@ public abstract class AbstractStateTest extends TestCase {
         }
 
         assertNull(_bc.getInnerClasses(false));
-
         try {
             _bc.getInnerClasses(true);
             fail("Allowed add inner classes");
@@ -177,7 +163,6 @@ public abstract class AbstractStateTest extends TestCase {
         }
 
         assertTrue(!_bc.isDeprecated());
-
         try {
             _bc.setDeprecated(true);
             fail("Allowed set deprecated");
@@ -187,7 +172,6 @@ public abstract class AbstractStateTest extends TestCase {
         assertEquals(0, _bc.getAttributes().length);
         _bc.clearAttributes();
         assertTrue(!_bc.removeAttribute(Constants.ATTR_SYNTHETIC));
-
         try {
             _bc.addAttribute(Constants.ATTR_SYNTHETIC);
             fail("Allowed add attribute");
@@ -196,7 +180,7 @@ public abstract class AbstractStateTest extends TestCase {
     }
 
     /**
-     *  Tests that these types cannot be written.
+     * Tests that these types cannot be written.
      */
     public void testWrite() {
         try {

@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,29 +12,27 @@
  */
 package serp.bytecode.lowlevel;
 
+import java.io.*;
 import serp.bytecode.visitor.*;
 
-import java.io.*;
-
-
 /**
- *  <p>A constant float value in the constant pool.</p>
- *
- *  @author Abe White
+ * A constant float value in the constant pool.
+ * 
+ * @author Abe White
  */
 public class FloatEntry extends Entry implements ConstantEntry {
     private float _value = 0.0F;
 
     /**
-     *  Default constructor.
+     * Default constructor.
      */
     public FloatEntry() {
     }
 
     /**
-     *  Constructor.
-     *
-     *  @param value        the constant float value of this entry
+     * Constructor.
+     * 
+     * @param value the constant float value of this entry
      */
     public FloatEntry(float value) {
         _value = value;
@@ -48,15 +43,15 @@ public class FloatEntry extends Entry implements ConstantEntry {
     }
 
     /**
-     *  Return the value of this constant.
-      */
+     * Return the value of this constant.
+     */
     public float getValue() {
         return _value;
     }
 
     /**
-     *  Set the value of this constant.
-      */
+     * Set the value of this constant.
+     */
     public void setValue(float value) {
         Object key = beforeModify();
         _value = value;

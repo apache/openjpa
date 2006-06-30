@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,33 +13,31 @@
 package org.apache.openjpa.lib.jdbc;
 
 import java.io.*;
-
 import java.sql.*;
-
 import java.util.*;
 
-
 /**
- *  <p>Wrapper around a DatabaseMetadata instance.</p>
- *
- *  @author Marc Prud'hommeaux
+ * Wrapper around a DatabaseMetadata instance.
+ * 
+ * @author Marc Prud'hommeaux
  */
 public class DelegatingDatabaseMetaData implements DatabaseMetaData {
     private final DatabaseMetaData _metaData;
-    private final Connection _conn;
+    private final Connection  _conn;
 
-    public DelegatingDatabaseMetaData(DatabaseMetaData metaData, Connection conn) {
+    public DelegatingDatabaseMetaData(DatabaseMetaData metaData,
+        Connection conn) {
         _conn = conn;
         _metaData = metaData;
     }
 
     /**
-     *  Return the base underlying database metadata.
+     * Return the base underlying database metadata.
      */
     public DatabaseMetaData getInnermostDelegate() {
-        return (_metaData instanceof DelegatingDatabaseMetaData)
-        ? ((DelegatingDatabaseMetaData) _metaData).getInnermostDelegate()
-        : _metaData;
+        return _metaData instanceof DelegatingDatabaseMetaData ?
+            ((DelegatingDatabaseMetaData)_metaData).getInnermostDelegate()
+            : _metaData;
     }
 
     public int hashCode() {
@@ -50,21 +45,17 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
     }
 
     public boolean equals(Object other) {
-        if (other == this) {
+        if (other == this)
             return true;
-        }
-
-        if (other instanceof DelegatingDatabaseMetaData) {
-            other = ((DelegatingDatabaseMetaData) other).getInnermostDelegate();
-        }
-
+        if (other instanceof DelegatingDatabaseMetaData)
+            other = ((DelegatingDatabaseMetaData) other)
+            .getInnermostDelegate();
         return getInnermostDelegate().equals(other);
     }
 
     public String toString() {
         StringBuffer buf = new StringBuffer("metadata ").append(hashCode());
         buf.append("[").append(_metaData.toString()).append("]");
-
         return buf.toString();
     }
 
@@ -76,13 +67,11 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.allTablesAreSelectable();
     }
 
-    public boolean dataDefinitionCausesTransactionCommit()
-        throws SQLException {
+    public boolean dataDefinitionCausesTransactionCommit() throws SQLException {
         return _metaData.dataDefinitionCausesTransactionCommit();
     }
 
-    public boolean dataDefinitionIgnoredInTransactions()
-        throws SQLException {
+    public boolean dataDefinitionIgnoredInTransactions() throws SQLException {
         return _metaData.dataDefinitionIgnoredInTransactions();
     }
 
@@ -94,10 +83,11 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.doesMaxRowSizeIncludeBlobs();
     }
 
-    public ResultSet getBestRowIdentifier(String catalog, String schema,
-        String table, int scope, boolean nullable) throws SQLException {
-        return _metaData.getBestRowIdentifier(catalog, schema, table, scope,
-            nullable);
+    public ResultSet getBestRowIdentifier(String catalog,
+        String schema, String table, int scope, boolean nullable)
+        throws SQLException {
+        return _metaData.getBestRowIdentifier(catalog, schema,
+            table, scope, nullable);
     }
 
     public ResultSet getCatalogs() throws SQLException {
@@ -114,15 +104,14 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
 
     public ResultSet getColumnPrivileges(String catalog, String schema,
         String table, String columnNamePattern) throws SQLException {
-        return _metaData.getColumnPrivileges(catalog, schema, table,
-            columnNamePattern);
+        return _metaData.getColumnPrivileges(catalog, schema,
+            table, columnNamePattern);
     }
 
     public ResultSet getColumns(String catalog, String schemaPattern,
-        String tableNamePattern, String columnNamePattern)
-        throws SQLException {
-        return _metaData.getColumns(catalog, schemaPattern, tableNamePattern,
-            columnNamePattern);
+        String tableNamePattern, String columnNamePattern) throws SQLException {
+        return _metaData.getColumns(catalog, schemaPattern,
+            tableNamePattern, columnNamePattern);
     }
 
     public Connection getConnection() throws SQLException {
@@ -164,8 +153,8 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.getDriverVersion();
     }
 
-    public ResultSet getExportedKeys(String catalog, String schema, String table)
-        throws SQLException {
+    public ResultSet getExportedKeys(String catalog, String schema,
+        String table) throws SQLException {
         return _metaData.getExportedKeys(catalog, schema, table);
     }
 
@@ -177,13 +166,13 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.getIdentifierQuoteString();
     }
 
-    public ResultSet getImportedKeys(String catalog, String schema, String table)
-        throws SQLException {
+    public ResultSet getImportedKeys(String catalog, String schema,
+        String table) throws SQLException {
         return _metaData.getImportedKeys(catalog, schema, table);
     }
 
-    public ResultSet getIndexInfo(String catalog, String schema, String table,
-        boolean unique, boolean approximate) throws SQLException {
+    public ResultSet getIndexInfo(String catalog, String schema,
+        String table, boolean unique, boolean approximate) throws SQLException {
         return _metaData.getIndexInfo(catalog, schema, table, unique,
             approximate);
     }
@@ -318,16 +307,16 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.getSystemFunctions();
     }
 
-    public ResultSet getTablePrivileges(String catalog, String schemaPattern,
-        String tableNamePattern) throws SQLException {
+    public ResultSet getTablePrivileges(String catalog,
+        String schemaPattern, String tableNamePattern) throws SQLException {
         return _metaData.getTablePrivileges(catalog, schemaPattern,
             tableNamePattern);
     }
 
     public ResultSet getTables(String catalog, String schemaPattern,
         String tableNamePattern, String[] types) throws SQLException {
-        return _metaData.getTables(catalog, schemaPattern, tableNamePattern,
-            types);
+        return _metaData.getTables(catalog, schemaPattern,
+            tableNamePattern, types);
     }
 
     public ResultSet getTableTypes() throws SQLException {
@@ -344,7 +333,8 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
 
     public ResultSet getUDTs(String catalog, String schemaPattern,
         String typeNamePattern, int[] types) throws SQLException {
-        return _metaData.getUDTs(catalog, schemaPattern, typeNamePattern, types);
+        return _metaData.getUDTs(catalog, schemaPattern,
+            typeNamePattern, types);
     }
 
     public String getURL() throws SQLException {
@@ -355,8 +345,8 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.getUserName();
     }
 
-    public ResultSet getVersionColumns(String catalog, String schema,
-        String table) throws SQLException {
+    public ResultSet getVersionColumns(String catalog,
+        String schema, String table) throws SQLException {
         return _metaData.getVersionColumns(catalog, schema, table);
     }
 
@@ -464,18 +454,15 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.supportsBatchUpdates();
     }
 
-    public boolean supportsCatalogsInDataManipulation()
-        throws SQLException {
+    public boolean supportsCatalogsInDataManipulation() throws SQLException {
         return _metaData.supportsCatalogsInDataManipulation();
     }
 
-    public boolean supportsCatalogsInIndexDefinitions()
-        throws SQLException {
+    public boolean supportsCatalogsInIndexDefinitions() throws SQLException {
         return _metaData.supportsCatalogsInIndexDefinitions();
     }
 
-    public boolean supportsCatalogsInPrivilegeDefinitions()
-        throws SQLException {
+    public boolean supportsCatalogsInPrivilegeDefinitions() throws SQLException {
         return _metaData.supportsCatalogsInPrivilegeDefinitions();
     }
 
@@ -483,8 +470,7 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.supportsCatalogsInProcedureCalls();
     }
 
-    public boolean supportsCatalogsInTableDefinitions()
-        throws SQLException {
+    public boolean supportsCatalogsInTableDefinitions() throws SQLException {
         return _metaData.supportsCatalogsInTableDefinitions();
     }
 
@@ -496,8 +482,7 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.supportsConvert();
     }
 
-    public boolean supportsConvert(int fromType, int toType)
-        throws SQLException {
+    public boolean supportsConvert(int fromType, int toType) throws SQLException {
         return _metaData.supportsConvert(fromType, toType);
     }
 
@@ -511,7 +496,8 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
 
     public boolean supportsDataDefinitionAndDataManipulationTransactions()
         throws SQLException {
-        return _metaData.supportsDataDefinitionAndDataManipulationTransactions();
+        return _metaData
+            .supportsDataDefinitionAndDataManipulationTransactions();
     }
 
     public boolean supportsDataManipulationTransactionsOnly()
@@ -519,8 +505,7 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.supportsDataManipulationTransactionsOnly();
     }
 
-    public boolean supportsDifferentTableCorrelationNames()
-        throws SQLException {
+    public boolean supportsDifferentTableCorrelationNames() throws SQLException {
         return _metaData.supportsDifferentTableCorrelationNames();
     }
 
@@ -548,8 +533,7 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.supportsGroupByUnrelated();
     }
 
-    public boolean supportsIntegrityEnhancementFacility()
-        throws SQLException {
+    public boolean supportsIntegrityEnhancementFacility() throws SQLException {
         return _metaData.supportsIntegrityEnhancementFacility();
     }
 
@@ -569,8 +553,7 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.supportsMixedCaseIdentifiers();
     }
 
-    public boolean supportsMixedCaseQuotedIdentifiers()
-        throws SQLException {
+    public boolean supportsMixedCaseQuotedIdentifiers() throws SQLException {
         return _metaData.supportsMixedCaseQuotedIdentifiers();
     }
 
@@ -590,18 +573,15 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.supportsOpenCursorsAcrossCommit();
     }
 
-    public boolean supportsOpenCursorsAcrossRollback()
-        throws SQLException {
+    public boolean supportsOpenCursorsAcrossRollback() throws SQLException {
         return _metaData.supportsOpenCursorsAcrossRollback();
     }
 
-    public boolean supportsOpenStatementsAcrossCommit()
-        throws SQLException {
+    public boolean supportsOpenStatementsAcrossCommit() throws SQLException {
         return _metaData.supportsOpenStatementsAcrossCommit();
     }
 
-    public boolean supportsOpenStatementsAcrossRollback()
-        throws SQLException {
+    public boolean supportsOpenStatementsAcrossRollback() throws SQLException {
         return _metaData.supportsOpenStatementsAcrossRollback();
     }
 
@@ -630,18 +610,15 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.supportsResultSetType(type);
     }
 
-    public boolean supportsSchemasInDataManipulation()
-        throws SQLException {
+    public boolean supportsSchemasInDataManipulation() throws SQLException {
         return _metaData.supportsSchemasInDataManipulation();
     }
 
-    public boolean supportsSchemasInIndexDefinitions()
-        throws SQLException {
+    public boolean supportsSchemasInIndexDefinitions() throws SQLException {
         return _metaData.supportsSchemasInIndexDefinitions();
     }
 
-    public boolean supportsSchemasInPrivilegeDefinitions()
-        throws SQLException {
+    public boolean supportsSchemasInPrivilegeDefinitions() throws SQLException {
         return _metaData.supportsSchemasInPrivilegeDefinitions();
     }
 
@@ -649,8 +626,7 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.supportsSchemasInProcedureCalls();
     }
 
-    public boolean supportsSchemasInTableDefinitions()
-        throws SQLException {
+    public boolean supportsSchemasInTableDefinitions() throws SQLException {
         return _metaData.supportsSchemasInTableDefinitions();
     }
 
@@ -711,8 +687,9 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.usesLocalFiles();
     }
 
-    // JDBC 3.0 methods (unsupported) follow; these are required to be able to 
+    // JDBC 3.0 methods(unsupported) follow; these are required to be able to
     // compile against JDK 1.4
+
     public boolean supportsSavepoints() throws SQLException {
         throw new UnsupportedOperationException();
     }
@@ -740,8 +717,7 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
     }
 
     public ResultSet getAttributes(String catalog, String schemaPatter,
-        String typeNamePattern, String attributeNamePattern)
-        throws SQLException {
+        String typeNamePattern, String attributeNamePattern) throws SQLException {
         throw new UnsupportedOperationException();
     }
 
@@ -782,3 +758,4 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         throw new UnsupportedOperationException();
     }
 }
+

@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,40 +14,39 @@ package org.apache.openjpa.lib.util;
 
 import java.util.*;
 
-
 /**
- *  <p>Basic event manager interface.</p>
- *
- *  @author Abe White
+ * Basic event manager interface.
+ * 
+ * @author Abe White
  */
 public interface EventManager {
     /**
-     *  Add an event listener.
+     * Add an event listener.
      */
     public void addListener(Object listener);
 
     /**
-     *  Remove an event listener.
+     * Remove an event listener.
      */
     public boolean removeListener(Object listener);
 
     /**
-     *  Return whether the given instance is in the list of listeners.
+     * Return whether the given instance is in the list of listeners.
      */
     public boolean hasListener(Object listener);
 
     /**
-     *  Return true if there are any registered listeners.
+     * Return true if there are any registered listeners.
      */
     public boolean hasListeners();
 
     /**
-     *  Return a read-only list of listeners.
+     * Return a read-only list of listeners.
      */
     public Collection getListeners();
 
     /**
-     *  Fire the given event to all listeners, returning any exceptions.
+     * Fire the given event to all listeners, returning any exceptions.
      */
     public Exception[] fireEvent(Object event);
 }

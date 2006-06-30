@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,18 +12,16 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
+import java.sql.*;
 import org.apache.openjpa.lib.util.*;
 
-import java.sql.*;
-
-
 /**
- *  <p>Wrapper around an existing statement.  Subclasses can override the
- *  methods whose behavior they mean to change.  The <code>equals</code> and
- *  <code>hashCode</code> methods pass through to the base underlying data
- *  store statement.</p>
- *
- *  @author Abe White
+ * Wrapper around an existing statement. Subclasses can override the
+ * methods whose behavior they mean to change. The <code>equals</code> and
+ * <code>hashCode</code> methods pass through to the base underlying data
+ * store statement.
+ * 
+ * @author Abe White
  */
 public class DelegatingStatement implements Statement, Closeable {
     private final Statement _stmnt;
@@ -36,34 +31,30 @@ public class DelegatingStatement implements Statement, Closeable {
     public DelegatingStatement(Statement stmnt, Connection conn) {
         _conn = conn;
         _stmnt = stmnt;
-
-        if (stmnt instanceof DelegatingStatement) {
+        if (stmnt instanceof DelegatingStatement)
             _del = (DelegatingStatement) stmnt;
-        } else {
+        else
             _del = null;
-        }
     }
 
     protected ResultSet wrapResult(ResultSet rs, boolean wrap) {
-        if (!wrap || (rs == null)) {
+        if (!wrap || rs == null)
             return rs;
-        }
-
         return new DelegatingResultSet(rs, this);
     }
 
     /**
-     *  Return the wrapped statement.
+     * Return the wrapped statement.
      */
     public Statement getDelegate() {
         return _stmnt;
     }
 
     /**
-     *  Return the base underlying data store statement.
+     * Return the base underlying data store statement.
      */
     public Statement getInnermostDelegate() {
-        return (_del == null) ? _stmnt : _del.getInnermostDelegate();
+        return(_del == null) ? _stmnt : _del.getInnermostDelegate();
     }
 
     public int hashCode() {
@@ -71,28 +62,22 @@ public class DelegatingStatement implements Statement, Closeable {
     }
 
     public boolean equals(Object other) {
-        if (other == this) {
+        if (other == this)
             return true;
-        }
-
-        if (other instanceof DelegatingStatement) {
+        if (other instanceof DelegatingStatement)
             other = ((DelegatingStatement) other).getInnermostDelegate();
-        }
-
         return getInnermostDelegate().equals(other);
     }
 
     public String toString() {
         StringBuffer buf = new StringBuffer("stmnt ").append(hashCode());
         appendInfo(buf);
-
         return buf.toString();
     }
 
     protected void appendInfo(StringBuffer buf) {
-        if (_del != null) {
+        if (_del != null)
             _del.appendInfo(buf);
-        }
     }
 
     public ResultSet executeQuery(String str) throws SQLException {
@@ -100,19 +85,16 @@ public class DelegatingStatement implements Statement, Closeable {
     }
 
     /**
-      *  Execute the query, with the option of not wrapping it in a
-     *  {@link DelegatingResultSet}, which is the default.
+     * Execute the query, with the option of not wrapping it in a
+     * {@link DelegatingResultSet}, which is the default.
      */
     protected ResultSet executeQuery(String sql, boolean wrap)
         throws SQLException {
         ResultSet rs;
-
-        if (_del != null) {
+        if (_del != null)
             rs = _del.executeQuery(sql, false);
-        } else {
+        else
             rs = _stmnt.executeQuery(sql);
-        }
-
         return wrapResult(rs, wrap);
     }
 
@@ -177,18 +159,15 @@ public class DelegatingStatement implements Statement, Closeable {
     }
 
     /**
-      *  Get the last result set, with the option of not wrapping it in a
-     *  {@link DelegatingResultSet}, which is the default.
+     * Get the last result set, with the option of not wrapping it in a
+     * {@link DelegatingResultSet}, which is the default.
      */
     protected ResultSet getResultSet(boolean wrap) throws SQLException {
         ResultSet rs;
-
-        if (_del != null) {
+        if (_del != null)
             rs = _del.getResultSet(false);
-        } else {
+        else
             rs = _stmnt.getResultSet();
-        }
-
         return wrapResult(rs, wrap);
     }
 
@@ -240,8 +219,9 @@ public class DelegatingStatement implements Statement, Closeable {
         return _conn;
     }
 
-    // JDBC 3.0 (unsupported) method follow; these are required to be able 
+    // JDBC 3.0 (unsupported) method follow; these are required to be able
     // to compile against JDK 1.4
+
     public boolean getMoreResults(int i) throws SQLException {
         throw new UnsupportedOperationException();
     }
@@ -278,3 +258,4 @@ public class DelegatingStatement implements Statement, Closeable {
         throw new UnsupportedOperationException();
     }
 }
+

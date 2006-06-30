@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,115 +14,108 @@ package org.apache.openjpa.lib.util;
 
 import java.util.*;
 
-
 /**
- *  Utilities for calculating string distance.
- *
- *  @author Marc Prud'hommeaux
- *  @nojavadoc */
+ * Utilities for calculating string distance.
+ * 
+ * @author Marc Prud'hommeaux
+ * @nojavadoc
+ */
 public class StringDistance {
     /**
-     *  Returns the candidate string with the closest Levenshtein distance
-     *  to the given string.
-     *
-     *  @see #getClosestLevenshteinDistance(String,Collection,int)
+     * Returns the candidate string with the closest Levenshtein distance
+     * to the given string.
+     * 
+     * @see #getClosestLevenshteinDistance(String,Collection,int)
      */
     public static String getClosestLevenshteinDistance(String str,
         String[] candidates) {
-        if (candidates == null) {
+        if (candidates == null)
             return null;
-        }
-
         return getClosestLevenshteinDistance(str, Arrays.asList(candidates));
     }
 
     /**
-     *  Returns the candidate string with the closest Levenshtein distance
-     *  to the given string.
-     *
-     *  @see #getClosestLevenshteinDistance(String,Collection,int)
+     * Returns the candidate string with the closest Levenshtein distance
+     * to the given string.
+     * 
+     * @see #getClosestLevenshteinDistance(String,Collection,int)
      */
     public static String getClosestLevenshteinDistance(String str,
         Collection candidates) {
-        return getClosestLevenshteinDistance(str, candidates, Integer.MAX_VALUE);
+        return getClosestLevenshteinDistance(str, candidates,
+            Integer.MAX_VALUE);
     }
 
     /**
-     *  Returns the candidate string with the closest Levenshtein distance
-     *  to the given string.
-     *
-     *  @see #getClosestLevenshteinDistance(String,Collection,int)
+     * Returns the candidate string with the closest Levenshtein distance
+     * to the given string.
+     * 
+     * @see #getClosestLevenshteinDistance(String,Collection,int)
      */
     public static String getClosestLevenshteinDistance(String str,
         String[] candidates, int threshold) {
-        if (candidates == null) {
+        if (candidates == null)
             return null;
-        }
-
         return getClosestLevenshteinDistance(str, Arrays.asList(candidates),
             threshold);
     }
 
     /**
-     *  Returns the candidate string with the closest Levenshtein distance
-     *  to the given string and using the threshold as the specified
-     *  percentage of the length of the candidate string (0.0f-1.0f).
-     *
-     *  @see #getClosestLevenshteinDistance(String,Collection,int)
+     * Returns the candidate string with the closest Levenshtein distance
+     * to the given string and using the threshold as the specified
+     * percentage of the length of the candidate string(0.0f-1.0f).
+     * 
+     * @see #getClosestLevenshteinDistance(String,Collection,int)
      */
     public static String getClosestLevenshteinDistance(String str,
         String[] candidates, float thresholdPercentage) {
-        if (candidates == null) {
+        if (candidates == null)
             return null;
-        }
 
         return getClosestLevenshteinDistance(str, Arrays.asList(candidates),
             thresholdPercentage);
     }
 
     /**
-     *  Returns the candidate string with the closest Levenshtein distance
-     *  to the given string and using the threshold as the specified
-     *  percentage of the length of the candidate string (0.0f-1.0f).
-     *
-     *  @see #getClosestLevenshteinDistance(String,Collection,int)
+     * Returns the candidate string with the closest Levenshtein distance
+     * to the given string and using the threshold as the specified
+     * percentage of the length of the candidate string(0.0f-1.0f).
+     * 
+     * @see #getClosestLevenshteinDistance(String,Collection,int)
      */
     public static String getClosestLevenshteinDistance(String str,
         Collection candidates, float thresholdPercentage) {
-        if (str == null) {
+        if (str == null)
             return null;
-        }
 
         thresholdPercentage = Math.min(thresholdPercentage, 1.0f);
         thresholdPercentage = Math.max(thresholdPercentage, 0.0f);
 
         return getClosestLevenshteinDistance(str, candidates,
-            (int) (str.length() * thresholdPercentage));
+            (int)(str.length() * thresholdPercentage));
     }
 
     /**
-     *  Returns the candidate string with the closest Levenshtein distance
-     *  to the given string.
-     *
-     *  @param str                 the string to check
-     *  @param candidates  the list of strings to test against
-     *  @param threshold        the threshold distance a candidate must meet
-     *
-     *  @see #getLevenshteinDistance
+     * Returns the candidate string with the closest Levenshtein distance
+     * to the given string.
+     * 
+     * @param str the string to check
+     * @param candidates the list of strings to test against
+     * @param threshold the threshold distance a candidate must meet
+     * 
+     * @see #getLevenshteinDistance
      */
     public static String getClosestLevenshteinDistance(String str,
         Collection candidates, int threshhold) {
-        if ((candidates == null) || candidates.isEmpty()) {
+        if (candidates == null || candidates.isEmpty())
             return null;
-        }
 
         String minString = null;
         int minValue = Integer.MAX_VALUE;
 
-        for (Iterator i = candidates.iterator(); i.hasNext();) {
+        for (Iterator i = candidates.iterator(); i.hasNext(); ) {
             String candidate = (String) i.next();
             int distance = getLevenshteinDistance(str, candidate);
-
             if (distance < minValue) {
                 minValue = distance;
                 minString = candidate;
@@ -133,34 +123,31 @@ public class StringDistance {
         }
 
         // return the lowest close string only if we surpass the threshhold
-        if (minValue <= threshhold) {
+        if (minValue <= threshhold)
             return minString;
-        } else {
+        else
             return null;
-        }
     }
 
     /**
-     *  Returns the Levenshtein distance between the two strings.
-     *  The distance is the minimum number of changes that need to be
-     *  applied to the first string in order to get to the second
-     *  string. For details of the algorithm, see
-     *  <a href="http://en.wikipedia.org/wiki/Levenshtein_distance">
-     *  http://en.wikipedia.org/wiki/Levenshtein_distance</a>.
+     * Returns the Levenshtein distance between the two strings.
+     * The distance is the minimum number of changes that need to be
+     * applied to the first string in order to get to the second
+     * string. For details of the algorithm, see
+     * <a href="http://en.wikipedia.org/wiki/Levenshtein_distance">
+     * http://en.wikipedia.org/wiki/Levenshtein_distance</a>.
      */
     public static int getLevenshteinDistance(String s, String t) {
         int n = s.length();
         int m = t.length();
 
-        if (n == 0) {
+        if (n == 0)
             return m;
-        }
 
-        if (m == 0) {
+        if (m == 0)
             return n;
-        }
 
-        int[][] matrix = new int[n + 1][m + 1];
+        int[][] matrix = new int[n+1][m+1];
 
         for (int i = 0; i <= n; i++)
             matrix[i][0] = i;
@@ -176,14 +163,13 @@ public class StringDistance {
 
                 int cost;
 
-                if (si == tj) {
+                if (si == tj)
                     cost = 0;
-                } else {
+                else
                     cost = 1;
-                }
 
-                matrix[i][j] = min(matrix[i - 1][j] + 1, matrix[i][j - 1] + 1,
-                        matrix[i - 1][j - 1] + cost);
+                matrix[i][j] = min(matrix[i-1][j]+1, matrix[i][j-1]+1,
+                    matrix[i-1][j-1] + cost);
             }
         }
 
@@ -193,14 +179,13 @@ public class StringDistance {
     private static int min(int a, int b, int c) {
         int mi = a;
 
-        if (b < mi) {
+        if (b < mi)
             mi = b;
-        }
 
-        if (c < mi) {
+        if (c < mi)
             mi = c;
-        }
 
         return mi;
     }
 }
+

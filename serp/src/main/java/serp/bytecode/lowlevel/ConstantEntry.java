@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,21 +12,20 @@
  */
 package serp.bytecode.lowlevel;
 
-
 /**
- *  <p>Interface implemented by entries representing constant values.  Allows
- *  generic access the constant value regardless of type.</p>
- *
- *  @author Abe White
+ * Interface implemented by entries representing constant values. Allows
+ * generic access the constant value regardless of type.
+ * 
+ * @author Abe White
  */
 public interface ConstantEntry {
     /**
-     *  Return the value of the constant held by this entry.</p>
+     * Return the value of the constant held by this entry.
      */
     public Object getConstant();
 
     /**
-     *  Set the value of the constant held by this entry.</p>
+     * Set the value of the constant held by this entry.
      */
     public void setConstant(Object value);
 }

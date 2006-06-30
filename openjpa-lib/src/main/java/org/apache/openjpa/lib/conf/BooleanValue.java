@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,11 +12,10 @@
  */
 package org.apache.openjpa.lib.conf;
 
-
 /**
- *  A boolean {@link Value}.
- *
- *  @author Marc Prud'hommeaux
+ * A boolean {@link Value}.
+ * 
+ * @author Marc Prud'hommeaux
  */
 public class BooleanValue extends Value {
     private boolean value;
@@ -34,19 +30,17 @@ public class BooleanValue extends Value {
     }
 
     /**
-     *  The internal value.
+     * The internal value.
      */
     public void set(boolean value) {
         boolean oldValue = this.value;
         this.value = value;
-
-        if (oldValue != value) {
+        if (oldValue != value)
             valueChanged();
-        }
     }
 
     /**
-     *  The internal value.
+     * The internal value.
      */
     public boolean get() {
         return value;
@@ -61,10 +55,9 @@ public class BooleanValue extends Value {
     }
 
     protected void setInternalObject(Object obj) {
-        if (obj == null) {
+        if (obj == null)
             set(false);
-        } else {
+        else
             set(((Boolean) obj).booleanValue());
-        }
     }
 }

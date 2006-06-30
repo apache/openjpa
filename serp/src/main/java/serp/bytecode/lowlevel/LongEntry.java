@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,31 +12,28 @@
  */
 package serp.bytecode.lowlevel;
 
+import java.io.*;
 import serp.bytecode.visitor.*;
-
 import serp.util.*;
 
-import java.io.*;
-
-
 /**
- *  <p>A long constant in the constant pool.</p>
- *
- *  @author Abe White
+ * A long constant in the constant pool.
+ * 
+ * @author Abe White
  */
 public class LongEntry extends Entry implements ConstantEntry {
     private long _value = 0L;
 
     /**
-     *  Default constructor.
+     * Default constructor.
      */
     public LongEntry() {
     }
 
     /**
-     *  Constructor.
-     *
-     *  @param value        the constant long value of this entry
+     * Constructor.
+     * 
+     * @param value the constant long value of this entry
      */
     public LongEntry(long value) {
         _value = value;
@@ -54,14 +48,14 @@ public class LongEntry extends Entry implements ConstantEntry {
     }
 
     /**
-     *  Return the value of the constant.
+     * Return the value of the constant.
      */
     public long getValue() {
         return _value;
     }
 
     /**
-     *  Set the value of the constant.
+     * Set the value of the constant.
      */
     public void setValue(long value) {
         Object key = beforeModify();

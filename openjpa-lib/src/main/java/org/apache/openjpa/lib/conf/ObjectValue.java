@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,17 +13,17 @@
 package org.apache.openjpa.lib.conf;
 
 import org.apache.commons.lang.*;
-
 import org.apache.openjpa.lib.util.*;
 
-
 /**
- *  <p>An object {@link Value}.</p>
- *
- *  @author Abe White
+ * An object {@link Value}.
+ * 
+ * @author Abe White
  */
 public class ObjectValue extends Value {
-    private static final Localizer _loc = Localizer.forPackage(ObjectValue.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (ObjectValue.class);
+
     private Object _value = null;
 
     public ObjectValue(String prop) {
@@ -34,28 +31,27 @@ public class ObjectValue extends Value {
     }
 
     /**
-     *  The internal value.
+     * The internal value.
      */
     public Object get() {
         return _value;
     }
 
     /**
-     *  The internal value.
+     * The internal value.
      */
     public void set(Object obj) {
         set(obj, false);
     }
 
     /**
-     *  The internal value.
-     *
-     *  @param derived        if true, this value was derived from other properties
+     * The internal value.
+     * 
+     * @param derived if true, this value was derived from other properties
      */
     public void set(Object obj, boolean derived) {
         Object oldValue = _value;
         _value = obj;
-
         if (!derived && !ObjectUtils.equals(obj, oldValue)) {
             objectChanged();
             valueChanged();
@@ -63,26 +59,26 @@ public class ObjectValue extends Value {
     }
 
     /**
-     *  Instantiate the object as an instance of the given class. Equivalent
-     *  to <code>instantiate (type, conf, true)</code>.
+     * Instantiate the object as an instance of the given class. Equivalent
+     * to <code>instantiate(type, conf, true)</code>.
      */
     public Object instantiate(Class type, Configuration conf) {
         return instantiate(type, conf, true);
     }
 
     /**
-     *  Instantiate the object as an instance of the given class.
+     * Instantiate the object as an instance of the given class.
      */
     public Object instantiate(Class type, Configuration conf, boolean fatal) {
         throw new UnsupportedOperationException();
     }
 
     /**
-     *  Allow subclasses to instantiate additional plugins.  This method does
-     *  not perform configuration.
+     * Allow subclasses to instantiate additional plugins. This method does
+     * not perform configuration.
      */
-    public Object newInstance(String clsName, Class type, Configuration conf,
-        boolean fatal) {
+    public Object newInstance(String clsName, Class type,
+        Configuration conf, boolean fatal) {
         return Configurations.newInstance(clsName, this, conf,
             type.getClassLoader(), fatal);
     }
@@ -92,8 +88,8 @@ public class ObjectValue extends Value {
     }
 
     /**
-     *  Implement this method to synchronize internal data with the new
-     *  object value.
+     * Implement this method to synchronize internal data with the new
+     * object value.
      */
     protected void objectChanged() {
     }
@@ -103,12 +99,11 @@ public class ObjectValue extends Value {
     }
 
     protected void setInternalString(String str) {
-        if (str == null) {
+        if (str == null)
             set(null);
-        } else {
+        else
             throw new IllegalArgumentException(_loc.get("cant-set-string",
-                    getProperty()));
-        }
+                getProperty()));
     }
 
     protected void setInternalObject(Object obj) {

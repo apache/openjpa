@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,19 +12,15 @@
  */
 package serp.bytecode;
 
+import java.io.*;
 import serp.bytecode.lowlevel.*;
-
 import serp.bytecode.visitor.*;
 
-import java.io.*;
-
-
 /**
- *  <p>An instruction that takes as an argument a class to operate
- *  on.         Examples include <code>anewarray, checkcast, instance, anew</code>,
- *  etc.</p>
- *
- *  @author Abe White
+ * An instruction that takes as an argument a class to operate
+ * on. Examples include <code>anewarray, checkcast, instance, anew</code>, etc.
+ * 
+ * @author Abe White
  */
 public class ClassInstruction extends TypedInstruction {
     private int _index = 0;
@@ -41,10 +34,8 @@ public class ClassInstruction extends TypedInstruction {
     }
 
     public int getStackChange() {
-        if (getOpcode() == Constants.NEW) {
+        if (getOpcode() == Constants.NEW)
             return 1;
-        }
-
         return 0;
     }
 
@@ -53,64 +44,56 @@ public class ClassInstruction extends TypedInstruction {
     }
 
     /**
-     *  Return the {@link ConstantPool} index of the
-     *  {@link ClassEntry} describing the class for this instruction.
+     * Return the {@link ConstantPool} index of the
+     * {@link ClassEntry} describing the class for this instruction.
      */
     public int getTypeIndex() {
         return _index;
     }
 
     /**
-     *  Set the {@link ConstantPool} index of the
-     *  {@link ClassEntry} describing the class for this instruction.
-     *
-      *  @return this instruction, for method chaining
+     * Set the {@link ConstantPool} index of the
+     * {@link ClassEntry} describing the class for this instruction.
+     * 
+     * @return this instruction, for method chaining
      */
     public ClassInstruction setTypeIndex(int index) {
         _index = index;
-
         return this;
     }
 
     public String getTypeName() {
-        if (_index == 0) {
+        if (_index == 0)
             return null;
-        }
 
         ClassEntry entry = (ClassEntry) getPool().getEntry(_index);
-
-        return getProject().getNameCache()
-                   .getExternalForm(entry.getNameEntry().getValue(), false);
+        return getProject().getNameCache().getExternalForm
+            (entry.getNameEntry().getValue(), false);
     }
 
     public TypedInstruction setType(String type) {
-        if (type == null) {
+        if (type == null)
             setTypeIndex(0);
-        } else {
+        else {
             type = getProject().getNameCache().getInternalForm(type, false);
             setTypeIndex(getPool().findClassEntry(type, true));
         }
-
         return this;
     }
 
     /**
-     *  ClassInstructions are equal if the type they reference is the same or
-     *  unset and if their opcodes are equal.
+     * ClassInstructions are equal if the type they reference is the same or
+     * unset and if their opcodes are equal.
      */
     public boolean equalsInstruction(Instruction other) {
-        if (other == this) {
+        if (other == this)
             return true;
-        }
-
-        if (!super.equalsInstruction(other)) {
+        if (!super.equalsInstruction(other))
             return false;
-        }
 
         String type = getTypeName();
         String otherType = ((ClassInstruction) other).getTypeName();
-
-        return (type == null) || (otherType == null) || type.equals(otherType);
+        return type == null || otherType == null || type.equals(otherType);
     }
 
     public void acceptVisit(BCVisitor visit) {

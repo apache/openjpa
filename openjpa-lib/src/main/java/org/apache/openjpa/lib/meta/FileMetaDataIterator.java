@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,41 +12,41 @@
  */
 package org.apache.openjpa.lib.meta;
 
+import java.io.*;
+import java.util.*;
 import org.apache.openjpa.lib.util.*;
 
-import java.io.*;
-
-import java.util.*;
-
-
 /**
- *  <p>Iterator over a file, or over all metadata resources below a given
- *  directory.</p>
- *
- *  @author Abe White
- *  @nojavadoc */
+ * Iterator over a file, or over all metadata resources below a given directory.
+ * 
+ * @author Abe White
+ * @nojavadoc
+ */
 public class FileMetaDataIterator implements MetaDataIterator {
     private static final long SCAN_LIMIT = 100000;
-    private static final Localizer _loc = Localizer.forPackage(FileMetaDataIterator.class);
+
+    private static final Localizer _loc = Localizer.forPackage
+        (FileMetaDataIterator.class);
+
     private final Iterator _itr;
     private File _file = null;
 
     /**
-     *  Constructor; supply metadata file.
+     * Constructor; supply metadata file.
      */
     public FileMetaDataIterator(File file) {
         _itr = Collections.singleton(file).iterator();
     }
 
     /**
-     *  Constructor; supply root of directory tree to search and optional
-     *  file filter.
+     * Constructor; supply root of directory tree to search and optional
+     * file filter.
      */
     public FileMetaDataIterator(File dir, MetaDataFilter filter)
         throws IOException {
-        if (dir == null) {
+        if (dir == null)
             _itr = null;
-        } else {
+        else {
             Collection metas = new ArrayList();
             FileResource rsrc = (filter == null) ? null : new FileResource();
             scan(dir, filter, rsrc, metas, 0);
@@ -58,65 +55,53 @@ public class FileMetaDataIterator implements MetaDataIterator {
     }
 
     /**
-     *  Scan all files below the given one for metadata files, adding them
-     *  to the given collection.
+     * Scan all files below the given one for metadata files, adding them
+     * to the given collection.
      */
     private int scan(File file, MetaDataFilter filter, FileResource rsrc,
         Collection metas, int scanned) throws IOException {
-        if (scanned > SCAN_LIMIT) {
+        if (scanned > SCAN_LIMIT)
             throw new IllegalStateException(_loc.get("too-many-files",
-                    String.valueOf(SCAN_LIMIT)));
-        }
-
+                String.valueOf(SCAN_LIMIT)));
         scanned++;
 
-        if (filter == null) {
+        if (filter == null)
             metas.add(file);
-        } else {
+        else {
             rsrc.setFile(file);
-
-            if (filter.matches(rsrc)) {
+            if (filter.matches(rsrc))
                 metas.add(file);
-            } else {
+            else {
                 File[] files = file.listFiles();
-
-                if (files != null) {
+                if (files != null)
                     for (int i = 0; i < files.length; i++)
                         scanned = scan(files[i], filter, rsrc, metas, scanned);
-                }
             }
         }
-
         return scanned;
     }
 
     public boolean hasNext() {
-        return (_itr != null) && _itr.hasNext();
+        return _itr != null && _itr.hasNext();
     }
 
     public Object next() throws IOException {
-        if (_itr == null) {
+        if (_itr == null)
             throw new NoSuchElementException();
-        }
 
         _file = (File) _itr.next();
-
         return _file.getAbsoluteFile().toURL();
     }
 
     public InputStream getInputStream() throws IOException {
-        if (_file == null) {
+        if (_file == null)
             throw new IllegalStateException();
-        }
-
         return new FileInputStream(_file);
     }
 
     public File getFile() {
-        if (_file == null) {
+        if (_file == null)
             throw new IllegalStateException();
-        }
-
         return _file;
     }
 
@@ -136,16 +121,13 @@ public class FileMetaDataIterator implements MetaDataIterator {
 
         public byte[] getContent() throws IOException {
             long len = _file.length();
-
-            if (len <= 0) {
+            if (len <= 0)
                 return new byte[0];
-            }
 
             byte[] content = new byte[(int) len];
             FileInputStream fin = new FileInputStream(_file);
             fin.read(content);
             fin.close();
-
             return content;
         }
     }

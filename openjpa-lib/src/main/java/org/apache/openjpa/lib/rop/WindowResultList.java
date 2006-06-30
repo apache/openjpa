@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,20 +13,19 @@
 package org.apache.openjpa.lib.rop;
 
 import java.io.*;
-
 import java.util.*;
 
-
 /**
- *  <p>ResultList implementation that uses a forward-scrolling window of
- *  results.</p>
- *
- *  @author Abe White
- *  @nojavadoc */
+ * ResultList implementation that uses a forward-scrolling window of results.
+ * 
+ * @author Abe White
+ * @nojavadoc
+ */
 public class WindowResultList extends AbstractNonSequentialResultList {
     private static final int OPEN = 0;
     private static final int FREED = 1;
     private static final int CLOSED = 2;
+
     private final Object[] _window;
     private int _pos = -1;
     private ResultObjectProvider _rop = null;
@@ -44,10 +40,8 @@ public class WindowResultList extends AbstractNonSequentialResultList {
     public WindowResultList(ResultObjectProvider rop, int windowSize) {
         _rop = rop;
 
-        if (windowSize <= 0) {
+        if (windowSize <= 0)
             windowSize = 10;
-        }
-
         _window = new Object[windowSize];
 
         try {
@@ -79,14 +73,10 @@ public class WindowResultList extends AbstractNonSequentialResultList {
 
     public int size() {
         assertOpen();
-
-        if (_size != -1) {
+        if (_size != -1)
             return _size;
-        }
-
         try {
             _size = _rop.size();
-
             return _size;
         } catch (RuntimeException re) {
             close();
@@ -94,58 +84,48 @@ public class WindowResultList extends AbstractNonSequentialResultList {
         } catch (Exception e) {
             close();
             _rop.handleCheckedException(e);
-
             return -1;
         }
     }
 
     public Object getInternal(int index) {
         // out of range?
-        if ((index < 0) || ((_size != -1) && (index >= _size))) {
+        if (index < 0 || (_size != -1 && index >= _size))
             return PAST_END;
-        }
 
         try {
             // if this is before window range, move window back
             if (index < _pos) {
-                if (!_random || (index == 0)) {
+                if (!_random || index == 0)
                     _rop.reset();
-                }
-
                 _pos = -1;
             }
 
             // if this is the first get or past window range, move window
-            if ((_pos == -1) || (index >= (_pos + _window.length))) {
+            if (_pos == -1 || index >= _pos + _window.length) {
                 // position result provider just before requested index
-                if (_random && (index != 0)) {
-                    if (!_rop.absolute(index - 1)) {
+                if (_random && index != 0) {
+                    if (!_rop.absolute(index - 1))
                         return PAST_END;
-                    }
                 } else {
-                    int begin = (_pos == -1) ? 0 : (_pos + _window.length);
-
+                    int begin = (_pos == -1) ? 0 : _pos + _window.length;
                     for (int i = begin; i < index; i++)
-                        if (!_rop.next()) {
+                        if (!_rop.next())
                             return PAST_END;
-                        }
                 }
 
                 // create window starting at requested index
                 int end = -1;
-
                 for (int i = 0; i < _window.length; i++) {
-                    if ((end == -1) && !_rop.next()) {
+                    if (end == -1 && !_rop.next())
                         end = i;
-                    }
-
-                    _window[i] = (end == -1) ? _rop.getResultObject() : PAST_END;
+                    _window[i] = (end == -1) ? _rop.getResultObject()
+                        : PAST_END;
                 }
-
                 _pos = index;
 
                 // if the window spans the entire result list, free
-                if ((end != -1) && (_pos == 0)) {
+                if (end != -1 && _pos == 0) {
                     _size = end;
                     free();
                 }
@@ -159,33 +139,25 @@ public class WindowResultList extends AbstractNonSequentialResultList {
         } catch (Exception e) {
             close();
             _rop.handleCheckedException(e);
-
             return null;
         }
     }
 
     private void free() {
         if (_state == OPEN) {
-            try {
-                _rop.close();
-            } catch (Exception e) {
-            }
-
+            try { _rop.close(); } catch (Exception e) {}
             _state = FREED;
         }
     }
 
     public Object writeReplace() throws ObjectStreamException {
-        if (_state != OPEN) {
+        if (_state != OPEN)
             return this;
-        }
 
         // load results into list
         List list = new ArrayList();
-
         for (Iterator itr = iterator(); itr.hasNext();)
             list.add(itr.next());
-
         return list;
     }
 }

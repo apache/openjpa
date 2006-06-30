@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,15 +12,13 @@
  */
 package serp.bytecode;
 
+import java.io.*;
 import serp.bytecode.visitor.*;
 
-import java.io.*;
-
-
 /**
- *  <p>The <code>iinc</code> instruction.</p>
- *
- *  @author Abe White
+ * The <code>iinc</code> instruction.
+ * 
+ * @author Abe White
  */
 public class IIncInstruction extends LocalVariableInstruction {
     private int _inc = 0;
@@ -37,40 +32,33 @@ public class IIncInstruction extends LocalVariableInstruction {
     }
 
     /**
-     *  Return the increment for this IINC instruction.
-      */
+     * Return the increment for this IINC instruction.
+     */
     public int getIncrement() {
         return _inc;
     }
 
     /**
-     *  Set the increment on this IINC instruction.
-     *
-     *  @return this Instruction, for method chaining
+     * Set the increment on this IINC instruction.
+     * 
+     * @return this Instruction, for method chaining
      */
     public IIncInstruction setIncrement(int val) {
         _inc = val;
-
         return this;
     }
 
     public boolean equalsInstruction(Instruction other) {
-        if (this == other) {
+        if (this == other)
             return true;
-        }
-
-        if (!(other instanceof IIncInstruction)) {
+        if (!(other instanceof IIncInstruction))
             return false;
-        }
-
-        if (!super.equalsInstruction(other)) {
+        if (!super.equalsInstruction(other))
             return false;
-        }
 
         IIncInstruction ins = (IIncInstruction) other;
-
-        return ((getIncrement() == 0) || (ins.getIncrement() == 0) ||
-        (getIncrement() == ins.getIncrement()));
+        return(getIncrement() == 0 || ins.getIncrement() == 0
+            || getIncrement() == ins.getIncrement());
     }
 
     public void acceptVisit(BCVisitor visit) {

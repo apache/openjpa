@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,20 +12,19 @@
  */
 package org.apache.openjpa.lib.util;
 
+import java.util.*;
 import junit.framework.*;
-
 import junit.textui.*;
 
-import java.util.*;
-
-
 /**
- *  <p>Tests the {@link ReferenceHashSet}.</p>
- *
- *  @author Abe White
+ * Tests the {@link ReferenceHashSet}.
+ * 
+ * @author Abe White
  */
 public class TestReferenceSet extends TestCase {
-    private ReferenceHashSet _coll = new ReferenceHashSet(ReferenceHashSet.WEAK);
+    private ReferenceHashSet _coll = new ReferenceHashSet
+        (ReferenceHashSet.WEAK);
+
     private Object _heldValue = new Integer(2);
 
     public TestReferenceSet(String test) {
@@ -41,7 +37,7 @@ public class TestReferenceSet extends TestCase {
     }
 
     /**
-     *  Tests basic add/contains/remove functionality.
+     * Tests basic add/contains/remove functionality.
      */
     public void testBasics() {
         Collection coll = new ReferenceHashSet(ReferenceHashSet.WEAK);
@@ -61,12 +57,11 @@ public class TestReferenceSet extends TestCase {
     }
 
     /**
-     *  Test that values with strong references are not gc'd.
+     * Test that values with strong references are not gc'd.
      */
     public void testHeldReference() {
-        if (JavaVersions.VERSION >= 5) {
+        if (JavaVersions.VERSION >= 5)
             return;
-        }
 
         System.gc();
         System.gc();
@@ -74,12 +69,11 @@ public class TestReferenceSet extends TestCase {
     }
 
     /**
-     *  Test that weak references are gc'd.
-      */
+     * Test that weak references are gc'd.
+     */
     public void testWeakReference() {
-        if (JavaVersions.VERSION >= 5) {
+        if (JavaVersions.VERSION >= 5)
             return;
-        }
 
         System.gc();
         System.gc();
@@ -87,10 +81,8 @@ public class TestReferenceSet extends TestCase {
         assertEquals(1, _coll.size());
 
         int size = 0;
-
         for (Iterator itr = _coll.iterator(); itr.hasNext(); size++)
             assertEquals(_heldValue, itr.next());
-
         assertEquals(1, size);
 
         // run a mutator method to ensure expired elements are removed
@@ -102,12 +94,11 @@ public class TestReferenceSet extends TestCase {
     }
 
     /**
-     *  Test that values that have been replaced aren't expired.
+     * Test that values that have been replaced aren't expired.
      */
     public void testChangeValue() {
-        if (JavaVersions.VERSION >= 5) {
+        if (JavaVersions.VERSION >= 5)
             return;
-        }
 
         Object held = new Integer(1);
         assertTrue(_coll.remove(held));
@@ -121,7 +112,7 @@ public class TestReferenceSet extends TestCase {
     }
 
     /**
-     *  Used to test inherited functionality.
+     * Used to test inherited functionality.
      */
     private static final class Node {
         public int hashCode() {
