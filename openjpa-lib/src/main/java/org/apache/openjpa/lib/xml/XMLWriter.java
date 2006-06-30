@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,23 +14,24 @@ package org.apache.openjpa.lib.xml;
 
 import java.io.*;
 
-
 /**
- *  <p>The XMLWriter is a writer type for pretty-printing XML.
- *  It assumes that the streamed XML will be given without any whitespace,
- *  other than the space within text blocks.</p>
- *
- *  @author Abe White
- *  @nojavadoc */
+ * The XMLWriter is a writer type for pretty-printing XML.
+ * It assumes that the streamed XML will be given without any whitespace,
+ * other than the space within text blocks.
+ * 
+ * @author Abe White
+ * @nojavadoc
+ */
 public class XMLWriter extends FilterWriter {
     private static String _endl = System.getProperty("line.separator");
+
     private int _lastChar = ' ';
     private int _lastChar2 = ' ';
     private int _lastChar3 = ' ';
     private int _depth = 0;
 
     /**
-     *  Construct an XMLWriter that will write to the given stream.
+     * Construct an XMLWriter that will write to the given stream.
      */
     public XMLWriter(Writer out) {
         super(out);
@@ -51,24 +49,23 @@ public class XMLWriter extends FilterWriter {
 
     public void write(int c) throws IOException {
         // the basic idea of this method is to make sure that when a tag
-        // or a text block starts, it is placed on a separate line and 
+        // or a text block starts, it is placed on a separate line and
         // indented an amount appropriate to the XML tree depth
+
         if (_lastChar == '<') {
             // tag or processing instruction?
-            if ((c != '?') && (c != '!')) {
+            if (c != '?' && c != '!') {
                 // end tag; decrease depth before writing spaces
-                if (c == '/') {
+                if (c == '/')
                     _depth--;
-                }
 
                 // tags are always on separate lines
                 out.write(_endl);
                 writeSpaces();
 
                 // beginning tag; increase depth for tag body
-                if (c != '/') {
+                if (c != '/')
                     _depth++;
-                }
             }
 
             // if this is not a processing instruction / comment,
@@ -79,25 +76,21 @@ public class XMLWriter extends FilterWriter {
             }
         } else if (c == '>') {
             // if unary tag decrease depth to undo the increase at tag start
-            if (_lastChar == '/') {
+            if (_lastChar == '/')
                 _depth--;
-            }
 
             // check for the comment-processing conditions
-            if ((_lastChar2 == '<') && (_lastChar == '!')) {
+            if (_lastChar2 == '<' && _lastChar == '!')
                 out.write("<!");
-            } else if ((_lastChar3 == '<') && (_lastChar2 == '!') &&
-                    (_lastChar == '-')) {
+            else if (_lastChar3 == '<' && _lastChar2 == '!' && _lastChar == '-')
                 out.write("<!-");
-            }
 
             out.write('>');
         } else if (c != '<') {
             // if we're at "<!--", indent and put in the beginning of
             // the comment. if it's "<!-?" where ? is something other
             // than -, dump what we've gotten so far
-            if ((_lastChar3 == '<') && (_lastChar2 == '!') &&
-                    (_lastChar == '-')) {
+            if (_lastChar3 == '<' && _lastChar2 == '!' && _lastChar == '-') {
                 if (c == '-') {
                     out.write(_endl);
                     writeSpaces();
@@ -108,15 +101,13 @@ public class XMLWriter extends FilterWriter {
                 }
             }
             // if we're at "<!-", keep on not writing data
-            else if (!((_lastChar2 == '<') && (_lastChar == '!') && (c == '-'))) {
+            else if (!(_lastChar2 == '<' && _lastChar == '!' && c == '-')) {
                 // if just ended a tag and about to print text, put on
                 // separate line
-                if ((_lastChar == '>') && (_lastChar2 != '?') &&
-                        (_lastChar2 != '!')) {
+                if (_lastChar == '>' && _lastChar2 != '?' && _lastChar2 != '!') {
                     out.write(_endl);
                     writeSpaces();
                 }
-
                 out.write(c);
             }
         }

@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,17 +12,14 @@
  */
 package serp.bytecode;
 
+import java.io.*;
+import java.util.*;
 import serp.bytecode.lowlevel.*;
 
-import java.io.*;
-
-import java.util.*;
-
-
 /**
- *  <p>A member field or method of a class.</p>
- *
- *  @author Abe White
+ * A member field or method of a class.
+ * 
+ * @author Abe White
  */
 public abstract class BCMember extends Attributes {
     private BCClass _owner = null;
@@ -39,7 +33,7 @@ public abstract class BCMember extends Attributes {
     }
 
     /**
-     *  Return the {@link BCClass} that declares this member.
+     * Return the {@link BCClass} that declares this member.
      */
     public BCClass getDeclarer() {
         return _owner;
@@ -50,34 +44,34 @@ public abstract class BCMember extends Attributes {
     /////////////////////
 
     /**
-     *  Return the access flags for this member as a bit array of
-      *  ACCESS_XXX constants from {@link Constants}.  This can be used to
-     *  transfer access flags between members without getting/setting each
-     *  possible access flag.  Defaults to {@link Constants#ACCESS_PRIVATE}
+     * Return the access flags for this member as a bit array of
+     * ACCESS_XXX constants from {@link Constants}. This can be used to
+     * transfer access flags between members without getting/setting each
+     * possible access flag. Defaults to {@link Constants#ACCESS_PRIVATE}
      */
     public int getAccessFlags() {
         return _access;
     }
 
     /**
-     *  Set the access flags for this member as a bit array of
-      *  ACCESS_XXX constants from {@link Constants}.  This can be used to
-     *  transfer access flags between members without getting/setting each
-     *  possible access flag.  Defaults to {@link Constants#ACCESS_PRIVATE}
+     * Set the access flags for this member as a bit array of
+     * ACCESS_XXX constants from {@link Constants}. This can be used to
+     * transfer access flags between members without getting/setting each
+     * possible access flag. Defaults to {@link Constants#ACCESS_PRIVATE}
      */
     public void setAccessFlags(int access) {
         _access = access;
     }
 
     /**
-     *  Manipulate the member access flags.
+     * Manipulate the member access flags.
      */
     public boolean isPublic() {
-        return (getAccessFlags() & Constants.ACCESS_PUBLIC) > 0;
+        return(getAccessFlags() & Constants.ACCESS_PUBLIC) > 0;
     }
 
     /**
-     *  Manipulate the member access flags.
+     * Manipulate the member access flags.
      */
     public void makePublic() {
         setAccessFlags(getAccessFlags() | Constants.ACCESS_PUBLIC);
@@ -86,14 +80,14 @@ public abstract class BCMember extends Attributes {
     }
 
     /**
-     *  Manipulate the member access flags.
+     * Manipulate the member access flags.
      */
     public boolean isProtected() {
-        return (getAccessFlags() & Constants.ACCESS_PROTECTED) > 0;
+        return(getAccessFlags() & Constants.ACCESS_PROTECTED) > 0;
     }
 
     /**
-     *  Manipulate the member access flags.
+     * Manipulate the member access flags.
      */
     public void makeProtected() {
         setAccessFlags(getAccessFlags() & ~Constants.ACCESS_PUBLIC);
@@ -102,14 +96,14 @@ public abstract class BCMember extends Attributes {
     }
 
     /**
-     *  Manipulate the member access flags.
+     * Manipulate the member access flags.
      */
     public boolean isPrivate() {
-        return (getAccessFlags() & Constants.ACCESS_PRIVATE) > 0;
+        return(getAccessFlags() & Constants.ACCESS_PRIVATE) > 0;
     }
 
     /**
-     *  Manipulate the member access flags.
+     * Manipulate the member access flags.
      */
     public void makePrivate() {
         setAccessFlags(getAccessFlags() & ~Constants.ACCESS_PUBLIC);
@@ -118,22 +112,21 @@ public abstract class BCMember extends Attributes {
     }
 
     /**
-     *  Manipulate the member access flags.
+     * Manipulate the member access flags.
      */
     public boolean isPackage() {
         boolean hasAccess = false;
-        hasAccess = hasAccess ||
-            ((getAccessFlags() & Constants.ACCESS_PRIVATE) > 0);
-        hasAccess = hasAccess ||
-            ((getAccessFlags() & Constants.ACCESS_PROTECTED) > 0);
-        hasAccess = hasAccess ||
-            ((getAccessFlags() & Constants.ACCESS_PUBLIC) > 0);
-
+        hasAccess = hasAccess
+            || (getAccessFlags() & Constants.ACCESS_PRIVATE) > 0;
+        hasAccess = hasAccess
+            || (getAccessFlags() & Constants.ACCESS_PROTECTED) > 0;
+        hasAccess = hasAccess
+            || (getAccessFlags() & Constants.ACCESS_PUBLIC) > 0;
         return !hasAccess;
     }
 
     /**
-     *  Manipulate the member access flags.
+     * Manipulate the member access flags.
      */
     public void makePackage() {
         setAccessFlags(getAccessFlags() & ~Constants.ACCESS_PUBLIC);
@@ -142,39 +135,37 @@ public abstract class BCMember extends Attributes {
     }
 
     /**
-     *  Manipulate the member access flags.
+     * Manipulate the member access flags.
      */
     public boolean isFinal() {
-        return (getAccessFlags() & Constants.ACCESS_FINAL) > 0;
+        return(getAccessFlags() & Constants.ACCESS_FINAL) > 0;
     }
 
     /**
-     *  Manipulate the member access flags.
+     * Manipulate the member access flags.
      */
     public void setFinal(boolean on) {
-        if (on) {
+        if (on)
             setAccessFlags(getAccessFlags() | Constants.ACCESS_FINAL);
-        } else {
+        else
             setAccessFlags(getAccessFlags() & ~Constants.ACCESS_FINAL);
-        }
     }
 
     /**
-     *  Manipulate the member access flags.
+     * Manipulate the member access flags.
      */
     public boolean isStatic() {
-        return (getAccessFlags() & Constants.ACCESS_STATIC) > 0;
+        return(getAccessFlags() & Constants.ACCESS_STATIC) > 0;
     }
 
     /**
-     *  Manipulate the member access flags.
+     * Manipulate the member access flags.
      */
     public void setStatic(boolean on) {
-        if (on) {
+        if (on)
             setAccessFlags(getAccessFlags() | Constants.ACCESS_STATIC);
-        } else {
+        else
             setAccessFlags(getAccessFlags() & ~Constants.ACCESS_STATIC);
-        }
     }
 
     /////////////////////////
@@ -182,16 +173,16 @@ public abstract class BCMember extends Attributes {
     /////////////////////////
 
     /**
-     *  Return the index in the class {@link ConstantPool} of the
-     *  {@link UTF8Entry} holding the name of this member.
+     * Return the index in the class {@link ConstantPool} of the
+     * {@link UTF8Entry} holding the name of this member.
      */
     public int getNameIndex() {
         return _nameIndex;
     }
 
     /**
-     *  Set the index in the class {@link ConstantPool} of the
-     *  {@link UTF8Entry} holding the name of this member.
+     * Set the index in the class {@link ConstantPool} of the
+     * {@link UTF8Entry} holding the name of this member.
      */
     public void setNameIndex(int index) {
         String origName = getName();
@@ -202,16 +193,16 @@ public abstract class BCMember extends Attributes {
     }
 
     /**
-     *  Return the index in the class {@link ConstantPool} of the
-     *  {@link UTF8Entry} holding the descriptor of this member.
+     * Return the index in the class {@link ConstantPool} of the
+     * {@link UTF8Entry} holding the descriptor of this member.
      */
     public int getDescriptorIndex() {
         return _descriptorIndex;
     }
 
     /**
-     *  Set the index in the class {@link ConstantPool} of the
-     *  {@link UTF8Entry} holding the descriptor of this member.
+     * Set the index in the class {@link ConstantPool} of the
+     * {@link UTF8Entry} holding the descriptor of this member.
      */
     public void setDescriptorIndex(int index) {
         String origDesc = getDescriptor();
@@ -222,14 +213,14 @@ public abstract class BCMember extends Attributes {
     }
 
     /**
-     *  Return the name of this member.
+     * Return the name of this member.
      */
     public String getName() {
-        return ((UTF8Entry) getPool().getEntry(_nameIndex)).getValue();
+        return((UTF8Entry) getPool().getEntry(_nameIndex)).getValue();
     }
 
     /**
-     *  Set the name of this member.
+     * Set the name of this member.
      */
     public void setName(String name) {
         String origName = getName();
@@ -242,14 +233,14 @@ public abstract class BCMember extends Attributes {
     }
 
     /**
-     *  Return the descriptor of this member, in internal form.
+     * Return the descriptor of this member, in internal form.
      */
     public String getDescriptor() {
-        return ((UTF8Entry) getPool().getEntry(_descriptorIndex)).getValue();
+        return((UTF8Entry) getPool().getEntry(_descriptorIndex)).getValue();
     }
 
     /**
-     *  Set the descriptor of this member.
+     * Set the descriptor of this member.
      */
     public void setDescriptor(String desc) {
         String origDesc = getDescriptor();
@@ -263,35 +254,33 @@ public abstract class BCMember extends Attributes {
     }
 
     /**
-     *  Resets the {@link ComplexEntry} of the owning class corresponding to
-     *  this member.  Changes in the member will therefore propogate to all
-     *  code in the class.
-      */
+     * Resets the {@link ComplexEntry} of the owning class corresponding to
+     * this member. Changes in the member will therefore propogate to all
+     * code in the class.
+     */
     private void setEntry(String origName, String origDesc) {
         // find the entry matching this member, if any
-        String owner = getProject().getNameCache()
-                           .getInternalForm(_owner.getName(), false);
+        String owner = getProject().getNameCache().getInternalForm
+            (_owner.getName(), false);
         ConstantPool pool = getPool();
 
         int index;
-
-        if (this instanceof BCField) {
+        if (this instanceof BCField)
             index = pool.findFieldEntry(origName, origDesc, owner, false);
-        } else if (!_owner.isInterface()) {
+        else if (!_owner.isInterface())
             index = pool.findMethodEntry(origName, origDesc, owner, false);
-        } else {
-            index = pool.findInterfaceMethodEntry(origName, origDesc, owner,
-                    false);
-        }
+        else
+            index = pool.findInterfaceMethodEntry(origName, origDesc,
+                owner, false);
 
         // change the entry to match the new info; this is dones so
-        // that refs to the member in code will still be valid after the 
+        // that refs to the member in code will still be valid after the
         // change, without changing any other constants that happened to match
         // the old name and/or descriptor
         if (index != 0) {
             ComplexEntry complex = (ComplexEntry) pool.getEntry(index);
-            int ntIndex = pool.findNameAndTypeEntry(getName(), getDescriptor(),
-                    true);
+            int ntIndex = pool.findNameAndTypeEntry(getName(),
+                getDescriptor(), true);
             complex.setNameAndTypeIndex(ntIndex);
         }
     }
@@ -301,50 +290,47 @@ public abstract class BCMember extends Attributes {
     ///////////////////////
 
     /**
-     *  Convenience method to return deprecation information for the member.
-     *  Acts internally through the {@link Attributes} interface.
+     * Convenience method to return deprecation information for the member.
+     * Acts internally through the {@link Attributes} interface.
      */
     public boolean isDeprecated() {
         return getAttribute(Constants.ATTR_DEPRECATED) != null;
     }
 
     /**
-     *  Convenience method to set whether this member should be considered
-     *  deprecated.
-     *  Acts internally through the {@link Attributes} interface.
+     * Convenience method to set whether this member should be considered
+     * deprecated. Acts internally through the {@link Attributes} interface.
      */
     public void setDeprecated(boolean on) {
-        if (!on) {
+        if (!on)
             removeAttribute(Constants.ATTR_DEPRECATED);
-        } else if (!isDeprecated()) {
+        else if (!isDeprecated())
             addAttribute(Constants.ATTR_DEPRECATED);
-        }
     }
 
     /**
-     *  Convenience method to return synthetic information for the member.
-     *  Acts internally through the {@link Attributes} interface.
+     * Convenience method to return synthetic information for the member.
+     * Acts internally through the {@link Attributes} interface.
      */
     public boolean isSynthetic() {
         return getAttribute(Constants.ATTR_SYNTHETIC) != null;
     }
 
     /**
-     *  Convenience method to set whether this member should be considered
-     *  synthetic.
-     *  Acts internally through the {@link Attributes} interface.
+     * Convenience method to set whether this member should be considered
+     * synthetic. Acts internally through the {@link Attributes} interface.
      */
     public void setSynthetic(boolean on) {
-        if (!on) {
+        if (!on)
             removeAttribute(Constants.ATTR_SYNTHETIC);
-        } else if (!isSynthetic()) {
+        else if (!isSynthetic())
             addAttribute(Constants.ATTR_SYNTHETIC);
-        }
     }
 
     ////////////////////////////////
     // Implementation of Attributes
     ////////////////////////////////
+
     public Project getProject() {
         return _owner.getProject();
     }
@@ -366,8 +352,8 @@ public abstract class BCMember extends Attributes {
     }
 
     /**
-     *  Either this method or {@link #read} must be called prior to use
-     *  of this class.  The given descriptor must be in internal form.
+     * Either this method or {@link #read} must be called prior to use
+     * of this class. The given descriptor must be in internal form.
      */
     void initialize(String name, String descriptor) {
         _nameIndex = getPool().findUTF8Entry(name, true);
@@ -375,7 +361,7 @@ public abstract class BCMember extends Attributes {
     }
 
     /**
-     *  Used when this member is deleted from its class.
+     * Used when this member is deleted from its class.
      */
     void invalidate() {
         _owner = null;

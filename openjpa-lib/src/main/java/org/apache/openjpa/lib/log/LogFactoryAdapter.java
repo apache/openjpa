@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,16 +12,14 @@
  */
 package org.apache.openjpa.lib.log;
 
+import java.util.*;
 import org.apache.openjpa.lib.util.concurrent.*;
 
-import java.util.*;
-
-
 /**
- *  <p>Base type that aids in adapting an external log framework to the
- *  {@link LogFactory}.</p>
- *
- *  @author Abe White
+ * Base type that aids in adapting an external log framework to the
+ * {@link LogFactory}.
+ * 
+ * @author Abe White
  */
 public abstract class LogFactoryAdapter implements LogFactory {
     // cache category to log adapters
@@ -33,18 +28,16 @@ public abstract class LogFactoryAdapter implements LogFactory {
     public Log getLog(String channel) {
         // no locking; OK if same adapter created multiple times
         Log log = (Log) _logs.get(channel);
-
         if (log == null) {
             log = newLogAdapter(channel);
             _logs.put(channel, log);
         }
-
         return log;
     }
 
     /**
-     *  Return a log adapter for the given channel.  This method may be called
-     *  multiple times for the same channel in concurrent situations.
+     * Return a log adapter for the given channel. This method may be called
+     * multiple times for the same channel in concurrent situations.
      */
     protected abstract Log newLogAdapter(String channel);
 }

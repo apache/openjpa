@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,19 +12,15 @@
  */
 package serp.bytecode.visitor;
 
+import java.io.*;
 import serp.bytecode.*;
-
 import serp.bytecode.lowlevel.*;
 
-import java.io.*;
-
-
 /**
- *  <p>Visitor type that outputs a detailed, formatted document of the
- *  visited entity; similar to the <i>javap -c</i> command but more
- *  detailed.</p>
- *
- *  @author Abe White
+ * Visitor type that outputs a detailed, formatted document of the
+ * visited entity; similar to the <i>javap -c</i> command but more detailed.
+ * 
+ * @author Abe White
  */
 public class PrettyPrintVisitor extends BCVisitor {
     private PrintWriter _out = null;
@@ -35,49 +28,46 @@ public class PrettyPrintVisitor extends BCVisitor {
     private int _entryCount = 0;
 
     /**
-     *  Constructor; all pritning will go to stdout.
-     */
-    public PrettyPrintVisitor() {
-        _out = new PrintWriter(System.out);
-    }
-
-    /**
-     *  Constructor.
-     *
-     *  @param out                the stream to print to
-     */
-    public PrettyPrintVisitor(PrintWriter out) {
-        _out = out;
-    }
-
-    /**
-     *  Invoke with the class or file names to pretty print; the
-     *  functionality is similar to the <i>javap -c</i> command, but more
-     *  detailed.
+     * Invoke with the class or file names to pretty print; the
+     * functionality is similar to the <i>javap -c</i> command, but more
+     * detailed.
      */
     public static void main(String[] args)
         throws ClassNotFoundException, IOException {
         if (args.length == 0) {
-            System.err.println("Usage: java " +
-                PrettyPrintVisitor.class.getName() +
-                " <class name | .class file>+");
+            System.err.println("Usage: java "
+                + PrettyPrintVisitor.class.getName()
+                + " <class name | .class file>+");
             System.exit(1);
         }
 
         PrettyPrintVisitor ppv = new PrettyPrintVisitor();
         Project project = new Project();
         BCClass type;
-
         for (int i = 0; i < args.length; i++) {
-            if (args[i].endsWith(".class")) {
+            if (args[i].endsWith(".class"))
                 type = project.loadClass(new File(args[i]));
-            } else {
+            else
                 type = project.loadClass(Class.forName(args[i], false,
-                            PrettyPrintVisitor.class.getClassLoader()));
-            }
-
+                    PrettyPrintVisitor.class.getClassLoader()));
             ppv.visit(type);
         }
+    }
+
+    /**
+     * Constructor; all pritning will go to stdout.
+     */
+    public PrettyPrintVisitor() {
+        _out = new PrintWriter(System.out);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param out the stream to print to
+     */
+    public PrettyPrintVisitor(PrintWriter out) {
+        _out = out;
     }
 
     public void visit(VisitAcceptor entity) {
@@ -103,12 +93,11 @@ public class PrettyPrintVisitor extends BCVisitor {
         println("major=" + obj.getMajorVersion());
         println("access=" + obj.getAccessFlags());
         println("name=" + obj.getIndex() + " <" + obj.getName() + ">");
-        println("super=" + obj.getSuperclassIndex() + " <" +
-            obj.getSuperclassName() + ">");
+        println("super=" + obj.getSuperclassIndex()
+            + " <" + obj.getSuperclassName() + ">");
 
         int[] indexes = obj.getDeclaredInterfaceIndexes();
         String[] names = obj.getDeclaredInterfaceNames();
-
         for (int i = 0; i < indexes.length; i++)
             println("interface=" + indexes[i] + " <" + names[i] + ">");
     }
@@ -121,8 +110,8 @@ public class PrettyPrintVisitor extends BCVisitor {
         openBlock("Field");
         println("access=" + obj.getAccessFlags());
         println("name=" + obj.getNameIndex() + " <" + obj.getName() + ">");
-        println("type=" + obj.getDescriptorIndex() + " <" + obj.getTypeName() +
-            ">");
+        println("type=" + obj.getDescriptorIndex()
+            + " <" + obj.getTypeName() + ">");
     }
 
     public void exitBCField(BCField obj) {
@@ -135,9 +124,7 @@ public class PrettyPrintVisitor extends BCVisitor {
         println("name=" + obj.getNameIndex() + " <" + obj.getName() + ">");
         println("descriptor=" + obj.getDescriptorIndex());
         println("return=" + obj.getReturnName());
-
         String[] params = obj.getParamNames();
-
         for (int i = 0; i < params.length; i++)
             println("param=" + params[i]);
     }
@@ -155,21 +142,20 @@ public class PrettyPrintVisitor extends BCVisitor {
     }
 
     public void enterConstantValue(ConstantValue obj) {
-        println("value=" + obj.getValueIndex() + " <" + obj.getTypeName() +
-            "=" + obj.getValue() + ">");
+        println("value=" + obj.getValueIndex() + " <" + obj.getTypeName()
+            + "=" + obj.getValue() + ">");
     }
 
     public void enterExceptions(Exceptions obj) {
         int[] indexes = obj.getExceptionIndexes();
         String[] names = obj.getExceptionNames();
-
         for (int i = 0; i < indexes.length; i++)
             println("exception=" + indexes[i] + " <" + names[i] + ">");
     }
 
     public void enterSourceFile(SourceFile obj) {
-        println("source=" + obj.getFileIndex() + " <" + obj.getFileName() +
-            ">");
+        println("source=" + obj.getFileIndex() + " <"
+            + obj.getFileName() + ">");
     }
 
     public void enterCode(Code obj) {
@@ -183,8 +169,8 @@ public class PrettyPrintVisitor extends BCVisitor {
         println("startPc=" + obj.getTryStartPc());
         println("endPc=" + obj.getTryEndPc());
         println("handlerPc=" + obj.getHandlerStartPc());
-        println("catch=" + obj.getCatchIndex() + " <" + obj.getCatchName() +
-            ">");
+        println("catch=" + obj.getCatchIndex() + " <"
+            + obj.getCatchName() + ">");
     }
 
     public void exitExceptionHandler(ExceptionHandler obj) {
@@ -196,8 +182,8 @@ public class PrettyPrintVisitor extends BCVisitor {
         println("access=" + obj.getAccessFlags());
         println("name=" + obj.getNameIndex() + " <" + obj.getName() + ">");
         println("type=" + obj.getTypeIndex() + "<" + obj.getTypeName() + ">");
-        println("declarer=" + obj.getDeclarerIndex() + "<" +
-            obj.getDeclarerName() + ">");
+        println("declarer=" + obj.getDeclarerIndex() + "<"
+            + obj.getDeclarerName() + ">");
     }
 
     public void exitInnerClass(InnerClass obj) {
@@ -233,8 +219,8 @@ public class PrettyPrintVisitor extends BCVisitor {
         println("length=" + obj.getLength());
         println("local=" + obj.getLocal());
         println("name=" + obj.getNameIndex() + " <" + obj.getName() + ">");
-        println("signature=" + obj.getTypeIndex() + " <" + obj.getTypeName() +
-            ">");
+        println("signature=" + obj.getTypeIndex() + " <"
+            + obj.getTypeName() + ">");
     }
 
     public void exitLocalVariableType(LocalVariableType obj) {
@@ -258,17 +244,15 @@ public class PrettyPrintVisitor extends BCVisitor {
     }
 
     public void enterGetFieldInstruction(GetFieldInstruction obj) {
-        _out.print(obj.getFieldIndex() + " <" + obj.getFieldTypeName() + " " +
-            obj.getFieldDeclarerName() + "." + obj.getFieldName() + ">");
+        _out.print(obj.getFieldIndex() + " <" + obj.getFieldTypeName()
+            + " " + obj.getFieldDeclarerName()
+            + "." + obj.getFieldName() + ">");
     }
 
     public void enterIIncInstruction(IIncInstruction obj) {
         _out.print(obj.getLocal() + " ");
-
-        if (obj.getIncrement() < 0) {
+        if (obj.getIncrement() < 0)
             _out.print("-");
-        }
-
         _out.print(obj.getIncrement());
     }
 
@@ -290,49 +274,38 @@ public class PrettyPrintVisitor extends BCVisitor {
 
         int[] offsets = obj.getOffsets();
         int[] matches = obj.getMatches();
-
         for (int i = 0; i < offsets.length; i++)
             println("case " + matches[i] + "=" + offsets[i]);
-
         _out.print(_prefix + "default=" + obj.getDefaultOffset());
 
         _prefix = _prefix.substring(2);
     }
 
     public void enterMethodInstruction(MethodInstruction obj) {
-        _out.print(obj.getMethodIndex() + " <" + obj.getMethodReturnName() +
-            " " + obj.getMethodDeclarerName() + "." + obj.getMethodName() +
-            "(");
-
+        _out.print(obj.getMethodIndex() + " <" + obj.getMethodReturnName()
+            + " " + obj.getMethodDeclarerName()
+            + "." + obj.getMethodName() + "(");
         String[] params = obj.getMethodParamNames();
         int dotIndex;
-
         for (int i = 0; i < params.length; i++) {
             dotIndex = params[i].lastIndexOf('.');
-
-            if (dotIndex != -1) {
+            if (dotIndex != -1)
                 params[i] = params[i].substring(dotIndex + 1);
-            }
 
             _out.print(params[i]);
-
-            if (i != (params.length - 1)) {
+            if (i != params.length - 1)
                 _out.print(", ");
-            }
         }
 
         _out.print(")>");
     }
 
     public void enterMultiANewArrayInstruction(MultiANewArrayInstruction obj) {
-        _out.print(obj.getTypeIndex() + " " + obj.getDimensions() + " <" +
-            obj.getTypeName());
-
+        _out.print(obj.getTypeIndex() + " " + obj.getDimensions()
+            + " <" + obj.getTypeName());
         String post = "";
-
         for (int i = 0; i < obj.getDimensions(); i++)
             post += "[]";
-
         _out.print(post + ">");
     }
 
@@ -341,8 +314,9 @@ public class PrettyPrintVisitor extends BCVisitor {
     }
 
     public void enterPutFieldInstruction(PutFieldInstruction obj) {
-        _out.print(obj.getFieldIndex() + " <" + obj.getFieldTypeName() + " " +
-            obj.getFieldDeclarerName() + "." + obj.getFieldName() + ">");
+        _out.print(obj.getFieldIndex() + " <" + obj.getFieldTypeName()
+            + " " + obj.getFieldDeclarerName()
+            + "." + obj.getFieldName() + ">");
     }
 
     public void enterRetInstruction(RetInstruction obj) {
@@ -359,12 +333,9 @@ public class PrettyPrintVisitor extends BCVisitor {
 
         println("low=" + obj.getLow());
         println("high=" + obj.getHigh());
-
         int[] offsets = obj.getOffsets();
-
         for (int i = 0; i < offsets.length; i++)
             println("case=" + offsets[i]);
-
         _out.print(_prefix + "default=" + obj.getDefaultOffset());
 
         _prefix = _prefix.substring(2);
@@ -386,8 +357,8 @@ public class PrettyPrintVisitor extends BCVisitor {
 
     public void enterEntry(Entry obj) {
         String name = obj.getClass().getName();
-        openBlock(++_entryCount + ": " +
-            name.substring(name.lastIndexOf('.') + 1));
+        openBlock(++_entryCount + ": "
+            + name.substring(name.lastIndexOf('.') + 1));
     }
 
     public void exitEntry(Entry obj) {

@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,14 +13,12 @@
 package org.apache.openjpa.lib.util;
 
 import junit.framework.*;
-
 import junit.textui.*;
 
-
 /**
- *  <p>Tests the {@link TypedProperties} type.</p>
- *
- *  @author Abe White
+ * Tests the {@link TypedProperties} type.
+ * 
+ * @author Abe White
  */
 public class TestTypedProperties extends TestCase {
     private TypedProperties _props = null;
@@ -45,7 +40,7 @@ public class TestTypedProperties extends TestCase {
     }
 
     /**
-     *  Tests basic typed gets.
+     * Tests basic typed gets.
      */
     public void testTypes() {
         assertTrue(_props.getBooleanProperty("bool"));
@@ -57,7 +52,7 @@ public class TestTypedProperties extends TestCase {
     }
 
     /**
-     *  Tests the defaults returned for missing keys.
+     * Tests the defaults returned for missing keys.
      */
     public void testNoDefaults() {
         assertTrue(!_props.getBooleanProperty("bool2"));
@@ -69,8 +64,8 @@ public class TestTypedProperties extends TestCase {
     }
 
     /**
-     *  Tests the defaults returned by keys found in the default
-     *  backing properties instance.
+     * Tests the defaults returned by keys found in the default
+     * backing properties instance.
      */
     public void testDefaults() {
         assertTrue(_defs.getBooleanProperty("bool"));
@@ -82,7 +77,7 @@ public class TestTypedProperties extends TestCase {
     }
 
     /**
-     *  Tests that given defaults works.
+     * Tests that given defaults works.
      */
     public void testGivenDefaults() {
         assertTrue(_props.getBooleanProperty("bool2", true));

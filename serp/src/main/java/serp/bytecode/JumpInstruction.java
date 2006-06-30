@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,18 +12,15 @@
  */
 package serp.bytecode;
 
+import java.io.*;
+import java.util.*;
 import serp.bytecode.visitor.*;
 
-import java.io.*;
-
-import java.util.*;
-
-
 /**
- *  <p>An instruction that specifies a position in the code block to jump to.
- *  Examples include <code>go2, jsr</code>, etc.</p>
- *
- *  @author Abe White
+ * An instruction that specifies a position in the code block to jump to.
+ * Examples include <code>go2, jsr</code>, etc.
+ * 
+ * @author Abe White
  */
 public class JumpInstruction extends Instruction implements InstructionPtr {
     private InstructionPtrStrategy _target = new InstructionPtrStrategy(this);
@@ -40,10 +34,8 @@ public class JumpInstruction extends Instruction implements InstructionPtr {
     }
 
     public int getStackChange() {
-        if (getOpcode() == Constants.JSR) {
+        if (getOpcode() == Constants.JSR)
             return 1;
-        }
-
         return 0;
     }
 
@@ -52,49 +44,42 @@ public class JumpInstruction extends Instruction implements InstructionPtr {
         case Constants.GOTOW:
         case Constants.JSRW:
             return super.getLength() + 4;
-
         default:
             return super.getLength() + 2;
         }
     }
 
     /**
-      *  Get the current target instruction to jump to, if it has been set.
+     * Get the current target instruction to jump to, if it has been set.
      */
     public Instruction getTarget() {
         return _target.getTargetInstruction();
     }
 
     /**
-      *  Set the instruction to jump to; the instruction must already be
-     *  added to the code block.
-      *
-     *  @return this instruction, for method chaining
+     * Set the instruction to jump to; the instruction must already be
+     * added to the code block.
+     * 
+     * @return this instruction, for method chaining
      */
     public JumpInstruction setTarget(Instruction instruction) {
         _target.setTargetInstruction(instruction);
-
         return this;
     }
 
     /**
-      *  JumpInstructions are equal if they represent the same operation and
-     *  the instruction they jump to is the
-     *  same, or if the jump Instruction of either is unset.
+     * JumpInstructions are equal if they represent the same operation and
+     * the instruction they jump to is the
+     * same, or if the jump Instruction of either is unset.
      */
     public boolean equalsInstruction(Instruction other) {
-        if (this == other) {
+        if (this == other)
             return true;
-        }
-
-        if (!super.equalsInstruction(other)) {
+        if (!super.equalsInstruction(other))
             return false;
-        }
 
         Instruction target = ((JumpInstruction) other).getTarget();
-
-        return ((target == null) || (getTarget() == null) ||
-        (target == getTarget()));
+        return(target == null || getTarget() == null || target == getTarget());
     }
 
     public void updateTargets() {
@@ -122,9 +107,7 @@ public class JumpInstruction extends Instruction implements InstructionPtr {
         case Constants.GOTOW:
         case Constants.JSRW:
             setOffset(in.readInt());
-
             break;
-
         default:
             setOffset(in.readShort());
         }
@@ -137,9 +120,7 @@ public class JumpInstruction extends Instruction implements InstructionPtr {
         case Constants.GOTOW:
         case Constants.JSRW:
             out.writeInt(getOffset());
-
             break;
-
         default:
             out.writeShort(getOffset());
         }
@@ -147,30 +128,22 @@ public class JumpInstruction extends Instruction implements InstructionPtr {
 
     void calculateOpcode() {
         int offset;
-
         switch (getOpcode()) {
         case Constants.GOTO:
         case Constants.GOTOW:
             offset = getOffset();
-
-            if (offset < (2 << 16)) {
+            if (offset < (2 << 16))
                 setOpcode(Constants.GOTO);
-            } else {
+            else
                 setOpcode(Constants.GOTOW);
-            }
-
             break;
-
         case Constants.JSR:
         case Constants.JSRW:
             offset = getOffset();
-
-            if (offset < (2 << 16)) {
+            if (offset < (2 << 16))
                 setOpcode(Constants.JSR);
-            } else {
+            else
                 setOpcode(Constants.JSRW);
-            }
-
             break;
         }
     }

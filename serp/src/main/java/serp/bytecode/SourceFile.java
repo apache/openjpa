@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,17 +12,14 @@
  */
 package serp.bytecode;
 
+import java.io.*;
 import serp.bytecode.lowlevel.*;
-
 import serp.bytecode.visitor.*;
 
-import java.io.*;
-
-
 /**
- *  <p>Attribute naming the source file for this class.</p>
- *
- *  @author Abe White
+ * Attribute naming the source file for this class.
+ * 
+ * @author Abe White
  */
 public class SourceFile extends Attribute {
     int _sourceFileIndex = 0;
@@ -39,78 +33,68 @@ public class SourceFile extends Attribute {
     }
 
     /**
-     *  Return the index into the class {@link ConstantPool} of the
-     *  {@link UTF8Entry} naming the source file for this class, or 0 if
-     *  not set.
+     * Return the index into the class {@link ConstantPool} of the
+     * {@link UTF8Entry} naming the source file for this class, or 0 if not set.
      */
     public int getFileIndex() {
         return _sourceFileIndex;
     }
 
     /**
-     *  Set the index into the class {@link ConstantPool} of the
-     *  {@link UTF8Entry} naming the source file for this class.
+     * Set the index into the class {@link ConstantPool} of the
+     * {@link UTF8Entry} naming the source file for this class.
      */
     public void setFileIndex(int sourceFileIndex) {
-        if (sourceFileIndex < 0) {
+        if (sourceFileIndex < 0)
             sourceFileIndex = 0;
-        }
-
         _sourceFileIndex = sourceFileIndex;
     }
 
     /**
-     *  Return the name of the source file, or null if not set.
+     * Return the name of the source file, or null if not set.
      */
     public String getFileName() {
-        if (_sourceFileIndex == 0) {
+        if (_sourceFileIndex == 0)
             return null;
-        }
-
-        return ((UTF8Entry) getPool().getEntry(_sourceFileIndex)).getValue();
+        return((UTF8Entry) getPool().getEntry(_sourceFileIndex)).getValue();
     }
 
     /**
-     *  Return the file object for the source file, or null if not set.
-     *
-     *  @param dir                the directory of the file, or null
+     * Return the file object for the source file, or null if not set.
+     * 
+     * @param dir the directory of the file, or null
      */
     public File getFile(File dir) {
         String name = getFileName();
-
-        if (name == null) {
+        if (name == null)
             return null;
-        }
-
         return new File(dir, name);
     }
 
     /**
-     *  Set the name of the source file.  The name should be the file name
-     *  only; it should not include the path to the file.
-      */
+     * Set the name of the source file. The name should be the file name
+     * only; it should not include the path to the file.
+     */
     public void setFile(String name) {
-        if (name == null) {
+        if (name == null)
             setFileIndex(0);
-        } else {
+        else
             setFileIndex(getPool().findUTF8Entry(name, true));
-        }
     }
 
     /**
-     *  Set the source file.  Note that only the file name is recorded;
-     *  the path to the file is discarded.
+     * Set the source file. Note that only the file name is recorded;
+     * the path to the file is discarded.
      */
     public void setFile(File file) {
-        if (file == null) {
+        if (file == null)
             setFile((String) null);
-        } else {
+        else
             setFile(file.getName());
-        }
     }
 
     /**
-      *  Set the file name from the current class name plus the .java extension.
+     * Set the file name from the current class name plus the .java extension.
      */
     public void setFromClassName() {
         setFile(((BCClass) getOwner()).getClassName() + ".java");

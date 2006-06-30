@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,19 +13,16 @@
 package org.apache.openjpa.lib.util;
 
 import junit.framework.*;
-
 import junit.textui.*;
 
-
 /**
- *  <p>Tests simple regex for use in in-memory query execution.</p>
- *
- *  @author Greg Campbell
+ * Tests simple regex for use in in-memory query execution.
+ * 
+ * @author Greg Campbell
  */
 public class TestSimpleRegex extends TestCase {
     private boolean matchExpr(String target, String expr, boolean caseInsens) {
         SimpleRegex re = new SimpleRegex(expr, caseInsens);
-
         return re.matches(target);
     }
 
@@ -51,15 +45,15 @@ public class TestSimpleRegex extends TestCase {
         assertTrue(matchExpr("Hello", "h.*lo", true));
         assertFalse(matchExpr("Hello", "h.*lo", false));
         assertTrue(matchExpr("The quick brown fox jumped over the lazy dog",
-                "The .*brown.*dog", false));
+            "The .*brown.*dog", false));
         assertTrue(matchExpr("The quick brown fox jumped over the lazy dog",
-                "The .*br.wn.*d.g", false));
+            "The .*br.wn.*d.g", false));
         assertTrue(matchExpr("the quick BRown fox jumped over the lazy dog",
-                "The .*br.wn.*d.g", true));
+            "The .*br.wn.*d.g", true));
         assertFalse(matchExpr("The quick brown fox jumped over the lazy dog",
-                "The .*brown.*dogg", false));
+            "The .*brown.*dogg", false));
         assertFalse(matchExpr("The quick brown fox jumped over the lazy dog",
-                "TThe .*brown.*dogg", false));
+            "TThe .*brown.*dogg", false));
 
         assertFalse(matchExpr("Yo Hellow", ".*ello", false));
     }

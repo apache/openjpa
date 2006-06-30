@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,23 +13,21 @@
 package org.apache.openjpa.lib.meta;
 
 import org.apache.openjpa.lib.util.*;
-
 import org.xml.sax.*;
-
 import serp.util.*;
 
-
 /**
- *  <p>Custom SAX parser used by the system to quickly parse metadata files
- *  for classes.</p>
- *
- *  @author Abe White
- *  @nojavadoc */
+ * Custom SAX parser used by the system to quickly parse metadata files
+ * for classes.
+ * 
+ * @author Abe White
+ * @nojavadoc
+ */
 public class CFMetaDataParser extends XMLMetaDataParser {
     static final String[] PACKAGES = new String[] {
-            "java.lang.", "java.util.", "java.math."
-        };
-    private static final Localizer _loc = Localizer.forPackage(CFMetaDataParser.class);
+        "java.lang.", "java.util.", "java.math." };
+    private static final Localizer _loc = Localizer.forPackage
+        (CFMetaDataParser.class);
 
     // the current package and class being parsed
     private String _package = null;
@@ -43,44 +38,44 @@ public class CFMetaDataParser extends XMLMetaDataParser {
     }
 
     /**
-     *  The name of the package element.  Defaults to "package".
+     * The name of the package element. Defaults to "package".
      */
     protected boolean isPackageElementName(String name) {
         return "package".equals(name);
     }
 
     /**
-     *  The attribute of the package element that holds the name, or null to
-     *  use the element text.  Defaults to "name".
+     * The attribute of the package element that holds the name, or null to
+     * use the element text. Defaults to "name".
      */
     protected String getPackageAttributeName() {
         return "name";
     }
 
     /**
-     *  The depth of the package element.  Defaults to 1.
+     * The depth of the package element. Defaults to 1.
      */
     protected int getPackageElementDepth() {
         return 1;
     }
 
     /**
-     *  The name of the class element.  Defaults to "class".
+     * The name of the class element. Defaults to "class".
      */
     protected boolean isClassElementName(String name) {
         return "class".equals(name);
     }
 
     /**
-     *  The attribute of the class element that holds the name, or null to
-     *  use the element text.  Defaults to "name".
+     * The attribute of the class element that holds the name, or null to
+     * use the element text. Defaults to "name".
      */
     protected String getClassAttributeName() {
         return "name";
     }
 
     /**
-     *  The depth of the class element.  Defaults to 2.
+     * The depth of the class element. Defaults to 2.
      */
     protected int getClassElementDepth() {
         return 2;
@@ -90,31 +85,21 @@ public class CFMetaDataParser extends XMLMetaDataParser {
         throws SAXException {
         // skip root element
         int depth = currentDepth();
-
-        if (depth == 0) {
+        if (depth == 0)
             return true;
-        }
 
         try {
-            if ((depth == getPackageElementDepth()) &&
-                    isPackageElementName(name)) {
+            if (depth == getPackageElementDepth()
+                && isPackageElementName(name))
                 return startPackage(name, attrs);
-            }
-
-            if ((depth == getClassElementDepth()) && isClassElementName(name)) {
+            if (depth == getClassElementDepth() && isClassElementName(name))
                 return startClass(name, attrs);
-            }
-
-            if ((depth > getClassElementDepth()) && (_class != null) &&
-                    (getClassAttributeName() != null)) {
+            if (depth > getClassElementDepth() && _class != null
+                && getClassAttributeName() != null)
                 return startClassElement(name, attrs);
-            }
-
-            if ((depth > getPackageElementDepth()) && (_package != null) &&
-                    (getPackageAttributeName() != null)) {
+            if (depth > getPackageElementDepth() && _package != null
+                && getPackageAttributeName() != null)
                 return startPackageElement(name, attrs);
-            }
-
             return startSystemElement(name, attrs);
         } catch (SAXException se) {
             throw se;
@@ -126,27 +111,24 @@ public class CFMetaDataParser extends XMLMetaDataParser {
     protected void endElement(String name) throws SAXException {
         // skip root element
         int depth = currentDepth();
-
-        if (depth == 0) {
+        if (depth == 0)
             return;
-        }
 
         try {
-            if ((depth == getPackageElementDepth()) &&
-                    isPackageElementName(name)) {
+            if (depth == getPackageElementDepth()
+                && isPackageElementName(name))
                 endPackage(name);
-            } else if ((depth == getClassElementDepth()) &&
-                    isClassElementName(name)) {
+            else if (depth == getClassElementDepth()
+                && isClassElementName(name))
                 endClass(name);
-            } else if ((depth > getClassElementDepth()) && (_class != null) &&
-                    (getClassAttributeName() != null)) {
+            else if (depth > getClassElementDepth() && _class != null
+                && getClassAttributeName() != null)
                 endClassElement(name);
-            } else if ((depth > getPackageElementDepth()) &&
-                    (_package != null) && (getPackageAttributeName() != null)) {
+            else if (depth > getPackageElementDepth() && _package != null
+                && getPackageAttributeName() != null)
                 endPackageElement(name);
-            } else {
+            else
                 endSystemElement(name);
-            }
         } catch (SAXException se) {
             throw se;
         } catch (NullPointerException npe) {
@@ -155,70 +137,61 @@ public class CFMetaDataParser extends XMLMetaDataParser {
     }
 
     /**
-     *  Start a package.  Parses out package attribute by default.
-     *  Return false to skip package element and its contents.
+     * Start a package. Parses out package attribute by default.
+     * Return false to skip package element and its contents.
      */
     protected boolean startPackage(String elem, Attributes attrs)
         throws SAXException {
         if (getPackageAttributeName() != null) {
             _package = attrs.getValue(getPackageAttributeName());
-
-            if (_package == null) {
+            if (_package == null)
                 _package = "";
-            }
         }
-
         return true;
     }
 
     /**
-     *  End a package.  Parses contained text by default.
+     * End a package. Parses contained text by default.
      */
     protected void endPackage(String elem) {
-        if (getPackageAttributeName() != null) {
+        if (getPackageAttributeName() != null)
             _package = null;
-        } else {
+        else
             _package = currentText();
-        }
     }
 
     /**
-     *  Start a class.  Parses out class name by default.  Return
-     *  false to skip class element and its contents.
+     * Start a class. Parses out class name by default. Return
+     * false to skip class element and its contents.
      */
     protected boolean startClass(String elem, Attributes attrs)
         throws SAXException {
         if (getClassAttributeName() != null) {
             _class = attrs.getValue(getClassAttributeName());
-
-            if ((_package != null) && (_package.length() > 0) &&
-                    (_class.indexOf('.') == -1)) {
+            if (_package != null && _package.length() > 0
+                && _class.indexOf('.') == -1)
                 _class = _package + "." + _class;
-            }
         }
-
         return true;
     }
 
     /**
-     *  End a class.  Parses contained text by default.
+     * End a class. Parses contained text by default.
      */
     protected void endClass(String elem) throws SAXException {
-        if (getClassAttributeName() != null) {
+        if (getClassAttributeName() != null)
             _class = null;
-        } else {
+        else {
             _class = currentText();
-
-            if ((_package != null) && (_package.length() > 0) &&
-                    (_class.indexOf('.') == -1)) {
+            if (_package != null && _package.length() > 0
+                && _class.indexOf('.') == -1)
                 _class = _package + "." + _class;
-            }
         }
     }
 
     /**
-     *  Override this method marking the start of an element outside of any
-     *  package or class.
+     * Override this method marking the start of an element outside of any
+     * package or class.
      */
     protected boolean startSystemElement(String name, Attributes attrs)
         throws SAXException {
@@ -226,15 +199,15 @@ public class CFMetaDataParser extends XMLMetaDataParser {
     }
 
     /**
-     *  Override this method marking the end of an element outside of any
-     *  package or class.
+     * Override this method marking the end of an element outside of any
+     * package or class.
      */
     protected void endSystemElement(String name) throws SAXException {
     }
 
     /**
-     *  Override this method marking the start of an element within a declared
-     *  package.
+     * Override this method marking the start of an element within a declared
+     * package.
      */
     protected boolean startPackageElement(String name, Attributes attrs)
         throws SAXException {
@@ -242,15 +215,15 @@ public class CFMetaDataParser extends XMLMetaDataParser {
     }
 
     /**
-     *  Override this method marking the end of an element within a declared
-     *  package.
+     * Override this method marking the end of an element within a declared
+     * package.
      */
     protected void endPackageElement(String name) throws SAXException {
     }
 
     /**
-     *  Override this method marking the start of an element within a declared
-     *  class.
+     * Override this method marking the start of an element within a declared
+     * class.
      */
     protected boolean startClassElement(String name, Attributes attrs)
         throws SAXException {
@@ -258,16 +231,16 @@ public class CFMetaDataParser extends XMLMetaDataParser {
     }
 
     /**
-     *  Override this method marking the end of an element within a declared
-     *  class.
+     * Override this method marking the end of an element within a declared
+     * class.
      */
     protected void endClassElement(String name) throws SAXException {
     }
 
     /**
-     *  Override this method to clear any state and ready the parser for
-     *  a new document.  Subclasses should call
-     *  <code>super.reset ()</code> to clear superclass state.
+     * Override this method to clear any state and ready the parser for
+     * a new document. Subclasses should call
+     * <code>super.reset()</code> to clear superclass state.
      */
     protected void reset() {
         super.reset();
@@ -276,63 +249,51 @@ public class CFMetaDataParser extends XMLMetaDataParser {
     }
 
     /**
-     *  Return the current class being parsed; the returned name will
-     *  be fully qualified.
+     * Return the current class being parsed; the returned name will
+     * be fully qualified.
      */
     protected String currentClassName() {
         return _class;
     }
 
     /**
-     *  Return the current package being parsed.
+     * Return the current package being parsed.
      */
     protected String currentPackage() {
         return _package;
     }
 
     /**
-     *  Helper method to create the {@link Class} for the given name,
-     *  taking into account the package currently being parsed for relative
-     *  class names.
+     * Helper method to create the {@link Class} for the given name,
+     * taking into account the package currently being parsed for relative
+     * class names.
      */
     protected Class classForName(String name, boolean resolve)
         throws SAXException {
-        if (name == null) {
+        if (name == null)
             return null;
-        }
-
         Class cls = classForName(name, _package, resolve, currentClassLoader());
-
-        if (cls == null) {
+        if (cls == null)
             throw getException(_loc.get("invalid-class", name));
-        }
-
         return cls;
     }
 
     /**
-      *  Load the given class name against the given package and the set
-     *  of accepted standard packages.  Return null if the class cannot be
-     *  loaded.
+     * Load the given class name against the given package and the set
+     * of accepted standard packages. Return null if the class cannot be loaded.
      */
-    public static Class classForName(String name, String pkg, boolean resolve,
-        ClassLoader loader) {
-        if ((name == null) || (name.length() == 0)) {
+    public static Class classForName(String name, String pkg,
+        boolean resolve, ClassLoader loader) {
+        if (name == null || name.length() == 0)
             return null;
-        }
 
-        if (loader == null) {
+        if (loader == null)
             loader = Thread.currentThread().getContextClassLoader();
-        }
-
         boolean fullName = name.indexOf('.') != -1;
-        boolean noPackage = (pkg == null) || (pkg.length() == 0);
-
+        boolean noPackage = pkg == null || pkg.length() == 0;
         try {
-            if (fullName || noPackage) {
+            if (fullName || noPackage)
                 return Strings.toClass(name, resolve, loader);
-            }
-
             return Strings.toClass(pkg + "." + name, resolve, loader);
         } catch (RuntimeException re) {
         }
@@ -354,7 +315,6 @@ public class CFMetaDataParser extends XMLMetaDataParser {
                 }
             }
         }
-
         return null;
     }
 }

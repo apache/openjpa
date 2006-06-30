@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,32 +14,29 @@ package serp.bytecode.visitor;
 
 import serp.bytecode.*;
 import serp.bytecode.Deprecated;
-
 import serp.bytecode.lowlevel.*;
 
-
 /**
- *  <p>Base class for visitors on a bytecode entity.  The public {@link #visit}
- *  method will traverse the object graph of the given entity, calling the
- *  <code>enter*</code> and <code>exit*</code> methods as it visits each
- *  object.  The traversal is done depth-first.  Subclasses should override
- *  only the methods for visiting the entities they are interested in.
- *  Whenever there is a general method (i.e. <code>enter/exitEntry</code>) as
- *  well as a more specific one        (i.e. <code>enter/exitStringEntry</code>), the
- *  more general method will be called first, followed by a call on the correct
- *  specific method.  Most subclasses will override either the general or
- *  specific cases, but not both.</p>
- *
- *  @author Abe White
+ * Base class for visitors on a bytecode entity. The public {@link #visit}
+ * method will traverse the object graph of the given entity, calling the
+ * <code>enter*</code> and <code>exit*</code> methods as it visits each
+ * object. The traversal is done depth-first. Subclasses should override
+ * only the methods for visiting the entities they are interested in.
+ * Whenever there is a general method(i.e. <code>enter/exitEntry</code>) as
+ * well as a more specific one(i.e. <code>enter/exitStringEntry</code>), the
+ * more general method will be called first, followed by a call on the correct
+ * specific method. Most subclasses will override either the general or
+ * specific cases, but not both.
+ * 
+ * @author Abe White
  */
 public class BCVisitor {
     /**
-     *  Visit the given entity.
+     * Visit the given entity.
      */
     public void visit(VisitAcceptor obj) {
-        if (obj == null) {
+        if (obj == null)
             return;
-        }
 
         obj.acceptVisit(this);
     }

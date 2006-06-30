@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,33 +12,26 @@
  */
 package org.apache.openjpa.lib.util;
 
+import java.io.*;
+import java.net.*;
+import java.security.*;
+import java.util.*;
 import org.apache.commons.lang.exception.*;
 
-import java.io.*;
-
-import java.net.*;
-
-import java.security.*;
-
-import java.util.*;
-
-
 /**
- *  <p>UUID value generator.  Based on the time-based generator in the LGPL
- *  project:<br />
- *  http://www.doomdark.org/doomdark/proj/jug/<br />
- *  The code has been vastly simplified and modified to replace the ethernet
- *  address of the host machine with the IP, since we do not want to require
- *  native libs and Java cannot access the MAC address directly.</p>
- *
- *  <p>Aside from the above modification, implements the IETF UUID draft
- *  specification, found here:
- *  http://www1.ics.uci.edu/~ejw/authoring/uuid-guid
- *  draft-leach-uuids-guids-01.txt</p>
- *
- *  @author Abe White
- *  @since 3.3
- *  @nojavadoc */
+ * UUID value generator. Based on the time-based generator in the LGPL
+ * project:<br /> http://www.doomdark.org/doomdark/proj/jug/<br />
+ * The code has been vastly simplified and modified to replace the ethernet
+ * address of the host machine with the IP, since we do not want to require
+ * native libs and Java cannot access the MAC address directly.
+ *  Aside from the above modification, implements the IETF UUID draft
+ * specification, found here: http://www1.ics.uci.edu/~ejw/authoring/uuid-guid/
+ * draft-leach-uuids-guids-01.txt
+ * 
+ * @author Abe White
+ * @since 3.3
+ * @nojavadoc
+ */
 public class UUIDGenerator {
     // indexes within the uuid array for certain boundaries
     private static final byte IDX_TIME_HI = 6;
@@ -59,7 +49,7 @@ public class UUIDGenerator {
     // type of UUID; is this part of the spec?
     private final static byte TYPE_TIME_BASED = 1;
 
-    // random number generator used to reduce conflicts with other JVMs, and 
+    // random number generator used to reduce conflicts with other JVMs, and
     // hasher for strings.  note that secure random is very slow the first time
     // it is used; consider switching to a standard random
     private static final Random RANDOM = new SecureRandom();
@@ -68,21 +58,20 @@ public class UUIDGenerator {
     // the MAC address is usually 6 bytes
     private static final byte[] IP;
 
-    // counter is initialized not to 0 but to a random 8-bit number, and each 
-    // time clock changes, lowest 8-bits of counter are preserved. the purpose 
+    // counter is initialized not to 0 but to a random 8-bit number, and each
+    // time clock changes, lowest 8-bits of counter are preserved. the purpose
     // is to reduce chances of multi-JVM collisions without reducing perf
     // awhite: I don't really understand this precaution, but it was in the
     // original algo
     private static int _counter;
 
-    // last used millis time, and a randomized sequence that gets reset 
+    // last used millis time, and a randomized sequence that gets reset
     // whenever the time is reset
     private static long _last = 0L;
     private static byte[] _seq = new byte[2];
 
     static {
         byte[] ip = null;
-
         try {
             ip = InetAddress.getLocalHost().getAddress();
         } catch (IOException ioe) {
@@ -97,7 +86,7 @@ public class UUIDGenerator {
     }
 
     /**
-     *  Return a unique UUID value.
+     * Return a unique UUID value.
      */
     public static byte[] next() {
         // set ip addr
@@ -106,12 +95,11 @@ public class UUIDGenerator {
 
         // set time info
         long now = System.currentTimeMillis();
-
         synchronized (UUIDGenerator.class) {
             // if time moves backwards somehow, spec says to reset randomization
-            if (now < _last) {
+            if (now < _last)
                 resetTime();
-            } else if ((now == _last) && (_counter == MILLI_MULT)) {
+            else if (now == _last && _counter == MILLI_MULT) {
                 // if we run out of slots in this milli, increment
                 now++;
                 _last = now;
@@ -121,7 +109,7 @@ public class UUIDGenerator {
                 _counter &= 0xFF; // rest counter?
             }
 
-            // translate timestamp to 100ns slot since beginning of gregorian 
+            // translate timestamp to 100ns slot since beginning of gregorian
             now *= MILLI_MULT;
             now += GREG_OFFSET;
 
@@ -158,11 +146,10 @@ public class UUIDGenerator {
     }
 
     /**
-     *  Return the next unique uuid value as a 16-character string.
+     * Return the next unique uuid value as a 16-character string.
      */
     public static String nextString() {
         byte[] bytes = next();
-
         try {
             return new String(bytes, "ISO-8859-1");
         } catch (Exception e) {
@@ -171,15 +158,15 @@ public class UUIDGenerator {
     }
 
     /**
-     *  Return the next unique uuid value as a 32-character hex string.
+     * Return the next unique uuid value as a 32-character hex string.
      */
     public static String nextHex() {
         return Base16Encoder.encode(next());
     }
 
     /**
-     *  Reset the random time sequence and counter.  Must be called from
-     *  synchronized code.
+     * Reset the random time sequence and counter. Must be called from
+     * synchronized code.
      */
     private static void resetTime() {
         _last = 0L;

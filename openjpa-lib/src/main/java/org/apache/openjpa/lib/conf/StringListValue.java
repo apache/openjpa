@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,14 +14,14 @@ package org.apache.openjpa.lib.conf;
 
 import serp.util.*;
 
-
 /**
- *  <p>A comma-separated list of string values.</p>
- *
- *  @author Abe White
+ * A comma-separated list of string values.
+ * 
+ * @author Abe White
  */
 public class StringListValue extends Value {
     public static final String[] EMPTY = new String[0];
+
     private String[] _values = EMPTY;
 
     public StringListValue(String prop) {
@@ -32,7 +29,7 @@ public class StringListValue extends Value {
     }
 
     /**
-     *  The internal value.
+     * The internal value.
      */
     public void set(String[] values) {
         _values = (values == null) ? EMPTY : values;
@@ -40,7 +37,7 @@ public class StringListValue extends Value {
     }
 
     /**
-     *  The internal value.
+     * The internal value.
      */
     public String[] get() {
         return _values;
@@ -56,12 +53,9 @@ public class StringListValue extends Value {
 
     protected void setInternalString(String val) {
         String[] vals = Strings.split(val, ",", 0);
-
-        if (vals != null) {
+        if (vals != null)
             for (int i = 0; i < vals.length; i++)
                 vals[i] = vals[i].trim();
-        }
-
         set(vals);
     }
 
@@ -69,3 +63,4 @@ public class StringListValue extends Value {
         set((String[]) obj);
     }
 }
+

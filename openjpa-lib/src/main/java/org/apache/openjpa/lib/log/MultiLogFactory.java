@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,12 +14,11 @@ package org.apache.openjpa.lib.log;
 
 import java.util.*;
 
-
 /**
-*  A LogFactory implementation to pass events through multiple
-*  LogFactory implementations (such as log4j and LogPanelFactory).
- *
-*  @author Steve Kim
+ * A LogFactory implementation to pass events through multiple
+ * LogFactory implementations(such as log4j and LogPanelFactory).
+ * 
+ * @author Steve Kim
  */
 public class MultiLogFactory implements LogFactory {
     private List _delegates;
@@ -31,19 +27,18 @@ public class MultiLogFactory implements LogFactory {
      * create an instance with two delegates
      */
     public MultiLogFactory(LogFactory d1, LogFactory d2) {
-        this(new LogFactory[] { d1, d2 });
+        this(new LogFactory [] { d1, d2 });
     }
 
     public MultiLogFactory(LogFactory d1, LogFactory d2, LogFactory d3) {
-        this(new LogFactory[] { d1, d2, d3 });
+        this(new LogFactory [] { d1, d2, d3 });
     }
 
     /**
      * create an instance with the given delegates
      */
-    public MultiLogFactory(LogFactory[] delegates) {
-        _delegates = new LinkedList(Arrays.asList(delegates));
-        ;
+    public MultiLogFactory(LogFactory [] delegates) {
+        _delegates = new LinkedList(Arrays.asList(delegates));;
     }
 
     public synchronized void addLogFactory(LogFactory factory) {
@@ -55,11 +50,10 @@ public class MultiLogFactory implements LogFactory {
     }
 
     /**
-     *  Returns the delegates that this MultiLogFactory delegates
-     *  messages to.
+     * Returns the delegates that this MultiLogFactory delegates messages to.
      */
     public synchronized LogFactory[] getDelegates() {
-        return (LogFactory[]) _delegates.toArray(new LogFactory[0]);
+        return(LogFactory[])_delegates.toArray(new LogFactory[0]);
     }
 
     /**
@@ -67,20 +61,16 @@ public class MultiLogFactory implements LogFactory {
      */
     public synchronized Log getLog(String channel) {
         List logs = new ArrayList(_delegates.size());
-
-        for (Iterator i = _delegates.iterator(); i.hasNext();) {
-            LogFactory f = (LogFactory) i.next();
-
+        for (Iterator i = _delegates.iterator(); i.hasNext(); ) {
+            LogFactory f = (LogFactory)i.next();
             if (f != null) {
                 Log l = f.getLog(channel);
-
-                if (l != null) {
+                if (l != null)
                     logs.add(l);
-                }
             }
         }
 
-        return new MultiLog((Log[]) logs.toArray(new Log[logs.size()]));
+        return new MultiLog((Log[])logs.toArray(new Log[logs.size()]));
     }
 
     /**
@@ -94,7 +84,7 @@ public class MultiLogFactory implements LogFactory {
         }
 
         /**
-         *  Return the logs that this log delegates to.
+         * Return the logs that this log delegates to.
          */
         public Log[] getDelegates() {
             return _logs;
@@ -162,54 +152,48 @@ public class MultiLogFactory implements LogFactory {
 
         public boolean isTraceEnabled() {
             for (int i = 0; i < _logs.length; i++)
-                if (_logs[i].isTraceEnabled()) {
+                if (_logs[i].isTraceEnabled())
                     return true;
-                }
 
             return false;
         }
 
         public boolean isInfoEnabled() {
             for (int i = 0; i < _logs.length; i++)
-                if (_logs[i].isInfoEnabled()) {
+                if (_logs[i].isInfoEnabled())
                     return true;
-                }
 
             return false;
         }
 
         public boolean isWarnEnabled() {
             for (int i = 0; i < _logs.length; i++)
-                if (_logs[i].isWarnEnabled()) {
+                if (_logs[i].isWarnEnabled())
                     return true;
-                }
 
             return false;
         }
 
         public boolean isDebugEnabled() {
             for (int i = 0; i < _logs.length; i++)
-                if (_logs[i].isDebugEnabled()) {
+                if (_logs[i].isDebugEnabled())
                     return true;
-                }
 
             return false;
         }
 
         public boolean isErrorEnabled() {
             for (int i = 0; i < _logs.length; i++)
-                if (_logs[i].isErrorEnabled()) {
+                if (_logs[i].isErrorEnabled())
                     return true;
-                }
 
             return false;
         }
 
         public boolean isFatalEnabled() {
             for (int i = 0; i < _logs.length; i++)
-                if (_logs[i].isFatalEnabled()) {
+                if (_logs[i].isFatalEnabled())
                     return true;
-                }
 
             return false;
         }

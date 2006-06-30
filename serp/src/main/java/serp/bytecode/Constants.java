@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,14 +12,13 @@
  */
 package serp.bytecode;
 
-
 /**
- *  <p>Interface to track constants used in bytecode.  Entities can access these
- *  constants using the static <code>Constants.</code> field prefix,
- *  or implement this interface themselves to conveniently import the
- *  constants into their own namespace.</p>
- *
- *  @author Abe White
+ * Interface to track constants used in bytecode. Entities can access these
+ * constants using the static <code>Constants.</code> field prefix,
+ * or implement this interface themselves to conveniently import the
+ * constants into their own namespace.
+ * 
+ * @author Abe White
  */
 public interface Constants {
     // class magic number
@@ -289,36 +285,33 @@ public interface Constants {
 
     // human-readable opcode names
     public static final String[] OPCODE_NAMES = new String[] {
-            "nop", "aconstnull", "iconstm1", "iconst0", "iconst1", "iconst2",
-            "iconst3", "iconst4", "iconst5", "lconst0", "lconst1", "fconst0",
-            "fconst1", "fconst2", "dconst0", "dconst1", "bipush", "sipush",
-            "ldc", "ldcw", "ldc2w", "iload", "lload", "fload", "dload", "aload",
-            "iload0", "iload1", "iload2", "iload3", "lload0", "lload1", "lload2",
-            "lload3", "fload0", "fload1", "fload2", "fload3", "dload0", "dload1",
-            "dload2", "dload3", "aload0", "aload1", "aload2", "aload3", "iaload",
-            "laload", "faload", "daload", "aaload", "baload", "caload", "saload",
-            "istore", "lstore", "fstore", "dstore", "astore", "istore0",
-            "istore1", "istore2", "istore3", "lstore0", "lstore1", "lstore2",
-            "lstore3", "fstore0", "fstore1", "fstore2", "fstore3", "dstore0",
-            "dstore1", "dstore2", "dstore3", "astore0", "astore1", "astore2",
-            "astore3", "iastore", "lastore", "fastore", "dastore", "aastore",
-            "bastore", "castore", "sastore", "pop", "pop2", "dup", "dupx1",
-            "dupx2", "dup2", "dup2x1", "dup2x2", "swap", "iadd", "ladd", "fadd",
-            "dadd", "isub", "lsub", "fsub", "dsub", "imul", "lmul", "fmul",
-            "dmul", "idiv", "ldiv", "fdiv", "ddiv", "irem", "lrem", "frem",
-            "drem", "ineg", "lneg", "fneg", "dneg", "ishl", "lshl", "ishr",
-            "lshr", "iushr", "lushr", "iand", "land", "ior", "lor", "ixor",
-            "lxor", "iinc", "i2l", "i2f", "i2d", "l2i", "l2f", "l2d", "f2i",
-            "f2l", "f2d", "d2i", "d2l", "d2f", "i2b", "i2c", "i2s", "lcmp",
-            "fcmpl", "fcmpg", "dcmpl", "dcmpg", "ifeq", "ifne", "iflt", "ifge",
-            "ifgt", "ifle", "ificmpeq", "ificmpne", "ificmplt", "ificmpge",
-            "ificmpgt", "ificmple", "ifacmpeq", "ifacmpne", "goto", "jsr", "ret",
-            "tableswitch", "lookupswitch", "ireturn", "lreturn", "freturn",
-            "dreturn", "areturn", "return", "getstatic", "putstatic", "getfield",
-            "putfield", "invokevirtual", "invokespecial", "invokestatic",
-            "invokeinterface", "??", "new", "newarray", "anewarray",
-            "arraylength", "athrow", "checkcast", "instanceof", "monitorenter",
-            "monitorexit", "wide", "multianewarray", "ifnull", "ifnonnull",
-            "gotow", "jsrw",
-        };
+        "nop", "aconstnull", "iconstm1", "iconst0", "iconst1", "iconst2",
+        "iconst3", "iconst4", "iconst5", "lconst0", "lconst1", "fconst0",
+        "fconst1", "fconst2", "dconst0", "dconst1", "bipush", "sipush", "ldc",
+        "ldcw", "ldc2w", "iload", "lload", "fload", "dload", "aload", "iload0",
+        "iload1", "iload2", "iload3", "lload0", "lload1", "lload2", "lload3",
+        "fload0", "fload1", "fload2", "fload3", "dload0", "dload1", "dload2",
+        "dload3", "aload0", "aload1", "aload2", "aload3", "iaload", "laload",
+        "faload", "daload", "aaload", "baload", "caload", "saload", "istore",
+        "lstore", "fstore", "dstore", "astore", "istore0", "istore1", "istore2",
+        "istore3", "lstore0", "lstore1", "lstore2", "lstore3", "fstore0",
+        "fstore1", "fstore2", "fstore3", "dstore0", "dstore1", "dstore2",
+        "dstore3", "astore0", "astore1", "astore2", "astore3", "iastore",
+        "lastore", "fastore", "dastore", "aastore", "bastore", "castore",
+        "sastore", "pop", "pop2", "dup", "dupx1", "dupx2", "dup2", "dup2x1",
+        "dup2x2", "swap", "iadd", "ladd", "fadd", "dadd", "isub", "lsub",
+        "fsub", "dsub", "imul", "lmul", "fmul", "dmul", "idiv", "ldiv", "fdiv",
+        "ddiv", "irem", "lrem", "frem", "drem", "ineg", "lneg", "fneg", "dneg",
+        "ishl", "lshl", "ishr", "lshr", "iushr", "lushr", "iand", "land", "ior",
+        "lor", "ixor", "lxor", "iinc", "i2l", "i2f", "i2d", "l2i", "l2f", "l2d",
+        "f2i", "f2l", "f2d", "d2i", "d2l", "d2f", "i2b", "i2c", "i2s", "lcmp",
+        "fcmpl", "fcmpg", "dcmpl", "dcmpg", "ifeq", "ifne", "iflt", "ifge",
+        "ifgt", "ifle", "ificmpeq", "ificmpne", "ificmplt", "ificmpge",
+        "ificmpgt", "ificmple", "ifacmpeq", "ifacmpne", "goto", "jsr", "ret",
+        "tableswitch", "lookupswitch", "ireturn", "lreturn", "freturn",
+        "dreturn", "areturn", "return", "getstatic", "putstatic", "getfield",
+        "putfield", "invokevirtual", "invokespecial", "invokestatic",
+        "invokeinterface", "??", "new", "newarray", "anewarray", "arraylength",
+        "athrow", "checkcast", "instanceof", "monitorenter", "monitorexit",
+        "wide", "multianewarray", "ifnull", "ifnonnull", "gotow", "jsrw", };
 }

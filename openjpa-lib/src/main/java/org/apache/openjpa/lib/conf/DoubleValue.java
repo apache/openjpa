@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,11 +12,10 @@
  */
 package org.apache.openjpa.lib.conf;
 
-
 /**
- *  A double {@link Value}.
- *
- *  @author Marc Prud'hommeaux
+ * A double {@link Value}.
+ * 
+ * @author Marc Prud'hommeaux
  */
 public class DoubleValue extends Value {
     private double value;
@@ -33,19 +29,17 @@ public class DoubleValue extends Value {
     }
 
     /**
-     *  The internal value.
+     * The internal value.
      */
     public void set(double value) {
         double oldValue = this.value;
         this.value = value;
-
-        if (oldValue != value) {
+        if (oldValue != value)
             valueChanged();
-        }
     }
 
     /**
-     *  The internal value.
+     * The internal value.
      */
     public double get() {
         return value;
@@ -56,18 +50,16 @@ public class DoubleValue extends Value {
     }
 
     protected void setInternalString(String val) {
-        if ((val == null) || (val.length() == 0)) {
+        if (val == null || val.length() == 0)
             set(0D);
-        } else {
+        else
             set(Double.parseDouble(val));
-        }
     }
 
     protected void setInternalObject(Object obj) {
-        if (obj == null) {
+        if (obj == null)
             set(0D);
-        } else {
+        else
             set(((Number) obj).doubleValue());
-        }
     }
 }

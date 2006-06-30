@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,28 +12,21 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
+import java.io.*;
+import java.math.*;
+import java.net.*;
+import java.sql.*;
+import java.sql.Date;
+import java.util.*;
 import org.apache.openjpa.lib.util.*;
 import org.apache.openjpa.lib.util.Closeable;
 
-import java.io.*;
-
-import java.math.*;
-
-import java.net.*;
-
-import java.sql.*;
-import java.sql.Date;
-
-import java.util.*;
-
-
 /**
- *  <p>{@link CallableStatement} that delegates to an internal statement.</p>
- *
- *  @author Abe White
+ * {@link CallableStatement} that delegates to an internal statement.
+ * 
+ * @author Abe White
  */
-public class DelegatingCallableStatement implements CallableStatement,
-    Closeable {
+public class DelegatingCallableStatement implements CallableStatement, Closeable {
     private final CallableStatement _stmnt;
     private final DelegatingCallableStatement _del;
     private final Connection _conn;
@@ -44,39 +34,35 @@ public class DelegatingCallableStatement implements CallableStatement,
     public DelegatingCallableStatement(CallableStatement stmnt, Connection conn) {
         _conn = conn;
         _stmnt = stmnt;
-
-        if (_stmnt instanceof DelegatingCallableStatement) {
+        if (_stmnt instanceof DelegatingCallableStatement)
             _del = (DelegatingCallableStatement) _stmnt;
-        } else {
+        else
             _del = null;
-        }
     }
 
     private ResultSet wrapResult(boolean wrap, ResultSet rs) {
-        if (!wrap) {
+        if (!wrap)
             return rs;
-        }
 
         // never wrap null
-        if (rs == null) {
+        if (rs == null)
             return null;
-        }
 
         return new DelegatingResultSet(rs, this);
     }
 
     /**
-     *  Return the wrapped statement.
+     * Return the wrapped statement.
      */
     public CallableStatement getDelegate() {
         return _stmnt;
     }
 
     /**
-     *  Return the base underlying data store statement.
+     * Return the base underlying data store statement.
      */
     public CallableStatement getInnermostDelegate() {
-        return (_del == null) ? _stmnt : _del.getInnermostDelegate();
+        return(_del == null) ? _stmnt : _del.getInnermostDelegate();
     }
 
     public int hashCode() {
@@ -84,28 +70,23 @@ public class DelegatingCallableStatement implements CallableStatement,
     }
 
     public boolean equals(Object other) {
-        if (other == this) {
+        if (other == this)
             return true;
-        }
-
-        if (other instanceof DelegatingCallableStatement) {
-            other = ((DelegatingCallableStatement) other).getInnermostDelegate();
-        }
-
+        if (other instanceof DelegatingCallableStatement)
+            other = ((DelegatingCallableStatement) other).
+                getInnermostDelegate();
         return getInnermostDelegate().equals(other);
     }
 
     public String toString() {
         StringBuffer buf = new StringBuffer("prepstmnt ").append(hashCode());
         appendInfo(buf);
-
         return buf.toString();
     }
 
     protected void appendInfo(StringBuffer buf) {
-        if (_del != null) {
+        if (_del != null)
             _del.appendInfo(buf);
-        }
     }
 
     public ResultSet executeQuery(String str) throws SQLException {
@@ -113,18 +94,16 @@ public class DelegatingCallableStatement implements CallableStatement,
     }
 
     /**
-      *  Execute the query, with the option of not wrapping it in a
-     *  {@link DelegatingResultSet}, which is the default.
+     * Execute the query, with the option of not wrapping it in a
+     * {@link DelegatingResultSet}, which is the default.
      */
     protected ResultSet executeQuery(String sql, boolean wrap)
         throws SQLException {
         ResultSet rs;
-
-        if (_del != null) {
+        if (_del != null)
             rs = _del.executeQuery(sql, false);
-        } else {
+        else
             rs = _stmnt.executeQuery(sql);
-        }
 
         return wrapResult(wrap, rs);
     }
@@ -190,17 +169,15 @@ public class DelegatingCallableStatement implements CallableStatement,
     }
 
     /**
-      *  Get the last result set, with the option of not wrapping it in a
-     *  {@link DelegatingResultSet}, which is the default.
+     * Get the last result set, with the option of not wrapping it in a
+     * {@link DelegatingResultSet}, which is the default.
      */
     protected ResultSet getResultSet(boolean wrap) throws SQLException {
         ResultSet rs;
-
-        if (_del != null) {
+        if (_del != null)
             rs = _del.getResultSet(false);
-        } else {
+        else
             rs = _stmnt.getResultSet();
-        }
 
         return wrapResult(wrap, rs);
     }
@@ -258,22 +235,20 @@ public class DelegatingCallableStatement implements CallableStatement,
     }
 
     /**
-      *  Execute the query, with the option of not wrapping it in a
-     *  {@link DelegatingResultSet}, which is the default.
+     * Execute the query, with the option of not wrapping it in a
+     * {@link DelegatingResultSet}, which is the default.
      */
     protected ResultSet executeQuery(boolean wrap) throws SQLException {
         ResultSet rs;
-
-        if (_del != null) {
+        if (_del != null)
             rs = _del.executeQuery(false);
-        } else {
+        else
             rs = _stmnt.executeQuery();
-        }
 
         return wrapResult(wrap, rs);
     }
 
-    public int executeUpdate() throws SQLException {
+    public int executeUpdate  () throws SQLException {
         return _stmnt.executeUpdate();
     }
 
@@ -352,8 +327,7 @@ public class DelegatingCallableStatement implements CallableStatement,
         _stmnt.clearParameters();
     }
 
-    public void setObject(int i1, Object o, int i2, int i3)
-        throws SQLException {
+    public void setObject(int i1, Object o, int i2, int i3) throws SQLException {
         _stmnt.setObject(i1, o, i2, i3);
     }
 
@@ -373,8 +347,7 @@ public class DelegatingCallableStatement implements CallableStatement,
         _stmnt.addBatch();
     }
 
-    public void setCharacterStream(int i1, Reader r, int i2)
-        throws SQLException {
+    public void setCharacterStream(int i1, Reader r, int i2) throws SQLException {
         _stmnt.setCharacterStream(i1, r, i2);
     }
 
@@ -406,8 +379,7 @@ public class DelegatingCallableStatement implements CallableStatement,
         _stmnt.setTime(i, t, c);
     }
 
-    public void setTimestamp(int i, Timestamp t, Calendar c)
-        throws SQLException {
+    public void setTimestamp(int i, Timestamp t, Calendar c) throws SQLException {
         _stmnt.setTimestamp(i, t, c);
     }
 
@@ -415,8 +387,9 @@ public class DelegatingCallableStatement implements CallableStatement,
         _stmnt.setNull(i1, i2, s);
     }
 
-    // JDBC 3.0 (unsupported) methods follow; these are required to be able 
+    // JDBC 3.0 (unsupported) methods follow; these are required to be able
     // to compile against JDK 1.4
+
     public boolean getMoreResults(int i) throws SQLException {
         throw new UnsupportedOperationException();
     }
@@ -464,12 +437,12 @@ public class DelegatingCallableStatement implements CallableStatement,
     /////////////////////////////
     // CallableStatement methods
     /////////////////////////////
+
     public void registerOutParameter(int i1, int i2) throws SQLException {
         _stmnt.registerOutParameter(i1, i2);
     }
 
-    public void registerOutParameter(int i1, int i2, int i3)
-        throws SQLException {
+    public void registerOutParameter(int i1, int i2, int i3) throws SQLException {
         _stmnt.registerOutParameter(i1, i2, i3);
     }
 
@@ -574,8 +547,9 @@ public class DelegatingCallableStatement implements CallableStatement,
         _stmnt.registerOutParameter(i1, i2, s);
     }
 
-    // JDBC 3.0 (unsupported) methods follow; these are required to be able 
+    // JDBC 3.0 (unsupported) methods follow; these are required to be able
     // to compile against JDK 1.4
+
     public void registerOutParameter(String s, int i) throws SQLException {
         throw new UnsupportedOperationException();
     }
@@ -668,8 +642,7 @@ public class DelegatingCallableStatement implements CallableStatement,
         throw new UnsupportedOperationException();
     }
 
-    public void setObject(String a, Object b, int c, int d)
-        throws SQLException {
+    public void setObject(String a, Object b, int c, int d) throws SQLException {
         throw new UnsupportedOperationException();
     }
 
@@ -787,8 +760,7 @@ public class DelegatingCallableStatement implements CallableStatement,
         throw new UnsupportedOperationException();
     }
 
-    public Timestamp getTimestamp(String a, Calendar b)
-        throws SQLException {
+    public Timestamp getTimestamp(String a, Calendar b) throws SQLException {
         throw new UnsupportedOperationException();
     }
 }

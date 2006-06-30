@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,11 +14,10 @@ package org.apache.openjpa.lib.conf;
 
 import serp.util.*;
 
-
 /**
- *  An int {@link Value}.
- *
- *  @author Marc Prud'hommeaux
+ * An int {@link Value}.
+ * 
+ * @author Marc Prud'hommeaux
  */
 public class IntValue extends Value {
     private int value;
@@ -35,19 +31,17 @@ public class IntValue extends Value {
     }
 
     /**
-     *  The internal value.
+     * The internal value.
      */
     public void set(int value) {
         int oldValue = this.value;
         this.value = value;
-
-        if (value != oldValue) {
+        if (value != oldValue)
             valueChanged();
-        }
     }
 
     /**
-     *  The internal value.
+     * The internal value.
      */
     public int get() {
         return this.value;
@@ -58,18 +52,16 @@ public class IntValue extends Value {
     }
 
     protected void setInternalString(String val) {
-        if ((val == null) || (val.length() == 0)) {
+        if (val == null || val.length() == 0)
             set(0);
-        } else {
+        else
             set(Integer.parseInt(val));
-        }
     }
 
     protected void setInternalObject(Object obj) {
-        if (obj == null) {
+        if (obj == null)
             set(0);
-        } else {
+        else
             set(((Number) obj).intValue());
-        }
     }
 }
