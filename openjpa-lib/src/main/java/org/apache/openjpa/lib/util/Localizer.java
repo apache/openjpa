@@ -14,7 +14,7 @@ package org.apache.openjpa.lib.util;
 
 import java.text.*;
 import java.util.*;
-import java.util.concurrent.*;
+import org.apache.openjpa.lib.util.concurrent.*;
 
 /**
  * The Localizer provides convenient access to localized
