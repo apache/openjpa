@@ -207,7 +207,10 @@ public abstract class Value implements Cloneable {
 
     /**
      * The name of the getter method for the instantiated value of this
-     * property(as opposed to the string value)
+     * property(as opposed to the string value). If the string starts with
+     * <code>this.</code>, then the getter will be looked up on the value
+     * instance itself. Otherwise, the getter will be looked up on the 
+     * configuration instance. 
      */
     public void setInstantiatingGetter(String getter) {
         this.getter = getter;
