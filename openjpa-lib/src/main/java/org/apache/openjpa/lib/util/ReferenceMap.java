@@ -12,15 +12,16 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * A {@link Map} type that can hold its keys, values, or both with
  * weak or soft references.
- * 
+ *
  * @author Abe White
  */
 public interface ReferenceMap extends Map {
+
     public static final int HARD = 0;
     public static final int WEAK = 1;
     public static final int SOFT = 2;
@@ -32,14 +33,14 @@ public interface ReferenceMap extends Map {
 
     /**
      * Overridable callback for when a key reference expires.
-     * 
+     *
      * @param value the value for the expired key
      */
     public void keyExpired(Object value);
 
     /**
      * Overridable callback for when a value reference expires.
-     * 
+     *
      * @param key the key for the expired value
      */
     public void valueExpired(Object key);

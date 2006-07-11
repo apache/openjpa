@@ -12,15 +12,19 @@
  */
 package serp.bytecode;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Caching and conversion of names in both internal and external form.
- * 
+ *
  * @author Abe White
  */
 public class NameCache {
-    static final Object[][] _codes = new Object[][] {
+
+    static final Object[][] _codes = new Object[][]{
         { byte.class, "B" }, { char.class, "C" }, { double.class, "D" },
         { float.class, "F" }, { int.class, "I" }, { long.class, "J" },
         { short.class, "S" }, { boolean.class, "Z" }, { void.class, "V" }, };
@@ -33,11 +37,11 @@ public class NameCache {
 
     /**
      * Converts the given class name to its internal form.
-     * 
-     * @param className the name to convert
+     *
+     * @param className  the name to convert
      * @param descriptor true if the name is to be used for a descriptor
-     * section -- the difference seems to be that for
-     * descriptors, non-primitives are prefixed with 'L' and ended with ';'
+     *                   section -- the difference seems to be that for
+     *                   descriptors, non-primitives are prefixed with 'L' and ended with ';'
      */
     public String getInternalForm(String className, boolean descriptor) {
         if (className == null || className.length() == 0)
@@ -89,12 +93,12 @@ public class NameCache {
 
     /**
      * Given the internal name of the class, return the 'normal' java name.
-     * 
-     * @param internalName the internal name being used
+     *
+     * @param internalName  the internal name being used
      * @param humanReadable if the returned name should be in human-readable
-     * form, rather than a form suitable for a
-     * {@link Class#forName} call -- the difference
-     * lies in the handling of arrays
+     *                      form, rather than a form suitable for a
+     *                      {@link Class#forName} call -- the difference
+     *                      lies in the handling of arrays
      */
     public String getExternalForm(String internalName, boolean humanReadable) {
         if (internalName == null || internalName.length() == 0)
@@ -113,7 +117,8 @@ public class NameCache {
     /**
      * @see #getExternalForm
      */
-    private String getExternalFormInternal(String intern, boolean humanReadable) {
+    private String getExternalFormInternal(String intern,
+        boolean humanReadable) {
         if (!humanReadable) {
             // check against primitives
             for (int i = 0; i < _codes.length; i++) {
@@ -214,7 +219,7 @@ public class NameCache {
             descriptor = descriptor.substring(index + 1);
         }
 
-        return(String[]) tokens.toArray(new String[tokens.size()]);
+        return (String[]) tokens.toArray(new String[tokens.size()]);
     }
 
     /**

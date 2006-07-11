@@ -12,15 +12,27 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import org.apache.commons.lang.exception.*;
-import org.apache.openjpa.lib.util.*;
-import org.xml.sax.*;
-import org.xml.sax.Attributes;
-import serp.bytecode.lowlevel.*;
-import serp.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.exception.NestableRuntimeException;
+import org.apache.openjpa.lib.util.Files;
+import org.apache.openjpa.lib.util.Localizer;
+import serp.bytecode.lowlevel.ConstantPoolTable;
+import serp.util.Strings;
 
 /**
  * Parser used to resolve arguments into java classes.
@@ -28,15 +40,16 @@ import serp.util.*;
  * resources, .java files or resources, or metadata files or resources
  * conforming to the common format defined by {@link CFMetaDataParser}.
  * Transforms the information in these args into {@link Class} instances.
- *  Note that when parsing .java files, only the main class in the file
+ * Note that when parsing .java files, only the main class in the file
  * is detected. Other classes defined in the file, such as inner classes,
  * are not added to the returned classes list.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class ClassArgParser {
-    private static final int TOKEN_EOF  = -1;
+
+    private static final int TOKEN_EOF = -1;
     private static final int TOKEN_NONE = 0;
     private static final int TOKEN_PACKAGE = 1;
     private static final int TOKEN_CLASS = 2;
@@ -51,7 +64,7 @@ public class ClassArgParser {
     private char[] _classAttr = "name".toCharArray();
     private char[][] _beginElements = { { 'p' }, { 'c' } };
     private char[][] _endElements = { "ackage".toCharArray(),
-                                                "lass".toCharArray() };
+        "lass".toCharArray() };
 
     /**
      * The class loader with which to load parsed classes.
@@ -130,9 +143,9 @@ public class ClassArgParser {
     /**
      * Return the {@link Class} representation of the class(es) named in the
      * given arg.
-     * 
+     *
      * @param arg a class name, .java file, .class file, or metadata
-     * file naming the type(s) to act on
+     *            file naming the type(s) to act on
      */
     public Class[] parseTypes(String arg) {
         String[] names = parseTypeNames(arg);
@@ -176,9 +189,9 @@ public class ClassArgParser {
 
     /**
      * Return the names of the class(es) from the given arg.
-     * 
+     *
      * @param arg a class name, .java file, .class file, or metadata
-     * file naming the type(s) to act on
+     *            file naming the type(s) to act on
      * @throws IllegalArgumentException with appropriate message on error
      */
     public String[] parseTypeNames(String arg) {
@@ -188,19 +201,19 @@ public class ClassArgParser {
         try {
             File file = Files.getFile(arg, _loader);
             if (arg.endsWith(".class"))
-                return new String[] { getFromClassFile(file) };
+                return new String[]{ getFromClassFile(file) };
             if (arg.endsWith(".java"))
-                return new String[] { getFromJavaFile(file) };
+                return new String[]{ getFromJavaFile(file) };
             if (file.exists()) {
                 Collection col = getFromMetaDataFile(file);
-                return(String[]) col.toArray(new String[col.size()]);
+                return (String[]) col.toArray(new String[col.size()]);
             }
         } catch (Exception e) {
             throw new NestableRuntimeException(_loc.get("class-arg", arg), e);
         }
 
         // must be a class name
-        return new String[] { arg };
+        return new String[]{ arg };
     }
 
     /**
@@ -221,7 +234,7 @@ public class ClassArgParser {
             throw new NestableRuntimeException(_loc.get("class-arg", source),
                 e);
         }
-        return(String[]) names.toArray(new String[names.size()]);
+        return (String[]) names.toArray(new String[names.size()]);
     }
 
     /**
@@ -236,7 +249,10 @@ public class ClassArgParser {
             names.addAll(getFromMetaData(new InputStreamReader(in)));
         }
         finally {
-            try { in.close(); } catch (IOException ioe) {}
+            try {
+                in.close();
+            } catch (IOException ioe) {
+            }
         }
     }
 
@@ -278,7 +294,10 @@ public class ClassArgParser {
         }
         finally {
             if (fin != null)
-                try { fin.close(); } catch (IOException ioe) {}
+                try {
+                    fin.close();
+                } catch (IOException ioe) {
+                }
         }
     }
 
@@ -334,7 +353,10 @@ public class ClassArgParser {
         }
         finally {
             if (in != null)
-                try { in.close(); } catch (IOException ioe) {}
+                try {
+                    in.close();
+                } catch (IOException ioe) {
+                }
         }
     }
 
@@ -349,7 +371,10 @@ public class ClassArgParser {
         }
         finally {
             if (in != null)
-                try { in.close(); } catch (IOException ioe) {}
+                try {
+                    in.close();
+                } catch (IOException ioe) {
+                }
         }
     }
 
@@ -364,7 +389,8 @@ public class ClassArgParser {
         int token = TOKEN_NONE;
         String pkg = "";
         String name;
-        read: for (int ch = 0, last = 0, last2 = 0;
+        read:
+        for (int ch = 0, last = 0, last2 = 0;
             ch == '<' || (ch = in.read()) != -1; last2 = last, last = ch) {
             // handle comments
             if (comment && last2 == '-' && last == '-' && ch == '>') {
@@ -396,38 +422,38 @@ public class ClassArgParser {
             // read element name; look for packages and classes
             token = readElementToken(ch, in);
             switch (token) {
-            case TOKEN_EOF:
-                break read;
-            case TOKEN_PACKAGE:
-                pkg = readAttribute(in, _packageAttr);
-                if (pkg == null)
+                case TOKEN_EOF:
                     break read;
-                break;
-            case TOKEN_PACKAGE_NOATTR:
-                pkg = readElementText(in);
-                if (pkg == null)
-                    break read;
-                ch = '<'; // reading element text reads to next '<'
-                break;
-            case TOKEN_CLASS:
-                name = readAttribute(in, _classAttr);
-                if (name == null)
-                    break read;
-                if (pkg.length() > 0 && name.indexOf('.') == -1)
-                    names.add(pkg + "." + name);
-                else
-                    names.add(name);
-                break;
-            case TOKEN_CLASS_NOATTR:
-                name = readElementText(in);
-                if (name == null)
-                    break read;
-                ch = '<'; // reading element text reads to next '<'
-                if (pkg.length() > 0 && name.indexOf('.') == -1)
-                    names.add(pkg + "." + name);
-                else
-                    names.add(name);
-                break;
+                case TOKEN_PACKAGE:
+                    pkg = readAttribute(in, _packageAttr);
+                    if (pkg == null)
+                        break read;
+                    break;
+                case TOKEN_PACKAGE_NOATTR:
+                    pkg = readElementText(in);
+                    if (pkg == null)
+                        break read;
+                    ch = '<'; // reading element text reads to next '<'
+                    break;
+                case TOKEN_CLASS:
+                    name = readAttribute(in, _classAttr);
+                    if (name == null)
+                        break read;
+                    if (pkg.length() > 0 && name.indexOf('.') == -1)
+                        names.add(pkg + "." + name);
+                    else
+                        names.add(name);
+                    break;
+                case TOKEN_CLASS_NOATTR:
+                    name = readElementText(in);
+                    if (name == null)
+                        break read;
+                    ch = '<'; // reading element text reads to next '<'
+                    if (pkg.length() > 0 && name.indexOf('.') == -1)
+                        names.add(pkg + "." + name);
+                    else
+                        names.add(name);
+                    break;
             }
         }
         return names;
@@ -442,7 +468,8 @@ public class ClassArgParser {
         int matchIdx = -1;
         int matched = 0;
         int dq = 0;
-        for (int beginIdx = 0; beginIdx < _beginElements[0].length; beginIdx++) {
+        for (int beginIdx = 0; beginIdx < _beginElements[0].length; beginIdx++)
+        {
             if (beginIdx != 0)
                 ch = in.read();
             if (ch == -1)
@@ -554,7 +581,7 @@ public class ClassArgParser {
                 buf = new StringBuffer();
             buf.append((char) ch);
         }
-        return(buf == null) ? "" : buf.toString();
+        return (buf == null) ? "" : buf.toString();
     }
 
     /**

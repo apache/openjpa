@@ -12,50 +12,60 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.io.*;
-import java.lang.reflect.*;
-import java.sql.*;
-import java.util.*;
-import org.apache.commons.lang.exception.*;
-import org.apache.openjpa.lib.util.*;
+import java.lang.reflect.Method;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.apache.openjpa.lib.util.Closeable;
-import serp.util.*;
+import org.apache.openjpa.lib.util.Localizer;
+import serp.util.Numbers;
 
 /**
  * Wrapper around an existing connection. Subclasses can override the
  * methods whose behavior they mean to change. The <code>equals</code> and
  * <code>hashCode</code> methods pass through to the base underlying data
  * store connection.
- * 
+ *
  * @author Abe White
  */
 public class DelegatingConnection implements Connection, Closeable {
+
     // jdbc 3 method keys
-    private static final Object SET_HOLDABILITY         = new Object();
-    private static final Object GET_HOLDABILITY         = new Object();
-    private static final Object SET_SAVEPOINT_NONAME    = new Object();
-    private static final Object SET_SAVEPOINT           = new Object();
-    private static final Object ROLLBACK_SAVEPOINT      = new Object();
-    private static final Object RELEASE_SAVEPOINT       = new Object();
-    private static final Object CREATE_STATEMENT        = new Object();
-    private static final Object PREPARE_STATEMENT       = new Object();
-    private static final Object PREPARE_CALL            = new Object();
-    private static final Object PREPARE_WITH_KEYS       = new Object();
-    private static final Object PREPARE_WITH_INDEX      = new Object();
-    private static final Object PREPARE_WITH_NAMES      = new Object();
+    private static final Object SET_HOLDABILITY = new Object();
+    private static final Object GET_HOLDABILITY = new Object();
+    private static final Object SET_SAVEPOINT_NONAME = new Object();
+    private static final Object SET_SAVEPOINT = new Object();
+    private static final Object ROLLBACK_SAVEPOINT = new Object();
+    private static final Object RELEASE_SAVEPOINT = new Object();
+    private static final Object CREATE_STATEMENT = new Object();
+    private static final Object PREPARE_STATEMENT = new Object();
+    private static final Object PREPARE_CALL = new Object();
+    private static final Object PREPARE_WITH_KEYS = new Object();
+    private static final Object PREPARE_WITH_INDEX = new Object();
+    private static final Object PREPARE_WITH_NAMES = new Object();
 
     private static final Localizer _loc = Localizer.forPackage
         (DelegatingConnection.class);
 
     private static final Map _jdbc3;
+
     static {
         boolean jdbc3 = false;
         Method m = null;
         try {
             m = Connection.class.getMethod("setSavepoint",
-                new Class[] { String.class });
+                new Class[]{ String.class });
             jdbc3 = true;
-        } catch (Throwable t) {}
+        } catch (Throwable t) {
+        }
 
         if (jdbc3) {
             _jdbc3 = new HashMap();
@@ -86,7 +96,7 @@ public class DelegatingConnection implements Connection, Closeable {
      * Return the base underlying data store connection.
      */
     public Connection getInnermostDelegate() {
-        return(_del == null) ? _conn : _del.getInnermostDelegate();
+        return (_del == null) ? _conn : _del.getInnermostDelegate();
     }
 
     public int hashCode() {
@@ -329,8 +339,8 @@ public class DelegatingConnection implements Connection, Closeable {
         Method m = (Method) _jdbc3.get(SET_HOLDABILITY);
         if (m == null)
             m = createJDBC3Method(SET_HOLDABILITY, "setHoldability",
-                new Class[] {int.class});
-        invokeJDBC3(m, new Object[] {Numbers.valueOf(holdability)});
+                new Class[]{ int.class });
+        invokeJDBC3(m, new Object[]{ Numbers.valueOf(holdability) });
     }
 
     public int getHoldability() throws SQLException {
@@ -338,7 +348,7 @@ public class DelegatingConnection implements Connection, Closeable {
         Method m = (Method) _jdbc3.get(GET_HOLDABILITY);
         if (m == null)
             m = createJDBC3Method(GET_HOLDABILITY, "getHoldability", null);
-        return((Number) invokeJDBC3(m, null)).intValue();
+        return ((Number) invokeJDBC3(m, null)).intValue();
     }
 
     public Savepoint setSavepoint() throws SQLException {
@@ -346,7 +356,7 @@ public class DelegatingConnection implements Connection, Closeable {
         Method m = (Method) _jdbc3.get(SET_SAVEPOINT_NONAME);
         if (m == null)
             m = createJDBC3Method(SET_SAVEPOINT_NONAME, "setSavepoint", null);
-        return(Savepoint) invokeJDBC3(m, null);
+        return (Savepoint) invokeJDBC3(m, null);
     }
 
     public Savepoint setSavepoint(String savepoint) throws SQLException {
@@ -354,8 +364,8 @@ public class DelegatingConnection implements Connection, Closeable {
         Method m = (Method) _jdbc3.get(SET_SAVEPOINT);
         if (m == null)
             m = createJDBC3Method(SET_SAVEPOINT, "setSavepoint",
-                new Class[] {String.class});
-        return(Savepoint) invokeJDBC3(m, new Object[] {savepoint});
+                new Class[]{ String.class });
+        return (Savepoint) invokeJDBC3(m, new Object[]{ savepoint });
     }
 
     public void rollback(Savepoint savepoint) throws SQLException {
@@ -363,8 +373,8 @@ public class DelegatingConnection implements Connection, Closeable {
         Method m = (Method) _jdbc3.get(ROLLBACK_SAVEPOINT);
         if (m == null)
             m = createJDBC3Method(ROLLBACK_SAVEPOINT, "rollback",
-                new Class[] {Savepoint.class});
-        invokeJDBC3(m, new Object[] {savepoint});
+                new Class[]{ Savepoint.class });
+        invokeJDBC3(m, new Object[]{ savepoint });
     }
 
     public void releaseSavepoint(Savepoint savepoint) throws SQLException {
@@ -372,12 +382,13 @@ public class DelegatingConnection implements Connection, Closeable {
         Method m = (Method) _jdbc3.get(RELEASE_SAVEPOINT);
         if (m == null)
             m = createJDBC3Method(RELEASE_SAVEPOINT, "releaseSavepoint",
-                new Class[] {Savepoint.class});
-        invokeJDBC3(m, new Object[] {savepoint});
+                new Class[]{ Savepoint.class });
+        invokeJDBC3(m, new Object[]{ savepoint });
     }
 
     public Statement createStatement(int resultSetType,
-        int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+        int resultSetConcurrency, int resultSetHoldability)
+        throws SQLException {
         assertJDBC3();
         return createStatement(resultSetType, resultSetConcurrency,
             resultSetHoldability, true);
@@ -394,11 +405,11 @@ public class DelegatingConnection implements Connection, Closeable {
             Method m = (Method) _jdbc3.get(CREATE_STATEMENT);
             if (m == null)
                 m = createJDBC3Method(CREATE_STATEMENT, "createStatement",
-                    new Class[] {int.class, int.class, int.class});
-            stmnt = (Statement) invokeJDBC3(m, new Object[] {
+                    new Class[]{ int.class, int.class, int.class });
+            stmnt = (Statement) invokeJDBC3(m, new Object[]{
                 Numbers.valueOf(resultSetType),
                 Numbers.valueOf(resultSetConcurrency),
-                Numbers.valueOf(resultSetHoldability)});
+                Numbers.valueOf(resultSetHoldability) });
         }
         if (wrap)
             stmnt = new DelegatingStatement(stmnt, this);
@@ -424,11 +435,12 @@ public class DelegatingConnection implements Connection, Closeable {
             Method m = (Method) _jdbc3.get(PREPARE_STATEMENT);
             if (m == null)
                 m = createJDBC3Method(PREPARE_STATEMENT, "prepareStatement",
-                    new Class[]{String.class, int.class, int.class, int.class});
-            stmnt = (PreparedStatement) invokeJDBC3(m, new Object[] { sql,
+                    new Class[]{ String.class, int.class, int.class,
+                        int.class });
+            stmnt = (PreparedStatement) invokeJDBC3(m, new Object[]{ sql,
                 Numbers.valueOf(resultSetType),
                 Numbers.valueOf(resultSetConcurrency),
-                Numbers.valueOf(resultSetHoldability)});
+                Numbers.valueOf(resultSetHoldability) });
         }
         if (wrap)
             stmnt = new DelegatingPreparedStatement(stmnt, this);
@@ -454,11 +466,12 @@ public class DelegatingConnection implements Connection, Closeable {
             Method m = (Method) _jdbc3.get(PREPARE_CALL);
             if (m == null)
                 m = createJDBC3Method(PREPARE_CALL, "prepareCall",
-                    new Class[]{String.class, int.class, int.class, int.class});
-            stmnt = (CallableStatement) invokeJDBC3(m, new Object[] { sql,
+                    new Class[]{ String.class, int.class, int.class,
+                        int.class });
+            stmnt = (CallableStatement) invokeJDBC3(m, new Object[]{ sql,
                 Numbers.valueOf(resultSetType),
                 Numbers.valueOf(resultSetConcurrency),
-                Numbers.valueOf(resultSetHoldability)});
+                Numbers.valueOf(resultSetHoldability) });
         }
         if (wrap)
             stmnt = new DelegatingCallableStatement(stmnt, this);
@@ -480,9 +493,9 @@ public class DelegatingConnection implements Connection, Closeable {
             Method m = (Method) _jdbc3.get(PREPARE_WITH_KEYS);
             if (m == null)
                 m = createJDBC3Method(PREPARE_WITH_KEYS, "prepareStatement",
-                    new Class[] {String.class, int.class});
-            stmnt = (PreparedStatement) invokeJDBC3(m, new Object[] { sql,
-                Numbers.valueOf(autoGeneratedKeys)});
+                    new Class[]{ String.class, int.class });
+            stmnt = (PreparedStatement) invokeJDBC3(m, new Object[]{ sql,
+                Numbers.valueOf(autoGeneratedKeys) });
         }
         if (wrap)
             stmnt = new DelegatingPreparedStatement(stmnt, this);
@@ -504,9 +517,9 @@ public class DelegatingConnection implements Connection, Closeable {
             Method m = (Method) _jdbc3.get(PREPARE_WITH_INDEX);
             if (m == null)
                 m = createJDBC3Method(PREPARE_WITH_INDEX, "prepareStatement",
-                    new Class[] {String.class, int[].class});
-            stmnt = (PreparedStatement) invokeJDBC3(m, new Object[] { sql,
-                columnIndexes});
+                    new Class[]{ String.class, int[].class });
+            stmnt = (PreparedStatement) invokeJDBC3(m, new Object[]{ sql,
+                columnIndexes });
         }
         if (wrap)
             stmnt = new DelegatingPreparedStatement(stmnt, this);
@@ -529,9 +542,9 @@ public class DelegatingConnection implements Connection, Closeable {
             Method m = (Method) _jdbc3.get(PREPARE_WITH_NAMES);
             if (m == null)
                 m = createJDBC3Method(PREPARE_WITH_NAMES, "prepareStatement",
-                    new Class[] {String.class, String[].class});
-            stmnt = (PreparedStatement) invokeJDBC3(m, new Object[] { sql,
-                columnNames});
+                    new Class[]{ String.class, String[].class });
+            stmnt = (PreparedStatement) invokeJDBC3(m, new Object[]{ sql,
+                columnNames });
         }
         if (wrap)
             stmnt = new DelegatingPreparedStatement(stmnt, this);

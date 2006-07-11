@@ -12,15 +12,18 @@
  */
 package serp.bytecode;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link Attributes} type.
- * 
+ *
  * @author Abe White
  */
 public class TestAttributes extends TestCase {
+
     private Project _project = new Project();
     private Attributes _attrs = _project.loadClass("serp.Attrs");
     private Attributes _attrs2 = _project.loadClass("serp.Attrs2");
@@ -49,7 +52,7 @@ public class TestAttributes extends TestCase {
         assertEquals(1, _attrs.getAttributes(Constants.ATTR_SYNTHETIC). length);
         assertTrue(attr1 == _attrs.getAttributes
             (Constants.ATTR_DEPRECATED)[0]);
-        assertTrue(attr2 == _attrs.getAttributes (Constants.ATTR_SYNTHETIC)[0]);
+        assertTrue(attr2 == _attrs.getAttributes(Constants.ATTR_SYNTHETIC)[0]);
 
         Attribute attr3 = _attrs.addAttribute(Constants.ATTR_DEPRECATED);
         assertEquals(3, _attrs.getAttributes().length);
@@ -74,7 +77,7 @@ public class TestAttributes extends TestCase {
         assertTrue(attr2 != _attrs2.getAttribute(Constants.ATTR_SYNTHETIC));
 
         Attribute attr3 = _attrs.addAttribute(Constants.ATTR_SOURCE);
-        _attrs2.setAttributes(new Attribute[] { attr3 });
+        _attrs2.setAttributes(new Attribute[]{ attr3 });
         assertEquals(1, _attrs2.getAttributes().length);
         assertEquals(Constants.ATTR_SOURCE, _attrs2.getAttributes()[0].
             getName());

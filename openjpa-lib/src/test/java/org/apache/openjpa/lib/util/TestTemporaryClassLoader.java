@@ -12,10 +12,13 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.util.*;
-import junit.framework.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import junit.framework.TestCase;
 
 public class TestTemporaryClassLoader extends TestCase {
+
     public void testTemporaryClassLoader() throws Exception {
         Set s = new HashSet();
         for (int i = 0; i < 2; i++) {
@@ -25,10 +28,11 @@ public class TestTemporaryClassLoader extends TestCase {
                 true, loader);
             s.add(cls);
             assertEquals(loader, cls.getClassLoader());
-            assertEquals(i+1, s.size());
+            assertEquals(i + 1, s.size());
         }
     }
 }
 
 class TempClass {
+
 }

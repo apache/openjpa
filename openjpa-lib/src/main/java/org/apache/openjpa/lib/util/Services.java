@@ -12,9 +12,17 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 /**
  * Utility classes to locate services, as defined in the <a
@@ -22,17 +30,18 @@ import java.util.*;
  * #Service%20Provider">Jar File Specification</a>. Most of the methods in this
  * class can also be found in the <em>sun.misc.Service</em> class, but since
  * it is undocumented, we cannot rely on its API.
- *  Service location for a specified interface is done by searching for the
+ * Service location for a specified interface is done by searching for the
  * resource <em>/META-INF/services/</em><i>service.class.name</i>, and
  * loading the resource.
- *  Methods in this class that do not declare exceptions will never throw
+ * Methods in this class that do not declare exceptions will never throw
  * Runtime exceptions: exceptions are silently swallowed and empty array values
  * are returned.
- * 
+ *
  * @author Marc Prud'hommeaux
  * @nojavadoc
  */
 public class Services {
+
     private static final String PREFIX = "META-INF/services/";
 
     /**
@@ -77,7 +86,7 @@ public class Services {
             while (resources.hasMoreElements())
                 addResources((URL) resources.nextElement(), resourceList);
 
-            return(String[]) resourceList.toArray(new String[resourceList
+            return (String[]) resourceList.toArray(new String[resourceList
                 .size()]);
         } catch (Exception e) {
             // silently swallow all exceptions.
@@ -153,10 +162,10 @@ public class Services {
     /**
      * Return an array of Class objects of all known service implementors of the
      * specified class name, as resolved by the specified {@link ClassLoader}.
-     * 
+     *
      * @param skipMissing if true, then ignore classes that cannot be loaded by
-     * the classloader; otherwise, resolution failures will throw a
-     * {@link ClassNotFoundException}.
+     *                    the classloader; otherwise, resolution failures will throw a
+     *                    {@link ClassNotFoundException}.
      */
     public static Class[] getImplementorClasses(String serviceName,
         ClassLoader loader, boolean skipMissing) throws ClassNotFoundException {
@@ -182,6 +191,6 @@ public class Services {
                     throw le;
             }
         }
-        return(Class[]) classes.toArray(new Class[classes.size()]);
+        return (Class[]) classes.toArray(new Class[classes.size()]);
     }
 }

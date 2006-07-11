@@ -12,14 +12,13 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-
 /**
  * Tests the {@link RandomAccessResultList}.
- * 
+ *
  * @author Abe White
  */
 public class TestRandomAccessResultList extends ResultListTest {
+
     public TestRandomAccessResultList(String test) {
         super(test);
     }

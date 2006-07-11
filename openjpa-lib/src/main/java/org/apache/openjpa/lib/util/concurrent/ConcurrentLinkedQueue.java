@@ -17,7 +17,7 @@
  */
 package org.apache.openjpa.lib.util.concurrent;
 
-import java.io.*;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -34,33 +34,34 @@ import java.util.NoSuchElementException;
  * A <tt>ConcurrentLinkedQueue</tt> is an appropriate choice when
  * many threads will share access to a common collection.
  * This queue does not permit <tt>null</tt> elements.
- *  This implementation employs an efficient &quot;wait-free&quot;
+ * This implementation employs an efficient &quot;wait-free&quot;
  * algorithm based on one described in <a
  * href="http://www.cs.rochester.edu/u/michael/PODC96.html"> Simple,
  * Fast, and Practical Non-Blocking and Blocking Concurrent Queue
  * Algorithms</a> by Maged M. Michael and Michael L. Scott.
- *  Beware that, unlike in most collections, the <tt>size</tt> method
+ * Beware that, unlike in most collections, the <tt>size</tt> method
  * is <em>NOT</em> a constant-time operation. Because of the
  * asynchronous nature of these queues, determining the current number
  * of elements requires a traversal of the elements.
- *  This class and its iterator implement all of the
+ * This class and its iterator implement all of the
  * <em>optional</em> methods of the {@link Collection} and {@link
  * Iterator} interfaces.
- *  Memory consistency effects: As with other concurrent
+ * Memory consistency effects: As with other concurrent
  * collections, actions in a thread prior to placing an object into a
  * {@code ConcurrentLinkedQueue}
  * <a href="package-summary.html#MemoryVisibility"><i>happen-before</i></a>
  * actions subsequent to the access or removal of that element from
  * the {@code ConcurrentLinkedQueue} in another thread.
- *  This class is a member of the
+ * This class is a member of the
  * <a href="{@docRoot}/../guide/collections/index.html">
  * Java Collections Framework</a>.
- * 
- * @since 1.5
+ *
  * @author Doug Lea
+ * @since 1.5
  */
 public class ConcurrentLinkedQueue extends AbstractQueue
     implements Queue, java.io.Serializable {
+
     private static final long serialVersionUID = 196745693267521676L;
 
     private final Object headLock = new SerializableLock();
@@ -83,12 +84,18 @@ public class ConcurrentLinkedQueue extends AbstractQueue
      */
 
     private static class Node {
+
         private volatile Object item;
         private volatile Node next;
 
-        Node(Object x) { item = x; }
+        Node(Object x) {
+            item = x;
+        }
 
-        Node(Object x, Node n) { item = x; next = n; }
+        Node(Object x, Node n) {
+            item = x;
+            next = n;
+        }
 
         Object getItem() {
             return item;
@@ -123,7 +130,6 @@ public class ConcurrentLinkedQueue extends AbstractQueue
         synchronized void setNext(Node val) {
             next = val;
         }
-
     }
 
     private boolean casTail(Node cmp, Node val) {
@@ -154,21 +160,25 @@ public class ConcurrentLinkedQueue extends AbstractQueue
      */
     private transient volatile Node head = new Node(null, null);
 
-    /** Pointer to last node on list **/
- private transient volatile Node tail = head;
+    /**
+     * Pointer to last node on list *
+     */
+    private transient volatile Node tail = head;
 
     /* *
      * Creates a <tt>ConcurrentLinkedQueue</tt> that is initially empty.
      */
-    public ConcurrentLinkedQueue() {}
+    public ConcurrentLinkedQueue() {
+    }
 
     /**
      * Creates a <tt>ConcurrentLinkedQueue</tt>
      * initially containing the elements of the given collection,
      * added in traversal order of the collection's iterator.
+     *
      * @param c the collection of elements to initially contain
      * @throws NullPointerException if the specified collection or any
-     * of its elements are null
+     *                              of its elements are null
      */
     public ConcurrentLinkedQueue(Collection c) {
         for (Iterator it = c.iterator(); it.hasNext();)
@@ -179,7 +189,7 @@ public class ConcurrentLinkedQueue extends AbstractQueue
 
     /**
      * Inserts the specified element at the tail of this queue.
-     * 
+     *
      * @return <tt>true</tt> (as specified by {@link Collection#add})
      * @throws NullPointerException if the specified element is null
      */
@@ -189,14 +199,14 @@ public class ConcurrentLinkedQueue extends AbstractQueue
 
     /**
      * Inserts the specified element at the tail of this queue.
-     * 
+     *
      * @return <tt>true</tt> (as specified by {@link Queue#offer})
      * @throws NullPointerException if the specified element is null
      */
     public boolean offer(Object e) {
         if (e == null) throw new NullPointerException();
         Node n = new Node(e, null);
-        for(;;) {
+        for (; ;) {
             Node t = tail;
             Node s = t.getNext();
             if (t == tail) {
@@ -213,7 +223,7 @@ public class ConcurrentLinkedQueue extends AbstractQueue
     }
 
     public Object poll() {
-        for (;;) {
+        for (; ;) {
             Node h = head;
             Node t = tail;
             Node first = h.getNext();
@@ -236,7 +246,7 @@ public class ConcurrentLinkedQueue extends AbstractQueue
     }
 
     public Object peek() { // same as poll except don't remove item
-        for (;;) {
+        for (; ;) {
             Node h = head;
             Node t = tail;
             Node first = h.getNext();
@@ -264,7 +274,7 @@ public class ConcurrentLinkedQueue extends AbstractQueue
      * introducing race.)
      */
     Node first() {
-        for (;;) {
+        for (; ;) {
             Node h = head;
             Node t = tail;
             Node first = h.getNext();
@@ -286,7 +296,7 @@ public class ConcurrentLinkedQueue extends AbstractQueue
 
     /**
      * Returns <tt>true</tt> if this queue contains no elements.
-     * 
+     *
      * @return <tt>true</tt> if this queue contains no elements
      */
     public boolean isEmpty() {
@@ -297,11 +307,11 @@ public class ConcurrentLinkedQueue extends AbstractQueue
      * Returns the number of elements in this queue. If this queue
      * contains more than <tt>Integer.MAX_VALUE</tt> elements, returns
      * <tt>Integer.MAX_VALUE</tt>.
-     *  Beware that, unlike in most collections, this method is
+     * Beware that, unlike in most collections, this method is
      * <em>NOT</em> a constant-time operation. Because of the
      * asynchronous nature of these queues, determining the current
      * number of elements requires an O(n) traversal.
-     * 
+     *
      * @return the number of elements in this queue
      */
     public int size() {
@@ -320,7 +330,7 @@ public class ConcurrentLinkedQueue extends AbstractQueue
      * Returns <tt>true</tt> if this queue contains the specified element.
      * More formally, returns <tt>true</tt> if and only if this queue contains
      * at least one element <tt>e</tt> such that <tt>o.equals(e)</tt>.
-     * 
+     *
      * @param o object to be checked for containment in this queue
      * @return <tt>true</tt> if this queue contains the specified element
      */
@@ -341,7 +351,7 @@ public class ConcurrentLinkedQueue extends AbstractQueue
      * elements.
      * Returns <tt>true</tt> if this queue contained the specified element
      * (or equivalently, if this queue changed as a result of the call).
-     * 
+     *
      * @param o element to be removed from this queue, if present
      * @return <tt>true</tt> if this queue changed as a result of the call
      */
@@ -362,7 +372,7 @@ public class ConcurrentLinkedQueue extends AbstractQueue
      * and guarantees to traverse elements as they existed upon
      * construction of the iterator, and may(but is not guaranteed to)
      * reflect any modifications subsequent to construction.
-     * 
+     *
      * @return an iterator over the elements in this queue in proper sequence
      */
     public Iterator iterator() {
@@ -370,6 +380,7 @@ public class ConcurrentLinkedQueue extends AbstractQueue
     }
 
     private class Itr implements Iterator {
+
         /**
          * Next node to return item for.
          */
@@ -401,7 +412,7 @@ public class ConcurrentLinkedQueue extends AbstractQueue
             Object x = nextItem;
 
             Node p = (nextNode == null) ? first() : nextNode.getNext();
-            for (;;) {
+            for (; ;) {
                 if (p == null) {
                     nextNode = null;
                     nextItem = null;
@@ -437,10 +448,10 @@ public class ConcurrentLinkedQueue extends AbstractQueue
 
     /**
      * Save the state to a stream(that is, serialize it).
-     * 
+     *
+     * @param s the stream
      * @serialData All of the elements(each an <tt>E</tt>) in
      * the proper order, followed by a null
-     * @param s the stream
      */
     private void writeObject(java.io.ObjectOutputStream s)
         throws java.io.IOException {
@@ -461,6 +472,7 @@ public class ConcurrentLinkedQueue extends AbstractQueue
 
     /**
      * Reconstitute the Queue instance from a stream(that is, deserialize it).
+     *
      * @param s the stream
      */
     private void readObject(java.io.ObjectInputStream s)
@@ -471,7 +483,7 @@ public class ConcurrentLinkedQueue extends AbstractQueue
         head = new Node(null, null);
         tail = head;
         // Read in all elements and place in queue
-        for (;;) {
+        for (; ;) {
             Object item = s.readObject();
             if (item == null)
                 break;
@@ -480,5 +492,7 @@ public class ConcurrentLinkedQueue extends AbstractQueue
         }
     }
 
-    private static class SerializableLock implements Serializable {}
+    private static class SerializableLock implements Serializable {
+
+    }
 }

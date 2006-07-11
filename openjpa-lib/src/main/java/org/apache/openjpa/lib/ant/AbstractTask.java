@@ -10,34 +10,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*********************************************************************
-
-**********************************************************************/
 package org.apache.openjpa.lib.ant;
 
-import java.io.*;
-import java.util.*;
-import org.apache.openjpa.lib.conf.*;
-import org.apache.openjpa.lib.util.*;
-import org.apache.tools.ant.*;
-import org.apache.tools.ant.taskdefs.*;
-import org.apache.tools.ant.types.*;
-import org.apache.tools.ant.util.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.tools.ant.AntClassLoader;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.taskdefs.MatchingTask;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Path;
+import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Ant tasks all have a nested <code>&lt;config&rt;</code> tag, which uses
  * the configuration as a bean-like task. E.g., you can do:
- * 
+ * <p/>
  * <code> &lt;mytask&rt;<br />
  * &nbsp;&nbsp;&lt;config licenseKey="key" connectionUserName="foo"/&rt;<br />
  * &lt;/mytask&rt;
  * </code>
- *  The defailt configuration for the system will be used if the
+ * The defailt configuration for the system will be used if the
  * <code>&lt;config&rt;</code> subtask is excluded.
- * 
+ *
  * @nojavadoc
  */
 public abstract class AbstractTask extends MatchingTask {
+
     static final Localizer _loc = Localizer.forPackage(AbstractTask.class);
 
     protected List fileSets = new ArrayList();
@@ -156,8 +159,8 @@ public abstract class AbstractTask extends MatchingTask {
 
     private String[] getFiles() {
         List files = new ArrayList();
-        for (Iterator i = fileSets.iterator(); i.hasNext(); ) {
-            FileSet fs = (FileSet)i.next();
+        for (Iterator i = fileSets.iterator(); i.hasNext();) {
+            FileSet fs = (FileSet) i.next();
             DirectoryScanner ds = fs.getDirectoryScanner(project);
 
             String[] dsFiles = ds.getIncludedFiles();
@@ -170,7 +173,7 @@ public abstract class AbstractTask extends MatchingTask {
             }
         }
 
-        return(String[]) files.toArray(new String[files.size()]);
+        return (String[]) files.toArray(new String[files.size()]);
     }
 }
 

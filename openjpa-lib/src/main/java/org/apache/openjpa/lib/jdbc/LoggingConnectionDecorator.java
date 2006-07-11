@@ -12,22 +12,42 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.io.*;
-import java.math.*;
-import java.sql.*;
+import java.io.InputStream;
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.sql.Array;
+import java.sql.BatchUpdateException;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.Date;
-import java.util.*;
-import javax.sql.*;
-import org.apache.openjpa.lib.log.*;
+import java.sql.PreparedStatement;
+import java.sql.Ref;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.openjpa.lib.log.Log;
 
 /**
  * A {@link ConnectionDecorator} that creates logging connections and
  * {@link ReportingSQLException}s.
- * 
+ *
  * @author Marc Prud'hommeaux
  * @nojavadoc
  */
 public class LoggingConnectionDecorator implements ConnectionDecorator {
+
     private static final String SEP = System.getProperty("line.separator");
 
     private static final int WARN_IGNORE = 0;
@@ -38,6 +58,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
     private static final int WARN_THROW = 5;
     private static final int WARN_HANDLE = 6;
     private static final String[] WARNING_ACTIONS = new String[7];
+
     static {
         WARNING_ACTIONS[WARN_IGNORE] = "ignore";
         WARNING_ACTIONS[WARN_LOG_TRACE] = "trace";
@@ -156,14 +177,14 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
     private SQLException wrap(SQLException sqle, Statement stmnt) {
         if (sqle instanceof ReportingSQLException)
-            return(ReportingSQLException)sqle;
+            return (ReportingSQLException) sqle;
 
         return new ReportingSQLException(sqle, stmnt);
     }
 
     private SQLException wrap(SQLException sqle, String sql) {
         if (sqle instanceof ReportingSQLException)
-            return(ReportingSQLException)sqle;
+            return (ReportingSQLException) sqle;
 
         return new ReportingSQLException(sqle, sql);
     }
@@ -184,10 +205,12 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
      * {@link SQLWarning}s occur.
      */
     public static interface SQLWarningHandler {
+
         public void handleWarning(SQLWarning warning) throws SQLException;
     }
 
     private class LoggingConnection extends DelegatingConnection {
+
         public LoggingConnection(Connection conn) throws SQLException {
             super(conn);
         }
@@ -339,7 +362,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             try {
                 PreparedStatement stmnt = super.prepareStatement
                     (sql, resultSetType, resultSetConcurrency,
-                    resultSetHoldability, false);
+                        resultSetHoldability, false);
                 handleSQLWarning();
                 return new LoggingPreparedStatement(stmnt, sql);
             } catch (SQLException se) {
@@ -383,13 +406,14 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
-        protected DatabaseMetaData getMetaData(boolean wrap) throws SQLException {
+        protected DatabaseMetaData getMetaData(boolean wrap)
+            throws SQLException {
             return new LoggingDatabaseMetaData(super.getMetaData(false));
         }
 
         /**
          * Handle any {@link SQLWarning}s on the current {@link Connection}.
-         * 
+         *
          * @see #handleSQLWarning(SQLWarning)
          */
         private void handleSQLWarning() throws SQLException {
@@ -406,7 +430,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
         /**
          * Handle any {@link SQLWarning}s on the specified {@link Statement}.
-         * 
+         *
          * @see #handleSQLWarning(SQLWarning)
          */
         private void handleSQLWarning(Statement stmnt) throws SQLException {
@@ -423,7 +447,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
         /**
          * Handle any {@link SQLWarning}s on the specified {@link ResultSet}.
-         * 
+         *
          * @see #handleSQLWarning(SQLWarning)
          */
         private void handleSQLWarning(ResultSet rs) throws SQLException {
@@ -441,7 +465,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         /**
          * Handle the specified {@link SQLWarning} depending on the
          * setting of the {@link #setWarningAction} attribute.
-         * 
+         *
          * @param warning the warning to handle
          */
         void handleSQLWarning(SQLWarning warning) throws SQLException {
@@ -451,39 +475,41 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 return;
 
             Log log = _logs.getJDBCLog();
-            for ( ; warning != null; warning = warning.getNextWarning()) {
+            for (; warning != null; warning = warning.getNextWarning()) {
                 switch (_warningAction) {
-                case WARN_LOG_TRACE:
-                    if (log.isTraceEnabled())
-                        log.trace(warning);
-                    break;
-                case WARN_LOG_INFO:
-                    if (log.isInfoEnabled())
-                        log.info(warning);
-                    break;
-                case WARN_LOG_WARN:
-                    if (log.isWarnEnabled())
-                        log.warn(warning);
-                    break;
-                case WARN_LOG_ERROR:
-                    if (log.isErrorEnabled())
-                        log.error(warning);
-                    break;
-                case WARN_THROW:
-                    // just throw it as if it were a SQLException
-                    throw warning;
-                case WARN_HANDLE:
-                    if (_warningHandler != null)
-                        _warningHandler.handleWarning(warning);
-                    break;
-                default:
-                    // ignore
-                    break;
+                    case WARN_LOG_TRACE:
+                        if (log.isTraceEnabled())
+                            log.trace(warning);
+                        break;
+                    case WARN_LOG_INFO:
+                        if (log.isInfoEnabled())
+                            log.info(warning);
+                        break;
+                    case WARN_LOG_WARN:
+                        if (log.isWarnEnabled())
+                            log.warn(warning);
+                        break;
+                    case WARN_LOG_ERROR:
+                        if (log.isErrorEnabled())
+                            log.error(warning);
+                        break;
+                    case WARN_THROW:
+                        // just throw it as if it were a SQLException
+                        throw warning;
+                    case WARN_HANDLE:
+                        if (_warningHandler != null)
+                            _warningHandler.handleWarning(warning);
+                        break;
+                    default:
+                        // ignore
+                        break;
                 }
             }
         }
 
-        private class LoggingDatabaseMetaData extends DelegatingDatabaseMetaData {
+        private class LoggingDatabaseMetaData
+            extends DelegatingDatabaseMetaData {
+
             public LoggingDatabaseMetaData(DatabaseMetaData meta) {
                 super(meta, LoggingConnection.this);
             }
@@ -662,6 +688,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
          * remembers the last piece of SQL to be executed on it.
          */
         private class LoggingStatement extends DelegatingStatement {
+
             private String _sql = null;
 
             public LoggingStatement(Statement stmnt) throws SQLException {
@@ -749,6 +776,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
         private class LoggingPreparedStatement
             extends DelegatingPreparedStatement {
+
             private final String _sql;
             private List _params = null;
             private List _paramBatch = null;
@@ -826,7 +854,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 }
             }
 
-            public int executeUpdate  () throws SQLException {
+            public int executeUpdate() throws SQLException {
                 long start = System.currentTimeMillis();
 
                 try {
@@ -854,9 +882,10 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     // show the correct param
                     if (se instanceof BatchUpdateException
                         && _paramBatch != null && shouldTrackParameters()) {
-                        int[] count = ((BatchUpdateException)se).
+                        int[] count = ((BatchUpdateException) se).
                             getUpdateCounts();
-                        if (count != null && count.length <= _paramBatch.size()) {
+                        if (count != null && count.length <= _paramBatch.size())
+                        {
                             int index = -1;
                             for (int i = 0; i < count.length; i++) {
                                 // -3 is Statement.STATEMENT_FAILED, but is
@@ -875,7 +904,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
                             // set the current params to the saved values
                             if (index < _paramBatch.size())
-                                _params = (List)_paramBatch.get(index);
+                                _params = (List) _paramBatch.get(index);
                         }
                     }
                     throw wrap(se, LoggingPreparedStatement.this);
@@ -922,7 +951,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
             public void setByte(int i, byte b) throws SQLException {
                 setLogParameter(i, b);
-                super.setByte(i,b);
+                super.setByte(i, b);
             }
 
             public void setShort(int i, short s) throws SQLException {
@@ -950,7 +979,8 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 super.setDouble(i, d);
             }
 
-            public void setBigDecimal(int i, BigDecimal bd) throws SQLException {
+            public void setBigDecimal(int i, BigDecimal bd)
+                throws SQLException {
                 setLogParameter(i, "BigDecimal", bd);
                 super.setBigDecimal(i, bd);
             }
@@ -1009,7 +1039,8 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 super.setObject(i1, o, i2, i3);
             }
 
-            public void setObject(int i1, Object o, int i2) throws SQLException {
+            public void setObject(int i1, Object o, int i2)
+                throws SQLException {
                 setLogParameter(i1, "Object", o);
                 super.setObject(i1, o, i2);
             }
@@ -1189,6 +1220,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         }
 
         private class LoggingResultSet extends DelegatingResultSet {
+
             public LoggingResultSet(ResultSet rs, Statement stmnt) {
                 super(rs, stmnt);
             }

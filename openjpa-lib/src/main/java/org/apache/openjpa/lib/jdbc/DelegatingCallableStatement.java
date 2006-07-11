@@ -12,26 +12,42 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.io.*;
-import java.math.*;
-import java.net.*;
-import java.sql.*;
+import java.io.InputStream;
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.CallableStatement;
+import java.sql.Clob;
+import java.sql.Connection;
 import java.sql.Date;
-import java.util.*;
-import org.apache.openjpa.lib.util.*;
+import java.sql.Ref;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Map;
+
 import org.apache.openjpa.lib.util.Closeable;
 
 /**
  * {@link CallableStatement} that delegates to an internal statement.
- * 
+ *
  * @author Abe White
  */
-public class DelegatingCallableStatement implements CallableStatement, Closeable {
+public class DelegatingCallableStatement
+    implements CallableStatement, Closeable {
+
     private final CallableStatement _stmnt;
     private final DelegatingCallableStatement _del;
     private final Connection _conn;
 
-    public DelegatingCallableStatement(CallableStatement stmnt, Connection conn) {
+    public DelegatingCallableStatement(CallableStatement stmnt,
+        Connection conn) {
         _conn = conn;
         _stmnt = stmnt;
         if (_stmnt instanceof DelegatingCallableStatement)
@@ -62,7 +78,7 @@ public class DelegatingCallableStatement implements CallableStatement, Closeable
      * Return the base underlying data store statement.
      */
     public CallableStatement getInnermostDelegate() {
-        return(_del == null) ? _stmnt : _del.getInnermostDelegate();
+        return (_del == null) ? _stmnt : _del.getInnermostDelegate();
     }
 
     public int hashCode() {
@@ -248,7 +264,7 @@ public class DelegatingCallableStatement implements CallableStatement, Closeable
         return wrapResult(wrap, rs);
     }
 
-    public int executeUpdate  () throws SQLException {
+    public int executeUpdate() throws SQLException {
         return _stmnt.executeUpdate();
     }
 
@@ -327,7 +343,8 @@ public class DelegatingCallableStatement implements CallableStatement, Closeable
         _stmnt.clearParameters();
     }
 
-    public void setObject(int i1, Object o, int i2, int i3) throws SQLException {
+    public void setObject(int i1, Object o, int i2, int i3)
+        throws SQLException {
         _stmnt.setObject(i1, o, i2, i3);
     }
 
@@ -347,7 +364,8 @@ public class DelegatingCallableStatement implements CallableStatement, Closeable
         _stmnt.addBatch();
     }
 
-    public void setCharacterStream(int i1, Reader r, int i2) throws SQLException {
+    public void setCharacterStream(int i1, Reader r, int i2)
+        throws SQLException {
         _stmnt.setCharacterStream(i1, r, i2);
     }
 
@@ -379,7 +397,8 @@ public class DelegatingCallableStatement implements CallableStatement, Closeable
         _stmnt.setTime(i, t, c);
     }
 
-    public void setTimestamp(int i, Timestamp t, Calendar c) throws SQLException {
+    public void setTimestamp(int i, Timestamp t, Calendar c)
+        throws SQLException {
         _stmnt.setTimestamp(i, t, c);
     }
 
@@ -442,7 +461,8 @@ public class DelegatingCallableStatement implements CallableStatement, Closeable
         _stmnt.registerOutParameter(i1, i2);
     }
 
-    public void registerOutParameter(int i1, int i2, int i3) throws SQLException {
+    public void registerOutParameter(int i1, int i2, int i3)
+        throws SQLException {
         _stmnt.registerOutParameter(i1, i2, i3);
     }
 
@@ -642,7 +662,8 @@ public class DelegatingCallableStatement implements CallableStatement, Closeable
         throw new UnsupportedOperationException();
     }
 
-    public void setObject(String a, Object b, int c, int d) throws SQLException {
+    public void setObject(String a, Object b, int c, int d)
+        throws SQLException {
         throw new UnsupportedOperationException();
     }
 

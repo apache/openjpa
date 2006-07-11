@@ -12,17 +12,22 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.io.*;
-import java.util.*;
-import org.apache.commons.collections.set.*;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import org.apache.commons.collections.set.MapBackedSet;
 
 /**
  * A set whose values may be stored as weak or soft references.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class ReferenceHashSet implements Set, Serializable {
+
     /**
      * Hard reference marker.
      */
@@ -55,7 +60,7 @@ public class ReferenceHashSet implements Set, Serializable {
             _set = MapBackedSet.decorate(new org.apache.commons.
                 collections.map.ReferenceMap(mapRefType,
                 org.apache.commons.collections.map.
-                ReferenceMap.HARD), DUMMY_VAL);
+                    ReferenceMap.HARD), DUMMY_VAL);
         }
     }
 

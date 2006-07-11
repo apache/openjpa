@@ -12,14 +12,15 @@
  */
 package serp.bytecode;
 
-import serp.bytecode.visitor.*;
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * Stores a value from the stack into a field.
- * 
+ *
  * @author Abe White
  */
 public class PutFieldInstruction extends FieldInstruction {
+
     PutFieldInstruction(Code owner, int opcode) {
         super(owner, opcode);
     }

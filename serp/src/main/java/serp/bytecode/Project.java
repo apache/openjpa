@@ -12,28 +12,34 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import serp.bytecode.visitor.BCVisitor;
+import serp.bytecode.visitor.VisitAcceptor;
+import serp.util.Strings;
 
 /**
  * The Project represents a working set of classes. It caches parsed
  * bytecode and is responsible for bytecode class creation. Currently
  * changes made in one class are <strong>not</strong> reflected in other
  * classes, though this will be an option in the future.
- *  Bytecode that has been parsed is held in a cache so that retrieving
+ * Bytecode that has been parsed is held in a cache so that retrieving
  * a class with the same name multiple times always returns the same
  * {@link BCClass} instance.
- *  A future goal is to eventually have facilities for traversing jars
+ * A future goal is to eventually have facilities for traversing jars
  * or directory structures to find classes that meet a given criteria(such
  * as implementing a given interface, etc) and to perform operations on entire
  * projects, similar to aspect-oriented programming.
- * 
+ *
  * @author Abe White
  */
 public class Project implements VisitAcceptor {
+
     private final String _name;
     private final HashMap _cache = new HashMap();
     private final NameCache _names = new NameCache();
@@ -69,7 +75,7 @@ public class Project implements VisitAcceptor {
 
     /**
      * Load a class with the given name.
-     * 
+     *
      * @see #loadClass(String,ClassLoader)
      */
     public BCClass loadClass(String name) {
@@ -84,11 +90,11 @@ public class Project implements VisitAcceptor {
      * type, the returned instance will contain the parsed bytecode for
      * that type. If the name is of a primitive or array type, the returned
      * instance will act accordingly.
-     * 
-     * @param name the name of the class, including package
+     *
+     * @param name   the name of the class, including package
      * @param loader the class loader to use to search for an existing
-     * class with the given name; if null defaults to the
-     * context loader of the current thread
+     *               class with the given name; if null defaults to the
+     *               context loader of the current thread
      * @throws RuntimeException on parse error
      */
     public BCClass loadClass(String name, ClassLoader loader) {
@@ -127,7 +133,7 @@ public class Project implements VisitAcceptor {
      * class will be parsed and returned as a new {@link BCClass}. If the
      * given class is an array or primitive type, the returned instance will
      * act accordingly.
-     * 
+     *
      * @param type the class to parse
      * @throws RuntimeException on parse error
      */
@@ -160,7 +166,7 @@ public class Project implements VisitAcceptor {
      * If this project already contains the class in the given file, it will
      * be returned. Otherwise a new {@link BCClass} will be created from the
      * given bytecode.
-     * 
+     *
      * @throws RuntimeException on parse error
      */
     public BCClass loadClass(File classFile) {
@@ -172,7 +178,7 @@ public class Project implements VisitAcceptor {
      * If this project already contains the class in the given file, it will
      * be returned. Otherwise a new {@link BCClass} will be created from the
      * given bytecode.
-     * 
+     *
      * @throws RuntimeException on parse error
      */
     public BCClass loadClass(File classFile, ClassLoader loader) {
@@ -199,7 +205,7 @@ public class Project implements VisitAcceptor {
      * If this project already contains the class in the given stream,
      * it will be returned. Otherwise a new {@link BCClass} will be created
      * from the given bytecode.
-     * 
+     *
      * @throws RuntimeException on parse error
      */
     public BCClass loadClass(InputStream in) {
@@ -211,7 +217,7 @@ public class Project implements VisitAcceptor {
      * If this project already contains the class in the given stream,
      * it will be returned. Otherwise a new {@link BCClass} will be created
      * from the given bytecode.
-     * 
+     *
      * @throws RuntimeException on parse error
      */
     public BCClass loadClass(InputStream in, ClassLoader loader) {
@@ -276,7 +282,7 @@ public class Project implements VisitAcceptor {
     /**
      * Remove a class from this project. After removal, the result of any
      * further operations on the class is undefined.
-     * 
+     *
      * @return true if the class belonged to this project, false otherwise
      */
     public boolean removeClass(String type) {
@@ -286,7 +292,7 @@ public class Project implements VisitAcceptor {
     /**
      * Remove a class from this project. After removal, the result of any
      * further operations on the class is undefined.
-     * 
+     *
      * @return true if the class belonged to this project, false otherwise
      */
     public boolean removeClass(Class type) {
@@ -298,7 +304,7 @@ public class Project implements VisitAcceptor {
     /**
      * Remove a class from this project. After removal, the result of any
      * further operations on the class is undefined.
-     * 
+     *
      * @return true if the class belonged to this project, false otherwise
      */
     public boolean removeClass(BCClass type) {
@@ -316,7 +322,7 @@ public class Project implements VisitAcceptor {
      */
     public BCClass[] getClasses() {
         Collection values = _cache.values();
-        return(BCClass[]) values.toArray(new BCClass[values.size()]);
+        return (BCClass[]) values.toArray(new BCClass[values.size()]);
     }
 
     /**
@@ -330,14 +336,14 @@ public class Project implements VisitAcceptor {
      * Return true if the project already contains the given class.
      */
     public boolean containsClass(Class type) {
-        return(type == null) ? false : containsClass(type.getName());
+        return (type == null) ? false : containsClass(type.getName());
     }
 
     /**
      * Return true if the project already contains the given class.
      */
     public boolean containsClass(BCClass type) {
-        return(type == null) ? false : containsClass(type.getName());
+        return (type == null) ? false : containsClass(type.getName());
     }
 
     public void acceptVisit(BCVisitor visit) {
@@ -353,7 +359,7 @@ public class Project implements VisitAcceptor {
     /**
      * Renames the given class within this project. Used internally by
      * {@link BCClass} instances when their name is modified.
-     * 
+     *
      * @throws IllegalStateException if a class with the new name already exists
      */
     void renameClass(String oldName, String newName, BCClass bc) {
@@ -373,7 +379,7 @@ public class Project implements VisitAcceptor {
      * Check the cache for a loaded type.
      */
     private BCClass checkCache(String name) {
-        return(BCClass) _cache.get(name);
+        return (BCClass) _cache.get(name);
     }
 
     /**

@@ -12,20 +12,26 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * The <code>tableswitch</code> instruction.
- * 
+ *
  * @author Abe White
  */
 public class TableSwitchInstruction extends JumpInstruction {
+
     // case info
     private int _low = 0;
     private int _high = 0;
-    private List    _cases      = new LinkedList();
+    private List _cases = new LinkedList();
 
     TableSwitchInstruction(Code owner) {
         super(owner, Constants.TABLESWITCH);
@@ -38,8 +44,8 @@ public class TableSwitchInstruction extends JumpInstruction {
     public int[] getOffsets() {
         int bi = getByteIndex();
         int[] offsets = new int[_cases.size()];
-        for (int i=0; i < _cases.size(); i++)
-            offsets [i] = ((InstructionPtrStrategy) _cases.get(i)).
+        for (int i = 0; i < _cases.size(); i++)
+            offsets[i] = ((InstructionPtrStrategy) _cases.get(i)).
                 getByteIndex() - bi;
         return offsets;
     }
@@ -70,7 +76,7 @@ public class TableSwitchInstruction extends JumpInstruction {
         // make the first byte of the 'default' a multiple of 4 from the
         // start of the method
         int byteIndex = getByteIndex() + 1;
-        for (; byteIndex % 4 != 0; byteIndex++, length++);
+        for (; byteIndex % 4 != 0; byteIndex++, length++) ;
 
         // default, low, high
         length += 12;
@@ -92,7 +98,7 @@ public class TableSwitchInstruction extends JumpInstruction {
      * Synonymous with {@link #setTarget}.
      */
     public TableSwitchInstruction setDefaultTarget(Instruction ins) {
-        return(TableSwitchInstruction) setTarget(ins);
+        return (TableSwitchInstruction) setTarget(ins);
     }
 
     /**
@@ -133,28 +139,28 @@ public class TableSwitchInstruction extends JumpInstruction {
      */
     public Instruction[] getTargets() {
         Instruction[] result = new Instruction [_cases.size()];
-        for (int i=0; i < _cases.size(); i++)
-            result [i] = ((InstructionPtrStrategy) _cases.get(i)).
+        for (int i = 0; i < _cases.size(); i++)
+            result[i] = ((InstructionPtrStrategy) _cases.get(i)).
                 getTargetInstruction();
         return result;
     }
 
     /**
      * Set the jump points for this switch.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public TableSwitchInstruction setTargets(Instruction[] targets) {
         _cases.clear();
         if (targets != null)
             for (int i = 0; i < targets.length; i++)
-                addTarget(targets [i]);
+                addTarget(targets[i]);
         return this;
     }
 
     /**
      * Add a target to this switch.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public TableSwitchInstruction addTarget(Instruction target) {

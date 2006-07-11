@@ -12,8 +12,8 @@
  */
 package serp.bytecode;
 
-import java.util.*;
-import serp.bytecode.lowlevel.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Pseudo-instruction used to place {@link Class} objects onto the stack.
@@ -22,12 +22,14 @@ import serp.bytecode.lowlevel.*;
  * Therefore, once the type of class being loaded is set, it cannot
  * be changed. Also, this instruction is invalid as the target of
  * any jump instruction or exception handler.
- * 
+ *
  * @author Abe White
  */
 public class ClassConstantInstruction {
-    private static final Class[] _params = new Class[] { String.class };
+
+    private static final Class[] _params = new Class[]{ String.class };
     private static final Map _wrappers = new HashMap();
+
     static {
         _wrappers.put(byte.class.getName(), Byte.class);
         _wrappers.put(boolean.class.getName(), Boolean.class);
@@ -52,7 +54,7 @@ public class ClassConstantInstruction {
 
     /**
      * Set the type of class being loaded.
-     * 
+     *
      * @return the first Instruction of the block added by setting the type
      * @throws IllegalStateException if type has already been set
      */
@@ -64,7 +66,7 @@ public class ClassConstantInstruction {
 
     /**
      * Set the type of class being loaded.
-     * 
+     *
      * @return the first Instruction of the block added by setting the type
      * @throws IllegalStateException if type has already been set
      */
@@ -74,7 +76,7 @@ public class ClassConstantInstruction {
 
     /**
      * Set the type of class being loaded.
-     * 
+     *
      * @return the first Instruction of the block added by setting the type
      * @throws IllegalStateException if type has already been set
      */
@@ -195,6 +197,6 @@ public class ClassConstantInstruction {
     private static Class getWrapperClass(String name) {
         if (name == null)
             return null;
-        return(Class) _wrappers.get(name);
+        return (Class) _wrappers.get(name);
     }
 }

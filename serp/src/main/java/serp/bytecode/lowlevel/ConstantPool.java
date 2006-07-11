@@ -12,10 +12,18 @@
  */
 package serp.bytecode.lowlevel;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import serp.bytecode.visitor.BCVisitor;
+import serp.bytecode.visitor.VisitAcceptor;
+import serp.util.Numbers;
 
 /**
  * A bytecode constant pool, containing entries for all strings,
@@ -23,10 +31,11 @@ import serp.util.*;
  * opcodes. In keeping with the low-level bytecode representation, all pool
  * indexes are 1-based and {@link LongEntry}s and {@link DoubleEntry}s each
  * occupy two indexes in the pool.
- * 
+ *
  * @author Abe White
  */
 public class ConstantPool implements VisitAcceptor {
+
     private List _entries = new ArrayList(50);
     private Map _lookup = new HashMap(50);
 
@@ -47,15 +56,15 @@ public class ConstantPool implements VisitAcceptor {
             if (entry != null)
                 entries.add(entry);
         }
-        return(Entry[]) entries.toArray(new Entry[entries.size()]);
+        return (Entry[]) entries.toArray(new Entry[entries.size()]);
     }
 
     /**
      * Retrieve the entry at the specified 1-based index.
-     * 
+     *
      * @throws IndexOutOfBoundsException if index is invalid,
-     * including the case that it points to the second slot of a
-     * long or double entry
+     *                                   including the case that it points to the second slot of a
+     *                                   long or double entry
      */
     public Entry getEntry(int index) {
         Entry entry = (Entry) _entries.get(index - 1);
@@ -75,7 +84,7 @@ public class ConstantPool implements VisitAcceptor {
 
     /**
      * Add an entry to the pool.
-     * 
+     *
      * @return the index at which the entry was added
      */
     public int addEntry(Entry entry) {
@@ -100,7 +109,7 @@ public class ConstantPool implements VisitAcceptor {
 
     /**
      * Remove the given entry from the pool.
-     * 
+     *
      * @return false if the entry is not in the pool, true otherwise
      */
     public boolean removeEntry(Entry entry) {
@@ -158,9 +167,9 @@ public class ConstantPool implements VisitAcceptor {
     /**
      * Return the index of the {@link UTF8Entry} with the given value, or
      * 0 if it does not exist.
-     * 
+     *
      * @param add if true, the entry will be added if it does not
-     * already exist, and the new entry's index returned
+     *            already exist, and the new entry's index returned
      */
     public int findUTF8Entry(String value, boolean add) {
         if (value == null) {
@@ -178,10 +187,10 @@ public class ConstantPool implements VisitAcceptor {
     /**
      * Return the constant pool index of the {@link DoubleEntry} for the given
      * value, or 0 if it does not exist.
-     * 
+     *
      * @param value the value to find
-     * @param add if true, the entry will be added if it does not
-     * already exist, and the new entry's index returned
+     * @param add   if true, the entry will be added if it does not
+     *              already exist, and the new entry's index returned
      */
     public int findDoubleEntry(double value, boolean add) {
         Double key = new Double(value);
@@ -194,10 +203,10 @@ public class ConstantPool implements VisitAcceptor {
     /**
      * Return the constant pool index of the {@link FloatEntry} for the given
      * value, or 0 if it does not exist.
-     * 
+     *
      * @param value the value to find
-     * @param add if true, the entry will be added if it does not
-     * already exist, and the new entry's index returned
+     * @param add   if true, the entry will be added if it does not
+     *              already exist, and the new entry's index returned
      */
     public int findFloatEntry(float value, boolean add) {
         Float key = new Float(value);
@@ -210,10 +219,10 @@ public class ConstantPool implements VisitAcceptor {
     /**
      * Return the constant pool index of the {@link IntEntry} for the given
      * value, or 0 if it does not exist.
-     * 
+     *
      * @param value the value to find
-     * @param add if true, the entry will be added if it does not
-     * already exist, and the new entry's index returned
+     * @param add   if true, the entry will be added if it does not
+     *              already exist, and the new entry's index returned
      */
     public int findIntEntry(int value, boolean add) {
         Integer key = Numbers.valueOf(value);
@@ -226,10 +235,10 @@ public class ConstantPool implements VisitAcceptor {
     /**
      * Return the constant pool index of the {@link LongEntry} for the given
      * value, or 0 if it does not exist.
-     * 
+     *
      * @param value the value to find
-     * @param add if true, the entry will be added if it does not
-     * already exist, and the new entry's index returned
+     * @param add   if true, the entry will be added if it does not
+     *              already exist, and the new entry's index returned
      */
     public int findLongEntry(long value, boolean add) {
         Long key = Numbers.valueOf(value);
@@ -242,10 +251,10 @@ public class ConstantPool implements VisitAcceptor {
     /**
      * Return the constant pool index of the {@link StringEntry} for the given
      * string value, or 0 if it does not exist.
-     * 
+     *
      * @param value the value to find
-     * @param add if true, the entry will be added if it does not
-     * already exist, and the new entry's index returned
+     * @param add   if true, the entry will be added if it does not
+     *              already exist, and the new entry's index returned
      */
     public int findStringEntry(String value, boolean add) {
         int valueIndex = findUTF8Entry(value, add);
@@ -262,10 +271,10 @@ public class ConstantPool implements VisitAcceptor {
     /**
      * Return the constant pool index of the {@link ClassEntry} for the given
      * class name, or 0 if it does not exist.
-     * 
+     *
      * @param name the class name in internal form
-     * @param add if true, the entry will be added if it does not
-     * already exist, and the new entry's index returned
+     * @param add  if true, the entry will be added if it does not
+     *             already exist, and the new entry's index returned
      */
     public int findClassEntry(String name, boolean add) {
         int nameIndex = findUTF8Entry(name, add);
@@ -282,11 +291,11 @@ public class ConstantPool implements VisitAcceptor {
     /**
      * Return the constant pool index of the {@link NameAndTypeEntry} for the
      * given name and descriptor, or 0 if it does not exist.
-     * 
+     *
      * @param name the name of the entity
      * @param desc the descriptor of the entity in internal form
-     * @param add if true, the entry will be added if it does not
-     * already exist, and the new entry's index returned
+     * @param add  if true, the entry will be added if it does not
+     *             already exist, and the new entry's index returned
      */
     public int findNameAndTypeEntry(String name, String desc, boolean add) {
         int nameIndex = findUTF8Entry(name, add);
@@ -306,12 +315,12 @@ public class ConstantPool implements VisitAcceptor {
     /**
      * Return the constant pool index of the {@link FieldEntry} for the
      * given name, descriptor, and owner class name.
-     * 
+     *
      * @param owner the name of the field's owning class in internal form
-     * @param name the name of the field
-     * @param desc the descriptor of the field in internal form
-     * @param add if true, the entry will be added if it does not
-     * already exist, and the new entry's index returned
+     * @param name  the name of the field
+     * @param desc  the descriptor of the field in internal form
+     * @param add   if true, the entry will be added if it does not
+     *              already exist, and the new entry's index returned
      */
     public int findFieldEntry(String owner, String name, String desc,
         boolean add) {
@@ -321,12 +330,12 @@ public class ConstantPool implements VisitAcceptor {
     /**
      * Return the constant pool index of the {@link MethodEntry} for the
      * given name, descriptor, and owner class name.
-     * 
+     *
      * @param owner the name of the method's owning class in internal form
-     * @param name the name of the method
-     * @param desc the descriptor of the method in internal form
-     * @param add if true, the entry will be added if it does not
-     * already exist, and the new entry's index returned
+     * @param name  the name of the method
+     * @param desc  the descriptor of the method in internal form
+     * @param add   if true, the entry will be added if it does not
+     *              already exist, and the new entry's index returned
      */
     public int findMethodEntry(String owner, String name, String desc,
         boolean add) {
@@ -336,12 +345,12 @@ public class ConstantPool implements VisitAcceptor {
     /**
      * Return the constant pool index of the {@link InterfaceMethodEntry} for
      * the given name, descriptor, and owner class name.
-     * 
+     *
      * @param owner the name of the method's owning class in internal form
-     * @param name the name of the method
-     * @param desc the descriptor of the method in internal form
-     * @param add if true, the entry will be added if it does not
-     * already exist, and the new entry's index returned
+     * @param name  the name of the method
+     * @param desc  the descriptor of the method in internal form
+     * @param add   if true, the entry will be added if it does not
+     *              already exist, and the new entry's index returned
      */
     public int findInterfaceMethodEntry(String owner, String name, String desc,
         boolean add) {
@@ -351,13 +360,13 @@ public class ConstantPool implements VisitAcceptor {
     /**
      * Return the constant pool index of the {@link ComplexEntry} for the
      * given name, descriptor, and owner class name.
-     * 
+     *
      * @param owner the name of the owning class in internal form
-     * @param name the name of the entity
-     * @param desc the descriptor of the entity in internal form
-     * @param type the type of entry: field, method, interface method
-     * @param add if true, the entry will be added if it does not
-     * already exist, and the new entry's index returned
+     * @param name  the name of the entity
+     * @param desc  the descriptor of the entity in internal form
+     * @param type  the type of entry: field, method, interface method
+     * @param add   if true, the entry will be added if it does not
+     *              already exist, and the new entry's index returned
      */
     private int findComplexEntry(String owner, String name, String desc,
         int type, boolean add) {
@@ -370,15 +379,15 @@ public class ConstantPool implements VisitAcceptor {
 
         Object key = null;
         switch (type) {
-        case Entry.FIELD:
-            key = new FieldKey(classIndex, descIndex);
-            break;
-        case Entry.METHOD:
-            key = new MethodKey(classIndex, descIndex);
-            break;
-        case Entry.INTERFACEMETHOD:
-            key = new InterfaceMethodKey(classIndex, descIndex);
-            break;
+            case Entry.FIELD:
+                key = new FieldKey(classIndex, descIndex);
+                break;
+            case Entry.METHOD:
+                key = new MethodKey(classIndex, descIndex);
+                break;
+            case Entry.INTERFACEMETHOD:
+                key = new InterfaceMethodKey(classIndex, descIndex);
+                break;
         }
         int index = find(key);
         if (!add || index > 0)
@@ -386,15 +395,15 @@ public class ConstantPool implements VisitAcceptor {
 
         Entry entry = null;
         switch (type) {
-        case Entry.FIELD:
-            entry = new FieldEntry(classIndex, descIndex);
-            break;
-        case Entry.METHOD:
-            entry = new MethodEntry(classIndex, descIndex);
-            break;
-        case Entry.INTERFACEMETHOD:
-            entry = new InterfaceMethodEntry(classIndex, descIndex);
-            break;
+            case Entry.FIELD:
+                entry = new FieldEntry(classIndex, descIndex);
+                break;
+            case Entry.METHOD:
+                entry = new MethodEntry(classIndex, descIndex);
+                break;
+            case Entry.INTERFACEMETHOD:
+                entry = new InterfaceMethodEntry(classIndex, descIndex);
+                break;
         }
         return addEntry(key, entry);
     }
@@ -470,32 +479,34 @@ public class ConstantPool implements VisitAcceptor {
      */
     static Object getKey(Entry entry) {
         switch (entry.getType()) {
-        case Entry.CLASS:
-            return new ClassKey(((ClassEntry) entry).getNameIndex());
-        case Entry.FIELD:
-            FieldEntry fe = (FieldEntry) entry;
-            return new FieldKey(fe.getClassIndex(), fe.getNameAndTypeIndex());
-        case Entry.METHOD:
-            MethodEntry me = (MethodEntry) entry;
-            return new MethodKey(me.getClassIndex(), me.getNameAndTypeIndex());
-        case Entry.INTERFACEMETHOD:
-            InterfaceMethodEntry ime = (InterfaceMethodEntry) entry;
-            return new InterfaceMethodKey(ime.getClassIndex(),
-                ime.getNameAndTypeIndex());
-        case Entry.STRING:
-            return new StringKey(((StringEntry) entry).getStringIndex());
-        case Entry.INT:
-        case Entry.FLOAT:
-        case Entry.LONG:
-        case Entry.DOUBLE:
-        case Entry.UTF8:
-            return((ConstantEntry) entry).getConstant();
-        case Entry.NAMEANDTYPE:
-            NameAndTypeEntry nte = (NameAndTypeEntry) entry;
-            return new NameAndTypeKey(nte.getNameIndex(),
-                nte.getDescriptorIndex());
-        default:
-            return null;
+            case Entry.CLASS:
+                return new ClassKey(((ClassEntry) entry).getNameIndex());
+            case Entry.FIELD:
+                FieldEntry fe = (FieldEntry) entry;
+                return new FieldKey(fe.getClassIndex(),
+                    fe.getNameAndTypeIndex());
+            case Entry.METHOD:
+                MethodEntry me = (MethodEntry) entry;
+                return new MethodKey(me.getClassIndex(),
+                    me.getNameAndTypeIndex());
+            case Entry.INTERFACEMETHOD:
+                InterfaceMethodEntry ime = (InterfaceMethodEntry) entry;
+                return new InterfaceMethodKey(ime.getClassIndex(),
+                    ime.getNameAndTypeIndex());
+            case Entry.STRING:
+                return new StringKey(((StringEntry) entry).getStringIndex());
+            case Entry.INT:
+            case Entry.FLOAT:
+            case Entry.LONG:
+            case Entry.DOUBLE:
+            case Entry.UTF8:
+                return ((ConstantEntry) entry).getConstant();
+            case Entry.NAMEANDTYPE:
+                NameAndTypeEntry nte = (NameAndTypeEntry) entry;
+                return new NameAndTypeKey(nte.getNameIndex(),
+                    nte.getDescriptorIndex());
+            default:
+                return null;
         }
     }
 
@@ -503,6 +514,7 @@ public class ConstantPool implements VisitAcceptor {
      * Base class key for entries with one ptr to another entry.
      */
     private static abstract class PtrKey {
+
         private final int _index;
 
         public PtrKey(int index) {
@@ -518,7 +530,7 @@ public class ConstantPool implements VisitAcceptor {
                 return true;
             if (other.getClass() != getClass())
                 return false;
-            return((PtrKey) other)._index == _index;
+            return ((PtrKey) other)._index == _index;
         }
     }
 
@@ -526,6 +538,7 @@ public class ConstantPool implements VisitAcceptor {
      * Key for string entries.
      */
     private static class StringKey extends PtrKey {
+
         public StringKey(int index) {
             super(index);
         }
@@ -535,6 +548,7 @@ public class ConstantPool implements VisitAcceptor {
      * Key for class entries.
      */
     private static class ClassKey extends PtrKey {
+
         public ClassKey(int index) {
             super(index);
         }
@@ -544,6 +558,7 @@ public class ConstantPool implements VisitAcceptor {
      * Base class key for entries with two ptr to other entries.
      */
     private static abstract class DoublePtrKey {
+
         private final int _index1;
         private final int _index2;
 
@@ -571,6 +586,7 @@ public class ConstantPool implements VisitAcceptor {
      * Key for name and type entries.
      */
     private static class NameAndTypeKey extends DoublePtrKey {
+
         public NameAndTypeKey(int index1, int index2) {
             super(index1, index2);
         }
@@ -580,6 +596,7 @@ public class ConstantPool implements VisitAcceptor {
      * Key for field entries.
      */
     private static class FieldKey extends DoublePtrKey {
+
         public FieldKey(int index1, int index2) {
             super(index1, index2);
         }
@@ -589,6 +606,7 @@ public class ConstantPool implements VisitAcceptor {
      * Key for method entries.
      */
     private static class MethodKey extends DoublePtrKey {
+
         public MethodKey(int index1, int index2) {
             super(index1, index2);
         }
@@ -598,6 +616,7 @@ public class ConstantPool implements VisitAcceptor {
      * Key for interface method entries.
      */
     private static class InterfaceMethodKey extends DoublePtrKey {
+
         public InterfaceMethodKey(int index1, int index2) {
             super(index1, index2);
         }

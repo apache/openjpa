@@ -12,14 +12,13 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-
 /**
  * Tests the {@link SoftRandomAccessResultList}.
- * 
+ *
  * @author Abe White
  */
 public class TestSoftRandomAccessResultList extends ResultListTest {
+
     public TestSoftRandomAccessResultList(String test) {
         super(test);
     }

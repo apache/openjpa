@@ -12,16 +12,17 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Utilities for dealing with different Java spec versions.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class JavaVersions {
+
     /**
      * Java version; one of 2, 3, 4, 5, 6, or 7.
      */
@@ -68,11 +69,11 @@ public class JavaVersions {
                 GET_STACK = Throwable.class.getMethod("getStackTrace",
                     (Class[]) null);
                 SET_STACK = Throwable.class.getMethod("setStackTrace",
-                    new Class[] { stack });
+                    new Class[]{ stack });
                 GET_CAUSE = Throwable.class.getMethod("getCause",
                     (Class[]) null);
                 INIT_CAUSE = Throwable.class.getMethod("initCause",
-                    new Class[] { Throwable.class });
+                    new Class[]{ Throwable.class });
             } catch (Throwable t) {
             }
         }
@@ -80,11 +81,10 @@ public class JavaVersions {
 
     /**
      * Returns a version-specific instance of the specified class
-     * 
-     * @see #getVersionSpecificClass(java.lang.String)
-     * 
+     *
      * @param base the base class to check
      * @return the JDK-version-specific version of the class
+     * @see #getVersionSpecificClass(String)
      */
     public static Class getVersionSpecificClass(Class base) {
         try {
@@ -101,7 +101,7 @@ public class JavaVersions {
      * first checks for the name of the class with the current
      * setting of the {@link #VERSION} field, then each number in
      * decreasing order, until ending in the unqualified name.
-     *  For example, if we are using JDK 1.5.1, and we want to load
+     * For example, if we are using JDK 1.5.1, and we want to load
      * "org.apache.openjpa.lib.SomeClass", we will try to load the following
      * classes in order and return the first one that is successfully
      * found and loaded:
@@ -113,7 +113,7 @@ public class JavaVersions {
      * <li>org.apache.openjpa.lib.SomeClass1</li>
      * <li>org.apache.openjpa.lib.SomeClass</li>
      * </ol>
-     * 
+     *
      * @param base the base name of the class to load
      * @return the subclass appropriate for the current Java version
      */
@@ -214,7 +214,7 @@ public class JavaVersions {
 
         try {
             Object stack = GET_STACK.invoke(from, (Object[]) null);
-            SET_STACK.invoke(to, new Object[] { stack });
+            SET_STACK.invoke(to, new Object[]{ stack });
             return true;
         } catch (Throwable t) {
             return false;
@@ -229,7 +229,7 @@ public class JavaVersions {
             return null;
 
         try {
-            return(Throwable) GET_CAUSE.invoke(ex, (Object[]) null);
+            return (Throwable) GET_CAUSE.invoke(ex, (Object[]) null);
         } catch (Throwable t) {
             return null;
         }
@@ -243,7 +243,7 @@ public class JavaVersions {
             return ex;
 
         try {
-            return(Throwable) INIT_CAUSE.invoke(ex, new Object[] { cause });
+            return (Throwable) INIT_CAUSE.invoke(ex, new Object[]{ cause });
         } catch (Throwable t) {
             return ex;
         }

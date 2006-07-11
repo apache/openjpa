@@ -12,19 +12,23 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.sql.*;
-import java.util.*;
-import javax.sql.*;
-import org.apache.openjpa.lib.util.concurrent.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 
 /**
  * Manages the firing of {@link JDBCEvent}s.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
     implements ConnectionDecorator {
+
     public Connection decorate(Connection conn) {
         if (!hasListeners())
             return conn;
@@ -53,42 +57,42 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
         JDBCListener listen = (JDBCListener) listener;
         JDBCEvent ev = (JDBCEvent) event;
         switch (ev.getType()) {
-        case JDBCEvent.BEFORE_PREPARE_STATEMENT:
-            listen.beforePrepareStatement(ev);
-            break;
-        case JDBCEvent.AFTER_PREPARE_STATEMENT:
-            listen.afterPrepareStatement(ev);
-            break;
-        case JDBCEvent.BEFORE_CREATE_STATEMENT:
-            listen.beforeCreateStatement(ev);
-            break;
-        case JDBCEvent.AFTER_CREATE_STATEMENT:
-            listen.afterCreateStatement(ev);
-            break;
-        case JDBCEvent.BEFORE_EXECUTE_STATEMENT:
-            listen.beforeExecuteStatement(ev);
-            break;
-        case JDBCEvent.AFTER_EXECUTE_STATEMENT:
-            listen.afterExecuteStatement(ev);
-            break;
-        case JDBCEvent.BEFORE_COMMIT:
-            listen.beforeCommit(ev);
-            break;
-        case JDBCEvent.AFTER_COMMIT:
-            listen.afterCommit(ev);
-            break;
-        case JDBCEvent.BEFORE_ROLLBACK:
-            listen.beforeRollback(ev);
-            break;
-        case JDBCEvent.AFTER_ROLLBACK:
-            listen.afterRollback(ev);
-            break;
-        case JDBCEvent.AFTER_CONNECT:
-            listen.afterConnect(ev);
-            break;
-        case JDBCEvent.BEFORE_CLOSE:
-            listen.beforeClose(ev);
-            break;
+            case JDBCEvent.BEFORE_PREPARE_STATEMENT:
+                listen.beforePrepareStatement(ev);
+                break;
+            case JDBCEvent.AFTER_PREPARE_STATEMENT:
+                listen.afterPrepareStatement(ev);
+                break;
+            case JDBCEvent.BEFORE_CREATE_STATEMENT:
+                listen.beforeCreateStatement(ev);
+                break;
+            case JDBCEvent.AFTER_CREATE_STATEMENT:
+                listen.afterCreateStatement(ev);
+                break;
+            case JDBCEvent.BEFORE_EXECUTE_STATEMENT:
+                listen.beforeExecuteStatement(ev);
+                break;
+            case JDBCEvent.AFTER_EXECUTE_STATEMENT:
+                listen.afterExecuteStatement(ev);
+                break;
+            case JDBCEvent.BEFORE_COMMIT:
+                listen.beforeCommit(ev);
+                break;
+            case JDBCEvent.AFTER_COMMIT:
+                listen.afterCommit(ev);
+                break;
+            case JDBCEvent.BEFORE_ROLLBACK:
+                listen.beforeRollback(ev);
+                break;
+            case JDBCEvent.AFTER_ROLLBACK:
+                listen.afterRollback(ev);
+                break;
+            case JDBCEvent.AFTER_CONNECT:
+                listen.afterConnect(ev);
+                break;
+            case JDBCEvent.BEFORE_CLOSE:
+                listen.beforeClose(ev);
+                break;
         }
     }
 
@@ -96,6 +100,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
      * Fires events as appropriate.
      */
     private class EventConnection extends DelegatingConnection {
+
         public EventConnection(Connection conn) {
             super(conn);
             fireEvent(getDelegate(), JDBCEvent.AFTER_CONNECT, null, null, null);
@@ -203,6 +208,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
      * Fires events as appropriate.
      */
     private class EventPreparedStatement extends DelegatingPreparedStatement {
+
         private final EventConnection _conn;
         private final String _sql;
 
@@ -257,6 +263,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
      * Fires events as appropriate.
      */
     private class EventStatement extends DelegatingStatement {
+
         private final EventConnection _conn;
 
         public EventStatement(Statement stmnt, EventConnection conn) {

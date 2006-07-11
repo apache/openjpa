@@ -12,17 +12,19 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-import org.apache.openjpa.lib.util.*;
+import java.util.NoSuchElementException;
+
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Prevents a view of a given range of indices from the delegate
  * result object provider.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class RangeResultObjectProvider implements ResultObjectProvider {
+
     private static final Localizer _loc = Localizer.forPackage
         (RangeResultObjectProvider.class);
 
@@ -36,12 +38,12 @@ public class RangeResultObjectProvider implements ResultObjectProvider {
      * and result object providers work with int indexes, neither the start
      * or end index can be greater than Integer.MAX_VALUE(with the exception
      * of Long.MAX_VALUE, which is used to indicate no limit).
-     * 
+     *
      * @param delegate the result object provider to delegate to
      * @param startIdx 0-based inclusive start index of the range
-     * to present; must be &lt; Integer.MAX_VALUE
-     * @param endIdx 0-based exclusive end index of the range to
-     * present; must be &lt; Integer.MAX_VALUE, or Long.MAX_VALUE for no limit
+     *                 to present; must be &lt; Integer.MAX_VALUE
+     * @param endIdx   0-based exclusive end index of the range to
+     *                 present; must be &lt; Integer.MAX_VALUE, or Long.MAX_VALUE for no limit
      */
     public RangeResultObjectProvider(ResultObjectProvider delegate,
         long startIdx, long endIdx) {
@@ -106,7 +108,7 @@ public class RangeResultObjectProvider implements ResultObjectProvider {
         if (size == Integer.MAX_VALUE)
             return size;
         size = Math.min(_endIdx, size) - _startIdx;
-        return(size < 0) ? 0 : size;
+        return (size < 0) ? 0 : size;
     }
 
     public void reset() throws Exception {

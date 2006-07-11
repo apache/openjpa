@@ -12,15 +12,16 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import org.apache.commons.lang.*;
-import org.apache.openjpa.lib.util.*;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * An object {@link Value}.
- * 
+ *
  * @author Abe White
  */
 public class ObjectValue extends Value {
+
     private static final Localizer _loc = Localizer.forPackage
         (ObjectValue.class);
 
@@ -46,7 +47,7 @@ public class ObjectValue extends Value {
 
     /**
      * The internal value.
-     * 
+     *
      * @param derived if true, this value was derived from other properties
      */
     public void set(Object obj, boolean derived) {

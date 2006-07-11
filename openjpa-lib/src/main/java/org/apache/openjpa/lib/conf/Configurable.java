@@ -17,10 +17,11 @@ package org.apache.openjpa.lib.conf;
  * objects when configuration events occur. It provides an object
  * with the opportunity to set itself up for configuration and to
  * perform any necessary post-configuration.
- * 
+ *
  * @author Patrick Linskey
  */
 public interface Configurable {
+
     /**
      * Invoked prior to setting bean properties.
      */

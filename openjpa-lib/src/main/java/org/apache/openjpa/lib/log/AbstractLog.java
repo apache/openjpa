@@ -12,15 +12,17 @@
  */
 package org.apache.openjpa.lib.log;
 
-import java.io.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * A simple implementation of the {@link Log} interface. Writes
  * output to stdout.
- * 
+ *
  * @author Patrick Linskey
  */
 public abstract class AbstractLog implements Log {
+
     /**
      * Check to see if the specified logging level is enabled.
      */
@@ -28,10 +30,10 @@ public abstract class AbstractLog implements Log {
 
     /**
      * Send the specified log message to the handler.
-     * 
-     * @param level the level of the log message
+     *
+     * @param level   the level of the log message
      * @param message the message to send
-     * @param t the Throwable, or null if this is not an error
+     * @param t       the Throwable, or null if this is not an error
      */
     protected abstract void log(short level, String message, Throwable t);
 
@@ -131,7 +133,7 @@ public abstract class AbstractLog implements Log {
         if (t != null)
             return t;
         if (message instanceof Throwable)
-            return(Throwable)message;
+            return (Throwable) message;
 
         return null;
     }
@@ -140,6 +142,6 @@ public abstract class AbstractLog implements Log {
      * Efficiently turn the given object into a string.
      */
     private static String toString(Object o) {
-        return(o == null) ? "null" : o.toString();
+        return (o == null) ? "null" : o.toString();
     }
 }

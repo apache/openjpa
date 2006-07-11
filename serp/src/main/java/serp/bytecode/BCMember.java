@@ -12,16 +12,23 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.lowlevel.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedList;
+
+import serp.bytecode.lowlevel.ComplexEntry;
+import serp.bytecode.lowlevel.ConstantPool;
+import serp.bytecode.lowlevel.UTF8Entry;
 
 /**
  * A member field or method of a class.
- * 
+ *
  * @author Abe White
  */
 public abstract class BCMember extends Attributes {
+
     private BCClass _owner = null;
     private int _access = Constants.ACCESS_PRIVATE;
     private int _nameIndex = 0;
@@ -67,7 +74,7 @@ public abstract class BCMember extends Attributes {
      * Manipulate the member access flags.
      */
     public boolean isPublic() {
-        return(getAccessFlags() & Constants.ACCESS_PUBLIC) > 0;
+        return (getAccessFlags() & Constants.ACCESS_PUBLIC) > 0;
     }
 
     /**
@@ -83,7 +90,7 @@ public abstract class BCMember extends Attributes {
      * Manipulate the member access flags.
      */
     public boolean isProtected() {
-        return(getAccessFlags() & Constants.ACCESS_PROTECTED) > 0;
+        return (getAccessFlags() & Constants.ACCESS_PROTECTED) > 0;
     }
 
     /**
@@ -99,7 +106,7 @@ public abstract class BCMember extends Attributes {
      * Manipulate the member access flags.
      */
     public boolean isPrivate() {
-        return(getAccessFlags() & Constants.ACCESS_PRIVATE) > 0;
+        return (getAccessFlags() & Constants.ACCESS_PRIVATE) > 0;
     }
 
     /**
@@ -138,7 +145,7 @@ public abstract class BCMember extends Attributes {
      * Manipulate the member access flags.
      */
     public boolean isFinal() {
-        return(getAccessFlags() & Constants.ACCESS_FINAL) > 0;
+        return (getAccessFlags() & Constants.ACCESS_FINAL) > 0;
     }
 
     /**
@@ -155,7 +162,7 @@ public abstract class BCMember extends Attributes {
      * Manipulate the member access flags.
      */
     public boolean isStatic() {
-        return(getAccessFlags() & Constants.ACCESS_STATIC) > 0;
+        return (getAccessFlags() & Constants.ACCESS_STATIC) > 0;
     }
 
     /**
@@ -216,7 +223,7 @@ public abstract class BCMember extends Attributes {
      * Return the name of this member.
      */
     public String getName() {
-        return((UTF8Entry) getPool().getEntry(_nameIndex)).getValue();
+        return ((UTF8Entry) getPool().getEntry(_nameIndex)).getValue();
     }
 
     /**
@@ -236,7 +243,7 @@ public abstract class BCMember extends Attributes {
      * Return the descriptor of this member, in internal form.
      */
     public String getDescriptor() {
-        return((UTF8Entry) getPool().getEntry(_descriptorIndex)).getValue();
+        return ((UTF8Entry) getPool().getEntry(_descriptorIndex)).getValue();
     }
 
     /**

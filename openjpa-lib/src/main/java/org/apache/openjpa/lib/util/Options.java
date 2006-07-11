@@ -12,31 +12,42 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.lang.reflect.*;
-import java.util.*;
-import org.apache.commons.collections.*;
-import org.apache.commons.lang.*;
-import org.apache.commons.lang.exception.*;
-import serp.util.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeSet;
+
+import org.apache.commons.lang.StringUtils;
+import serp.util.Strings;
 
 /**
  * A specialization of the {@link Properties} map type with the added
  * abilities to read application options from the command line and to
  * use bean patterns to set an object's properties via command-line the
  * stored mappings.
- *  A typical use pattern for this class is to construct a new instance
+ * A typical use pattern for this class is to construct a new instance
  * in the <code>main</code> method, then call {@link #setFromCmdLine} with the
  * given args. Next, an instanceof the class being invoked is created, and
  * {@link #setInto} is called with that instance as a parameter. With this
  * pattern, the user can configure any bean properties of the class, or even
  * properties of classes reachable from the class, through the command line.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class Options extends TypedProperties {
+
     // maps primitive types to the appropriate wrapper class and default value
-    private static Object[][] _primWrappers = new Object[][] {
+    private static Object[][] _primWrappers = new Object[][]{
         { boolean.class, Boolean.class, Boolean.FALSE },
         { byte.class, Byte.class, new Byte((byte) 0) },
         { char.class, Character.class, new Character((char) 0) },
@@ -55,7 +66,7 @@ public class Options extends TypedProperties {
 
     /**
      * Construct the options instance with the given set of defaults.
-     * 
+     *
      * @see Properties#Properties(Properties)
      */
     public Options(Properties defaults) {
@@ -69,10 +80,10 @@ public class Options extends TypedProperties {
      * a mapping present, the existing mapping will be overwritten.
      * Flags should be of the form:<br />
      * <code>java Foo -flag1 value1 -flag2 value2 ... arg1 arg2 ...</code>
-     * 
+     *
      * @param args the command-line arguments
      * @return all arguments in the original array beyond the
-     * flag/value pair list
+     *         flag/value pair list
      * @author Patrick Linskey
      */
     public String[] setFromCmdLine(String[] args) {
@@ -105,7 +116,7 @@ public class Options extends TypedProperties {
                 remainder.add(args[i]);
         }
 
-        return(String[]) remainder.toArray(new String[remainder.size()]);
+        return (String[]) remainder.toArray(new String[remainder.size()]);
     }
 
     /**
@@ -139,19 +150,20 @@ public class Options extends TypedProperties {
      * Resultant method call: <code>obj.getBrother().setName("Bob")
      * <code></li>
      * </ul>
-     *  Any keys present in the map for which there is no
+     * Any keys present in the map for which there is no
      * corresponding property in the given object will be ignored,
      * and will be returned in the {@link Map} returned by this method.
-     * 
+     *
      * @return a {@link Map} of key-value pairs in this object
-     * for which no setters could be found.
+     *         for which no setters could be found.
      * @throws RuntimeException on parse error
      */
     public Map setInto(Object obj) {
         // set all defaults that have no explicit value
         Map.Entry entry = null;
         if (defaults != null) {
-            for (Iterator itr = defaults.entrySet().iterator(); itr.hasNext();) {
+            for (Iterator itr = defaults.entrySet().iterator(); itr.hasNext();)
+            {
                 entry = (Map.Entry) itr.next();
                 if (!containsKey(entry.getKey()))
                     setInto(obj, entry);
@@ -170,15 +182,16 @@ public class Options extends TypedProperties {
             }
         }
 
-        return(invalidEntries == null) ? Collections.EMPTY_MAP : invalidEntries;
+        return (invalidEntries == null) ? Collections.EMPTY_MAP :
+            invalidEntries;
     }
 
     /**
      * Sets the property named by the key of the given entry in the
      * given object.
-     * 
+     *
      * @return <code>true</code> if the set succeeded, or
-     * <code>false</code> if no method could be found for this property.
+     *         <code>false</code> if no method could be found for this property.
      */
     private boolean setInto(Object obj, Map.Entry entry) {
         if (entry.getKey() == null)
@@ -186,7 +199,7 @@ public class Options extends TypedProperties {
 
         try {
             // look for matching parameter of object
-            Object[] match = new Object[] { obj, null };
+            Object[] match = new Object[]{ obj, null };
             if (!matchOptionToMember(entry.getKey().toString(), match))
                 return false;
 
@@ -196,7 +209,7 @@ public class Options extends TypedProperties {
             if (entry.getValue() == null)
                 strValues = new String[1];
             else if (values.length == 1)
-                strValues = new String[] { entry.getValue().toString() };
+                strValues = new String[]{ entry.getValue().toString() };
             else
                 strValues = Strings.split(entry.getValue().toString(), ",", 0);
 
@@ -228,10 +241,10 @@ public class Options extends TypedProperties {
     /**
      * Finds all the options that can be set on the provided class. This does
      * not look for path-traversal expressions.
-     * 
+     *
      * @param type The class for which available options should be listed.
      * @return The available option names in <code>type</code>. The
-     * names will have initial caps. They will be ordered alphabetically.
+     *         names will have initial caps. They will be ordered alphabetically.
      */
     public static Collection findOptionsFor(Class type) {
         Collection names = new TreeSet();
@@ -261,16 +274,16 @@ public class Options extends TypedProperties {
 
     /**
      * Matches a key to an object/setter pair.
-     * 
-     * @param key the key given at the command line; may be of the form
-     * 'foo.bar' to signify the 'bar' property of the 'foo' owned object
+     *
+     * @param key   the key given at the command line; may be of the form
+     *              'foo.bar' to signify the 'bar' property of the 'foo' owned object
      * @param match an array of length 2, where the first index is set
-     * to the object to retrieve the setter for
+     *              to the object to retrieve the setter for
      * @return true if a match was made, false otherwise; additionally,
-     * the first index of the match array will be set to
-     * the matching object and the second index will be
-     * set to the setter method or public field for the
-     * property named by the key
+     *         the first index of the match array will be set to
+     *         the matching object and the second index will be
+     *         set to the setter method or public field for the
+     *         property named by the key
      */
     private static boolean matchOptionToMember(String key, Object[] match)
         throws Exception {
@@ -344,7 +357,7 @@ public class Options extends TypedProperties {
             if (inner == null && setter != null) {
                 Class innerType = getType(setter)[0];
                 inner = innerType.newInstance();
-                invoke(match[0], setter, new Object[] { inner });
+                invoke(match[0], setter, new Object[]{ inner });
             }
             match[0] = inner;
             return matchOptionToMember(find[1], match);
@@ -360,8 +373,8 @@ public class Options extends TypedProperties {
      */
     private static Class[] getType(Object member) {
         if (member instanceof Method)
-            return((Method) member).getParameterTypes();
-        return new Class[] { ((Field) member).getType() };
+            return ((Method) member).getParameterTypes();
+        return new Class[]{ ((Field) member).getType() };
     }
 
     /**
@@ -370,9 +383,9 @@ public class Options extends TypedProperties {
     private static Object invoke(Object target, Object member, Object[] values)
         throws Exception {
         if (member instanceof Method)
-            return((Method) member).invoke(target, values);
+            return ((Method) member).invoke(target, values);
         if (values == null || values.length == 0)
-            return((Field) member).get(target);
+            return ((Field) member).get(target);
         ((Field) member).set(target, values[0]);
         return null;
     }
@@ -406,10 +419,10 @@ public class Options extends TypedProperties {
         Exception err = null;
         try {
             Constructor cons = type.getConstructor
-                (new Class[] { String.class });
+                (new Class[]{ String.class });
             if (type == Boolean.class && "t".equalsIgnoreCase(str))
                 str = "true";
-            return cons.newInstance(new Object[] { str });
+            return cons.newInstance(new Object[]{ str });
         } catch (Exception e) {
             err = e;
         }
@@ -461,7 +474,7 @@ public class Options extends TypedProperties {
         String val = getProperty(key);
         if (val == null)
             val = getProperty(key2);
-        return(val == null) ? def : Float.parseFloat(val);
+        return (val == null) ? def : Float.parseFloat(val);
     }
 
     /**
@@ -473,7 +486,7 @@ public class Options extends TypedProperties {
         String val = getProperty(key);
         if (val == null)
             val = getProperty(key2);
-        return(val == null) ? def : Double.parseDouble(val);
+        return (val == null) ? def : Double.parseDouble(val);
     }
 
     /**
@@ -485,7 +498,7 @@ public class Options extends TypedProperties {
         String val = getProperty(key);
         if (val == null)
             val = getProperty(key2);
-        return(val == null) ? def : Long.parseLong(val);
+        return (val == null) ? def : Long.parseLong(val);
     }
 
     /**
@@ -497,7 +510,7 @@ public class Options extends TypedProperties {
         String val = getProperty(key);
         if (val == null)
             val = getProperty(key2);
-        return(val == null) ? def : Integer.parseInt(val);
+        return (val == null) ? def : Integer.parseInt(val);
     }
 
     /**
@@ -507,7 +520,7 @@ public class Options extends TypedProperties {
      */
     public String getProperty(String key, String key2, String def) {
         String val = getProperty(key);
-        return(val == null) ? getProperty(key2, def) : val;
+        return (val == null) ? getProperty(key2, def) : val;
     }
 
     /**
@@ -537,7 +550,7 @@ public class Options extends TypedProperties {
             val = removeProperty(key2);
         else
             removeProperty(key2);
-        return(val == null) ? def : Float.parseFloat(val);
+        return (val == null) ? def : Float.parseFloat(val);
     }
 
     /**
@@ -551,7 +564,7 @@ public class Options extends TypedProperties {
             val = removeProperty(key2);
         else
             removeProperty(key2);
-        return(val == null) ? def : Double.parseDouble(val);
+        return (val == null) ? def : Double.parseDouble(val);
     }
 
     /**
@@ -565,7 +578,7 @@ public class Options extends TypedProperties {
             val = removeProperty(key2);
         else
             removeProperty(key2);
-        return(val == null) ? def : Long.parseLong(val);
+        return (val == null) ? def : Long.parseLong(val);
     }
 
     /**
@@ -579,7 +592,7 @@ public class Options extends TypedProperties {
             val = removeProperty(key2);
         else
             removeProperty(key2);
-        return(val == null) ? def : Integer.parseInt(val);
+        return (val == null) ? def : Integer.parseInt(val);
     }
 
     /**
@@ -589,6 +602,6 @@ public class Options extends TypedProperties {
      */
     public String removeProperty(String key, String key2, String def) {
         String val = removeProperty(key);
-        return(val == null) ? removeProperty(key2, def) : val;
+        return (val == null) ? removeProperty(key2, def) : val;
     }
 }

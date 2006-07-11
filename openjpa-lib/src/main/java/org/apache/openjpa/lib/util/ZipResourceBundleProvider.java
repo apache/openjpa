@@ -12,18 +12,23 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.io.*;
-import java.util.*;
-import java.util.zip.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Locale;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * {@link ResourceBundleProvider} that expects the
  * {@link ClassLoader#getResourceAsStream} method to return a zipped input
  * stream. Created for use under Weblogic RARs.
- * 
+ *
  * @author Patrick Linskey
  */
 class ZipResourceBundleProvider implements ResourceBundleProvider {
+
     public ResourceBundle findResource(String name, Locale locale,
         ClassLoader loader) {
         String rsrc = name.replace('.', '/') + ".properties";
@@ -51,7 +56,10 @@ class ZipResourceBundleProvider implements ResourceBundleProvider {
         } catch (Exception e) {
         }
         finally {
-            try { zip.close(); } catch (IOException ioe) {}
+            try {
+                zip.close();
+            } catch (IOException ioe) {
+            }
         }
         return null;
     }

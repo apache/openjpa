@@ -12,15 +12,15 @@
  */
 package serp.bytecode.lowlevel;
 
-import java.io.*;
-import serp.bytecode.visitor.*;
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * A reference to a class method.
- * 
+ *
  * @author Abe White
  */
 public class MethodEntry extends ComplexEntry {
+
     /**
      * Default constructor.
      */
@@ -29,7 +29,7 @@ public class MethodEntry extends ComplexEntry {
 
     /**
      * Constructor.
-     * 
+     *
      * @see ComplexEntry#ComplexEntry(int,int)
      */
     public MethodEntry(int classIndex, int nameAndTypeIndex) {

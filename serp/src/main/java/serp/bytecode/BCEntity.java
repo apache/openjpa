@@ -12,15 +12,16 @@
  */
 package serp.bytecode;
 
-import serp.bytecode.lowlevel.*;
+import serp.bytecode.lowlevel.ConstantPool;
 
 /**
  * Interface implemented by all bytecode entities. Entities must be able
  * to access the project, constant pool, and class loader of the current class.
- * 
+ *
  * @author Abe White
  */
 public interface BCEntity {
+
     /**
      * Return the project of the current class.
      */

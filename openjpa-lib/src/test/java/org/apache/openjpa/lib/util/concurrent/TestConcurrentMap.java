@@ -12,21 +12,28 @@
  */
 package org.apache.openjpa.lib.util.concurrent;
 
-import java.util.*;
-import junit.framework.*;
-import junit.textui.*;
-import org.apache.openjpa.lib.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import junit.framework.TestCase;
+import org.apache.openjpa.lib.util.ReferenceMap;
 
 /**
  * Tests the methods of {@link ConcurrentMap}.
- * 
+ *
  * @author Abe White
  */
 public class TestConcurrentMap extends TestCase {
+
     private static final int ENTRIES = 333;
     private static final int SLEEP = 3;
 
-    private ConcurrentMap[] _maps = new ConcurrentMap[] {
+    private ConcurrentMap[] _maps = new ConcurrentMap[]{
         new ConcurrentHashMap(),
         new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.HARD), };
 
@@ -94,7 +101,7 @@ public class TestConcurrentMap extends TestCase {
             while (itr.hasNext()) {
                 Map.Entry entry = (Map.Entry) itr.next();
                 assertEquals("v" + entry.getKey(), entry.getValue());
-                assertTrue(keys + ":: "+ _maps[i].getClass() + "::"
+                assertTrue(keys + ":: " + _maps[i].getClass() + "::"
                     + entry.getKey() + "::" + entry.getValue(),
                     keys.add(entry.getKey()));
                 ordered.add(entry.getKey());
@@ -111,6 +118,7 @@ public class TestConcurrentMap extends TestCase {
     }
 
     private static class RemoveRandomRunnable implements Runnable {
+
         public boolean error = false;
         public boolean interrupted = false;
 

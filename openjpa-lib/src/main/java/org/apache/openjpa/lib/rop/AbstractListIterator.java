@@ -12,16 +12,18 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-import org.apache.openjpa.lib.util.*;
+import java.util.ListIterator;
+
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Abstract read-only list iterator.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 abstract class AbstractListIterator implements ListIterator {
+
     private static final Localizer _loc = Localizer.forPackage
         (AbstractListIterator.class);
 

@@ -12,20 +12,26 @@
  */
 package org.apache.openjpa.lib.xml;
 
-import java.io.*;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.*;
-import junit.framework.*;
-import junit.textui.*;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link XMLWriter} by comparing the results of passing the
  * raw-source.xml file in this package through the writer to the correct
  * output in the formatted-result.xml file, also in this package.
- * 
+ *
  * @author Abe White
  */
 public class TestXMLWriter extends TestCase {
+
     public TestXMLWriter(String test) {
         super(test);
     }
@@ -49,7 +55,7 @@ public class TestXMLWriter extends TestCase {
         StringBuffer correct = new StringBuffer();
         InputStreamReader reader = new InputStreamReader
             (getClass().getResourceAsStream("formatted-result.xml"));
-        for (int c; (c = reader.read()) != -1; correct.append((char) c));
+        for (int c; (c = reader.read()) != -1; correct.append((char) c)) ;
 
         // assertTrue the formatted result and buffer are equal
         assertEquals(fixNewline(correct.toString().trim()),
@@ -57,8 +63,8 @@ public class TestXMLWriter extends TestCase {
     }
 
     private String fixNewline(String str) {
-        return serp.util.Strings.join (serp.util.Strings.split
-                (str, "\r\n", -1), "\n");
+        return serp.util.Strings.join(serp.util.Strings.split
+            (str, "\r\n", -1), "\n");
     }
 
     public static Test suite() {

@@ -12,7 +12,10 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /*
  * Lots of this could be abstracted out into a word-wrapping class.
@@ -21,24 +24,25 @@ import java.util.*;
 /**
  * Converts single-line SQL strings into nicely-formatted
  * multi-line, indented statements.
- *  Example: from PERSON t0, COMPANY t1 WHERE t0.ID = 10 AND \
- t0.COMPANY_ID = t1.ID AND t1.NAME = 'OpenJPA'</code>
- becomes
-    <code>SELECT * 
- FROM PERSON t0, COMPANY t1
- WHERE t0.ID = 10 AND t0.COMPANY_ID = t1.ID AND t1.NAME = 'OpenJPA'\
- </code>
- and
- <code>INSERT INTO PERSON VALUES('Patrick', 'Linskey', 'OpenJPA', \
- '202 595 2064 x1111')</code>
- becomes
- <code>INSERT INTO PERSON VALUES('Patrick', 'Linskey', 'OpenJPA', '202
- 595 2064 x1111')</code>
- etc.
- * 
+ * Example: from PERSON t0, COMPANY t1 WHERE t0.ID = 10 AND \
+ * t0.COMPANY_ID = t1.ID AND t1.NAME = 'OpenJPA'</code>
+ * becomes
+ * <code>SELECT *
+ * FROM PERSON t0, COMPANY t1
+ * WHERE t0.ID = 10 AND t0.COMPANY_ID = t1.ID AND t1.NAME = 'OpenJPA'\
+ * </code>
+ * and
+ * <code>INSERT INTO PERSON VALUES('Patrick', 'Linskey', 'OpenJPA', \
+ * '202 595 2064 x1111')</code>
+ * becomes
+ * <code>INSERT INTO PERSON VALUES('Patrick', 'Linskey', 'OpenJPA', '202
+ * 595 2064 x1111')</code>
+ * etc.
+ *
  * @author Patrick Linskey
  */
 public class SQLFormatter {
+
     private boolean multiLine = false;
     private boolean doubleSpace = true;
     private String newline = System.getProperty("line.separator");
@@ -46,24 +50,24 @@ public class SQLFormatter {
     private String wrapIndent = "        ";
     private String clauseIndent = "    ";
 
-    private static final String[] selectSeparators = new String[] {
-            "FROM ", "WHERE ", "ORDER BY ", // ### is this order correct?
-            "GROUP BY ", "HAVING ", };
+    private static final String[] selectSeparators = new String[]{
+        "FROM ", "WHERE ", "ORDER BY ", // ### is this order correct?
+        "GROUP BY ", "HAVING ", };
 
-    private static final String[] insertSeparators = new String[] {
-            "VALUES ", };
+    private static final String[] insertSeparators = new String[]{
+        "VALUES ", };
 
-    private static final String[] updateSeparators = new String[] {
-            "SET ", "WHERE ", };
+    private static final String[] updateSeparators = new String[]{
+        "SET ", "WHERE ", };
 
-    private static final String[] deleteSeparators = new String[] {
-            "WHERE ", };
+    private static final String[] deleteSeparators = new String[]{
+        "WHERE ", };
 
-    private static final String[] createTableSeparators = new String[] {
-            "( ", };
+    private static final String[] createTableSeparators = new String[]{
+        "( ", };
 
-    private static final String[] createIndexSeparators = new String[] {
-            "ON ", "( ", };
+    private static final String[] createIndexSeparators = new String[]{
+        "ON ", "( ", };
 
     public void setNewline(String val) {
         newline = val;
@@ -200,7 +204,7 @@ public class SQLFormatter {
         clause.append(sql.substring(start));
 
         StringBuffer pp = new StringBuffer(sql.length());
-        for (Iterator iter = clauses.iterator(); iter.hasNext(); ) {
+        for (Iterator iter = clauses.iterator(); iter.hasNext();) {
             pp.append(wrapLine(((StringBuffer) iter.next()).toString()));
             if (iter.hasNext())
                 pp.append(newline);
@@ -214,7 +218,7 @@ public class SQLFormatter {
 
         // ensure that any leading whitespace is preserved.
         for (int i = 0; i < line.length() &&
-                 (line.charAt(i) == ' ' || line.charAt(i) == '\t'); i++) {
+            (line.charAt(i) == ' ' || line.charAt(i) == '\t'); i++) {
             lines.append(line.charAt(i));
         }
 

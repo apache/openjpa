@@ -12,15 +12,17 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * A connection decorator can wrap {@link Connection}s before they are
  * returned to the user to add functionality.
- * 
+ *
  * @author Abe White
  */
 public interface ConnectionDecorator {
+
     /**
      * Decorate the given connection if desired.
      */

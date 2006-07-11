@@ -12,15 +12,16 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * A {@link Map} type that maintains a maximum size, automatically
  * removing entries when the maximum is exceeded.
- * 
+ *
  * @author Abe White
  */
 public interface SizedMap extends Map {
+
     /**
      * The maximum number of entries, or Integer.MAX_VALUE for no limit.
      */

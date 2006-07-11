@@ -12,16 +12,20 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import java.util.*;
-import org.apache.commons.lang.*;
-import org.apache.openjpa.lib.util.*;
+import java.util.Arrays;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.ParseException;
 
 /**
  * A configuration value.
- * 
+ *
  * @author Marc Prud'hommeaux
  */
 public abstract class Value implements Cloneable {
+
     private static final String[] EMPTY_ALIASES = new String[0];
     private static final Localizer s_loc = Localizer.forPackage(Value.class);
 
@@ -35,7 +39,7 @@ public abstract class Value implements Cloneable {
 
     /**
      * Constructor. Supply the property name.
-     * 
+     *
      * @see #setProperty
      */
     public Value(String prop) {
@@ -69,7 +73,7 @@ public abstract class Value implements Cloneable {
      * All alias values must be in string form.
      */
     public String[] getAliases() {
-        return(aliases == null) ? EMPTY_ALIASES : aliases;
+        return (aliases == null) ? EMPTY_ALIASES : aliases;
     }
 
     /**
@@ -142,14 +146,14 @@ public abstract class Value implements Cloneable {
         if (str != null)
             str = str.trim();
         if (aliases == null || aliases.length == 0)
-            return(nullNotFound) ? null : str;
+            return (nullNotFound) ? null : str;
 
         boolean empty = str != null && str.length() == 0;
         for (int i = 1; i < aliases.length; i += 2)
             if (StringUtils.equals(str, aliases[i])
                 || (empty && aliases[i] == null))
                 return aliases[i - 1];
-        return(nullNotFound) ? null : str;
+        return (nullNotFound) ? null : str;
     }
 
     /**
@@ -162,7 +166,8 @@ public abstract class Value implements Cloneable {
     /**
      * Unalias the given setting.
      */
-    protected String unalias(String str, String[] aliases, boolean nullNotFound) {
+    protected String unalias(String str, String[] aliases,
+        boolean nullNotFound) {
         if (str != null)
             str = str.trim();
 
@@ -172,7 +177,7 @@ public abstract class Value implements Cloneable {
         if (aliases != null)
             for (int i = 0; i < aliases.length; i += 2)
                 if (StringUtils.equals(str, aliases[i])
-                    || StringUtils.equals(str, aliases[i+1])
+                    || StringUtils.equals(str, aliases[i + 1])
                     || (empty && aliases[i] == null))
                     return aliases[i + 1];
 
@@ -180,7 +185,7 @@ public abstract class Value implements Cloneable {
             throw new ParseException(s_loc.get("invalid-enumerated-config",
                 getProperty(), str, Arrays.asList(aliases)));
 
-        return(nullNotFound) ? null : str;
+        return (nullNotFound) ? null : str;
     }
 
     /**
@@ -209,8 +214,8 @@ public abstract class Value implements Cloneable {
      * The name of the getter method for the instantiated value of this
      * property(as opposed to the string value). If the string starts with
      * <code>this.</code>, then the getter will be looked up on the value
-     * instance itself. Otherwise, the getter will be looked up on the 
-     * configuration instance. 
+     * instance itself. Otherwise, the getter will be looked up on the
+     * configuration instance.
      */
     public void setInstantiatingGetter(String getter) {
         this.getter = getter;
@@ -321,7 +326,7 @@ public abstract class Value implements Cloneable {
 
     public int hashCode() {
         String str = getString();
-        int strHash =  (str == null) ? 0 : str.hashCode();
+        int strHash = (str == null) ? 0 : str.hashCode();
         int propHash = (prop == null) ? 0 : prop.hashCode();
         return strHash ^ propHash;
     }
@@ -332,7 +337,7 @@ public abstract class Value implements Cloneable {
         if (!(other instanceof Value))
             return false;
 
-        Value o = (Value)other;
+        Value o = (Value) other;
         return StringUtils.equals(prop, o.getProperty())
             && StringUtils.equals(getString(), o.getString());
     }

@@ -21,10 +21,11 @@ import java.util.List;
 /**
  * Contains functionality common to the different switch types
  * (TableSwitch and LookupSwitch).
- * 
+ *
  * @author Eric Lindauer
  */
 public abstract class SwitchInstruction extends JumpInstruction {
+
     private List _cases = new LinkedList();
 
     public SwitchInstruction(Code owner, int opcode) {
@@ -38,8 +39,8 @@ public abstract class SwitchInstruction extends JumpInstruction {
     public int[] getOffsets() {
         int bi = getByteIndex();
         int[] offsets = new int [_cases.size()];
-        for (int i=0; i < offsets.length; i++)
-            offsets [i] = ((InstructionPtrStrategy) _cases.get(i)).
+        for (int i = 0; i < offsets.length; i++)
+            offsets[i] = ((InstructionPtrStrategy) _cases.get(i)).
                 getByteIndex() - bi;
         return offsets;
     }
@@ -75,7 +76,7 @@ public abstract class SwitchInstruction extends JumpInstruction {
         // make the first byte of the 'default' a multiple of 4 from the
         // start of the method
         int byteIndex = getByteIndex() + 1;
-        for (; byteIndex % 4 != 0; byteIndex++, length++);
+        for (; byteIndex % 4 != 0; byteIndex++, length++) ;
 
         return length;
     }
@@ -106,7 +107,7 @@ public abstract class SwitchInstruction extends JumpInstruction {
      * Synonymous with {@link #setTarget}.
      */
     public SwitchInstruction setDefaultTarget(Instruction ins) {
-        return(SwitchInstruction) setTarget(ins);
+        return (SwitchInstruction) setTarget(ins);
     }
 
     /**
@@ -114,28 +115,28 @@ public abstract class SwitchInstruction extends JumpInstruction {
      */
     public Instruction[] getTargets() {
         Instruction[] result = new Instruction [_cases.size()];
-        for (int i=0; i < _cases.size(); i++)
-            result [i] = ((InstructionPtrStrategy) _cases.get(i)).
+        for (int i = 0; i < _cases.size(); i++)
+            result[i] = ((InstructionPtrStrategy) _cases.get(i)).
                 getTargetInstruction();
         return result;
     }
 
     /**
      * Set the jump points for this switch.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public SwitchInstruction setTargets(Instruction[] targets) {
         _cases.clear();
         if (targets != null)
             for (int i = 0; i < targets.length; i++)
-                addTarget(targets [i]);
+                addTarget(targets[i]);
         return this;
     }
 
     /**
      * Add a target to this switch.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public SwitchInstruction addTarget(Instruction target) {
@@ -190,7 +191,7 @@ public abstract class SwitchInstruction extends JumpInstruction {
 
     /**
      * Set the match-jumppt pairs for this switch.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public SwitchInstruction setCases(int[] matches, Instruction[] targets) {
@@ -201,14 +202,14 @@ public abstract class SwitchInstruction extends JumpInstruction {
 
     public SwitchInstruction setMatches(int[] matches) {
         clearMatches();
-        for (int i=0; i < matches.length; i++)
-            addMatch(matches [i]);
+        for (int i = 0; i < matches.length; i++)
+            addMatch(matches[i]);
         return this;
     }
 
     /**
      * Add a case to this switch.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public SwitchInstruction addCase(int match, Instruction target) {

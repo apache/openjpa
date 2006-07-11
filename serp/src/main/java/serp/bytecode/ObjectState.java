@@ -12,15 +12,20 @@
  */
 package serp.bytecode;
 
-import java.util.*;
-import serp.bytecode.lowlevel.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+
+import serp.bytecode.lowlevel.ClassEntry;
+import serp.bytecode.lowlevel.ConstantPool;
 
 /**
  * State implementing the behavior of an object type.
- * 
+ *
  * @author Abe White
  */
 class ObjectState extends State {
+
     private final ConstantPool _pool = new ConstantPool();
     private final NameCache _names;
 

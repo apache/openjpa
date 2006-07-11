@@ -12,16 +12,18 @@
  */
 package org.apache.openjpa.lib.xml;
 
-import java.text.*;
-import org.apache.openjpa.lib.util.*;
-import org.xml.sax.*;
-import serp.util.*;
+import java.text.MessageFormat;
+
+import org.xml.sax.Locator;
+import org.apache.openjpa.lib.util.Localizer;
+import serp.util.Numbers;
 
 /**
  * @author Stephen Kim
  * @nojavadoc
  */
 public class Location {
+
     private static final Localizer _loc = Localizer.forPackage(Location.class);
 
     private boolean _nullOnNoLocator = false;
@@ -44,10 +46,10 @@ public class Location {
                 return null;
             return _loc.get("no-locator");
         }
-        String forma = MessageFormat.format(format, new Object [] {
+        String forma = MessageFormat.format(format, new Object []{
             Numbers.valueOf(_locator.getLineNumber()),
             Numbers.valueOf(_locator.getColumnNumber()), _locator.getPublicId(),
-            _locator.getSystemId()});
+            _locator.getSystemId() });
         return forma;
     }
 

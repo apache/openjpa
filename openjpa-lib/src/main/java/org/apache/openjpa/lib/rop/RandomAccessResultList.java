@@ -12,19 +12,25 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.io.*;
-import java.util.*;
-import serp.util.*;
+import java.io.ObjectStreamException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import serp.util.Numbers;
 
 /**
  * Random-access result list implementation. It maintains a map
  * of the items that we have already instantiated.
- * 
+ *
  * @author Marc Prud'hommeaux
  * @author Abe White
  * @nojavadoc
  */
 public class RandomAccessResultList extends AbstractNonSequentialResultList {
+
     private static final int OPEN = 0;
     private static final int FREED = 1;
     private static final int CLOSED = 2;
@@ -95,7 +101,7 @@ public class RandomAccessResultList extends AbstractNonSequentialResultList {
         }
 
         ret = instantiateRow(i);
-        return(ret == null) ? PAST_END : ret;
+        return (ret == null) ? PAST_END : ret;
     }
 
     /**
@@ -176,7 +182,10 @@ public class RandomAccessResultList extends AbstractNonSequentialResultList {
 
     private void free() {
         if (_state == OPEN) {
-            try { _rop.close(); } catch (Exception e) {}
+            try {
+                _rop.close();
+            } catch (Exception e) {
+            }
             _rows = null;
             _state = FREED;
         }
@@ -215,6 +224,7 @@ public class RandomAccessResultList extends AbstractNonSequentialResultList {
      * event of a huge result set with lots of nulls.
      */
     private static class Null {
+
     }
 }
 

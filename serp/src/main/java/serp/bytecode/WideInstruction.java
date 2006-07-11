@@ -12,18 +12,22 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * The <code>wide</code> instruction, which is used to allow other
  * instructions to index values beyond what they can normally index baed
  * on the length of their arguments.
- * 
+ *
  * @author Abe White
  */
 public class WideInstruction extends LocalVariableInstruction {
-    private static final Class[][] _mappings = new Class[][] {
+
+    private static final Class[][] _mappings = new Class[][]{
         { byte.class, int.class }, { boolean.class, int.class },
         { char.class, int.class }, { short.class, int.class },
         { void.class, int.class }, };
@@ -48,63 +52,63 @@ public class WideInstruction extends LocalVariableInstruction {
 
     public int getStackChange() {
         switch (getInstruction()) {
-        case Constants.ILOAD:
-        case Constants.FLOAD:
-        case Constants.ALOAD:
-            return 1;
-        case Constants.LLOAD:
-        case Constants.DLOAD:
-            return 2;
-        case Constants.ISTORE:
-        case Constants.FSTORE:
-        case Constants.ASTORE:
-            return -1;
-        case Constants.LSTORE:
-        case Constants.DSTORE:
-            return -2;
-        default:
-            return 0;
+            case Constants.ILOAD:
+            case Constants.FLOAD:
+            case Constants.ALOAD:
+                return 1;
+            case Constants.LLOAD:
+            case Constants.DLOAD:
+                return 2;
+            case Constants.ISTORE:
+            case Constants.FSTORE:
+            case Constants.ASTORE:
+                return -1;
+            case Constants.LSTORE:
+            case Constants.DSTORE:
+                return -2;
+            default:
+                return 0;
         }
     }
 
     public int getLogicalStackChange() {
         switch (getInstruction()) {
-        case Constants.ILOAD:
-        case Constants.FLOAD:
-        case Constants.ALOAD:
-        case Constants.LLOAD:
-        case Constants.DLOAD:
-            return 1;
-        case Constants.ISTORE:
-        case Constants.FSTORE:
-        case Constants.ASTORE:
-        case Constants.LSTORE:
-        case Constants.DSTORE:
-            return -1;
-        default:
-            return 0;
+            case Constants.ILOAD:
+            case Constants.FLOAD:
+            case Constants.ALOAD:
+            case Constants.LLOAD:
+            case Constants.DLOAD:
+                return 1;
+            case Constants.ISTORE:
+            case Constants.FSTORE:
+            case Constants.ASTORE:
+            case Constants.LSTORE:
+            case Constants.DSTORE:
+                return -1;
+            default:
+                return 0;
         }
     }
 
     public String getTypeName() {
         switch (getInstruction()) {
-        case Constants.ILOAD:
-        case Constants.ISTORE:
-            return int.class.getName();
-        case Constants.LLOAD:
-        case Constants.LSTORE:
-            return long.class.getName();
-        case Constants.FLOAD:
-        case Constants.FSTORE:
-            return float.class.getName();
-        case Constants.DLOAD:
-        case Constants.DSTORE:
-            return double.class.getName();
-        case Constants.ALOAD:
-        case Constants.ASTORE:
-            return Object.class.getName();
-        default:
-            return null;
+            case Constants.ILOAD:
+            case Constants.ISTORE:
+                return int.class.getName();
+            case Constants.LLOAD:
+            case Constants.LSTORE:
+                return long.class.getName();
+            case Constants.FLOAD:
+            case Constants.FSTORE:
+                return float.class.getName();
+            case Constants.DLOAD:
+            case Constants.DSTORE:
+                return double.class.getName();
+            case Constants.ALOAD:
+            case Constants.ASTORE:
+                return Object.class.getName();
+            default:
+                return null;
         }
     }
 
@@ -112,49 +116,59 @@ public class WideInstruction extends LocalVariableInstruction {
         type = mapType(type, _mappings, true);
 
         switch (getInstruction()) {
-        case Constants.ILOAD:
-        case Constants.LLOAD:
-        case Constants.FLOAD:
-        case Constants.DLOAD:
-        case Constants.ALOAD:
-            if (type == null)
-                throw new IllegalStateException();
-            switch (type.charAt(0)) {
-            case 'i':
-                return(TypedInstruction) setInstruction(Constants.ILOAD);
-            case 'l':
-                return(TypedInstruction) setInstruction(Constants.LLOAD);
-            case 'f':
-                return(TypedInstruction) setInstruction(Constants.FLOAD);
-            case 'd':
-                return(TypedInstruction) setInstruction(Constants.DLOAD);
+            case Constants.ILOAD:
+            case Constants.LLOAD:
+            case Constants.FLOAD:
+            case Constants.DLOAD:
+            case Constants.ALOAD:
+                if (type == null)
+                    throw new IllegalStateException();
+                switch (type.charAt(0)) {
+                    case 'i':
+                        return (TypedInstruction) setInstruction(
+                            Constants.ILOAD);
+                    case 'l':
+                        return (TypedInstruction) setInstruction(
+                            Constants.LLOAD);
+                    case 'f':
+                        return (TypedInstruction) setInstruction(
+                            Constants.FLOAD);
+                    case 'd':
+                        return (TypedInstruction) setInstruction(
+                            Constants.DLOAD);
+                    default:
+                        return (TypedInstruction) setInstruction(
+                            Constants.ALOAD);
+                }
+            case Constants.ISTORE:
+            case Constants.LSTORE:
+            case Constants.FSTORE:
+            case Constants.DSTORE:
+            case Constants.ASTORE:
+                if (type == null)
+                    throw new IllegalStateException();
+                switch (type.charAt(0)) {
+                    case 'i':
+                        return (TypedInstruction) setInstruction(
+                            Constants.ISTORE);
+                    case 'l':
+                        return (TypedInstruction) setInstruction(
+                            Constants.LSTORE);
+                    case 'f':
+                        return (TypedInstruction) setInstruction(
+                            Constants.FSTORE);
+                    case 'd':
+                        return (TypedInstruction) setInstruction(
+                            Constants.DSTORE);
+                    default:
+                        return (TypedInstruction) setInstruction(
+                            Constants.ASTORE);
+                }
             default:
-                return(TypedInstruction) setInstruction(Constants.ALOAD);
-            }
-        case Constants.ISTORE:
-        case Constants.LSTORE:
-        case Constants.FSTORE:
-        case Constants.DSTORE:
-        case Constants.ASTORE:
-            if (type == null)
-                throw new IllegalStateException();
-            switch (type.charAt(0)) {
-            case 'i':
-                return(TypedInstruction) setInstruction(Constants.ISTORE);
-            case 'l':
-                return(TypedInstruction) setInstruction(Constants.LSTORE);
-            case 'f':
-                return(TypedInstruction) setInstruction(Constants.FSTORE);
-            case 'd':
-                return(TypedInstruction) setInstruction(Constants.DSTORE);
-            default:
-                return(TypedInstruction) setInstruction(Constants.ASTORE);
-            }
-        default:
-            if (type != null)
-                throw new IllegalStateException("Augmented instruction not "
-                    + "typed");
-            return this;
+                if (type != null)
+                    throw new IllegalStateException("Augmented instruction not "
+                        + "typed");
+                return this;
         }
     }
 
@@ -190,7 +204,7 @@ public class WideInstruction extends LocalVariableInstruction {
 
     /**
      * Set the type of instruction this wide instruction modifies.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public WideInstruction iinc() {
@@ -199,7 +213,7 @@ public class WideInstruction extends LocalVariableInstruction {
 
     /**
      * Set the type of instruction this wide instruction modifies.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public WideInstruction ret() {
@@ -208,7 +222,7 @@ public class WideInstruction extends LocalVariableInstruction {
 
     /**
      * Set the type of instruction this wide instruction modifies.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public WideInstruction iload() {
@@ -217,7 +231,7 @@ public class WideInstruction extends LocalVariableInstruction {
 
     /**
      * Set the type of instruction this wide instruction modifies.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public WideInstruction fload() {
@@ -226,7 +240,7 @@ public class WideInstruction extends LocalVariableInstruction {
 
     /**
      * Set the type of instruction this wide instruction modifies.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public WideInstruction aload() {
@@ -235,7 +249,7 @@ public class WideInstruction extends LocalVariableInstruction {
 
     /**
      * Set the type of instruction this wide instruction modifies.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public WideInstruction lload() {
@@ -244,7 +258,7 @@ public class WideInstruction extends LocalVariableInstruction {
 
     /**
      * Set the type of instruction this wide instruction modifies.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public WideInstruction dload() {
@@ -253,7 +267,7 @@ public class WideInstruction extends LocalVariableInstruction {
 
     /**
      * Set the type of instruction this wide instruction modifies.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public WideInstruction istore() {
@@ -262,7 +276,7 @@ public class WideInstruction extends LocalVariableInstruction {
 
     /**
      * Set the type of instruction this wide instruction modifies.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public WideInstruction fstore() {
@@ -271,7 +285,7 @@ public class WideInstruction extends LocalVariableInstruction {
 
     /**
      * Set the type of instruction this wide instruction modifies.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public WideInstruction astore() {
@@ -280,7 +294,7 @@ public class WideInstruction extends LocalVariableInstruction {
 
     /**
      * Set the type of instruction this wide instruction modifies.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public WideInstruction lstore() {
@@ -289,7 +303,7 @@ public class WideInstruction extends LocalVariableInstruction {
 
     /**
      * Set the type of instruction this wide instruction modifies.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public WideInstruction dstore() {
@@ -306,7 +320,7 @@ public class WideInstruction extends LocalVariableInstruction {
 
     /**
      * Set the increment on this instruction if it augments IINC.
-     * 
+     *
      * @return this Instruction, for method chaining
      */
     public WideInstruction setIncrement(int val) {

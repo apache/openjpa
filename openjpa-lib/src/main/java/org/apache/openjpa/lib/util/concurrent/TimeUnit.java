@@ -27,122 +27,313 @@ package org.apache.openjpa.lib.util.concurrent;
  * thousandth of a microsecond, a microsecond as one thousandth of a
  * millisecond, a millisecond as one thousandth of a second, a minute
  * as sixty seconds, an hour as sixty minutes, and a day as twenty four hours.
- *  A <tt>TimeUnit</tt> is mainly used to inform time-based methods
+ * A <tt>TimeUnit</tt> is mainly used to inform time-based methods
  * how a given timing parameter should be interpreted. For example,
  * the following code will timeout in 50 milliseconds if the {@link
  * edu.emory.mathcs.backport.java.util.concurrent.locks.Lock lock} is not
  * available:
- * 
+ * <p/>
  * <pre> Lock lock = ...; if ( lock.tryLock(50L, TimeUnit.MILLISECONDS) ) ...
  * </pre> while this code will timeout in 50 seconds:
  * <pre> Lock lock = ...; if ( lock.tryLock(50L, TimeUnit.SECONDS) ) ...
  * </pre>
- *  Note however, that there is no guarantee that a particular timeout
+ * Note however, that there is no guarantee that a particular timeout
  * implementation will be able to notice the passage of time at the
  * same granularity as the given <tt>TimeUnit</tt>.
- * 
- * @since 1.5
+ *
  * @author Doug Lea
+ * @since 1.5
  */
 public abstract class TimeUnit implements java.io.Serializable {
 
     public static final TimeUnit NANOSECONDS = new TimeUnit(0, "NANOSECONDS") {
         private final static long serialVersionUID = 535148490883208361L;
-        public long toNanos(long d)   { return d; }
-        public long toMicros(long d)  { return d/(C1/C0); }
-        public long toMillis(long d)  { return d/(C2/C0); }
-        public long toSeconds(long d) { return d/(C3/C0); }
-        public long toMinutes(long d) { return d/(C4/C0); }
-        public long toHours(long d)   { return d/(C5/C0); }
-        public long toDays(long d)    { return d/(C6/C0); }
-        public long convert(long d, TimeUnit u) { return u.toNanos(d); }
-        int excessNanos(long d, long m) { return(int)(d - (m*C2)); }
+
+        public long toNanos(long d) {
+            return d;
+        }
+
+        public long toMicros(long d) {
+            return d / (C1 / C0);
+        }
+
+        public long toMillis(long d) {
+            return d / (C2 / C0);
+        }
+
+        public long toSeconds(long d) {
+            return d / (C3 / C0);
+        }
+
+        public long toMinutes(long d) {
+            return d / (C4 / C0);
+        }
+
+        public long toHours(long d) {
+            return d / (C5 / C0);
+        }
+
+        public long toDays(long d) {
+            return d / (C6 / C0);
+        }
+
+        public long convert(long d, TimeUnit u) {
+            return u.toNanos(d);
+        }
+
+        int excessNanos(long d, long m) {
+            return (int) (d - (m * C2));
+        }
     };
 
-    public static final TimeUnit MICROSECONDS = new TimeUnit(1, "MICROSECONDS"){
-        private final static long serialVersionUID = 2185906575929579108L;
-        public long toNanos(long d)   { return x(d, C1/C0, MAX/(C1/C0)); }
-        public long toMicros(long d)  { return d; }
-        public long toMillis(long d)  { return d/(C2/C1); }
-        public long toSeconds(long d) { return d/(C3/C1); }
-        public long toMinutes(long d) { return d/(C4/C1); }
-        public long toHours(long d)   { return d/(C5/C1); }
-        public long toDays(long d)    { return d/(C6/C1); }
-        public long convert(long d, TimeUnit u) { return u.toMicros(d); }
-        int excessNanos(long d, long m) { return(int)((d*C1) - (m*C2)); }
-    };
+    public static final TimeUnit MICROSECONDS =
+        new TimeUnit(1, "MICROSECONDS") {
+            private final static long serialVersionUID = 2185906575929579108L;
 
-    public static final TimeUnit MILLISECONDS = new TimeUnit(2, "MILLISECONDS"){
-        private final static long serialVersionUID = 9032047794123325184L;
-        public long toNanos(long d)   { return x(d, C2/C0, MAX/(C2/C0)); }
-        public long toMicros(long d)  { return x(d, C2/C1, MAX/(C2/C1)); }
-        public long toMillis(long d)  { return d; }
-        public long toSeconds(long d) { return d/(C3/C2); }
-        public long toMinutes(long d) { return d/(C4/C2); }
-        public long toHours(long d)   { return d/(C5/C2); }
-        public long toDays(long d)    { return d/(C6/C2); }
-        public long convert(long d, TimeUnit u) { return u.toMillis(d); }
-        int excessNanos(long d, long m) { return 0; }
-    };
+            public long toNanos(long d) {
+                return x(d, C1 / C0, MAX / (C1 / C0));
+            }
+
+            public long toMicros(long d) {
+                return d;
+            }
+
+            public long toMillis(long d) {
+                return d / (C2 / C1);
+            }
+
+            public long toSeconds(long d) {
+                return d / (C3 / C1);
+            }
+
+            public long toMinutes(long d) {
+                return d / (C4 / C1);
+            }
+
+            public long toHours(long d) {
+                return d / (C5 / C1);
+            }
+
+            public long toDays(long d) {
+                return d / (C6 / C1);
+            }
+
+            public long convert(long d, TimeUnit u) {
+                return u.toMicros(d);
+            }
+
+            int excessNanos(long d, long m) {
+                return (int) ((d * C1) - (m * C2));
+            }
+        };
+
+    public static final TimeUnit MILLISECONDS =
+        new TimeUnit(2, "MILLISECONDS") {
+            private final static long serialVersionUID = 9032047794123325184L;
+
+            public long toNanos(long d) {
+                return x(d, C2 / C0, MAX / (C2 / C0));
+            }
+
+            public long toMicros(long d) {
+                return x(d, C2 / C1, MAX / (C2 / C1));
+            }
+
+            public long toMillis(long d) {
+                return d;
+            }
+
+            public long toSeconds(long d) {
+                return d / (C3 / C2);
+            }
+
+            public long toMinutes(long d) {
+                return d / (C4 / C2);
+            }
+
+            public long toHours(long d) {
+                return d / (C5 / C2);
+            }
+
+            public long toDays(long d) {
+                return d / (C6 / C2);
+            }
+
+            public long convert(long d, TimeUnit u) {
+                return u.toMillis(d);
+            }
+
+            int excessNanos(long d, long m) {
+                return 0;
+            }
+        };
 
     public static final TimeUnit SECONDS = new TimeUnit(3, "SECONDS") {
         private final static long serialVersionUID = 227755028449378390L;
-        public long toNanos(long d)   { return x(d, C3/C0, MAX/(C3/C0)); }
-        public long toMicros(long d)  { return x(d, C3/C1, MAX/(C3/C1)); }
-        public long toMillis(long d)  { return x(d, C3/C2, MAX/(C3/C2)); }
-        public long toSeconds(long d) { return d; }
-        public long toMinutes(long d) { return d/(C4/C3); }
-        public long toHours(long d)   { return d/(C5/C3); }
-        public long toDays(long d)    { return d/(C6/C3); }
-        public long convert(long d, TimeUnit u) { return u.toSeconds(d); }
-        int excessNanos(long d, long m) { return 0; }
+
+        public long toNanos(long d) {
+            return x(d, C3 / C0, MAX / (C3 / C0));
+        }
+
+        public long toMicros(long d) {
+            return x(d, C3 / C1, MAX / (C3 / C1));
+        }
+
+        public long toMillis(long d) {
+            return x(d, C3 / C2, MAX / (C3 / C2));
+        }
+
+        public long toSeconds(long d) {
+            return d;
+        }
+
+        public long toMinutes(long d) {
+            return d / (C4 / C3);
+        }
+
+        public long toHours(long d) {
+            return d / (C5 / C3);
+        }
+
+        public long toDays(long d) {
+            return d / (C6 / C3);
+        }
+
+        public long convert(long d, TimeUnit u) {
+            return u.toSeconds(d);
+        }
+
+        int excessNanos(long d, long m) {
+            return 0;
+        }
     };
 
     public static final TimeUnit MINUTES = new TimeUnit(4, "MINUTES") {
         private final static long serialVersionUID = 1827351566402609187L;
-        public long toNanos(long d)   { return x(d, C4/C0, MAX/(C4/C0)); }
-        public long toMicros(long d)  { return x(d, C4/C1, MAX/(C4/C1)); }
-        public long toMillis(long d)  { return x(d, C4/C2, MAX/(C4/C2)); }
-        public long toSeconds(long d) { return x(d, C4/C3, MAX/(C4/C3)); }
-        public long toMinutes(long d) { return d; }
-        public long toHours(long d)   { return d/(C5/C4); }
-        public long toDays(long d)    { return d/(C6/C4); }
-        public long convert(long d, TimeUnit u) { return u.toMinutes(d); }
-        int excessNanos(long d, long m) { return 0; }
+
+        public long toNanos(long d) {
+            return x(d, C4 / C0, MAX / (C4 / C0));
+        }
+
+        public long toMicros(long d) {
+            return x(d, C4 / C1, MAX / (C4 / C1));
+        }
+
+        public long toMillis(long d) {
+            return x(d, C4 / C2, MAX / (C4 / C2));
+        }
+
+        public long toSeconds(long d) {
+            return x(d, C4 / C3, MAX / (C4 / C3));
+        }
+
+        public long toMinutes(long d) {
+            return d;
+        }
+
+        public long toHours(long d) {
+            return d / (C5 / C4);
+        }
+
+        public long toDays(long d) {
+            return d / (C6 / C4);
+        }
+
+        public long convert(long d, TimeUnit u) {
+            return u.toMinutes(d);
+        }
+
+        int excessNanos(long d, long m) {
+            return 0;
+        }
     };
 
     public static final TimeUnit HOURS = new TimeUnit(5, "HOURS") {
         private final static long serialVersionUID = -6438436134732089810L;
-        public long toNanos(long d)   { return x(d, C5/C0, MAX/(C5/C0)); }
-        public long toMicros(long d)  { return x(d, C5/C1, MAX/(C5/C1)); }
-        public long toMillis(long d)  { return x(d, C5/C2, MAX/(C5/C2)); }
-        public long toSeconds(long d) { return x(d, C5/C3, MAX/(C5/C3)); }
-        public long toMinutes(long d) { return x(d, C5/C4, MAX/(C5/C4)); }
-        public long toHours(long d)   { return d; }
-        public long toDays(long d)    { return d/(C6/C5); }
-        public long convert(long d, TimeUnit u) { return u.toHours(d); }
-        int excessNanos(long d, long m) { return 0; }
+
+        public long toNanos(long d) {
+            return x(d, C5 / C0, MAX / (C5 / C0));
+        }
+
+        public long toMicros(long d) {
+            return x(d, C5 / C1, MAX / (C5 / C1));
+        }
+
+        public long toMillis(long d) {
+            return x(d, C5 / C2, MAX / (C5 / C2));
+        }
+
+        public long toSeconds(long d) {
+            return x(d, C5 / C3, MAX / (C5 / C3));
+        }
+
+        public long toMinutes(long d) {
+            return x(d, C5 / C4, MAX / (C5 / C4));
+        }
+
+        public long toHours(long d) {
+            return d;
+        }
+
+        public long toDays(long d) {
+            return d / (C6 / C5);
+        }
+
+        public long convert(long d, TimeUnit u) {
+            return u.toHours(d);
+        }
+
+        int excessNanos(long d, long m) {
+            return 0;
+        }
     };
 
     public static final TimeUnit DAYS = new TimeUnit(6, "DAYS") {
         private final static long serialVersionUID = 567463171959674600L;
-        public long toNanos(long d)   { return x(d, C6/C0, MAX/(C6/C0)); }
-        public long toMicros(long d)  { return x(d, C6/C1, MAX/(C6/C1)); }
-        public long toMillis(long d)  { return x(d, C6/C2, MAX/(C6/C2)); }
-        public long toSeconds(long d) { return x(d, C6/C3, MAX/(C6/C3)); }
-        public long toMinutes(long d) { return x(d, C6/C4, MAX/(C6/C4)); }
-        public long toHours(long d)   { return x(d, C6/C5, MAX/(C6/C5)); }
-        public long toDays(long d)    { return d; }
-        public long convert(long d, TimeUnit u) { return u.toDays(d); }
-        int excessNanos(long d, long m) { return 0; }
+
+        public long toNanos(long d) {
+            return x(d, C6 / C0, MAX / (C6 / C0));
+        }
+
+        public long toMicros(long d) {
+            return x(d, C6 / C1, MAX / (C6 / C1));
+        }
+
+        public long toMillis(long d) {
+            return x(d, C6 / C2, MAX / (C6 / C2));
+        }
+
+        public long toSeconds(long d) {
+            return x(d, C6 / C3, MAX / (C6 / C3));
+        }
+
+        public long toMinutes(long d) {
+            return x(d, C6 / C4, MAX / (C6 / C4));
+        }
+
+        public long toHours(long d) {
+            return x(d, C6 / C5, MAX / (C6 / C5));
+        }
+
+        public long toDays(long d) {
+            return d;
+        }
+
+        public long convert(long d, TimeUnit u) {
+            return u.toDays(d);
+        }
+
+        int excessNanos(long d, long m) {
+            return 0;
+        }
     };
 
-    private static final TimeUnit[] values = new TimeUnit[] {
+    private static final TimeUnit[] values = new TimeUnit[]{
         NANOSECONDS, MICROSECONDS, MILLISECONDS, SECONDS, MINUTES, HOURS, DAYS
     };
 
     public static TimeUnit[] values() {
-        return(TimeUnit[])values.clone();
+        return (TimeUnit[]) values.clone();
     }
 
     /**
@@ -152,10 +343,15 @@ public abstract class TimeUnit implements java.io.Serializable {
      */
     private final int index;
 
-    /** name of this unit */
- private final String name;
+    /**
+     * name of this unit
+     */
+    private final String name;
 
-    /** Internal constructor */ TimeUnit(int index, String name) {
+    /**
+     * Internal constructor
+     */
+    TimeUnit(int index, String name) {
         this.index = index;
         this.name = name;
     }
@@ -176,7 +372,7 @@ public abstract class TimeUnit implements java.io.Serializable {
      * This has a short name to make above code more readable.
      */
     static long x(long d, long m, long over) {
-        if (d >  over) return Long.MAX_VALUE;
+        if (d > over) return Long.MAX_VALUE;
         if (d < -over) return Long.MIN_VALUE;
         return d * m;
     }
@@ -190,63 +386,68 @@ public abstract class TimeUnit implements java.io.Serializable {
      * with arguments that would numerically overflow saturate to
      * <tt>Long.MIN_VALUE</tt> if negative or <tt>Long.MAX_VALUE</tt>
      * if positive.
-     *  For example, to convert 10 minutes to milliseconds, use:
+     * For example, to convert 10 minutes to milliseconds, use:
      * <tt>TimeUnit.MILLISECONDS.convert(10L, TimeUnit.MINUTES)</tt>
-     * 
+     *
      * @param sourceDuration the time duration in the given <tt>sourceUnit</tt>
-     * @param sourceUnit the unit of the <tt>sourceDuration</tt> argument
+     * @param sourceUnit     the unit of the <tt>sourceDuration</tt> argument
      * @return the converted duration in this unit,
-     * or <tt>Long.MIN_VALUE</tt> if conversion would negatively
-     * overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
+     *         or <tt>Long.MIN_VALUE</tt> if conversion would negatively
+     *         overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
      */
     public abstract long convert(long sourceDuration, TimeUnit sourceUnit);
 
     /**
      * Equivalent to <tt>NANOSECONDS.convert(duration, this)</tt>.
+     *
      * @param duration the duration
      * @return the converted duration,
-     * or <tt>Long.MIN_VALUE</tt> if conversion would negatively
-     * overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
+     *         or <tt>Long.MIN_VALUE</tt> if conversion would negatively
+     *         overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
      * @see #convert
      */
     public abstract long toNanos(long duration);
 
     /**
      * Equivalent to <tt>MICROSECONDS.convert(duration, this)</tt>.
+     *
      * @param duration the duration
      * @return the converted duration,
-     * or <tt>Long.MIN_VALUE</tt> if conversion would negatively
-     * overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
+     *         or <tt>Long.MIN_VALUE</tt> if conversion would negatively
+     *         overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
      * @see #convert
      */
     public abstract long toMicros(long duration);
 
     /**
      * Equivalent to <tt>MILLISECONDS.convert(duration, this)</tt>.
+     *
      * @param duration the duration
      * @return the converted duration,
-     * or <tt>Long.MIN_VALUE</tt> if conversion would negatively
-     * overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
+     *         or <tt>Long.MIN_VALUE</tt> if conversion would negatively
+     *         overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
      * @see #convert
      */
     public abstract long toMillis(long duration);
 
     /**
      * Equivalent to <tt>SECONDS.convert(duration, this)</tt>.
+     *
      * @param duration the duration
      * @return the converted duration,
-     * or <tt>Long.MIN_VALUE</tt> if conversion would negatively
-     * overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
+     *         or <tt>Long.MIN_VALUE</tt> if conversion would negatively
+     *         overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
      * @see #convert
      */
     public abstract long toSeconds(long duration);
 
     /**
      * Equivalent to <tt>MINUTES.convert(duration, this)</tt>.
+     *
      * @param duration the duration
      * @return the converted duration,
-     * or <tt>Long.MIN_VALUE</tt> if conversion would negatively
-     * overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
+     *         or <tt>Long.MIN_VALUE</tt> if conversion would negatively
+     *         overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
      * @see #convert
      * @since 1.6
      */
@@ -254,10 +455,11 @@ public abstract class TimeUnit implements java.io.Serializable {
 
     /**
      * Equivalent to <tt>HOURS.convert(duration, this)</tt>.
+     *
      * @param duration the duration
      * @return the converted duration,
-     * or <tt>Long.MIN_VALUE</tt> if conversion would negatively
-     * overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
+     *         or <tt>Long.MIN_VALUE</tt> if conversion would negatively
+     *         overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
      * @see #convert
      * @since 1.6
      */
@@ -265,6 +467,7 @@ public abstract class TimeUnit implements java.io.Serializable {
 
     /**
      * Equivalent to <tt>DAYS.convert(duration, this)</tt>.
+     *
      * @param duration the duration
      * @return the converted duration
      * @see #convert
@@ -274,6 +477,7 @@ public abstract class TimeUnit implements java.io.Serializable {
 
     /**
      * Utility to compute the excess-nanosecond argument to wait, sleep, join.
+     *
      * @param d the duration
      * @param m the number of milliseconds
      * @return the number of nanoseconds
@@ -284,18 +488,18 @@ public abstract class TimeUnit implements java.io.Serializable {
      * Performs a timed <tt>Object.wait</tt> using this time unit.
      * This is a convenience method that converts timeout arguments
      * into the form required by the <tt>Object.wait</tt> method.
-     *  For example, you could implement a blocking <tt>poll</tt>
+     * For example, you could implement a blocking <tt>poll</tt>
      * method(see {@link BlockingQueue#poll BlockingQueue.poll}) using:
-     * 
+     * <p/>
      * <pre> public synchronized Object poll(long timeout, TimeUnit unit)
      * throws InterruptedException { while (empty) {
      * unit.timedWait(this, timeout); ... } }</pre>
-     * 
-     * @param obj the object to wait on
+     *
+     * @param obj     the object to wait on
      * @param timeout the maximum time to wait. If less than
-     * or equal to zero, do not wait at all.
+     *                or equal to zero, do not wait at all.
      * @throws InterruptedException if interrupted while waiting.
-     * @see java.lang.Object#wait(long, int)
+     * @see Object#wait(long, int)
      */
     public void timedWait(Object obj, long timeout)
         throws InterruptedException {
@@ -310,11 +514,12 @@ public abstract class TimeUnit implements java.io.Serializable {
      * Performs a timed <tt>Thread.join</tt> using this time unit.
      * This is a convenience method that converts time arguments into the
      * form required by the <tt>Thread.join</tt> method.
-     * @param thread the thread to wait for
+     *
+     * @param thread  the thread to wait for
      * @param timeout the maximum time to wait. If less than
-     * or equal to zero, do not wait at all.
+     *                or equal to zero, do not wait at all.
      * @throws InterruptedException if interrupted while waiting.
-     * @see java.lang.Thread#join(long, int)
+     * @see Thread#join(long, int)
      */
     public void timedJoin(Thread thread, long timeout)
         throws InterruptedException {
@@ -329,10 +534,11 @@ public abstract class TimeUnit implements java.io.Serializable {
      * Performs a <tt>Thread.sleep</tt> using this unit.
      * This is a convenience method that converts time arguments into the
      * form required by the <tt>Thread.sleep</tt> method.
+     *
      * @param timeout the maximum time to sleep. If less than
-     * or equal to zero, do not sleep at all.
+     *                or equal to zero, do not sleep at all.
      * @throws InterruptedException if interrupted while sleeping.
-     * @see java.lang.Thread#sleep
+     * @see Thread#sleep
      */
     public void sleep(long timeout) throws InterruptedException {
         if (timeout > 0) {

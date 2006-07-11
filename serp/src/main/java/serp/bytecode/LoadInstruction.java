@@ -12,16 +12,20 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * Loads a value from the locals table to the stack.
- * 
+ *
  * @author Abe White
  */
 public class LoadInstruction extends LocalVariableInstruction {
-    private static final Class[][] _mappings = new Class[][] {
+
+    private static final Class[][] _mappings = new Class[][]{
         { byte.class, int.class }, { boolean.class, int.class },
         { char.class, int.class }, { short.class, int.class },
         { void.class, int.class }, };
@@ -38,80 +42,80 @@ public class LoadInstruction extends LocalVariableInstruction {
 
     int getLength() {
         switch (getOpcode()) {
-        case Constants.ILOAD:
-        case Constants.LLOAD:
-        case Constants.FLOAD:
-        case Constants.DLOAD:
-        case Constants.ALOAD:
-            return super.getLength() + 1;
-        default:
-            return super.getLength();
+            case Constants.ILOAD:
+            case Constants.LLOAD:
+            case Constants.FLOAD:
+            case Constants.DLOAD:
+            case Constants.ALOAD:
+                return super.getLength() + 1;
+            default:
+                return super.getLength();
         }
     }
 
     public int getStackChange() {
         switch (getOpcode()) {
-        case Constants.LLOAD:
-        case Constants.LLOAD0:
-        case Constants.LLOAD1:
-        case Constants.LLOAD2:
-        case Constants.LLOAD3:
-        case Constants.DLOAD:
-        case Constants.DLOAD0:
-        case Constants.DLOAD1:
-        case Constants.DLOAD2:
-        case Constants.DLOAD3:
-            return 2;
-        case Constants.NOP:
-            return 0;
-        default:
-            return 1;
+            case Constants.LLOAD:
+            case Constants.LLOAD0:
+            case Constants.LLOAD1:
+            case Constants.LLOAD2:
+            case Constants.LLOAD3:
+            case Constants.DLOAD:
+            case Constants.DLOAD0:
+            case Constants.DLOAD1:
+            case Constants.DLOAD2:
+            case Constants.DLOAD3:
+                return 2;
+            case Constants.NOP:
+                return 0;
+            default:
+                return 1;
         }
     }
 
     public int getLogicalStackChange() {
         switch (getOpcode()) {
-        case Constants.NOP:
-            return 0;
-        default:
-            return 1;
+            case Constants.NOP:
+                return 0;
+            default:
+                return 1;
         }
     }
 
     public String getTypeName() {
         switch (getOpcode()) {
-        case Constants.ILOAD:
-        case Constants.ILOAD0:
-        case Constants.ILOAD1:
-        case Constants.ILOAD2:
-        case Constants.ILOAD3:
-            return int.class.getName();
-        case Constants.LLOAD:
-        case Constants.LLOAD0:
-        case Constants.LLOAD1:
-        case Constants.LLOAD2:
-        case Constants.LLOAD3:
-            return long.class.getName();
-        case Constants.FLOAD:
-        case Constants.FLOAD0:
-        case Constants.FLOAD1:
-        case Constants.FLOAD2:
-        case Constants.FLOAD3:
-            return float.class.getName();
-        case Constants.DLOAD:
-        case Constants.DLOAD0:
-        case Constants.DLOAD1:
-        case Constants.DLOAD2:
-        case Constants.DLOAD3:
-            return double.class.getName();
-        case Constants.ALOAD:
-        case Constants.ALOAD0:
-        case Constants.ALOAD1:
-        case Constants.ALOAD2:
-        case Constants.ALOAD3:
-            return Object.class.getName();
-        default:
-            return _type;
+            case Constants.ILOAD:
+            case Constants.ILOAD0:
+            case Constants.ILOAD1:
+            case Constants.ILOAD2:
+            case Constants.ILOAD3:
+                return int.class.getName();
+            case Constants.LLOAD:
+            case Constants.LLOAD0:
+            case Constants.LLOAD1:
+            case Constants.LLOAD2:
+            case Constants.LLOAD3:
+                return long.class.getName();
+            case Constants.FLOAD:
+            case Constants.FLOAD0:
+            case Constants.FLOAD1:
+            case Constants.FLOAD2:
+            case Constants.FLOAD3:
+                return float.class.getName();
+            case Constants.DLOAD:
+            case Constants.DLOAD0:
+            case Constants.DLOAD1:
+            case Constants.DLOAD2:
+            case Constants.DLOAD3:
+                return double.class.getName();
+            case Constants.ALOAD:
+            case Constants.ALOAD0:
+            case Constants.ALOAD1:
+            case Constants.ALOAD2:
+            case Constants.ALOAD3:
+                return Object.class.getName();
+            default:
+                return _type;
         }
     }
 
@@ -122,39 +126,44 @@ public class LoadInstruction extends LocalVariableInstruction {
         // if an invalid type or local, revert to nop
         if (type == null || local < 0) {
             _type = type;
-            return(TypedInstruction) setOpcode(Constants.NOP);
+            return (TypedInstruction) setOpcode(Constants.NOP);
         }
 
         // valid opcode, unset saved type
         _type = null;
 
         switch (type.charAt(0)) {
-        case 'i':
-            return(TypedInstruction) setOpcode((local > 3) ? Constants.ILOAD
-                : Constants.ILOAD0 + local);
-        case 'l':
-            return(TypedInstruction) setOpcode((local > 3) ? Constants.LLOAD
-                : Constants.LLOAD0 + local);
-        case 'f':
-            return(TypedInstruction) setOpcode((local > 3) ? Constants.FLOAD
-                : Constants.FLOAD0 + local);
-        case 'd':
-            return(TypedInstruction) setOpcode((local > 3) ? Constants.DLOAD
-                : Constants.DLOAD0 + local);
-        default:
-            return(TypedInstruction) setOpcode((local > 3) ? Constants.ALOAD
-                : Constants.ALOAD0 + local);
+            case 'i':
+                return (TypedInstruction) setOpcode(
+                    (local > 3) ? Constants.ILOAD
+                        : Constants.ILOAD0 + local);
+            case 'l':
+                return (TypedInstruction) setOpcode(
+                    (local > 3) ? Constants.LLOAD
+                        : Constants.LLOAD0 + local);
+            case 'f':
+                return (TypedInstruction) setOpcode(
+                    (local > 3) ? Constants.FLOAD
+                        : Constants.FLOAD0 + local);
+            case 'd':
+                return (TypedInstruction) setOpcode(
+                    (local > 3) ? Constants.DLOAD
+                        : Constants.DLOAD0 + local);
+            default:
+                return (TypedInstruction) setOpcode(
+                    (local > 3) ? Constants.ALOAD
+                        : Constants.ALOAD0 + local);
         }
     }
 
     /**
      * Equivalent to <code>setLocal(0).setType(Object.class)</code>; the
      * <code>this</code> ptr is always passed in local variable 0.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public LoadInstruction setThis() {
-        return(LoadInstruction) setLocal(0).setType(Object.class);
+        return (LoadInstruction) setLocal(0).setType(Object.class);
     }
 
     /**
@@ -198,13 +207,13 @@ public class LoadInstruction extends LocalVariableInstruction {
         super.read(in);
 
         switch (getOpcode()) {
-        case Constants.ILOAD:
-        case Constants.LLOAD:
-        case Constants.FLOAD:
-        case Constants.DLOAD:
-        case Constants.ALOAD:
-            setLocal(in.readUnsignedByte());
-            break;
+            case Constants.ILOAD:
+            case Constants.LLOAD:
+            case Constants.FLOAD:
+            case Constants.DLOAD:
+            case Constants.ALOAD:
+                setLocal(in.readUnsignedByte());
+                break;
         }
     }
 
@@ -212,12 +221,12 @@ public class LoadInstruction extends LocalVariableInstruction {
         super.write(out);
 
         switch (getOpcode()) {
-        case Constants.ILOAD:
-        case Constants.LLOAD:
-        case Constants.FLOAD:
-        case Constants.DLOAD:
-        case Constants.ALOAD:
-            out.writeByte(getLocal());
+            case Constants.ILOAD:
+            case Constants.LLOAD:
+            case Constants.FLOAD:
+            case Constants.DLOAD:
+            case Constants.ALOAD:
+                out.writeByte(getLocal());
         }
     }
 
@@ -228,34 +237,34 @@ public class LoadInstruction extends LocalVariableInstruction {
 
     void calculateLocal() {
         switch (getOpcode()) {
-        case Constants.ILOAD0:
-        case Constants.LLOAD0:
-        case Constants.FLOAD0:
-        case Constants.DLOAD0:
-        case Constants.ALOAD0:
-            setLocal(0);
-            break;
-        case Constants.ILOAD1:
-        case Constants.LLOAD1:
-        case Constants.FLOAD1:
-        case Constants.DLOAD1:
-        case Constants.ALOAD1:
-            setLocal(1);
-            break;
-        case Constants.ILOAD2:
-        case Constants.LLOAD2:
-        case Constants.FLOAD2:
-        case Constants.DLOAD2:
-        case Constants.ALOAD2:
-            setLocal(2);
-            break;
-        case Constants.ILOAD3:
-        case Constants.LLOAD3:
-        case Constants.FLOAD3:
-        case Constants.DLOAD3:
-        case Constants.ALOAD3:
-            setLocal(3);
-            break;
+            case Constants.ILOAD0:
+            case Constants.LLOAD0:
+            case Constants.FLOAD0:
+            case Constants.DLOAD0:
+            case Constants.ALOAD0:
+                setLocal(0);
+                break;
+            case Constants.ILOAD1:
+            case Constants.LLOAD1:
+            case Constants.FLOAD1:
+            case Constants.DLOAD1:
+            case Constants.ALOAD1:
+                setLocal(1);
+                break;
+            case Constants.ILOAD2:
+            case Constants.LLOAD2:
+            case Constants.FLOAD2:
+            case Constants.DLOAD2:
+            case Constants.ALOAD2:
+                setLocal(2);
+                break;
+            case Constants.ILOAD3:
+            case Constants.LLOAD3:
+            case Constants.FLOAD3:
+            case Constants.DLOAD3:
+            case Constants.ALOAD3:
+                setLocal(3);
+                break;
         }
     }
 }

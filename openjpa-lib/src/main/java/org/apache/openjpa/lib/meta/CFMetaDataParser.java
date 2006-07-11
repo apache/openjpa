@@ -12,19 +12,21 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import org.apache.openjpa.lib.util.*;
-import org.xml.sax.*;
-import serp.util.*;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.apache.openjpa.lib.util.Localizer;
+import serp.util.Strings;
 
 /**
  * Custom SAX parser used by the system to quickly parse metadata files
  * for classes.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class CFMetaDataParser extends XMLMetaDataParser {
-    static final String[] PACKAGES = new String[] {
+
+    static final String[] PACKAGES = new String[]{
         "java.lang.", "java.util.", "java.math." };
     private static final Localizer _loc = Localizer.forPackage
         (CFMetaDataParser.class);

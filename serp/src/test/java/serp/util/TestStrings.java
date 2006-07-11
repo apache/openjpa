@@ -12,15 +12,18 @@
  */
 package serp.util;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link Strings} type.
- * 
+ *
  * @author Abe White
  */
 public class TestStrings extends TestCase {
+
     public TestStrings(String test) {
         super(test);
     }
@@ -31,23 +34,23 @@ public class TestStrings extends TestCase {
     public void testSplit() {
         String str = "boo:and:foo";
 
-        assertEquals(new String[] { "boo", "and:foo" },
+        assertEquals(new String[]{ "boo", "and:foo" },
             Strings.split(str, ":", 2));
-        assertEquals(new String[] { "boo:and:foo" },
+        assertEquals(new String[]{ "boo:and:foo" },
             Strings.split(str, ":", 1));
-        assertEquals(new String[] { "boo", "and", "foo" },
+        assertEquals(new String[]{ "boo", "and", "foo" },
             Strings.split(str, ":", 0));
-        assertEquals(new String[] { "boo", "and", "foo" },
+        assertEquals(new String[]{ "boo", "and", "foo" },
             Strings.split(str, ":", -2));
-        assertEquals(new String[] { "b", "", ":and:f", "", "" },
+        assertEquals(new String[]{ "b", "", ":and:f", "", "" },
             Strings.split(str, "o", 5));
-        assertEquals(new String[] { "b", "", ":and:f", "o" },
+        assertEquals(new String[]{ "b", "", ":and:f", "o" },
             Strings.split(str, "o", 4));
-        assertEquals(new String[] { "b", "", ":and:f", "", "" },
+        assertEquals(new String[]{ "b", "", ":and:f", "", "" },
             Strings.split(str, "o", -2));
-        assertEquals(new String[] { "b", "", ":and:f" },
+        assertEquals(new String[]{ "b", "", ":and:f" },
             Strings.split(str, "o", 0));
-        assertEquals(new String[] { "", "b", "", ":and:f" },
+        assertEquals(new String[]{ "", "b", "", ":and:f" },
             Strings.split("o" + str, "o", 0));
     }
 

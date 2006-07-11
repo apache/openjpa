@@ -12,16 +12,20 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-import org.apache.openjpa.lib.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Abstract base class for read-only result lists.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public abstract class AbstractResultList implements ResultList {
+
     private static final Localizer _loc = Localizer.forPackage
         (AbstractResultList.class);
 

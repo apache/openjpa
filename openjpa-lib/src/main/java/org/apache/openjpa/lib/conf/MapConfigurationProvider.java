@@ -12,20 +12,23 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import java.io.*;
-import java.util.*;
-import org.apache.commons.collections.*;
-import org.apache.openjpa.lib.log.*;
-import org.apache.openjpa.lib.util.*;
+import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Simple configuration provider that sets configuration based on a
  * provided map.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class MapConfigurationProvider implements ConfigurationProvider {
+
     private static final Localizer _loc = Localizer.forPackage
         (MapConfigurationProvider.class);
 
@@ -57,7 +60,7 @@ public class MapConfigurationProvider implements ConfigurationProvider {
     }
 
     public Map getProperties() {
-        return(_props == null) ? Collections.EMPTY_MAP : _props;
+        return (_props == null) ? Collections.EMPTY_MAP : _props;
     }
 
     public void addProperties(Map props) {

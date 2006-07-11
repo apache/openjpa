@@ -12,16 +12,20 @@
  */
 package serp.bytecode.lowlevel;
 
-import java.io.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * A String constant in the constant pool. String constants
  * hold a reference to a {@link UTF8Entry} that stores the actual value.
- * 
+ *
  * @author Abe White
  */
 public class StringEntry extends Entry implements ConstantEntry {
+
     private int _stringIndex = -1;
 
     /**
@@ -32,9 +36,9 @@ public class StringEntry extends Entry implements ConstantEntry {
 
     /**
      * Constructor.
-     * 
+     *
      * @param stringIndex the constant pool index of the {@link UTF8Entry}
-     * containing the value of this string
+     *                    containing the value of this string
      */
     public StringEntry(int stringIndex) {
         _stringIndex = stringIndex;
@@ -67,7 +71,7 @@ public class StringEntry extends Entry implements ConstantEntry {
      * be run for entries that have been added to a constant pool.
      */
     public UTF8Entry getStringEntry() {
-        return(UTF8Entry) getPool().getEntry(_stringIndex);
+        return (UTF8Entry) getPool().getEntry(_stringIndex);
     }
 
     public Object getConstant() {

@@ -12,18 +12,21 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Map;
 
 /**
  * Extension of the commons <code>LRUMap</code> that can change its
  * maximum size.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class LRUMap extends org.apache.commons.collections.map.LRUMap
     implements SizedMap {
+
     private int _max = -1;
 
     public LRUMap() {
@@ -61,11 +64,11 @@ public class LRUMap extends org.apache.commons.collections.map.LRUMap
     }
 
     public int maxSize() {
-        return(_max == -1) ? super.maxSize() : _max;
+        return (_max == -1) ? super.maxSize() : _max;
     }
 
     public boolean isFull() {
-        return(_max == -1) ? super.isFull() : size() >= _max;
+        return (_max == -1) ? super.isFull() : size() >= _max;
     }
 
     protected boolean removeLRU(LinkEntry entry) {

@@ -12,17 +12,22 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.io.*;
-import java.util.*;
+import java.io.ObjectStreamException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
 /**
  * Lazy forward-only result list.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class LazyForwardResultList extends AbstractSequentialResultList
     implements ResultList {
+
     private static final int OPEN = 0;
     private static final int CLOSED = 1;
     private static final int FREED = 2;
@@ -73,7 +78,7 @@ public class LazyForwardResultList extends AbstractSequentialResultList
     }
 
     protected ListIterator itr(int index) {
-        return(_state != OPEN) ? _list.listIterator(index) : new Itr(index);
+        return (_state != OPEN) ? _list.listIterator(index) : new Itr(index);
     }
 
     public int size() {
@@ -115,7 +120,10 @@ public class LazyForwardResultList extends AbstractSequentialResultList
 
     private void free() {
         if (_state == OPEN) {
-            try { _rop.close(); } catch (Exception e) {}
+            try {
+                _rop.close();
+            } catch (Exception e) {
+            }
             _state = FREED;
         }
     }
@@ -139,6 +147,7 @@ public class LazyForwardResultList extends AbstractSequentialResultList
     }
 
     private class Itr extends AbstractListIterator {
+
         private int _idx = 0;
 
         public Itr(int index) {

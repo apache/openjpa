@@ -12,17 +12,20 @@
  */
 package org.apache.openjpa.lib.xml;
 
-import org.xml.sax.*;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * ErrorHandler implementation which overrides the default
  * behavior of ignoring parse errors to throw a {@link SAXException} instead.
  * This handler is used by the validating parsers of the {@link XMLFactory}.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class ValidatingErrorHandler implements ErrorHandler {
+
     public void warning(SAXParseException e) throws SAXException {
         throw e;
     }

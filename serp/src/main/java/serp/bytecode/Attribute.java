@@ -12,22 +12,28 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.lang.reflect.*;
-import java.util.*;
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.Collection;
+import java.util.Collections;
+
+import serp.bytecode.lowlevel.ConstantPool;
+import serp.bytecode.lowlevel.UTF8Entry;
+import serp.bytecode.visitor.VisitAcceptor;
+import serp.util.Numbers;
 
 /**
  * In bytecode attributes are used to represent anything that is not
  * part of the class structure. This includes the source file name, code of
  * methods, the line number table, etc. All attributes contain at a minimum
  * an immutable name that also determines the attribute's type.
- * 
+ *
  * @author Abe White
  */
 public abstract class Attribute extends Attributes implements VisitAcceptor {
+
     private int _nameIndex = 0;
     private Attributes _owner = null;
 
@@ -42,7 +48,7 @@ public abstract class Attribute extends Attributes implements VisitAcceptor {
             Constructor cons = type.getDeclaredConstructor(new Class[]
                 { int.class, Attributes.class });
 
-            return(Attribute) cons.newInstance(new Object[]
+            return (Attribute) cons.newInstance(new Object[]
                 { Numbers.valueOf(nameIndex), owner });
         } catch (Throwable t) {
             return new UnknownAttribute(nameIndex, owner);
@@ -75,7 +81,7 @@ public abstract class Attribute extends Attributes implements VisitAcceptor {
      * Return the name of this attribute.
      */
     public String getName() {
-        return((UTF8Entry) getPool().getEntry(_nameIndex)).getValue();
+        return ((UTF8Entry) getPool().getEntry(_nameIndex)).getValue();
     }
 
     public Project getProject() {

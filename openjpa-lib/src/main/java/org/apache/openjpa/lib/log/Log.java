@@ -14,11 +14,12 @@ package org.apache.openjpa.lib.log;
 
 /**
  * Logging interface that is independent of other logging frameworks.
- * 
+ *
  * @author Patrick Linskey
  * @author Abe White
  */
 public interface Log {
+
     public static final short TRACE = 1;
     public static final short DEBUG = 2;
     public static final short INFO = 3;

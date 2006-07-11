@@ -12,14 +12,16 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Tests the {@link MergedResultObjectProvider}.
- * 
+ *
  * @author Abe White
  */
 public class TestMergedResultObjectProvider extends ResultListTest {
+
     public TestMergedResultObjectProvider(String test) {
         super(test);
     }
@@ -34,18 +36,18 @@ public class TestMergedResultObjectProvider extends ResultListTest {
         // 2. neither rop empty
         // 3. both rops empty
         ResultObjectProvider[] merges = new ResultObjectProvider[3];
-        merges[0] = new MergedResultObjectProvider(new ResultObjectProvider[] {
+        merges[0] = new MergedResultObjectProvider(new ResultObjectProvider[]{
             new ListResultObjectProvider(Collections.EMPTY_LIST),
             new ListResultObjectProvider(list), });
 
         int mid = list.size() / 2;
         List list1 = list.subList(0, mid);
         List list2 = list.subList(mid, list.size());
-        merges[1] = new MergedResultObjectProvider(new ResultObjectProvider[] {
+        merges[1] = new MergedResultObjectProvider(new ResultObjectProvider[]{
             new ListResultObjectProvider(list1),
             new ListResultObjectProvider(list2), });
 
-        merges[2] = new MergedResultObjectProvider(new ResultObjectProvider[] {
+        merges[2] = new MergedResultObjectProvider(new ResultObjectProvider[]{
             new ListResultObjectProvider(list),
             new ListResultObjectProvider(Collections.EMPTY_LIST), });
 

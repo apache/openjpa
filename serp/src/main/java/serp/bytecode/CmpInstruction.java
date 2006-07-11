@@ -12,16 +12,17 @@
  */
 package serp.bytecode;
 
-import serp.bytecode.visitor.*;
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * An instruction comparing two stack values. Examples include
  * <code>lcmp, fcmpl</code>, etc.
- * 
+ *
  * @author Abe White
  */
 public class CmpInstruction extends TypedInstruction {
-    private static Class[][] _mappings = new Class[][] {
+
+    private static Class[][] _mappings = new Class[][]{
         { int.class, long.class }, { byte.class, long.class },
         { char.class, long.class }, { short.class, long.class },
         { boolean.class, long.class }, { void.class, long.class },
@@ -37,38 +38,38 @@ public class CmpInstruction extends TypedInstruction {
 
     public int getLogicalStackChange() {
         switch (getOpcode()) {
-        case Constants.NOP:
-            return 0;
-        default:
-            return -1;
+            case Constants.NOP:
+                return 0;
+            default:
+                return -1;
         }
     }
 
     public int getStackChange() {
         switch (getOpcode()) {
-        case Constants.LCMP:
-        case Constants.DCMPL:
-        case Constants.DCMPG:
-            return -3;
-        case Constants.NOP:
-            return 0;
-        default:
-            return -1;
+            case Constants.LCMP:
+            case Constants.DCMPL:
+            case Constants.DCMPG:
+                return -3;
+            case Constants.NOP:
+                return 0;
+            default:
+                return -1;
         }
     }
 
     public String getTypeName() {
         switch (getOpcode()) {
-        case Constants.LCMP:
-            return long.class.getName();
-        case Constants.FCMPL:
-        case Constants.FCMPG:
-            return float.class.getName();
-        case Constants.DCMPL:
-        case Constants.DCMPG:
-            return double.class.getName();
-        default:
-            return null;
+            case Constants.LCMP:
+                return long.class.getName();
+            case Constants.FCMPL:
+            case Constants.FCMPG:
+                return float.class.getName();
+            case Constants.DCMPL:
+            case Constants.DCMPG:
+                return double.class.getName();
+            default:
+                return null;
         }
     }
 
@@ -76,22 +77,22 @@ public class CmpInstruction extends TypedInstruction {
         type = mapType(type, _mappings, true);
 
         if (type == null)
-            return(TypedInstruction) setOpcode(Constants.NOP);
+            return (TypedInstruction) setOpcode(Constants.NOP);
 
         int opcode = getOpcode();
         switch (type.charAt(0)) {
-        case 'l':
-            return(TypedInstruction) setOpcode(Constants.LCMP);
-        case 'f':
-            if (opcode == Constants.FCMPL || opcode == Constants.DCMPL)
-                return(TypedInstruction) setOpcode(Constants.FCMPL);
-            return(TypedInstruction) setOpcode(Constants.FCMPG);
-        case 'd':
-            if (opcode == Constants.FCMPL || opcode == Constants.DCMPL)
-                return(TypedInstruction) setOpcode(Constants.DCMPL);
-            return(TypedInstruction) setOpcode(Constants.DCMPG);
-        default:
-            throw new IllegalStateException();
+            case 'l':
+                return (TypedInstruction) setOpcode(Constants.LCMP);
+            case 'f':
+                if (opcode == Constants.FCMPL || opcode == Constants.DCMPL)
+                    return (TypedInstruction) setOpcode(Constants.FCMPL);
+                return (TypedInstruction) setOpcode(Constants.FCMPG);
+            case 'd':
+                if (opcode == Constants.FCMPL || opcode == Constants.DCMPL)
+                    return (TypedInstruction) setOpcode(Constants.DCMPL);
+                return (TypedInstruction) setOpcode(Constants.DCMPG);
+            default:
+                throw new IllegalStateException();
         }
     }
 
@@ -103,14 +104,14 @@ public class CmpInstruction extends TypedInstruction {
      */
     public int getNaNValue() {
         switch (getOpcode()) {
-        case Constants.FCMPL:
-        case Constants.DCMPL:
-            return -1;
-        case Constants.FCMPG:
-        case Constants.DCMPG:
-            return 1;
-        default:
-            return 0;
+            case Constants.FCMPL:
+            case Constants.DCMPL:
+                return -1;
+            case Constants.FCMPG:
+            case Constants.DCMPG:
+                return 1;
+            default:
+                return 0;
         }
     }
 
@@ -119,30 +120,30 @@ public class CmpInstruction extends TypedInstruction {
      * is of type float or double and one of the operands is NaN. For
      * FCMPG or DCMPG, this value should be 1; for FCMPL or DCMPL this value
      * should be -1. For LCMP, this value should be 0.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public CmpInstruction setNaNValue(int nan) {
         switch (getOpcode()) {
-        case Constants.FCMPL:
-        case Constants.FCMPG:
-            if (nan == 1)
-                setOpcode(Constants.FCMPG);
-            else if (nan == -1)
-                setOpcode(Constants.FCMPL);
-            else
-                throw new IllegalArgumentException("Invalid nan for type");
-        case Constants.DCMPL:
-        case Constants.DCMPG:
-            if (nan == 1)
-                setOpcode(Constants.DCMPG);
-            else if (nan == -1)
-                setOpcode(Constants.DCMPL);
-            else
-                throw new IllegalArgumentException("Invalid nan for type");
-        default:
-            if (nan != 0)
-                throw new IllegalArgumentException("Invalid nan for type");
+            case Constants.FCMPL:
+            case Constants.FCMPG:
+                if (nan == 1)
+                    setOpcode(Constants.FCMPG);
+                else if (nan == -1)
+                    setOpcode(Constants.FCMPL);
+                else
+                    throw new IllegalArgumentException("Invalid nan for type");
+            case Constants.DCMPL:
+            case Constants.DCMPG:
+                if (nan == 1)
+                    setOpcode(Constants.DCMPG);
+                else if (nan == -1)
+                    setOpcode(Constants.DCMPL);
+                else
+                    throw new IllegalArgumentException("Invalid nan for type");
+            default:
+                if (nan != 0)
+                    throw new IllegalArgumentException("Invalid nan for type");
         }
         return this;
     }

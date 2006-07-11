@@ -12,10 +12,15 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.lowlevel.ClassEntry;
+import serp.bytecode.lowlevel.ConstantEntry;
+import serp.bytecode.lowlevel.Entry;
+import serp.bytecode.visitor.BCVisitor;
+import serp.util.Numbers;
 
 /**
  * An instruction that that loads a constant onto the stack.
@@ -23,10 +28,11 @@ import serp.util.*;
  * type and value of the constant set. For example, if the constant value
  * is initially set to 5, the opcode will be <code>iconst5</code>; if later
  * incremented to 6, the opcode will be changed to <code>bipush(6)</code>.
- * 
+ *
  * @author Abe White
  */
 public class ConstantInstruction extends TypedInstruction {
+
     private int _arg = -1;
 
     ConstantInstruction(Code owner) {
@@ -39,15 +45,15 @@ public class ConstantInstruction extends TypedInstruction {
 
     int getLength() {
         switch (getOpcode()) {
-        case Constants.BIPUSH:
-        case Constants.LDC:
-            return super.getLength() + 1;
-        case Constants.SIPUSH:
-        case Constants.LDCW:
-        case Constants.LDC2W:
-            return super.getLength() + 2;
-        default:
-            return super.getLength();
+            case Constants.BIPUSH:
+            case Constants.LDC:
+                return super.getLength() + 1;
+            case Constants.SIPUSH:
+            case Constants.LDCW:
+            case Constants.LDC2W:
+                return super.getLength() + 2;
+            default:
+                return super.getLength();
         }
     }
 
@@ -66,49 +72,49 @@ public class ConstantInstruction extends TypedInstruction {
     public String getTypeName() {
         int opcode = getOpcode();
         switch (opcode) {
-        case Constants.NOP:
-            return null;
-        case Constants.ACONSTNULL:
-            return Object.class.getName();
-        case Constants.ICONSTM1:
-        case Constants.ICONST0:
-        case Constants.ICONST1:
-        case Constants.ICONST2:
-        case Constants.ICONST3:
-        case Constants.ICONST4:
-        case Constants.ICONST5:
-        case Constants.BIPUSH:
-        case Constants.SIPUSH:
-            return int.class.getName();
-        case Constants.LCONST0:
-        case Constants.LCONST1:
-            return long.class.getName();
-        case Constants.FCONST0:
-        case Constants.FCONST1:
-        case Constants.FCONST2:
-            return float.class.getName();
-        case Constants.DCONST0:
-        case Constants.DCONST1:
-            return double.class.getName();
+            case Constants.NOP:
+                return null;
+            case Constants.ACONSTNULL:
+                return Object.class.getName();
+            case Constants.ICONSTM1:
+            case Constants.ICONST0:
+            case Constants.ICONST1:
+            case Constants.ICONST2:
+            case Constants.ICONST3:
+            case Constants.ICONST4:
+            case Constants.ICONST5:
+            case Constants.BIPUSH:
+            case Constants.SIPUSH:
+                return int.class.getName();
+            case Constants.LCONST0:
+            case Constants.LCONST1:
+                return long.class.getName();
+            case Constants.FCONST0:
+            case Constants.FCONST1:
+            case Constants.FCONST2:
+                return float.class.getName();
+            case Constants.DCONST0:
+            case Constants.DCONST1:
+                return double.class.getName();
         }
 
         Entry entry = getPool().getEntry(_arg);
         switch (entry.getType()) {
-        case Entry.UTF8:
-        case Entry.STRING:
-            return String.class.getName();
-        case Entry.INT:
-            return int.class.getName();
-        case Entry.FLOAT:
-            return float.class.getName();
-        case Entry.LONG:
-            return long.class.getName();
-        case Entry.DOUBLE:
-            return double.class.getName();
-        case Entry.CLASS:
-            return Class.class.getName();
-        default:
-            return null;
+            case Entry.UTF8:
+            case Entry.STRING:
+                return String.class.getName();
+            case Entry.INT:
+                return int.class.getName();
+            case Entry.FLOAT:
+                return float.class.getName();
+            case Entry.LONG:
+                return long.class.getName();
+            case Entry.DOUBLE:
+                return double.class.getName();
+            case Entry.CLASS:
+                return Class.class.getName();
+            default:
+                return null;
         }
     }
 
@@ -123,37 +129,37 @@ public class ConstantInstruction extends TypedInstruction {
     public Object getValue() {
         int opcode = getOpcode();
         switch (opcode) {
-        case Constants.NOP:
-        case Constants.ACONSTNULL:
-            return null;
-        case Constants.ICONSTM1:
-        case Constants.ICONST0:
-        case Constants.ICONST1:
-        case Constants.ICONST2:
-        case Constants.ICONST3:
-        case Constants.ICONST4:
-        case Constants.ICONST5:
-            return Numbers.valueOf(opcode - Constants.ICONST0);
-        case Constants.LCONST0:
-        case Constants.LCONST1:
-            return Numbers.valueOf((long) (opcode - Constants.LCONST0));
-        case Constants.FCONST0:
-        case Constants.FCONST1:
-        case Constants.FCONST2:
-            return new Float(opcode - Constants.FCONST0);
-        case Constants.DCONST0:
-        case Constants.DCONST1:
-            return new Double(opcode - Constants.DCONST0);
-        case Constants.BIPUSH:
-        case Constants.SIPUSH:
-            return Numbers.valueOf(_arg);
-        default:
-            Entry entry = getPool().getEntry(_arg);
-            Object val = ((ConstantEntry) entry).getConstant();
-            if (entry.getType() == Entry.CLASS)
-                return getProject().getNameCache().getExternalForm
-                    ((String) val, false);
-            return val;
+            case Constants.NOP:
+            case Constants.ACONSTNULL:
+                return null;
+            case Constants.ICONSTM1:
+            case Constants.ICONST0:
+            case Constants.ICONST1:
+            case Constants.ICONST2:
+            case Constants.ICONST3:
+            case Constants.ICONST4:
+            case Constants.ICONST5:
+                return Numbers.valueOf(opcode - Constants.ICONST0);
+            case Constants.LCONST0:
+            case Constants.LCONST1:
+                return Numbers.valueOf((long) (opcode - Constants.LCONST0));
+            case Constants.FCONST0:
+            case Constants.FCONST1:
+            case Constants.FCONST2:
+                return new Float(opcode - Constants.FCONST0);
+            case Constants.DCONST0:
+            case Constants.DCONST1:
+                return new Double(opcode - Constants.DCONST0);
+            case Constants.BIPUSH:
+            case Constants.SIPUSH:
+                return Numbers.valueOf(_arg);
+            default:
+                Entry entry = getPool().getEntry(_arg);
+                Object val = ((ConstantEntry) entry).getConstant();
+                if (entry.getType() == Entry.CLASS)
+                    return getProject().getNameCache().getExternalForm
+                        ((String) val, false);
+                return val;
         }
     }
 
@@ -162,7 +168,7 @@ public class ConstantInstruction extends TypedInstruction {
      * an instance of String, Integer, Long, Double, Float, Class, BCClass, or
      * null depending on the constant type. If the given value is not
      * supported directly, it will be converted accordingly.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ConstantInstruction setValue(Object value) {
@@ -189,7 +195,7 @@ public class ConstantInstruction extends TypedInstruction {
      * Return the string value of this constant, or null if not set.
      */
     public String getStringValue() {
-        return(String) getValue();
+        return (String) getValue();
     }
 
     /**
@@ -197,7 +203,7 @@ public class ConstantInstruction extends TypedInstruction {
      */
     public int getIntValue() {
         Object value = getValue();
-        return(value == null) ? 0 : ((Number) value).intValue();
+        return (value == null) ? 0 : ((Number) value).intValue();
     }
 
     /**
@@ -205,7 +211,7 @@ public class ConstantInstruction extends TypedInstruction {
      */
     public long getLongValue() {
         Object value = getValue();
-        return(value == null) ? 0L : ((Number) value).longValue();
+        return (value == null) ? 0L : ((Number) value).longValue();
     }
 
     /**
@@ -213,7 +219,7 @@ public class ConstantInstruction extends TypedInstruction {
      */
     public float getFloatValue() {
         Object value = getValue();
-        return(value == null) ? 0F : ((Number) value).floatValue();
+        return (value == null) ? 0F : ((Number) value).floatValue();
     }
 
     /**
@@ -221,19 +227,19 @@ public class ConstantInstruction extends TypedInstruction {
      */
     public double getDoubleValue() {
         Object value = getValue();
-        return(value == null) ? 0D : ((Number) value).doubleValue();
+        return (value == null) ? 0D : ((Number) value).doubleValue();
     }
 
     /**
      * Return the class value of this constant, or null if not set.
      */
     public String getClassNameValue() {
-        return(String) getValue();
+        return (String) getValue();
     }
 
     /**
      * Set this constant to null.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ConstantInstruction setNull() {
@@ -243,7 +249,7 @@ public class ConstantInstruction extends TypedInstruction {
 
     /**
      * Set the value of this constant.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ConstantInstruction setValue(String value) {
@@ -253,7 +259,7 @@ public class ConstantInstruction extends TypedInstruction {
 
     /**
      * Set the value of this constant.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ConstantInstruction setValue(Class value) {
@@ -263,7 +269,7 @@ public class ConstantInstruction extends TypedInstruction {
 
     /**
      * Set the value of this constant.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ConstantInstruction setValue(BCClass value) {
@@ -273,7 +279,7 @@ public class ConstantInstruction extends TypedInstruction {
 
     /**
      * Set the value of this constant.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ConstantInstruction setValue(int value) {
@@ -283,7 +289,7 @@ public class ConstantInstruction extends TypedInstruction {
 
     /**
      * Set the value of this constant.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ConstantInstruction setValue(long value) {
@@ -293,7 +299,7 @@ public class ConstantInstruction extends TypedInstruction {
 
     /**
      * Set the value of this constant.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ConstantInstruction setValue(float value) {
@@ -303,7 +309,7 @@ public class ConstantInstruction extends TypedInstruction {
 
     /**
      * Set the value of this constant.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ConstantInstruction setValue(double value) {
@@ -313,7 +319,7 @@ public class ConstantInstruction extends TypedInstruction {
 
     /**
      * Set the value of this constant; note that this type is converted to int.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ConstantInstruction setValue(boolean value) {
@@ -322,7 +328,7 @@ public class ConstantInstruction extends TypedInstruction {
 
     /**
      * Set the value of this constant; note that this type is converted to int.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ConstantInstruction setValue(short value) {
@@ -331,7 +337,7 @@ public class ConstantInstruction extends TypedInstruction {
 
     /**
      * Set the value of this constant; note that this type is converted to int.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ConstantInstruction setValue(char value) {
@@ -369,14 +375,14 @@ public class ConstantInstruction extends TypedInstruction {
         super.read(in);
 
         switch (getOpcode()) {
-        case Constants.BIPUSH:
-        case Constants.LDC:
-            _arg = in.readUnsignedByte();
-            break;
-        case Constants.SIPUSH:
-        case Constants.LDCW:
-        case Constants.LDC2W:
-            _arg = in.readUnsignedShort();
+            case Constants.BIPUSH:
+            case Constants.LDC:
+                _arg = in.readUnsignedByte();
+                break;
+            case Constants.SIPUSH:
+            case Constants.LDCW:
+            case Constants.LDC2W:
+                _arg = in.readUnsignedShort();
         }
     }
 
@@ -384,15 +390,15 @@ public class ConstantInstruction extends TypedInstruction {
         super.write(out);
 
         switch (getOpcode()) {
-        case Constants.BIPUSH:
-        case Constants.LDC:
-            out.writeByte(_arg);
-            break;
-        case Constants.SIPUSH:
-        case Constants.LDCW:
-        case Constants.LDC2W:
-            out.writeShort(_arg);
-            break;
+            case Constants.BIPUSH:
+            case Constants.LDC:
+                out.writeByte(_arg);
+                break;
+            case Constants.SIPUSH:
+            case Constants.LDCW:
+            case Constants.LDC2W:
+                out.writeShort(_arg);
+                break;
         }
     }
 

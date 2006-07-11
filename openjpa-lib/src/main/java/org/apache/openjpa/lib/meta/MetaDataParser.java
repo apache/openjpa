@@ -12,17 +12,20 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.net.URL;
+import java.util.List;
 
 /**
  * Interface for metadata parsers.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public interface MetaDataParser {
+
     /**
      * The classloader to use to resolve resources, or null for impl-defined
      * default.
@@ -59,10 +62,10 @@ public interface MetaDataParser {
 
     /**
      * Parse the metadata in the given reader.
-     * 
-     * @param content reader containing the metadata to parse
+     *
+     * @param content    reader containing the metadata to parse
      * @param sourceName the name of the source being parsed, for use
-     * in error messages
+     *                   in error messages
      */
     public void parse(Reader content, String sourceName) throws IOException;
 

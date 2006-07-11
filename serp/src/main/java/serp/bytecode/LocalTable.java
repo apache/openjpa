@@ -12,17 +12,21 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Code blocks compiled from source have local tables mapping
  * locals used in opcodes to their names and descriptions.
- * 
+ *
  * @author Abe White
  */
 public abstract class LocalTable extends Attribute implements InstructionPtr {
+
     private List _locals = new ArrayList();
 
     LocalTable(int nameIndex, Attributes owner) {
@@ -33,7 +37,7 @@ public abstract class LocalTable extends Attribute implements InstructionPtr {
      * Return all the locals of this method.
      */
     public Local[] getLocals() {
-        return(Local[]) _locals.toArray(newLocalArray(_locals.size()));
+        return (Local[]) _locals.toArray(newLocalArray(_locals.size()));
     }
 
     /**
@@ -42,7 +46,7 @@ public abstract class LocalTable extends Attribute implements InstructionPtr {
     public Local getLocal(int local) {
         for (int i = 0; i < _locals.size(); i++)
             if (((Local) _locals.get(i)).getLocal() == local)
-                return(Local) _locals.get(i);
+                return (Local) _locals.get(i);
         return null;
     }
 
@@ -56,7 +60,7 @@ public abstract class LocalTable extends Attribute implements InstructionPtr {
             loc = ((Local) _locals.get(i)).getName();
             if ((loc == null && name == null)
                 || (loc != null && loc.equals(name)))
-                return(Local) _locals.get(i);
+                return (Local) _locals.get(i);
         }
         return null;
     }
@@ -73,7 +77,7 @@ public abstract class LocalTable extends Attribute implements InstructionPtr {
                 || (loc != null && loc.equals(name)))
                 matches.add(_locals.get(i));
         }
-        return(Local[]) matches.toArray(newLocalArray(matches.size()));
+        return (Local[]) matches.toArray(newLocalArray(matches.size()));
     }
 
     /**
@@ -140,7 +144,7 @@ public abstract class LocalTable extends Attribute implements InstructionPtr {
 
     /**
      * Removes the local with the given locals index from the table.
-     * 
+     *
      * @return true if a local was removed, false otherwise
      */
     public boolean removeLocal(int local) {
@@ -149,7 +153,7 @@ public abstract class LocalTable extends Attribute implements InstructionPtr {
 
     /**
      * Removes the local with the given name from this method.
-     * 
+     *
      * @return true if a local was removed, false otherwise
      */
     public boolean removeLocal(String name) {
@@ -159,7 +163,7 @@ public abstract class LocalTable extends Attribute implements InstructionPtr {
     /**
      * Removes a local from this method. After this method, the local
      * will be invalid, and the result of any operations on it is undefined.
-     * 
+     *
      * @return true if a local was removed, false otherwise
      */
     public boolean removeLocal(Local local) {
@@ -181,7 +185,7 @@ public abstract class LocalTable extends Attribute implements InstructionPtr {
     }
 
     public Code getCode() {
-        return(Code) getOwner();
+        return (Code) getOwner();
     }
 
     int getLength() {

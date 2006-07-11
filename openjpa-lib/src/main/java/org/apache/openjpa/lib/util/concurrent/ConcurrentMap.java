@@ -12,18 +12,20 @@
  */
 package org.apache.openjpa.lib.util.concurrent;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * A highly concurrent map.
- * 
+ *
  * @author Abe White
  */
 public interface ConcurrentMap extends Map {
+
     /**
      * Remove an arbitrary(not strictly random) entry from the map. This
      * allows implementation of concurrent caches with size ceilings.
-     * 
+     *
      * @return the removed entry, or null if map is empty
      */
     public Map.Entry removeRandom();

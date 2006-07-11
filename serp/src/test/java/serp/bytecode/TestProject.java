@@ -12,16 +12,21 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import junit.framework.*;
-import junit.textui.*;
+import java.io.File;
+import java.io.InputStream;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link Project} type.
- * 
+ *
  * @author Abe White
  */
 public class TestProject extends TestCase {
+
     private Project _project = new Project();
 
     public TestProject(String test) {
@@ -45,9 +50,9 @@ public class TestProject extends TestCase {
         String[] names, names2;
 
         // test primitive types
-        names = new String[] { "boolean", "byte", "char", "double", "float",
+        names = new String[]{ "boolean", "byte", "char", "double", "float",
             "int", "long", "short", "void" };
-        names2 = new String[] { "Z", "B", "C", "D", "F", "I", "J", "S", "V" };
+        names2 = new String[]{ "Z", "B", "C", "D", "F", "I", "J", "S", "V" };
 
         for (int i = 0; i < names.length; i++) {
             bc = _project.loadClass(names[i]);
@@ -58,9 +63,9 @@ public class TestProject extends TestCase {
         }
 
         // test primitive array types
-        names = new String[] { "boolean[]", "byte[]", "char[]", "double[]",
+        names = new String[]{ "boolean[]", "byte[]", "char[]", "double[]",
             "float[]", "int[]", "long[]", "short[]" };
-        names2 = new String[] { "[Z", "[B", "[C", "[D", "[F", "[I", "[J", "[S"};
+        names2 = new String[]{ "[Z", "[B", "[C", "[D", "[F", "[I", "[J", "[S" };
 
         for (int i = 0; i < names.length; i++) {
             bc = _project.loadClass(names[i]);
@@ -111,10 +116,10 @@ public class TestProject extends TestCase {
         String[] names;
 
         // test primitive types
-        types = new Class[] { boolean.class, byte.class, char.class,
+        types = new Class[]{ boolean.class, byte.class, char.class,
             double.class, float.class, int.class, long.class, short.class,
             void.class };
-        names = new String[] { "Z", "B", "C", "D", "F", "I", "J", "S", "V" };
+        names = new String[]{ "Z", "B", "C", "D", "F", "I", "J", "S", "V" };
 
         for (int i = 0; i < names.length; i++) {
             bc = _project.loadClass(types[i]);
@@ -125,10 +130,10 @@ public class TestProject extends TestCase {
         }
 
         // test primitive array types
-        types = new Class[] { boolean[].class, byte[].class, char[].class,
+        types = new Class[]{ boolean[].class, byte[].class, char[].class,
             double[].class, float[].class, int[].class, long[].class,
             short[].class, };
-        names = new String[] { "[Z", "[B", "[C", "[D", "[F", "[I", "[J", "[S"};
+        names = new String[]{ "[Z", "[B", "[C", "[D", "[F", "[I", "[J", "[S" };
 
         for (int i = 0; i < names.length; i++) {
             bc = _project.loadClass(types[i]);

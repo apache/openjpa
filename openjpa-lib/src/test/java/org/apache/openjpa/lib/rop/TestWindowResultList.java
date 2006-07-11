@@ -12,14 +12,13 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-
 /**
  * Tests the {@link WindowResultList}.
- * 
+ *
  * @author Abe White
  */
 public class TestWindowResultList extends ResultListTest {
+
     public TestWindowResultList(String test) {
         super(test);
     }

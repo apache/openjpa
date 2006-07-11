@@ -12,18 +12,21 @@
  */
 package org.apache.openjpa.lib.util.concurrent;
 
-import java.io.*;
-import java.util.*;
-import org.apache.commons.collections.map.*;
-import org.apache.commons.collections.set.*;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
+
+import org.apache.commons.collections.set.MapBackedSet;
 
 /**
  * A concurrent set whose values may be stored as weak or soft references.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class ConcurrentReferenceHashSet implements Set, Serializable {
+
     /**
      * Hard reference marker.
      */

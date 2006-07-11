@@ -12,18 +12,30 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.io.*;
-import java.net.*;
-import org.apache.commons.lang.exception.*;
-import serp.util.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.net.URL;
+import java.net.URLDecoder;
+
+import org.apache.commons.lang.exception.NestableRuntimeException;
+import serp.util.Strings;
 
 /**
  * Utility operations on files.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class Files {
+
     /**
      * Backup the given file to a new file called &lt;file-name&gt;~. If
      * the file does not exist or a backup could not be created, returns null.
@@ -147,10 +159,10 @@ public class Files {
      * represent an existing file, it is checked as a resource name of a
      * file. If no resource exists, then it is interpreted as a path
      * to a file that does not exist yet.
-     * 
-     * @param name the file path or resource name
+     *
+     * @param name   the file path or resource name
      * @param loader a class loader to use in resource lookup, or null
-     * to use the thread's context loader
+     *               to use the thread's context loader
      */
     public static File getFile(String name, ClassLoader loader) {
         if (name == null)
@@ -179,7 +191,7 @@ public class Files {
     /**
      * Return a writer to the stream(stdout or stderr) or file named by the
      * given string.
-     * 
+     *
      * @see #getFile
      */
     public static Writer getWriter(String file, ClassLoader loader)
@@ -200,10 +212,11 @@ public class Files {
     /**
      * Return an output stream to the stream(stdout or stderr) or file named
      * by the given string.
-     * 
+     *
      * @see #getFile
      */
-    public static OutputStream getOutputStream(String file, ClassLoader loader) {
+    public static OutputStream getOutputStream(String file,
+        ClassLoader loader) {
         if (file == null)
             return null;
         if ("stdout".equals(file))
@@ -231,15 +244,21 @@ public class Files {
             BufferedInputStream inbuf = new BufferedInputStream(in);
             out = new FileOutputStream(to);
             BufferedOutputStream outbuf = new BufferedOutputStream(out);
-            for (int b; (b = inbuf.read()) != -1; outbuf.write(b));
+            for (int b; (b = inbuf.read()) != -1; outbuf.write(b)) ;
             outbuf.flush();
             return true;
         }
         finally {
             if (in != null)
-                try { in.close(); } catch (Exception e) {}
+                try {
+                    in.close();
+                } catch (Exception e) {
+                }
             if (out != null)
-                try { out.close(); } catch (Exception e) {}
+                try {
+                    out.close();
+                } catch (Exception e) {
+                }
         }
     }
 }

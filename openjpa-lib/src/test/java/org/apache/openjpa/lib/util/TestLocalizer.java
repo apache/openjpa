@@ -12,17 +12,22 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.util.*;
-import junit.framework.*;
-import junit.textui.*;
-import org.apache.openjpa.lib.util.testlocalizer.*;
+import java.util.Locale;
+import java.util.MissingResourceException;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
+import org.apache.openjpa.lib.util.testlocalizer.LocalizerTestHelper;
 
 /**
  * Tests the Localizer.
- * 
+ *
  * @author Abe White
  */
 public class TestLocalizer extends TestCase {
+
     private Localizer _locals = null;
 
     public TestLocalizer(String test) {
@@ -72,7 +77,7 @@ public class TestLocalizer extends TestCase {
      */
     public void testMessageFormat() {
         assertEquals("value2 x sep y", _locals.get("test.local2",
-            new String[] { "x", "y" }));
+            new String[]{ "x", "y" }));
 
         // test that it treates single objects as single-element arrays
         assertEquals("value2 x sep {1}", _locals.get("test.local2", "x"));

@@ -12,18 +12,24 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.io.*;
-import java.util.*;
-import java.util.zip.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.NoSuchElementException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Iterator over all metadata resources in a given zip input stream.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class ZipStreamMetaDataIterator
     implements MetaDataIterator, MetaDataFilter.Resource {
+
     private final ZipInputStream _stream;
     private final MetaDataFilter _filter;
     private ZipEntry _entry = null;
@@ -86,7 +92,10 @@ public class ZipStreamMetaDataIterator
     }
 
     public void close() {
-        try { _stream.close(); } catch (IOException ioe) {}
+        try {
+            _stream.close();
+        } catch (IOException ioe) {
+        }
     }
 
     //////////////////////////////////////////
@@ -104,7 +113,7 @@ public class ZipStreamMetaDataIterator
         if (size < 0) {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             byte[] buf = new byte[1024];
-            for (int r; (r = _stream.read(buf)) != -1; bout.write(buf, 0, r));
+            for (int r; (r = _stream.read(buf)) != -1; bout.write(buf, 0, r)) ;
             _buf = bout.toByteArray();
         } else {
             _buf = new byte[size];
@@ -119,6 +128,7 @@ public class ZipStreamMetaDataIterator
      * stream is not closed.
      */
     private class NoCloseInputStream extends InputStream {
+
         public int available() throws IOException {
             return _stream.available();
         }

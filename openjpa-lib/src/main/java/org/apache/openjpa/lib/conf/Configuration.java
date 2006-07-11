@@ -12,22 +12,27 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import java.beans.*;
-import java.io.*;
-import java.util.*;
-import org.apache.openjpa.lib.log.*;
+import java.beans.BeanInfo;
+import java.beans.PropertyChangeListener;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Properties;
+
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.log.LogFactory;
 import org.apache.openjpa.lib.util.Closeable;
 
 /**
  * Interface for generic configuration objects. Includes the ability
  * to write configuration to and from {@link Properties} instances. Instances
  * are threadsafe for reads, but not for writes.
- * 
+ *
  * @author Marc Prud'hommeaux
  * @author Abe White
  */
 public interface Configuration
     extends BeanInfo, Serializable, Closeable, Cloneable {
+
     /**
      * Attribute of returned {@link Value} property descriptors listing
      * recognized values for the property.
@@ -86,7 +91,7 @@ public interface Configuration
 
     /**
      * Return the log for the given category.
-     * 
+     *
      * @see #getLogFactory
      */
     public Log getLog(String category);
@@ -131,9 +136,9 @@ public interface Configuration
      * A properties representation of this Configuration.
      * Note that changes made to this properties object will
      * not be automatically reflected in this Configuration object.
-     * 
+     *
      * @param storeDefaults if true, then properties will be written
-     * out even if they match the default value for a property
+     *                      out even if they match the default value for a property
      */
     public Map toProperties(boolean storeDefaults);
 
@@ -141,7 +146,7 @@ public interface Configuration
      * Set this Configuration via the given map. Any keys missing from
      * the given map will not be set. Note that changes made to this map
      * will not be automatically reflected in this Configuration object.
-     *  IMPORTANT: If the map contains instantiated objects(rather than
+     * IMPORTANT: If the map contains instantiated objects(rather than
      * string values), only the string representation of those objects
      * are considered in this configuration's <code>equals</code> and
      * <code>hashCode</code> methods. If the object's property has no
@@ -153,14 +158,14 @@ public interface Configuration
     /**
      * Adds a listener for any property changes. The property events fired
      * will <b>not</b> include the old value.
-     * 
+     *
      * @param listener the listener to receive notification of property changes
      */
     public void addPropertyChangeListener(PropertyChangeListener listener);
 
     /**
      * Removes a listener for any property changes.
-     * 
+     *
      * @param listener the listener to remove
      */
     public void removePropertyChangeListener(PropertyChangeListener listener);

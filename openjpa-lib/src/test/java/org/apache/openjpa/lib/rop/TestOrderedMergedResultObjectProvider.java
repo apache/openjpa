@@ -12,15 +12,18 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-import org.apache.commons.collections.comparators.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Tests the {@link MergedResultObjectProvider}.
- * 
+ *
  * @author Abe White
  */
 public class TestOrderedMergedResultObjectProvider extends ResultListTest {
+
     public TestOrderedMergedResultObjectProvider(String test) {
         super(test);
     }
@@ -43,12 +46,12 @@ public class TestOrderedMergedResultObjectProvider extends ResultListTest {
         Collections.sort(list3, comp);
         Collections.sort(list4, comp);
 
-        ResultObjectProvider[] rops = new ResultObjectProvider[] {
+        ResultObjectProvider[] rops = new ResultObjectProvider[]{
             new ListResultObjectProvider(list1),
             new ListResultObjectProvider(list2),
             new ListResultObjectProvider(list3),
             new ListResultObjectProvider(list4), };
-        return new ResultObjectProvider[] {
+        return new ResultObjectProvider[]{
             new MergedResultObjectProvider(rops, comp)
         };
     }
@@ -58,6 +61,7 @@ public class TestOrderedMergedResultObjectProvider extends ResultListTest {
     }
 
     private static class IntValueComparator implements Comparator {
+
         public int compare(Object o1, Object o2) {
             return Integer.valueOf(o1.toString()).
                 compareTo(Integer.valueOf(o2.toString()));

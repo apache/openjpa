@@ -12,15 +12,19 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * The <code>ret</code> instruction is used in the implementation of finally.
- * 
+ *
  * @author Abe White
  */
 public class RetInstruction extends LocalVariableInstruction {
+
     RetInstruction(Code owner) {
         super(owner, Constants.RET);
     }

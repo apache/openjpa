@@ -12,13 +12,25 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.io.*;
-import java.math.*;
-import java.net.*;
-import java.sql.*;
+import java.io.InputStream;
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Connection;
 import java.sql.Date;
-import java.util.*;
-import org.apache.openjpa.lib.util.*;
+import java.sql.PreparedStatement;
+import java.sql.Ref;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Calendar;
+
 import org.apache.openjpa.lib.util.Closeable;
 
 /**
@@ -26,15 +38,18 @@ import org.apache.openjpa.lib.util.Closeable;
  * methods whose behavior they mean to change. The <code>equals</code> and
  * <code>hashCode</code> methods pass through to the base underlying data
  * store statement.
- * 
+ *
  * @author Abe White
  */
-public class DelegatingPreparedStatement implements PreparedStatement, Closeable {
+public class DelegatingPreparedStatement
+    implements PreparedStatement, Closeable {
+
     private final PreparedStatement _stmnt;
     private final DelegatingPreparedStatement _del;
     private final Connection _conn;
 
-    public DelegatingPreparedStatement(PreparedStatement stmnt, Connection conn) {
+    public DelegatingPreparedStatement(PreparedStatement stmnt,
+        Connection conn) {
         _conn = conn;
         _stmnt = stmnt;
         if (_stmnt instanceof DelegatingPreparedStatement)
@@ -60,7 +75,7 @@ public class DelegatingPreparedStatement implements PreparedStatement, Closeable
      * Return the base underlying data store statement.
      */
     public PreparedStatement getInnermostDelegate() {
-        return(_del == null) ? _stmnt : _del.getInnermostDelegate();
+        return (_del == null) ? _stmnt : _del.getInnermostDelegate();
     }
 
     public int hashCode() {
@@ -243,7 +258,7 @@ public class DelegatingPreparedStatement implements PreparedStatement, Closeable
         return wrapResult(rs, wrap);
     }
 
-    public int executeUpdate  () throws SQLException {
+    public int executeUpdate() throws SQLException {
         return _stmnt.executeUpdate();
     }
 
@@ -322,7 +337,8 @@ public class DelegatingPreparedStatement implements PreparedStatement, Closeable
         _stmnt.clearParameters();
     }
 
-    public void setObject(int i1, Object o, int i2, int i3) throws SQLException {
+    public void setObject(int i1, Object o, int i2, int i3)
+        throws SQLException {
         _stmnt.setObject(i1, o, i2, i3);
     }
 
@@ -342,7 +358,8 @@ public class DelegatingPreparedStatement implements PreparedStatement, Closeable
         _stmnt.addBatch();
     }
 
-    public void setCharacterStream(int i1, Reader r, int i2) throws SQLException {
+    public void setCharacterStream(int i1, Reader r, int i2)
+        throws SQLException {
         _stmnt.setCharacterStream(i1, r, i2);
     }
 
@@ -374,7 +391,8 @@ public class DelegatingPreparedStatement implements PreparedStatement, Closeable
         _stmnt.setTime(i, t, c);
     }
 
-    public void setTimestamp(int i, Timestamp t, Calendar c) throws SQLException {
+    public void setTimestamp(int i, Timestamp t, Calendar c)
+        throws SQLException {
         _stmnt.setTimestamp(i, t, c);
     }
 

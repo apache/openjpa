@@ -12,17 +12,33 @@
  */
 package serp.bytecode.visitor;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import serp.bytecode.*;
-import serp.bytecode.lowlevel.*;
+import serp.bytecode.lowlevel.ClassEntry;
+import serp.bytecode.lowlevel.ConstantPool;
+import serp.bytecode.lowlevel.DoubleEntry;
+import serp.bytecode.lowlevel.Entry;
+import serp.bytecode.lowlevel.FieldEntry;
+import serp.bytecode.lowlevel.FloatEntry;
+import serp.bytecode.lowlevel.IntEntry;
+import serp.bytecode.lowlevel.InterfaceMethodEntry;
+import serp.bytecode.lowlevel.LongEntry;
+import serp.bytecode.lowlevel.MethodEntry;
+import serp.bytecode.lowlevel.NameAndTypeEntry;
+import serp.bytecode.lowlevel.StringEntry;
+import serp.bytecode.lowlevel.UTF8Entry;
 
 /**
  * Visitor type that outputs a detailed, formatted document of the
  * visited entity; similar to the <i>javap -c</i> command but more detailed.
- * 
+ *
  * @author Abe White
  */
 public class PrettyPrintVisitor extends BCVisitor {
+
     private PrintWriter _out = null;
     private String _prefix = "";
     private int _entryCount = 0;
@@ -63,7 +79,7 @@ public class PrettyPrintVisitor extends BCVisitor {
 
     /**
      * Constructor.
-     * 
+     *
      * @param out the stream to print to
      */
     public PrettyPrintVisitor(PrintWriter out) {

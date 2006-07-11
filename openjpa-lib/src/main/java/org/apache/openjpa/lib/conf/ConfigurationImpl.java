@@ -13,16 +13,48 @@
 package org.apache.openjpa.lib.conf;
 
 import java.awt.*;
-import java.beans.*;
-import java.io.*;
-import java.lang.reflect.*;
-import java.util.*;
+import java.beans.BeanDescriptor;
+import java.beans.BeanInfo;
+import java.beans.EventSetDescriptor;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.beans.PropertyDescriptor;
+import java.io.Externalizable;
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import org.apache.commons.lang.*;
-import org.apache.openjpa.lib.log.*;
-import org.apache.openjpa.lib.util.*;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Properties;
+import java.util.TreeSet;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.log.LogFactory;
 import org.apache.openjpa.lib.util.Closeable;
-import serp.util.*;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.ParseException;
+import org.apache.openjpa.lib.util.Services;
+import org.apache.openjpa.lib.util.StringDistance;
+import serp.util.Strings;
 
 /**
  * Default implementation of the {@link Configuration} interface.
@@ -31,7 +63,7 @@ import serp.util.*;
  * provides base configuration functionality, including serialization,
  * the <code>equals</code> and <code>hashCode</code> contracts, and default
  * property loading.
- *  Property descriptors for {@link Value} instances are constructed from
+ * Property descriptors for {@link Value} instances are constructed from
  * the {@link Localizer} for the package of the configuration class. The
  * following localized strings will be used for describing a value, where
  * <em>name</em> is the last token of the value's property string:
@@ -53,11 +85,12 @@ import serp.util.*;
  * <li><em>name</em>-displayorder: The order in which the property should
  * be displayer.</li>
  * </ul>
- * 
+ *
  * @author Abe White
  */
 public class ConfigurationImpl
     implements Configuration, Externalizable, ValueListener {
+
     private static final String SEP = System.getProperty("line.separator");
 
     private static final Localizer _loc = Localizer.forPackage
@@ -87,12 +120,12 @@ public class ConfigurationImpl
 
     /**
      * Constructor.
-     * 
+     *
      * @param loadDefaults whether to attempt to load the default properties
      */
     public ConfigurationImpl(boolean loadDefaults) {
         logFactoryPlugin = addPlugin("org.apache.openjpa.lib.Log", true);
-        String[] aliases = new String[] {
+        String[] aliases = new String[]{
             "true", "org.apache.openjpa.lib.log.LogFactoryImpl",
             "commons", "org.apache.openjpa.lib.log.CommonsLogFactory",
             "log4j", "org.apache.openjpa.lib.log.Log4JLogFactory",
@@ -141,7 +174,7 @@ public class ConfigurationImpl
     public LogFactory getLogFactory() {
         if (logFactoryPlugin.get() == null)
             logFactoryPlugin.instantiate(LogFactory.class, this);
-        return(LogFactory) logFactoryPlugin.get();
+        return (LogFactory) logFactoryPlugin.get();
     }
 
     public void setLogFactory(LogFactory logFactory) {
@@ -187,7 +220,7 @@ public class ConfigurationImpl
     }
 
     public Value[] getValues() {
-        return(Value[]) _vals.toArray(new Value[_vals.size()]);
+        return (Value[]) _vals.toArray(new Value[_vals.size()]);
     }
 
     public Value getValue(String property) {
@@ -402,7 +435,7 @@ public class ConfigurationImpl
                 + StringUtils.capitalize(prop), (Class[]) null));
             pd.setWriteMethod(getClass().getMethod("set"
                 + StringUtils.capitalize(prop), new Class[]
-                {pd.getReadMethod().getReturnType()}));
+                { pd.getReadMethod().getReturnType() }));
         } catch (Throwable t) {
             // if an error occurs, it might be because the value is a
             // dynamic property.
@@ -698,9 +731,9 @@ public class ConfigurationImpl
     public Object clone() {
         try {
             Constructor cons = getClass().getConstructor
-                (new Class[] { boolean.class });
+                (new Class[]{ boolean.class });
             Configuration clone = (Configuration) cons.newInstance
-                (new Object[] { Boolean.FALSE });
+                (new Object[]{ Boolean.FALSE });
             clone.fromProperties(toProperties(true));
             return clone;
         } catch (RuntimeException re) {
@@ -808,8 +841,9 @@ public class ConfigurationImpl
      * Exposes our values list as a list of property names.
      */
     private class PropertyList extends AbstractList {
+
         public Object get(int i) {
-            return((Value) _vals.get(i)).getProperty();
+            return ((Value) _vals.get(i)).getProperty();
         }
 
         public int size() {

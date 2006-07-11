@@ -12,19 +12,23 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.lang.reflect.*;
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.lang.reflect.Field;
+
+import serp.bytecode.lowlevel.ComplexEntry;
+import serp.bytecode.lowlevel.ConstantPool;
+import serp.util.Strings;
 
 /**
  * Instruction that takes as an argument a field to operate
  * on. Examples include <code>getfield, getstatic, setfield, setstatic</code>.
- * 
+ *
  * @author Abe White
  */
 public abstract class FieldInstruction extends Instruction {
+
     private int _index = 0;
 
     FieldInstruction(Code owner, int opcode) {
@@ -50,7 +54,7 @@ public abstract class FieldInstruction extends Instruction {
     /**
      * Set the index in the class {@link ConstantPool} of the
      * {@link ComplexEntry} describing the field to operate on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public FieldInstruction setFieldIndex(int index) {
@@ -76,7 +80,7 @@ public abstract class FieldInstruction extends Instruction {
 
     /**
      * Set the field this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public FieldInstruction setField(BCField field) {
@@ -88,7 +92,7 @@ public abstract class FieldInstruction extends Instruction {
 
     /**
      * Set the field this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public FieldInstruction setField(Field field) {
@@ -100,8 +104,8 @@ public abstract class FieldInstruction extends Instruction {
 
     /**
      * Set the field this instruction operates on.
-     * 
-     * @param dec the full class name of the field's declaring class
+     *
+     * @param dec  the full class name of the field's declaring class
      * @param name the field name
      * @param type the full class name of the field type
      * @return this instruction, for method chaining
@@ -120,13 +124,13 @@ public abstract class FieldInstruction extends Instruction {
         dec = getProject().getNameCache().getInternalForm(dec, false);
         type = getProject().getNameCache().getInternalForm(type, true);
 
-        return setFieldIndex(getPool().findFieldEntry (dec, name, type, true));
+        return setFieldIndex(getPool().findFieldEntry(dec, name, type, true));
     }
 
     /**
      * Set the field this instruction operates on, for fields that are
      * declared by the current class.
-     * 
+     *
      * @param name the field name
      * @param type the full class name of the field type
      * @return this instruction, for method chaining
@@ -138,8 +142,8 @@ public abstract class FieldInstruction extends Instruction {
 
     /**
      * Set the field this instruction operates on.
-     * 
-     * @param dec the field's declaring class
+     *
+     * @param dec  the field's declaring class
      * @param name the field name
      * @param type the class of the field type
      * @return this instruction, for method chaining
@@ -153,7 +157,7 @@ public abstract class FieldInstruction extends Instruction {
     /**
      * Set the field this instruction operates on, for fields that are
      * declared by the current class.
-     * 
+     *
      * @param name the field name
      * @param type the class of the field type
      * @return this instruction, for method chaining
@@ -166,8 +170,8 @@ public abstract class FieldInstruction extends Instruction {
 
     /**
      * Set the field this instruction operates on.
-     * 
-     * @param dec the field's declaring class
+     *
+     * @param dec  the field's declaring class
      * @param name the field name
      * @param type the class of the field type
      * @return this instruction, for method chaining
@@ -181,7 +185,7 @@ public abstract class FieldInstruction extends Instruction {
     /**
      * Set the field this instruction operates on, for fields that are
      * declared by the current class.
-     * 
+     *
      * @param name the field name
      * @param type the class of the field type
      * @return this instruction, for method chaining
@@ -214,7 +218,7 @@ public abstract class FieldInstruction extends Instruction {
 
     /**
      * Set the name of the field this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public FieldInstruction setFieldName(String name) {
@@ -262,7 +266,7 @@ public abstract class FieldInstruction extends Instruction {
 
     /**
      * Set the type of the field this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public FieldInstruction setFieldType(String type) {
@@ -271,7 +275,7 @@ public abstract class FieldInstruction extends Instruction {
 
     /**
      * Set the type of the field this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public FieldInstruction setFieldType(Class type) {
@@ -283,7 +287,7 @@ public abstract class FieldInstruction extends Instruction {
 
     /**
      * Set the type of the field this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public FieldInstruction setFieldType(BCClass type) {
@@ -334,7 +338,7 @@ public abstract class FieldInstruction extends Instruction {
 
     /**
      * Set the declaring class of the field this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public FieldInstruction setFieldDeclarer(String type) {
@@ -343,7 +347,7 @@ public abstract class FieldInstruction extends Instruction {
 
     /**
      * Set the declaring class of the field this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public FieldInstruction setFieldDeclarer(Class type) {
@@ -355,7 +359,7 @@ public abstract class FieldInstruction extends Instruction {
 
     /**
      * Set the declaring class of the field this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public FieldInstruction setFieldDeclarer(BCClass type) {

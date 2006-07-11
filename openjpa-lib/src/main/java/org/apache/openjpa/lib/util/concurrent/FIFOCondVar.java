@@ -18,15 +18,19 @@
  */
 package org.apache.openjpa.lib.util.concurrent;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
 
 class FIFOCondVar extends CondVar implements Condition, java.io.Serializable {
 
     private static final WaitQueue.QueuedSync sync =
         new WaitQueue.QueuedSync() {
-            public boolean recheck(WaitQueue.WaitNode node) { return false; }
+            public boolean recheck(WaitQueue.WaitNode node) {
+                return false;
+            }
 
-            public void takeOver(WaitQueue.WaitNode node) {}
+            public void takeOver(WaitQueue.WaitNode node) {
+            }
         };
 
     // wait queue; only accessed when holding the lock
@@ -34,6 +38,7 @@ class FIFOCondVar extends CondVar implements Condition, java.io.Serializable {
 
     /**
      * Create a new CondVar that relies on the given mutual exclusion lock.
+     *
      * @param lock A non-reentrant mutual exclusion lock.
      */
     FIFOCondVar(ExclusiveLock lock) {
@@ -47,12 +52,12 @@ class FIFOCondVar extends CondVar implements Condition, java.io.Serializable {
         }
         WaitQueue.WaitNode n = new WaitQueue.WaitNode();
         wq.insert(n);
-        for (int i=holdCount; i>0; i--) lock.unlock();
+        for (int i = holdCount; i > 0; i--) lock.unlock();
         try {
             n.doWaitUninterruptibly(sync);
         }
         finally {
-            for (int i=holdCount; i>0; i--) lock.lock();
+            for (int i = holdCount; i > 0; i--) lock.lock();
         }
     }
 
@@ -64,12 +69,12 @@ class FIFOCondVar extends CondVar implements Condition, java.io.Serializable {
         if (Thread.interrupted()) throw new InterruptedException();
         WaitQueue.WaitNode n = new WaitQueue.WaitNode();
         wq.insert(n);
-        for (int i=holdCount; i>0; i--) lock.unlock();
+        for (int i = holdCount; i > 0; i--) lock.unlock();
         try {
             n.doWait(sync);
         }
         finally {
-            for (int i=holdCount; i>0; i--) lock.lock();
+            for (int i = holdCount; i > 0; i--) lock.lock();
         }
     }
 
@@ -84,12 +89,12 @@ class FIFOCondVar extends CondVar implements Condition, java.io.Serializable {
         WaitQueue.WaitNode n = new WaitQueue.WaitNode();
         wq.insert(n);
         boolean success = false;
-        for (int i=holdCount; i>0; i--) lock.unlock();
+        for (int i = holdCount; i > 0; i--) lock.unlock();
         try {
             success = n.doTimedWait(sync, nanos);
         }
         finally {
-            for (int i=holdCount; i>0; i--) lock.lock();
+            for (int i = holdCount; i > 0; i--) lock.lock();
         }
         return success;
     }
@@ -110,7 +115,7 @@ class FIFOCondVar extends CondVar implements Condition, java.io.Serializable {
         if (!lock.isHeldByCurrentThread()) {
             throw new IllegalMonitorStateException();
         }
-        for (;;) {
+        for (; ;) {
             WaitQueue.WaitNode w = wq.extract();
             if (w == null) return;  // no one to signal
             if (w.signal(sync)) return; // notify if still waiting, else skip
@@ -121,7 +126,7 @@ class FIFOCondVar extends CondVar implements Condition, java.io.Serializable {
         if (!lock.isHeldByCurrentThread()) {
             throw new IllegalMonitorStateException();
         }
-        for (;;) {
+        for (; ;) {
             WaitQueue.WaitNode w = wq.extract();
             if (w == null) return;  // no more to signal
             w.signal(sync);

@@ -14,10 +14,11 @@ package org.apache.openjpa.lib.log;
 
 /**
  * Factory for log instances.
- * 
+ *
  * @author Abe White
  */
 public interface LogFactory {
+
     /**
      * Return a log for the given channel name.
      */

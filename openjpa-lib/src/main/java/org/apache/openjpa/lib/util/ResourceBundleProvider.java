@@ -12,15 +12,17 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.util.*;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * A simple mechanism for looking up ResourceBundle instances
  * across different potential sources.
- * 
+ *
  * @author Stephen Kim
  */
 interface ResourceBundleProvider {
+
     /**
      * Find a ResourceBundle with the given name, locale, and class loader
      * (which may be null).

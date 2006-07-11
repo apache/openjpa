@@ -12,8 +12,8 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import org.apache.commons.lang.*;
-import org.apache.openjpa.lib.util.*;
+import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * A plugin {@link Value} consisting of plugin name and properties.
@@ -23,11 +23,12 @@ import org.apache.openjpa.lib.util.*;
  * forms are also valid:<br />
  * <code>&lt;plugin-name&gt;</code><br />
  * <code>&lt;prop1&gt;=&lt;val1&gt; ...</code>
- *  Defaults and aliases on plugin values apply only to the plugin name.
- * 
+ * Defaults and aliases on plugin values apply only to the plugin name.
+ *
  * @author Abe White
  */
 public class PluginValue extends ObjectValue {
+
     private static final Localizer _loc = Localizer.forPackage
         (PluginValue.class);
 

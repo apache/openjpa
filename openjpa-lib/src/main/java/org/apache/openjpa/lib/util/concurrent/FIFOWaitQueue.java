@@ -17,7 +17,9 @@
  */
 package org.apache.openjpa.lib.util.concurrent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Simple linked list queue used in FIFOSemaphore.
@@ -26,10 +28,12 @@ import java.util.*;
  * NOTE: this class is NOT present in java.util.concurrent.
  */
 class FIFOWaitQueue extends WaitQueue implements java.io.Serializable {
+
     protected transient WaitNode head_ = null;
     protected transient WaitNode tail_ = null;
 
-    public FIFOWaitQueue() {}
+    public FIFOWaitQueue() {
+    }
 
     public void insert(WaitNode w) {
         if (tail_ == null)

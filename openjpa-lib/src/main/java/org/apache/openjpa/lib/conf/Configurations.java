@@ -12,21 +12,35 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import java.io.*;
-import java.util.*;
-import javax.naming.*;
-import org.apache.commons.lang.exception.*;
-import org.apache.openjpa.lib.log.*;
-import org.apache.openjpa.lib.util.*;
-import serp.util.*;
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Properties;
+import java.util.TreeSet;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.apache.commons.lang.exception.NestableRuntimeException;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.lib.util.ParseException;
+import org.apache.openjpa.lib.util.Services;
+import org.apache.openjpa.lib.util.StringDistance;
+import serp.util.Strings;
 
 /**
  * Utility methods dealing with configuration.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class Configurations {
+
     private static final Localizer _loc = Localizer.forPackage
         (Configurations.class);
 
@@ -59,8 +73,8 @@ public class Configurations {
         if (openParen == -1) {
             int eq = plugin.indexOf('=');
             if (eq == -1)
-                return(clsName) ? plugin : null;
-            return(clsName) ? null : plugin;
+                return (clsName) ? plugin : null;
+            return (clsName) ? null : plugin;
         }
 
         // clsName(props) form
@@ -68,7 +82,7 @@ public class Configurations {
             return plugin.substring(0, openParen).trim();
         String prop = plugin.substring(openParen + 1,
             plugin.length() - 1).trim();
-        return(prop.length() == 0) ? null : prop;
+        return (prop.length() == 0) ? null : prop;
     }
 
     /**
@@ -164,16 +178,16 @@ public class Configurations {
         String closest;
         if (keys.length == 0) {
             msg = "invalid-plugin";
-            params = new Object[] { val.getProperty(), alias, e.toString(), };
+            params = new Object[]{ val.getProperty(), alias, e.toString(), };
         } else if ((closest = StringDistance.getClosestLevenshteinDistance
             (alias, keys, 0.5f)) == null) {
             msg = "invalid-plugin-aliases";
-            params = new Object[] {
+            params = new Object[]{
                 val.getProperty(), alias, e.toString(),
                 new TreeSet(Arrays.asList(keys)), };
         } else {
             msg = "invalid-plugin-aliases-hint";
-            params = new Object[] {
+            params = new Object[]{
                 val.getProperty(), alias, e.toString(),
                 new TreeSet(Arrays.asList(keys)), closest, };
         }
@@ -186,7 +200,7 @@ public class Configurations {
      * methods. The properties string should be in the form
      * "prop1=val1, prop2=val2 ...". Does not validate that setter
      * methods exist for the properties.
-     * 
+     *
      * @throws RuntimeException on configuration error
      */
     public static void configureInstance(Object obj, Configuration conf,
@@ -200,7 +214,7 @@ public class Configurations {
      * methods. The properties string should be in the form
      * "prop1=val1, prop2=val2 ...". Validates that setter methods
      * exist for the properties.
-     * 
+     *
      * @throws RuntimeException on configuration error
      */
     public static void configureInstance(Object obj, Configuration conf,
@@ -218,7 +232,7 @@ public class Configurations {
      * Configures the given object with the given properties by
      * matching the properties string to the object's setter
      * methods. Does not validate that setter methods exist for the properties.
-     * 
+     *
      * @throws RuntimeException on configuration error
      */
     public static void configureInstance(Object obj, Configuration conf,
@@ -232,7 +246,7 @@ public class Configurations {
      * methods. If <code>configurationName</code> is
      * non-<code>null</code>, validates that setter methods exist for
      * the properties.
-     * 
+     *
      * @throws RuntimeException on configuration error
      */
     public static void configureInstance(Object obj, Configuration conf,
@@ -274,13 +288,13 @@ public class Configurations {
                         (first, options, 0.75f);
                     if (close != null)
                         msg = _loc.get("invalid-config-param-hint",
-                            new Object[] {
+                            new Object[]{
                                 configurationName, obj.getClass(), first, close,
                                 options, });
                 }
 
                 if (msg == null) {
-                    msg = _loc.get("invalid-config-params", new String[] {
+                    msg = _loc.get("invalid-config-params", new String[]{
                         configurationName, obj.getClass().getName(),
                         invalidEntries.keySet().toString(),
                         Options.findOptionsFor(obj.getClass()).toString(), });
@@ -449,7 +463,7 @@ public class Configurations {
      */
     private static ConfigurationProvider newProvider(Class cls) {
         try {
-            return(ConfigurationProvider) cls.newInstance();
+            return (ConfigurationProvider) cls.newInstance();
         } catch (Throwable e) {
             return null;
         }
@@ -542,7 +556,10 @@ public class Configurations {
         }
         finally {
             if (ctx != null)
-                try { ctx.close(); } catch (Exception e) {}
+                try {
+                    ctx.close();
+                } catch (Exception e) {
+                }
         }
     }
 }

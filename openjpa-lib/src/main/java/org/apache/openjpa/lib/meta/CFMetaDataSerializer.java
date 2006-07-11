@@ -12,20 +12,24 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.util.*;
-import org.apache.commons.collections.map.*;
-import org.apache.openjpa.lib.util.*;
-import org.xml.sax.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+
+import org.apache.commons.collections.map.LinkedMap;
+import org.xml.sax.SAXException;
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Helps serialize metadata objects to package and class elements.
- * 
- * @see CFMetaDataParser
- * 
+ *
  * @author Abe White
  * @nojavadoc
+ * @see CFMetaDataParser
  */
 public abstract class CFMetaDataSerializer extends XMLMetaDataSerializer {
+
     private static final Localizer _loc = Localizer.forPackage
         (CFMetaDataSerializer.class);
 
@@ -47,9 +51,9 @@ public abstract class CFMetaDataSerializer extends XMLMetaDataSerializer {
 
     /**
      * Helper method to group objects by package.
-     * 
+     *
      * @return mapping of package name to a collection of objects in
-     * that package
+     *         that package
      */
     protected Map groupByPackage(Collection objs) throws SAXException {
         Map packages = new LinkedMap();

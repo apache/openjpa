@@ -12,15 +12,19 @@
  */
 package serp.bytecode.lowlevel;
 
-import java.io.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * A unicode string value in the constant pool.
- * 
+ *
  * @author Abe White
  */
 public class UTF8Entry extends Entry implements ConstantEntry {
+
     private String _value = "";
 
     /**
@@ -31,7 +35,7 @@ public class UTF8Entry extends Entry implements ConstantEntry {
 
     /**
      * Constructor.
-     * 
+     *
      * @param value the constant string value of this entry
      */
     public UTF8Entry(String value) {

@@ -12,15 +12,16 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.io.*;
+import java.io.File;
 
 /**
  * Interface that can optionally be implemented by metadata
  * to include the source file from which the metadata was originally parsed.
- * 
+ *
  * @author Abe White
  */
 public interface SourceTracker {
+
     public static final int SRC_OTHER = 0;
     public static final int SRC_ANNOTATIONS = 1;
     public static final int SRC_XML = 2;

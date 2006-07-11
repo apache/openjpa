@@ -12,17 +12,24 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import junit.framework.*;
-import junit.textui.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link BCClass} type.
- *  UNFINISHED
- * 
+ * UNFINISHED
+ *
  * @author Abe White
  */
 public class TestBCClass extends TestCase {
+
     private Project _project = new Project();
     private BCClass _bc = _project.loadClass(Integer.class);
 
@@ -43,7 +50,7 @@ public class TestBCClass extends TestCase {
     /**
      * Test read/write.
      */
-    public void testReadWrite  () throws IOException {
+    public void testReadWrite() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         InputStream in = Integer.class.getResourceAsStream("Integer.class");
         int ch;

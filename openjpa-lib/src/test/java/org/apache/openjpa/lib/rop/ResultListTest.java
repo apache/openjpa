@@ -12,15 +12,23 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-import org.apache.openjpa.lib.test.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+
+import org.apache.openjpa.lib.test.AbstractTestCase;
 
 /**
  * Tests for {@link ResultList} implementations.
- * 
+ *
  * @author Abe White
  */
 public abstract class ResultListTest extends AbstractTestCase {
+
     private ResultList[] _lists = null;
 
     public ResultListTest(String test) {
@@ -37,7 +45,7 @@ public abstract class ResultListTest extends AbstractTestCase {
      * can return multiple providers to test with each.
      */
     protected ResultObjectProvider[] getResultObjectProviders(List list) {
-        return new ResultObjectProvider[] {
+        return new ResultObjectProvider[]{
             new ListResultObjectProvider(list)
         };
     }

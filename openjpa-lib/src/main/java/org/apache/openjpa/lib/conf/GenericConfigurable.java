@@ -12,17 +12,18 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * Implementations of this interface may perform additional
  * generic configuration with any key-value pairs that cannot be set
  * into the object via the normal {@link org.apache.openjpa.lib.util.Options#setInto}
  * means.
- * 
+ *
  * @author Patrick Linskey
  */
 public interface GenericConfigurable {
+
     /**
      * Perform any generic configuration based on the data in
      * <code>m</code>. This method should remove any values in

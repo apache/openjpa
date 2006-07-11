@@ -12,16 +12,19 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-import org.apache.openjpa.lib.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import org.apache.openjpa.lib.util.Closeable;
 
 /**
  * Iterator wrapped around a {@link ResultObjectProvider}.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class ResultObjectProviderIterator implements Iterator, Closeable {
+
     private final ResultObjectProvider _rop;
     private Boolean _hasNext = null;
     private Boolean _open = null;
@@ -38,7 +41,10 @@ public class ResultObjectProviderIterator implements Iterator, Closeable {
      */
     public void close() {
         if (_open == Boolean.TRUE) {
-            try { _rop.close(); } catch (Exception e) {}
+            try {
+                _rop.close();
+            } catch (Exception e) {
+            }
             _open = Boolean.FALSE;
         }
     }

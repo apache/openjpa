@@ -12,15 +12,19 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * The <code>iinc</code> instruction.
- * 
+ *
  * @author Abe White
  */
 public class IIncInstruction extends LocalVariableInstruction {
+
     private int _inc = 0;
 
     IIncInstruction(Code owner) {
@@ -40,7 +44,7 @@ public class IIncInstruction extends LocalVariableInstruction {
 
     /**
      * Set the increment on this IINC instruction.
-     * 
+     *
      * @return this Instruction, for method chaining
      */
     public IIncInstruction setIncrement(int val) {
@@ -57,7 +61,7 @@ public class IIncInstruction extends LocalVariableInstruction {
             return false;
 
         IIncInstruction ins = (IIncInstruction) other;
-        return(getIncrement() == 0 || ins.getIncrement() == 0
+        return (getIncrement() == 0 || ins.getIncrement() == 0
             || getIncrement() == ins.getIncrement());
     }
 

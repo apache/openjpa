@@ -12,15 +12,16 @@
  */
 package serp.bytecode;
 
-import serp.bytecode.visitor.*;
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * Code blocks compiled from source have local variable tables mapping
  * locals used in opcodes to their names and descriptions.
- * 
+ *
  * @author Abe White
  */
 public class LocalVariableTable extends LocalTable {
+
     LocalVariableTable(int nameIndex, Attributes owner) {
         super(nameIndex, owner);
     }
@@ -29,14 +30,14 @@ public class LocalVariableTable extends LocalTable {
      * Return all the locals of this method.
      */
     public LocalVariable[] getLocalVariables() {
-        return(LocalVariable[]) getLocals();
+        return (LocalVariable[]) getLocals();
     }
 
     /**
      * Return the local with the given locals index, or null if none.
      */
     public LocalVariable getLocalVariable(int local) {
-        return(LocalVariable) getLocal(local);
+        return (LocalVariable) getLocal(local);
     }
 
     /**
@@ -44,14 +45,14 @@ public class LocalVariableTable extends LocalTable {
      * locals have the given name, which is returned is undefined.
      */
     public LocalVariable getLocalVariable(String name) {
-        return(LocalVariable) getLocal(name);
+        return (LocalVariable) getLocal(name);
     }
 
     /**
      * Return all locals with the given name, or empty array if none.
      */
     public LocalVariable[] getLocalVariables(String name) {
-        return(LocalVariable[]) getLocals(name);
+        return (LocalVariable[]) getLocals(name);
     }
 
     /**
@@ -61,21 +62,21 @@ public class LocalVariableTable extends LocalTable {
      * as the one the local is copied from, or the pc and length are reset.
      */
     public LocalVariable addLocalVariable(LocalVariable local) {
-        return(LocalVariable) addLocal(local);
+        return (LocalVariable) addLocal(local);
     }
 
     /**
      * Add a local to this table.
      */
     public LocalVariable addLocalVariable() {
-        return(LocalVariable) addLocal();
+        return (LocalVariable) addLocal();
     }
 
     /**
      * Add a local to this table.
      */
     public LocalVariable addLocalVariable(String name, String type) {
-        return(LocalVariable) addLocal(name, type);
+        return (LocalVariable) addLocal(name, type);
     }
 
     /**

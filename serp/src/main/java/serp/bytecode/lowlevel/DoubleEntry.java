@@ -12,15 +12,19 @@
  */
 package serp.bytecode.lowlevel;
 
-import java.io.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * A constant double value in the constant pool.
- * 
+ *
  * @author Abe White
  */
 public class DoubleEntry extends Entry implements ConstantEntry {
+
     private double _value = 0.0;
 
     /**
@@ -31,7 +35,7 @@ public class DoubleEntry extends Entry implements ConstantEntry {
 
     /**
      * Constructor.
-     * 
+     *
      * @param value the constant double value of this entry
      */
     public DoubleEntry(double value) {

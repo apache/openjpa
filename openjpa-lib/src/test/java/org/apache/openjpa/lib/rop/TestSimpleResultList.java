@@ -12,14 +12,13 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-
 /**
  * Tests the {@link SimpleResultList}.
- * 
+ *
  * @author Abe White
  */
 public class TestSimpleResultList extends ResultListTest {
+
     public TestSimpleResultList(String test) {
         super(test);
     }

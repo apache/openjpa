@@ -12,18 +12,19 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.sql.*;
-import java.util.*;
-import javax.sql.*;
-import org.apache.openjpa.lib.log.*;
+import java.sql.Connection;
+
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.log.NoneLogFactory;
 
 /**
  * Provies basic logging facilities to a DataSource.
- * 
+ *
  * @author Marc Prud'hommeaux
  * @nojavadoc
  */
 public class DataSourceLogs {
+
     private Log _jdbcLog = null;
     private Log _sqlLog = null;
 
@@ -39,7 +40,7 @@ public class DataSourceLogs {
      * The log to write JDBC messages to.
      */
     public Log getJDBCLog() {
-        return(_jdbcLog == null) ? NoneLogFactory.NoneLog.getInstance()
+        return (_jdbcLog == null) ? NoneLogFactory.NoneLog.getInstance()
             : _jdbcLog;
     }
 
@@ -54,14 +55,14 @@ public class DataSourceLogs {
      * Return true if JDBC logging is enabled.
      */
     public boolean isJDBCEnabled() {
-        return(_jdbcLog != null && _jdbcLog.isTraceEnabled());
+        return (_jdbcLog != null && _jdbcLog.isTraceEnabled());
     }
 
     /**
      * The log to write SQL messages to.
      */
     public Log getSQLLog() {
-        return(_sqlLog == null) ? NoneLogFactory.NoneLog.getInstance()
+        return (_sqlLog == null) ? NoneLogFactory.NoneLog.getInstance()
             : _sqlLog;
     }
 
@@ -76,7 +77,7 @@ public class DataSourceLogs {
      * Return true if SQL logging is enabled.
      */
     public boolean isSQLEnabled() {
-        return(_sqlLog != null && _sqlLog.isTraceEnabled());
+        return (_sqlLog != null && _sqlLog.isTraceEnabled());
     }
 
     /**

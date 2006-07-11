@@ -12,19 +12,23 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.util.*;
-import junit.framework.*;
-import junit.textui.*;
+import java.util.Properties;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link Options} type.
- * 
+ *
  * @author Abe White
  */
 public class TestOptions extends TestCase {
+
     private Options _opts = null;
 
-    private String[] _args = new String[] {
+    private String[] _args = new String[]{
         "-int", "10", "-boolean", "-string", "STR,STR2", "-range1", "10,100",
         "-range2", "10", "-fieldVal", "20", "-FieldVal2", "30",
         "-inner.nullInner.range1", "10,100", "arg1", "arg2", "arg3" };
@@ -38,7 +42,6 @@ public class TestOptions extends TestCase {
         defs.setProperty("default", "value");
         _opts = new Options(defs);
         _args = _opts.setFromCmdLine(_args);
-
     }
 
     /**
@@ -60,7 +63,7 @@ public class TestOptions extends TestCase {
         assertEquals("10,100", _opts.getProperty("inner.nullInner.range1"));
         assertEquals("value", _opts.getProperty("default"));
 
-        _args = _opts.setFromCmdLine(new String[] { "-default", "newValue" });
+        _args = _opts.setFromCmdLine(new String[]{ "-default", "newValue" });
         assertEquals(0, _args.length);
         assertEquals("newValue", _opts.getProperty("default"));
     }
@@ -98,7 +101,6 @@ public class TestOptions extends TestCase {
         opts.setInto(inner);
         assertEquals(1, inner.getInt());
         assertEquals("STR", inner.getString());
-
     }
 
     public static Test suite() {
@@ -113,6 +115,7 @@ public class TestOptions extends TestCase {
      * Used internally for testing; must be public so Options can construct it.
      */
     public static class Inner {
+
         public int fieldVal = 0;
         public int fieldVal2 = 0;
 
@@ -206,5 +209,6 @@ public class TestOptions extends TestCase {
      * Used internally for testing; must be public so Options can construct it.
      */
     public static class Inner2 extends Inner {
+
     }
 }

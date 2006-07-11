@@ -12,14 +12,15 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import org.apache.openjpa.lib.util.*;
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Utility class for performing common operations on {@link SourceTracker}s.
- * 
+ *
  * @since 3.3.1
  */
 public class SourceTrackers {
+
     private static final Localizer _loc =
         Localizer.forPackage(SourceTrackers.class);
 
@@ -28,9 +29,9 @@ public class SourceTrackers {
     /**
      * Create a message appropriate for display to the user describing
      * the location(s) that <code>trackers</code> were loaded from.
-     * 
+     *
      * @param trackers the source-trackers for which location info should
-     * be provided.
+     *                 be provided.
      */
     public static String getSourceLocationMessage(SourceTracker[] trackers) {
         StringBuffer buf = new StringBuffer(20 * (trackers.length + 1));

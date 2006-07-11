@@ -12,12 +12,30 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import serp.bytecode.lowlevel.ClassEntry;
+import serp.bytecode.lowlevel.ConstantPool;
+import serp.bytecode.visitor.BCVisitor;
+import serp.bytecode.visitor.VisitAcceptor;
+import serp.util.Numbers;
+import serp.util.Strings;
 
 /**
  * The BCClass represents a class object in the bytecode framework, in many
@@ -27,16 +45,17 @@ import serp.util.*;
  * contains methods to manipulate the low-level state of the class(constant
  * pool indexes, etc), but these can and should be ignored in
  * favor of the available high-level methods.
- *  A BCClass instance is loaded from a {@link Project} and remains
+ * A BCClass instance is loaded from a {@link Project} and remains
  * attached to that project for its lifetime. If a BCClass is removed from
  * its project, the result of any further operations on the class are undefined.
- *  Note that if a BCClass represents a primitive or array type, all of the
+ * Note that if a BCClass represents a primitive or array type, all of the
  * available mutator methods and any methods that access the constant pool
  * will throw {@link UnsupportedOperationException}s.
- * 
+ *
  * @author Abe White
  */
 public class BCClass extends Attributes implements VisitAcceptor {
+
     private Project _project = null;
     private State _state = null;
     private ClassLoader _loader = null;
@@ -73,7 +92,11 @@ public class BCClass extends Attributes implements VisitAcceptor {
      */
     void read(File classFile, ClassLoader loader) throws IOException {
         InputStream in = new FileInputStream(classFile);
-        try { read(in, loader); } finally { in.close(); }
+        try {
+            read(in, loader);
+        } finally {
+            in.close();
+        }
     }
 
     /**
@@ -143,7 +166,11 @@ public class BCClass extends Attributes implements VisitAcceptor {
 
         // attempt to get the class file for the class as a stream
         InputStream in = type.getResourceAsStream(className + ".class");
-        try { read(in, type.getClassLoader()); } finally { in.close(); }
+        try {
+            read(in, type.getClassLoader());
+        } finally {
+            in.close();
+        }
     }
 
     /**
@@ -178,7 +205,11 @@ public class BCClass extends Attributes implements VisitAcceptor {
         // has spaces in it
         OutputStream out = new FileOutputStream(URLDecoder.decode
             (type.getResource(name + ".class").getFile()));
-        try { write(out); } finally { out.close(); }
+        try {
+            write(out);
+        } finally {
+            out.close();
+        }
     }
 
     /**
@@ -186,7 +217,11 @@ public class BCClass extends Attributes implements VisitAcceptor {
      */
     public void write(File classFile) throws IOException {
         OutputStream out = new FileOutputStream(classFile);
-        try { write(out); } finally { out.close(); }
+        try {
+            write(out);
+        } finally {
+            out.close();
+        }
     }
 
     /**
@@ -246,7 +281,10 @@ public class BCClass extends Attributes implements VisitAcceptor {
             throw new RuntimeException(ioe.toString());
         }
         finally {
-            try { out.close(); } catch (IOException ioe) {}
+            try {
+                out.close();
+            } catch (IOException ioe) {
+            }
         }
     }
 
@@ -330,7 +368,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      * Manipulate the class access flags.
      */
     public boolean isPublic() {
-        return(getAccessFlags() & Constants.ACCESS_PUBLIC) > 0;
+        return (getAccessFlags() & Constants.ACCESS_PUBLIC) > 0;
     }
 
     /**
@@ -358,7 +396,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      * Manipulate the class access flags.
      */
     public boolean isFinal() {
-        return(getAccessFlags() & Constants.ACCESS_FINAL) > 0;
+        return (getAccessFlags() & Constants.ACCESS_FINAL) > 0;
     }
 
     /**
@@ -375,7 +413,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      * Manipulate the class access flags.
      */
     public boolean isInterface() {
-        return(getAccessFlags() & Constants.ACCESS_INTERFACE) > 0;
+        return (getAccessFlags() & Constants.ACCESS_INTERFACE) > 0;
     }
 
     /**
@@ -393,7 +431,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      * Manipulate the class access flags.
      */
     public boolean isAbstract() {
-        return(getAccessFlags() & Constants.ACCESS_ABSTRACT) > 0;
+        return (getAccessFlags() & Constants.ACCESS_ABSTRACT) > 0;
     }
 
     /**
@@ -626,7 +664,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      * Return the list of {@link ConstantPool} indexes of the
      * {@link ClassEntry}s describing all the interfaces this class declares
      * that it implements/extends.
-     * 
+     *
      * @return the implmented interfaces, or an empty array if none
      */
     public int[] getDeclaredInterfaceIndexes() {
@@ -748,7 +786,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
             for (int i = 0; i < names.length; i++)
                 allNames.add(names[i]);
         }
-        return(String[]) allNames.toArray(new String[allNames.size()]);
+        return (String[]) allNames.toArray(new String[allNames.size()]);
     }
 
     /**
@@ -764,7 +802,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
             for (int i = 0; i < types.length; i++)
                 allTypes.add(types[i]);
         }
-        return(Class[]) allTypes.toArray(new Class[allTypes.size()]);
+        return (Class[]) allTypes.toArray(new Class[allTypes.size()]);
     }
 
     /**
@@ -780,7 +818,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
             for (int i = 0; i < types.length; i++)
                 allTypes.add(types[i]);
         }
-        return(BCClass[]) allTypes.toArray(new BCClass[allTypes.size()]);
+        return (BCClass[]) allTypes.toArray(new BCClass[allTypes.size()]);
     }
 
     /**
@@ -792,7 +830,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
 
     /**
      * Remove an interface declared by this class.
-     * 
+     *
      * @return true if the class had the interface, false otherwise
      */
     public boolean removeDeclaredInterface(String name) {
@@ -810,7 +848,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
 
     /**
      * Remove an interface declared by this class.
-     * 
+     *
      * @return true if the class had the interface, false otherwise
      */
     public boolean removeDeclaredInterface(Class type) {
@@ -821,7 +859,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
 
     /**
      * Remove an interface declared by this class.
-     * 
+     *
      * @return true if the class had the interface, false otherwise
      */
     public boolean removeDeclaredInterface(BCClass type) {
@@ -901,7 +939,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      */
     public BCField[] getDeclaredFields() {
         Collection fields = _state.getFieldsHolder();
-        return(BCField[]) fields.toArray(new BCField[fields.size()]);
+        return (BCField[]) fields.toArray(new BCField[fields.size()]);
     }
 
     /**
@@ -927,7 +965,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
             for (int i = 0; i < fields.length; i++)
                 allFields.add(fields[i]);
         }
-        return(BCField[]) allFields.toArray(new BCField[allFields.size()]);
+        return (BCField[]) allFields.toArray(new BCField[allFields.size()]);
     }
 
     /**
@@ -940,7 +978,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
         for (int i = 0; i < fields.length; i++)
             if (fields[i].getName().equals(name))
                 matches.add(fields[i]);
-        return(BCField[]) matches.toArray(new BCField[matches.size()]);
+        return (BCField[]) matches.toArray(new BCField[matches.size()]);
     }
 
     /**
@@ -956,7 +994,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
 
     /**
      * Import the information from given field as a new field in this class.
-     * 
+     *
      * @return the added field
      */
     public BCField declareField(BCField field) {
@@ -968,7 +1006,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
 
     /**
      * Add a field to this class.
-     * 
+     *
      * @return the added field
      */
     public BCField declareField(String name, String type) {
@@ -981,7 +1019,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
 
     /**
      * Add a field to this class.
-     * 
+     *
      * @return the added field
      */
     public BCField declareField(String name, Class type) {
@@ -991,7 +1029,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
 
     /**
      * Add a field to this class.
-     * 
+     *
      * @return the added field
      */
     public BCField declareField(String name, BCClass type) {
@@ -1015,7 +1053,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
     /**
      * Remove a field from this class. After this method, the removed field
      * will be invalid, and the result of any operations on it is undefined.
-     * 
+     *
      * @return true if this class contained the field, false otherwise
      */
     public boolean removeDeclaredField(String name) {
@@ -1035,7 +1073,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
     /**
      * Remove a field from this class. After this method, the removed field
      * will be invalid, and the result of any operations on it is undefined.
-     * 
+     *
      * @return true if this class contained the field, false otherwise
      */
     public boolean removeDeclaredField(BCField field) {
@@ -1054,7 +1092,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      */
     public BCMethod[] getDeclaredMethods() {
         Collection methods = _state.getMethodsHolder();
-        return(BCMethod[]) methods.toArray(new BCMethod[methods.size()]);
+        return (BCMethod[]) methods.toArray(new BCMethod[methods.size()]);
     }
 
     /**
@@ -1084,7 +1122,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
         for (int i = 0; i < methods.length; i++)
             if (methods[i].getName().equals(name))
                 matches.add(methods[i]);
-        return(BCMethod[]) matches.toArray(new BCMethod[matches.size()]);
+        return (BCMethod[]) matches.toArray(new BCMethod[matches.size()]);
     }
 
     /**
@@ -1170,7 +1208,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
             for (int i = 0; i < methods.length; i++)
                 allMethods.add(methods[i]);
         }
-        return(BCMethod[]) allMethods.toArray (new BCMethod[allMethods.size()]);
+        return (BCMethod[]) allMethods.toArray(new BCMethod[allMethods.size()]);
     }
 
     /**
@@ -1185,7 +1223,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
         for (int i = 0; i < methods.length; i++)
             if (methods[i].getName().equals(name))
                 matches.add(methods[i]);
-        return(BCMethod[]) matches.toArray(new BCMethod[matches.size()]);
+        return (BCMethod[]) matches.toArray(new BCMethod[matches.size()]);
     }
 
     /**
@@ -1221,7 +1259,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
                     matches.add(methods[i]);
             }
         }
-        return(BCMethod[]) matches.toArray(new BCMethod[matches.size()]);
+        return (BCMethod[]) matches.toArray(new BCMethod[matches.size()]);
     }
 
     /**
@@ -1269,7 +1307,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
 
     /**
      * Import the information in the given method as a new method of this class.
-     * 
+     *
      * @return the added method
      */
     public BCMethod declareMethod(BCMethod method) {
@@ -1284,7 +1322,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      * Add a method to this class.
      * Note that in bytecode, constructors are named <code>&lt;init&gt;</code>
      * and static initializers are named <code>&lt;clinit&gt;</code>.
-     * 
+     *
      * @return the added method
      */
     public BCMethod declareMethod(String name, String returnType,
@@ -1300,7 +1338,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      * Add a method to this class.
      * Note that in bytecode, constructors are named <code>&lt;init&gt;</code>
      * and static initializers are named <code>&lt;clinit&gt;</code>.
-     * 
+     *
      * @return the added method
      */
     public BCMethod declareMethod(String name, Class returnType,
@@ -1319,7 +1357,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      * Add a method to this class.
      * Note that in bytecode, constructors are named <code>&lt;init&gt;</code>
      * and static initializers are named <code>&lt;clinit&gt;</code>.
-     * 
+     *
      * @return the added method
      */
     public BCMethod declareMethod(String name, BCClass returnType,
@@ -1353,7 +1391,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      * If multiple methods match the given name, which is removed is undefined.
      * Note that in bytecode, constructors are named <code>&lt;init&gt;</code>
      * and static initializers are named <code>&lt;clinit&gt;</code>.
-     * 
+     *
      * @return true if this class contained the method, false otherwise
      */
     public boolean removeDeclaredMethod(String name) {
@@ -1373,7 +1411,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
     /**
      * Removes a method from this class. After this method, the removed method
      * will be invalid, and the result of any operations on it is undefined.
-     * 
+     *
      * @return true if this class contained the method, false otherwise
      */
     public boolean removeDeclaredMethod(BCMethod method) {
@@ -1387,7 +1425,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      * will be invalid, and the result of any operations on it is undefined.
      * Note that in bytecode, constructors are named <code>&lt;init&gt;</code>
      * and static initializers are named <code>&lt;clinit&gt;</code>.
-     * 
+     *
      * @return true if this class contained the method, false otherwise
      */
     public boolean removeDeclaredMethod(String name, String[] paramTypes) {
@@ -1429,7 +1467,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      * will be invalid, and the result of any operations on it is undefined.
      * Note that in bytecode, constructors are named <code>&lt;init&gt;</code>
      * and static initializers are named <code>&lt;clinit&gt;</code>.
-     * 
+     *
      * @return true if this class contained the method, false otherwise
      */
     public boolean removeDeclaredMethod(String name, Class[] paramTypes) {
@@ -1447,7 +1485,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      * will be invalid, and the result of any operations on it is undefined.
      * Note that in bytecode, constructors are named <code>&lt;init&gt;</code>
      * and static initializers are named <code>&lt;clinit&gt;</code>.
-     * 
+     *
      * @return true if this class contained the method, false otherwise
      */
     public boolean removeDeclaredMethod(String name, BCClass[] paramTypes) {
@@ -1469,7 +1507,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      * If a default constructor already exists, this method will return it
      * without modification.
      * This method can only be called if the superclass has been set.
-     * 
+     *
      * @return the default constructor
      */
     public BCMethod addDefaultConstructor() {
@@ -1492,23 +1530,23 @@ public class BCClass extends Attributes implements VisitAcceptor {
     /**
      * Return source file information for the class.
      * Acts internally through the {@link Attributes} interface.
-     * 
+     *
      * @param add if true, a new source file attribute will be added
-     * if not already present
+     *            if not already present
      * @return the source file information, or null if none and the
-     * <code>add</code> param is set to false
+     *         <code>add</code> param is set to false
      */
     public SourceFile getSourceFile(boolean add) {
         SourceFile source = (SourceFile) getAttribute(Constants.ATTR_SOURCE);
         if (!add || source != null)
             return source;
-        return(SourceFile) addAttribute(Constants.ATTR_SOURCE);
+        return (SourceFile) addAttribute(Constants.ATTR_SOURCE);
     }
 
     /**
      * Remove the source file attribute for the class.
      * Acts internally through the {@link Attributes} interface.
-     * 
+     *
      * @return true if there was a file to remove
      */
     public boolean removeSourceFile() {
@@ -1518,24 +1556,24 @@ public class BCClass extends Attributes implements VisitAcceptor {
     /**
      * Return inner classes information for the class.
      * Acts internally through the {@link Attributes} interface.
-     * 
+     *
      * @param add if true, a new inner classes attribute will be added
-     * if not already present
+     *            if not already present
      * @return the inner classes information, or null if none and the
-     * <code>add</code> param is set to false
+     *         <code>add</code> param is set to false
      */
     public InnerClasses getInnerClasses(boolean add) {
         InnerClasses inner = (InnerClasses) getAttribute
             (Constants.ATTR_INNERCLASS);
         if (!add || inner != null)
             return inner;
-        return(InnerClasses) addAttribute(Constants.ATTR_INNERCLASS);
+        return (InnerClasses) addAttribute(Constants.ATTR_INNERCLASS);
     }
 
     /**
      * Remove the inner classes attribute for the class.
      * Acts internally through the {@link Attributes} interface.
-     * 
+     *
      * @return true if there was an attribute to remove
      */
     public boolean removeInnerClasses() {

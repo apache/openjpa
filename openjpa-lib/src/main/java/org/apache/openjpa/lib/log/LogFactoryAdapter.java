@@ -12,16 +12,18 @@
  */
 package org.apache.openjpa.lib.log;
 
-import java.util.*;
-import org.apache.openjpa.lib.util.concurrent.*;
+import java.util.Map;
+
+import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 
 /**
  * Base type that aids in adapting an external log framework to the
  * {@link LogFactory}.
- * 
+ *
  * @author Abe White
  */
 public abstract class LogFactoryAdapter implements LogFactory {
+
     // cache category to log adapters
     private Map _logs = new ConcurrentHashMap();
 

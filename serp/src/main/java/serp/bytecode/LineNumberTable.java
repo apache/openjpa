@@ -12,19 +12,25 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * Code blocks compiled from source have line number tables mapping
  * opcodes to source lines. This table automatically maintains line
  * numbers in ascending order by their start program counter position
  * at all times.
- * 
+ *
  * @author Abe White
  */
 public class LineNumberTable extends Attribute implements InstructionPtr {
+
     private List _lineNumbers = new ArrayList();
 
     LineNumberTable(int nameIndex, Attributes owner) {
@@ -36,7 +42,7 @@ public class LineNumberTable extends Attribute implements InstructionPtr {
      */
     public LineNumber[] getLineNumbers() {
         Collections.sort(_lineNumbers);
-        return(LineNumber[]) _lineNumbers.toArray
+        return (LineNumber[]) _lineNumbers.toArray
             (new LineNumber[_lineNumbers.size()]);
     }
 
@@ -47,7 +53,7 @@ public class LineNumberTable extends Attribute implements InstructionPtr {
         for (int i = _lineNumbers.size() - 1; i >= 0; i--)
             if (((LineNumber) _lineNumbers.get(i)).
                 _target.getByteIndex() <= pc)
-                return(LineNumber) _lineNumbers.get(i);
+                return (LineNumber) _lineNumbers.get(i);
         return null;
     }
 
@@ -73,7 +79,7 @@ public class LineNumberTable extends Attribute implements InstructionPtr {
 
     /**
      * Import a line number from another method.
-     * 
+     *
      * @return the newly added line number
      */
     public LineNumber addLineNumber(LineNumber ln) {
@@ -123,7 +129,7 @@ public class LineNumberTable extends Attribute implements InstructionPtr {
 
     /**
      * Remove the given line.
-     * 
+     *
      * @return true if the line was removed, false otherwise
      */
     public boolean removeLineNumber(LineNumber ln) {
@@ -136,7 +142,7 @@ public class LineNumberTable extends Attribute implements InstructionPtr {
 
     /**
      * Remove the line number for the given program counter.
-     * 
+     *
      * @return true if the line was removed, false otherwise
      */
     public boolean removeLineNumber(int pc) {
@@ -145,7 +151,7 @@ public class LineNumberTable extends Attribute implements InstructionPtr {
 
     /**
      * Remove the line number for the given instruction.
-     * 
+     *
      * @return true if the line was removed, false otherwise
      */
     public boolean removeLineNumber(Instruction ins) {
@@ -200,6 +206,6 @@ public class LineNumberTable extends Attribute implements InstructionPtr {
     }
 
     public Code getCode() {
-        return(Code) getOwner();
+        return (Code) getOwner();
     }
 }

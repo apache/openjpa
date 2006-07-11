@@ -12,16 +12,19 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.io.*;
-import java.util.*;
+import java.io.ObjectStreamException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * ResultList implementation that uses a forward-scrolling window of results.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class WindowResultList extends AbstractNonSequentialResultList {
+
     private static final int OPEN = 0;
     private static final int FREED = 1;
     private static final int CLOSED = 2;
@@ -145,7 +148,10 @@ public class WindowResultList extends AbstractNonSequentialResultList {
 
     private void free() {
         if (_state == OPEN) {
-            try { _rop.close(); } catch (Exception e) {}
+            try {
+                _rop.close();
+            } catch (Exception e) {
+            }
             _state = FREED;
         }
     }

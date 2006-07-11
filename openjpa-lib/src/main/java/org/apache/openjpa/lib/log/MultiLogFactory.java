@@ -12,33 +12,39 @@
  */
 package org.apache.openjpa.lib.log;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A LogFactory implementation to pass events through multiple
  * LogFactory implementations(such as log4j and LogPanelFactory).
- * 
+ *
  * @author Steve Kim
  */
 public class MultiLogFactory implements LogFactory {
+
     private List _delegates;
 
     /**
      * create an instance with two delegates
      */
     public MultiLogFactory(LogFactory d1, LogFactory d2) {
-        this(new LogFactory [] { d1, d2 });
+        this(new LogFactory []{ d1, d2 });
     }
 
     public MultiLogFactory(LogFactory d1, LogFactory d2, LogFactory d3) {
-        this(new LogFactory [] { d1, d2, d3 });
+        this(new LogFactory []{ d1, d2, d3 });
     }
 
     /**
      * create an instance with the given delegates
      */
     public MultiLogFactory(LogFactory [] delegates) {
-        _delegates = new LinkedList(Arrays.asList(delegates));;
+        _delegates = new LinkedList(Arrays.asList(delegates));
+        ;
     }
 
     public synchronized void addLogFactory(LogFactory factory) {
@@ -53,7 +59,7 @@ public class MultiLogFactory implements LogFactory {
      * Returns the delegates that this MultiLogFactory delegates messages to.
      */
     public synchronized LogFactory[] getDelegates() {
-        return(LogFactory[])_delegates.toArray(new LogFactory[0]);
+        return (LogFactory[]) _delegates.toArray(new LogFactory[0]);
     }
 
     /**
@@ -61,8 +67,8 @@ public class MultiLogFactory implements LogFactory {
      */
     public synchronized Log getLog(String channel) {
         List logs = new ArrayList(_delegates.size());
-        for (Iterator i = _delegates.iterator(); i.hasNext(); ) {
-            LogFactory f = (LogFactory)i.next();
+        for (Iterator i = _delegates.iterator(); i.hasNext();) {
+            LogFactory f = (LogFactory) i.next();
             if (f != null) {
                 Log l = f.getLog(channel);
                 if (l != null)
@@ -70,13 +76,14 @@ public class MultiLogFactory implements LogFactory {
             }
         }
 
-        return new MultiLog((Log[])logs.toArray(new Log[logs.size()]));
+        return new MultiLog((Log[]) logs.toArray(new Log[logs.size()]));
     }
 
     /**
      * Combinatory Log impl.
      */
     private static class MultiLog implements Log {
+
         private Log[] _logs;
 
         public MultiLog(Log[] logs) {

@@ -12,17 +12,20 @@
  */
 package org.apache.openjpa.lib.conf.test;
 
-import org.apache.openjpa.lib.conf.*;
-import org.apache.openjpa.lib.test.*;
-import serp.util.*;
+import org.apache.openjpa.lib.conf.PluginListValue;
+import org.apache.openjpa.lib.conf.PluginValue;
+import org.apache.openjpa.lib.conf.StringValue;
+import org.apache.openjpa.lib.conf.Value;
+import org.apache.openjpa.lib.test.AbstractTestCase;
 
 /**
  * Tests the {@link Value}, {@link PluginValue}, and
  * {@link PluginListValue} classes.
- * 
+ *
  * @author Abe White
  */
 public class TestPluginValue extends AbstractTestCase {
+
     public TestPluginValue(String test) {
         super(test);
     }
@@ -77,7 +80,7 @@ public class TestPluginValue extends AbstractTestCase {
     }
 
     private void aliasTest(Value val) {
-        val.setAliases(new String[] { "foo", "bar" });
+        val.setAliases(new String[]{ "foo", "bar" });
         val.setDefault("bar");
         assertEquals("bar", val.getDefault());
         val.setString(null);
@@ -89,13 +92,13 @@ public class TestPluginValue extends AbstractTestCase {
         val.setString(null);
         assertEquals("foo", val.getString());
         val.setString("yyy");
-        val.setAliases(new String[] { "xxx", "yyy" });
+        val.setAliases(new String[]{ "xxx", "yyy" });
         assertEquals("xxx", val.getString());
     }
 
     private void emptyAliasTest(Value val) {
         val.setDefault("foo");
-        val.setAliases(new String[] { "false", null });
+        val.setAliases(new String[]{ "false", null });
         val.setString("false");
         assertEquals("false", val.getString());
         val.setString(null);
@@ -106,7 +109,7 @@ public class TestPluginValue extends AbstractTestCase {
         // test plugin name-only aliases
         val.setString("foo(biz=baz)");
         assertEquals("foo(biz=baz)", val.getString());
-        val.setAliases(new String[] { "xxx", "foo" });
+        val.setAliases(new String[]{ "xxx", "foo" });
         assertEquals("xxx(biz=baz)", val.getString());
     }
 
@@ -114,10 +117,10 @@ public class TestPluginValue extends AbstractTestCase {
         // and test on lists
         val.setString("foo(biz=baz), foo(a=b),xxx, foo, yyy");
         assertEquals("foo(biz=baz), foo(a=b), xxx, foo, yyy", val.getString());
-        val.setAliases(new String[] { "bar", "foo" });
+        val.setAliases(new String[]{ "bar", "foo" });
         assertEquals("bar(biz=baz), bar(a=b), xxx, bar, yyy", val.getString());
 
-        val.setAliases(new String[] { "none", null });
+        val.setAliases(new String[]{ "none", null });
         val.setString("none");
         assertTrue(((PluginListValue) val).getClassNames().length == 0);
     }

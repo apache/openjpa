@@ -12,16 +12,26 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.lowlevel.ConstantEntry;
+import serp.bytecode.lowlevel.ConstantPool;
+import serp.bytecode.lowlevel.DoubleEntry;
+import serp.bytecode.lowlevel.FloatEntry;
+import serp.bytecode.lowlevel.IntEntry;
+import serp.bytecode.lowlevel.LongEntry;
+import serp.bytecode.lowlevel.StringEntry;
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * A constant value for a member field.
- * 
+ *
  * @author Abe White
  */
 public class ConstantValue extends Attribute {
+
     int _valueIndex = 0;
 
     ConstantValue(int nameIndex, Attributes owner) {
@@ -36,7 +46,7 @@ public class ConstantValue extends Attribute {
      * Return the owning field.
      */
     public BCField getField() {
-        return(BCField) getOwner();
+        return (BCField) getOwner();
     }
 
     /**
@@ -101,7 +111,7 @@ public class ConstantValue extends Attribute {
     public Object getValue() {
         if (_valueIndex <= 0)
             return null;
-        return((ConstantEntry) getPool().getEntry(_valueIndex)). getConstant();
+        return ((ConstantEntry) getPool().getEntry(_valueIndex)). getConstant();
     }
 
     /**
@@ -135,7 +145,7 @@ public class ConstantValue extends Attribute {
     public int getIntValue() {
         if (getValueIndex() <= 0)
             return 0;
-        return((IntEntry) getPool().getEntry(getValueIndex())).getValue();
+        return ((IntEntry) getPool().getEntry(getValueIndex())).getValue();
     }
 
     /**
@@ -151,7 +161,7 @@ public class ConstantValue extends Attribute {
     public float getFloatValue() {
         if (getValueIndex() <= 0)
             return 0F;
-        return((FloatEntry) getPool().getEntry(getValueIndex())).getValue();
+        return ((FloatEntry) getPool().getEntry(getValueIndex())).getValue();
     }
 
     /**
@@ -167,7 +177,7 @@ public class ConstantValue extends Attribute {
     public double getDoubleValue() {
         if (getValueIndex() <= 0)
             return 0D;
-        return((DoubleEntry) getPool().getEntry(getValueIndex())). getValue();
+        return ((DoubleEntry) getPool().getEntry(getValueIndex())). getValue();
     }
 
     /**
@@ -183,7 +193,7 @@ public class ConstantValue extends Attribute {
     public long getLongValue() {
         if (getValueIndex() <= 0)
             return 0L;
-        return((LongEntry) getPool().getEntry(getValueIndex())).getValue();
+        return ((LongEntry) getPool().getEntry(getValueIndex())).getValue();
     }
 
     /**
@@ -199,7 +209,7 @@ public class ConstantValue extends Attribute {
     public String getStringValue() {
         if (getValueIndex() <= 0)
             return null;
-        return((StringEntry) getPool().getEntry(getValueIndex())).
+        return ((StringEntry) getPool().getEntry(getValueIndex())).
             getStringEntry().getValue();
     }
 

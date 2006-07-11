@@ -12,17 +12,20 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-import org.apache.openjpa.lib.util.*;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Wrapper iterator that will return false for <code>hasNext()</code> if
  * the owning ResultList has been closed.
- * 
+ *
  * @author Marc Prud'hommeaux
  * @nojavadoc
  */
 public class ResultListIterator extends AbstractListIterator {
+
     private static final Localizer _loc = Localizer.forPackage(
         ResultListIterator.class);
 

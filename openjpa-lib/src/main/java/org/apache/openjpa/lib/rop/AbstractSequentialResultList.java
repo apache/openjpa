@@ -12,18 +12,24 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-import org.apache.commons.lang.*;
+import java.util.AbstractSequentialList;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.ListIterator;
+
+import org.apache.commons.lang.ObjectUtils;
 
 /**
  * Abstract base class for sequential result lists. Unlike the
  * {@link AbstractSequentialList}, this class doesn't rely on the
  * {@link Collection#size} method.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public abstract class AbstractSequentialResultList extends AbstractResultList {
+
     /**
      * Implement this method and {@link #size}.
      */

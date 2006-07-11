@@ -12,9 +12,28 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.io.*;
-import java.util.*;
-import org.apache.commons.collections.set.*;
+import java.io.BufferedReader;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import org.apache.commons.collections.set.ListOrderedSet;
 
 /*
  * ### things to add: - should probably be a SourceTracker
@@ -29,6 +48,7 @@ import org.apache.commons.collections.set.*;
  * offending entries.
  *  - putAll() with another FormatPreservingProperties should be smarter
  */
+
 /**
  * A specialization of {@link Properties} that stores its contents
  * in the same order and with the same formatting as was used to read
@@ -36,7 +56,7 @@ import org.apache.commons.collections.set.*;
  * that a properties file loaded via this object and then written
  * back out later on will only be different where changes or
  * additions were made.
- *  By default, the {@link #store} method in this class does not
+ * By default, the {@link #store} method in this class does not
  * behave the same as {@link Properties#store}. You can cause an
  * instance to approximate the behavior of {@link Properties#store}
  * by invoking {@link #setDefaultEntryDelimiter} with <code>=</code>,
@@ -44,14 +64,15 @@ import org.apache.commons.collections.set.*;
  * {@link #setAllowDuplicates} with <code>true</code>. However, this
  * will only influence how the instance will write new values, not how
  * it will write existing key-value pairs that are modified.
- *  In conjunction with a conservative output writer, it is
+ * In conjunction with a conservative output writer, it is
  * possible to only write to disk changes / additions.
- *  This implementation does not permit escaped ' ', '=', ':'
+ * This implementation does not permit escaped ' ', '=', ':'
  * characters in key names.
- * 
+ *
  * @since 3.3
  */
 public class FormatPreservingProperties extends Properties {
+
     private static Localizer _loc = Localizer.forPackage
         (FormatPreservingProperties.class);
 
@@ -78,7 +99,7 @@ public class FormatPreservingProperties extends Properties {
 
     /**
      * The character to use as a delimiter between property keys and values.
-     * 
+     *
      * @param defaultEntryDelimiter either ':' or '='
      */
     public void setDefaultEntryDelimiter(char defaultEntryDelimiter) {
@@ -96,7 +117,7 @@ public class FormatPreservingProperties extends Properties {
      * If set to <code>true</code>, this properties object will add a
      * space after the delimiter character(if the delimiter is not
      * the space character). Else, this will not add a space.
-     *  Default value: <code>true</code>. Note that {@link
+     * Default value: <code>true</code>. Note that {@link
      * Properties#store} never writes whitespace.
      */
     public void setAddWhitespaceAfterDelimiter(boolean add) {
@@ -107,7 +128,7 @@ public class FormatPreservingProperties extends Properties {
      * If set to <code>true</code>, this properties object will add a
      * space after the delimiter character(if the delimiter is not
      * the space character). Else, this will not add a space.
-     *  Default value: <code>true</code>. Note that {@link
+     * Default value: <code>true</code>. Note that {@link
      * Properties#store} never writes whitespace.
      */
     public boolean getAddWhitespaceAfterDelimiter() {
@@ -118,7 +139,7 @@ public class FormatPreservingProperties extends Properties {
      * If set to <code>true</code>, this properties object will add a
      * timestamp to the beginning of the file, just after the header
      * (if any) is printed. Else, this will not add a timestamp.
-     *  Default value: <code>false</code>. Note that {@link
+     * Default value: <code>false</code>. Note that {@link
      * Properties#store} always writes a timestamp.
      */
     public void setInsertTimestamp(boolean insertTimestamp) {
@@ -129,7 +150,7 @@ public class FormatPreservingProperties extends Properties {
      * If set to <code>true</code>, this properties object will add a
      * timestamp to the beginning of the file, just after the header
      * (if any) is printed. Else, this will not add a timestamp.
-     *  Default value: <code>false</code>. Note that {@link
+     * Default value: <code>false</code>. Note that {@link
      * Properties#store} always writes a timestamp.
      */
     public boolean getInsertTimestamp() {
@@ -141,7 +162,7 @@ public class FormatPreservingProperties extends Properties {
      * the last property setting in the input will overwrite any previous
      * settings. If set to <code>false</code>, duplicate property definitions
      * in the input will cause an exception to be thrown during {@link #load}.
-     *  Default value: <code>false</code>. Note that {@link
+     * Default value: <code>false</code>. Note that {@link
      * Properties#store} always allows duplicates.
      */
     public void setAllowDuplicates(boolean allowDuplicates) {
@@ -153,7 +174,7 @@ public class FormatPreservingProperties extends Properties {
      * the last property setting in the input will overwrite any previous
      * settings. If set to <code>false</code>, duplicate property definitions
      * in the input will cause an exception to be thrown during {@link #load}.
-     *  Default value: <code>false</code>. Note that {@link
+     * Default value: <code>false</code>. Note that {@link
      * Properties#store} always allows duplicates.
      */
     public boolean getAllowDuplicates() {
@@ -178,7 +199,7 @@ public class FormatPreservingProperties extends Properties {
      */
     public void putAll(Map m) {
         Map.Entry e;
-        for (Iterator iter = m.entrySet().iterator(); iter.hasNext(); ) {
+        for (Iterator iter = m.entrySet().iterator(); iter.hasNext();) {
             e = (Map.Entry) iter.next();
             put(e.getKey(), e.getValue());
         }
@@ -207,10 +228,10 @@ public class FormatPreservingProperties extends Properties {
             super.clone();
 
         if (source != null)
-            c.source = (PropertySource)source.clone();
+            c.source = (PropertySource) source.clone();
 
         if (modifiedKeys != null)
-            c.modifiedKeys = (HashSet)modifiedKeys.clone();
+            c.modifiedKeys = (HashSet) modifiedKeys.clone();
 
         if (newKeys != null) {
             c.newKeys = new ListOrderedSet();
@@ -252,7 +273,7 @@ public class FormatPreservingProperties extends Properties {
      * returns <code>true</code>, this will throw a {@link
      * DuplicateKeyException} if duplicate property declarations are
      * encountered.
-     * 
+     *
      * @see Properties#load
      */
     public void load(InputStream in) throws IOException {
@@ -273,7 +294,7 @@ public class FormatPreservingProperties extends Properties {
         Set loadedKeys = new HashSet();
 
         for (PropertyLine l;
-            (l = reader.readPropertyLine()) != null && source.add(l); ) {
+            (l = reader.readPropertyLine()) != null && source.add(l);) {
             String line = l.line.toString();
 
             char c = 0;
@@ -306,8 +327,9 @@ public class FormatPreservingProperties extends Properties {
 
             boolean isDelim = (c == ':' || c == '=');
 
-            for ( ; pos < line.length()
-                && isSpace(c = line.charAt(pos)); pos++);
+            for (; pos < line.length()
+                && isSpace(c = line.charAt(pos)); pos++)
+                ;
 
             if (!isDelim && (c == ':' || c == '=')) {
                 pos++;
@@ -353,38 +375,38 @@ public class FormatPreservingProperties extends Properties {
      * Read the next escaped character: handle newlines, tabs, returns, and
      * form feeds with the appropriate escaped character, then try to
      * decode unicode characters. Finally, just add the character explicitly.
-     * 
+     *
      * @param source the source of the characters
-     * @param pos the position at which to start reading
-     * @param value the value we are appending to
+     * @param pos    the position at which to start reading
+     * @param value  the value we are appending to
      * @return the position after the reading is done
      */
     private static int readEscape(String source, int pos, StringBuffer value) {
         char c = source.charAt(pos++);
         switch (c) {
-        case 'n':
-            value.append('\n');
-            break;
-        case 't':
-            value.append('\t');
-            break;
-        case 'f':
-            value.append('\f');
-            break;
-        case 'r':
-            value.append('\r');
-            break;
-        case 'u':
-            if (pos + 4 <= source.length()) {
-                char uni = (char)Integer.parseInt
-                    (source.substring(pos, pos + 4), 16);
-                value.append(uni);
-                pos += 4;
-            }
-            break;
-        default:
-            value.append(c);
-            break;
+            case 'n':
+                value.append('\n');
+                break;
+            case 't':
+                value.append('\t');
+                break;
+            case 'f':
+                value.append('\f');
+                break;
+            case 'r':
+                value.append('\r');
+                break;
+            case 'u':
+                if (pos + 4 <= source.length()) {
+                    char uni = (char) Integer.parseInt
+                        (source.substring(pos, pos + 4), 16);
+                    value.append(uni);
+                    pos += 4;
+                }
+                break;
+            default:
+                value.append(c);
+                break;
         }
 
         return pos;
@@ -431,14 +453,14 @@ public class FormatPreservingProperties extends Properties {
 
         boolean needsNewline = false;
 
-        for (Iterator i = lines.iterator(); i.hasNext(); ) {
+        for (Iterator i = lines.iterator(); i.hasNext();) {
             Object next = i.next();
 
             if (next instanceof PropertyLine) {
-                if (((PropertyLine)next).write(writer, keys, needsNewline))
+                if (((PropertyLine) next).write(writer, keys, needsNewline))
                     needsNewline = i.hasNext();
             } else if (next instanceof String) {
-                String key = (String)next;
+                String key = (String) next;
                 if (keys.remove(key)) {
                     if (writeProperty(key, writer, needsNewline)) {
                         needsNewline = i.hasNext() && keys.size() > 0;
@@ -486,13 +508,14 @@ public class FormatPreservingProperties extends Properties {
     /**
      * Format the given string as an encoded value for storage. This will
      * perform any necessary escaping of special characters.
-     * 
-     * @param str the value to encode
-     * @param buf the buffer to which to append the encoded value
+     *
+     * @param str   the value to encode
+     * @param buf   the buffer to which to append the encoded value
      * @param isKey if true, then the string is a Property key, otherwise
-     * it is a value
+     *              it is a value
      */
-    private static void formatValue(String str, StringBuffer buf, boolean isKey) {
+    private static void formatValue(String str, StringBuffer buf,
+        boolean isKey) {
         if (isKey) {
             buf.setLength(0);
             buf.ensureCapacity(str.length());
@@ -530,6 +553,7 @@ public class FormatPreservingProperties extends Properties {
     }
 
     public static class DuplicateKeyException extends RuntimeException {
+
         public DuplicateKeyException(String key, Object firstVal,
             String secondVal) {
             super(_loc.get("dup-key", key, firstVal, secondVal));
@@ -541,6 +565,7 @@ public class FormatPreservingProperties extends Properties {
      * proper key/value pair, or a comment, or just whitespace.
      */
     private class PropertyLine implements Serializable {
+
         private final StringBuffer line = new StringBuffer();
         private String propertyKey;
         private String propertyValue;
@@ -574,7 +599,7 @@ public class FormatPreservingProperties extends Properties {
          * Write the given line. It will only be written if the line is a
          * comment, or if it is a property and its value is unchanged
          * from the original.
-         * 
+         *
          * @param pw the PrintWriter to which the write
          * @return whether or not this was a known key
          */
@@ -593,7 +618,7 @@ public class FormatPreservingProperties extends Properties {
             if (propertyValue != null && containsKey(propertyKey) &&
                 (propertyValue.equals(getProperty(propertyKey)) ||
                     (!newKeys.contains(propertyKey) &&
-                    !modifiedKeys.contains(propertyKey)))) {
+                        !modifiedKeys.contains(propertyKey)))) {
                 if (needsNewline)
                     pw.println();
                 pw.print(line.toString());
@@ -610,7 +635,7 @@ public class FormatPreservingProperties extends Properties {
             if (containsKey(propertyKey) &&
                 (modifiedKeys.contains(propertyKey) ||
                     newKeys.contains(propertyKey))) {
-                while (keys.remove(propertyKey));
+                while (keys.remove(propertyKey)) ;
                 return writeProperty(propertyKey, pw, needsNewline);
             }
 
@@ -620,6 +645,7 @@ public class FormatPreservingProperties extends Properties {
     }
 
     private class PropertyLineReader extends BufferedReader {
+
         public PropertyLineReader(InputStream in, PropertySource source)
             throws IOException {
             // Must be ISO-8859-1 ecoding according to Properties.load javadoc
@@ -642,6 +668,7 @@ public class FormatPreservingProperties extends Properties {
      * character that it read was a newline or not.
      */
     private static class LineEndingStream extends FilterInputStream {
+
         private final PropertySource source;
 
         LineEndingStream(InputStream in, PropertySource source) {
@@ -667,6 +694,7 @@ public class FormatPreservingProperties extends Properties {
 
     static class PropertySource extends LinkedList
         implements Cloneable, Serializable {
+
         private boolean endsInNewline = false;
     }
 }

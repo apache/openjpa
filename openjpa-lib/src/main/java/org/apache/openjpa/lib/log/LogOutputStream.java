@@ -12,19 +12,21 @@
  */
 package org.apache.openjpa.lib.log;
 
-import java.io.*;
-import java.util.*;
-import org.apache.openjpa.lib.log.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.StringTokenizer;
 
 /**
  * Many standard components log to {@link OutputStream}s.
  * This wrapper class extends the {@link ByteArrayOutputStream}
  * class and writes all given data to an underlying {@link Log} instance
  * whenever it is flushed and the internally held byte array contains a newline.
- * 
+ *
  * @author Abe White, Marc Prud'hommeaux
  */
 public class LogOutputStream extends ByteArrayOutputStream {
+
     private static final String _sep = System.getProperty("line.separator");
 
     private final int _level;
@@ -32,8 +34,8 @@ public class LogOutputStream extends ByteArrayOutputStream {
 
     /**
      * Constructor.
-     * 
-     * @param log the log to log to
+     *
+     * @param log   the log to log to
      * @param level the level to log at
      */
     public LogOutputStream(Log log, int level) {
@@ -49,7 +51,7 @@ public class LogOutputStream extends ByteArrayOutputStream {
             // break up the message based on the line separator; this
             // may be because the flushed buffer contains mutliple lines
             for (StringTokenizer tok = new StringTokenizer(msg, _sep);
-                tok.hasMoreTokens(); ) {
+                tok.hasMoreTokens();) {
                 String next = tok.nextToken();
                 log(next);
             }
@@ -61,24 +63,24 @@ public class LogOutputStream extends ByteArrayOutputStream {
 
     private void log(String msg) {
         switch (_level) {
-        case Log.TRACE:
-            _log.trace(msg);
-            break;
-        case Log.DEBUG:
-            _log.debug(msg);
-            break;
-        case Log.INFO:
-            _log.info(msg);
-            break;
-        case Log.WARN:
-            _log.warn(msg);
-            break;
-        case Log.ERROR:
-            _log.error(msg);
-            break;
-        case Log.FATAL:
-            _log.fatal(msg);
-            break;
+            case Log.TRACE:
+                _log.trace(msg);
+                break;
+            case Log.DEBUG:
+                _log.debug(msg);
+                break;
+            case Log.INFO:
+                _log.info(msg);
+                break;
+            case Log.WARN:
+                _log.warn(msg);
+                break;
+            case Log.ERROR:
+                _log.error(msg);
+                break;
+            case Log.FATAL:
+                _log.fatal(msg);
+                break;
         }
     }
 }

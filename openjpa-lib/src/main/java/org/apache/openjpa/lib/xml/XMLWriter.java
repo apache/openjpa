@@ -12,17 +12,20 @@
  */
 package org.apache.openjpa.lib.xml;
 
-import java.io.*;
+import java.io.FilterWriter;
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  * The XMLWriter is a writer type for pretty-printing XML.
  * It assumes that the streamed XML will be given without any whitespace,
  * other than the space within text blocks.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class XMLWriter extends FilterWriter {
+
     private static String _endl = System.getProperty("line.separator");
 
     private int _lastChar = ' ';
@@ -104,7 +107,8 @@ public class XMLWriter extends FilterWriter {
             else if (!(_lastChar2 == '<' && _lastChar == '!' && c == '-')) {
                 // if just ended a tag and about to print text, put on
                 // separate line
-                if (_lastChar == '>' && _lastChar2 != '?' && _lastChar2 != '!') {
+                if (_lastChar == '>' && _lastChar2 != '?' && _lastChar2 != '!')
+                {
                     out.write(_endl);
                     writeSpaces();
                 }

@@ -12,15 +12,18 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.util.*;
-import junit.framework.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import junit.framework.TestCase;
 
 /**
  * Test UUID generation.
- * 
+ *
  * @author Abe White
  */
 public class TestUUIDGenerator extends TestCase {
+
     public void testUniqueString() {
         Set seen = new HashSet();
         for (int i = 0; i < 1000; i++)

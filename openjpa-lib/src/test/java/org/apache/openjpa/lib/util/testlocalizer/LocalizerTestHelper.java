@@ -17,8 +17,9 @@ package org.apache.openjpa.lib.util.testlocalizer;
  * can be accessed. The properties cannot be in the same package(serp.util)
  * as the main tester class because other utilities in the source line might
  * eventually want to use a localizer.properties file for that package.
- * 
+ *
  * @author Abe White
  */
 public class LocalizerTestHelper {
+
 }

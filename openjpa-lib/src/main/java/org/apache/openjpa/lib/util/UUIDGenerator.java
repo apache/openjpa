@@ -12,11 +12,12 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.io.*;
-import java.net.*;
-import java.security.*;
-import java.util.*;
-import org.apache.commons.lang.exception.*;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.security.SecureRandom;
+import java.util.Random;
+
+import org.apache.commons.lang.exception.NestableRuntimeException;
 
 /**
  * UUID value generator. Based on the time-based generator in the LGPL
@@ -24,15 +25,16 @@ import org.apache.commons.lang.exception.*;
  * The code has been vastly simplified and modified to replace the ethernet
  * address of the host machine with the IP, since we do not want to require
  * native libs and Java cannot access the MAC address directly.
- *  Aside from the above modification, implements the IETF UUID draft
+ * Aside from the above modification, implements the IETF UUID draft
  * specification, found here: http://www1.ics.uci.edu/~ejw/authoring/uuid-guid/
  * draft-leach-uuids-guids-01.txt
- * 
+ *
  * @author Abe White
- * @since 3.3
  * @nojavadoc
+ * @since 3.3
  */
 public class UUIDGenerator {
+
     // indexes within the uuid array for certain boundaries
     private static final byte IDX_TIME_HI = 6;
     private static final byte IDX_TYPE = 6; // multiplexed

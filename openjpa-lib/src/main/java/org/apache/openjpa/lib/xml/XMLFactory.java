@@ -12,12 +12,23 @@
  */
 package org.apache.openjpa.lib.xml;
 
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.sax.*;
-import org.apache.commons.lang.exception.*;
-import org.w3c.dom.*;
-import org.xml.sax.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+
+import org.apache.commons.lang.exception.NestableRuntimeException;
+import org.w3c.dom.Document;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
 
 /**
  * The XMLFactory produces validating and non-validating DOM level 2
@@ -25,16 +36,18 @@ import org.xml.sax.*;
  * caching to avoid repeatedly paying the relatively expensive runtime costs
  * associated with resolving the correct XML implementation through the
  * JAXP configuration mechanisms.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class XMLFactory {
+
     // cache parsers and transformers in all possible configurations
     private static SAXParserFactory[] _saxFactories = null;
     private static DocumentBuilderFactory[] _domFactories = null;
     private static SAXTransformerFactory _transFactory = null;
     private static ErrorHandler _validating;
+
     static {
         _saxFactories = new SAXParserFactory[4];
         _domFactories = new DocumentBuilderFactory[4];
@@ -158,7 +171,8 @@ public class XMLFactory {
     /**
      * Return the array index of the factory with the given properties.
      */
-    private static int factoryIndex(boolean validating, boolean namespaceAware) {
+    private static int factoryIndex(boolean validating,
+        boolean namespaceAware) {
         int arrayIndex = 0;
         if (validating)
             arrayIndex += 2;

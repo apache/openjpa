@@ -12,22 +12,21 @@
  */
 package serp.bytecode;
 
-import serp.bytecode.visitor.*;
-
 /**
  * An instruction that has an argument of an index into the
  * local variable table of the current frame. This includes most of the
  * <code>load</code> and <code>store</code> instructions.
- *  The local variable table size is fixed by the <code>maxLocals</code>
+ * The local variable table size is fixed by the <code>maxLocals</code>
  * property of the code block. Long and double types take up 2 local variable
  * indexes.
- *  Parameter values to methods are loaded into the local variable table
+ * Parameter values to methods are loaded into the local variable table
  * prior to the execution of the first instruction. The 0 index of the
  * table is set to the instance of the class the method is being invoked on.
- * 
+ *
  * @author Abe White
  */
 public abstract class LocalVariableInstruction extends TypedInstruction {
+
     private int _index = -1;
 
     LocalVariableInstruction(Code owner) {
@@ -56,7 +55,7 @@ public abstract class LocalVariableInstruction extends TypedInstruction {
 
     /**
      * Set the index of the local variable that this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public LocalVariableInstruction setLocal(int index) {
@@ -90,7 +89,7 @@ public abstract class LocalVariableInstruction extends TypedInstruction {
     /**
      * Return the local variable object this instruction
      * operates on, or null if none.
-     * 
+     *
      * @see LocalVariableTable#getLocalVariable(int)
      */
     public LocalVariable getLocalVariable() {
@@ -104,7 +103,7 @@ public abstract class LocalVariableInstruction extends TypedInstruction {
      * Set the local variable object this instruction
      * operates on. This method will set both the type and local index
      * of this instruction from the given local variable.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public LocalVariableInstruction setLocalVariable(LocalVariable local) {

@@ -12,18 +12,26 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import serp.bytecode.lowlevel.ClassEntry;
+import serp.bytecode.lowlevel.ConstantPool;
+import serp.bytecode.visitor.BCVisitor;
+import serp.util.Numbers;
+import serp.util.Strings;
 
 /**
  * Attribute declaring the checked exceptions a method can throw.
- * 
+ *
  * @author Abe White
  */
 public class Exceptions extends Attribute {
+
     private List _indexes = new LinkedList();
 
     Exceptions(int nameIndex, Attributes owner) {
@@ -38,7 +46,7 @@ public class Exceptions extends Attribute {
      * Return the owning method.
      */
     public BCMethod getMethod() {
-        return(BCMethod) getOwner();
+        return (BCMethod) getOwner();
     }
 
     /**
@@ -163,7 +171,7 @@ public class Exceptions extends Attribute {
 
     /**
      * Remove an exception type thrown by this method.
-     * 
+     *
      * @return true if the method had the exception type, false otherwise
      */
     public boolean removeException(String type) {
@@ -184,7 +192,7 @@ public class Exceptions extends Attribute {
 
     /**
      * Remove an exception thrown by this method.
-     * 
+     *
      * @return true if the method had the exception type, false otherwise
      */
     public boolean removeException(Class type) {
@@ -195,7 +203,7 @@ public class Exceptions extends Attribute {
 
     /**
      * Remove an exception thrown by this method.
-     * 
+     *
      * @return true if the method had the exception type, false otherwise
      */
     public boolean removeException(BCClass type) {

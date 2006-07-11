@@ -12,15 +12,18 @@
  */
 package serp.bytecode;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link StoreInstruction} type.
- * 
+ *
  * @author Abe White
  */
 public class TestStoreInstruction extends TestCase {
+
     private Code _code = new Code();
 
     public TestStoreInstruction(String test) {

@@ -12,23 +12,23 @@
  */
 package serp.bytecode;
 
-import java.util.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import serp.bytecode.visitor.BCVisitor;
+import serp.util.Strings;
 
 /**
  * A conversion opcode such as <code>i2l, f2i</code>, etc.
  * Changing the types of the instruction will automatically
  * update the underlying opcode. Converting from one type to the same
  * type will result in a <code>nop</code>.
- * 
+ *
  * @author Abe White
  */
 public class ConvertInstruction extends TypedInstruction {
-    private static final Class[][] _mappings = new Class[][] {
+
+    private static final Class[][] _mappings = new Class[][]{
         { boolean.class, int.class }, { void.class, int.class },
         { Object.class, int.class }, };
-    private static final Class[][] _fromMappings = new Class[][] {
+    private static final Class[][] _fromMappings = new Class[][]{
         { boolean.class, int.class }, { void.class, int.class },
         { Object.class, int.class }, { byte.class, int.class },
         { char.class, int.class }, { short.class, int.class }, };
@@ -50,47 +50,47 @@ public class ConvertInstruction extends TypedInstruction {
 
     public int getStackChange() {
         switch (getOpcode()) {
-        case Constants.I2L:
-        case Constants.I2D:
-        case Constants.F2L:
-        case Constants.F2D:
-            return 1;
-        case Constants.L2I:
-        case Constants.L2F:
-        case Constants.D2I:
-        case Constants.D2F:
-            return -1;
-        default:
-            return 0;
+            case Constants.I2L:
+            case Constants.I2D:
+            case Constants.F2L:
+            case Constants.F2D:
+                return 1;
+            case Constants.L2I:
+            case Constants.L2F:
+            case Constants.D2I:
+            case Constants.D2F:
+                return -1;
+            default:
+                return 0;
         }
     }
 
     public String getTypeName() {
         switch (getOpcode()) {
-        case Constants.L2I:
-        case Constants.F2I:
-        case Constants.D2I:
-            return int.class.getName();
-        case Constants.I2L:
-        case Constants.F2L:
-        case Constants.D2L:
-            return long.class.getName();
-        case Constants.I2F:
-        case Constants.L2F:
-        case Constants.D2F:
-            return float.class.getName();
-        case Constants.I2D:
-        case Constants.L2D:
-        case Constants.F2D:
-            return double.class.getName();
-        case Constants.I2B:
-            return byte.class.getName();
-        case Constants.I2C:
-            return char.class.getName();
-        case Constants.I2S:
-            return short.class.getName();
-        default:
-            return _toType;
+            case Constants.L2I:
+            case Constants.F2I:
+            case Constants.D2I:
+                return int.class.getName();
+            case Constants.I2L:
+            case Constants.F2L:
+            case Constants.D2L:
+                return long.class.getName();
+            case Constants.I2F:
+            case Constants.L2F:
+            case Constants.D2F:
+                return float.class.getName();
+            case Constants.I2D:
+            case Constants.L2D:
+            case Constants.F2D:
+                return double.class.getName();
+            case Constants.I2B:
+                return byte.class.getName();
+            case Constants.I2C:
+                return char.class.getName();
+            case Constants.I2S:
+                return short.class.getName();
+            default:
+                return _toType;
         }
     }
 
@@ -103,7 +103,7 @@ public class ConvertInstruction extends TypedInstruction {
         if (toType == null || fromType == null || toType.equals(fromType)) {
             _toType = toType;
             _fromType = fromType;
-            return(TypedInstruction) setOpcode(Constants.NOP);
+            return (TypedInstruction) setOpcode(Constants.NOP);
         }
 
         // ok, valid conversion possible, forget saved types
@@ -114,53 +114,53 @@ public class ConvertInstruction extends TypedInstruction {
         char from = fromType.charAt(0);
 
         switch (to) {
-        case 'i':
-            switch (from) {
-            case 'l':
-                return(TypedInstruction) setOpcode(Constants.L2I);
-            case 'f':
-                return(TypedInstruction) setOpcode(Constants.F2I);
-            case 'd':
-                return(TypedInstruction) setOpcode(Constants.D2I);
-            }
-        case 'l':
-            switch (from) {
             case 'i':
-                return(TypedInstruction) setOpcode(Constants.I2L);
-            case 'f':
-                return(TypedInstruction) setOpcode(Constants.F2L);
-            case 'd':
-                return(TypedInstruction) setOpcode(Constants.D2L);
-            }
-        case 'f':
-            switch (from) {
-            case 'i':
-                return(TypedInstruction) setOpcode(Constants.I2F);
+                switch (from) {
+                    case 'l':
+                        return (TypedInstruction) setOpcode(Constants.L2I);
+                    case 'f':
+                        return (TypedInstruction) setOpcode(Constants.F2I);
+                    case 'd':
+                        return (TypedInstruction) setOpcode(Constants.D2I);
+                }
             case 'l':
-                return(TypedInstruction) setOpcode(Constants.L2F);
-            case 'd':
-                return(TypedInstruction) setOpcode(Constants.D2F);
-            }
-        case 'd':
-            switch (from) {
-            case 'i':
-                return(TypedInstruction) setOpcode(Constants.I2D);
-            case 'l':
-                return(TypedInstruction) setOpcode(Constants.L2D);
+                switch (from) {
+                    case 'i':
+                        return (TypedInstruction) setOpcode(Constants.I2L);
+                    case 'f':
+                        return (TypedInstruction) setOpcode(Constants.F2L);
+                    case 'd':
+                        return (TypedInstruction) setOpcode(Constants.D2L);
+                }
             case 'f':
-                return(TypedInstruction) setOpcode(Constants.F2D);
-            }
-        case 'b':
-            if (from == 'i')
-                return(TypedInstruction) setOpcode(Constants.I2B);
-        case 'C':
-            if (from == 'i')
-                return(TypedInstruction) setOpcode(Constants.I2C);
-        case 'S':
-            if (from == 'i')
-                return(TypedInstruction) setOpcode(Constants.I2S);
-        default:
-            throw new IllegalStateException();
+                switch (from) {
+                    case 'i':
+                        return (TypedInstruction) setOpcode(Constants.I2F);
+                    case 'l':
+                        return (TypedInstruction) setOpcode(Constants.L2F);
+                    case 'd':
+                        return (TypedInstruction) setOpcode(Constants.D2F);
+                }
+            case 'd':
+                switch (from) {
+                    case 'i':
+                        return (TypedInstruction) setOpcode(Constants.I2D);
+                    case 'l':
+                        return (TypedInstruction) setOpcode(Constants.L2D);
+                    case 'f':
+                        return (TypedInstruction) setOpcode(Constants.F2D);
+                }
+            case 'b':
+                if (from == 'i')
+                    return (TypedInstruction) setOpcode(Constants.I2B);
+            case 'C':
+                if (from == 'i')
+                    return (TypedInstruction) setOpcode(Constants.I2C);
+            case 'S':
+                if (from == 'i')
+                    return (TypedInstruction) setOpcode(Constants.I2S);
+            default:
+                throw new IllegalStateException();
         }
     }
 
@@ -170,27 +170,27 @@ public class ConvertInstruction extends TypedInstruction {
      */
     public String getFromTypeName() {
         switch (getOpcode()) {
-        case Constants.I2L:
-        case Constants.I2F:
-        case Constants.I2D:
-        case Constants.I2B:
-        case Constants.I2S:
-        case Constants.I2C:
-            return int.class.getName();
-        case Constants.L2I:
-        case Constants.L2F:
-        case Constants.L2D:
-            return long.class.getName();
-        case Constants.F2I:
-        case Constants.F2L:
-        case Constants.F2D:
-            return float.class.getName();
-        case Constants.D2I:
-        case Constants.D2L:
-        case Constants.D2F:
-            return double.class.getName();
-        default:
-            return _fromType;
+            case Constants.I2L:
+            case Constants.I2F:
+            case Constants.I2D:
+            case Constants.I2B:
+            case Constants.I2S:
+            case Constants.I2C:
+                return int.class.getName();
+            case Constants.L2I:
+            case Constants.L2F:
+            case Constants.L2D:
+                return long.class.getName();
+            case Constants.F2I:
+            case Constants.F2L:
+            case Constants.F2D:
+                return float.class.getName();
+            case Constants.D2I:
+            case Constants.D2L:
+            case Constants.D2F:
+                return double.class.getName();
+            default:
+                return _fromType;
         }
     }
 
@@ -219,7 +219,7 @@ public class ConvertInstruction extends TypedInstruction {
     /**
      * Set the type being converted from. Types that have no direct
      * support will be converted accordingly.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ConvertInstruction setFromType(String type) {
@@ -231,7 +231,7 @@ public class ConvertInstruction extends TypedInstruction {
         if (toType == null || fromType == null || toType.equals(fromType)) {
             _toType = toType;
             _fromType = fromType;
-            return(ConvertInstruction) setOpcode(Constants.NOP);
+            return (ConvertInstruction) setOpcode(Constants.NOP);
         }
 
         // ok, valid conversion possible, forget saved types
@@ -242,57 +242,57 @@ public class ConvertInstruction extends TypedInstruction {
         char from = fromType.charAt(0);
 
         switch (from) {
-        case 'i':
-            switch (to) {
-            case 'l':
-                return(ConvertInstruction) setOpcode(Constants.I2L);
-            case 'f':
-                return(ConvertInstruction) setOpcode(Constants.I2F);
-            case 'd':
-                return(ConvertInstruction) setOpcode(Constants.I2D);
-            case 'b':
-                return(ConvertInstruction) setOpcode(Constants.I2B);
-            case 'c':
-                return(ConvertInstruction) setOpcode(Constants.I2C);
-            case 's':
-                return(ConvertInstruction) setOpcode(Constants.I2S);
-            }
-        case 'l':
-            switch (to) {
             case 'i':
-                return(ConvertInstruction) setOpcode(Constants.L2I);
-            case 'f':
-                return(ConvertInstruction) setOpcode(Constants.L2F);
-            case 'd':
-                return(ConvertInstruction) setOpcode(Constants.L2D);
-            }
-        case 'f':
-            switch (to) {
-            case 'i':
-                return(ConvertInstruction) setOpcode(Constants.F2I);
+                switch (to) {
+                    case 'l':
+                        return (ConvertInstruction) setOpcode(Constants.I2L);
+                    case 'f':
+                        return (ConvertInstruction) setOpcode(Constants.I2F);
+                    case 'd':
+                        return (ConvertInstruction) setOpcode(Constants.I2D);
+                    case 'b':
+                        return (ConvertInstruction) setOpcode(Constants.I2B);
+                    case 'c':
+                        return (ConvertInstruction) setOpcode(Constants.I2C);
+                    case 's':
+                        return (ConvertInstruction) setOpcode(Constants.I2S);
+                }
             case 'l':
-                return(ConvertInstruction) setOpcode(Constants.F2L);
-            case 'd':
-                return(ConvertInstruction) setOpcode(Constants.F2D);
-            }
-        case 'd':
-            switch (to) {
-            case 'i':
-                return(ConvertInstruction) setOpcode(Constants.D2I);
-            case 'l':
-                return(ConvertInstruction) setOpcode(Constants.D2L);
+                switch (to) {
+                    case 'i':
+                        return (ConvertInstruction) setOpcode(Constants.L2I);
+                    case 'f':
+                        return (ConvertInstruction) setOpcode(Constants.L2F);
+                    case 'd':
+                        return (ConvertInstruction) setOpcode(Constants.L2D);
+                }
             case 'f':
-                return(ConvertInstruction) setOpcode(Constants.D2F);
-            }
-        default:
-            throw new IllegalStateException();
+                switch (to) {
+                    case 'i':
+                        return (ConvertInstruction) setOpcode(Constants.F2I);
+                    case 'l':
+                        return (ConvertInstruction) setOpcode(Constants.F2L);
+                    case 'd':
+                        return (ConvertInstruction) setOpcode(Constants.F2D);
+                }
+            case 'd':
+                switch (to) {
+                    case 'i':
+                        return (ConvertInstruction) setOpcode(Constants.D2I);
+                    case 'l':
+                        return (ConvertInstruction) setOpcode(Constants.D2L);
+                    case 'f':
+                        return (ConvertInstruction) setOpcode(Constants.D2F);
+                }
+            default:
+                throw new IllegalStateException();
         }
     }
 
     /**
      * Set the type being converted from. Types that have no direct
      * support will be converted accordingly.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ConvertInstruction setFromType(Class type) {
@@ -304,7 +304,7 @@ public class ConvertInstruction extends TypedInstruction {
     /**
      * Set the type being converted from. Types that have no direct
      * support will be converted accordingly.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ConvertInstruction setFromType(BCClass type) {

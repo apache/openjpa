@@ -12,17 +12,19 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-import org.apache.commons.collections.*;
+import java.util.Map;
+
+import org.apache.commons.collections.ReferenceMap;
 
 /**
  * Specialization of the {@link RandomAccessResultList} that only maintains
  * soft references to instantiated objects.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class SoftRandomAccessResultList extends RandomAccessResultList {
+
     public SoftRandomAccessResultList(ResultObjectProvider rop) {
         super(rop);
     }

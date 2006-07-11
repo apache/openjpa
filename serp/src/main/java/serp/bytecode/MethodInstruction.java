@@ -12,18 +12,24 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.lang.reflect.*;
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+
+import serp.bytecode.lowlevel.ComplexEntry;
+import serp.bytecode.lowlevel.ConstantPool;
+import serp.bytecode.visitor.BCVisitor;
+import serp.util.Strings;
 
 /**
  * An instruction that invokes a method.
- * 
+ *
  * @author Abe White
  */
 public class MethodInstruction extends Instruction {
+
     private int _index = 0;
 
     MethodInstruction(Code owner, int opcode) {
@@ -49,7 +55,7 @@ public class MethodInstruction extends Instruction {
 
         // and for each arg
         String[] params = getMethodParamNames();
-        for (int i = 0; i < params.length; i++ )
+        for (int i = 0; i < params.length; i++)
             stack--;
 
         // add for the return value, if any
@@ -102,7 +108,7 @@ public class MethodInstruction extends Instruction {
     /**
      * Set the index in the class {@link ConstantPool} of the
      * {@link ComplexEntry} describing the method to operate on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethodIndex(int index) {
@@ -129,7 +135,7 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the method this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethod(BCMethod method) {
@@ -141,7 +147,7 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the method this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethod(Method method) {
@@ -153,7 +159,7 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the method this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethod(Constructor method) {
@@ -167,11 +173,11 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the method this instruction operates on.
-     * 
-     * @param dec the full class name of the method's declaring class
-     * @param name the method name
+     *
+     * @param dec        the full class name of the method's declaring class
+     * @param name       the method name
      * @param returnType the full class name of the method return type
-     * @param param the full class names of the method param types
+     * @param param      the full class names of the method param types
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethod(String dec, String name,
@@ -207,10 +213,10 @@ public class MethodInstruction extends Instruction {
     /**
      * Set the method this instruction operates on, for methods that are
      * declared by the current class.
-     * 
-     * @param name the method name
+     *
+     * @param name       the method name
      * @param returnType the full class name of the method return type
-     * @param param the full class names of the method param types
+     * @param param      the full class names of the method param types
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethod(String name, String returnType,
@@ -221,11 +227,11 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the method this instruction operates on.
-     * 
-     * @param dec the method's declaring class
-     * @param name the method name
+     *
+     * @param dec        the method's declaring class
+     * @param name       the method name
      * @param returnType the class of the method return type
-     * @param param the class of the method param types
+     * @param param      the class of the method param types
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethod(Class dec, String name,
@@ -244,10 +250,10 @@ public class MethodInstruction extends Instruction {
     /**
      * Set the method this instruction operates on, for methods that are
      * declared by the current class.
-     * 
-     * @param name the method name
+     *
+     * @param name       the method name
      * @param returnType the class of the method return type
-     * @param param the class of the method param types
+     * @param param      the class of the method param types
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethod(String name, Class returnType,
@@ -265,11 +271,11 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the method this instruction operates on.
-     * 
-     * @param dec the method's declaring class
-     * @param name the method name
+     *
+     * @param dec        the method's declaring class
+     * @param name       the method name
      * @param returnType the class of the method return type
-     * @param param the class of the method param types
+     * @param param      the class of the method param types
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethod(BCClass dec, String name,
@@ -288,10 +294,10 @@ public class MethodInstruction extends Instruction {
     /**
      * Set the method this instruction operates on, for methods that are
      * declared by the current class.
-     * 
-     * @param name the method name
+     *
+     * @param name       the method name
      * @param returnType the class of the method return type
-     * @param param the class of the method param types
+     * @param param      the class of the method param types
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethod(String name, BCClass returnType,
@@ -330,7 +336,7 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the name of the method this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethodName(String name) {
@@ -383,7 +389,7 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the return type of the method this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethodReturn(String type) {
@@ -393,7 +399,7 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the return type of the method this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethodReturn(Class type) {
@@ -405,7 +411,7 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the return type of the method this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethodReturn(BCClass type) {
@@ -460,7 +466,7 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the param types of the method this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethodParams(String[] types) {
@@ -470,7 +476,7 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the param types of the method this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public void setMethodParams(Class[] types) {
@@ -486,7 +492,7 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the param types of the method this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public void setMethodParams(BCClass[] types) {
@@ -541,7 +547,7 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the declaring type of the method this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethodDeclarer(String type) {
@@ -551,7 +557,7 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the declaring type of the method this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethodDeclarer(Class type) {
@@ -563,7 +569,7 @@ public class MethodInstruction extends Instruction {
 
     /**
      * Set the declaring type of the method this instruction operates on.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethodDeclarer(BCClass type) {

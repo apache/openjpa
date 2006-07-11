@@ -12,18 +12,21 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import java.lang.reflect.*;
-import java.util.*;
-import org.apache.openjpa.lib.util.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * A list of plugins. Defaults and aliases on plugin lists apply only
  * to individual class names.
- * 
- * @see PluginValue
+ *
  * @author Abe White
+ * @see PluginValue
  */
 public class PluginListValue extends ObjectValue {
+
     private static final String[] EMPTY = new String[0];
 
     private static final Localizer _loc = Localizer.forPackage
@@ -75,7 +78,8 @@ public class PluginListValue extends ObjectValue {
     /**
      * Instantiate the plugins as instances of the given class.
      */
-    public Object instantiate(Class elemType, Configuration conf, boolean fatal) {
+    public Object instantiate(Class elemType, Configuration conf,
+        boolean fatal) {
         Object[] ret;
         if (_names.length == 0)
             ret = (Object[]) Array.newInstance(elemType, 0);
@@ -134,24 +138,24 @@ public class PluginListValue extends ObjectValue {
         for (int i = 0; i < str.length(); i++) {
             c = str.charAt(i);
             switch (c) {
-            case '(':
-                inParen = true;
-                plugin.append(c);
-                break;
-            case ')':
-                inParen = false;
-                plugin.append(c);
-                break;
-            case ',':
-                if (inParen)
+                case '(':
+                    inParen = true;
                     plugin.append(c);
-                else {
-                    plugins.add(plugin.toString());
-                    plugin = new StringBuffer();
-                }
-                break;
-            default:
-                plugin.append(c);
+                    break;
+                case ')':
+                    inParen = false;
+                    plugin.append(c);
+                    break;
+                case ',':
+                    if (inParen)
+                        plugin.append(c);
+                    else {
+                        plugins.add(plugin.toString());
+                        plugin = new StringBuffer();
+                    }
+                    break;
+                default:
+                    plugin.append(c);
             }
         }
         if (plugin.length() > 0)

@@ -12,16 +12,18 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.util.*;
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link AbstractEventManager}.
- * 
+ *
  * @author Abe White
  */
 public class TestAbstractEventManager extends TestCase {
+
     private EventManager _em = new EventManager();
 
     public TestAbstractEventManager(String test) {
@@ -60,12 +62,14 @@ public class TestAbstractEventManager extends TestCase {
     }
 
     private static class EventManager extends AbstractEventManager {
+
         protected void fireEvent(Object event, Object listener) {
             ((Listener) listener).fire();
         }
     }
 
     private class Listener {
+
         public static final int NONE = 0;
         public static final int ADD = 1;
         public static final int REMOVE = 2;

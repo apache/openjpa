@@ -12,25 +12,27 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.io.*;
-import serp.bytecode.lowlevel.*;
+import java.io.IOException;
+
+import serp.bytecode.lowlevel.ConstantPoolTable;
 
 /**
  * Filter that looks for classes with one of a set of annotations.
  * See JDK 1.5 JVM spec for details on annotation bytecode:<br />
  * java.sun.com/docs/books/vmspec/2nd-edition/ClassFileFormat-final-draft.pdf
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class ClassAnnotationMetaDataFilter implements MetaDataFilter {
+
     private final String[] _annos;
 
     /**
      * Constructor; supply annotation to match against.
      */
     public ClassAnnotationMetaDataFilter(Class anno) {
-        this(new Class[] { anno });
+        this(new Class[]{ anno });
     }
 
     /**
@@ -121,36 +123,38 @@ public class ClassAnnotationMetaDataFilter implements MetaDataFilter {
         int idx) {
         int skipped = 0;
         switch (table.readByte(idx + skipped++)) {
-        case 'Z': // bool
-        case 'B': // byte
-        case 'C': // char
-        case 'D': // double
-        case 'F': // float
-        case 'I': // int
-        case 'J': // long
-        case 'S': // short
-        case 's': // string
-        case 'c': // class
-            skipped += 2;
-            break;
-        case 'e': // enum ptr
-            skipped += 4;
-            break;
-        case '[': // array
-            int size = table.readUnsignedShort(idx + skipped);
-            skipped += 2;
-            for (int i = 0; i < size; i++)
-                skipped += skipAnnotationPropertyValue(table, idx + skipped);
-            break;
-        case '@': // anno
-            skipped += 2; // type
-            int props = table.readUnsignedShort(idx + skipped);
-            skipped += 2;
-            for (int j = 0; j < props; j++) {
-                skipped += 2; // name
-                skipped += skipAnnotationPropertyValue(table, idx + skipped);
-            }
-            break;
+            case 'Z': // bool
+            case 'B': // byte
+            case 'C': // char
+            case 'D': // double
+            case 'F': // float
+            case 'I': // int
+            case 'J': // long
+            case 'S': // short
+            case 's': // string
+            case 'c': // class
+                skipped += 2;
+                break;
+            case 'e': // enum ptr
+                skipped += 4;
+                break;
+            case '[': // array
+                int size = table.readUnsignedShort(idx + skipped);
+                skipped += 2;
+                for (int i = 0; i < size; i++)
+                    skipped +=
+                        skipAnnotationPropertyValue(table, idx + skipped);
+                break;
+            case '@': // anno
+                skipped += 2; // type
+                int props = table.readUnsignedShort(idx + skipped);
+                skipped += 2;
+                for (int j = 0; j < props; j++) {
+                    skipped += 2; // name
+                    skipped +=
+                        skipAnnotationPropertyValue(table, idx + skipped);
+                }
+                break;
         }
         return skipped;
     }

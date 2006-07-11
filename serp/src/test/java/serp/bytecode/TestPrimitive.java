@@ -12,15 +12,17 @@
  */
 package serp.bytecode;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the handling of primitive {@link BCClass}es.
- * 
+ *
  * @author Abe White
  */
 public class TestPrimitive extends AbstractStateTest {
+
     public TestPrimitive(String test) {
         super(test);
     }

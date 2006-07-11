@@ -18,12 +18,15 @@
  */
 package org.apache.openjpa.lib.util.concurrent;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
 
 class CondVar implements Condition, java.io.Serializable {
 
-    /** The lock */
- protected final ExclusiveLock lock;
+    /**
+     * The lock
+     */
+    protected final ExclusiveLock lock;
 
     /* *
      * Create a new CondVar that relies on the given mutual exclusion lock.
@@ -42,7 +45,7 @@ class CondVar implements Condition, java.io.Serializable {
         boolean wasInterrupted = Thread.interrupted();
         try {
             synchronized (this) {
-                for (int i=holdCount; i>0; i--) lock.unlock();
+                for (int i = holdCount; i > 0; i--) lock.unlock();
                 while (true) {
                     try {
                         wait();
@@ -57,7 +60,7 @@ class CondVar implements Condition, java.io.Serializable {
             }
         }
         finally {
-            for (int i=holdCount; i>0; i--) lock.lock();
+            for (int i = holdCount; i > 0; i--) lock.lock();
             if (wasInterrupted) {
                 Thread.currentThread().interrupt();
             }
@@ -72,7 +75,7 @@ class CondVar implements Condition, java.io.Serializable {
         if (Thread.interrupted()) throw new InterruptedException();
         try {
             synchronized (this) {
-                for (int i=holdCount; i>0; i--) lock.unlock();
+                for (int i = holdCount; i > 0; i--) lock.unlock();
                 try {
                     wait();
                 } catch (InterruptedException ex) {
@@ -82,7 +85,7 @@ class CondVar implements Condition, java.io.Serializable {
             }
         }
         finally {
-            for (int i=holdCount; i>0; i--) lock.lock();
+            for (int i = holdCount; i > 0; i--) lock.lock();
         }
     }
 
@@ -97,7 +100,7 @@ class CondVar implements Condition, java.io.Serializable {
         boolean success = false;
         try {
             synchronized (this) {
-                for (int i=holdCount; i>0; i--) lock.unlock();
+                for (int i = holdCount; i > 0; i--) lock.unlock();
                 try {
                     if (nanos > 0) {
                         long start = Utils.nanoTime();
@@ -114,7 +117,7 @@ class CondVar implements Condition, java.io.Serializable {
             }
         }
         finally {
-            for (int i=holdCount; i>0; i--) lock.lock();
+            for (int i = holdCount; i > 0; i--) lock.lock();
         }
         return success;
     }
@@ -135,7 +138,7 @@ class CondVar implements Condition, java.io.Serializable {
         boolean success = false;
         try {
             synchronized (this) {
-                for (int i=holdCount; i>0; i--) lock.unlock();
+                for (int i = holdCount; i > 0; i--) lock.unlock();
                 try {
                     long start = System.currentTimeMillis();
                     long msecs = abstime - start;
@@ -153,7 +156,7 @@ class CondVar implements Condition, java.io.Serializable {
             }
         }
         finally {
-            for (int i=holdCount; i>0; i--) lock.lock();
+            for (int i = holdCount; i > 0; i--) lock.lock();
         }
         return success;
     }
@@ -172,7 +175,9 @@ class CondVar implements Condition, java.io.Serializable {
         notifyAll();
     }
 
-    protected ExclusiveLock getLock() { return lock; }
+    protected ExclusiveLock getLock() {
+        return lock;
+    }
 
     protected boolean hasWaiters() {
         throw new UnsupportedOperationException("Use FAIR version");
@@ -187,7 +192,9 @@ class CondVar implements Condition, java.io.Serializable {
     }
 
     static interface ExclusiveLock extends Lock {
+
         boolean isHeldByCurrentThread();
+
         int getHoldCount();
     }
 }

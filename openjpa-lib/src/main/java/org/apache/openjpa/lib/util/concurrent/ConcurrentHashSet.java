@@ -12,18 +12,21 @@
  */
 package org.apache.openjpa.lib.util.concurrent;
 
-import java.io.*;
-import java.util.*;
-import org.apache.commons.collections.map.*;
-import org.apache.commons.collections.set.*;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
+
+import org.apache.commons.collections.set.MapBackedSet;
 
 /**
  * A concurrent set.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class ConcurrentHashSet implements Set, Serializable {
+
     private static final Object DUMMY_VAL = new Object();
 
     private final Set _set;
