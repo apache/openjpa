@@ -15,6 +15,7 @@ package org.apache.openjpa.util;
 import java.io.ObjectStreamException;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;

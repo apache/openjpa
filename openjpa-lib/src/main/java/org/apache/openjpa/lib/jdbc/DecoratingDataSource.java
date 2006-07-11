@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.apache.openjpa.lib.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -30,7 +32,6 @@ import org.apache.openjpa.lib.util.concurrent.CopyOnWriteArrayList;
 public class DecoratingDataSource extends DelegatingDataSource {
 
     private List _decorators = new CopyOnWriteArrayList();
-    private boolean _conf = false;
 
     /**
      * Constructor. Supply wrapped data source.
