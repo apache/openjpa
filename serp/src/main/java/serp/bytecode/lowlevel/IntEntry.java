@@ -12,16 +12,20 @@
  */
 package serp.bytecode.lowlevel;
 
-import java.io.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.visitor.BCVisitor;
+import serp.util.Numbers;
 
 /**
  * A constant int value in the constant pool.
- * 
+ *
  * @author Abe White
  */
 public class IntEntry extends Entry implements ConstantEntry {
+
     private int _value = -1;
 
     /**
@@ -32,7 +36,7 @@ public class IntEntry extends Entry implements ConstantEntry {
 
     /**
      * Constructor.
-     * 
+     *
      * @param value the constant int value of this entry
      */
     public IntEntry(int value) {

@@ -12,19 +12,20 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.Map;
 
 /**
  * Implementations of this interface can populate {@link Configuration}s in
  * some environment-specific way. Implementations must implement the
  * <code>equals</code> and <code>hashCode</code> methods so that equivalent
  * configurations compare equal.
- * 
- * @since 4.0.0
+ *
  * @nojavadoc
+ * @since 4.0.0
  */
 public interface ConfigurationProvider {
+
     /**
      * Load defaults, or return false if no defaults for this provider found.
      */

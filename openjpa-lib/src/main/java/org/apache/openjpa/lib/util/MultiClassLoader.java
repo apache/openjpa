@@ -12,19 +12,24 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Class loader type that can be configured to delegate to multiple
  * internal class loaders.
- *  The {@link #THREAD_LOADER} constant is a marker that will be replaced
+ * The {@link #THREAD_LOADER} constant is a marker that will be replaced
  * with the context loader of the current thread.
- * 
+ *
  * @author Abe White
  */
 public class MultiClassLoader extends ClassLoader {
+
     /**
      * Marker that will be replaced with the context loader of the current
      * thread whenever it is discovered in the class loader list.
@@ -89,7 +94,7 @@ public class MultiClassLoader extends ClassLoader {
 
     /**
      * Add the given class loader to the set of loaders that will be tried.
-     * 
+     *
      * @return true if the loader was added, false if already in the list
      */
     public boolean addClassLoader(ClassLoader loader) {
@@ -100,7 +105,7 @@ public class MultiClassLoader extends ClassLoader {
 
     /**
      * Add the given class loader at the specified index.
-     * 
+     *
      * @return true if the loader was added, false if already in the list
      */
     public boolean addClassLoader(int index, ClassLoader loader) {
@@ -121,7 +126,7 @@ public class MultiClassLoader extends ClassLoader {
     /**
      * Adds all class loaders from the given multi loader starting at the
      * given index.
-     * 
+     *
      * @return true if any loaders were added, false if all already in list
      */
     public boolean addClassLoaders(int index, MultiClassLoader multi) {
@@ -141,7 +146,7 @@ public class MultiClassLoader extends ClassLoader {
 
     /**
      * Adds all the class loaders from the given multi loader.
-     * 
+     *
      * @return true if any loaders were added, false if all already in list
      */
     public boolean addClassLoaders(MultiClassLoader multi) {
@@ -157,7 +162,7 @@ public class MultiClassLoader extends ClassLoader {
 
     /**
      * Remove the given loader from the list.
-     * 
+     *
      * @return true if removed, false if not in list
      */
     public boolean removeClassLoader(ClassLoader loader) {
@@ -239,7 +244,7 @@ public class MultiClassLoader extends ClassLoader {
             return true;
         if (!(other instanceof MultiClassLoader))
             return false;
-        return((MultiClassLoader) other)._loaders.equals(_loaders);
+        return ((MultiClassLoader) other)._loaders.equals(_loaders);
     }
 
     public int hashCode() {

@@ -12,20 +12,23 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.sql.*;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * A {@link SQLException} that contains information about
  * the {@link Statement} SQL that caused the exception.
- * 
+ *
  * @author Marc Prud'hommeaux
  * @nojavadoc
  */
 public class ReportingSQLException extends SQLException {
+
     private final transient Statement _stmnt;
     private final SQLException _sqle;
 
-    public ReportingSQLException(SQLException sqle, Statement stmnt, String sql) {
+    public ReportingSQLException(SQLException sqle, Statement stmnt,
+        String sql) {
         super(getExceptionMessage(sqle, stmnt, sql));
         this._sqle = sqle;
         this._stmnt = stmnt;

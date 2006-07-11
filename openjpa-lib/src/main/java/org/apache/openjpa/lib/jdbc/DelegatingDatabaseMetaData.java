@@ -12,18 +12,20 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.io.*;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Wrapper around a DatabaseMetadata instance.
- * 
+ *
  * @author Marc Prud'hommeaux
  */
 public class DelegatingDatabaseMetaData implements DatabaseMetaData {
+
     private final DatabaseMetaData _metaData;
-    private final Connection  _conn;
+    private final Connection _conn;
 
     public DelegatingDatabaseMetaData(DatabaseMetaData metaData,
         Connection conn) {
@@ -36,7 +38,7 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
      */
     public DatabaseMetaData getInnermostDelegate() {
         return _metaData instanceof DelegatingDatabaseMetaData ?
-            ((DelegatingDatabaseMetaData)_metaData).getInnermostDelegate()
+            ((DelegatingDatabaseMetaData) _metaData).getInnermostDelegate()
             : _metaData;
     }
 
@@ -49,7 +51,7 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
             return true;
         if (other instanceof DelegatingDatabaseMetaData)
             other = ((DelegatingDatabaseMetaData) other)
-            .getInnermostDelegate();
+                .getInnermostDelegate();
         return getInnermostDelegate().equals(other);
     }
 
@@ -462,7 +464,8 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.supportsCatalogsInIndexDefinitions();
     }
 
-    public boolean supportsCatalogsInPrivilegeDefinitions() throws SQLException {
+    public boolean supportsCatalogsInPrivilegeDefinitions()
+        throws SQLException {
         return _metaData.supportsCatalogsInPrivilegeDefinitions();
     }
 
@@ -482,7 +485,8 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.supportsConvert();
     }
 
-    public boolean supportsConvert(int fromType, int toType) throws SQLException {
+    public boolean supportsConvert(int fromType, int toType)
+        throws SQLException {
         return _metaData.supportsConvert(fromType, toType);
     }
 
@@ -505,7 +509,8 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.supportsDataManipulationTransactionsOnly();
     }
 
-    public boolean supportsDifferentTableCorrelationNames() throws SQLException {
+    public boolean supportsDifferentTableCorrelationNames()
+        throws SQLException {
         return _metaData.supportsDifferentTableCorrelationNames();
     }
 
@@ -717,7 +722,8 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
     }
 
     public ResultSet getAttributes(String catalog, String schemaPatter,
-        String typeNamePattern, String attributeNamePattern) throws SQLException {
+        String typeNamePattern, String attributeNamePattern)
+        throws SQLException {
         throw new UnsupportedOperationException();
     }
 

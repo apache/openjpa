@@ -12,17 +12,21 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.lowlevel.ConstantPool;
+import serp.bytecode.visitor.BCVisitor;
+import serp.bytecode.visitor.VisitAcceptor;
 
 /**
  * An opcode in a method of a class.
- * 
+ *
  * @author Abe White
  */
 public class Instruction extends CodeEntry implements BCEntity, VisitAcceptor {
+
     private Code _owner = null;
     private int _opcode = Constants.NOP;
 
@@ -58,7 +62,7 @@ public class Instruction extends CodeEntry implements BCEntity, VisitAcceptor {
 
     /**
      * Set the opcode this instruction represents. For internal use only.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     Instruction setOpcode(int opcode) {
@@ -80,7 +84,7 @@ public class Instruction extends CodeEntry implements BCEntity, VisitAcceptor {
     /**
      * Return the line number of this instruction, or null if none. This
      * method is subject to the validity constraints of {@link #getByteIndex}.
-     * 
+     *
      * @see LineNumberTable#getLineNumber(Instruction)
      */
     public LineNumber getLineNumber() {
@@ -110,10 +114,10 @@ public class Instruction extends CodeEntry implements BCEntity, VisitAcceptor {
     /**
      * Return the number of stack positions this instruction pushes
      * or pops during its execution.
-     * 
+     *
      * @return 0 if the stack is not affected by this instruction, a
-     * positive number if it pushes onto the stack, and a negative
-     * number if it pops from the stack
+     *         positive number if it pushes onto the stack, and a negative
+     *         number if it pops from the stack
      */
     public int getStackChange() {
         return 0;

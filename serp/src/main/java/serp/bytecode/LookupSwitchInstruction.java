@@ -12,20 +12,26 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import serp.bytecode.visitor.BCVisitor;
+import serp.util.Numbers;
 
 /**
  * The <code>lookupswitch</code> instruction.
- * 
+ *
  * @author Abe White
  */
 public class LookupSwitchInstruction extends JumpInstruction {
+
     // case info
     private List _matches = new LinkedList();
-    private List _cases     = new LinkedList();
+    private List _cases = new LinkedList();
 
     LookupSwitchInstruction(Code owner) {
         super(owner, Constants.LOOKUPSWITCH);
@@ -39,7 +45,7 @@ public class LookupSwitchInstruction extends JumpInstruction {
         // make the first byte of the 'default' a multiple of 4 from the
         // start of the method
         int byteIndex = getByteIndex() + 1;
-        for (; byteIndex % 4 != 0; byteIndex++, length++);
+        for (; byteIndex % 4 != 0; byteIndex++, length++) ;
 
         // default, npairs
         length += 8;
@@ -69,7 +75,7 @@ public class LookupSwitchInstruction extends JumpInstruction {
      * Synonymous with {@link #setTarget}.
      */
     public LookupSwitchInstruction setDefaultTarget(Instruction ins) {
-        return(LookupSwitchInstruction) setTarget(ins);
+        return (LookupSwitchInstruction) setTarget(ins);
     }
 
     /**
@@ -89,7 +95,7 @@ public class LookupSwitchInstruction extends JumpInstruction {
 
     /**
      * Set the match-jumppt pairs for this switch.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public LookupSwitchInstruction setCases(int[] matches,
@@ -98,11 +104,11 @@ public class LookupSwitchInstruction extends JumpInstruction {
         _cases.clear();
 
         for (int i = 0; i < matches.length; i++)
-            _matches.add(Numbers.valueOf(matches [i]));
+            _matches.add(Numbers.valueOf(matches[i]));
 
         for (int i = 0; i < targets.length; i++) {
             InstructionPtrStrategy next = new InstructionPtrStrategy(this);
-            next.setTargetInstruction(targets [i]);
+            next.setTargetInstruction(targets[i]);
             _cases.add(next);
         }
 
@@ -112,8 +118,8 @@ public class LookupSwitchInstruction extends JumpInstruction {
     public int[] getOffsets() {
         int bi = getByteIndex();
         int[] offsets = new int [_cases.size()];
-        for (int i=0; i < offsets.length; i++)
-            offsets [i] = ((InstructionPtrStrategy) _cases.get(i)).
+        for (int i = 0; i < offsets.length; i++)
+            offsets[i] = ((InstructionPtrStrategy) _cases.get(i)).
                 getByteIndex() - bi;
         return offsets;
     }
@@ -134,15 +140,15 @@ public class LookupSwitchInstruction extends JumpInstruction {
      */
     public Instruction[] getTargets() {
         Instruction[] result = new Instruction[_cases.size()];
-        for (int i=0; i < result.length; i++)
-            result [i] = ((InstructionPtrStrategy) _cases.get(i)).
+        for (int i = 0; i < result.length; i++)
+            result[i] = ((InstructionPtrStrategy) _cases.get(i)).
                 getTargetInstruction();
         return result;
     }
 
     /**
      * Add a case to this switch.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public LookupSwitchInstruction addCase(int match, Instruction target) {
@@ -185,7 +191,7 @@ public class LookupSwitchInstruction extends JumpInstruction {
         LookupSwitchInstruction ins = (LookupSwitchInstruction) orig;
         _matches = new LinkedList(ins._matches);
         _cases.clear();
-        for (Iterator itr=ins._cases.iterator(); itr.hasNext();) {
+        for (Iterator itr = ins._cases.iterator(); itr.hasNext();) {
             InstructionPtrStrategy origPtr = (InstructionPtrStrategy)
                 itr.next();
             InstructionPtrStrategy newPtr = new InstructionPtrStrategy(this);

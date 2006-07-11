@@ -12,18 +12,21 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * The <code>newarray</code> instruction, which is used to create new
  * arrays of primitive types.
- * 
+ *
  * @author Abe White
  */
 public class NewArrayInstruction extends TypedInstruction {
-    private static final Class[][] _mappings = new Class[][] {
+
+    private static final Class[][] _mappings = new Class[][]{
         { void.class, int.class }, { Object.class, int.class }, };
 
     private int _code = -1;
@@ -38,24 +41,24 @@ public class NewArrayInstruction extends TypedInstruction {
 
     public String getTypeName() {
         switch (getTypeCode()) {
-        case Constants.ARRAY_BOOLEAN:
-            return boolean.class.getName();
-        case Constants.ARRAY_CHAR:
-            return char.class.getName();
-        case Constants.ARRAY_FLOAT:
-            return float.class.getName();
-        case Constants.ARRAY_DOUBLE:
-            return double.class.getName();
-        case Constants.ARRAY_BYTE:
-            return byte.class.getName();
-        case Constants.ARRAY_SHORT:
-            return short.class.getName();
-        case Constants.ARRAY_INT:
-            return int.class.getName();
-        case Constants.ARRAY_LONG:
-            return long.class.getName();
-        default:
-            return null;
+            case Constants.ARRAY_BOOLEAN:
+                return boolean.class.getName();
+            case Constants.ARRAY_CHAR:
+                return char.class.getName();
+            case Constants.ARRAY_FLOAT:
+                return float.class.getName();
+            case Constants.ARRAY_DOUBLE:
+                return double.class.getName();
+            case Constants.ARRAY_BYTE:
+                return byte.class.getName();
+            case Constants.ARRAY_SHORT:
+                return short.class.getName();
+            case Constants.ARRAY_INT:
+                return int.class.getName();
+            case Constants.ARRAY_LONG:
+                return long.class.getName();
+            default:
+                return null;
         }
     }
 
@@ -65,24 +68,24 @@ public class NewArrayInstruction extends TypedInstruction {
             return setTypeCode(-1);
 
         switch (type.charAt(0)) {
-        case 'b':
-            if (boolean.class.getName().equals(type))
-                return setTypeCode(Constants.ARRAY_BOOLEAN);
-            return setTypeCode(Constants.ARRAY_BYTE);
-        case 'c':
-            return setTypeCode(Constants.ARRAY_CHAR);
-        case 'f':
-            return setTypeCode(Constants.ARRAY_FLOAT);
-        case 'd':
-            return setTypeCode(Constants.ARRAY_DOUBLE);
-        case 's':
-            return setTypeCode(Constants.ARRAY_SHORT);
-        case 'i':
-            return setTypeCode(Constants.ARRAY_INT);
-        case 'l':
-            return setTypeCode(Constants.ARRAY_LONG);
-        default:
-            throw new IllegalStateException();
+            case 'b':
+                if (boolean.class.getName().equals(type))
+                    return setTypeCode(Constants.ARRAY_BOOLEAN);
+                return setTypeCode(Constants.ARRAY_BYTE);
+            case 'c':
+                return setTypeCode(Constants.ARRAY_CHAR);
+            case 'f':
+                return setTypeCode(Constants.ARRAY_FLOAT);
+            case 'd':
+                return setTypeCode(Constants.ARRAY_DOUBLE);
+            case 's':
+                return setTypeCode(Constants.ARRAY_SHORT);
+            case 'i':
+                return setTypeCode(Constants.ARRAY_INT);
+            case 'l':
+                return setTypeCode(Constants.ARRAY_LONG);
+            default:
+                throw new IllegalStateException();
         }
     }
 
@@ -95,7 +98,7 @@ public class NewArrayInstruction extends TypedInstruction {
 
     /**
      * Set the array code used in the lowlevel bytecode.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public NewArrayInstruction setTypeCode(int code) {

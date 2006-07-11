@@ -15,10 +15,11 @@ package org.apache.openjpa.lib.log;
 /**
  * A log factory implementation that does not do any logging, as
  * quickly as possible.
- * 
+ *
  * @author Patrick Linskey
  */
 public class NoneLogFactory implements LogFactory {
+
     public final Log getLog(String channel) {
         return NoneLog.getInstance();
     }
@@ -27,6 +28,7 @@ public class NoneLogFactory implements LogFactory {
      * No-op log.
      */
     public static class NoneLog implements Log {
+
         private static final NoneLog s_log = new NoneLog();
 
         public static NoneLog getInstance() {

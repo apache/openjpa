@@ -12,17 +12,22 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.lowlevel.ClassEntry;
+import serp.bytecode.lowlevel.ConstantPool;
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * An instruction that takes as an argument a class to operate
  * on. Examples include <code>anewarray, checkcast, instance, anew</code>, etc.
- * 
+ *
  * @author Abe White
  */
 public class ClassInstruction extends TypedInstruction {
+
     private int _index = 0;
 
     ClassInstruction(Code owner, int opcode) {
@@ -54,7 +59,7 @@ public class ClassInstruction extends TypedInstruction {
     /**
      * Set the {@link ConstantPool} index of the
      * {@link ClassEntry} describing the class for this instruction.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public ClassInstruction setTypeIndex(int index) {

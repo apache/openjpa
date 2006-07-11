@@ -12,17 +12,20 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.net.*;
-import java.util.*;
-import junit.framework.*;
-import junit.textui.*;
+import java.net.URL;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link MultiClassLoader}.
- * 
+ *
  * @author Abe White
  */
 public class TestMultiClassLoader extends TestCase {
+
     private ClassLoader SYSTEM_LOADER = MultiClassLoader.class.getClassLoader();
 
     private MultiClassLoader _loader = new MultiClassLoader();
@@ -133,6 +136,7 @@ public class TestMultiClassLoader extends TestCase {
     }
 
     private static final class FooLoader extends ClassLoader {
+
         protected Class findClass(String name) throws ClassNotFoundException {
             if ("foo".equals(name))
                 return Integer.class;

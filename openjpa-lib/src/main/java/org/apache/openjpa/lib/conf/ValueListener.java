@@ -14,10 +14,11 @@ package org.apache.openjpa.lib.conf;
 
 /**
  * Components can listen on {@link Value} objects for changes directly.
- * 
+ *
  * @author Abe White
  */
 public interface ValueListener {
+
     /**
      * Callback used by {@link Value} objects to notify listener of change.
      */

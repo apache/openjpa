@@ -12,18 +12,23 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.sql.*;
-import java.util.*;
-import javax.sql.*;
-import org.apache.openjpa.lib.util.concurrent.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.openjpa.lib.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Delegating data source that maintains a list of {@link ConnectionDecorator}s.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class DecoratingDataSource extends DelegatingDataSource {
+
     private List _decorators = new CopyOnWriteArrayList();
     private boolean _conf = false;
 

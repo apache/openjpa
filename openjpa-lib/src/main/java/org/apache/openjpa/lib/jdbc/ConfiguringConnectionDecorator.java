@@ -12,8 +12,10 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.sql.*;
-import javax.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Connection decorator that can configure some properties of the
@@ -23,11 +25,12 @@ import javax.sql.*;
  * <li>TransactionIsolation({@link Connection} constants)</li>
  * <li>AutoCommit</li>
  * </ul>
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class ConfiguringConnectionDecorator implements ConnectionDecorator {
+
     private int _isolation = -1;
     private int _queryTimeout = -1;
     private Boolean _autoCommit = null;
@@ -91,6 +94,7 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
      * Decorator to configure connection components correctly.
      */
     private class ConfiguringConnection extends DelegatingConnection {
+
         private boolean _curAutoCommit = false;
 
         public ConfiguringConnection(Connection conn) throws SQLException {

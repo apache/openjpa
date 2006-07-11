@@ -12,14 +12,15 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import serp.util.*;
+import serp.util.Strings;
 
 /**
  * A comma-separated list of string values.
- * 
+ *
  * @author Abe White
  */
 public class StringListValue extends Value {
+
     public static final String[] EMPTY = new String[0];
 
     private String[] _values = EMPTY;

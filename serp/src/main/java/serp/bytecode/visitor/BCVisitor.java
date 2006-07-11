@@ -13,8 +13,19 @@
 package serp.bytecode.visitor;
 
 import serp.bytecode.*;
-import serp.bytecode.Deprecated;
-import serp.bytecode.lowlevel.*;
+import serp.bytecode.lowlevel.ClassEntry;
+import serp.bytecode.lowlevel.ConstantPool;
+import serp.bytecode.lowlevel.DoubleEntry;
+import serp.bytecode.lowlevel.Entry;
+import serp.bytecode.lowlevel.FieldEntry;
+import serp.bytecode.lowlevel.FloatEntry;
+import serp.bytecode.lowlevel.IntEntry;
+import serp.bytecode.lowlevel.InterfaceMethodEntry;
+import serp.bytecode.lowlevel.LongEntry;
+import serp.bytecode.lowlevel.MethodEntry;
+import serp.bytecode.lowlevel.NameAndTypeEntry;
+import serp.bytecode.lowlevel.StringEntry;
+import serp.bytecode.lowlevel.UTF8Entry;
 
 /**
  * Base class for visitors on a bytecode entity. The public {@link #visit}
@@ -27,10 +38,11 @@ import serp.bytecode.lowlevel.*;
  * more general method will be called first, followed by a call on the correct
  * specific method. Most subclasses will override either the general or
  * specific cases, but not both.
- * 
+ *
  * @author Abe White
  */
 public class BCVisitor {
+
     /**
      * Visit the given entity.
      */

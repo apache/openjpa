@@ -17,10 +17,11 @@ package serp.bytecode;
  * constants using the static <code>Constants.</code> field prefix,
  * or implement this interface themselves to conveniently import the
  * constants into their own namespace.
- * 
+ *
  * @author Abe White
  */
 public interface Constants {
+
     // class magic number
     public static final int VALID_MAGIC = 0xcafebabe;
 
@@ -284,7 +285,7 @@ public interface Constants {
     public static final int MATH_XOR = IXOR;
 
     // human-readable opcode names
-    public static final String[] OPCODE_NAMES = new String[] {
+    public static final String[] OPCODE_NAMES = new String[]{
         "nop", "aconstnull", "iconstm1", "iconst0", "iconst1", "iconst2",
         "iconst3", "iconst4", "iconst5", "lconst0", "lconst1", "fconst0",
         "fconst1", "fconst2", "dconst0", "dconst1", "bipush", "sipush", "ldc",

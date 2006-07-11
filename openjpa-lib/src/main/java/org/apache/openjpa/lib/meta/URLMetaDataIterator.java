@@ -12,16 +12,20 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.io.*;
-import java.net.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLDecoder;
 
 /**
  * Iterator over the metadata resource represented by a URL.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class URLMetaDataIterator implements MetaDataIterator {
+
     private final URL _url;
     private boolean _iterated = false;
 
@@ -58,7 +62,7 @@ public class URLMetaDataIterator implements MetaDataIterator {
         if (_url == null)
             return null;
         File file = new File(URLDecoder.decode(_url.getPath()));
-        return(file.exists()) ? file : null;
+        return (file.exists()) ? file : null;
     }
 
     public void close() {

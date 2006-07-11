@@ -12,15 +12,19 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * A basic {@link ResultList} implementation that wraps a normal list.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class ListResultList extends AbstractResultList {
+
     private final List _list;
     private boolean _closed = false;
 

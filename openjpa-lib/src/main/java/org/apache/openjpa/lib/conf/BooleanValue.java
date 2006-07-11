@@ -14,10 +14,11 @@ package org.apache.openjpa.lib.conf;
 
 /**
  * A boolean {@link Value}.
- * 
+ *
  * @author Marc Prud'hommeaux
  */
 public class BooleanValue extends Value {
+
     private boolean value;
 
     public BooleanValue(String prop) {

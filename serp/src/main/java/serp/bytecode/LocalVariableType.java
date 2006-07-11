@@ -12,15 +12,16 @@
  */
 package serp.bytecode;
 
-import serp.bytecode.visitor.*;
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * A local variable type contains the name, signature, index and scope
  * of a generics-using local used in opcodes.
- * 
+ *
  * @author Abe White
  */
 public class LocalVariableType extends Local {
+
     LocalVariableType(LocalVariableTypeTable owner) {
         super(owner);
     }
@@ -29,7 +30,7 @@ public class LocalVariableType extends Local {
      * The owning table.
      */
     public LocalVariableTypeTable getLocalVariableTypeTable() {
-        return(LocalVariableTypeTable) getTable();
+        return (LocalVariableTypeTable) getTable();
     }
 
     public void acceptVisit(BCVisitor visit) {

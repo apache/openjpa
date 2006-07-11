@@ -12,16 +12,17 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * Filters metadata resources. Typically used to constrain the results
  * of a {@link MetaDataIterator}.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public interface MetaDataFilter {
+
     /**
      * Return whether the given resource passes the filter.
      */
@@ -31,6 +32,7 @@ public interface MetaDataFilter {
      * Information about a metadata resource.
      */
     public static interface Resource {
+
         /**
          * The name of the resource.
          */

@@ -12,19 +12,24 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.io.*;
-import java.util.*;
-import org.apache.commons.collections.iterators.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Metadata iterator that combines several iterators.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class MetaDataIteratorChain implements MetaDataIterator {
+
     private List _itrs = null;
-    private int  _cur = -1;
+    private int _cur = -1;
     private MetaDataIterator _itr = null;
 
     /**

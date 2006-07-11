@@ -12,16 +12,17 @@
  */
 package serp.bytecode;
 
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import serp.bytecode.visitor.BCVisitor;
+import serp.bytecode.visitor.VisitAcceptor;
+import serp.util.Strings;
 
 /**
  * A field of a class.
- * 
+ *
  * @author Abe White
  */
 public class BCField extends BCMember implements VisitAcceptor {
+
     BCField(BCClass owner) {
         super(owner);
     }
@@ -30,7 +31,7 @@ public class BCField extends BCMember implements VisitAcceptor {
      * Manipulate the field access flags.
      */
     public boolean isVolatile() {
-        return(getAccessFlags() & Constants.ACCESS_VOLATILE) > 0;
+        return (getAccessFlags() & Constants.ACCESS_VOLATILE) > 0;
     }
 
     /**
@@ -47,7 +48,7 @@ public class BCField extends BCMember implements VisitAcceptor {
      * Manipulate the field access flags.
      */
     public boolean isTransient() {
-        return(getAccessFlags() & Constants.ACCESS_TRANSIENT) > 0;
+        return (getAccessFlags() & Constants.ACCESS_TRANSIENT) > 0;
     }
 
     /**
@@ -63,7 +64,7 @@ public class BCField extends BCMember implements VisitAcceptor {
     /**
      * Return the name of the type of this field. The name will be given in
      * a form suitable for a {@link Class#forName} call.
-     * 
+     *
      * @see BCMember#getDescriptor
      */
     public String getTypeName() {
@@ -87,7 +88,7 @@ public class BCField extends BCMember implements VisitAcceptor {
 
     /**
      * Set the name of the type of this field.
-     * 
+     *
      * @see BCMember#setDescriptor
      */
     public void setType(String type) {
@@ -96,7 +97,7 @@ public class BCField extends BCMember implements VisitAcceptor {
 
     /**
      * Set the type of this field.
-     * 
+     *
      * @see BCMember#setDescriptor
      */
     public void setType(Class type) {
@@ -105,7 +106,7 @@ public class BCField extends BCMember implements VisitAcceptor {
 
     /**
      * Set the type of this field.
-     * 
+     *
      * @see BCMember#setDescriptor
      */
     public void setType(BCClass type) {
@@ -115,11 +116,11 @@ public class BCField extends BCMember implements VisitAcceptor {
     /**
      * Return the constant value information for the field.
      * Acts internally through the {@link Attributes} interface.
-     * 
+     *
      * @param add if true, a new constant value attribute will be added
-     * if not already present
+     *            if not already present
      * @return the constant value information, or null if none and the
-     * <code>add</code> param is set to false
+     *         <code>add</code> param is set to false
      */
     public ConstantValue getConstantValue(boolean add) {
         ConstantValue constant = (ConstantValue) getAttribute
@@ -135,7 +136,7 @@ public class BCField extends BCMember implements VisitAcceptor {
     /**
      * Remove the constant value attribute for the field.
      * Acts internally through the {@link Attributes} interface.
-     * 
+     *
      * @return true if there was a value to remove
      */
     public boolean removeConstantValue() {

@@ -12,16 +12,16 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import org.apache.openjpa.lib.test.*;
-import org.apache.openjpa.lib.util.*;
-import serp.util.*;
+import org.apache.openjpa.lib.test.AbstractTestCase;
+import org.apache.openjpa.lib.util.Options;
 
 /**
  * Tests the {@link Configurations} class.
- * 
+ *
  * @author Abe White
  */
 public class TestConfigurations extends AbstractTestCase {
+
     public TestConfigurations(String test) {
         super(test);
     }

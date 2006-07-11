@@ -12,15 +12,15 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import serp.bytecode.visitor.*;
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * The <code>monitorenter</code> instruction.
- * 
+ *
  * @author Abe White
  */
 public class MonitorEnterInstruction extends MonitorInstruction {
+
     MonitorEnterInstruction(Code owner) {
         super(owner, Constants.MONITORENTER);
     }

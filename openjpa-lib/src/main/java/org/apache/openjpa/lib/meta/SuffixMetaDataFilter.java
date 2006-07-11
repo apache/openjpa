@@ -14,11 +14,12 @@ package org.apache.openjpa.lib.meta;
 
 /**
  * Filters metadata iteration based on resource name suffix.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class SuffixMetaDataFilter implements MetaDataFilter {
+
     private final String _suffix;
 
     /**

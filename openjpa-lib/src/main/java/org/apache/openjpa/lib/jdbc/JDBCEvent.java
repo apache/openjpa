@@ -12,17 +12,19 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.util.EventObject;
 
 /**
  * A JDBC event. The event source will be the connection.
- * 
- * @see JDBCListener
+ *
  * @author Marc Prud'hommeaux
  * @author Abe White
+ * @see JDBCListener
  */
 public class JDBCEvent extends EventObject {
+
     /**
      * Type code indicating that a {@link Statement} is being prepared.
      */
@@ -116,7 +118,7 @@ public class JDBCEvent extends EventObject {
      * Return the Connection for this event.
      */
     public final Connection getConnection() {
-        return(Connection) getSource();
+        return (Connection) getSource();
     }
 
     /**

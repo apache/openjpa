@@ -12,14 +12,16 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.io.*;
-import serp.bytecode.*;
+import java.io.IOException;
+
+import serp.bytecode.BCClass;
 
 /**
  * Control how enhanced bytecode is written.
- * 
+ *
  * @author Steve Kim
  */
 public interface BytecodeWriter {
+
     public void write(BCClass type) throws IOException;
 }

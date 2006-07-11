@@ -12,17 +12,20 @@
  */
 package serp.bytecode;
 
-import java.util.*;
-import serp.bytecode.lowlevel.*;
+import java.util.Collection;
+
+import serp.bytecode.lowlevel.ClassEntry;
+import serp.bytecode.lowlevel.ConstantPool;
 
 /**
  * The State type is extended by various concrete types to change
  * the behavior of a {@link BCClass}. All methods in this base
  * implementation throw an {@link UnsupportedOperationException}
- * 
+ *
  * @author Abe White
  */
 class State {
+
     /**
      * A singleton instance of this type that can be used to make a
      * class invalid.

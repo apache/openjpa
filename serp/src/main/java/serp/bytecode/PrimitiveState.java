@@ -12,15 +12,16 @@
  */
 package serp.bytecode;
 
-import java.util.*;
-import serp.bytecode.lowlevel.*;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * State implementing the behavior of a primitive class.
- * 
+ *
  * @author Abe White
  */
 class PrimitiveState extends State {
+
     private final Class _type;
     private final NameCache _names;
 

@@ -12,15 +12,16 @@
  */
 package serp.bytecode;
 
-import serp.bytecode.visitor.*;
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * Attribute marking a member as synthetic, or not present in the class
  * source code.
- * 
+ *
  * @author Abe White
  */
 public class Synthetic extends Attribute {
+
     Synthetic(int nameIndex, Attributes owner) {
         super(nameIndex, owner);
     }

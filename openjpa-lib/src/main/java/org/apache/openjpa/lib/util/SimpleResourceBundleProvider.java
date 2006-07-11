@@ -12,15 +12,17 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.util.*;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * {@link ResourceBundleProvider} that uses Java's built-in resource
  * bundle lookup methods.
- * 
+ *
  * @author Abe White
  */
 class SimpleResourceBundleProvider implements ResourceBundleProvider {
+
     public ResourceBundle findResource(String name, Locale locale,
         ClassLoader loader) {
         ResourceBundle bundle = null;

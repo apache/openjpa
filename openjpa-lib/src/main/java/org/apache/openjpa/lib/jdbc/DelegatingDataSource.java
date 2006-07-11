@@ -12,20 +12,23 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.io.*;
-import java.sql.*;
-import javax.sql.*;
-import org.apache.openjpa.lib.util.*;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
 import org.apache.openjpa.lib.util.Closeable;
 
 /**
  * Wrapper around an existing data source. Subclasses can override the
  * methods whose behavior they mean to change. The <code>equals</code> and
  * <code>hashCode</code> methods pass through to the base underlying data store.
- * 
+ *
  * @author Abe White
  */
 public class DelegatingDataSource implements DataSource, Closeable {
+
     private final DataSource _ds;
     private final DelegatingDataSource _del;
 
@@ -52,7 +55,7 @@ public class DelegatingDataSource implements DataSource, Closeable {
      * Return the inner-most wrapped delegate.
      */
     public DataSource getInnermostDelegate() {
-        return(_del == null) ? _ds : _del.getInnermostDelegate();
+        return (_del == null) ? _ds : _del.getInnermostDelegate();
     }
 
     public int hashCode() {

@@ -12,29 +12,51 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import javax.xml.parsers.*;
-import org.apache.openjpa.lib.log.*;
-import org.apache.openjpa.lib.util.*;
-import org.apache.openjpa.lib.xml.*;
-import org.xml.sax.*;
-import org.xml.sax.ext.*;
-import org.xml.sax.helpers.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.xml.parsers.SAXParser;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.helpers.DefaultHandler;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.JavaVersions;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.xml.Commentable;
+import org.apache.openjpa.lib.xml.DocTypeReader;
+import org.apache.openjpa.lib.xml.Location;
+import org.apache.openjpa.lib.xml.XMLFactory;
 
 /**
  * Custom SAX parser used by the system to quickly parse metadata files.
  * Subclasses should handle the processing of the content.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public abstract class XMLMetaDataParser extends DefaultHandler
     implements LexicalHandler, MetaDataParser {
+
     private static final Localizer _loc = Localizer.forPackage
         (XMLMetaDataParser.class);
     private static boolean _schemaBug;
+
     static {
         try {
             // check for Xerces version 2.0.2 to see if we need to disable
@@ -334,10 +356,10 @@ public abstract class XMLMetaDataParser extends DefaultHandler
             if (schema != null) {
                 parser.setProperty
                     ("http://java.sun.com/xml/jaxp/properties/schemaLanguage",
-                    "http://www.w3.org/2001/XMLSchema");
+                        "http://www.w3.org/2001/XMLSchema");
                 parser.setProperty
                     ("http://java.sun.com/xml/jaxp/properties/schemaSource",
-                    schema);
+                        schema);
             }
 
             InputSource is = new InputSource(xml);
@@ -580,7 +602,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     protected String[] currentComments() {
         if (_comments == null || _comments.isEmpty())
             return Commentable.EMPTY_COMMENTS;
-        return(String[]) _comments.toArray(new String[_comments.size()]);
+        return (String[]) _comments.toArray(new String[_comments.size()]);
     }
 
     /**
@@ -621,7 +643,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
 
     /**
      * Ignore all content below the current element.
-     * 
+     *
      * @param ignoreEnd whether to ignore the end element event
      */
     protected void ignoreContent(boolean ignoreEnd) {

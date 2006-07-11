@@ -12,15 +12,17 @@
  */
 package org.apache.openjpa.lib.log;
 
-import java.util.*;
-import org.apache.log4j.*;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 /**
  * {@link LogFactory} implementation that delegates to the Log4J framework.
- * 
+ *
  * @author Patrick Linskey
  */
 public class Log4JLogFactory extends LogFactoryAdapter {
+
     protected Log newLogAdapter(String channel) {
         return new LogAdapter((Logger) LogManager.getLogger(channel));
     }
@@ -29,6 +31,7 @@ public class Log4JLogFactory extends LogFactoryAdapter {
      * Adapts a Log4J logger to the {@link org.apache.openjpa.lib.log.Log} interface.
      */
     public static class LogAdapter implements Log {
+
         private Logger _log;
 
         private LogAdapter(Logger wrapee) {

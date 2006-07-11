@@ -12,22 +12,30 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import org.apache.commons.collections.set.*;
-import org.apache.openjpa.lib.util.*;
-import serp.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.apache.openjpa.lib.util.MultiClassLoader;
+import serp.util.Strings;
 
 /**
  * Iterator over all metadata resources that might contain the
  * metadata for a given class, starting with the most general. Assumes that
  * package-level resources are named "package.&lt;suffix&gt;".
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class ClassMetaDataIterator implements MetaDataIterator {
+
     private final ClassLoader _loader;
     private final List _locs;
     private int _loc = -1;
@@ -148,7 +156,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
     public InputStream getInputStream() throws IOException {
         if (_url == -1 || _url >= _urls.size())
             throw new IllegalStateException();
-        return((URL) _urls.get(_url)).openStream();
+        return ((URL) _urls.get(_url)).openStream();
     }
 
     public File getFile() throws IOException {
@@ -156,7 +164,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
             throw new IllegalStateException();
         File file = new File(URLDecoder.decode(((URL) _urls.get(_url)).
             getFile()));
-        return(file.exists()) ? file : null;
+        return (file.exists()) ? file : null;
     }
 
     public void close() {

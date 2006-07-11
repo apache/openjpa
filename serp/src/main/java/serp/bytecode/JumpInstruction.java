@@ -12,17 +12,20 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * An instruction that specifies a position in the code block to jump to.
  * Examples include <code>go2, jsr</code>, etc.
- * 
+ *
  * @author Abe White
  */
 public class JumpInstruction extends Instruction implements InstructionPtr {
+
     private InstructionPtrStrategy _target = new InstructionPtrStrategy(this);
 
     JumpInstruction(Code owner, int opcode) {
@@ -41,11 +44,11 @@ public class JumpInstruction extends Instruction implements InstructionPtr {
 
     int getLength() {
         switch (getOpcode()) {
-        case Constants.GOTOW:
-        case Constants.JSRW:
-            return super.getLength() + 4;
-        default:
-            return super.getLength() + 2;
+            case Constants.GOTOW:
+            case Constants.JSRW:
+                return super.getLength() + 4;
+            default:
+                return super.getLength() + 2;
         }
     }
 
@@ -59,7 +62,7 @@ public class JumpInstruction extends Instruction implements InstructionPtr {
     /**
      * Set the instruction to jump to; the instruction must already be
      * added to the code block.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public JumpInstruction setTarget(Instruction instruction) {
@@ -79,7 +82,7 @@ public class JumpInstruction extends Instruction implements InstructionPtr {
             return false;
 
         Instruction target = ((JumpInstruction) other).getTarget();
-        return(target == null || getTarget() == null || target == getTarget());
+        return (target == null || getTarget() == null || target == getTarget());
     }
 
     public void updateTargets() {
@@ -104,12 +107,12 @@ public class JumpInstruction extends Instruction implements InstructionPtr {
         super.read(in);
 
         switch (getOpcode()) {
-        case Constants.GOTOW:
-        case Constants.JSRW:
-            setOffset(in.readInt());
-            break;
-        default:
-            setOffset(in.readShort());
+            case Constants.GOTOW:
+            case Constants.JSRW:
+                setOffset(in.readInt());
+                break;
+            default:
+                setOffset(in.readShort());
         }
     }
 
@@ -117,34 +120,34 @@ public class JumpInstruction extends Instruction implements InstructionPtr {
         super.write(out);
 
         switch (getOpcode()) {
-        case Constants.GOTOW:
-        case Constants.JSRW:
-            out.writeInt(getOffset());
-            break;
-        default:
-            out.writeShort(getOffset());
+            case Constants.GOTOW:
+            case Constants.JSRW:
+                out.writeInt(getOffset());
+                break;
+            default:
+                out.writeShort(getOffset());
         }
     }
 
     void calculateOpcode() {
         int offset;
         switch (getOpcode()) {
-        case Constants.GOTO:
-        case Constants.GOTOW:
-            offset = getOffset();
-            if (offset < (2 << 16))
-                setOpcode(Constants.GOTO);
-            else
-                setOpcode(Constants.GOTOW);
-            break;
-        case Constants.JSR:
-        case Constants.JSRW:
-            offset = getOffset();
-            if (offset < (2 << 16))
-                setOpcode(Constants.JSR);
-            else
-                setOpcode(Constants.JSRW);
-            break;
+            case Constants.GOTO:
+            case Constants.GOTOW:
+                offset = getOffset();
+                if (offset < (2 << 16))
+                    setOpcode(Constants.GOTO);
+                else
+                    setOpcode(Constants.GOTOW);
+                break;
+            case Constants.JSR:
+            case Constants.JSRW:
+                offset = getOffset();
+                if (offset < (2 << 16))
+                    setOpcode(Constants.JSR);
+                else
+                    setOpcode(Constants.JSRW);
+                break;
         }
     }
 

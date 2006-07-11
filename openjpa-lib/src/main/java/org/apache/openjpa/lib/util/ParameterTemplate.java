@@ -12,8 +12,19 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A template that allows parameter substitutions. Parameters should be
@@ -22,11 +33,12 @@ import java.util.*;
  * substituted into the template on calls to {@link #write} and
  * {@link #toString}. If a parameter is encountered that hasn't been set, then
  * the parameter key is used to lookup the corresponding System property.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class ParameterTemplate {
+
     private static final String SEP = System.getProperty("line.separator");
 
     private final StringBuffer _buf = new StringBuffer();
@@ -131,7 +143,10 @@ public class ParameterTemplate {
             return append(reader);
         }
         finally {
-            try { reader.close(); } catch (IOException ioe) {}
+            try {
+                reader.close();
+            } catch (IOException ioe) {
+            }
         }
     }
 
@@ -229,7 +244,10 @@ public class ParameterTemplate {
             write(writer);
         }
         finally {
-            try { writer.close(); } catch (IOException ioe) {}
+            try {
+                writer.close();
+            } catch (IOException ioe) {
+            }
         }
     }
 }

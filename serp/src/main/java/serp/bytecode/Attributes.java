@@ -12,25 +12,32 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import serp.bytecode.lowlevel.UTF8Entry;
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * Abstract superclass for all bytecode entities that hold attributes.
- * 
+ *
  * @author Abe White
  */
 public abstract class Attributes implements BCEntity {
+
     /**
      * Return all the attributes owned by this entity.
-     * 
+     *
      * @return all owned attributes, or empty array if none
      */
     public Attribute[] getAttributes() {
         Collection attrs = getAttributesHolder();
-        return(Attribute[]) attrs.toArray(new Attribute[attrs.size()]);
+        return (Attribute[]) attrs.toArray(new Attribute[attrs.size()]);
     }
 
     /**
@@ -51,7 +58,7 @@ public abstract class Attributes implements BCEntity {
 
     /**
      * Return all attributes with the given name.
-     * 
+     *
      * @return the matching attributes, or empty array if none
      */
     public Attribute[] getAttributes(String name) {
@@ -64,7 +71,7 @@ public abstract class Attributes implements BCEntity {
             if (attr.getName().equals(name))
                 matches.add(attr);
         }
-        return(Attribute[]) matches.toArray(new Attribute[matches.size()]);
+        return (Attribute[]) matches.toArray(new Attribute[matches.size()]);
     }
 
     /**
@@ -112,7 +119,7 @@ public abstract class Attributes implements BCEntity {
 
     /**
      * Remove all attributes with the given name from this entity.
-     * 
+     *
      * @return true if an attribute was removed, false otherwise
      */
     public boolean removeAttribute(String name) {
@@ -122,7 +129,7 @@ public abstract class Attributes implements BCEntity {
     /**
      * Remove the given attribute. After being removed, the attribute
      * is invalid, and the result of any operations on it are undefined.
-     * 
+     *
      * @return true if the attribute was removed, false otherwise
      */
     public boolean removeAttribute(Attribute attribute) {

@@ -15,10 +15,11 @@ package org.apache.openjpa.lib.jdbc;
 /**
  * An abstract implementation of the {@link JDBCListener}
  * listener. It allows simple implementation of fine-grained event handling.
- * 
+ *
  * @author Marc Prud'hommeaux
  */
 public class AbstractJDBCListener implements JDBCListener {
+
     /**
      * Catch-all for unhandled events. This method is called by all other
      * event methods if you do not override them. Does nothing by default.

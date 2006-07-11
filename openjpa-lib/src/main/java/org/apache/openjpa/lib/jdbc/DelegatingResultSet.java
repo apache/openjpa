@@ -12,13 +12,25 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.io.*;
-import java.math.*;
-import java.net.*;
-import java.sql.*;
+import java.io.InputStream;
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.Date;
-import java.util.*;
-import org.apache.openjpa.lib.util.*;
+import java.sql.Ref;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Map;
+
 import org.apache.openjpa.lib.util.Closeable;
 
 /**
@@ -26,10 +38,11 @@ import org.apache.openjpa.lib.util.Closeable;
  * methods whose behavior they mean to change. The <code>equals</code> and
  * <code>hashCode</code> methods pass through to the base underlying data
  * store statement.
- * 
+ *
  * @author Marc Prud'hommeaux
  */
 public class DelegatingResultSet implements ResultSet, Closeable {
+
     private final ResultSet _rs;
     private final DelegatingResultSet _del;
     private final Statement _stmnt;
@@ -57,7 +70,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
      * Return the inner-most wrapped delegate.
      */
     public ResultSet getInnermostDelegate() {
-        return(_del == null) ? _rs : _del.getInnermostDelegate();
+        return (_del == null) ? _rs : _del.getInnermostDelegate();
     }
 
     public int hashCode() {
@@ -644,7 +657,8 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         throw new UnsupportedOperationException();
     }
 
-    public void updateArray(String columnName, Array array) throws SQLException {
+    public void updateArray(String columnName, Array array)
+        throws SQLException {
         throw new UnsupportedOperationException();
     }
 }

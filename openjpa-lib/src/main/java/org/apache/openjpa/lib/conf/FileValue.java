@@ -12,15 +12,17 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import java.io.*;
-import org.apache.commons.lang.*;
+import java.io.File;
+
+import org.apache.commons.lang.ObjectUtils;
 
 /**
  * A {@link File} {@link Value}.
- * 
+ *
  * @author Marc Prud'hommeaux
  */
 public class FileValue extends Value {
+
     private File value;
 
     public FileValue(String prop) {
@@ -49,7 +51,7 @@ public class FileValue extends Value {
     }
 
     protected String getInternalString() {
-        return(value == null) ? null : value.getAbsolutePath();
+        return (value == null) ? null : value.getAbsolutePath();
     }
 
     protected void setInternalString(String val) {

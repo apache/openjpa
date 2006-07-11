@@ -12,19 +12,25 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.zip.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * Iterator over all metadata resources in a given zip file.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class ZipFileMetaDataIterator
     implements MetaDataIterator, MetaDataFilter.Resource {
+
     private final ZipFile _file;
     private final MetaDataFilter _filter;
     private final Enumeration _entries;
@@ -89,7 +95,10 @@ public class ZipFileMetaDataIterator
 
     public void close() {
         if (_close)
-            try { _file.close(); } catch (IOException ioe) {}
+            try {
+                _file.close();
+            } catch (IOException ioe) {
+            }
     }
 
     //////////////////////////////////////////
@@ -110,7 +119,7 @@ public class ZipFileMetaDataIterator
         if (size < 0) {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             byte[] buf = new byte[1024];
-            for (int r; (r = in.read(buf)) != -1; bout.write(buf, 0, r));
+            for (int r; (r = in.read(buf)) != -1; bout.write(buf, 0, r)) ;
             content = bout.toByteArray();
         } else {
             content = new byte[(int) size];

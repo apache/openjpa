@@ -12,19 +12,22 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.io.*;
-import java.util.*;
+import java.io.ObjectStreamException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * An almost stateless {@link ResultList} designed for use with result
  * object providers backed by efficient random-access data structures, such
  * as the {@link ListResultObjectProvider}. This result list does not
  * perform any caching.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class SimpleResultList extends AbstractNonSequentialResultList {
+
     private final transient ResultObjectProvider _rop;
     private boolean _closed = false;
     private int _size = -1;
@@ -53,7 +56,10 @@ public class SimpleResultList extends AbstractNonSequentialResultList {
     public void close() {
         if (!_closed) {
             _closed = true;
-            try { _rop.close(); } catch (Exception e) {}
+            try {
+                _rop.close();
+            } catch (Exception e) {
+            }
         }
     }
 

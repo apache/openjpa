@@ -12,14 +12,13 @@
  */
 package serp.bytecode;
 
-import java.util.*;
-
 /**
  * An entity that maintains ptrs to instructions in a code block.
- * 
+ *
  * @author Abe White
  */
 public interface InstructionPtr {
+
     /**
      * Use the byte indexes read from the class file to calculate and
      * set references to the target instruction(s) for this ptr.

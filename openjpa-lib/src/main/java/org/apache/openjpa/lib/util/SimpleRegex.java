@@ -16,13 +16,15 @@ package org.apache.openjpa.lib.util;
  * Allows for simple regex style testing of strings. The wildcard '.'
  * is used to represent any single character, while '.*' is used to represent
  * any series of 0 or more characters.
- *  Examples:<br />
+ * Examples:<br />
  * <code> SimpleRegex re = new SimpleRegex("the qu.ck .* dog", true);
  * boolean matches = re.matches("The quick fox jumped over the lazy dog");
  * </code>
+ *
  * @nojavadoc
  */
 public class SimpleRegex {
+
     private final String expr;
     private final boolean caseInsensitive;
 
@@ -111,7 +113,7 @@ public class SimpleRegex {
                 // "." in the expr matches any character in the target
                 if (expr.charAt(exprStart + i) != '.' &&
                     expr.charAt(exprStart + i) !=
-                    target.charAt(targetStart + i)) {
+                        target.charAt(targetStart + i)) {
                     found = false;
                     break;
                 }

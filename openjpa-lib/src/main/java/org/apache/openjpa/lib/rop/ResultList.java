@@ -12,29 +12,29 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.io.*;
-import java.util.*;
-import java.util.NoSuchElementException; // for javadoc; bug #4330419
-import org.apache.openjpa.lib.util.*;
+import java.io.Serializable;
+import java.util.List;
+
 import org.apache.openjpa.lib.util.Closeable;
 
 /**
  * List interface that represents a potentially lazy ResultList instantiation.
- *  A ResultList will typically be instantiated from a factory, and
+ * A ResultList will typically be instantiated from a factory, and
  * will use a ResultObjectProvider for obtaining individual object
  * data representations.
- *  Depending on the support for scrolling inputs,
+ * Depending on the support for scrolling inputs,
  * the list that is returned may use lazy instantiation of the
  * objects, and thus allow very large result sets to be obtained and
  * manipulated.
- *  Note that wrapping a ResultList in another Collection will
+ * Note that wrapping a ResultList in another Collection will
  * always instantiate the entire set of elements contained in the
  * ResultList. This may not always be desireable, since the list may
  * be very large.
- * 
+ *
  * @author Marc Prud'hommeaux
  */
 public interface ResultList extends List, Serializable, Closeable {
+
     /**
      * Returns true if the provider backing this list is open.
      */

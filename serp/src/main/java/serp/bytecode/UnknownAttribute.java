@@ -12,16 +12,20 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * An unrecognized attribute; class files are allowed to contain
  * attributes that are not recognized, and the JVM must ignore them.
- * 
+ *
  * @author Abe White
  */
 public class UnknownAttribute extends Attribute {
+
     private byte[] _value = new byte[0];
 
     UnknownAttribute(int nameIndex, Attributes owner) {

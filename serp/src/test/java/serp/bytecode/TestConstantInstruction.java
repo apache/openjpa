@@ -12,15 +12,18 @@
  */
 package serp.bytecode;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link ConstantInstruction} type.
- * 
+ *
  * @author Abe White
  */
 public class TestConstantInstruction extends TestCase {
+
     private ConstantInstruction _const = new Code().constant();
 
     public TestConstantInstruction(String test) {

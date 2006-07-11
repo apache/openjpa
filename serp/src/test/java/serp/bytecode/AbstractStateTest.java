@@ -12,17 +12,17 @@
  */
 package serp.bytecode;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
 
 /**
  * Base class for testing the handling of the {@link PrimitiveState} and
  * {@link ArrayState}. Subclasses should set the {@link #_bc} member in
  * their {@link TestCase#setUp} method.
- * 
+ *
  * @author Abe White
  */
 public abstract class AbstractStateTest extends TestCase {
+
     protected Project _project = new Project();
     protected BCClass _bc = null;
 

@@ -12,7 +12,11 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Base event manager that handles adding/removing listeners
@@ -20,10 +24,11 @@ import java.util.*;
  * and removed by other listeners when they receive events. The changes will
  * not be visible until the event fire that initiated the recursive sequence
  * of calls completes, however.
- * 
+ *
  * @author Abe White
  */
 public abstract class AbstractEventManager implements EventManager {
+
     private static Exception[] EMPTY_EXCEPTIONS = new Exception[0];
 
     private boolean _firing = false;
@@ -81,7 +86,7 @@ public abstract class AbstractEventManager implements EventManager {
      * Return a read-only list of listeners.
      */
     public synchronized Collection getListeners() {
-        return(_listeners == null) ? Collections.EMPTY_LIST
+        return (_listeners == null) ? Collections.EMPTY_LIST
             : Collections.unmodifiableCollection(_listeners);
     }
 
@@ -117,7 +122,7 @@ public abstract class AbstractEventManager implements EventManager {
 
         if (exceptions == null)
             return EMPTY_EXCEPTIONS;
-        return(Exception[]) exceptions.toArray
+        return (Exception[]) exceptions.toArray
             (new Exception[exceptions.size()]);
     }
 

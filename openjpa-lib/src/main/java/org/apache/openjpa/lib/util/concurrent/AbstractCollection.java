@@ -20,7 +20,7 @@ package org.apache.openjpa.lib.util.concurrent;
 /**
  * Overrides toArray() and toArray(Object[]) in AbstractCollection to provide
  * implementations valid for concurrent collections.
- * 
+ *
  * @author Doug Lea
  * @author Dawid Kurzyniec
  */
@@ -30,7 +30,9 @@ abstract class AbstractCollection extends java.util.AbstractCollection {
      * Sole constructor. (For invocation by subclass constructors, typically
      * implicit.)
      */
-    protected AbstractCollection() { super(); }
+    protected AbstractCollection() {
+        super();
+    }
 
     public Object[] toArray() {
         return Utils.collectionToArray(this);

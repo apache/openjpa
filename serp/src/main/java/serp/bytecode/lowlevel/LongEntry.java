@@ -12,16 +12,20 @@
  */
 package serp.bytecode.lowlevel;
 
-import java.io.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.visitor.BCVisitor;
+import serp.util.Numbers;
 
 /**
  * A long constant in the constant pool.
- * 
+ *
  * @author Abe White
  */
 public class LongEntry extends Entry implements ConstantEntry {
+
     private long _value = 0L;
 
     /**
@@ -32,7 +36,7 @@ public class LongEntry extends Entry implements ConstantEntry {
 
     /**
      * Constructor.
-     * 
+     *
      * @param value the constant long value of this entry
      */
     public LongEntry(long value) {

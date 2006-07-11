@@ -12,19 +12,22 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Utilities for calculating string distance.
- * 
+ *
  * @author Marc Prud'hommeaux
  * @nojavadoc
  */
 public class StringDistance {
+
     /**
      * Returns the candidate string with the closest Levenshtein distance
      * to the given string.
-     * 
+     *
      * @see #getClosestLevenshteinDistance(String,Collection,int)
      */
     public static String getClosestLevenshteinDistance(String str,
@@ -37,7 +40,7 @@ public class StringDistance {
     /**
      * Returns the candidate string with the closest Levenshtein distance
      * to the given string.
-     * 
+     *
      * @see #getClosestLevenshteinDistance(String,Collection,int)
      */
     public static String getClosestLevenshteinDistance(String str,
@@ -49,7 +52,7 @@ public class StringDistance {
     /**
      * Returns the candidate string with the closest Levenshtein distance
      * to the given string.
-     * 
+     *
      * @see #getClosestLevenshteinDistance(String,Collection,int)
      */
     public static String getClosestLevenshteinDistance(String str,
@@ -64,7 +67,7 @@ public class StringDistance {
      * Returns the candidate string with the closest Levenshtein distance
      * to the given string and using the threshold as the specified
      * percentage of the length of the candidate string(0.0f-1.0f).
-     * 
+     *
      * @see #getClosestLevenshteinDistance(String,Collection,int)
      */
     public static String getClosestLevenshteinDistance(String str,
@@ -80,7 +83,7 @@ public class StringDistance {
      * Returns the candidate string with the closest Levenshtein distance
      * to the given string and using the threshold as the specified
      * percentage of the length of the candidate string(0.0f-1.0f).
-     * 
+     *
      * @see #getClosestLevenshteinDistance(String,Collection,int)
      */
     public static String getClosestLevenshteinDistance(String str,
@@ -92,17 +95,16 @@ public class StringDistance {
         thresholdPercentage = Math.max(thresholdPercentage, 0.0f);
 
         return getClosestLevenshteinDistance(str, candidates,
-            (int)(str.length() * thresholdPercentage));
+            (int) (str.length() * thresholdPercentage));
     }
 
     /**
      * Returns the candidate string with the closest Levenshtein distance
      * to the given string.
-     * 
-     * @param str the string to check
+     *
+     * @param str        the string to check
      * @param candidates the list of strings to test against
-     * @param threshold the threshold distance a candidate must meet
-     * 
+     * @param threshold  the threshold distance a candidate must meet
      * @see #getLevenshteinDistance
      */
     public static String getClosestLevenshteinDistance(String str,
@@ -113,7 +115,7 @@ public class StringDistance {
         String minString = null;
         int minValue = Integer.MAX_VALUE;
 
-        for (Iterator i = candidates.iterator(); i.hasNext(); ) {
+        for (Iterator i = candidates.iterator(); i.hasNext();) {
             String candidate = (String) i.next();
             int distance = getLevenshteinDistance(str, candidate);
             if (distance < minValue) {
@@ -147,7 +149,7 @@ public class StringDistance {
         if (m == 0)
             return n;
 
-        int[][] matrix = new int[n+1][m+1];
+        int[][] matrix = new int[n + 1][m + 1];
 
         for (int i = 0; i <= n; i++)
             matrix[i][0] = i;
@@ -168,8 +170,8 @@ public class StringDistance {
                 else
                     cost = 1;
 
-                matrix[i][j] = min(matrix[i-1][j]+1, matrix[i][j-1]+1,
-                    matrix[i-1][j-1] + cost);
+                matrix[i][j] = min(matrix[i - 1][j] + 1, matrix[i][j - 1] + 1,
+                    matrix[i - 1][j - 1] + cost);
             }
         }
 

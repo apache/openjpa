@@ -12,16 +12,20 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * The <code>multianewarray</code> instruction, which creates a new
  * multi-dimensional array.
- * 
+ *
  * @author Abe White
  */
 public class MultiANewArrayInstruction extends ClassInstruction {
+
     private int _dims = -1;
 
     MultiANewArrayInstruction(Code owner) {
@@ -49,7 +53,7 @@ public class MultiANewArrayInstruction extends ClassInstruction {
 
     /**
      * Set the dimensions of the array.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public MultiANewArrayInstruction setDimensions(int dims) {

@@ -12,14 +12,16 @@
  */
 package serp.bytecode;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * State implementing the behavior of an array class.
- * 
+ *
  * @author Abe White
  */
 class ArrayState extends State {
+
     private String _name = null;
     private String _componentName = null;
 

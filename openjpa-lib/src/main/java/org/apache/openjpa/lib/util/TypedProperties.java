@@ -12,17 +12,18 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.util.*;
+import java.util.Properties;
 
 /**
  * A specialization of the {@link Properties} map type with added
  * convenience methods to retrieve and set options as primitive values.
  * The internal representation of all data is kept in string form.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class TypedProperties extends Properties {
+
     /**
      * Default constructor.
      */
@@ -32,7 +33,7 @@ public class TypedProperties extends Properties {
 
     /**
      * Construct the properties instance with the given set of defaults.
-     * 
+     *
      * @see Properties#Properties(Properties)
      */
     public TypedProperties(Properties defaults) {
@@ -61,7 +62,7 @@ public class TypedProperties extends Properties {
     /**
      * Return the property under the given key as a float, or 0 if
      * it does not exist and has no set default.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public float getFloatProperty(String key) {
@@ -71,18 +72,18 @@ public class TypedProperties extends Properties {
     /**
      * Return the property under the given key as a float, or the given
      * default if it does not exist.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public float getFloatProperty(String key, float def) {
         String val = getProperty(key);
-        return(val == null) ? def : Float.parseFloat(val);
+        return (val == null) ? def : Float.parseFloat(val);
     }
 
     /**
      * Return the property under the given key as a double, or 0 if
      * it does not exist and has no set default.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public double getDoubleProperty(String key) {
@@ -92,18 +93,18 @@ public class TypedProperties extends Properties {
     /**
      * Return the property under the given key as a double, or the given
      * default if it does not exist.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public double getDoubleProperty(String key, double def) {
         String val = getProperty(key);
-        return(val == null) ? def : Double.parseDouble(val);
+        return (val == null) ? def : Double.parseDouble(val);
     }
 
     /**
      * Return the property under the given key as a long, or 0 if
      * it does not exist and has no set default.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public long getLongProperty(String key) {
@@ -113,18 +114,18 @@ public class TypedProperties extends Properties {
     /**
      * Return the property under the given key as a double, or the given
      * default if it does not exist.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public long getLongProperty(String key, long def) {
         String val = getProperty(key);
-        return(val == null) ? def : Long.parseLong(val);
+        return (val == null) ? def : Long.parseLong(val);
     }
 
     /**
      * Return the property under the given key as an int, or 0 if
      * it does not exist and has no set default.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public int getIntProperty(String key) {
@@ -134,18 +135,18 @@ public class TypedProperties extends Properties {
     /**
      * Return the property under the given key as an int, or the given
      * default if it does not exist.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public int getIntProperty(String key, int def) {
         String val = getProperty(key);
-        return(val == null) ? def : Integer.parseInt(val);
+        return (val == null) ? def : Integer.parseInt(val);
     }
 
     /**
      * Overrides {@link Properties#setProperty(String,String)} to remove
      * the key if the given value is <code>null</code>.
-     * 
+     *
      * @see Properties#setProperty(String,String)
      */
     public Object setProperty(String key, String val) {
@@ -156,7 +157,7 @@ public class TypedProperties extends Properties {
 
     /**
      * Set the given key to a string version of the given value.
-     * 
+     *
      * @see Properties#setProperty(String,String)
      */
     public void setProperty(String key, boolean val) {
@@ -165,7 +166,7 @@ public class TypedProperties extends Properties {
 
     /**
      * Set the given key to a string version of the given value.
-     * 
+     *
      * @see Properties#setProperty(String,String)
      */
     public void setProperty(String key, double val) {
@@ -174,7 +175,7 @@ public class TypedProperties extends Properties {
 
     /**
      * Set the given key to a string version of the given value.
-     * 
+     *
      * @see Properties#setProperty(String,String)
      */
     public void setProperty(String key, float val) {
@@ -183,7 +184,7 @@ public class TypedProperties extends Properties {
 
     /**
      * Set the given key to a string version of the given value.
-     * 
+     *
      * @see Properties#setProperty(String,String)
      */
     public void setProperty(String key, int val) {
@@ -192,7 +193,7 @@ public class TypedProperties extends Properties {
 
     /**
      * Set the given key to a string version of the given value.
-     * 
+     *
      * @see Properties#setProperty(String,String)
      */
     public void setProperty(String key, long val) {
@@ -204,7 +205,7 @@ public class TypedProperties extends Properties {
      */
     public String removeProperty(String key) {
         Object val = remove(key);
-        return(val == null) ? null : val.toString();
+        return (val == null) ? null : val.toString();
     }
 
     /**
@@ -237,18 +238,18 @@ public class TypedProperties extends Properties {
 
     /**
      * Remove the property under the given key as a double.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public double removeDoubleProperty(String key) {
         String val = removeProperty(key);
-        return(val == null) ? 0D : Double.parseDouble(val);
+        return (val == null) ? 0D : Double.parseDouble(val);
     }
 
     /**
      * Remove the property under the given key as a double, or return the
      * given default if it does not exist.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public double removeDoubleProperty(String key, double def) {
@@ -259,18 +260,18 @@ public class TypedProperties extends Properties {
 
     /**
      * Remove the property under the given key as a float.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public float removeFloatProperty(String key) {
         String val = removeProperty(key);
-        return(val == null) ? 0F : Float.parseFloat(val);
+        return (val == null) ? 0F : Float.parseFloat(val);
     }
 
     /**
      * Remove the property under the given key as a float, or return the
      * given default if it does not exist.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public float removeFloatProperty(String key, float def) {
@@ -281,18 +282,18 @@ public class TypedProperties extends Properties {
 
     /**
      * Remove the property under the given key as a int.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public int removeIntProperty(String key) {
         String val = removeProperty(key);
-        return(val == null) ? 0 : Integer.parseInt(val);
+        return (val == null) ? 0 : Integer.parseInt(val);
     }
 
     /**
      * Remove the property under the given key as a int, or return the
      * given default if it does not exist.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public int removeIntProperty(String key, int def) {
@@ -303,18 +304,18 @@ public class TypedProperties extends Properties {
 
     /**
      * Remove the property under the given key as a long.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public long removeLongProperty(String key) {
         String val = removeProperty(key);
-        return(val == null) ? 0L : Long.parseLong(val);
+        return (val == null) ? 0L : Long.parseLong(val);
     }
 
     /**
      * Remove the property under the given key as a long, or return the
      * given default if it does not exist.
-     * 
+     *
      * @throws NumberFormatException on parse error
      */
     public long removeLongProperty(String key, long def) {

@@ -12,15 +12,18 @@
  */
 package serp.bytecode.lowlevel;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link ConstantPool} type.
- * 
+ *
  * @author Abe White
  */
 public class TestConstantPool extends TestCase {
+
     private ConstantPool _pool = new ConstantPool();
     private IntEntry _intEntry = new IntEntry(1);
     private LongEntry _longEntry = new LongEntry(2L);

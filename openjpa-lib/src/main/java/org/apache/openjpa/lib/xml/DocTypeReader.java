@@ -12,7 +12,11 @@
  */
 package org.apache.openjpa.lib.xml;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.PushbackReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 /**
  * The DocTypeReader can be used to dynamically include a
@@ -25,18 +29,19 @@ import java.io.*;
  * it possible to maintain XML files without any <code>DOCTYPE</code>
  * declaration, then dynamically include the <code>DOCTYPE</code> information
  * at runtime.
- *  If the XML stream already contains a <code>DOCTYPE</code> declaration,
+ * If the XML stream already contains a <code>DOCTYPE</code> declaration,
  * the reader will not add an additional one.
- *  The <code>DOCTYPE</code> information given to the reader will be placed
+ * The <code>DOCTYPE</code> information given to the reader will be placed
  * in the XML stream it wraps just before the root element of the document.
- *  Note that all methods other than the various forms of <code>read</code>
+ * Note that all methods other than the various forms of <code>read</code>
  * apply onto the underlying XML stream and should not be used until the
  * header and doc type have been read.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class DocTypeReader extends Reader {
+
     private Reader _xml = null;
     private Reader _docType = null;
 

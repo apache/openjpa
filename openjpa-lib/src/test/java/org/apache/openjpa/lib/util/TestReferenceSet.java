@@ -12,16 +12,18 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.util.*;
-import junit.framework.*;
-import junit.textui.*;
+import java.util.Collection;
+import java.util.Iterator;
+
+import junit.framework.TestCase;
 
 /**
  * Tests the {@link ReferenceHashSet}.
- * 
+ *
  * @author Abe White
  */
 public class TestReferenceSet extends TestCase {
+
     private ReferenceHashSet _coll = new ReferenceHashSet
         (ReferenceHashSet.WEAK);
 
@@ -115,6 +117,7 @@ public class TestReferenceSet extends TestCase {
      * Used to test inherited functionality.
      */
     private static final class Node {
+
         public int hashCode() {
             return 1;
         }

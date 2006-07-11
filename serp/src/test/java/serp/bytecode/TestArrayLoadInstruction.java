@@ -12,15 +12,18 @@
  */
 package serp.bytecode;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link ArrayLoadInstruction} type.
- * 
+ *
  * @author Abe White
  */
 public class TestArrayLoadInstruction extends TestCase {
+
     private Code _code = new Code();
 
     public TestArrayLoadInstruction(String test) {

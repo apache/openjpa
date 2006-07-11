@@ -12,18 +12,20 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.lowlevel.ConstantPool;
+import serp.bytecode.lowlevel.UTF8Entry;
 
 /**
  * A local variable or local variable type.
- * 
+ *
  * @author Abe White
  */
 public abstract class Local implements BCEntity, InstructionPtr {
+
     private LocalTable _owner = null;
     private InstructionPtrStrategy _target = new InstructionPtrStrategy(this);
 
@@ -163,7 +165,7 @@ public abstract class Local implements BCEntity, InstructionPtr {
     public String getName() {
         if (getNameIndex() == 0)
             return null;
-        return((UTF8Entry) getPool().getEntry(getNameIndex())).getValue();
+        return ((UTF8Entry) getPool().getEntry(getNameIndex())).getValue();
     }
 
     /**

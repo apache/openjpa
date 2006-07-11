@@ -17,11 +17,12 @@ package serp.bytecode;
  * Instructions that InstructionPtrs point to. These strategies include,
  * from least desirable to most desirable, using byte indexes,
  * and storing a reference to the target Instruction proper.
- * 
+ *
  * @author Eric Lindauer
  * @date 2002.7.26
  */
 class InstructionPtrStrategy implements InstructionPtr {
+
     // the Instruction doing the targetting
     private InstructionPtr _pointer;
 

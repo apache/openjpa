@@ -12,14 +12,15 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.util.*;
+import java.util.Collection;
 
 /**
  * Basic event manager interface.
- * 
+ *
  * @author Abe White
  */
 public interface EventManager {
+
     /**
      * Add an event listener.
      */

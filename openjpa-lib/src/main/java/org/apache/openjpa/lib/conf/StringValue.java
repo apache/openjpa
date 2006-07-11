@@ -12,14 +12,15 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import org.apache.commons.lang.*;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * A string {@link Value}.
- * 
+ *
  * @author Marc Prud'hommeaux
  */
 public class StringValue extends Value {
+
     private String value;
 
     public StringValue(String prop) {

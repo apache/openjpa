@@ -12,17 +12,21 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Locale;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
 
 /**
  * {@link ResourceBundleProvider} that uses the
  * {@link ClassLoader#getResourceAsStream} method to load resources.
  * Created for use under WSAD.
- * 
+ *
  * @author Stephen Kim
  */
 class StreamResourceBundleProvider implements ResourceBundleProvider {
+
     public ResourceBundle findResource(String name, Locale locale,
         ClassLoader loader) {
         String rsrc = name.replace('.', '/') + ".properties";
@@ -36,7 +40,10 @@ class StreamResourceBundleProvider implements ResourceBundleProvider {
             } catch (Exception e) {
             }
             finally {
-                try { in.close(); } catch (IOException ioe) {}
+                try {
+                    in.close();
+                } catch (IOException ioe) {
+                }
             }
         }
         return null;

@@ -12,14 +12,16 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Tests the {@link RangeResultObjectProvider}.
- * 
+ *
  * @author Abe White
  */
 public class TestRangeResultObjectProvider extends ResultListTest {
+
     public TestRangeResultObjectProvider(String test) {
         super(test);
     }

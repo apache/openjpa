@@ -12,15 +12,18 @@
  */
 package serp.bytecode;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link Code} class.
- * 
+ *
  * @author Eric Lindauer
  */
 public class TestCode extends TestCase {
+
     public TestCode(String test) {
         super(test);
     }

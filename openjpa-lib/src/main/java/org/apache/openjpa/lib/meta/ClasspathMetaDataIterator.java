@@ -12,18 +12,21 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.io.*;
-import java.util.*;
-import java.util.zip.*;
-import serp.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.zip.ZipFile;
+
+import serp.util.Strings;
 
 /**
  * Iterator over directories in the classpath.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class ClasspathMetaDataIterator extends MetaDataIteratorChain {
+
     /**
      * Default constructor; iterates over all classpath elements.
      */

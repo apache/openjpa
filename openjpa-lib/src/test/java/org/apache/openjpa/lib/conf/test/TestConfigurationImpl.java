@@ -12,13 +12,18 @@
  */
 package org.apache.openjpa.lib.conf.test;
 
-import java.beans.*;
-import java.io.*;
-import java.lang.reflect.*;
-import java.util.*;
-import org.apache.openjpa.lib.conf.*;
-import org.apache.openjpa.lib.test.*;
-import serp.util.*;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Properties;
+
+import org.apache.openjpa.lib.conf.ConfigurationImpl;
+import org.apache.openjpa.lib.conf.ObjectValue;
+import org.apache.openjpa.lib.conf.PluginValue;
+import org.apache.openjpa.lib.conf.StringValue;
+import org.apache.openjpa.lib.conf.Value;
+import org.apache.openjpa.lib.test.AbstractTestCase;
 
 /**
  * Tests the {@link ConfigurationImpl} type, and in so doing tests
@@ -26,10 +31,11 @@ import serp.util.*;
  * in a sub-package so that it can have its own localizer.properties
  * properties, which are required for the bean descriptors used by the
  * configuration framework {@link Value}.
- * 
+ *
  * @author Abe White
  */
 public class TestConfigurationImpl extends AbstractTestCase {
+
     private ConfigurationTest _conf = new ConfigurationTest();
     private String _def;
 
@@ -180,7 +186,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
             else
                 continue;
 
-            setter.invoke(_conf, new Object [] { setVal });
+            setter.invoke(_conf, new Object []{ setVal });
             assertEquals(setVal, getter.invoke(_conf, (Object[]) null));
         }
     }
@@ -240,6 +246,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
     }
 
     private static class ConfigurationTest extends ConfigurationImpl {
+
         private final StringValue _testKey;
         private final StringValue _sysKey;
         private final PluginValue _pluginKey;

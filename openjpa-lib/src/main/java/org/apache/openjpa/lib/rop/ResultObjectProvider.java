@@ -12,22 +12,23 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import org.apache.openjpa.lib.util.*;
+import org.apache.openjpa.lib.util.Closeable;
 
 /**
  * Interface that allows lazy/custom instantiation of input objects.
- *  {@link ResultList} objects do not necessarily load in data all
+ * {@link ResultList} objects do not necessarily load in data all
  * at once. Instead, they may lazily load objects as necessary. So,
  * the lifespan of a {@link ResultObjectProvider} instance is
  * related to how the application deals with processing the
  * {@link ResultList} created with a given
  * {@link ResultObjectProvider} instance.
- * 
+ *
  * @author Marc Prud'hommeaux
  * @author Patrick Linskey
  * @author Abe White
  */
 public interface ResultObjectProvider extends Closeable {
+
     /**
      * Return true if this provider supports random access.
      */

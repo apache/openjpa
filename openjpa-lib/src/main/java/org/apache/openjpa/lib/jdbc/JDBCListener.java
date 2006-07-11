@@ -14,12 +14,13 @@ package org.apache.openjpa.lib.jdbc;
 
 /**
  * A listener for all {@link JDBCEvent}s that occur.
- * 
- * @see AbstractJDBCListener
+ *
  * @author Marc Prud'hommeaux
  * @author Abe White
+ * @see AbstractJDBCListener
  */
 public interface JDBCListener {
+
     /**
      * @see JDBCEvent#BEFORE_PREPARE_STATEMENT
      */

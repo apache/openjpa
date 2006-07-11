@@ -12,15 +12,18 @@
  */
 package serp.bytecode;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link NameCache} utility type.
- * 
+ *
  * @author Abe White
  */
 public class TestNameCache extends TestCase {
+
     private NameCache _cache = null;
 
     public TestNameCache(String test) {
@@ -157,9 +160,9 @@ public class TestNameCache extends TestCase {
         assertEquals("()Ljava/lang/Object;", _cache.getDescriptor
             ("java.lang.Object", null));
         assertEquals("(Z)V", _cache.getDescriptor
-            ("void", new String[] { "boolean" }));
+            ("void", new String[]{ "boolean" }));
         assertEquals("([ZLjava/lang/Object;I)[I", _cache.getDescriptor
-            ("int[]", new String[] { "[Z", "Ljava/lang/Object;", "int" }));
+            ("int[]", new String[]{ "[Z", "Ljava/lang/Object;", "int" }));
     }
 
     /**

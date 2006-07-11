@@ -12,28 +12,45 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.io.*;
-import java.util.*;
-import javax.xml.transform.*;
-import javax.xml.transform.sax.*;
-import javax.xml.transform.stream.*;
-import org.apache.openjpa.lib.log.*;
-import org.apache.openjpa.lib.util.*;
-import org.apache.openjpa.lib.xml.*;
-import org.xml.sax.*;
-import org.xml.sax.ext.*;
-import org.xml.sax.helpers.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import javax.xml.transform.Result;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.transform.stream.StreamResult;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.helpers.AttributesImpl;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.Files;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.xml.Commentable;
+import org.apache.openjpa.lib.xml.XMLWriter;
 
 /**
  * Abstract base type for serlializers that transfer groups of objects
  * to XML. Includes a way of serializing objects back to the XML files
  * they were parsed from.
- *  Serializers are not thread safe.
- * 
+ * Serializers are not thread safe.
+ *
  * @author Abe White
  * @nojavadoc
  */
 public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
+
     private static final Localizer _loc = Localizer.forPackage
         (XMLMetaDataSerializer.class);
     private static final SAXTransformerFactory _factory =
@@ -160,7 +177,7 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
      */
     protected File getSourceFile(Object obj) {
         if (obj instanceof SourceTracker)
-            return((SourceTracker) obj).getSourceFile();
+            return ((SourceTracker) obj).getSourceFile();
         return null;
     }
 
@@ -203,7 +220,8 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
      * Serilize the current set of objects to a series of SAX events on the
      * given handler.
      */
-    public void serialize(ContentHandler handler, int flags) throws SAXException {
+    public void serialize(ContentHandler handler, int flags)
+        throws SAXException {
         serialize(getObjects(), handler, flags);
     }
 
@@ -233,7 +251,7 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
      * Whether this serialization is in verbose mode.
      */
     protected boolean isVerbose() {
-        return(_flags & VERBOSE) > 0;
+        return (_flags & VERBOSE) > 0;
     }
 
     /**

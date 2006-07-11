@@ -15,10 +15,11 @@ package serp.bytecode;
 /**
  * Class loader that will attempt to find requested classes in a given
  * {@link Project}.
- * 
+ *
  * @author Abe White
  */
 public class BCClassLoader extends ClassLoader {
+
     private Project _project = null;
 
     /**
@@ -30,7 +31,7 @@ public class BCClassLoader extends ClassLoader {
 
     /**
      * Constructor. Supply the project to use when looking for classes.
-     * 
+     *
      * @param parent the parent classoader
      */
     public BCClassLoader(Project project, ClassLoader loader) {

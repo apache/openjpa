@@ -12,33 +12,71 @@
  */
 package org.apache.openjpa.lib.test;
 
-import java.beans.*;
-import java.io.*;
-import java.lang.reflect.*;
-import java.math.*;
-import java.net.*;
-import java.text.*;
-import java.util.*;
-import junit.framework.*;
-import junit.textui.*;
-import org.apache.openjpa.lib.log.*;
-import org.apache.regexp.*;
-import org.apache.tools.ant.*;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URL;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
+
+import junit.framework.TestCase;
+import junit.framework.TestResult;
+import junit.textui.TestRunner;
+import org.apache.regexp.RE;
+import org.apache.regexp.RESyntaxException;
+import org.apache.regexp.REUtil;
+import org.apache.tools.ant.AntClassLoader;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.ProjectHelper;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.log.LogFactoryImpl;
 
 /**
  * TestCase framework to run various tests against solarmetric code.
- *  This class contains various utility methods for the following functions:
+ * This class contains various utility methods for the following functions:
  * <ul>
  * <li>Using multiple, isolated ClassLoaders</li>
  * <li>Running a test in multiple concurrent threads</li>
  * <li>Assertion helpers</li>
  * <li>Creating random Strings, numbers, etc.</li>
  * </ul>
- * 
+ *
  * @author Marc Prud'hommeaux
  * @author Patrick Linskey
  */
 public abstract class AbstractTestCase extends TestCase {
+
     public static final String TEST_METHODS =
         System.getProperty(AbstractTestCase.class.getName() + ".testMethods");
     public static final long PLATFORM_ALL = 2 << 1;
@@ -140,20 +178,20 @@ public abstract class AbstractTestCase extends TestCase {
      * class to disable test cases on a per-method granularity, and
      * prevents the test from showing up as a passed test just
      * because it was skipped.
-     *  For example, if a particular test case method should not be
+     * For example, if a particular test case method should not be
      * run against a certain database, this method could check the
      * name of the test result and the current database configuration
      * in order to make the decision:
-     * 
+     * <p/>
      * <code> protected boolean skipTest() {
- // don't run with pointbase: it uses a DataSource, which
- // can't be translated into a JBoss DataSource configuration.
- if ("testJBoss".equals(getName()) &&
- getCurrentPlatform() == PLATFORM_POINTBASE)
- return true;
- }
+     * // don't run with pointbase: it uses a DataSource, which
+     * // can't be translated into a JBoss DataSource configuration.
+     * if ("testJBoss".equals(getName()) &&
+     * getCurrentPlatform() == PLATFORM_POINTBASE)
+     * return true;
+     * }
      * </code>
-     *  If you want to disable execution of an entire test case
+     * If you want to disable execution of an entire test case
      * class for a given database, you might want to add the class to
      * the excluded test list in that database's properties file.
      */
@@ -179,7 +217,6 @@ public abstract class AbstractTestCase extends TestCase {
     public void tearDownTestClass() throws Exception {
     }
 
-
     public void tearDown() throws Exception {
         if ("true".equals(System.getProperty("meminfo", "true")))
             printMemoryInfo();
@@ -195,56 +232,56 @@ public abstract class AbstractTestCase extends TestCase {
      * Support method to get a random Integer for testing.
      */
     public static Integer randomInt() {
-        return new Integer((int)(Math.random() * Integer.MAX_VALUE));
+        return new Integer((int) (Math.random() * Integer.MAX_VALUE));
     }
 
     /**
      * Support method to get a random Character for testing.
      */
     public static Character randomChar() {
-        char [] TEST_CHAR_ARRAY = new char [] {
+        char [] TEST_CHAR_ARRAY = new char []{
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
             'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
             's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1',
             '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        return new Character(TEST_CHAR_ARRAY [
-            (int)(Math.random() * TEST_CHAR_ARRAY.length)]);
+        return new Character(TEST_CHAR_ARRAY[
+            (int) (Math.random() * TEST_CHAR_ARRAY.length)]);
     }
 
     /**
      * Support method to get a random Long for testing.
      */
     public static Long randomLong() {
-        return new Long((long)(Math.random() * Long.MAX_VALUE));
+        return new Long((long) (Math.random() * Long.MAX_VALUE));
     }
 
     /**
      * Support method to get a random Short for testing.
      */
     public static Short randomShort() {
-        return new Short((short)(Math.random() * Short.MAX_VALUE));
+        return new Short((short) (Math.random() * Short.MAX_VALUE));
     }
 
     /**
      * Support method to get a random Double for testing.
      */
     public static Double randomDouble() {
-        return new Double((double)(Math.round(Math.random() * 5000d))/1000d);
+        return new Double((double) (Math.round(Math.random() * 5000d)) / 1000d);
     }
 
     /**
      * Support method to get a random Float for testing.
      */
     public static Float randomFloat() {
-        return new Float((float)(Math.round(Math.random() * 5000f))/1000f);
+        return new Float((float) (Math.round(Math.random() * 5000f)) / 1000f);
     }
 
     /**
      * Support method to get a random Byte for testing.
      */
     public static Byte randomByte() {
-        return new Byte((byte)(Math.random() * Byte.MAX_VALUE));
+        return new Byte((byte) (Math.random() * Byte.MAX_VALUE));
     }
 
     /**
@@ -258,7 +295,7 @@ public abstract class AbstractTestCase extends TestCase {
      * Support method to get a random Date for testing.
      */
     public static Date randomDate() {
-        long millis = (long)(Math.random() * System.currentTimeMillis());
+        long millis = (long) (Math.random() * System.currentTimeMillis());
 
         // round millis to the nearest 1000: this is because some
         // databases do not store the milliseconds correctly(e.g., MySQL).
@@ -282,7 +319,7 @@ public abstract class AbstractTestCase extends TestCase {
      */
     public static String randomString(int len) {
         StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < (int)(Math.random() * len) + 1; i++)
+        for (int i = 0; i < (int) (Math.random() * len) + 1; i++)
             buf.append(randomChar());
         return buf.toString();
     }
@@ -306,10 +343,10 @@ public abstract class AbstractTestCase extends TestCase {
         // too many of our test databases don't support bigints > MAX_LONG:
         // I don't like it, but for now, let's only test below MAX_LONG
         BigInteger lng = new BigInteger(
-            ((long)(Math.random() * Long.MAX_VALUE)) + "");
+            ((long) (Math.random() * Long.MAX_VALUE)) + "");
 
         BigInteger multiplier = new BigInteger("1");
-            // (1 + (int)(Math.random() * 10000)) + "");
+        // (1 + (int)(Math.random() * 10000)) + "");
         if (Math.random() < 0.5)
             multiplier = multiplier.multiply(new BigInteger("-1"));
 
@@ -329,16 +366,16 @@ public abstract class AbstractTestCase extends TestCase {
                 str = str.substring(0, str.length() - 1);
         start = new BigInteger(str);
 
-        String val = start + "." + ((int)(Math.random() * 10))
-            + ((int)(Math.random() * 10))
-            + ((int)(Math.random() * 10))
-            + ((int)(Math.random() * 10))
-            + ((int)(Math.random() * 10))
-            + ((int)(Math.random() * 10))
-            + ((int)(Math.random() * 10))
-            + ((int)(Math.random() * 10))
-            + ((int)(Math.random() * 10))
-            + ((int)(Math.random() * 10));
+        String val = start + "." + ((int) (Math.random() * 10))
+            + ((int) (Math.random() * 10))
+            + ((int) (Math.random() * 10))
+            + ((int) (Math.random() * 10))
+            + ((int) (Math.random() * 10))
+            + ((int) (Math.random() * 10))
+            + ((int) (Math.random() * 10))
+            + ((int) (Math.random() * 10))
+            + ((int) (Math.random() * 10))
+            + ((int) (Math.random() * 10));
 
         return new BigDecimal(val);
     }
@@ -348,9 +385,9 @@ public abstract class AbstractTestCase extends TestCase {
      */
     public static byte[] randomBlob() {
         // up to 100K blob
-        byte [] blob = new byte [(int)(Math.random() * 1024 * 100)];
+        byte [] blob = new byte [(int) (Math.random() * 1024 * 100)];
         for (int i = 0; i < blob.length; i++)
-            blob [i] = randomByte().byteValue();
+            blob[i] = randomByte().byteValue();
 
         return blob;
     }
@@ -361,11 +398,11 @@ public abstract class AbstractTestCase extends TestCase {
      */
     public static Object randomizeBean(Object bean)
         throws IntrospectionException, IllegalAccessException,
-            InvocationTargetException {
+        InvocationTargetException {
         BeanInfo info = Introspector.getBeanInfo(bean.getClass());
         PropertyDescriptor [] props = info.getPropertyDescriptors();
-        for (int i = 0 ; i < props.length; i++) {
-            Method write = props [i].getWriteMethod();
+        for (int i = 0; i < props.length; i++) {
+            Method write = props[i].getWriteMethod();
             if (write == null)
                 continue;
 
@@ -373,7 +410,7 @@ public abstract class AbstractTestCase extends TestCase {
             if (params == null || params.length != 1)
                 continue;
 
-            Class paramType = params [0];
+            Class paramType = params[0];
             Object arg = null;
 
             if (paramType == boolean.class || paramType == Boolean.class)
@@ -402,7 +439,7 @@ public abstract class AbstractTestCase extends TestCase {
                 arg = randomDate();
 
             if (arg != null)
-                write.invoke(bean, new Object [] { arg });
+                write.invoke(bean, new Object []{ arg });
         }
 
         return bean;
@@ -442,19 +479,17 @@ public abstract class AbstractTestCase extends TestCase {
 
     /**
      * Execute a test method in multiple threads.
-     * 
-     * @throws ThreadingException if an errors occur in
-     * any of the Threads. The actual exceptions
-     * will be embedded in the exception. Note that
-     * this means that assert() failures will be
-     * treated as errors rather than warnings.
-     * 
-     * @param thread the number of Threads to run in
+     *
+     * @param thread     the number of Threads to run in
      * @param iterations the number of times the method should
-     * be execute in a single Thread
-     * @param method the name of the method to execute
-     * @param args the arguments to pass to the method
-     * 
+     *                   be execute in a single Thread
+     * @param method     the name of the method to execute
+     * @param args       the arguments to pass to the method
+     * @throws ThreadingException if an errors occur in
+     *                            any of the Threads. The actual exceptions
+     *                            will be embedded in the exception. Note that
+     *                            this means that assert() failures will be
+     *                            treated as errors rather than warnings.
      * @author Marc Prud'hommeaux
      */
     public void mttest(int threads, int iterations, final String method,
@@ -465,7 +500,8 @@ public abstract class AbstractTestCase extends TestCase {
     public void mttest(int serialCount,
         int threads, int iterations, final String method, final Object [] args)
         throws ThreadingException {
-        if (multiThreadExecuting != null && multiThreadExecuting.equals(method)) {
+        if (multiThreadExecuting != null && multiThreadExecuting.equals(method))
+        {
             // we are currently executing in multi-threaded mode:
             // don't deadlock!
             return;
@@ -476,12 +512,12 @@ public abstract class AbstractTestCase extends TestCase {
         try {
             Class [] paramClasses = new Class [args.length];
             for (int i = 0; i < paramClasses.length; i++)
-                paramClasses [i] = args [i].getClass();
+                paramClasses[i] = args[i].getClass();
 
             final Method meth;
 
             try {
-                meth = getClass().getMethod( method, paramClasses);
+                meth = getClass().getMethod(method, paramClasses);
             } catch (NoSuchMethodException nsme) {
                 throw new ThreadingException(nsme.toString(), nsme);
             }
@@ -507,29 +543,27 @@ public abstract class AbstractTestCase extends TestCase {
 
     /**
      * Execute a test method in multiple threads.
-     * 
-     * @throws ThreadingException if an errors occur in
-     * any of the Threads. The actual exceptions
-     * will be embedded in the exception. Note that
-     * this means that assert() failures will be
-     * treated as errors rather than warnings.
-     * 
-     * @param title a description of the test, for inclusion in the
-     * error message
+     *
+     * @param title       a description of the test, for inclusion in the
+     *                    error message
      * @param serialCount the number of times to run the method
-     * serially before spawning threads.
-     * @param thread the number of Threads to run in
-     * @param iterations the number of times the method should
+     *                    serially before spawning threads.
+     * @param thread      the number of Threads to run in
+     * @param iterations  the number of times the method should
+     * @param runnner     the VolatileRunnable that will execute
+     *                    the actual test from within the Thread.
+     * @throws ThreadingException if an errors occur in
+     *                            any of the Threads. The actual exceptions
+     *                            will be embedded in the exception. Note that
+     *                            this means that assert() failures will be
+     *                            treated as errors rather than warnings.
      * @author Marc Prud'hommeaux be execute in a single Thread
-     * @param runnner the VolatileRunnable that will execute
-     * the actual test from within the Thread.
-     * 
      * @author Marc Prud'hommeaux
      */
     public void mttest(String title, final int serialCount,
         final int threads, final int iterations, final VolatileRunnable runner)
         throws ThreadingException {
-        final List exceptions = Collections.synchronizedList( new LinkedList());
+        final List exceptions = Collections.synchronizedList(new LinkedList());
 
         Thread [] runners = new Thread [threads];
 
@@ -538,53 +572,54 @@ public abstract class AbstractTestCase extends TestCase {
         for (int i = 1; i <= threads; i++) {
             final int thisThread = i;
 
-            runners [i - 1] =
+            runners[i - 1] =
                 new Thread(title + " [" + i + " of " + threads + "]") {
-                public void run() {
-                    // do our best to have all threads start at the exact
-                    // same time. This is imperfect, but the closer we
-                    // get to everyone starting at the same time, the
-                    // better chance we have for identifying MT problems.
-                    while (System.currentTimeMillis() < startMillis)
-                        yield();
+                    public void run() {
+                        // do our best to have all threads start at the exact
+                        // same time. This is imperfect, but the closer we
+                        // get to everyone starting at the same time, the
+                        // better chance we have for identifying MT problems.
+                        while (System.currentTimeMillis() < startMillis)
+                            yield();
 
-                    int thisIteration = 1;
-                    try {
-                        for (; thisIteration <= iterations; thisIteration++) {
-                            // go go go!
-                            runner.run();
-                        }
-                    } catch (Throwable error) {
-                        synchronized (exceptions) {
-                            // embed the exception into something that gives
-                            // us some more information about the threading
-                            // environment
-                            exceptions.add(new ThreadingException( "thread="
-                                + this.toString()
-                                + ";threadNum=" + thisThread
-                                + ";maxThreads=" + threads
-                                + ";iteration=" + thisIteration
-                                + ";maxIterations=" + iterations, error));
+                        int thisIteration = 1;
+                        try {
+                            for (; thisIteration <= iterations; thisIteration++)
+                            {
+                                // go go go!
+                                runner.run();
+                            }
+                        } catch (Throwable error) {
+                            synchronized (exceptions) {
+                                // embed the exception into something that gives
+                                // us some more information about the threading
+                                // environment
+                                exceptions.add(new ThreadingException("thread="
+                                    + this.toString()
+                                    + ";threadNum=" + thisThread
+                                    + ";maxThreads=" + threads
+                                    + ";iteration=" + thisIteration
+                                    + ";maxIterations=" + iterations, error));
+                            }
                         }
                     }
-                }
-            };
+                };
         }
 
         // start the serial tests(does not spawn the threads)
         for (int i = 0; i < serialCount; i++) {
-            runners [0].run();
+            runners[0].run();
         }
 
         // start the multithreaded
         for (int i = 0; i < threads; i++) {
-            runners [i].start();
+            runners[i].start();
         }
 
         // wait for them all to complete
         for (int i = 0; i < threads; i++) {
             try {
-                runners [i].join();
+                runners[i].join();
             } catch (InterruptedException e) {
             }
         }
@@ -594,7 +629,7 @@ public abstract class AbstractTestCase extends TestCase {
 
         // embed all the exceptions that were throws into a
         // ThreadingException
-        Throwable [] errors = (Throwable [])exceptions.toArray(
+        Throwable [] errors = (Throwable []) exceptions.toArray(
             new Throwable [0]);
         throw new ThreadingException("The "
             + errors.length + " embedded errors "
@@ -612,12 +647,10 @@ public abstract class AbstractTestCase extends TestCase {
     /**
      * Return the last method name that called this one by
      * parsing the current stack trace.
-     * 
+     *
      * @param exclude a method name to skip
-     * 
      * @throws IllegalStateException If the calling method could not be
-     * identified.
-     * 
+     *                               identified.
      * @author Marc Prud'hommeaux
      */
     public String callingMethod(String exclude) {
@@ -627,7 +660,7 @@ public abstract class AbstractTestCase extends TestCase {
         new Exception().printStackTrace(new PrintWriter(sw));
         for (StringTokenizer stackTrace = new StringTokenizer(sw.toString(),
             System.getProperty("line.separator"));
-            stackTrace.hasMoreTokens(); ) {
+            stackTrace.hasMoreTokens();) {
             String line = stackTrace.nextToken().trim();
 
             // not a stack trace element
@@ -656,6 +689,7 @@ public abstract class AbstractTestCase extends TestCase {
      * A Runnable that can throw an Exception: used to test cases.
      */
     public static interface VolatileRunnable {
+
         public void run() throws Exception;
     }
 
@@ -663,6 +697,7 @@ public abstract class AbstractTestCase extends TestCase {
      * Exception for errors caught during threading tests.
      */
     public class ThreadingException extends RuntimeException {
+
         private final Throwable[] _nested;
 
         public ThreadingException(String msg, Throwable nested) {
@@ -670,7 +705,7 @@ public abstract class AbstractTestCase extends TestCase {
             if (nested == null)
                 _nested = new Throwable[0];
             else
-                _nested = new Throwable[] { nested };
+                _nested = new Throwable[]{ nested };
         }
 
         public ThreadingException(String msg, Throwable[] nested) {
@@ -715,19 +750,20 @@ public abstract class AbstractTestCase extends TestCase {
      */
     public void sleepRandom(int max) {
         try {
-            Thread.currentThread().sleep((long)(Math.random() * max));
-        } catch (InterruptedException ex) {}
+            Thread.currentThread().sleep((long) (Math.random() * max));
+        } catch (InterruptedException ex) {
+        }
     }
 
     /**
      * Re-run this method in the current thread, timing out
      * after the specified number of seconds.
-     *  Usage:
+     * Usage:
      * <pre> public void timeOutOperation() { if (timeout(5 * 1000)) return;
      *  Thread.currentThread().sleep(10 * 1000); }
      * </pre>
-     * 
-     * 
+     * <p/>
+     * <p/>
      * <strong>Warning</strong> this method should be used sparingly,
      * and only when you expect that a timeout will <strong>not</strong>
      * occur. It utilized the deprecated {@link Thread.stop} and
@@ -735,10 +771,10 @@ public abstract class AbstractTestCase extends TestCase {
      * invalid state. It is only used because it provides more
      * meaningful information than just seeing that the entire autobuild
      * timed out.
-     * 
+     *
      * @param millis the number of milliseconds we should wait.
      * @return true if we are are in the thread that requested the
-     * timeout, false if we are in the timeout thread itself.
+     *         timeout, false if we are in the timeout thread itself.
      */
     public boolean timeout(long millis) throws Throwable {
         String methodName = callingMethod("timeout");
@@ -759,7 +795,7 @@ public abstract class AbstractTestCase extends TestCase {
 
         try {
             final Method method = getClass().
-                getMethod(methodName, (Class[])null);
+                getMethod(methodName, (Class[]) null);
             final Object thz = this;
 
             // spawn thread
@@ -767,7 +803,7 @@ public abstract class AbstractTestCase extends TestCase {
                 + methodName + "] (" + millis + "ms)") {
                 public void run() {
                     try {
-                        method.invoke(thz, (Object[])null);
+                        method.invoke(thz, (Object[]) null);
                     } catch (Throwable t) {
                         throwable = t;
                     }
@@ -786,11 +822,17 @@ public abstract class AbstractTestCase extends TestCase {
             if (System.currentTimeMillis() >= endTime) {
                 // if we are waiting on a monitor, this will give
                 // us a useful stack trace.
-                try { tot.interrupt(); } catch (Throwable e) { }
+                try {
+                    tot.interrupt();
+                } catch (Throwable e) {
+                }
                 Thread.currentThread().sleep(500);
 
                 // try to kill the thread
-                try { tot.stop(); } catch (Throwable e) { }
+                try {
+                    tot.stop();
+                } catch (Throwable e) {
+                }
                 Thread.currentThread().sleep(500);
 
                 throw new OperationTimedOutException("Execution of \""
@@ -812,8 +854,8 @@ public abstract class AbstractTestCase extends TestCase {
 
     /**
      * Utility method to start a profile.
-     * 
-     * @see #endProfile(java.lang.String)
+     *
+     * @see #endProfile(String)
      */
     public void startProfile(String name) {
         _times.put(name, new Long(System.currentTimeMillis()));
@@ -821,28 +863,29 @@ public abstract class AbstractTestCase extends TestCase {
 
     /**
      * Utility to end the profile and print out the time. Example usage:
-     * 
+     * <p/>
      * <pre><code> startProfile("Some long task"); doSomeLongTask();
      * endProfile("Some long task");
      * </code></pre>
-     * 
-     * @return the amount of time that this profile invocation took, or
-     * -1 if <code>name</code> was never started.
-     * 
+     *
      * @param name
+     * @return the amount of time that this profile invocation took, or
+     *         -1 if <code>name</code> was never started.
      */
     public long endProfile(String name) {
-        Long time = (Long)_times.remove(name);
+        Long time = (Long) _times.remove(name);
 
         long elapsed = -1;
         if (time != null)
             elapsed = System.currentTimeMillis() - time.longValue();
 
-        getLog().info(name + ": " + (time == null ? "???" : "" + elapsed) + "ms");
+        getLog()
+            .info(name + ": " + (time == null ? "???" : "" + elapsed) + "ms");
         return elapsed;
     }
 
     private static class TimeOutThread extends Thread {
+
         public Throwable throwable = null;
         public boolean completed = false;
 
@@ -856,6 +899,7 @@ public abstract class AbstractTestCase extends TestCase {
      * Indicates that a timeout occured.
      */
     public static class OperationTimedOutException extends RuntimeException {
+
         private final Throwable _err;
 
         public OperationTimedOutException(String msg, Throwable throwable) {
@@ -904,7 +948,7 @@ public abstract class AbstractTestCase extends TestCase {
 
     /**
      * Reload the specified class in an isolated ClassLoader.
-     * 
+     *
      * @param target the target class to load
      * @return the Class as reloaded in an new ClassLoader
      */
@@ -937,17 +981,18 @@ public abstract class AbstractTestCase extends TestCase {
 
     public Object isolateNew(Class target)
         throws ClassNotFoundException, IllegalAccessException,
-            InstantiationException {
+        InstantiationException {
         return isolate(target).newInstance();
     }
 
     private static class NestedClassLoader extends AntClassLoader {
+
         public NestedClassLoader(boolean useParent) {
             super(ClassLoader.getSystemClassLoader(), useParent);
 
             for (StringTokenizer cltok = new StringTokenizer(
                 System.getProperty("java.class.path"), File.pathSeparator);
-                cltok.hasMoreTokens(); ) {
+                cltok.hasMoreTokens();) {
                 String path = cltok.nextToken();
 
                 // only load test paths, not jar files
@@ -983,15 +1028,15 @@ public abstract class AbstractTestCase extends TestCase {
     /**
      * A ClassLoader that is completely isolated with respect to
      * any classes that are loaded in the System ClassLoader.
-     * 
+     *
      * @author <a href="mailto:marc@solarmetric.com">Marc Prud'hommeaux</a>
      */
     private static class IsolatedClassLoader extends NestedClassLoader {
+
         public IsolatedClassLoader() {
             super(false);
             setIsolated(false);
         }
-
     }
 
     ///////////////
@@ -1001,14 +1046,14 @@ public abstract class AbstractTestCase extends TestCase {
     /**
      * Validate that the specified {@link Collection} fulfills the
      * Collection contract as specified by the Collections API.
-     * 
+     * <p/>
      * <strong>Note</strong>: does not validate mutable operations
      */
     public static void validateCollection(Collection collection) {
         int size = collection.size();
         int iterated = 0;
         // ensure we can walk along the iterator
-        for (Iterator i = collection.iterator(); i.hasNext(); ) {
+        for (Iterator i = collection.iterator(); i.hasNext();) {
             iterated++;
             i.next();
         }
@@ -1021,15 +1066,15 @@ public abstract class AbstractTestCase extends TestCase {
             List ll = new ArrayList();
             for (int i = 0; i < 100; i++)
                 ll.add(new Integer(i));
-            validateList((List)ll);
-            validateList((List)collection);
+            validateList((List) ll);
+            validateList((List) collection);
         }
     }
 
     /**
      * Validate that the specified {@link List} fulfills the
      * List contract as specified by the Collections API.
-     * 
+     * <p/>
      * <strong>Note</strong>: does not validate mutable operations
      */
     public static void validateList(List list) {
@@ -1041,16 +1086,16 @@ public abstract class AbstractTestCase extends TestCase {
 
         // fill sequential index access list
         for (int i = 0; i < list.size(); i++)
-            values1 [i] = list.get(i);
+            values1[i] = list.get(i);
 
         // fill sequential list
         int index = 0;
         ListIterator iter;
-        for (iter = list.listIterator(0); iter.hasNext(); ) {
+        for (iter = list.listIterator(0); iter.hasNext();) {
             assertEquals(index, iter.nextIndex());
             assertEquals(index, iter.previousIndex() + 1);
-            values2 [index] = iter.next();
-            assertTrue(list.contains(values2 [index]));
+            values2[index] = iter.next();
+            assertTrue(list.contains(values2[index]));
             index++;
         }
 
@@ -1058,14 +1103,15 @@ public abstract class AbstractTestCase extends TestCase {
         try {
             iter.next();
             fail("next() should have resulted in a NoSuchElementException");
-        } catch (NoSuchElementException e) { } // as expected
+        } catch (NoSuchElementException e) {
+        } // as expected
 
         // fill reverse sequential list
         int back = 0;
-        for (iter = list.listIterator(list.size()); iter.hasPrevious(); ) {
+        for (iter = list.listIterator(list.size()); iter.hasPrevious();) {
             assertEquals(index, iter.previousIndex() + 1);
             assertEquals(index, iter.nextIndex());
-            values3 [--index] = iter.previous();
+            values3[--index] = iter.previous();
             back++;
         }
         assertEquals(list.size(), back);
@@ -1075,7 +1121,8 @@ public abstract class AbstractTestCase extends TestCase {
             iter.previous();
             fail("previous() should have resulted in a "
                 + "NoSuchElementException");
-        } catch (NoSuchElementException e) { } // as expected
+        } catch (NoSuchElementException e) {
+        } // as expected
 
         // fill random access list
         List indices = new LinkedList();
@@ -1083,9 +1130,9 @@ public abstract class AbstractTestCase extends TestCase {
             indices.add(new Integer(i));
 
         for (int i = 0; i < list.size(); i++) {
-            int rand = (int)(Math.random() * indices.size());
-            Integer randIndex = (Integer)indices.remove(rand);
-            values4 [randIndex.intValue()] = list.get(randIndex.intValue());
+            int rand = (int) (Math.random() * indices.size());
+            Integer randIndex = (Integer) indices.remove(rand);
+            values4[randIndex.intValue()] = list.get(randIndex.intValue());
         }
 
         assertEquals(Arrays.asList(coreValues), Arrays.asList(values1));
@@ -1107,7 +1154,7 @@ public abstract class AbstractTestCase extends TestCase {
     public static void assertIdentical(List c1, List c2) {
         assertEquals(c1.size(), c2.size());
         for (Iterator i1 = c1.iterator(), i2 = c2.iterator();
-                i1.hasNext() && i2.hasNext(); )
+            i1.hasNext() && i2.hasNext();)
             assertTrue(i1.next() == i2.next());
     }
 
@@ -1151,7 +1198,7 @@ public abstract class AbstractTestCase extends TestCase {
         if (ob instanceof Collection)
             ob = ((Collection) ob).iterator();
         if (ob instanceof Iterator) {
-            Iterator i = (Iterator)ob;
+            Iterator i = (Iterator) ob;
             int count = 0;
             while (i.hasNext()) {
                 count++;
@@ -1177,7 +1224,7 @@ public abstract class AbstractTestCase extends TestCase {
 
         byte[] b = new byte[1024];
 
-        for (int n = 0; (n = in.read(b)) != -1; )
+        for (int n = 0; (n = in.read(b)) != -1;)
             fout.write(b, 0, n);
     }
 
@@ -1215,9 +1262,9 @@ public abstract class AbstractTestCase extends TestCase {
 
     /**
      * Run ant on the specified build file.
-     * 
+     *
      * @param buildFile the build file to use
-     * @param target the name of the target to invoke
+     * @param target    the name of the target to invoke
      */
     public void ant(File buildFile, String target) {
         assertTrue(buildFile.isFile());
@@ -1231,9 +1278,9 @@ public abstract class AbstractTestCase extends TestCase {
 
     /**
      * Serialize and deserialize the object.
-     * 
+     *
      * @param validateEquality make sure the hashCode and equals
-     * methods hold true
+     *                         methods hold true
      */
     public static Object roundtrip(Object orig, boolean validateEquality)
         throws IOException, ClassNotFoundException {
@@ -1291,8 +1338,8 @@ public abstract class AbstractTestCase extends TestCase {
     public static List matches(String regex, Collection input)
         throws RESyntaxException {
         List matches = new ArrayList();
-        for (Iterator i = input.iterator(); i.hasNext(); ) {
-            String check = (String)i.next();
+        for (Iterator i = input.iterator(); i.hasNext();) {
+            String check = (String) i.next();
             if (matches(regex, check))
                 matches.add(check);
         }
@@ -1371,7 +1418,7 @@ public abstract class AbstractTestCase extends TestCase {
 
     /**
      * Returns the jar file in which the class is contained.
-     * 
+     *
      * @return the jar file, or none if the class is not in a jar
      * @throws FileNotFoundException if the jar file cannot located
      */
@@ -1418,10 +1465,11 @@ public abstract class AbstractTestCase extends TestCase {
      * if a timeout has occurred, since we can exit the entire test run
      * if a test hasn't completed in a shorted amount of time than
      * the global test timeout.
-     * 
+     *
      * @author <a href="mailto:marc@solarmetric.com">Marc Prud'hommeaux</a>
      */
     private static class WatchdogThread extends Thread {
+
         private final long _timeoutms;
         private long _endtime = -1;
         private AbstractTestCase _curtest = null;
@@ -1439,7 +1487,10 @@ public abstract class AbstractTestCase extends TestCase {
 
         public void run() {
             while (true) {
-                try { sleep(200); } catch (InterruptedException ie) { }
+                try {
+                    sleep(200);
+                } catch (InterruptedException ie) {
+                }
 
                 if (_endtime > 0 && System.currentTimeMillis() > _endtime) {
                     Thread preTimeout = new Thread
@@ -1452,10 +1503,16 @@ public abstract class AbstractTestCase extends TestCase {
 
                     // wait a little while for the pre-timeout
                     // thread to complete
-                    try { preTimeout.join(10 * 1000); } catch (Exception e) { }
+                    try {
+                        preTimeout.join(10 * 1000);
+                    } catch (Exception e) {
+                    }
 
                     // give it a few more seconds...
-                    try { sleep(5 * 1000); } catch (Exception e) { }
+                    try {
+                        sleep(5 * 1000);
+                    } catch (Exception e) {
+                    }
 
                     // new endtime? resume...
                     if (System.currentTimeMillis() < _endtime)
@@ -1463,18 +1520,21 @@ public abstract class AbstractTestCase extends TestCase {
 
                     new Exception("test case "
                         + (_curtest != null ? _curtest.getName()
-                            : "UNKNOWN") + " timed out after "
+                        : "UNKNOWN") + " timed out after "
                         + _timeoutms + "ms").printStackTrace();
 
                     // also run "killall -QUIT java" to try to grab
                     // a stack trace
                     try {
                         Runtime.getRuntime().exec
-                            (new String[] { "killall", "-QUIT", "java" });
+                            (new String[]{ "killall", "-QUIT", "java" });
                     } catch (Exception e) {
                     }
 
-                    try { sleep(1000); } catch (InterruptedException ie) { }
+                    try {
+                        sleep(1000);
+                    } catch (InterruptedException ie) {
+                    }
 
                     // now actually exit
                     System.exit(111);

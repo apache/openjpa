@@ -14,10 +14,11 @@ package org.apache.openjpa.lib.conf;
 
 /**
  * A double {@link Value}.
- * 
+ *
  * @author Marc Prud'hommeaux
  */
 public class DoubleValue extends Value {
+
     private double value;
 
     public DoubleValue(String prop) {

@@ -12,17 +12,26 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.io.*;
-import java.util.*;
-import org.apache.openjpa.lib.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Iterator over a file, or over all metadata resources below a given directory.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
 public class FileMetaDataIterator implements MetaDataIterator {
+
     private static final long SCAN_LIMIT = 100000;
 
     private static final Localizer _loc = Localizer.forPackage
@@ -109,6 +118,7 @@ public class FileMetaDataIterator implements MetaDataIterator {
     }
 
     private static class FileResource implements MetaDataFilter.Resource {
+
         private File _file = null;
 
         public void setFile(File file) {

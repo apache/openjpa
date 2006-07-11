@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.lib.util.concurrent;
 
-import java.util.*;
+import java.util.Collection;
 
 /**
  * Base class for internal queue classes for semaphores, etc.
@@ -28,21 +28,28 @@ import java.util.*;
 public abstract class WaitQueue {
 
     public abstract void insert(WaitNode w); // assumed not to block
+
     public abstract WaitNode extract(); // should return null if empty
 
     public abstract boolean hasNodes();
+
     public abstract int getLength();
+
     public abstract Collection getWaitingThreads();
+
     public abstract boolean isWaiting(Thread thread);
 
     public static interface QueuedSync {
+
         // invoked with sync on wait node, (atomically) just before enqueuing
         boolean recheck(WaitNode node);
+
         // invoked with sync on wait node, (atomically) just before signalling
         void takeOver(WaitNode node);
     }
 
     public static class WaitNode {
+
         boolean waiting = true;
         WaitNode next = null;
         final Thread owner;
@@ -75,7 +82,7 @@ public abstract class WaitQueue {
             } else {
                 long deadline = Utils.nanoTime() + nanos;
                 try {
-                    for (; ; ) {
+                    for (; ;) {
                         TimeUnit.NANOSECONDS.timedWait(this, nanos);
                         if (!waiting) // definitely signalled
                             return true;

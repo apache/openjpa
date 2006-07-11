@@ -12,16 +12,19 @@
  */
 package serp.util;
 
-import java.math.*;
-import java.util.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Date;
+import java.util.LinkedList;
 
 /**
  * String utiltity methods.
- * 
+ *
  * @author Abe White
  */
 public class Strings {
-    private static final Object[][] _codes = new Object[][] {
+
+    private static final Object[][] _codes = new Object[][]{
         { byte.class, "byte", "B" }, { char.class, "char", "C" },
         { double.class, "double", "D" }, { float.class, "float", "F" },
         { int.class, "int", "I" }, { long.class, "long", "J" },
@@ -32,10 +35,10 @@ public class Strings {
     /**
      * Replace all instances of <code>from</code> in <code>str</code>
      * with <code>to</code>.
-     * 
-     * @param str the candidate string to replace
+     *
+     * @param str  the candidate string to replace
      * @param from the token to replace
-     * @param to the new token
+     * @param to   the new token
      * @return the string with all the replacements made
      */
     public static String replace(String str, String from, String to) {
@@ -86,7 +89,7 @@ public class Strings {
             ret.add(buf.toString());
         }
 
-        return(String[]) ret.toArray(new String[ret.size()]);
+        return (String[]) ret.toArray(new String[ret.size()]);
     }
 
     /**
@@ -110,7 +113,7 @@ public class Strings {
      * Return the class for the given string, correctly handling
      * primitive types. If the given class loader is null, the context
      * loader of the current thread will be used.
-     * 
+     *
      * @throws RuntimeException on load error
      */
     public static Class toClass(String str, ClassLoader loader) {
@@ -121,10 +124,11 @@ public class Strings {
      * Return the class for the given string, correctly handling
      * primitive types. If the given class loader is null, the context
      * loader of the current thread will be used.
-     * 
+     *
      * @throws RuntimeException on load error
      */
-    public static Class toClass(String str, boolean resolve, ClassLoader loader) {
+    public static Class toClass(String str, boolean resolve,
+        ClassLoader loader) {
         if (str == null)
             throw new NullPointerException("str == null");
 
@@ -141,7 +145,7 @@ public class Strings {
             for (int i = 0; !primitive && i < _codes.length; i++) {
                 if (_codes[i][1].equals(str)) {
                     if (dims == 0)
-                        return(Class) _codes[i][0];
+                        return (Class) _codes[i][0];
                     str = (String) _codes[i][2];
                     primitive = true;
                 }
@@ -177,7 +181,7 @@ public class Strings {
      * Return only the class name, without package.
      */
     public static String getClassName(Class cls) {
-        return(cls == null) ? null : getClassName(cls.getName());
+        return (cls == null) ? null : getClassName(cls.getName());
     }
 
     /**
@@ -216,7 +220,7 @@ public class Strings {
      * Return only the package, or empty string if none.
      */
     public static String getPackageName(Class cls) {
-        return(cls == null) ? null : getPackageName(cls.getName());
+        return (cls == null) ? null : getPackageName(cls.getName());
     }
 
     /**
@@ -227,7 +231,7 @@ public class Strings {
             return null;
 
         int dotIdx = fullName.lastIndexOf('.');
-        return(dotIdx == -1) ? "" : fullName.substring(0, dotIdx);
+        return (dotIdx == -1) ? "" : fullName.substring(0, dotIdx);
     }
 
     /**
@@ -236,14 +240,14 @@ public class Strings {
      * primitive wrapper type is created and returned, and
      * <code>null</code>s are converted to the Java default for the
      * primitive type.
-     * 
-     * @param val The string value to parse
+     *
+     * @param val  The string value to parse
      * @param type The type to parse. This must be a primitive or a
-     * primitive wrapper, or one of {@link BigDecimal},
-     * {@link BigInteger}, {@link String}, {@link Date}.
+     *             primitive wrapper, or one of {@link BigDecimal},
+     *             {@link BigInteger}, {@link String}, {@link Date}.
      * @throws IllegalArgumentException if <code>type</code> is not a
-     * supported type, or if <code>val</code> cannot be
-     * converted into an instance of type <code>type</code>.
+     *                                  supported type, or if <code>val</code> cannot be
+     *                                  converted into an instance of type <code>type</code>.
      */
     public static Object parse(String val, Class type) {
         if (!canParse(type))

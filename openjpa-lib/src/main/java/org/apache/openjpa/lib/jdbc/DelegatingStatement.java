@@ -12,18 +12,24 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.sql.*;
-import org.apache.openjpa.lib.util.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
+
+import org.apache.openjpa.lib.util.Closeable;
 
 /**
  * Wrapper around an existing statement. Subclasses can override the
  * methods whose behavior they mean to change. The <code>equals</code> and
  * <code>hashCode</code> methods pass through to the base underlying data
  * store statement.
- * 
+ *
  * @author Abe White
  */
 public class DelegatingStatement implements Statement, Closeable {
+
     private final Statement _stmnt;
     private final DelegatingStatement _del;
     private final Connection _conn;
@@ -54,7 +60,7 @@ public class DelegatingStatement implements Statement, Closeable {
      * Return the base underlying data store statement.
      */
     public Statement getInnermostDelegate() {
-        return(_del == null) ? _stmnt : _del.getInnermostDelegate();
+        return (_del == null) ? _stmnt : _del.getInnermostDelegate();
     }
 
     public int hashCode() {

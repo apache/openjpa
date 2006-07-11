@@ -12,20 +12,22 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.io.*;
-import java.lang.ref.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.ref.Reference;
 
 /**
  * Map in which the key, value, or both may be weak/soft references.
- * 
+ *
  * @author Abe White
- * @since 4.0
  * @nojavadoc
+ * @since 4.0
  */
 public class ReferenceHashMap
     extends org.apache.commons.collections.map.ReferenceMap
     implements ReferenceMap, SizedMap {
+
     private int _maxSize = Integer.MAX_VALUE;
 
     public ReferenceHashMap(int keyType, int valueType) {
@@ -43,12 +45,12 @@ public class ReferenceHashMap
      */
     private static int toReferenceConstant(int type) {
         switch (type) {
-        case ReferenceMap.HARD:
-            return org.apache.commons.collections.map.ReferenceMap. HARD;
-        case ReferenceMap.SOFT:
-            return org.apache.commons.collections.map.ReferenceMap. SOFT;
-        default:
-            return org.apache.commons.collections.map.ReferenceMap. WEAK;
+            case ReferenceMap.HARD:
+                return org.apache.commons.collections.map.ReferenceMap. HARD;
+            case ReferenceMap.SOFT:
+                return org.apache.commons.collections.map.ReferenceMap. SOFT;
+            default:
+                return org.apache.commons.collections.map.ReferenceMap. WEAK;
         }
     }
 
@@ -170,6 +172,7 @@ public class ReferenceHashMap
      * protected state.
      */
     private static class AccessibleEntry extends ReferenceEntry {
+
         public AccessibleEntry(org.apache.commons.collections.map.
             AbstractReferenceMap map, HashEntry next,
             int hashCode, Object key, Object value) {
@@ -189,7 +192,7 @@ public class ReferenceHashMap
         }
 
         public AccessibleEntry nextEntry() {
-            return(AccessibleEntry) next;
+            return (AccessibleEntry) next;
         }
 
         public void setNextEntry(AccessibleEntry next) {

@@ -12,20 +12,30 @@
  */
 package org.apache.openjpa.lib.log;
 
-import java.io.*;
-import java.util.*;
-import org.apache.openjpa.lib.conf.*;
-import org.apache.openjpa.lib.util.*;
-import org.apache.openjpa.lib.util.concurrent.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.openjpa.lib.conf.GenericConfigurable;
+import org.apache.openjpa.lib.util.Files;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 
 /**
  * Default {@link LogFactory} implementation. For ease of automatic
  * configuration, this implementation keys on only the last dot-separated
  * token of the log channel name.
- * 
+ *
  * @author Patrick Linskey
  */
 public class LogFactoryImpl implements LogFactory, GenericConfigurable {
+
     private static Localizer _loc = Localizer.forPackage(LogFactoryImpl.class);
 
     public static final String TRACE_STR = _loc.get("log-trace");
@@ -171,20 +181,20 @@ public class LogFactoryImpl implements LogFactory, GenericConfigurable {
      */
     public static String getLevelName(short level) {
         switch (level) {
-        case Log.TRACE:
-            return TRACE_STR;
-        case Log.DEBUG:
-            return DEBUG_STR;
-        case Log.INFO:
-            return INFO_STR;
-        case Log.WARN:
-            return WARN_STR;
-        case Log.ERROR:
-            return ERROR_STR;
-        case Log.FATAL:
-            return FATAL_STR;
-        default:
-            return _loc.get("log-unknown");
+            case Log.TRACE:
+                return TRACE_STR;
+            case Log.DEBUG:
+                return DEBUG_STR;
+            case Log.INFO:
+                return INFO_STR;
+            case Log.WARN:
+                return WARN_STR;
+            case Log.ERROR:
+                return ERROR_STR;
+            case Log.FATAL:
+                return FATAL_STR;
+            default:
+                return _loc.get("log-unknown");
         }
     }
 
@@ -195,10 +205,10 @@ public class LogFactoryImpl implements LogFactory, GenericConfigurable {
         str = str.toUpperCase().trim();
         short val = TRACE_STR.equals(str) ? Log.TRACE :
             DEBUG_STR.equals(str) ? Log.DEBUG :
-            INFO_STR.equals(str) ? Log.INFO :
-            WARN_STR.equals(str) ? Log.WARN :
-            ERROR_STR.equals(str) ? Log.ERROR :
-            FATAL_STR.equals(str) ? Log.FATAL : -1;
+                INFO_STR.equals(str) ? Log.INFO :
+                    WARN_STR.equals(str) ? Log.WARN :
+                        ERROR_STR.equals(str) ? Log.ERROR :
+                            FATAL_STR.equals(str) ? Log.FATAL : -1;
 
         if (val == -1)
             throw new IllegalArgumentException
@@ -212,7 +222,7 @@ public class LogFactoryImpl implements LogFactory, GenericConfigurable {
     public void setInto(Map m) {
         if (!m.isEmpty()) {
             Map.Entry e;
-            for (Iterator iter = m.entrySet().iterator(); iter.hasNext(); ) {
+            for (Iterator iter = m.entrySet().iterator(); iter.hasNext();) {
                 e = (Map.Entry) iter.next();
                 _configuredLevels.put(shorten((String) e.getKey()),
                     new Short(getLevel((String) e.getValue())));
@@ -230,6 +240,7 @@ public class LogFactoryImpl implements LogFactory, GenericConfigurable {
      * output to stderr.
      */
     public class LogImpl extends AbstractLog {
+
         private short _level = INFO;
         private String _channel;
 
@@ -247,10 +258,11 @@ public class LogFactoryImpl implements LogFactory, GenericConfigurable {
         /**
          * Convert <code>message</code> into a string ready to be written to
          * the log. The string should include the terminating newline.
-         * 
+         *
          * @param t may be null
          */
-        protected String formatMessage(short level, String message, Throwable t) {
+        protected String formatMessage(short level, String message,
+            Throwable t) {
             // we write to a StringBuffer and then flush it all at
             // once as a single line, since some environments(e.g., JBoss)
             // override the System output stream to flush any calls

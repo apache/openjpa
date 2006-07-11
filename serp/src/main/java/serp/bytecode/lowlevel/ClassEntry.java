@@ -12,8 +12,11 @@
  */
 package serp.bytecode.lowlevel;
 
-import java.io.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * A constant pool entry describing a class.
@@ -21,10 +24,11 @@ import serp.bytecode.visitor.*;
  * implemented interfaces, etc. Each class entry contains the constant pool
  * index of the {@link UTF8Entry} that stores the class name, which is
  * represented in internal form.
- * 
+ *
  * @author Abe White
  */
 public class ClassEntry extends Entry implements ConstantEntry {
+
     private int _nameIndex = 0;
 
     /**
@@ -35,9 +39,9 @@ public class ClassEntry extends Entry implements ConstantEntry {
 
     /**
      * Constructor.
-     * 
+     *
      * @param nameIndex the constant pool index of the {@link UTF8Entry}
-     * containing the class name
+     *                  containing the class name
      */
     public ClassEntry(int nameIndex) {
         _nameIndex = nameIndex;
@@ -66,7 +70,7 @@ public class ClassEntry extends Entry implements ConstantEntry {
      * be run for entries that have been added to a constant pool.
      */
     public UTF8Entry getNameEntry() {
-        return(UTF8Entry) getPool().getEntry(_nameIndex);
+        return (UTF8Entry) getPool().getEntry(_nameIndex);
     }
 
     public int getType() {

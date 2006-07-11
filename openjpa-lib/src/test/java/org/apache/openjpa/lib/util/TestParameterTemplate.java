@@ -12,15 +12,18 @@
  */
 package org.apache.openjpa.lib.util;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link ParameterTemplate} utility class.
- * 
+ *
  * @author Abe White
  */
 public class TestParameterTemplate extends TestCase {
+
     private ParameterTemplate templ = new ParameterTemplate();
 
     public TestParameterTemplate(String test) {

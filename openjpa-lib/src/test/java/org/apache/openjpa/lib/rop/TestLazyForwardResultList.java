@@ -12,14 +12,13 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-
 /**
  * Tests the {@link LazyForwardResultList}.
- * 
+ *
  * @author Abe White
  */
 public class TestLazyForwardResultList extends ResultListTest {
+
     public TestLazyForwardResultList(String test) {
         super(test);
     }

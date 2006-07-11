@@ -12,18 +12,24 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.lowlevel.ClassEntry;
+import serp.bytecode.lowlevel.ConstantPool;
+import serp.bytecode.visitor.BCVisitor;
+import serp.bytecode.visitor.VisitAcceptor;
+import serp.util.Strings;
 
 /**
  * Represents a <code>try {} catch() {}</code> statement in bytecode.
- * 
+ *
  * @author Abe White
  */
-public class ExceptionHandler implements InstructionPtr, BCEntity, VisitAcceptor {
+public class ExceptionHandler
+    implements InstructionPtr, BCEntity, VisitAcceptor {
+
     private int _catchIndex = 0;
     private Code _owner = null;
 

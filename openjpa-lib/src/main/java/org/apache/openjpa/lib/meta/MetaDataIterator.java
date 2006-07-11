@@ -12,17 +12,19 @@
  */
 package org.apache.openjpa.lib.meta;
 
-import java.io.*;
-import java.util.*;
-import org.apache.openjpa.lib.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.apache.openjpa.lib.util.Closeable; // also in java.io(in 1.5)
 
 /**
  * Iterator over metadata resources.
- * 
+ *
  * @author Abe White
  */
 public interface MetaDataIterator extends Closeable {
+
     /**
      * Return whether there is another resource to iterate over.
      */

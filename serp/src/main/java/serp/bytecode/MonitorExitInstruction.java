@@ -12,14 +12,15 @@
  */
 package serp.bytecode;
 
-import serp.bytecode.visitor.*;
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * The <code>monitorexit</code> instruction.
- * 
+ *
  * @author Abe White
  */
 public class MonitorExitInstruction extends MonitorInstruction {
+
     MonitorExitInstruction(Code owner) {
         super(owner, Constants.MONITOREXIT);
     }

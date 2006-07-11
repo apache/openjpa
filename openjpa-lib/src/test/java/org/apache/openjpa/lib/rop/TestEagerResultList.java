@@ -12,14 +12,13 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-
 /**
  * Tests the {@link EagerResultList}.
- * 
+ *
  * @author Abe White
  */
 public class TestEagerResultList extends ResultListTest {
+
     public TestEagerResultList(String test) {
         super(test);
     }

@@ -12,15 +12,16 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * Simple, non-lazy ResultList implementation
- * 
+ *
  * @author Patrick Linskey
  * @nojavadoc
  */
 public class EagerResultList extends ListResultList implements ResultList {
+
     public EagerResultList(ResultObjectProvider rop) {
         super(new ArrayList());
         try {
@@ -33,7 +34,10 @@ public class EagerResultList extends ListResultList implements ResultList {
             rop.handleCheckedException(e);
         }
         finally {
-            try { rop.close(); } catch (Exception e) {}
+            try {
+                rop.close();
+            } catch (Exception e) {
+            }
         }
     }
 }

@@ -12,8 +12,7 @@
  */
 package serp.bytecode;
 
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * Represents an instruction that manipulates the stack of the current
@@ -22,10 +21,11 @@ import serp.bytecode.visitor.*;
  * of the opcode it represents(if manipulating a long or double). This
  * saves the developer from having to decide at compile time whether to
  * use <code>pop</code> or <code>pop2</code>, etc.
- * 
+ *
  * @author Abe White
  */
 public class StackInstruction extends TypedInstruction {
+
     StackInstruction(Code owner, int opcode) {
         super(owner, opcode);
     }
@@ -36,20 +36,20 @@ public class StackInstruction extends TypedInstruction {
 
     public int getStackChange() {
         switch (getOpcode()) {
-        case Constants.POP:
-            return -1;
-        case Constants.POP2:
-            return -2;
-        case Constants.DUP:
-        case Constants.DUPX1:
-        case Constants.DUPX2:
-            return 1;
-        case Constants.DUP2:
-        case Constants.DUP2X1:
-        case Constants.DUP2X2:
-            return 2;
-        default:
-            return 0;
+            case Constants.POP:
+                return -1;
+            case Constants.POP2:
+                return -2;
+            case Constants.DUP:
+            case Constants.DUPX1:
+            case Constants.DUPX2:
+                return 1;
+            case Constants.DUP2:
+            case Constants.DUP2X1:
+            case Constants.DUP2X2:
+                return 2;
+            default:
+                return 0;
         }
     }
 
@@ -73,48 +73,48 @@ public class StackInstruction extends TypedInstruction {
      */
     public boolean isWide() {
         switch (getOpcode()) {
-        case Constants.POP2:
-        case Constants.DUP2:
-        case Constants.DUP2X1:
-        case Constants.DUP2X2:
-            return true;
-        default:
-            return false;
+            case Constants.POP2:
+            case Constants.DUP2:
+            case Constants.DUP2X1:
+            case Constants.DUP2X2:
+                return true;
+            default:
+                return false;
         }
     }
 
     /**
      * Set whether to use the wide form of the current opcode for operations
      * on longs or doubles.
-     * 
+     *
      * @return this instruction, for method chaining
      */
     public StackInstruction setWide(boolean wide) {
         switch (getOpcode()) {
-        case Constants.POP:
-            if (wide) setOpcode(Constants.POP2);
-            break;
-        case Constants.POP2:
-            if (!wide) setOpcode(Constants.POP);
-            break;
-        case Constants.DUP:
-            if (wide) setOpcode(Constants.DUP2);
-            break;
-        case Constants.DUP2:
-            if (!wide) setOpcode(Constants.DUP);
-            break;
-        case Constants.DUPX1:
-            if (wide) setOpcode(Constants.DUP2X1);
-            break;
-        case Constants.DUP2X1:
-            if (!wide) setOpcode(Constants.DUPX1);
-            break;
-        case Constants.DUPX2:
-            if (wide) setOpcode(Constants.DUP2X2);
-            break;
-        case Constants.DUP2X2:
-            if (!wide) setOpcode(Constants.DUPX2);
-            break;
+            case Constants.POP:
+                if (wide) setOpcode(Constants.POP2);
+                break;
+            case Constants.POP2:
+                if (!wide) setOpcode(Constants.POP);
+                break;
+            case Constants.DUP:
+                if (wide) setOpcode(Constants.DUP2);
+                break;
+            case Constants.DUP2:
+                if (!wide) setOpcode(Constants.DUP);
+                break;
+            case Constants.DUPX1:
+                if (wide) setOpcode(Constants.DUP2X1);
+                break;
+            case Constants.DUP2X1:
+                if (!wide) setOpcode(Constants.DUPX1);
+                break;
+            case Constants.DUPX2:
+                if (wide) setOpcode(Constants.DUP2X2);
+                break;
+            case Constants.DUP2X2:
+                if (!wide) setOpcode(Constants.DUPX2);
+                break;
         }
         return this;
     }

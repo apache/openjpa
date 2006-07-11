@@ -12,10 +12,23 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.io.*;
-import java.util.*;
-import junit.framework.*;
-import org.apache.openjpa.lib.util.FormatPreservingProperties.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.StringBufferInputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+
+import junit.framework.TestCase;
+import org.apache.openjpa.lib.util.FormatPreservingProperties.DuplicateKeyException;
 
 // things to test:
 // - delimiters in keys
@@ -23,14 +36,16 @@ import org.apache.openjpa.lib.util.FormatPreservingProperties.*;
 // - unicode
 // - non-String keys / vals
 // - list() method behavior
+
 public class TestPropertiesParser extends TestCase {
+
     public void testSimpleProperties() throws IOException {
         StringBuffer buf = new StringBuffer();
         buf.append("key: value\n");
         buf.append("key2: value2"); // no EOL -- this is intentional
         Properties p = toProperties(buf.toString());
-        assertProperties(new String[][] {
-                { "key", "value" }, { "key2", "value2" } }, p);
+        assertProperties(new String[][]{
+            { "key", "value" }, { "key2", "value2" } }, p);
     }
 
     public void testComments() throws IOException {
@@ -53,19 +68,19 @@ public class TestPropertiesParser extends TestCase {
         buf.append("! and with a ! delimiter\n");
         buf.append("! and with escape \t chars\n");
         Properties p = toProperties(buf.toString());
-        assertProperties(new String[][] { { "foo", "bar#baz" } }, p);
+        assertProperties(new String[][]{ { "foo", "bar#baz" } }, p);
     }
 
     public void testMultiLineInput() throws IOException {
         String s = "foo: bar\\\n" + "more line goes here";
         Properties p = toProperties(s);
         assertProperties(
-            new String[][] { { "foo", "barmore line goes here" } }, p);
+            new String[][]{ { "foo", "barmore line goes here" } }, p);
     }
 
     public void testEmptyLines() throws IOException {
         Properties p = toProperties("\nfoo: bar\n\nbaz: val");
-        assertProperties( new String[][] { { "foo", "bar" }, { "baz", "val" } },
+        assertProperties(new String[][]{ { "foo", "bar" }, { "baz", "val" } },
             p);
     }
 
@@ -73,7 +88,7 @@ public class TestPropertiesParser extends TestCase {
         // intentionally left out the trailing end line
         String s = "foo: bar\nbaz: val";
         Properties p = toProperties(s);
-        assertProperties( new String[][] { { "foo", "bar" }, { "baz", "val" } },
+        assertProperties(new String[][]{ { "foo", "bar" }, { "baz", "val" } },
             p);
 
         p.put("new-key", "val1");
@@ -86,7 +101,7 @@ public class TestPropertiesParser extends TestCase {
     public void testAddAndMutateProperties() throws IOException {
         // intentionally left out the trailing end line
         Properties p = toProperties("foo: bar\nbaz: val");
-        assertProperties( new String[][] { { "foo", "bar" }, { "baz", "val" } },
+        assertProperties(new String[][]{ { "foo", "bar" }, { "baz", "val" } },
             p);
 
         p.put("new-key", "new value");
@@ -96,7 +111,7 @@ public class TestPropertiesParser extends TestCase {
 
     public void testEscapedEquals() throws IOException {
         Properties p = toProperties("foo=bar\\=WARN,baz\\=TRACE");
-        assertProperties(new String[][] { {"foo", "bar=WARN,baz=TRACE"} }, p);
+        assertProperties(new String[][]{ { "foo", "bar=WARN,baz=TRACE" } }, p);
     }
 
     public void testLineTypes() throws IOException {
@@ -106,11 +121,11 @@ public class TestPropertiesParser extends TestCase {
             + ":\ntest=\ndate today\n\n\nlong\\\n   value=tryin \\\n "
             + "gto\n4:vier\nvier     :4");
         Properties p = toProperties(buf.toString());
-        assertProperties(new String[][] {
-                { "name", "no" }, { "ents", "" }, { "dog", "nocat   " },
-                { "burps", "" }, { "test", "" }, { "date", "today" },
-                { "longvalue", "tryin gto" }, { "4", "vier" }, { "vier", "4" },
-            }, p);
+        assertProperties(new String[][]{
+            { "name", "no" }, { "ents", "" }, { "dog", "nocat   " },
+            { "burps", "" }, { "test", "" }, { "date", "today" },
+            { "longvalue", "tryin gto" }, { "4", "vier" }, { "vier", "4" },
+        }, p);
     }
 
     public void testSpecialChars() throws Throwable {
@@ -122,15 +137,15 @@ public class TestPropertiesParser extends TestCase {
 
     /**
      * Test that special characters work.
-     * 
+     *
      * @param formattingProps if true, test against the
-     * FormatPreservingProperties, otherwise test
-     * against a normal Properties instance(for validation of the test case).
-     * @param value whether to test the key or the value
+     *                        FormatPreservingProperties, otherwise test
+     *                        against a normal Properties instance(for validation of the test case).
+     * @param value           whether to test the key or the value
      */
     public void testSpecialChars(boolean formattingProps, boolean value)
         throws Throwable {
-        List valueList = new ArrayList(Arrays.asList(new String[] {
+        List valueList = new ArrayList(Arrays.asList(new String[]{
             "xxyy", "xx\\yy", "xx\nyy", "xx\\nyy", "xx\tyy", "xx\\tyy",
             "xx\ryy", "xx\\ryy", "xx\fyy", "xx\\fyy", "xx\r\n\\\t\r\t\nyy",
             "xx\\r\n\\\t\\r\t\\nyy",
@@ -139,12 +154,12 @@ public class TestPropertiesParser extends TestCase {
 
         // also store every individual character
         for (char c = 'a'; c < 'Z'; c++) {
-            valueList.add(new String(new char[] { c }));
-            valueList.add(new String(new char[] { c, '\\', c }));
-            valueList.add(new String(new char[] { '\\', c }));
+            valueList.add(new String(new char[]{ c }));
+            valueList.add(new String(new char[]{ c, '\\', c }));
+            valueList.add(new String(new char[]{ '\\', c }));
         }
 
-        String[] values = (String[])valueList.toArray(new String[0]);
+        String[] values = (String[]) valueList.toArray(new String[0]);
 
         final String dummy = "XXX";
 
@@ -158,8 +173,8 @@ public class TestPropertiesParser extends TestCase {
             if (p instanceof FormatPreservingProperties) {
                 // set these properties so we behave the same way as
                 // java.util.Properties
-                ((FormatPreservingProperties)p).setDefaultEntryDelimiter('=');
-                ((FormatPreservingProperties)p).
+                ((FormatPreservingProperties) p).setDefaultEntryDelimiter('=');
+                ((FormatPreservingProperties) p).
                     setAddWhitespaceAfterDelimiter(false);
             }
 
@@ -201,19 +216,19 @@ public class TestPropertiesParser extends TestCase {
     }
 
     static Character randomChar() {
-        char [] TEST_CHAR_ARRAY = new char [] {
+        char [] TEST_CHAR_ARRAY = new char []{
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
             'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
             's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1',
             '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        return new Character(TEST_CHAR_ARRAY [
-            (int)(Math.random() * TEST_CHAR_ARRAY.length)]);
+        return new Character(TEST_CHAR_ARRAY[
+            (int) (Math.random() * TEST_CHAR_ARRAY.length)]);
     }
 
     static String randomString(int len) {
         StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < (int)(Math.random() * len) + 1; i++)
+        for (int i = 0; i < (int) (Math.random() * len) + 1; i++)
             buf.append(randomChar());
         return buf.toString();
     }
@@ -222,10 +237,10 @@ public class TestPropertiesParser extends TestCase {
         Properties p1 = new Properties();
         FormatPreservingProperties p2 = new FormatPreservingProperties();
 
-        ((FormatPreservingProperties)p2).setDefaultEntryDelimiter('=');
-        ((FormatPreservingProperties)p2).setAddWhitespaceAfterDelimiter(false);
+        ((FormatPreservingProperties) p2).setDefaultEntryDelimiter('=');
+        ((FormatPreservingProperties) p2).setAddWhitespaceAfterDelimiter(false);
 
-        String[] values = new String[] {
+        String[] values = new String[]{
             "x", "x\ny", "x\\ny", "x\ty", "x\\ty", "x\fy", "x\\fy", "x\ry",
             "x\\ry", "C:\\Foo Bar\\Baz", randomString(5).replace('a', '\\'),
             randomString(500).replace('a', '\\'),
@@ -282,7 +297,7 @@ public class TestPropertiesParser extends TestCase {
         p = new FormatPreservingProperties();
         p.setAllowDuplicates(true);
         toProperties("foo=bar\nfoo=baz", p);
-        assertProperties(new String[][] { {"foo", "baz" } }, p);
+        assertProperties(new String[][]{ { "foo", "baz" } }, p);
     }
 
     public void testMultipleLoads() throws IOException {
@@ -329,9 +344,9 @@ public class TestPropertiesParser extends TestCase {
 
         try {
             FormatPreservingProperties deserialized =
-                (FormatPreservingProperties)new ObjectInputStream
+                (FormatPreservingProperties) new ObjectInputStream
                     (new ByteArrayInputStream(bout.toByteArray())).
-                        readObject();
+                    readObject();
             assertEquals(p, deserialized);
 
             out = new ByteArrayOutputStream();

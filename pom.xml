@@ -1,179 +1,194 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-		<modelVersion>4.0.0</modelVersion>
-	<groupId>org.apache.openjpa</groupId>
-	<artifactId>openjpa</artifactId>
-	<packaging>pom</packaging>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.openjpa</groupId>
+    <artifactId>openjpa</artifactId>
+    <packaging>pom</packaging>
 
-	<name>OpenJPA</name>
-	<description>OpenJPA</description>
-	<version>0.0.1</version>
-	<url>http://incubator.apache.org/projects/openjpa</url>
-	<issueManagement>
-		<system>jira</system>
-		<url>http://issues.apache.org/jira/browse/OPENJPA</url>
-	</issueManagement>
-	<inceptionYear>2006</inceptionYear>
-	<mailingLists>
-		<mailingList>
-			<name>OpenJPA Developer List</name>
-			<subscribe>open-jpa-dev-subscribe@incubator.apache.org</subscribe>
-			<unsubscribe>open-jpa-dev-unsubscribe@incubator.apache.org</unsubscribe>
-			<post>open-jpa-dev@incubator.apache.org</post>
-			<archive>http://mail-archives.apache.org/mod_mbox/incubator-open-jpa-dev/</archive>
-		</mailingList>
-		<mailingList>
-			<name>OpenJPA Commits List</name>
-			<subscribe>open-jpa-commits-subscribe@incubator.apache.org</subscribe>
-			<unsubscribe>open-jpa-commits-unsubscribe@incubator.apache.org</unsubscribe>
-			<post>open-jpa-commits@incubator.apache.org</post>
-			<archive>http://mail-archives.apache.org/mod_mbox/incubator-open-jpa-commits/</archive>
-		</mailingList>
-	</mailingLists>
-	<developers>
-		<developer>
-			<name>Patrick Linskey</name>
-			<id>plinskey</id>
-			<organization>BEA Systems, Inc.</organization>
-			<email>plinskey@bea.com</email>
-		</developer>
-		<developer>
-			<name>Abe White</name>
-			<id>awhite</id>
-			<organization>BEA Systems, Inc.</organization>
-			<email>awhite@bea.com</email>
-		</developer>
-		<developer>
-			<name>Steve Kim</name>
-			<id>stkim</id>
-			<organization>BEA Systems, Inc.</organization>
-			<email>stkim@bea.com</email>
-		</developer>
-		<developer>
-			<name>Marc Prud'hommeaux</name>
-			<id>mprudhom</id>
-			<organization>BEA Systems, Inc.</organization>
-			<email>mprudhom@bea.com</email>
-		</developer>
-	</developers>
-	<licenses>
-		<license>
-			<name>Apache Software License 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<organization>
-		<name>Apache Software Foundation</name>
-		<url>http://www.apache.org</url>
-	</organization>
-	<scm>
-		<connection>scm:svn:http://svn.apache.org/repos/asf/incubator/openjpa/${pom.artifactId}</connection>
-		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/openjpa/${pom.artifactId}</developerConnection>
-		<url>https://svn.apache.org/repos/asf/incubator/openjpa/${pom.artifactId}</url>
-	</scm>
-<modules>
-	
-		<module>openjpa-lib</module>
-		<module>serp</module>
-		
-	</modules>
-	<repositories>
-	
-		<repository>
-		<id>central</id>
-		<name>Maven Repository Switchboard</name>
-		<url>http://www.ibiblio.org/maven2</url>
-		</repository>
-		
-	
-		<repository>
-		<id>swami</id>
-		<name>Swami repository</name>
-		<url>http://m2.ngbw.org</url>
-		</repository>
-		
-	
-		<repository>
-		<id>java-net</id>
-		<name>dev.java.net repository</name>
-		<url>https://maven-repository.dev.java.net/nonav/repository</url>
-		<layout>legacy</layout>
-		</repository>
-		
-	</repositories>
-	<dependencies>
-	
-		<dependency>
-		
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>compile</scope>
-			
-		</dependency>
-		
-	</dependencies>
-	<build>
-	
-		<plugins>
-		
-			<plugin>
-			
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-				<source>1.5</source>
-				<target>1.5</target>
-				</configuration>
-				
-			</plugin>
-			
-		</plugins>
-		
-	</build>
-	
-	<reporting>
-		<plugins>
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>taglist-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jxr-maven-plugin</artifactId>
-				<configuration>
-					<aggregate>true</aggregate>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<aggregate>true</aggregate>
-					<linksource>true</linksource>
-					<links>
-						<link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-						<link>http://java.sun.com/javaee/5/docs/api</link>
-						<link>http://jakarta.apache.org/commons/collections/api-release</link>
-					</links>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
-	<distributionManagement>
-		<repository>
-			<id>bea-internal</id>
-			<name>Internal BEA OpenJPA test site</name>
-			<url>file:///${user.home}/web/devel/openjpa/dist</url>
-		</repository>
-		<site>
-			<id>bea-internal</id>
-			<name>Internal BEA OpenJPA test sit</name>
-			<url>file:///${user.home}/web/devel/openjpa/site</url>
-		</site>
-	</distributionManagement>
+    <name>OpenJPA</name>
+    <description>OpenJPA</description>
+    <version>0.0.1</version>
+    <url>http://incubator.apache.org/projects/openjpa</url>
+    <issueManagement>
+        <system>jira</system>
+        <url>http://issues.apache.org/jira/browse/OPENJPA</url>
+    </issueManagement>
+    <inceptionYear>2006</inceptionYear>
+    <mailingLists>
+        <mailingList>
+            <name>OpenJPA Developer List</name>
+            <subscribe>open-jpa-dev-subscribe@incubator.apache.org</subscribe>
+            <unsubscribe>
+                open-jpa-dev-unsubscribe@incubator.apache.org</unsubscribe>
+            <post>open-jpa-dev@incubator.apache.org</post>
+            <archive>
+                http://mail-archives.apache.org/mod_mbox/incubator-open-jpa-dev/</archive>
+        </mailingList>
+        <mailingList>
+            <name>OpenJPA Commits List</name>
+            <subscribe>
+                open-jpa-commits-subscribe@incubator.apache.org</subscribe>
+            <unsubscribe>
+                open-jpa-commits-unsubscribe@incubator.apache.org</unsubscribe>
+            <post>open-jpa-commits@incubator.apache.org</post>
+            <archive>
+                http://mail-archives.apache.org/mod_mbox/incubator-open-jpa-commits/</archive>
+        </mailingList>
+    </mailingLists>
+    <developers>
+        <developer>
+            <name>Patrick Linskey</name>
+            <id>plinskey</id>
+            <organization>BEA Systems, Inc.</organization>
+            <email>plinskey@bea.com</email>
+        </developer>
+        <developer>
+            <name>Abe White</name>
+            <id>awhite</id>
+            <organization>BEA Systems, Inc.</organization>
+            <email>awhite@bea.com</email>
+        </developer>
+        <developer>
+            <name>Steve Kim</name>
+            <id>stkim</id>
+            <organization>BEA Systems, Inc.</organization>
+            <email>stkim@bea.com</email>
+        </developer>
+        <developer>
+            <name>Marc Prud'hommeaux</name>
+            <id>mprudhom</id>
+            <organization>BEA Systems, Inc.</organization>
+            <email>mprudhom@bea.com</email>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>Apache Software License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <organization>
+        <name>Apache Software Foundation</name>
+        <url>http://www.apache.org</url>
+    </organization>
+    <scm>
+        <connection>
+            scm:svn:http://svn.apache.org/repos/asf/incubator/openjpa/${pom.artifactId}</connection>
+        <developerConnection>
+            scm:svn:https://svn.apache.org/repos/asf/incubator/openjpa/${pom.artifactId}</developerConnection>
+        <url>
+            https://svn.apache.org/repos/asf/incubator/openjpa/${pom.artifactId}</url>
+    </scm>
+    <modules>
+
+        <module>openjpa-lib</module>
+        <module>serp</module>
+        <module>openjpa-kernel</module>
+        <module>openjpa-kernel-5</module>
+        <module>openjpa-persistence</module>
+        <module>openjpa-xmlstore</module>
+
+    </modules>
+    <repositories>
+
+        <repository>
+            <id>central</id>
+            <name>Maven Repository Switchboard</name>
+            <url>http://www.ibiblio.org/maven2</url>
+        </repository>
+
+
+        <repository>
+            <id>swami</id>
+            <name>Swami repository</name>
+            <url>http://m2.ngbw.org</url>
+        </repository>
+
+
+        <repository>
+            <id>java-net</id>
+            <name>dev.java.net repository</name>
+            <url>https://maven-repository.dev.java.net/nonav/repository</url>
+            <layout>legacy</layout>
+        </repository>
+
+    </repositories>
+    <dependencies>
+
+        <dependency>
+
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>compile</scope>
+
+        </dependency>
+
+    </dependencies>
+    <build>
+
+        <plugins>
+
+            <plugin>
+
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>taglist-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jxr-maven-plugin</artifactId>
+                <configuration>
+                    <aggregate>true</aggregate>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <aggregate>true</aggregate>
+                    <linksource>true</linksource>
+                    <links>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                        <link>http://java.sun.com/javaee/5/docs/api</link>
+                        <link>
+                            http://jakarta.apache.org/commons/collections/api-release</link>
+                    </links>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+    <distributionManagement>
+        <repository>
+            <id>bea-internal</id>
+            <name>Internal BEA OpenJPA test site</name>
+            <url>file:///${user.home}/web/devel/openjpa/dist</url>
+        </repository>
+        <site>
+            <id>bea-internal</id>
+            <name>Internal BEA OpenJPA test sit</name>
+            <url>file:///${user.home}/web/devel/openjpa/site</url>
+        </site>
+    </distributionManagement>
 
 </project>

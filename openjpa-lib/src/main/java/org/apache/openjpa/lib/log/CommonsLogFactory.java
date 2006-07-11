@@ -12,15 +12,14 @@
  */
 package org.apache.openjpa.lib.log;
 
-import java.util.*;
-
 /**
  * {@link LogFactory} implementation that delegates to the commons logging
  * framework.
- * 
+ *
  * @author Patrick Linskey
  */
 public class CommonsLogFactory extends LogFactoryAdapter {
+
     private org.apache.commons.logging.LogFactory _factory;
 
     public CommonsLogFactory() {
@@ -36,6 +35,7 @@ public class CommonsLogFactory extends LogFactoryAdapter {
      * interface.
      */
     public static class LogAdapter implements org.apache.openjpa.lib.log.Log {
+
         private org.apache.commons.logging.Log _log;
 
         private LogAdapter(org.apache.commons.logging.Log wrapee) {

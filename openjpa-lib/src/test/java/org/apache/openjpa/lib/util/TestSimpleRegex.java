@@ -12,15 +12,16 @@
  */
 package org.apache.openjpa.lib.util;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
+import junit.textui.TestRunner;
 
 /**
  * Tests simple regex for use in in-memory query execution.
- * 
+ *
  * @author Greg Campbell
  */
 public class TestSimpleRegex extends TestCase {
+
     private boolean matchExpr(String target, String expr, boolean caseInsens) {
         SimpleRegex re = new SimpleRegex(expr, caseInsens);
         return re.matches(target);

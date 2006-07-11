@@ -12,16 +12,20 @@
  */
 package serp.bytecode.lowlevel;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Efficient representation of the constant pool as a table. This class
  * can be used to parse out bits of information from bytecode without
  * instantiating a full {@link serp.bytecode.BCClass}.
- * 
+ *
  * @author Abe White
  */
 public class ConstantPoolTable {
+
     private byte[] _bytecode = null;
     private int[] _table = null;
     private int _idx = 0;
@@ -46,24 +50,24 @@ public class ConstantPoolTable {
             if (table != null)
                 table[i] = idx + 1; // skip entry type
             switch (b[idx]) {
-            case 1: // utf8
-                idx += 3 + readUnsignedShort(b, idx + 1);
-                break;
-            case 3: // integer
-            case 4: // float
-            case 9: // field
-            case 10: // method
-            case 11: // interface method
-            case 12: // name
-                idx += 5;
-                break;
-            case 5: // long
-            case 6: // double
-                idx += 9;
-                i++; // wide entry
-                break;
-            default:
-                idx += 3;
+                case 1: // utf8
+                    idx += 3 + readUnsignedShort(b, idx + 1);
+                    break;
+                case 3: // integer
+                case 4: // float
+                case 9: // field
+                case 10: // method
+                case 11: // interface method
+                case 12: // name
+                    idx += 5;
+                    break;
+                case 5: // long
+                case 6: // double
+                    idx += 9;
+                    i++; // wide entry
+                    break;
+                default:
+                    idx += 3;
             }
         }
         return idx;
@@ -80,14 +84,14 @@ public class ConstantPoolTable {
      * Read an unsigned short value at the given offset into the given bytecode.
      */
     public static int readUnsignedShort(byte[] b, int idx) {
-        return(readByte(b, idx) << 8) | readByte(b, idx + 1);
+        return (readByte(b, idx) << 8) | readByte(b, idx + 1);
     }
 
     /**
      * Read an int value at the given offset into the given bytecode.
      */
     public static int readInt(byte[] b, int idx) {
-        return(readByte(b, idx) << 24) | (readByte(b, idx + 1) << 16)
+        return (readByte(b, idx) << 24) | (readByte(b, idx + 1) << 16)
             | (readByte(b, idx + 2) << 8) | readByte(b, idx + 3);
     }
 
@@ -95,7 +99,7 @@ public class ConstantPoolTable {
      * Read a long value at the given offset into the given bytecode.
      */
     public static long readLong(byte[] b, int idx) {
-        return(readInt(b, idx) << 32) | readInt(b, idx + 4);
+        return (readInt(b, idx) << 32) | readInt(b, idx + 4);
     }
 
     /**
@@ -132,7 +136,7 @@ public class ConstantPoolTable {
     private static byte[] toByteArray(InputStream in) throws IOException {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         byte[] buf = new byte[1024];
-        for (int r; (r = in.read(buf)) != -1; bout.write(buf, 0, r));
+        for (int r; (r = in.read(buf)) != -1; bout.write(buf, 0, r)) ;
         return bout.toByteArray();
     }
 

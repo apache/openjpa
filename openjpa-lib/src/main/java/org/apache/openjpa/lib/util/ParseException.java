@@ -12,16 +12,17 @@
  */
 package org.apache.openjpa.lib.util;
 
-import org.apache.commons.lang.exception.*;
+import org.apache.commons.lang.exception.NestableRuntimeException;
 
 /**
  * Exception type for parse errors.
- * 
+ *
  * @author Abe White
- * @since 4.0
  * @nojavadoc
+ * @since 4.0
  */
 public class ParseException extends NestableRuntimeException {
+
     public ParseException() {
     }
 

@@ -12,17 +12,20 @@
  */
 package serp.bytecode.lowlevel;
 
-import java.io.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
 /**
  * Base class for field, method, and interface method constant pool
  * entries. All complex entries reference the {@link ClassEntry} of the
  * class that owns the entity and a {@link NameAndTypeEntry} describing
  * the entity.
- * 
+ *
  * @author Abe White
  */
 public abstract class ComplexEntry extends Entry {
+
     private int _classIndex = 0;
     private int _nameAndTypeIndex = 0;
 
@@ -34,11 +37,11 @@ public abstract class ComplexEntry extends Entry {
 
     /**
      * Constructor.
-     * 
-     * @param classIndex the constant pool index of the
-     * {@link ClassEntry} describing the owner of this entity
+     *
+     * @param classIndex       the constant pool index of the
+     *                         {@link ClassEntry} describing the owner of this entity
      * @param nameAndTypeIndex the constant pool index of the
-     * {@link NameAndTypeEntry} describing this entity
+     *                         {@link NameAndTypeEntry} describing this entity
      */
     public ComplexEntry(int classIndex, int nameAndTypeIndex) {
         _classIndex = classIndex;
@@ -68,7 +71,7 @@ public abstract class ComplexEntry extends Entry {
      * be run for entries that have been added to a constant pool.
      */
     public ClassEntry getClassEntry() {
-        return(ClassEntry) getPool().getEntry(_classIndex);
+        return (ClassEntry) getPool().getEntry(_classIndex);
     }
 
     /**
@@ -94,7 +97,7 @@ public abstract class ComplexEntry extends Entry {
      * be run for entries that have been added to a constant pool.
      */
     public NameAndTypeEntry getNameAndTypeEntry() {
-        return(NameAndTypeEntry) getPool().getEntry(_nameAndTypeIndex);
+        return (NameAndTypeEntry) getPool().getEntry(_nameAndTypeIndex);
     }
 
     void readData(DataInput in) throws IOException {

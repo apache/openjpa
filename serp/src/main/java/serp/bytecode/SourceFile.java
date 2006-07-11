@@ -12,16 +12,22 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.File;
+import java.io.IOException;
+
+import serp.bytecode.lowlevel.ConstantPool;
+import serp.bytecode.lowlevel.UTF8Entry;
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * Attribute naming the source file for this class.
- * 
+ *
  * @author Abe White
  */
 public class SourceFile extends Attribute {
+
     int _sourceFileIndex = 0;
 
     SourceFile(int nameIndex, Attributes owner) {
@@ -56,12 +62,12 @@ public class SourceFile extends Attribute {
     public String getFileName() {
         if (_sourceFileIndex == 0)
             return null;
-        return((UTF8Entry) getPool().getEntry(_sourceFileIndex)).getValue();
+        return ((UTF8Entry) getPool().getEntry(_sourceFileIndex)).getValue();
     }
 
     /**
      * Return the file object for the source file, or null if not set.
-     * 
+     *
      * @param dir the directory of the file, or null
      */
     public File getFile(File dir) {

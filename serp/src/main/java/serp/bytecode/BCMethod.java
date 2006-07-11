@@ -12,15 +12,17 @@
  */
 package serp.bytecode;
 
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import serp.bytecode.visitor.BCVisitor;
+import serp.bytecode.visitor.VisitAcceptor;
+import serp.util.Strings;
 
 /**
  * A method of a class.
- * 
+ *
  * @author Abe White
  */
 public class BCMethod extends BCMember implements VisitAcceptor {
+
     BCMethod(BCClass owner) {
         super(owner);
     }
@@ -33,7 +35,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
      * Manipulate the method access flags.
      */
     public boolean isSynchronized() {
-        return(getAccessFlags() & Constants.ACCESS_SYNCHRONIZED) > 0;
+        return (getAccessFlags() & Constants.ACCESS_SYNCHRONIZED) > 0;
     }
 
     /**
@@ -50,7 +52,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
      * Manipulate the method access flags.
      */
     public boolean isNative() {
-        return(getAccessFlags() & Constants.ACCESS_NATIVE) > 0;
+        return (getAccessFlags() & Constants.ACCESS_NATIVE) > 0;
     }
 
     /**
@@ -67,7 +69,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
      * Manipulate the method access flags.
      */
     public boolean isAbstract() {
-        return(getAccessFlags() & Constants.ACCESS_ABSTRACT) > 0;
+        return (getAccessFlags() & Constants.ACCESS_ABSTRACT) > 0;
     }
 
     /**
@@ -84,7 +86,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
      * Manipulate the method access flags.
      */
     public boolean isStrict() {
-        return(getAccessFlags() & Constants.ACCESS_STRICT) > 0;
+        return (getAccessFlags() & Constants.ACCESS_STRICT) > 0;
     }
 
     /**
@@ -104,7 +106,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
     /**
      * Return the name of the type returned by this method. The name
      * will be given in a form suitable for a {@link Class#forName} call.
-     * 
+     *
      * @see BCMember#getDescriptor
      */
     public String getReturnName() {
@@ -114,7 +116,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
 
     /**
      * Return the {@link Class} object for the return type of this method.
-     * 
+     *
      * @see BCMember#getDescriptor
      */
     public Class getReturnType() {
@@ -123,7 +125,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
 
     /**
      * Return the bytecode for the return type of this method.
-     * 
+     *
      * @see BCMember#getDescriptor
      */
     public BCClass getReturnBC() {
@@ -159,7 +161,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
     /**
      * Return the names of all the parameter types for this method. The names
      * will be returned in a form suitable for a {@link Class#forName} call.
-     * 
+     *
      * @see BCMember#getDescriptor
      */
     public String[] getParamNames() {
@@ -177,7 +179,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
     /**
      * Return the {@link Class} objects for all the parameter types for this
      * method.
-     * 
+     *
      * @see BCMember#getDescriptor
      */
     public Class[] getParamTypes() {
@@ -190,7 +192,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
 
     /**
      * Return the bytecode for all the parameter types for this method.
-     * 
+     *
      * @see BCMember#getDescriptor
      */
     public BCClass[] getParamBCs() {
@@ -203,7 +205,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
 
     /**
      * Set the parameter types of this method.
-     * 
+     *
      * @see BCMember#setDescriptor
      */
     public void setParams(String[] names) {
@@ -215,7 +217,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
 
     /**
      * Set the parameter type of this method.
-     * 
+     *
      * @see BCMember#setDescriptor
      */
     public void setParams(Class[] types) {
@@ -231,7 +233,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
 
     /**
      * Set the parameter type of this method.
-     * 
+     *
      * @see BCMember#setDescriptor
      */
     public void setParams(BCClass[] types) {
@@ -274,7 +276,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
 
     /**
      * Add a parameter type to this method.
-     * 
+     *
      * @see java.util.List#add(int,Object)
      */
     public void addParam(int pos, String type) {
@@ -294,7 +296,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
 
     /**
      * Add a parameter type to this method.
-     * 
+     *
      * @see java.util.List#add(int,Object)
      */
     public void addParam(int pos, Class type) {
@@ -303,7 +305,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
 
     /**
      * Add a parameter type to this method.
-     * 
+     *
      * @see java.util.List#add(int,Object)
      */
     public void addParam(int pos, BCClass type) {
@@ -312,7 +314,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
 
     /**
      * Change a parameter type of this method.
-     * 
+     *
      * @see java.util.List#set(int,Object)
      */
     public void setParam(int pos, String type) {
@@ -332,7 +334,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
 
     /**
      * Change a parameter type of this method.
-     * 
+     *
      * @see java.util.List#set(int,Object)
      */
     public void setParam(int pos, Class type) {
@@ -341,7 +343,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
 
     /**
      * Change a parameter type of this method.
-     * 
+     *
      * @see java.util.List#set(int,Object)
      */
     public void setParam(int pos, BCClass type) {
@@ -377,11 +379,11 @@ public class BCMethod extends BCMember implements VisitAcceptor {
     /**
      * Return the checked exceptions information for the method.
      * Acts internally through the {@link Attributes} interface.
-     * 
+     *
      * @param add if true, a new exceptions attribute will be added
-     * if not already present
+     *            if not already present
      * @return the exceptions information, or null if none and the
-     * <code>add</code> param is set to false
+     *         <code>add</code> param is set to false
      */
     public Exceptions getExceptions(boolean add) {
         Exceptions exceptions = (Exceptions) getAttribute
@@ -397,7 +399,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
     /**
      * Remove the exceptions attribute for the method.
      * Acts internally through the {@link Attributes} interface.
-     * 
+     *
      * @return true if there was a value to remove
      */
     public boolean removeExceptions() {
@@ -408,11 +410,11 @@ public class BCMethod extends BCMember implements VisitAcceptor {
      * Return the code for the method. If the code already exists, its
      * iterator will be reset to the first instruction.
      * Acts internally through the {@link Attributes} interface.
-     * 
+     *
      * @param add if true, a new code attribute will be added
-     * if not already present
+     *            if not already present
      * @return the code for the metohd, or null if none and the
-     * <code>add</code> param is set to false
+     *         <code>add</code> param is set to false
      */
     public Code getCode(boolean add) {
         Code code = (Code) getAttribute(Constants.ATTR_CODE);
@@ -423,13 +425,13 @@ public class BCMethod extends BCMember implements VisitAcceptor {
         if (!add)
             return null;
 
-        return(Code) addAttribute(Constants.ATTR_CODE);
+        return (Code) addAttribute(Constants.ATTR_CODE);
     }
 
     /**
      * Remove the code attribute from the method.
      * Acts internally through the {@link Attributes} interface.
-     * 
+     *
      * @return true if there was a value to remove
      */
     public boolean removeCode() {

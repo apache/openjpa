@@ -12,20 +12,30 @@
  */
 package org.apache.openjpa.lib.xml;
 
-import java.io.*;
-import javax.xml.parsers.*;
-import junit.framework.*;
-import junit.textui.*;
-import org.xml.sax.*;
-import org.xml.sax.helpers.*;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+import javax.xml.parsers.SAXParser;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Tests the {@link DocTypeReader} by comparing the results of passing
  * various xml streams to the expected result with included doc type info.
- * 
+ *
  * @author Abe White
  */
 public class TestDocTypeReader extends TestCase {
+
     private String _docType = null;
     private String _validXML = null;
     private String _invalidXML = null;
@@ -189,6 +199,7 @@ public class TestDocTypeReader extends TestCase {
     }
 
     private static class Handler extends DefaultHandler {
+
         public void error(SAXParseException spe) throws SAXException {
             throw spe;
         }

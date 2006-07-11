@@ -12,19 +12,22 @@
  */
 package serp.bytecode.lowlevel;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.visitor.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.visitor.VisitAcceptor;
 
 /**
  * Base type for all constant pool entries. Entries should generally be
  * considered immutable; modifying an entry directly can have dire
  * consequences, and often renders the resulting class file invalid.
- *  Entries cannot be shared among constant pools.
- * 
+ * Entries cannot be shared among constant pools.
+ *
  * @author Abe White
  */
 public abstract class Entry implements VisitAcceptor {
+
     public static final int UTF8 = 1;
     public static final int INT = 3;
     public static final int FLOAT = 4;
@@ -62,30 +65,30 @@ public abstract class Entry implements VisitAcceptor {
      */
     public static Entry create(int type) {
         switch (type) {
-        case CLASS:
-            return new ClassEntry();
-        case FIELD:
-            return new FieldEntry();
-        case METHOD:
-            return new MethodEntry();
-        case INTERFACEMETHOD:
-            return new InterfaceMethodEntry();
-        case STRING:
-            return new StringEntry();
-        case INT:
-            return new IntEntry();
-        case FLOAT:
-            return new FloatEntry();
-        case LONG:
-            return new LongEntry();
-        case DOUBLE:
-            return new DoubleEntry();
-        case NAMEANDTYPE:
-            return new NameAndTypeEntry();
-        case UTF8:
-            return new UTF8Entry();
-        default:
-            throw new IllegalArgumentException("type = " + type);
+            case CLASS:
+                return new ClassEntry();
+            case FIELD:
+                return new FieldEntry();
+            case METHOD:
+                return new MethodEntry();
+            case INTERFACEMETHOD:
+                return new InterfaceMethodEntry();
+            case STRING:
+                return new StringEntry();
+            case INT:
+                return new IntEntry();
+            case FLOAT:
+                return new FloatEntry();
+            case LONG:
+                return new LongEntry();
+            case DOUBLE:
+                return new DoubleEntry();
+            case NAMEANDTYPE:
+                return new NameAndTypeEntry();
+            case UTF8:
+                return new UTF8Entry();
+            default:
+                throw new IllegalArgumentException("type = " + type);
         }
     }
 

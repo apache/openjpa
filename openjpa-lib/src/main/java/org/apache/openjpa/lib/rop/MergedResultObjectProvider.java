@@ -12,18 +12,20 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-import org.apache.commons.lang.exception.*;
+import java.util.Comparator;
+
+import org.apache.commons.lang.exception.NestableRuntimeException;
 
 /**
  * A result object provider that merges multiple result object provider
  * delegates. Support exists for maintaining ordering of the internally held
  * results, provided that each of the individual results is itself ordered.
- * 
+ *
  * @author Abe White
  * @author Marc Prud'hommeaux
  */
 public class MergedResultObjectProvider implements ResultObjectProvider {
+
     private static final byte UNOPENED = 0;
     private static final byte OPENED = 1;
     private static final byte VALUE = 2;
@@ -145,32 +147,32 @@ public class MergedResultObjectProvider implements ResultObjectProvider {
         boolean hasValue = false;
         for (int i = 0; i < _status.length; i++) {
             switch (_status[i]) {
-            case UNOPENED:
-                // this will only ever be the case if we aren't ordering
-                _rops[i].open();
-                _status[i] = OPENED;
-                // no break
-            case OPENED:
-                // if this rop has a value, cache it; if we're not ordering,
-                // then that's the value to return
-                if (_rops[i].next()) {
-                    if (_comp == null) {
-                        _cur = _rops[i].getResultObject();
-                        return true;
-                    } else {
-                        hasValue = true;
-                        _status[i] = VALUE;
-                        _values[i] = _rops[i].getResultObject();
-                        _orderValues[i] = getOrderingValue(_values[i],
-                            i, _rops[i]);
-                    }
-                } else
-                    _status[i] = DONE;
-                break;
-            case VALUE:
-                // we only use this state when ordering
-                hasValue = true;
-                break;
+                case UNOPENED:
+                    // this will only ever be the case if we aren't ordering
+                    _rops[i].open();
+                    _status[i] = OPENED;
+                    // no break
+                case OPENED:
+                    // if this rop has a value, cache it; if we're not ordering,
+                    // then that's the value to return
+                    if (_rops[i].next()) {
+                        if (_comp == null) {
+                            _cur = _rops[i].getResultObject();
+                            return true;
+                        } else {
+                            hasValue = true;
+                            _status[i] = VALUE;
+                            _values[i] = _rops[i].getResultObject();
+                            _orderValues[i] = getOrderingValue(_values[i],
+                                i, _rops[i]);
+                        }
+                    } else
+                        _status[i] = DONE;
+                    break;
+                case VALUE:
+                    // we only use this state when ordering
+                    hasValue = true;
+                    break;
             }
         }
 
@@ -209,10 +211,10 @@ public class MergedResultObjectProvider implements ResultObjectProvider {
     /**
      * Return the value to use for ordering on the given result value. Returns
      * the result value by default.
-     * 
+     *
      * @param val the result value
      * @param idx the index of the result object provider in the array
-     * given on construction that produced the result value
+     *            given on construction that produced the result value
      * @param rop the result object provider that produced the result value
      */
     protected Object getOrderingValue(Object val, int idx,

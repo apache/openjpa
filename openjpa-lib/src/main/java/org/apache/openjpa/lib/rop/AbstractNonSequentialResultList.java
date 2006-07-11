@@ -12,18 +12,26 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-import org.apache.commons.lang.*;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+
+import org.apache.commons.lang.ObjectUtils;
 
 /**
  * Abstract base class for random-access result lists. Unlike the
  * {@link AbstractList}, this class doesn't rely on the
  * {@link Collection#size} method.
- * 
+ *
  * @author Abe White
  * @nojavadoc
  */
-public abstract class AbstractNonSequentialResultList extends AbstractResultList {
+public abstract class AbstractNonSequentialResultList
+    extends AbstractResultList {
+
     protected static final Object PAST_END = new Object();
 
     /**
@@ -132,6 +140,7 @@ public abstract class AbstractNonSequentialResultList extends AbstractResultList
     }
 
     private class Itr extends AbstractListIterator {
+
         private int _idx = 0;
         private Object _next = PAST_END;
 

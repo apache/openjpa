@@ -12,16 +12,18 @@
  */
 package org.apache.openjpa.lib.rop;
 
-import java.util.*;
-import org.apache.commons.lang.exception.*;
-import org.apache.openjpa.lib.util.*;
+import java.util.List;
+
+import org.apache.commons.lang.exception.NestableRuntimeException;
+import org.apache.openjpa.lib.util.Closeable;
 
 /**
  * A result object provider wrapped around a normal list.
- * 
+ *
  * @author Abe White
  */
 public class ListResultObjectProvider implements ResultObjectProvider {
+
     private final List _list;
     private int _idx = -1;
 
@@ -69,7 +71,10 @@ public class ListResultObjectProvider implements ResultObjectProvider {
 
     public void close() throws Exception {
         if (_list instanceof Closeable)
-            try { ((Closeable) _list).close(); } catch (Exception e) {}
+            try {
+                ((Closeable) _list).close();
+            } catch (Exception e) {
+            }
     }
 
     public void handleCheckedException(Exception e) {

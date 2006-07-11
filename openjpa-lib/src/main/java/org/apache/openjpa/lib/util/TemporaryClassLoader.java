@@ -12,20 +12,23 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.io.*;
-import java.util.*;
-import serp.bytecode.lowlevel.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import serp.bytecode.lowlevel.ConstantPoolTable;
 
 /**
  * ClassLoader implementation that allows classes to be temporarily
  * loaded and then thrown away. Useful for the enhancer to be able
  * to run against a class without first loading(and thus polluting)
  * the parent ClassLoader.
- * 
+ *
  * @author Marc Prud'hommeaux
  * @nojavadoc
  */
 public class TemporaryClassLoader extends ClassLoader {
+
     public TemporaryClassLoader(ClassLoader parent) {
         super(parent);
     }
@@ -57,7 +60,8 @@ public class TemporaryClassLoader extends ClassLoader {
         byte[] b = new byte[1024];
         try {
             for (int n = 0; (n = resource.read(b, 0, b.length)) != -1;
-                bout.write(b, 0, n));
+                bout.write(b, 0, n))
+                ;
             byte[] classBytes = bout.toByteArray();
             if (isAnnotation(classBytes))
                 return Class.forName(name, resolve, getClass().
@@ -84,6 +88,6 @@ public class TemporaryClassLoader extends ClassLoader {
             return false;
         int idx = ConstantPoolTable.getEndIndex(b);
         int access = ConstantPoolTable.readUnsignedShort(b, idx);
-        return(access & 0x2000) != 0; // access constant for annotation type
+        return (access & 0x2000) != 0; // access constant for annotation type
     }
 }

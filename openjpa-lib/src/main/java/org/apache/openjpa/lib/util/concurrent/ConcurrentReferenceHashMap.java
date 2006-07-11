@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
+
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.SizedMap;
 
@@ -32,19 +33,21 @@ import org.apache.openjpa.lib.util.SizedMap;
  * Iterators returned by this class are not "fail-fast", but instead try to
  * continue to iterate over the data structure after changes have been
  * made. Finally purging of the reference queue is only done inside mutators.
- *  Null keys are not supported if keys use references. Null values are not
+ * Null keys are not supported if keys use references. Null values are not
  * supported if values use references.
- *  This class is based heavily on the WeakHashMap class in the Java
+ * This class is based heavily on the WeakHashMap class in the Java
  * collections package.
  */
 public class ConcurrentReferenceHashMap extends AbstractMap
     implements ConcurrentMap, ReferenceMap, SizedMap, Cloneable {
+
     /**
      * Cache of random numbers used in "random" methods, since generating them
      * is expensive. We hope each map changes enough between cycling through
      * this list that the overall effect is random enough.
      */
     static final double[] RANDOMS = new double[1000];
+
     static {
         Random random = new Random();
         for (int i = 0; i < RANDOMS.length; i++)
@@ -103,19 +106,19 @@ public class ConcurrentReferenceHashMap extends AbstractMap
     /**
      * Constructs a new, empty HashMap with the specified initial
      * capacity and the specified load factor.
-     * 
-     * @param keyType the reference type of map keys
-     * @param valueType the reference type of map values
+     *
+     * @param keyType         the reference type of map keys
+     * @param valueType       the reference type of map values
      * @param initialCapacity the initial capacity of the HashMap.
-     * @param loadFactor a number between 0.0 and 1.0.
-     * @exception IllegalArgumentException if neither keys nor values use hard
-     * references, if the initial capacity is less than or equal to zero, or if
-     * the load factor is less than or equal to zero
+     * @param loadFactor      a number between 0.0 and 1.0.
+     * @throws IllegalArgumentException if neither keys nor values use hard
+     *                                  references, if the initial capacity is less than or equal to zero, or if
+     *                                  the load factor is less than or equal to zero
      */
     public ConcurrentReferenceHashMap(int keyType, int valueType,
         int initialCapacity, float loadFactor) {
         if (initialCapacity < 0) {
-            throw new IllegalArgumentException("Illegal Initial Capacity: "+
+            throw new IllegalArgumentException("Illegal Initial Capacity: " +
                 initialCapacity);
         }
         if ((loadFactor > 1) || (loadFactor <= 0)) {
@@ -130,15 +133,15 @@ public class ConcurrentReferenceHashMap extends AbstractMap
         this.valueType = valueType;
         this.loadFactor = loadFactor;
         table = new Entry[initialCapacity];
-        threshold = (int)(initialCapacity * loadFactor);
+        threshold = (int) (initialCapacity * loadFactor);
     }
 
     /**
      * Constructs a new, empty HashMap with the specified initial capacity
      * and default load factor.
-     * 
-     * @param keyType the reference type of map keys
-     * @param valueType the reference type of map values
+     *
+     * @param keyType         the reference type of map keys
+     * @param valueType       the reference type of map values
      * @param initialCapacity the initial capacity of the HashMap.
      */
     public ConcurrentReferenceHashMap(int keyType, int valueType,
@@ -148,8 +151,8 @@ public class ConcurrentReferenceHashMap extends AbstractMap
 
     /**
      * Constructs a new, empty HashMap with a default capacity and load factor.
-     * 
-     * @param keyType the reference type of map keys
+     *
+     * @param keyType   the reference type of map keys
      * @param valueType the reference type of map values
      */
     public ConcurrentReferenceHashMap(int keyType, int valueType) {
@@ -161,12 +164,12 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * Map. The HashMap is created with a capacity of thrice the number
      * of entries in the given Map or 11 (whichever is greater), and a
      * default load factor.
-     * 
-     * @param keyType the reference type of map keys
+     *
+     * @param keyType   the reference type of map keys
      * @param valueType the reference type of map values
      */
     public ConcurrentReferenceHashMap(int keyType, int valueType, Map t) {
-        this(keyType, valueType, Math.max(3*t.size(), 11), 0.75f);
+        this(keyType, valueType, Math.max(3 * t.size(), 11), 0.75f);
         putAll(t);
     }
 
@@ -210,22 +213,22 @@ public class ConcurrentReferenceHashMap extends AbstractMap
     /**
      * Returns true if this HashMap maps one or more keys to the specified
      * value.
-     * 
+     *
      * @param value value whose presence in this Map is to be tested.
      */
     public boolean containsValue(Object value) {
         Entry[] tab = table;
 
-        if (value==null) {
+        if (value == null) {
             if (valueType != HARD)
                 return false;
-            for (int i = tab.length ; i-- > 0 ;)
-                for (Entry e = tab[i] ; e != null ; e = e.getNext())
-                    if (e.getValue()==null)
+            for (int i = tab.length; i-- > 0;)
+                for (Entry e = tab[i]; e != null; e = e.getNext())
+                    if (e.getValue() == null)
                         return true;
         } else {
-            for (int i = tab.length ; i-- > 0 ;)
-                for (Entry e = tab[i] ; e != null ; e = e.getNext())
+            for (int i = tab.length; i-- > 0;)
+                for (Entry e = tab[i]; e != null; e = e.getNext())
                     if (eq(value, e.getValue()))
                         return true;
         }
@@ -234,7 +237,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
 
     /**
      * Returns true if this HashMap contains a mapping for the specified key.
-     * 
+     *
      * @param key key whose presence in this Map is to be tested.
      */
     public boolean containsKey(Object key) {
@@ -245,7 +248,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
         int hash = (key == null) ? 0 : key.hashCode();
         int index = (hash & 0x7FFFFFFF) % tab.length;
         for (Entry e = tab[index]; e != null; e = e.getNext())
-            if (e.getHash()==hash && eq(key, e.getKey()))
+            if (e.getHash() == hash && eq(key, e.getKey()))
                 return true;
         return false;
     }
@@ -253,7 +256,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
     /**
      * Returns the value to which this HashMap maps the specified key.
      * Returns null if the HashMap contains no mapping for this key.
-     * 
+     *
      * @param key key whose associated value is to be returned.
      */
     public Object get(Object key) {
@@ -283,8 +286,8 @@ public class ConcurrentReferenceHashMap extends AbstractMap
         int newCapacity = oldCapacity * 2 + 1;
         Entry newMap[] = new Entry[newCapacity];
 
-        for (int i = oldCapacity ; i-- > 0 ;) {
-            for (Entry old = oldMap[i] ; old != null ; ) {
+        for (int i = oldCapacity; i-- > 0;) {
+            for (Entry old = oldMap[i]; old != null;) {
                 if ((keyType != HARD && old.getKey() == null)
                     || valueType != HARD && old.getValue() == null) {
                     Entry e = old;
@@ -292,7 +295,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
                     e.setNext(null);
                     count--;
                 } else {
-                    Entry e = (Entry)old.clone(queue);
+                    Entry e = (Entry) old.clone(queue);
                     old = old.getNext();
 
                     int index = (e.getHash() & 0x7FFFFFFF) % newCapacity;
@@ -302,7 +305,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
             }
         }
 
-        threshold = (int)(newCapacity * loadFactor);
+        threshold = (int) (newCapacity * loadFactor);
         table = newMap;
     }
 
@@ -310,12 +313,12 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * Associates the specified value with the specified key in this HashMap.
      * If the HashMap previously contained a mapping for this key, the old
      * value is replaced.
-     * 
-     * @param key key with which the specified value is to be associated.
+     *
+     * @param key   key with which the specified value is to be associated.
      * @param value value to be associated with the specified key.
      * @return previous value associated with specified key, or null if there
-     * was no mapping for key. A null return can also indicate that
-     * the HashMap previously associated null with the specified key.
+     *         was no mapping for key. A null return can also indicate that
+     *         the HashMap previously associated null with the specified key.
      */
     public Object put(Object key, Object value) {
         if ((key == null && keyType != HARD)
@@ -368,15 +371,15 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      */
     private Entry newEntry(int hash, Object key, Object value, Entry next) {
         int refType = (keyType != HARD) ? keyType : valueType;
-        switch(refType) {
-        case WEAK:
-            return new WeakEntry(hash, key, value, refType == keyType, next,
-                queue);
-        case SOFT:
-            return new SoftEntry(hash, key, value, refType == keyType, next,
-                queue);
-        default:
-            return new HardEntry(hash, key, value, next);
+        switch (refType) {
+            case WEAK:
+                return new WeakEntry(hash, key, value, refType == keyType, next,
+                    queue);
+            case SOFT:
+                return new SoftEntry(hash, key, value, refType == keyType, next,
+                    queue);
+            default:
+                return new HardEntry(hash, key, value, next);
         }
     }
 
@@ -394,11 +397,11 @@ public class ConcurrentReferenceHashMap extends AbstractMap
 
     /**
      * Removes the mapping for this key from this HashMap if present.
-     * 
+     *
      * @param key key whose mapping is to be removed from the Map.
      * @return previous value associated with specified key, or null if there
-     * was no mapping for key. A null return can also indicate that
-     * the HashMap previously associated null with the specified key.
+     *         was no mapping for key. A null return can also indicate that
+     *         the HashMap previously associated null with the specified key.
      */
     public Object remove(Object key) {
         if (key == null && keyType != HARD)
@@ -416,7 +419,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
                 if ((e.getHash() == hash) && eq(key, e.getKey())) {
                     if (prev != null)
                         prev.setNext(e.getNext());
-                    // otherwise put the bucket after us
+                        // otherwise put the bucket after us
                     else
                         tab[index] = e.getNext();
 
@@ -444,9 +447,9 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * Return an arbitrary entry index.
      */
     private int randomEntryIndex() {
-        if(randomEntry == RANDOMS.length)
+        if (randomEntry == RANDOMS.length)
             randomEntry = 0;
-        return(int) (RANDOMS[randomEntry++] * table.length);
+        return (int) (RANDOMS[randomEntry++] * table.length);
     }
 
     public Map.Entry removeRandom() {
@@ -475,13 +478,13 @@ public class ConcurrentReferenceHashMap extends AbstractMap
             for (int i = start; i < table.length; i++)
                 if (table[i] != null)
                     return i;
-            return(searchedOther || start == 0) ? -1
+            return (searchedOther || start == 0) ? -1
                 : findEntry(start - 1, false, true);
         } else {
             for (int i = start; i >= 0; i--)
                 if (table[i] != null)
                     return i;
-            return(searchedOther || start == table.length - 1) ? -1
+            return (searchedOther || start == table.length - 1) ? -1
                 : findEntry(start + 1, true, true);
         }
     }
@@ -496,7 +499,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * Copies all of the mappings from the specified Map to this HashMap
      * These mappings will replace any mappings that this HashMap had for any
      * of the keys currently in the specified Map.
-     * 
+     *
      * @param t Mappings to be stored in this Map.
      */
     public void putAll(Map t) {
@@ -535,13 +538,13 @@ public class ConcurrentReferenceHashMap extends AbstractMap
             ConcurrentReferenceHashMap t = (ConcurrentReferenceHashMap)
                 super.clone();
             t.table = new Entry[table.length];
-            for (int i = table.length ; i-- > 0 ; ) {
+            for (int i = table.length; i-- > 0;) {
                 Entry e = table[i];
                 if (e != null) {
-                    t.table[i] = (Entry)e.clone(t.queue);
+                    t.table[i] = (Entry) e.clone(t.queue);
                     e = e.getNext();
                     for (Entry k = t.table[i]; e != null; e = e.getNext()) {
-                        k.setNext((Entry)e.clone(t.queue));
+                        k.setNext((Entry) e.clone(t.queue));
                         k = k.getNext();
                     }
                 }
@@ -607,7 +610,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * operations.
      */
     public Collection values() {
-        if (values==null) {
+        if (values == null) {
             values = new java.util.AbstractCollection() {
                 public Iterator iterator() {
                     return new HashIterator(VALUES, table.length - 1);
@@ -637,11 +640,11 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * which removes the corresponding mapping from the HashMap, via the
      * Iterator.remove, Collection.remove, removeAll, retainAll and clear
      * operations. It does not support the add or addAll operations.
-     * 
+     *
      * @see Map.Entry
      */
     public Set entrySet() {
-        if (entrySet==null) {
+        if (entrySet == null) {
             entrySet = new java.util.AbstractSet() {
                 public Iterator iterator() {
                     return new HashIterator(ENTRIES, table.length - 1);
@@ -650,14 +653,14 @@ public class ConcurrentReferenceHashMap extends AbstractMap
                 public boolean contains(Object o) {
                     if (!(o instanceof Map.Entry))
                         return false;
-                    Map.Entry entry = (Map.Entry)o;
+                    Map.Entry entry = (Map.Entry) o;
                     Object key = entry.getKey();
                     Entry[] tab = table;
-                    int hash = (key==null ? 0 : key.hashCode());
+                    int hash = (key == null ? 0 : key.hashCode());
                     int index = (hash & 0x7FFFFFFF) % tab.length;
 
                     for (Entry e = tab[index]; e != null; e = e.getNext())
-                        if (e.getHash()==hash && eq(e, entry))
+                        if (e.getHash() == hash && eq(e, entry))
                             return true;
                     return false;
                 }
@@ -665,24 +668,24 @@ public class ConcurrentReferenceHashMap extends AbstractMap
                 public boolean remove(Object o) {
                     if (!(o instanceof Map.Entry))
                         return false;
-                    Map.Entry entry = (Map.Entry)o;
+                    Map.Entry entry = (Map.Entry) o;
                     Object key = entry.getKey();
                     synchronized (ConcurrentReferenceHashMap.this) {
                         Entry[] tab = table;
-                        int hash = (key==null ? 0 : key.hashCode());
+                        int hash = (key == null ? 0 : key.hashCode());
                         int index = (hash & 0x7FFFFFFF) % tab.length;
 
                         for (Entry e = tab[index], prev = null; e != null;
-                             prev = e, e = e.getNext()) {
-                             if (e.getHash()==hash && eq(e, entry)) {
-                                 if (prev != null)
+                            prev = e, e = e.getNext()) {
+                            if (e.getHash() == hash && eq(e, entry)) {
+                                if (prev != null)
                                     prev.setNext(e.getNext());
-                                 else
+                                else
                                     tab[index] = e.getNext();
 
-                                 count--;
-                                 return true;
-                             }
+                                count--;
+                                return true;
+                            }
                         }
                         return false;
                     }
@@ -707,7 +710,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
     private void expungeStaleEntries() {
         Object r;
         while ((r = queue.poll()) != null) {
-            Entry entry = (Entry)r;
+            Entry entry = (Entry) r;
             int hash = entry.getHash();
             Entry[] tab = table;
             int index = (hash & 0x7FFFFFFF) % tab.length;
@@ -717,7 +720,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
                 if (e == entry) {
                     if (prev != null)
                         prev.setNext(e.getNext());
-                    // otherwise put the bucket after us
+                        // otherwise put the bucket after us
                     else
                         tab[index] = e.getNext();
 
@@ -735,6 +738,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * HashMap collision list entry.
      */
     private static interface Entry extends Map.Entry {
+
         public int getHash();
 
         public Entry getNext();
@@ -748,6 +752,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * Hard entry.
      */
     private static class HardEntry implements Entry {
+
         private int hash;
         private Object key;
         private Object value;
@@ -796,18 +801,18 @@ public class ConcurrentReferenceHashMap extends AbstractMap
 
         public boolean equals(Object o) {
             if (!(o instanceof Map.Entry)) return false;
-            Map.Entry e = (Map.Entry)o;
+            Map.Entry e = (Map.Entry) o;
 
             Object k1 = key;
             Object k2 = e.getKey();
 
-            return(k1 == null ? k2 == null : eq(k1, k2)) &&
+            return (k1 == null ? k2 == null : eq(k1, k2)) &&
                 (value == null ? e.getValue() == null
-                : eq(value, e.getValue()));
+                    : eq(value, e.getValue()));
         }
 
         public int hashCode() {
-            return hash ^ (value==null ? 0 : value.hashCode());
+            return hash ^ (value == null ? 0 : value.hashCode());
         }
 
         public String toString() {
@@ -819,6 +824,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * Weak entry.
      */
     private static class WeakEntry extends WeakReference implements Entry {
+
         private int hash;
         private Object hard;
         private boolean keyRef;
@@ -855,11 +861,11 @@ public class ConcurrentReferenceHashMap extends AbstractMap
         // Map.Entry Ops
 
         public Object getKey() {
-            return(keyRef) ? super.get() : hard;
+            return (keyRef) ? super.get() : hard;
         }
 
         public Object getValue() {
-            return(keyRef) ? hard : super.get();
+            return (keyRef) ? hard : super.get();
         }
 
         public Object setValue(Object value) {
@@ -873,13 +879,13 @@ public class ConcurrentReferenceHashMap extends AbstractMap
 
         public boolean equals(Object o) {
             if (!(o instanceof Map.Entry)) return false;
-            Map.Entry e = (Map.Entry)o;
+            Map.Entry e = (Map.Entry) o;
             return eq(getKey(), e.getKey()) && eq(getValue(), e.getValue());
         }
 
         public int hashCode() {
             Object val = getValue();
-            return hash ^ (val==null ? 0 : val.hashCode());
+            return hash ^ (val == null ? 0 : val.hashCode());
         }
 
         public String toString() {
@@ -891,6 +897,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * Soft entry.
      */
     private static class SoftEntry extends SoftReference implements Entry {
+
         private int hash;
         private Object hard;
         private boolean keyRef;
@@ -927,11 +934,11 @@ public class ConcurrentReferenceHashMap extends AbstractMap
         // Map.Entry Ops
 
         public Object getKey() {
-            return(keyRef) ? super.get() : hard;
+            return (keyRef) ? super.get() : hard;
         }
 
         public Object getValue() {
-            return(keyRef) ? hard : super.get();
+            return (keyRef) ? hard : super.get();
         }
 
         public Object setValue(Object value) {
@@ -945,13 +952,13 @@ public class ConcurrentReferenceHashMap extends AbstractMap
 
         public boolean equals(Object o) {
             if (!(o instanceof Map.Entry)) return false;
-            Map.Entry e = (Map.Entry)o;
+            Map.Entry e = (Map.Entry) o;
             return eq(getKey(), e.getKey()) && eq(getValue(), e.getValue());
         }
 
         public int hashCode() {
             Object val = getValue();
-            return hash ^ (val==null ? 0 : val.hashCode());
+            return hash ^ (val == null ? 0 : val.hashCode());
         }
 
         public String toString() {
@@ -968,6 +975,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * Map iterator.
      */
     private class HashIterator implements Iterator {
+
         final Entry[] table = ConcurrentReferenceHashMap.this.table;
         final int type;
         int startIndex;
@@ -1020,7 +1028,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
                 int index = (lastReturned.getHash() & 0x7FFFFFFF) % tab.length;
 
                 for (Entry e = tab[index], prev = null; e != null;
-                         prev = e, e = e.getNext()) {
+                    prev = e, e = e.getNext()) {
                     if (e == lastReturned) {
                         if (prev == null)
                             tab[index] = e.getNext();

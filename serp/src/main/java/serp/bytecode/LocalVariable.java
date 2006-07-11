@@ -12,16 +12,17 @@
  */
 package serp.bytecode;
 
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import serp.bytecode.visitor.BCVisitor;
+import serp.util.Strings;
 
 /**
  * A local variable contains the name, description, index and scope
  * of a local used in opcodes.
- * 
+ *
  * @author Abe White
  */
 public class LocalVariable extends Local {
+
     LocalVariable(LocalVariableTable owner) {
         super(owner);
     }
@@ -30,7 +31,7 @@ public class LocalVariable extends Local {
      * The owning table.
      */
     public LocalVariableTable getLocalVariableTable() {
-        return(LocalVariableTable) getTable();
+        return (LocalVariableTable) getTable();
     }
 
     /**

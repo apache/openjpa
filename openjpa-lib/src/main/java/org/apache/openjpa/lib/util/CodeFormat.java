@@ -15,10 +15,11 @@ package org.apache.openjpa.lib.util;
 /**
  * Encapsulates some common Java source code formatting options. The
  * class can also be used as a buffer for formatted Java code.
- * 
+ *
  * @author Abe White
  */
 public final class CodeFormat implements Cloneable {
+
     private static final String _sep = System.getProperty("line.separator");
 
     private String _tab = "\t";
@@ -36,7 +37,7 @@ public final class CodeFormat implements Cloneable {
      * characters. Defaults to 0.
      */
     public int getTabSpaces() {
-        return(_tab.equals("\t")) ? 0 : _tab.length();
+        return (_tab.equals("\t")) ? 0 : _tab.length();
     }
 
     /**
@@ -218,7 +219,7 @@ public final class CodeFormat implements Cloneable {
     /**
      * Open brace string. Users can choose to place braces on the same
      * line, or on a new line, and can choose the indenting level.
-     * 
+     *
      * @param tabLevel the tab level of code within the brace
      */
     public String getOpenBrace(int tabLevel) {
@@ -232,7 +233,7 @@ public final class CodeFormat implements Cloneable {
     /**
      * Close brace string. Users can choose to place braces on the same
      * line, or on a new line, and can choose the indenting level.
-     * 
+     *
      * @param tabLevel the tab level of code within the brace
      */
     public String getCloseBrace(int tabLevel) {
@@ -286,7 +287,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Tab string. Users can choose to use spaces or tab characters.
-     * 
+     *
      * @param tabLevel the number of tabs
      */
     public String getTab(int tabLevel) {
@@ -306,7 +307,7 @@ public final class CodeFormat implements Cloneable {
      * leading underscore.
      */
     public String getFieldName(String fieldName) {
-        return(_scoreBeforeFieldName) ? "_" + fieldName : fieldName;
+        return (_scoreBeforeFieldName) ? "_" + fieldName : fieldName;
     }
 
     /**
@@ -390,7 +391,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Append the given value to the internal buffer.
-     * 
+     *
      * @see #getEndl()
      */
     public CodeFormat endl() {
@@ -400,7 +401,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Append the given value to the internal buffer.
-     * 
+     *
      * @see #getEndl(int)
      */
     public CodeFormat endl(int num) {
@@ -410,7 +411,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Append the given value to the internal buffer.
-     * 
+     *
      * @see #getEndl(int, int)
      */
     public CodeFormat endl(int num, int tabs) {
@@ -420,7 +421,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Append the given value to the internal buffer.
-     * 
+     *
      * @see #getAfterSection
      */
     public CodeFormat afterSection() {
@@ -430,7 +431,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Append the given value to the internal buffer.
-     * 
+     *
      * @see #getOpenParen
      */
     public CodeFormat openParen(boolean methodOrIf) {
@@ -440,7 +441,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Append the given value to the internal buffer.
-     * 
+     *
      * @see #getCloseParen
      */
     public CodeFormat closeParen() {
@@ -450,7 +451,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Append the given value to the internal buffer.
-     * 
+     *
      * @see #getParens
      */
     public CodeFormat parens() {
@@ -460,7 +461,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Append the given value to the internal buffer.
-     * 
+     *
      * @see #getOpenBrace
      */
     public CodeFormat openBrace(int tabLevel) {
@@ -470,7 +471,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Append the given value to the internal buffer.
-     * 
+     *
      * @see #getCloseBrace
      */
     public CodeFormat closeBrace(int tabLevel) {
@@ -480,7 +481,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Append the given value to the internal buffer.
-     * 
+     *
      * @see #getExtendsDec
      */
     public CodeFormat extendsDec(int tabLevel) {
@@ -490,7 +491,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Append the given value to the internal buffer.
-     * 
+     *
      * @see #getImplementsDec
      */
     public CodeFormat implementsDec(int tabLevel) {
@@ -500,7 +501,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Append the given value to the internal buffer.
-     * 
+     *
      * @see #getThrowsDec
      */
     public CodeFormat throwsDec(int tabLevel) {
@@ -510,7 +511,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Append the given value to the internal buffer.
-     * 
+     *
      * @see #getTab
      */
     public CodeFormat tab() {
@@ -520,7 +521,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Append the given value to the internal buffer.
-     * 
+     *
      * @see #getTab
      */
     public CodeFormat tab(int tabLevel) {
@@ -530,7 +531,7 @@ public final class CodeFormat implements Cloneable {
 
     /**
      * Append the given value to the internal buffer.
-     * 
+     *
      * @see #getFieldName
      */
     public CodeFormat fieldName(String name) {

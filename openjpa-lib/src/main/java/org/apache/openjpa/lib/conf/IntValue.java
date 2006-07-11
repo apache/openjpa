@@ -12,14 +12,13 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import serp.util.*;
-
 /**
  * An int {@link Value}.
- * 
+ *
  * @author Marc Prud'hommeaux
  */
 public class IntValue extends Value {
+
     private int value;
 
     public IntValue(String prop) {

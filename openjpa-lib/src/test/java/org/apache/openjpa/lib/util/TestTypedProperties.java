@@ -12,15 +12,18 @@
  */
 package org.apache.openjpa.lib.util;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Tests the {@link TypedProperties} type.
- * 
+ *
  * @author Abe White
  */
 public class TestTypedProperties extends TestCase {
+
     private TypedProperties _props = null;
     private TypedProperties _defs = null;
 

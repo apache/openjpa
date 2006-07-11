@@ -12,18 +12,25 @@
  */
 package serp.bytecode;
 
-import java.io.*;
-import serp.bytecode.lowlevel.*;
-import serp.bytecode.visitor.*;
-import serp.util.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import serp.bytecode.lowlevel.ClassEntry;
+import serp.bytecode.lowlevel.ConstantPool;
+import serp.bytecode.lowlevel.UTF8Entry;
+import serp.bytecode.visitor.BCVisitor;
+import serp.bytecode.visitor.VisitAcceptor;
+import serp.util.Strings;
 
 /**
  * Any referenced class that is not a package member is represented by
  * this structure. This includes member classes and interfaces.
- * 
+ *
  * @author Abe White
  */
 public class InnerClass implements BCEntity, VisitAcceptor {
+
     private int _index = 0;
     private int _nameIndex = 0;
     private int _ownerIndex = 0;
@@ -68,7 +75,7 @@ public class InnerClass implements BCEntity, VisitAcceptor {
      * Manipulate the inner class access flags.
      */
     public boolean isPublic() {
-        return(getAccessFlags() & Constants.ACCESS_PUBLIC) > 0;
+        return (getAccessFlags() & Constants.ACCESS_PUBLIC) > 0;
     }
 
     /**
@@ -84,7 +91,7 @@ public class InnerClass implements BCEntity, VisitAcceptor {
      * Manipulate the inner class access flags.
      */
     public boolean isProtected() {
-        return(getAccessFlags() & Constants.ACCESS_PROTECTED) > 0;
+        return (getAccessFlags() & Constants.ACCESS_PROTECTED) > 0;
     }
 
     /**
@@ -100,7 +107,7 @@ public class InnerClass implements BCEntity, VisitAcceptor {
      * Manipulate the inner class access flags.
      */
     public boolean isPrivate() {
-        return(getAccessFlags() & Constants.ACCESS_PRIVATE) > 0;
+        return (getAccessFlags() & Constants.ACCESS_PRIVATE) > 0;
     }
 
     /**
@@ -116,7 +123,7 @@ public class InnerClass implements BCEntity, VisitAcceptor {
      * Manipulate the inner class access flags.
      */
     public boolean isFinal() {
-        return(getAccessFlags() & Constants.ACCESS_FINAL) > 0;
+        return (getAccessFlags() & Constants.ACCESS_FINAL) > 0;
     }
 
     /**
@@ -133,7 +140,7 @@ public class InnerClass implements BCEntity, VisitAcceptor {
      * Manipulate the inner class access flags.
      */
     public boolean isStatic() {
-        return(getAccessFlags() & Constants.ACCESS_STATIC) > 0;
+        return (getAccessFlags() & Constants.ACCESS_STATIC) > 0;
     }
 
     /**
@@ -150,7 +157,7 @@ public class InnerClass implements BCEntity, VisitAcceptor {
      * Manipulate the class access flags.
      */
     public boolean isInterface() {
-        return(getAccessFlags() & Constants.ACCESS_INTERFACE) > 0;
+        return (getAccessFlags() & Constants.ACCESS_INTERFACE) > 0;
     }
 
     /**
@@ -168,7 +175,7 @@ public class InnerClass implements BCEntity, VisitAcceptor {
      * Manipulate the class access flags.
      */
     public boolean isAbstract() {
-        return(getAccessFlags() & Constants.ACCESS_ABSTRACT) > 0;
+        return (getAccessFlags() & Constants.ACCESS_ABSTRACT) > 0;
     }
 
     /**
@@ -209,7 +216,7 @@ public class InnerClass implements BCEntity, VisitAcceptor {
     public String getName() {
         if (getNameIndex() == 0)
             return null;
-        return((UTF8Entry) getPool().getEntry(getNameIndex())).getValue();
+        return ((UTF8Entry) getPool().getEntry(getNameIndex())).getValue();
     }
 
     /**
@@ -328,7 +335,7 @@ public class InnerClass implements BCEntity, VisitAcceptor {
         if (getDeclarerIndex() == 0)
             return null;
 
-        ClassEntry entry = (ClassEntry) getPool().getEntry (getDeclarerIndex());
+        ClassEntry entry = (ClassEntry) getPool().getEntry(getDeclarerIndex());
         return getProject().getNameCache().getExternalForm
             (entry.getNameEntry().getValue(), false);
     }

@@ -12,14 +12,15 @@
  */
 package serp.bytecode;
 
-import serp.bytecode.visitor.*;
+import serp.bytecode.visitor.BCVisitor;
 
 /**
  * Attribute signifying that a method or class is deprecated.
- * 
+ *
  * @author Abe White
  */
 public class Deprecated extends Attribute {
+
     Deprecated(int nameIndex, Attributes owner) {
         super(nameIndex, owner);
     }
