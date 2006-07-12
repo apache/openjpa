@@ -20,14 +20,6 @@
 
         <dependency>
 
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>serp</artifactId>
-            <version>0.0.1</version>
-            <scope>compile</scope>
-
-        </dependency>
-        <dependency>
-
             <groupId>jakarta-regexp</groupId>
             <artifactId>jakarta-regexp</artifactId>
             <version>1.4</version>
@@ -98,11 +90,12 @@
             <scope>compile</scope>
 
         </dependency>
+
         <dependency>
 
-            <groupId>jdbc</groupId>
-            <artifactId>jdbc-stdext</artifactId>
-            <version>2.0</version>
+            <groupId>net.sourceforge.serp</groupId>
+            <artifactId>serp</artifactId>
+            <version>1.11.0</version>
             <scope>compile</scope>
 
         </dependency>

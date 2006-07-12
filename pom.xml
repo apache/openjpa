@@ -84,7 +84,6 @@
     <modules>
 
         <module>openjpa-lib</module>
-        <module>serp</module>
         <module>openjpa-kernel</module>
         <module>openjpa-kernel-5</module>
         <module>openjpa-persistence</module>
@@ -101,17 +100,17 @@
 
 
         <repository>
-            <id>swami</id>
-            <name>Swami repository</name>
-            <url>http://m2.ngbw.org</url>
-        </repository>
-
-
-        <repository>
             <id>java-net</id>
             <name>dev.java.net repository</name>
             <url>https://maven-repository.dev.java.net/nonav/repository</url>
             <layout>legacy</layout>
+        </repository>
+
+
+        <repository>
+            <id>serp</id>
+            <name>Serp Project Repository</name>
+            <url>http://serp.sourceforge.net/m2repo</url>
         </repository>
 
     </repositories>
