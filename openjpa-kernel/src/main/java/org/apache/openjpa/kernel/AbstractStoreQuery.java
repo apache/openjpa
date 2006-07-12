@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -22,12 +25,13 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.InternalException;
 
 /**
- * Abstract {@link StoreQuery} that implements most methods as no-ops.
+ * <p>Abstract {@link StoreQuery} that implements most methods as no-ops.</p>
  *
  * @author Abe White
  * @since 4.0
  */
-public abstract class AbstractStoreQuery implements StoreQuery {
+public abstract class AbstractStoreQuery
+    implements StoreQuery {
 
     protected QueryContext ctx = null;
 
@@ -100,7 +104,8 @@ public abstract class AbstractStoreQuery implements StoreQuery {
     /**
      * Abstract {@link Executor} that implements most methods as no-ops.
      */
-    public static abstract class AbstractExecutor implements Executor {
+    public static abstract class AbstractExecutor
+        implements Executor {
 
         public ResultObjectProvider executeQuery(StoreQuery q, Map params,
             boolean lrs, long startIdx, long endIdx) {

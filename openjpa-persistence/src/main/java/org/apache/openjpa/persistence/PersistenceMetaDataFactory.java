@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -46,16 +49,18 @@ import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
- * {@link MetaDataFactory} for JPA metadata.
+ * <p>{@link MetaDataFactory} for JPA metadata.</p>
  *
  * @author Steve Kim
  * @since 4.0
  */
-public class PersistenceMetaDataFactory extends AbstractCFMetaDataFactory
+public class PersistenceMetaDataFactory
+    extends AbstractCFMetaDataFactory
     implements Configurable {
 
     private static final Localizer _loc = Localizer.forPackage
         (PersistenceMetaDataFactory.class);
+
     private AnnotationPersistenceMetaDataParser _annoParser = null;
     private XMLPersistenceMetaDataParser _xmlParser = null;
     private PersistenceMetaDataDefaults _def = null;
@@ -88,7 +93,8 @@ public class PersistenceMetaDataFactory extends AbstractCFMetaDataFactory
             return;
         if ("PROPERTY".equals(type.toUpperCase()))
             _access = ClassMetaData.ACCESS_PROPERTY;
-        else _access = ClassMetaData.ACCESS_FIELD;
+        else
+            _access = ClassMetaData.ACCESS_FIELD;
     }
 
     /**
@@ -165,11 +171,13 @@ public class PersistenceMetaDataFactory extends AbstractCFMetaDataFactory
             return;
         if (!strict && (mode & MODE_META) != 0)
             mode |= MODE_MAPPING;
+
         // getting the list of persistent types runs callbacks to
         // mapPersistentTypeNames if it hasn't been called already, which
         // caches XML resources
         getPersistentTypeNames(false, envLoader);
         URL xml = findXML(cls);
+
         // we have to parse metadata up-front to register persistence unit
         // defaults and system callbacks
         ClassMetaData meta;
@@ -180,6 +188,7 @@ public class PersistenceMetaDataFactory extends AbstractCFMetaDataFactory
                 parseXML(url, cls, mode, envLoader);
             parsedXML = _unparsed.contains(xml);
             _unparsed.clear();
+
             // XML process check
             meta = repos.getCachedMetaData(cls);
             if (meta != null && (meta.getSourceMode() & mode) == mode) {
@@ -187,9 +196,11 @@ public class PersistenceMetaDataFactory extends AbstractCFMetaDataFactory
                 return;
             }
         }
+
         // might have been looking for system-level query
         if (cls == null)
             return;
+
         // we may still need to parse XML if this is a redeploy of a class, or
         // if we're in strict query-only mode
         if (!parsedXML && xml != null) {
@@ -201,10 +212,12 @@ public class PersistenceMetaDataFactory extends AbstractCFMetaDataFactory
                 return;
             }
         }
+
         AnnotationPersistenceMetaDataParser parser = getAnnotationParser();
         parser.setEnvClassLoader(envLoader);
         parser.setMode(mode);
         parser.parse(cls);
+
         meta = repos.getCachedMetaData(cls);
         if (meta != null && (meta.getSourceMode() & mode) == mode)
             validateStrategies(meta);
@@ -222,7 +235,8 @@ public class PersistenceMetaDataFactory extends AbstractCFMetaDataFactory
         xmlParser.setMode(mode);
         try {
             xmlParser.parse(xml);
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new GeneralException(ioe);
         }
     }
@@ -242,6 +256,7 @@ public class PersistenceMetaDataFactory extends AbstractCFMetaDataFactory
     protected void mapPersistentTypeNames(Object rsrc, String[] names) {
         if (!(rsrc instanceof URL) || rsrc.toString().endsWith(".class"))
             return;
+
         if (_xml == null)
             _xml = new HashMap<URL, Set>();
         _xml.put((URL) rsrc, new HashSet(Arrays.asList(names)));
@@ -290,7 +305,8 @@ public class PersistenceMetaDataFactory extends AbstractCFMetaDataFactory
             if (!fmd.isExplicit()) {
                 if (buf == null)
                     buf = new StringBuffer();
-                else buf.append(", ");
+                else
+                    buf.append(", ");
                 buf.append(fmd);
             }
         }
@@ -378,6 +394,7 @@ public class PersistenceMetaDataFactory extends AbstractCFMetaDataFactory
     public void endConfiguration() {
         if (rsrcs == null)
             rsrcs = Collections.singleton("META-INF/orm.xml");
-        else rsrcs.add("META-INF/orm.xml");
-    }
+        else
+			rsrcs.add ("META-INF/orm.xml");
+	}
 }

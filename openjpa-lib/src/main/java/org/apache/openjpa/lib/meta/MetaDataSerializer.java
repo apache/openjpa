@@ -36,7 +36,7 @@ public interface MetaDataSerializer {
      * not be included in the output.
      *
      * @param flags bit flags specifying the output flags; e.g.
-     *              {@link PRETTY #PRETTY}
+     * {@link PRETTY #PRETTY}
      */
     public void serialize(int flags) throws IOException;
 
@@ -45,11 +45,11 @@ public interface MetaDataSerializer {
      * parsed. The objects must implement the {@link SourceTracker} interface.
      *
      * @param output if null, then serialize directly to the file system;
-     *               othwerwise, populate the specified {@link Map} with
-     *               keys that are the {@link File} instances, and
-     *               values that are the {@link String} contents of the metadata
-     * @param flags  bit flags specifying the output flags; e.g.
-     *               {@link PRETTY #PRETTY}
+     * othwerwise, populate the specified {@link Map} with
+     * keys that are the {@link File} instances, and
+     * values that are the {@link String} contents of the metadata
+     * @param flags bit flags specifying the output flags; e.g.
+     * {@link PRETTY #PRETTY}
      */
     public void serialize(Map output, int flags) throws IOException;
 
@@ -57,7 +57,7 @@ public interface MetaDataSerializer {
      * Serialize the current set of objects to the given file.
      *
      * @param flags bit flags specifying the output flags; e.g.
-     *              {@link PRETTY #PRETTY} | {@link APPEND #APPEND}
+     * {@link PRETTY #PRETTY} | {@link APPEND #APPEND}
      */
     public void serialize(File file, int flags) throws IOException;
 
@@ -65,7 +65,7 @@ public interface MetaDataSerializer {
      * Serialize the current set of objects to the given stream.
      *
      * @param flags bit flags specifying the output flags; e.g.
-     *              {@link PRETTY #PRETTY}
+     * {@link PRETTY #PRETTY}
      */
     public void serialize(Writer out, int flags) throws IOException;
 }

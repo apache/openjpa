@@ -38,7 +38,7 @@ public class StringEntry extends Entry implements ConstantEntry {
      * Constructor.
      *
      * @param stringIndex the constant pool index of the {@link UTF8Entry}
-     *                    containing the value of this string
+     * containing the value of this string
      */
     public StringEntry(int stringIndex) {
         _stringIndex = stringIndex;

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -50,15 +53,17 @@ import static org.apache.openjpa.persistence.PersistenceStrategy.*;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
- * Javax persistence-based metadata defaults.
+ * </p>Javax persistence-based metadata defaults.</p>
  *
  * @author Patrick Linskey
  * @author Abe White
  */
-class PersistenceMetaDataDefaults extends AbstractMetaDataDefaults {
+class PersistenceMetaDataDefaults
+    extends AbstractMetaDataDefaults {
 
     private static Localizer _loc = Localizer.forPackage
         (PersistenceMetaDataDefaults.class);
+
     private static final Map<Class, PersistenceStrategy> _strats =
         new HashMap<Class, PersistenceStrategy>();
     private static final Set<String> _ignoredAnnos = new HashSet<String>();
@@ -74,6 +79,7 @@ class PersistenceMetaDataDefaults extends AbstractMetaDataDefaults {
         _strats.put(Persistent.class, PERS);
         _strats.put(PersistentCollection.class, PERS_COLL);
         _strats.put(PersistentMap.class, PERS_MAP);
+
         _ignoredAnnos.add(DetachedState.class.getName());
         _ignoredAnnos.add(PostLoad.class.getName());
         _ignoredAnnos.add(PostPersist.class.getName());
@@ -90,7 +96,7 @@ class PersistenceMetaDataDefaults extends AbstractMetaDataDefaults {
     }
 
     /**
-     * Return the code for the strategy of the given member. Return null if
+     * Return the code for the strategy of the given member.  Return null if
      * no strategy.
      */
     public static PersistenceStrategy getPersistenceStrategy
@@ -103,6 +109,7 @@ class PersistenceMetaDataDefaults extends AbstractMetaDataDefaults {
         if (fmd != null
             && fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
             return null;
+
         // look for persistence strategy in annotation table
         PersistenceStrategy pstrat = null;
         for (Annotation anno : el.getDeclaredAnnotations()) {
@@ -113,6 +120,7 @@ class PersistenceMetaDataDefaults extends AbstractMetaDataDefaults {
         }
         if (pstrat != null)
             return pstrat;
+
         Class type;
         int code;
         if (fmd != null) {
@@ -125,10 +133,13 @@ class PersistenceMetaDataDefaults extends AbstractMetaDataDefaults {
             type = ((Method) member).getReturnType();
             code = JavaTypes.getTypeCode(type);
         }
+
         switch (code) {
             case JavaTypes.ARRAY:
-                if (type == byte[].class || type == char[].class
-                    || type == Byte[].class || type == Character[].class)
+                if (type == byte[].class
+                    || type == char[].class
+                    || type == Byte[].class
+                    || type == Character[].class)
                     return BASIC;
                 break;
             case JavaTypes.BOOLEAN:
@@ -157,6 +168,7 @@ class PersistenceMetaDataDefaults extends AbstractMetaDataDefaults {
                     return BASIC;
                 break;
         }
+
         //### EJB3: what if defined in XML?
         if (type.isAnnotationPresent(Embeddable.class))
             return EMBEDDED;
@@ -200,6 +212,7 @@ class PersistenceMetaDataDefaults extends AbstractMetaDataDefaults {
         // traversed entire hierarchy without finding annotations
         if (cls == null || cls == Object.class)
             return ClassMetaData.ACCESS_UNKNOWN;
+
         int access = 0;
         if (usesAccess(cls.getDeclaredFields()))
             access |= ClassMetaData.ACCESS_FIELD;
@@ -236,5 +249,5 @@ class PersistenceMetaDataDefaults extends AbstractMetaDataDefaults {
         if (strat == null || strat == PersistenceStrategy.TRANSIENT)
             return false;
         return true;
-    }
+	}
 }

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -38,26 +41,29 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 
 /**
- * StoreManager proxy that delegates to a data cache when possible.
+ * <p>StoreManager proxy that delegates to a data cache when possible.</p>
  *
  * @author Patrick Linskey
  * @nojavadoc
  */
-public class DataCacheStoreManager extends DelegatingStoreManager {
+public class DataCacheStoreManager
+    extends DelegatingStoreManager {
 
     // all the state managers changed in this transaction
-    private Collection _inserts = null; // statemanagers
-    private Map _updates = null; // statemanager -> fmd set
-    private Collection _deletes = null; // statemanagers
+    private Collection _inserts = null;    // statemanagers
+    private Map _updates = null;    // statemanager -> fmd set
+    private Collection _deletes = null;    // statemanagers
+
     // the owning context
     private StoreContext _ctx = null;
+
     // pc data generator
     private PCDataGenerator _gen = null;
 
     /**
      * Constructor.
      *
-     * @param sm the store manager to delegate to
+     * @param    sm            the store manager to delegate to
      */
     public DataCacheStoreManager(StoreManager sm) {
         super(sm);
@@ -103,9 +109,11 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
     private void evictTypes(Collection classes) {
         if (classes.isEmpty())
             return;
-        MetaDataRepository mdr =
-            _ctx.getConfiguration(). getMetaDataRepository();
+
+        MetaDataRepository mdr = _ctx.getConfiguration().
+            getMetaDataRepository();
         ClassLoader loader = _ctx.getClassLoader();
+
         Class cls;
         DataCache cache;
         for (Iterator itr = classes.iterator(); itr.hasNext();) {
@@ -126,6 +134,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         OpenJPAStateManager sm;
         DataCachePCData data;
         DataCache cache;
+
         // create pc datas for inserts
         if (_ctx.getPopulateDataCache() && _inserts != null) {
             for (Iterator itr = _inserts.iterator(); itr.hasNext();) {
@@ -133,6 +142,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                 cache = sm.getMetaData().getDataCache();
                 if (cache == null)
                     continue;
+
                 if (modMap == null)
                     modMap = new HashMap();
                 mods = getModifications(modMap, cache);
@@ -141,6 +151,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                 mods.additions.add(new PCDataHolder(data, sm));
             }
         }
+
         // update pcdatas for updates
         Map.Entry entry;
         if (_updates != null) {
@@ -150,9 +161,11 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                 entry = (Map.Entry) itr.next();
                 sm = (OpenJPAStateManager) entry.getKey();
                 fields = (BitSet) entry.getValue();
+
                 cache = sm.getMetaData().getDataCache();
                 if (cache == null)
                     continue;
+
                 // it's ok not to clone the object that we get from the cache,
                 // since we're inside the commit() method, so any modifications
                 // to the underlying cache are valid. If the commit had not
@@ -162,6 +175,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                     modMap = new HashMap();
                 data = cache.get(sm.getObjectId());
                 mods = getModifications(modMap, cache);
+
                 // data should always be non-null, since the object is
                 // dirty, but maybe it got dropped from the cache in the
                 // interim
@@ -175,6 +189,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                 }
             }
         }
+
         // remove pcdatas for deletes
         if (_deletes != null) {
             for (Iterator itr = _deletes.iterator(); itr.hasNext();) {
@@ -182,18 +197,21 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                 cache = sm.getMetaData().getDataCache();
                 if (cache == null)
                     continue;
+
                 if (modMap == null)
                     modMap = new HashMap();
                 mods = getModifications(modMap, cache);
                 mods.deletes.add(sm.getObjectId());
             }
         }
+
         // notify the caches of the changes
         if (modMap != null) {
             for (Iterator itr = modMap.entrySet().iterator(); itr.hasNext();) {
                 entry = (Map.Entry) itr.next();
                 cache = (DataCache) entry.getKey();
                 mods = (Modifications) entry.getValue();
+
                 // make sure we're not caching old versions
                 cache.writeLock();
                 try {
@@ -208,6 +226,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                 }
             }
         }
+
         // if we were in largeTransaction mode, then we have recorded
         // the classes of updated/deleted objects and these now need to be
         // evicted
@@ -215,6 +234,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             evictTypes(_ctx.getDeletedTypes());
             evictTypes(_ctx.getUpdatedTypes());
         }
+
         // and notify the query cache.  notify in one batch to reduce synch
         QueryCache queryCache = _ctx.getConfiguration().
             getDataCacheManagerInstance().getSystemQueryCache();
@@ -235,9 +255,11 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
 
     /**
      * Transforms a collection of {@link PCDataHolder}s that might contain
-     * stale instances into a collection of up-to-date {@link DataCachePCData}s.
+     * stale instances into a collection of up-to-date
+     * {@link DataCachePCData}s.
      */
-    private void transformToVersionSafePCDatas(DataCache cache, List holders) {
+    private void transformToVersionSafePCDatas(DataCache cache,
+        List holders) {
         PCDataHolder holder;
         DataCachePCData oldpc;
         for (ListIterator iter = holders.listIterator(); iter.hasNext();) {
@@ -246,7 +268,8 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             if (oldpc != null && compareVersion(holder.sm,
                 holder.sm.getVersion(), oldpc.getVersion()) == VERSION_EARLIER)
                 iter.remove();
-            else iter.set(holder.pcdata);
+            else
+                iter.set(holder.pcdata);
         }
     }
 
@@ -276,11 +299,13 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         DataCache cache = sm.getMetaData().getDataCache();
         if (cache == null || sm.isEmbedded())
             return super.syncVersion(sm, edata);
+
         DataCachePCData data;
         Object version = null;
         data = cache.get(sm.getObjectId());
         if (!isLocking(null) && data != null)
             version = data.getVersion();
+
         // if we have a cached version update from there
         if (version != null) {
             if (!version.equals(sm.getVersion())) {
@@ -289,6 +314,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             }
             return true;
         }
+
         // use data store version
         return super.syncVersion(sm, edata);
     }
@@ -298,6 +324,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         DataCache cache = sm.getMetaData().getDataCache();
         if (cache == null || sm.isEmbedded())
             return super.initialize(sm, state, fetchState, edata);
+
         DataCachePCData data = cache.get(sm.getObjectId());
         FetchConfiguration fetch = (fetchState == null)
             ? _ctx.getFetchConfiguration()
@@ -309,11 +336,13 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             data.load(sm, fetchState, edata);
             return true;
         }
+
         // initialize from store manager
         if (!super.initialize(sm, state, fetchState, edata))
             return false;
         if (!_ctx.getPopulateDataCache())
             return true;
+
         // make sure that we're not trying to cache an old version
         cache.writeLock();
         try {
@@ -321,6 +350,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             if (data != null && compareVersion(sm, sm.getVersion(),
                 data.getVersion()) == VERSION_EARLIER)
                 return true;
+
             // cache newly loaded info. It is safe to cache data frorm
             // initialize() because this method is only called upon
             // initial load of the data.
@@ -343,12 +373,14 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         DataCache cache = sm.getMetaData().getDataCache();
         if (cache == null || sm.isEmbedded())
             return super.load(sm, fields, fetchState, lockLevel, edata);
+
         DataCachePCData data = cache.get(sm.getObjectId());
         if (lockLevel == LockLevels.LOCK_NONE && !isLocking(fetch)
             && data != null)
             data.load(sm, fields, fetchState, edata);
         if (fields.length() == 0)
             return true;
+
         // load from store manager; clone the set of still-unloaded fields
         // so that if the store manager decides to modify it it won't affect us
         if (!super.load(sm, (BitSet) fields.clone(), fetchState,
@@ -356,6 +388,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             return false;
         if (!_ctx.getPopulateDataCache())
             return true;
+
         // make sure that we're not trying to cache an old version
         cache.writeLock();
         try {
@@ -363,6 +396,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             if (data != null && compareVersion(sm, sm.getVersion(),
                 data.getVersion()) == VERSION_EARLIER)
                 return true;
+
             // cache newly loaded info
             boolean isNew = data == null;
             if (isNew)
@@ -370,7 +404,8 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             data.store(sm, fields);
             if (isNew)
                 cache.put(data);
-            else cache.update(data);
+            else
+                cache.update(data);
         }
         finally {
             cache.writeUnlock();
@@ -385,12 +420,14 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             : fetchState.getFetchConfiguration();
         if (isLocking(fetch))
             return super.loadAll(sms, state, load, fetchState, edata);
+
         Map unloaded = null;
         OpenJPAStateManager sm;
         DataCache cache;
         DataCachePCData data;
         BitSet fields;
         FetchConfiguration fc;
+
         for (Iterator itr = sms.iterator(); itr.hasNext();) {
             sm = (OpenJPAStateManager) itr.next();
             cache = sm.getMetaData().getDataCache();
@@ -398,6 +435,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                 unloaded = addUnloaded(sm, null, unloaded);
                 continue;
             }
+
             if (sm.getManagedInstance() == null) {
                 data = cache.get(sm.getObjectId());
                 if (data != null) {
@@ -405,7 +443,8 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                     //### to be addressed for bug 511
                     sm.initialize(data.getType(), state);
                     data.load(sm, fetchState, edata);
-                } else unloaded = addUnloaded(sm, null, unloaded);
+                } else
+                    unloaded = addUnloaded(sm, null, unloaded);
             } else if (load != FORCE_LOAD_NONE
                 || sm.getPCState() == PCState.HOLLOW) {
                 data = cache.get(sm.getObjectId());
@@ -415,22 +454,27 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                     // ### and remove this code.
                     fc = (load == FORCE_LOAD_ALL) ? null
                         : fetchState.getFetchConfiguration();
+
                     // load unloaded fields
                     fields = sm.getUnloaded(fetchState);
                     data.load(sm, fields, fetchState, edata);
                     if (fields.length() > 0)
                         unloaded = addUnloaded(sm, fields, unloaded);
-                } else unloaded = addUnloaded(sm, null, unloaded);
+                } else
+                    unloaded = addUnloaded(sm, null, unloaded);
             } else if (!cache.contains(sm.getObjectId()))
                 unloaded = addUnloaded(sm, null, unloaded);
         }
+
         if (unloaded == null)
             return Collections.EMPTY_LIST;
+
         // load with delegate
         Collection failed = super.loadAll(unloaded.keySet(), state, load,
             fetchState, edata);
         if (!_ctx.getPopulateDataCache())
             return failed;
+
         // for each loaded instance, merge loaded state into cached data
         Map.Entry entry;
         boolean isNew;
@@ -438,10 +482,12 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             entry = (Map.Entry) itr.next();
             sm = (OpenJPAStateManager) entry.getKey();
             fields = (BitSet) entry.getValue();
+
             cache = sm.getMetaData().getDataCache();
             if (cache == null || sm.isEmbedded() || (failed != null
                 && failed.contains(sm.getId())))
                 continue;
+
             // make sure that we're not trying to cache an old version
             cache.writeLock();
             try {
@@ -449,15 +495,18 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                 if (data != null && compareVersion(sm, sm.getVersion(),
                     data.getVersion()) == VERSION_EARLIER)
                     continue;
+
                 isNew = data == null;
                 if (isNew)
                     data = newPCData(sm);
                 if (fields == null)
                     data.store(sm);
-                else data.store(sm, fields);
+                else
+                    data.store(sm, fields);
                 if (isNew)
                     cache.put(data);
-                else cache.update(data);
+                else
+                    cache.update(data);
             }
             finally {
                 cache.writeUnlock();
@@ -481,9 +530,11 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         Collection exceps = super.flush(states);
         if (!exceps.isEmpty() || _ctx.isLargeTransaction())
             return exceps;
+
         OpenJPAStateManager sm;
         for (Iterator itr = states.iterator(); itr.hasNext();) {
             sm = (OpenJPAStateManager) itr.next();
+
             if (sm.getPCState() == PCState.PNEW) {
                 if (_inserts == null)
                     _inserts = new LinkedList();
@@ -507,14 +558,17 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
 
     public StoreQuery newQuery(String language) {
         StoreQuery q = super.newQuery(language);
+
         // if the query can't be parsed or it's using a non-parsed language
         // (one for which there is no OpenJPA ExpressionParser), we can't cache it.
         if (q == null || QueryLanguages.parserForLanguage(language) == null)
             return q;
+
         QueryCache queryCache = _ctx.getConfiguration().
             getDataCacheManagerInstance().getSystemQueryCache();
         if (queryCache == null)
             return q;
+
         return new QueryCacheStoreQuery(q, queryCache);
     }
 
@@ -554,10 +608,11 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         public final DataCachePCData pcdata;
         public final OpenJPAStateManager sm;
 
-        public PCDataHolder(DataCachePCData pcdata, OpenJPAStateManager sm) {
+        public PCDataHolder(DataCachePCData pcdata,
+            OpenJPAStateManager sm) {
             this.pcdata = pcdata;
             this.sm = sm;
-        }
-    }
+		}
+	}
 }
 

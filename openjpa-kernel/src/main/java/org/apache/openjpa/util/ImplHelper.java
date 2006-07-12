@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -40,11 +43,11 @@ import org.apache.openjpa.meta.ValueStrategies;
 import serp.util.Strings;
 
 /**
- * Helper for OpenJPA back-ends.
+ * <p>Helper for OpenJPA back-ends.</p>
  *
+ * @since 3.0
  * @author Abe White
  * @nojavadoc
- * @since 3.0
  */
 public class ImplHelper {
 
@@ -58,10 +61,12 @@ public class ImplHelper {
         prop = StringUtils.capitalize(prop);
         try {
             return cls.getMethod("get" + prop, (Class[]) null);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             try {
                 return cls.getMethod("is" + prop, (Class[]) null);
-            } catch (Exception e2) {
+            }
+            catch (Exception e2) {
                 throw new UserException(_loc.get("bad-getter", cls,
                     prop)).setCause(e);
             }
@@ -77,17 +82,18 @@ public class ImplHelper {
         try {
             return cls.getMethod("set" + prop,
                 new Class[]{ getter.getReturnType() });
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new UserException(_loc.get("bad-setter", cls, prop)).
                 setCause(e);
         }
     }
 
     /**
-     * Helper for store manager implementations. This method simply delegates
+     * Helper for store manager implementations.  This method simply delegates
      * to the proper singular method for each state manager.
      *
-     * @see StoreManager#loadAll
+     * @see    StoreManager#loadAll
      * @since 4.0
      */
     public static Collection loadAll(Collection sms, StoreManager store,
@@ -105,6 +111,7 @@ public class ImplHelper {
                 || sm.getPCState() == PCState.HOLLOW) {
                 fc = (load == StoreManager.FORCE_LOAD_ALL) ? null
                     : fetchState.getFetchConfiguration();
+
                 lm = sm.getContext().getLockManager();
                 if (!store.load(sm, sm.getUnloaded(fetchState),
                     fetchState, lm.getLockLevel(sm), context))
@@ -127,7 +134,7 @@ public class ImplHelper {
     }
 
     /**
-     * Generate a value for the given metadata, or return null. Generates
+     * Generate a value for the given metadata, or return null.  Generates
      * values for hte following strategies: {@link ValueStrategies#SEQUENCE},
      * {@link ValueStrategies#UUID_STRING}, {@link ValueStrategies#UUID_HEX}
      */
@@ -137,7 +144,7 @@ public class ImplHelper {
     }
 
     /**
-     * Generate a value for the given metadata, or return null. Generates
+     * Generate a value for the given metadata, or return null.  Generates
      * values for hte following strategies: {@link ValueStrategies#SEQUENCE},
      * {@link ValueStrategies#UUID_STRING}, {@link ValueStrategies#UUID_HEX}
      */
@@ -171,25 +178,25 @@ public class ImplHelper {
 
     /**
      * Return the store-specific facade class for the given broker
-     * component class. This method is used by facade implementations to
+     * component class.  This method is used by facade implementations to
      * wrap store-specific components without knowing about all possible
      * back-ends.
      *
-     * @param conf        configuration for runtime
-     * @param openjpaCls  class of OpenJPA component(e.g.
-     *                    JDBCFetchConfiguration.class)
-     * @param openjpaSuff suffix of OpenJPA component(e.g. "FetchConfiguration")
-     * @param facadePkg   the unqualified facade package name(e.g. "jdo")
-     * @param facadeCls   the generic facade interface's class(e.g.
-     *                    FetchPlan.class)
-     * @param facadeSuff  the suffix to append to the store prefix to get
-     *                    the implementation class name(e.g. "FetchPlanImpl")
-     *                    or null to use the unqualified name of
-     *                    <code>facadeCls</code>
+     * @param    conf        configuration for runtime
+     * @param    openjpaCls        class of OpenJPA component (e.g.
+     * JDBCFetchConfiguration.class)
+     * @param    openjpaSuff    suffix of OpenJPA component (e.g. "FetchConfiguration")
+     * @param    facadePkg    the unqualified facade package name (e.g. "jdo")
+     * @param    facadeCls    the generic facade interface's class (e.g.
+     * FetchPlan.class)
+     * @param    facadeSuff    the suffix to append to the store prefix to get
+     * the implementation class name (e.g. "FetchPlanImpl")
+     * or null to use the unqualified name of
+     * <code>facadeCls</code>
      * @return the class formed by taking the top-most org.apache.openjpa.aaa package and
-     *         BBBStoreManager name prefix from <code>storeCls</code> and
-     *         combining them with the facade package ccc and suffix DDD to
-     *         get: org.apache.openjpa.ccc.aaa.BBBDDD
+     * BBBStoreManager name prefix from <code>storeCls</code> and
+     * combining them with the facade package ccc and suffix DDD to
+     * get: org.apache.openjpa.ccc.aaa.BBBDDD
      */
     public static Class getStoreFacadeType(OpenJPAConfiguration conf,
         Class openjpaCls, String openjpaSuff, String facadePkg, Class facadeCls,
@@ -203,25 +210,29 @@ public class ImplHelper {
         // extract 'xxx.' from org.apache.openjpa.xxx.yyy..., and XXX from XXXStoreManager
         String pkg = clsName.substring(5, clsName.indexOf('.', 5) + 1);
         String prefix = clsName.substring(dotIdx + 1, suffixIdx);
+
         // suffix of impl class name
         if (facadeSuff == null)
             facadeSuff = Strings.getClassName(facadeCls);
+
         clsName =
             "org.apache.openjpa." + facadePkg + "." + pkg + prefix + facadeSuff;
         try {
             return Class.forName(clsName, true, facadeCls.getClassLoader());
-        } catch (ClassNotFoundException ncfe) {
+        }
+        catch (ClassNotFoundException ncfe) {
             Log log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
             if (log.isTraceEnabled())
                 log.trace(_loc.get("no-store-exts", clsName));
             return null;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new InternalException(e);
         }
     }
 
     /**
-     * Close the given resource. The resource can be an extent iterator,
+     * Close the given resource.  The resource can be an extent iterator,
      * query result, large result set relation, or any closeable OpenJPA
      * component.
      */
@@ -229,9 +240,11 @@ public class ImplHelper {
         try {
             if (o instanceof Closeable)
                 ((Closeable) o).close();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw re;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new GeneralException(e);
         }
     }
@@ -241,20 +254,20 @@ public class ImplHelper {
      * OpenJPA.
      *
      * @param type the class to test
-     * @param conf the configuration that defines the current context
      * @return true if the class is manageable.
+     * @param    conf the configuration that defines the current context
      */
     public static boolean isManagedType(Class type) {
         return PersistenceCapable.class.isAssignableFrom(type);
     }
 
     /**
-     * Returns true if the specified instance is manageable.
+     *  Returns true if the specified instance is manageable.
      *
-     * @param instance the object to check
-     * @return true if the instance is a persistent type, false otherwise
+     *  @param  instance  the object to check
+     *  @return true if the instance is a persistent type, false otherwise
      */
     public static boolean isManageable(Object instance) {
         return instance instanceof PersistenceCapable;
-    }
+	}
 }

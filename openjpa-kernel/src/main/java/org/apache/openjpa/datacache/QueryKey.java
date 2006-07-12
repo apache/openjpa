@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -42,15 +45,16 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ImplHelper;
 
 /**
- * This class stores information about a particular invocation of
+ * <p>This class stores information about a particular invocation of
  * a query. It contains a reference to the external properties of the
  * query that was executed, as well as any parameters used to execute
  * that query, with one exception: first-class objects used as
- * parameter values are converted to OIDs.
+ * parameter values are converted to OIDs.</p>
  *
  * @author Patrick Linskey
  */
-public class QueryKey implements Externalizable {
+public class QueryKey
+    implements Externalizable {
 
     // initialize the set of unmodifiable classes. This allows us
     // to avoid cloning collections that are not modifiable,
@@ -64,12 +68,14 @@ public class QueryKey implements Externalizable {
         s_unmod.add(Collections.unmodifiableCollection(s).getClass());
         s_unmod.add(Collections.unmodifiableSet(s).getClass());
         s_unmod.add(Collections.unmodifiableSortedSet(s).getClass());
+
         // handle the list types; jdk uses different classes for standard
         // and random access lists
         List l = new LinkedList();
         s_unmod.add(Collections.unmodifiableList(l).getClass());
         l = new ArrayList(0);
         s_unmod.add(Collections.unmodifiableList(l).getClass());
+
         // handle the constant types
         s_unmod.add(Collections.EMPTY_SET.getClass());
         s_unmod.add(Collections.EMPTY_LIST.getClass());
@@ -85,6 +91,7 @@ public class QueryKey implements Externalizable {
     private Map _params;
     private long _rangeStart;
     private long _rangeEnd;
+
     // ### pcl: 2 May 2003: should this timeout take into account the
     // ### timeouts for classes in the access path of the query?
     // ### Currently, it only considers the candidate class and its
@@ -104,7 +111,7 @@ public class QueryKey implements Externalizable {
      */
     public static QueryKey newInstance(Query q, Object[] args) {
         // compile to make sure info encoded in query string is available
-        // via API calls(candidate class, result class, etc)
+        // via API calls (candidate class, result class, etc)
         q.compile();
         return newInstance(q, false, args, q.getCandidateType(),
             q.hasSubclasses(), q.getStartRange(), q.getEndRange());
@@ -115,7 +122,7 @@ public class QueryKey implements Externalizable {
      */
     public static QueryKey newInstance(Query q, Map args) {
         // compile to make sure info encoded in query string is available
-        // via API calls(candidate class, result class, etc)
+        // via API calls (candidate class, result class, etc)
         q.compile();
         return newInstance(q, false, args, q.getCandidateType(),
             q.hasSubclasses(), q.getStartRange(), q.getEndRange());
@@ -153,12 +160,15 @@ public class QueryKey implements Externalizable {
         Class candidateClass, boolean subclasses, long startIdx, long endIdx) {
         if (candidateClass == null)
             return null;
+
         // can only cache datastore queries
         if (q.getCandidateCollection() != null)
             return null;
+
         // no support already-packed results
         if (q.getResultType() != null && packed)
             return null;
+
         // can't cache non-serializable non-managed complex types
         Class[] types = q.getProjectionTypes();
         for (int i = 0; i < types.length; i++) {
@@ -173,11 +183,13 @@ public class QueryKey implements Externalizable {
                     break;
             }
         }
+
         // we can't cache the query if we don't know which classes are in the
         // access path
         ClassMetaData[] metas = q.getAccessPathMetaDatas();
         if (metas.length == 0)
             return null;
+
         Set accessPathClassNames = new HashSet((int) (metas.length * 1.33 + 1));
         ClassMetaData meta;
         for (int i = 0; i < metas.length; i++) {
@@ -186,20 +198,24 @@ public class QueryKey implements Externalizable {
             meta = metas[i];
             while (meta.getPCSuperclass() != null)
                 meta = meta.getPCSuperclassMetaData();
+
             // ensure that this metadata is cacheable
             if (meta.getDataCache() == null)
                 return null;
             accessPathClassNames.add(meta.getDescribedType().getName());
         }
+
         // if any of the types are currently dirty, we can't cache this query
         StoreContext ctx = q.getStoreContext();
         if (intersects(accessPathClassNames, ctx.getPersistedTypes())
             || intersects(accessPathClassNames, ctx.getUpdatedTypes())
             || intersects(accessPathClassNames, ctx.getDeletedTypes()))
             return null;
+
         // calculate the timeout for the key
         MetaDataRepository repos = ctx.getConfiguration().
             getMetaDataRepository();
+
         // won't find metadata for interfaces.
         if (candidateClass.isInterface())
             return null;
@@ -211,11 +227,13 @@ public class QueryKey implements Externalizable {
             for (int i = 0; i < metas.length; i++) {
                 if (metas[i].getDataCache() == null)
                     return null;
+
                 subTimeout = metas[i].getDataCacheTimeout();
                 if (subTimeout != -1 && subTimeout < timeout)
                     timeout = subTimeout;
             }
         }
+
         // tests all passed; cacheable
         QueryKey key = new QueryKey();
         key._candidateClassName = candidateClass.getName();
@@ -237,6 +255,7 @@ public class QueryKey implements Externalizable {
         Object[] args) {
         if (args == null || args.length == 0)
             return true;
+
         // Create a map for the given parameters, and convert the
         // parameter list into a map, using the query's parameter
         // declaration to determine ordering etc.
@@ -256,6 +275,7 @@ public class QueryKey implements Externalizable {
         Map params) {
         if (params == null || params.isEmpty())
             return true;
+
         Map.Entry e;
         Object v;
         for (Iterator iter = params.entrySet().iterator(); iter.hasNext();) {
@@ -266,6 +286,7 @@ public class QueryKey implements Externalizable {
                     return false;
                 e.setValue(ctx.getObjectId(v));
             }
+
             if (v instanceof Collection) {
                 Collection c = (Collection) v;
                 boolean contentsAreDates = false;
@@ -274,6 +295,7 @@ public class QueryKey implements Externalizable {
                     Object o = c.iterator().next();
                     if (ImplHelper.isManageable(o))
                         return false;
+
                     // pcl: 27 Jun 2004: if we grow this logic to
                     // handle other mutable types that are not
                     // known to be cloneable, we will have to add
@@ -283,6 +305,7 @@ public class QueryKey implements Externalizable {
                     // in Object.
                     if (o instanceof Date)
                         contentsAreDates = true;
+
                     // if the collection is not a known immutable
                     // type, or if it contains mutable instances,
                     // clone it for good measure.
@@ -293,19 +316,24 @@ public class QueryKey implements Externalizable {
                             copy = new TreeSet();
                         else if (c instanceof Set)
                             copy = new HashSet();
-                        else copy = new ArrayList(c.size());
+                        else
+                            copy = new ArrayList(c.size());
+
                         if (contentsAreDates) {
                             // must go through by hand and do the
                             // copy, since Date is mutable.
                             for (Iterator itr2 = c.iterator(); itr2.hasNext();)
                                 copy.add(((Date) itr2.next()).clone());
-                        } else copy.addAll(c);
+                        } else
+                            copy.addAll(c);
+
                         e.setValue(copy);
                     }
                 }
             } else if (v instanceof Date)
                 e.setValue(((Date) v).clone());
         }
+
         key._params = params;
         return true;
     }
@@ -368,12 +396,14 @@ public class QueryKey implements Externalizable {
             return true;
         if (ob == null || getClass() != ob.getClass())
             return false;
+
         QueryKey other = (QueryKey) ob;
         return StringUtils.equals(_candidateClassName,
             other._candidateClassName)
             && _subclasses == other._subclasses
             && _ignoreChanges == other._ignoreChanges
-            && _rangeStart == other._rangeStart && _rangeEnd == other._rangeEnd
+            && _rangeStart == other._rangeStart
+            && _rangeEnd == other._rangeEnd
             && StringUtils.equals(_query, other._query)
             && ObjectUtils.equals(_params, other._params);
     }
@@ -400,12 +430,15 @@ public class QueryKey implements Externalizable {
             append(",ignoreChanges:").append(_ignoreChanges).
             append(",startRange:").append(_rangeStart).
             append(",endRange:").append(_rangeEnd).
-            append(",timeout:").append(_timeout). append("]");
+            append(",timeout:").append(_timeout).
+            append("]");
         return buf.toString();
     }
 
     // ---------- Externalizable implementation ----------
-    public void writeExternal(ObjectOutput out) throws IOException {
+
+    public void writeExternal(ObjectOutput out)
+        throws IOException {
         out.writeObject(_candidateClassName);
         out.writeBoolean(_subclasses);
         out.writeObject(_accessPathClassNames);
@@ -426,7 +459,7 @@ public class QueryKey implements Externalizable {
         _ignoreChanges = in.readBoolean();
         _params = (Map) in.readObject();
         _rangeStart = in.readLong();
-        _rangeEnd = in.readLong();
-        _timeout = in.readInt();
-    }
+        _rangeEnd = in.readLong ();
+		_timeout = in.readInt ();
+	}
 }

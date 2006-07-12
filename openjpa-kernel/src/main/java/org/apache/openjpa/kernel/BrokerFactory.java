@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,15 +19,16 @@ import java.io.Serializable;
 import java.util.Properties;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.lib.util.Closeable; // also in java.io
+import org.apache.openjpa.lib.util.Closeable;
 
 /**
- * Factory for {@link Broker} instances.
+ * <p>Factory for {@link Broker} instances.</p>
  *
  * @author Abe White
  * @since 4.0
  */
-public interface BrokerFactory extends Serializable, Closeable {
+public interface BrokerFactory
+    extends Serializable, Closeable {
 
     /**
      * Return the configuration for this factory.
@@ -61,8 +65,8 @@ public interface BrokerFactory extends Serializable, Closeable {
 
     /**
      * Register a listener for lifecycle-related events on the specified
-     * classes. If the classes are null, all events will be propagated to
-     * the listener. The listener will be passed on to all new brokers.
+     * classes.  If the classes are null, all events will be propagated to
+     * the listener.  The listener will be passed on to all new brokers.
      *
      * @since 3.3
      */
@@ -91,7 +95,7 @@ public interface BrokerFactory extends Serializable, Closeable {
     public void lock();
 
     /**
-     * Release the internal lock.
-     */
-    public void unlock();
+     *	Release the internal lock.
+	 */
+	public void unlock ();
 }

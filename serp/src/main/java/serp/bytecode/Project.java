@@ -91,10 +91,10 @@ public class Project implements VisitAcceptor {
      * that type. If the name is of a primitive or array type, the returned
      * instance will act accordingly.
      *
-     * @param name   the name of the class, including package
+     * @param name the name of the class, including package
      * @param loader the class loader to use to search for an existing
-     *               class with the given name; if null defaults to the
-     *               context loader of the current thread
+     * class with the given name; if null defaults to the
+     * context loader of the current thread
      * @throws RuntimeException on parse error
      */
     public BCClass loadClass(String name, ClassLoader loader) {

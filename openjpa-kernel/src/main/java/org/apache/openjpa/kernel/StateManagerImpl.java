@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -52,24 +55,27 @@ import org.apache.openjpa.util.UserException;
 import serp.util.Numbers;
 
 /**
- * Implementation of the {@link OpenJPAStateManager} interface for use
- * with this runtime. Each state manager manages the state of a single
- * persistence capable instance. The state manager is also responsible for
- * all communications about the instance to the {@link StoreManager}.
- * The state manager uses the State pattern in both its interaction with
+ * <p>Implementation of the {@link OpenJPAStateManager} interface for use
+ * with this runtime.  Each state manager manages the state of a single
+ * persistence capable instance.  The state manager is also responsible for
+ * all communications about the instance to the {@link StoreManager}.</p>
+ * <p/>
+ * <p>The state manager uses the State pattern in both its interaction with
  * the governed instance and its interaction with the broker.
  * In its interactions with the persistence capable instance, it uses the
- * {@link FieldManager} interface. Similarly, when interacting with the
+ * {@link FieldManager} interface.  Similarly, when interacting with the
  * broker, it uses the {@link PCState} singleton that represents
- * the current lifecycle state of the instance.
+ * the current lifecycle state of the instance.</p>
  *
  * @author Abe White
  */
-public class StateManagerImpl implements OpenJPAStateManager {
+class StateManagerImpl
+    implements OpenJPAStateManager {
 
     public static final int LOAD_FGS = 0;
     public static final int LOAD_ALL = 1;
     public static final int LOAD_SERIALIZE = 2;
+
     private static final int FLAG_SAVE = 2 << 0;
     private static final int FLAG_DEREF = 2 << 1;
     private static final int FLAG_DFG = 2 << 2;
@@ -87,8 +93,10 @@ public class StateManagerImpl implements OpenJPAStateManager {
     private static final int FLAG_VERSION_CHECK = 2 << 14;
     private static final int FLAG_VERSION_UPDATE = 2 << 15;
     private static final int FLAG_DETACHING = 2 << 16;
-    private static Localizer _loc =
-        Localizer.forPackage(StateManagerImpl.class);
+
+    private static Localizer _loc = Localizer.forPackage
+        (StateManagerImpl.class);
+
     // information about the instance
     private PersistenceCapable _pc = null;
     private ClassMetaData _meta = null;
@@ -96,29 +104,35 @@ public class StateManagerImpl implements OpenJPAStateManager {
     private BitSet _dirty = null;
     private BitSet _flush = null;
     private int _flags = 0;
+
     // id is the state manager identity; oid is the persistent identity.  oid
     // may be null for embedded and transient-transactional objects or new
     // instances that haven't been assigned an oid.  id is reassigned to oid
-    // on successful oid assignment(or flush completion if assignment is
+    // on successful oid assignment (or flush completion if assignment is
     // during flush)
     private Object _id = null;
     private Object _oid = null;
+
     // the managing persistence manager and lifecycle state
     private final BrokerImpl _broker;
     private PCState _state = PCState.TRANSIENT;
+
     // the current and last loaded version indicators, and the lock object
     private Object _version = null;
     private Object _loadVersion = null;
     private Object _lock = null;
     private int _readLockLevel = -1;
     private int _writeLockLevel = -1;
+
     // delegates when providing/replacing instance data
     private SingleFieldManager _single = null;
     private SaveFieldManager _saved = null;
     private FieldManager _fm = null;
+
     // impldata; field impldata and intermediate data share the same array
     private Object _impl = null;
     private Object[] _fieldImpl = null;
+
     // information about the owner of this instance, if it is embedded
     private StateManagerImpl _owner = null;
     private ValueMetaData _ownerMeta = null;
@@ -126,11 +140,12 @@ public class StateManagerImpl implements OpenJPAStateManager {
     /**
      * Constructor; supply id, type metadata, and owning persistence manager.
      */
-    public StateManagerImpl(Object id, ClassMetaData meta, BrokerImpl broker) {
+    StateManagerImpl(Object id, ClassMetaData meta, BrokerImpl broker) {
         _id = id;
         _meta = meta;
         _broker = broker;
         _single = new SingleFieldManager(this, broker);
+
         if (_meta.getIdentityType() == ClassMetaData.ID_UNKNOWN)
             throw new UserException(_loc.get("meta-unknownid", _meta));
     }
@@ -158,28 +173,32 @@ public class StateManagerImpl implements OpenJPAStateManager {
     void setLoading(boolean loading) {
         if (loading)
             _flags |= FLAG_LOADING;
-        else _flags &= ~FLAG_LOADING;
+        else
+            _flags &= ~FLAG_LOADING;
     }
 
     /**
-     * Set or reset the lifecycle state of the managed instance. If the
+     * Set or reset the lifecycle state of the managed instance.  If the
      * transactional state of the instance changes, it will be enlisted/
-     * delisted from the current transaction as necessary. The given
-     * state will be initialized after being set. If the given state
+     * delisted from the current transaction as necessary.  The given
+     * state will be initialized after being set.  If the given state
      * is the same as the current state, this method will have no effect.
      */
     private void setPCState(PCState state) {
         if (_state == state)
             return;
+
         lock();
         try {
             // notify the store manager that we're changing states; can veto
             _broker.getStoreManager().beforeStateChange(this, _state, state);
+
             // replace state
             boolean wasDeleted = _state.isDeleted();
             boolean wasDirty = _state.isDirty();
             boolean wasPending = _state.isPendingTransactional();
             _state = state;
+
             // enlist/delist from transaction
             if (_state.isTransactional()) {
                 _broker.addToTransaction(this);
@@ -191,7 +210,9 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 _broker.addToPendingTransaction(this);
             else if (wasPending && !_state.isPendingTransactional())
                 _broker.removeFromPendingTransaction(this);
-            else _broker.removeFromTransaction(this);
+            else
+                _broker.removeFromTransaction(this);
+
             // initialize
             _state.initialize(this);
             if (_state.isDeleted() && !wasDeleted)
@@ -205,6 +226,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
     ///////////////////////////////////
     // OpenJPAStateManager implementation
     ///////////////////////////////////
+
     public void initialize(Class cls, PCState state) {
         // check to see if our current object id instance is the
         // correct id type for the specified class; this is for cases
@@ -227,16 +249,18 @@ public class StateManagerImpl implements OpenJPAStateManager {
             }
             _meta = sub;
         }
+
         PersistenceCapable inst = PCRegistry.newInstance(cls, this, _oid, true);
         if (inst == null) {
             // the instance was null: check to see if the instance is
-            // abstract(as can sometimes be the case when the
+            // abstract (as can sometimes be the case when the
             // class discriminator strategy is not configured correctly)
             if (Modifier.isAbstract(cls.getModifiers()))
                 throw new UserException(_loc.get("instantiate-abstract",
                     cls.getName(), _oid));
             throw new InternalException();
         }
+
         initialize(inst, state);
     }
 
@@ -250,25 +274,31 @@ public class StateManagerImpl implements OpenJPAStateManager {
             throw new UserException(_loc.get("init-sm-pc",
                 Exceptions.toString(pc))).setFailedObject(pc);
         pc.pcReplaceStateManager(this);
+
         FieldMetaData[] fmds = _meta.getFields();
         _loaded = new BitSet(fmds.length);
         _flush = new BitSet(fmds.length);
         _dirty = new BitSet(fmds.length);
+
         for (int i = 0; i < fmds.length; i++) {
             // mark primary key and non-persistent fields as loaded
             if (fmds[i].isPrimaryKey()
                 || fmds[i].getManagement() != fmds[i].MANAGE_PERSISTENT)
                 _loaded.set(i);
+
             // record whether there are any managed inverse fields
             if (_broker.getInverseManager() != null
                 && fmds[i].getInverseMetaDatas().length > 0)
                 _flags |= FLAG_INVERSES;
         }
+
         pc.pcSetDetachedState(null);
         pc.pcReplaceFlags();
         _pc = pc;
+
         if (_oid instanceof OpenJPAId)
             ((OpenJPAId) _oid).setManagedInstanceType(_meta.getDescribedType());
+
         // initialize our state and add ourselves to the broker's cache
         setPCState(state);
         _broker.setStateManager(_id, this, BrokerImpl.STATUS_INIT);
@@ -290,17 +320,19 @@ public class StateManagerImpl implements OpenJPAStateManager {
 
     /**
      * Load the state of this instance based on the given fetch configuration
-     * and load mode. Return true if any data was loaded, false otherwise.
+     * and load mode.  Return true if any data was loaded, false otherwise.
      */
     protected boolean load(FetchState fetchState, int loadMode,
         BitSet exclude, Object sdata, boolean forWrite) {
         if (!forWrite && (!isPersistent() || isNew() || isDeleted()))
             return false;
+
         // if any fields being loaded, do state transitions for read
         BitSet fields = getUnloadedInternal(fetchState, loadMode, exclude);
         boolean active = _broker.isActive();
         if (!forWrite && fields != null)
             beforeRead(-1);
+
         // call load even if no fields are being loaded, because it takes
         // care of checking if the DFG is loaded, making sure version info
         // is loaded, etc
@@ -371,12 +403,14 @@ public class StateManagerImpl implements OpenJPAStateManager {
         BitSet exclude) {
         if (exclude == StoreContext.EXCLUDE_ALL)
             return null;
+
         BitSet fields = null;
         FieldMetaData[] fmds = _meta.getFields();
         boolean load;
         for (int i = 0; i < fmds.length; i++) {
             if (_loaded.get(i) || (exclude != null && exclude.get(i)))
                 continue;
+
             switch (mode) {
                 case LOAD_SERIALIZE:
                     load = !fmds[i].isTransient();
@@ -385,9 +419,10 @@ public class StateManagerImpl implements OpenJPAStateManager {
                     load = fetchState == null ||
                         fetchState.requiresLoad(this, fmds[i]);
                     break;
-                default: // LOAD_ALL
+                default:     // LOAD_ALL
                     load = true;
             }
+
             if (load) {
                 if (fields == null)
                     fields = new BitSet(fmds.length);
@@ -442,12 +477,14 @@ public class StateManagerImpl implements OpenJPAStateManager {
     private boolean assignObjectId(boolean flush, boolean preFlushing) {
         if (_oid != null || isEmbedded() || !isPersistent())
             return true;
+
         if (_broker.getStoreManager().assignObjectId(this, preFlushing)) {
             if (!preFlushing)
                 assertObjectIdAssigned(true);
         } else if (flush)
             _broker.flush();
-        else return false;
+        else
+            return false;
         return true;
     }
 
@@ -455,7 +492,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
      * Make sure we were assigned an oid, and perform actions to make it
      * permanent.
      *
-     * @param recache whether to recache ourself on the new oid
+     * @param    recache        whether to recache ourself on the new oid
      */
     private void assertObjectIdAssigned(boolean recache) {
         if (!isNew() || isDeleted() || (_flags & FLAG_OID_ASSIGNED) > 0)
@@ -466,13 +503,15 @@ public class StateManagerImpl implements OpenJPAStateManager {
                     (getManagedInstance()));
             _oid = ApplicationIds.create(_pc, _meta);
         }
+
         Object orig = _id;
         _id = _oid;
         if (recache) {
             try {
                 _broker.setStateManager(orig, this,
                     BrokerImpl.STATUS_OID_ASSIGN);
-            } catch (RuntimeException re) {
+            }
+            catch (RuntimeException re) {
                 _id = orig;
                 _oid = null;
                 throw re;
@@ -491,6 +530,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
             sm = sm.getOwner();
         if (!sm.isNew() || sm.isFlushed() || sm.isDeleted())
             return false;
+
         // special-case oid fields, which require us to look inside the oid
         // object
         FieldMetaData fmd = _meta.getField(field);
@@ -498,6 +538,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
             // try to shortcut if possible
             if (_oid != null || isEmbedded() || !isPersistent())
                 return true;
+
             // check embedded fields of oid for value strategy + default value
             FieldMetaData[] pks = fmd.getEmbeddedMetaData().getFields();
             OpenJPAStateManager oidsm = null;
@@ -512,14 +553,17 @@ public class StateManagerImpl implements OpenJPAStateManager {
             }
             return assign && assignObjectId(!preFlushing, preFlushing);
         }
+
         // don't assign values to fields with non-default values already
         if (fmd.getValueStrategy() == ValueStrategies.NONE
             || !isDefaultValue(field))
             return false;
+
         // for primary key fields, assign the object id and recache so that
         // to the user, so it looks like the oid always matches the pk fields
         if (fmd.isPrimaryKey() && !isEmbedded())
             return assignObjectId(!preFlushing, preFlushing);
+
         // for other fields just assign the field or flush if needed
         if (_broker.getStoreManager().assignField(this, field, preFlushing))
             return true;
@@ -543,6 +587,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
     public void setVersion(Object version) {
         _version = version;
         _loadVersion = version;
+
         FieldMetaData vfield = _meta.getVersionField();
         if (vfield != null)
             store(vfield.getIndex(), JavaTypes.convert(version,
@@ -566,7 +611,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
         _impl = data;
         if (cacheable && data != null)
             _flags |= FLAG_IMPL_CACHE;
-        else _flags &= ~FLAG_IMPL_CACHE;
+        else
+            _flags &= ~FLAG_IMPL_CACHE;
         return old;
     }
 
@@ -621,12 +667,14 @@ public class StateManagerImpl implements OpenJPAStateManager {
         if (idx == -1)
             throw new InternalException(String.valueOf(_meta.getField
                 (field)));
+
         Object old = (_fieldImpl == null) ? null : _fieldImpl[idx];
         if (data != null) {
             // cannot set if field in wrong loaded state
             if (_loaded.get(field) != loaded)
                 throw new InternalException(String.valueOf(_meta.getField
                     (field)));
+
             // set data
             if (_fieldImpl == null)
                 _fieldImpl = new Object[_meta.getExtraFieldDataLength()];
@@ -647,17 +695,19 @@ public class StateManagerImpl implements OpenJPAStateManager {
             throw new UserException(_loc.get("no-field",
                 String.valueOf(field), getManagedInstance().getClass())).
                 setFailedObject(getManagedInstance());
+
         // do normal state transitions
         if (!fmd.isPrimaryKey() && transitions)
             accessingField(field);
+
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.STRING:
                 return fetchStringField(field);
             case JavaTypes.OBJECT:
                 return fetchObjectField(field);
             case JavaTypes.BOOLEAN:
-                return (fetchBooleanField(field)) ? Boolean.TRUE :
-                    Boolean.FALSE;
+                return (fetchBooleanField(field)) ? Boolean.TRUE
+                    : Boolean.FALSE;
             case JavaTypes.BYTE:
                 return new Byte(fetchByteField(field));
             case JavaTypes.CHAR:
@@ -692,6 +742,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
             && ((_flags & FLAG_INVERSES) == 0
             || fmd.getInverseMetaDatas().length == 0))
             throw new InvalidStateException(_loc.get("restore-unset"));
+
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.DATE:
             case JavaTypes.CALENDAR:
@@ -706,14 +757,17 @@ public class StateManagerImpl implements OpenJPAStateManager {
                     throw new InvalidStateException(_loc.get
                         ("mutable-restore-unset"));
         }
+
         lock();
         try {
             if (_saved == null || !_loaded.get(field) || !_dirty.get(field))
                 return fetchField(field, false);
+
             // if the field is dirty but we never loaded it, we can't restore it
             if (_saved.getUnloaded().get(field))
                 throw new InvalidStateException(_loc.get("initial-unloaded",
                     fmd));
+
             provideField(_saved.getState(), _single, field);
             return fetchField(_single, fmd);
         }
@@ -731,8 +785,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
         int field = fmd.getIndex();
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.BOOLEAN:
-                return (fm.fetchBooleanField(field)) ? Boolean.TRUE :
-                    Boolean.FALSE;
+                return (fm.fetchBooleanField(field)) ? Boolean.TRUE
+                    : Boolean.FALSE;
             case JavaTypes.BYTE:
                 return new Byte(fm.fetchByteField(field));
             case JavaTypes.CHAR:
@@ -766,6 +820,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
             unlock();
         }
     }
+
     ////////////////////////
     // Lifecycle operations
     ////////////////////////
@@ -773,28 +828,31 @@ public class StateManagerImpl implements OpenJPAStateManager {
     /**
      * Notification that the object is about to be accessed.
      *
-     * @param field the field number being read, or -1 if not a single
-     *              field read
+     * @param    field    the field number being read, or -1 if not a single
+     * field read
      */
     void beforeRead(int field) {
         // allow unmediated reads of primary key fields
         if (field != -1 && _meta.getField(field).isPrimaryKey())
             return;
+
         boolean active = _broker.isActive();
         if (active) {
             if (_broker.getOptimistic())
                 setPCState(_state.beforeOptimisticRead(this, field));
-            else setPCState(_state.beforeRead(this, field));
+            else
+                setPCState(_state.beforeRead(this, field));
         } else if (_broker.getNontransactionalRead())
             setPCState(_state.beforeNontransactionalRead(this, field));
-        else throw new InvalidStateException(_loc.get("non-trans-read")).
-            setFailedObject(getManagedInstance());
+        else
+            throw new InvalidStateException(_loc.get("non-trans-read")).
+                setFailedObject(getManagedInstance());
     }
 
     /**
      * Delegates to the current state.
      *
-     * @see PCState#beforeFlush
+     * @see    PCState#beforeFlush
      */
     void beforeFlush(int reason, OpCallbacks call) {
         _state.beforeFlush(this, reason == BrokerImpl.FLUSH_LOGICAL, call);
@@ -803,27 +861,32 @@ public class StateManagerImpl implements OpenJPAStateManager {
     /**
      * Delegates to the current state.
      *
-     * @see PCState#flush
+     * @see    PCState#flush
      */
     void afterFlush(int reason) {
         // nothing happens when we flush non-persistent states
         if (!isPersistent())
             return;
-        if (reason != BrokerImpl.FLUSH_ROLLBACK &&
-            reason != BrokerImpl.FLUSH_LOGICAL) {
+
+        if (reason != BrokerImpl.FLUSH_ROLLBACK
+            && reason != BrokerImpl.FLUSH_LOGICAL) {
             // all dirty fields were flushed
             _flush.or(_dirty);
+
             // important to set flushed bit after calling _state.flush so
             // that the state can tell whether this is the first flush
             setPCState(_state.flush(this));
             _flags |= FLAG_FLUSHED;
             _flags &= ~FLAG_FLUSHED_DIRTY;
+
             _flags &= ~FLAG_VERSION_CHECK;
             _flags &= ~FLAG_VERSION_UPDATE;
+
             // if this was an inc flush during which we had our identity
             // assigned, tell the broker to cache us under our final oid
             if (reason == BrokerImpl.FLUSH_INC)
                 assertObjectIdAssigned(true);
+
             // if this object was stored with preFlush, do post-store callback
             if ((_flags & FLAG_PRE_FLUSHED) > 0)
                 fireLifecycleEvent(LifecycleEvent.AFTER_STORE);
@@ -840,22 +903,27 @@ public class StateManagerImpl implements OpenJPAStateManager {
      * Delegates to the current state after checking the value
      * of the RetainState flag.
      *
-     * @see PCState#commit
-     * @see PCState#commitRetain
+     * @see    PCState#commit
+     * @see    PCState#commitRetain
      */
     void commit() {
         // release locks before oid updated
         releaseLocks();
+
         // update version and oid information
         setVersion(_version);
         _flags &= ~FLAG_FLUSHED;
         _flags &= ~FLAG_FLUSHED_DIRTY;
+
         Object orig = _id;
         assertObjectIdAssigned(false);
+
         boolean wasNew = isNew() && !isDeleted();
         if (_broker.getRetainState())
             setPCState(_state.commitRetain(this));
-        else setPCState(_state.commit(this));
+        else
+            setPCState(_state.commit(this));
+
         // ask the broker to re-cache us if we were new previously
         if (wasNew)
             _broker.setStateManager(orig, this, BrokerImpl.STATUS_COMMIT_NEW);
@@ -865,8 +933,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
      * Delegates to the current state after checking the value
      * of the RetainState flag.
      *
-     * @see PCState#rollback
-     * @see PCState#rollbackRestore
+     * @see    PCState#rollback
+     * @see    PCState#rollbackRestore
      */
     void rollback() {
         // release locks
@@ -874,9 +942,11 @@ public class StateManagerImpl implements OpenJPAStateManager {
         _flags &= ~FLAG_FLUSHED;
         _flags &= ~FLAG_FLUSHED_DIRTY;
         afterFlush(BrokerImpl.FLUSH_ROLLBACK);
+
         if (_broker.getRestoreState() != RestoreState.RESTORE_NONE)
             setPCState(_state.rollbackRestore(this));
-        else setPCState(_state.rollback(this));
+        else
+            setPCState(_state.rollback(this));
     }
 
     /**
@@ -899,8 +969,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
     /**
      * Delegates to the current state.
      *
-     * @see PCState#persist
-     * @see Broker#persist
+     * @see    PCState#persist
+     * @see    Broker#persist
      */
     void persist() {
         setPCState(_state.persist(this));
@@ -909,8 +979,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
     /**
      * Delegates to the current state.
      *
-     * @see PCState#delete
-     * @see Broker#delete
+     * @see    PCState#delete
+     * @see    Broker#delete
      */
     void delete() {
         setPCState(_state.delete(this));
@@ -919,8 +989,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
     /**
      * Delegates to the current state.
      *
-     * @see PCState#nontransactional
-     * @see Broker#nontransactional
+     * @see    PCState#nontransactional
+     * @see    Broker#nontransactional
      */
     void nontransactional() {
         setPCState(_state.nontransactional(this));
@@ -929,8 +999,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
     /**
      * Delegates to the current state.
      *
-     * @see PCState#transactional
-     * @see Broker#transactional
+     * @see    PCState#transactional
+     * @see    Broker#transactional
      */
     void transactional() {
         setPCState(_state.transactional(this));
@@ -939,8 +1009,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
     /**
      * Delegates to the current state.
      *
-     * @see PCState#release
-     * @see Broker#release
+     * @see    PCState#release
+     * @see    Broker#release
      */
     void release(boolean unproxy) {
         release(unproxy, false);
@@ -948,13 +1018,14 @@ public class StateManagerImpl implements OpenJPAStateManager {
 
     void release(boolean unproxy, boolean force) {
         // optimization for detach-in-place special case when fields are
-        // already(un)proxied correctly
+        // already (un)proxied correctly
         if (!unproxy)
             _flags |= FLAG_NO_UNPROXY;
         try {
             if (force)
                 setPCState(PCState.TRANSIENT);
-            else setPCState(_state.release(this));
+            else
+                setPCState(_state.release(this));
         }
         finally {
             _flags &= ~FLAG_NO_UNPROXY;
@@ -964,8 +1035,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
     /**
      * Delegates to the current state.
      *
-     * @see PCState#evict
-     * @see Broker#evict
+     * @see    PCState#evict
+     * @see    Broker#evict
      */
     void evict() {
         setPCState(_state.evict(this));
@@ -980,6 +1051,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         for (int i = 0; i < fmds.length; i++) {
             if (!_loaded.get(i))
                 continue;
+
             if (fmds[i].getCascadeRefresh() == ValueMetaData.CASCADE_IMMEDIATE
                 || fmds[i].getKey().getCascadeRefresh()
                 == ValueMetaData.CASCADE_IMMEDIATE
@@ -995,9 +1067,11 @@ public class StateManagerImpl implements OpenJPAStateManager {
     public boolean beforeRefresh(boolean refreshAll) {
         // note: all logic placed here rather than in the states for
         // optimization; this method public b/c used by remote package
+
         // nothing to do for non persistent or new instances
         if (!isPersistent() || isNew())
             return false;
+
         lock();
         try {
             // if dirty need to clear fields
@@ -1005,6 +1079,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 clearFields();
                 return true;
             }
+
             // if some fields have been loaded but the instance is out of
             // date or this is part of a refreshAll() and we don't want to
             // take the extra hit to see if the instance is out of date, clear
@@ -1012,6 +1087,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 || !syncVersion(null))) {
                 Object version = _version;
                 clearFields();
+
                 // if syncVersion just replaced the version, reset it
                 if (!refreshAll && !isEmbedded())
                     setVersion(version);
@@ -1025,7 +1101,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
     }
 
     /**
-     * Perform state transitions after refresh. This method is only
+     * Perform state transitions after refresh.  This method is only
      * called if {@link #beforeRefresh} returns true.
      */
     void afterRefresh() {
@@ -1036,7 +1112,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 setPCState(_state.afterNontransactionalRefresh());
             else if (_broker.getOptimistic())
                 setPCState(_state.afterOptimisticRefresh());
-            else setPCState(_state.afterRefresh());
+            else
+                setPCState(_state.afterRefresh());
         }
         finally {
             unlock();
@@ -1057,12 +1134,13 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 _broker.addDereferencedDependent(this);
         }
     }
+
     ///////////
     // Locking
     ///////////
 
     /**
-     * Notification that we've been read-locked. Pass in the level at which
+     * Notification that we've been read-locked.  Pass in the level at which
      * we were locked and the level at which we should write lock ourselves
      * on dirty.
      */
@@ -1071,6 +1149,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         // cleared on commit/rollback
         if (readLockLevel != LockLevels.LOCK_NONE)
             transactional();
+
         _readLockLevel = readLockLevel;
         _writeLockLevel = writeLockLevel;
         _flags |= FLAG_READ_LOCKED;
@@ -1086,6 +1165,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
             return LockLevels.LOCK_NONE;
         if (fetch == null)
             fetch = _broker.getFetchConfiguration();
+
         if (_readLockLevel == -1)
             _readLockLevel = fetch.getReadLockLevel();
         if (_writeLockLevel == -1)
@@ -1100,6 +1180,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FetchConfiguration fetch, Object sdata) {
         if (!active)
             return;
+
         // if we haven't been locked yet, lock now at the given level
         int flag = (forWrite) ? FLAG_WRITE_LOCKED : FLAG_READ_LOCKED;
         if ((_flags & flag) == 0) {
@@ -1107,6 +1188,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
             // cleared on commit/rollback
             if (lockLevel != LockLevels.LOCK_NONE)
                 transactional();
+
             if (fetch == null)
                 fetch = _broker.getFetchConfiguration();
             _broker.getLockManager().lock(this, lockLevel,
@@ -1131,25 +1213,30 @@ public class StateManagerImpl implements OpenJPAStateManager {
     ////////////////////////////////////////////
     // Implementation of StateManager interface
     ////////////////////////////////////////////
+
     public boolean serializing() {
         try {
             if (_meta.isDetachable())
                 return DetachManager.preSerialize(this);
+
             load(_broker.getFetchConfiguration().newFetchState(),
                 LOAD_SERIALIZE, null, null, false);
             return false;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
 
-    public boolean writeDetached(ObjectOutput out) throws IOException {
+    public boolean writeDetached(ObjectOutput out)
+        throws IOException {
         BitSet idxs = new BitSet(_meta.getFields().length);
         lock();
         try {
             boolean detsm = DetachManager.writeDetachedState(this, out, idxs);
             if (detsm)
                 _flags |= FLAG_DETACHING;
+
             FieldMetaData[] fmds = _meta.getFields();
             for (int i = 0; i < fmds.length; i++) {
                 if (fmds[i].isTransient())
@@ -1159,7 +1246,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 _single.clear();
             }
             return true;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
         finally {
@@ -1213,10 +1301,12 @@ public class StateManagerImpl implements OpenJPAStateManager {
             if (_oid == null || !_broker.getConfiguration().
                 getCompatibilityInstance().getCopyObjectIds())
                 return _oid;
+
             if (_meta.getIdentityType() == ClassMetaData.ID_DATASTORE)
                 return _broker.getStoreManager().copyDataStoreId(_oid, _meta);
             return ApplicationIds.copy(_oid, _meta);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1236,7 +1326,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
         try {
             beforeRead(field);
             beforeAccessField(field);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1251,9 +1342,11 @@ public class StateManagerImpl implements OpenJPAStateManager {
             int lockLevel = calculateLockLevel(active, false, null);
             if (!_loaded.get(field))
                 loadField(field, lockLevel, false, true);
-            else assignField(field, false);
+            else
+                assignField(field, false);
             obtainLocks(active, false, lockLevel, null, null);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
         finally {
@@ -1266,6 +1359,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         if (fmd == null)
             throw translate(new UserException(_loc.get("no-field", field,
                 _pc.getClass())).setFailedObject(getManagedInstance()));
+
         dirty(fmd.getIndex(), null, true);
     }
 
@@ -1276,11 +1370,11 @@ public class StateManagerImpl implements OpenJPAStateManager {
     /**
      * Make the given field dirty.
      *
-     * @param mutate if null, may be an SCO mutation; if true, is certainly
-     *               a mutation(or at least treat as one)
-     * @return {@link Boolean#FALSE} if this instance was already dirty,
-     *         <code>null</code> if it was dirty but not since flush, and
-     *         {@link Boolean#TRUE} if it was not dirty
+     * @param    mutate    if null, may be an SCO mutation; if true, is certainly
+     * a mutation (or at least treat as one)
+     * @return        {@link Boolean#FALSE} if this instance was already dirty,
+     * <code>null</code> if it was dirty but not since flush, and
+     * {@link Boolean#TRUE} if it was not dirty
      */
     private Boolean dirty(int field, Boolean mutate, boolean loadFetchGroup) {
         boolean locked = false;
@@ -1295,11 +1389,13 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 if (fmd.getUpdateStrategy() == UpdateStrategies.IGNORE)
                     return Boolean.FALSE;
             }
+
             if (isEmbedded()) {
                 // notify owner of change
                 _owner.dirty(_ownerMeta.getFieldMetaData().getIndex(),
                     Boolean.TRUE, loadFetchGroup);
             }
+
             // is this a direct mutation of an sco field?
             if (mutate == null) {
                 switch (fmd.getDeclaredTypeCode()) {
@@ -1316,12 +1412,14 @@ public class StateManagerImpl implements OpenJPAStateManager {
                             (fmd.isEmbedded()) ? Boolean.TRUE : Boolean.FALSE;
                         break;
                     default:
-                        mutate = Boolean.FALSE; // not sco
+                        mutate = Boolean.FALSE;        // not sco
                 }
             }
+
             // possibly change state
             boolean active = _broker.isActive();
-            clean = !_state.isDirty();  // intentional direct access
+            clean = !_state.isDirty();     // intentional direct access
+
             // fire event fast before state change.
             if (clean)
                 fireLifecycleEvent(LifecycleEvent.BEFORE_DIRTY);
@@ -1329,46 +1427,56 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 if (_broker.getOptimistic())
                     setPCState(_state.beforeOptimisticWrite(this, field,
                         mutate.booleanValue()));
-                else setPCState(_state.beforeWrite(this, field,
-                    mutate.booleanValue()));
+                else
+                    setPCState(_state.beforeWrite(this, field,
+                        mutate.booleanValue()));
             } else if (fmd.getManagement() == FieldMetaData.MANAGE_PERSISTENT) {
                 if (isPersistent() && !_broker.getNontransactionalWrite())
                     throw new InvalidStateException(_loc.get
                         ("non-trans-write")).setFailedObject
                         (getManagedInstance());
+
                 setPCState(_state.beforeNontransactionalWrite(this, field,
                     mutate.booleanValue()));
             }
+
             if ((_flags & FLAG_FLUSHED) != 0) {
                 newFlush = (_flags & FLAG_FLUSHED_DIRTY) == 0;
                 _flags |= FLAG_FLUSHED_DIRTY;
             }
+
             lock();
             locked = true;
+
             // note that the field is in need of flushing again, and tell the
             // broker too
             _flush.clear(field);
             _broker.setDirty(this, newFlush && !clean);
+
             // save the field for rollback if needed
             saveField(field);
+
             // dirty the field and mark loaded; load fetch group if needed
             int lockLevel = calculateLockLevel(active, true, null);
             if (!_dirty.get(field)) {
                 setLoaded(field, true);
                 _dirty.set(field);
+
                 // make sure the field's fetch group is loaded
                 if (loadFetchGroup && isPersistent()
                     && fmd.getManagement() == fmd.MANAGE_PERSISTENT)
                     loadField(field, lockLevel, true, true);
             }
             obtainLocks(active, true, lockLevel, null, null);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
         finally {
             if (locked)
                 unlock();
         }
+
         if (clean)
             return Boolean.TRUE;
         if (newFlush) {
@@ -1382,7 +1490,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
     /**
      * Fire post-dirty events after field value changes.
      *
-     * @param status return value from {@link #dirty(int,boolean,boolean)}
+     * @param    status    return value from {@link #dirty(int,boolean,boolean)}
      */
     private void postDirty(Boolean status) {
         if (Boolean.TRUE.equals(status))
@@ -1394,6 +1502,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
     public void removed(int field, Object removed, boolean key) {
         if (removed == null)
             return;
+
         try {
             // dereference dependent fields, delete embedded
             FieldMetaData fmd = _meta.getField(field);
@@ -1402,7 +1511,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 _single.delete(vmd, removed, null);
             else if (vmd.getCascadeDelete() == ValueMetaData.CASCADE_AUTO)
                 _single.dereferenceDependent(removed);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1411,6 +1521,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             return newFieldProxy(field);
+
         switch (fmd.getTypeCode()) {
             case JavaTypes.DATE:
                 if (fmd.getDeclaredType() == java.sql.Date.class)
@@ -1435,6 +1546,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         ProxyManager mgr = _broker.getConfiguration().
             getProxyManagerInstance();
         Object init = fmd.getInitializer();
+
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.DATE:
                 return mgr.newDateProxy(fmd.getDeclaredType());
@@ -1469,8 +1581,9 @@ public class StateManagerImpl implements OpenJPAStateManager {
     }
 
     /////////////////////////////////////////////////////////
-    // Record that the field is dirty(which might load DFG)
+    // Record that the field is dirty (which might load DFG)
     /////////////////////////////////////////////////////////
+
     public void settingBooleanField(PersistenceCapable pc, int field,
         boolean curVal, boolean newVal, int set) {
         if (set != SET_REMOTE) {
@@ -1478,6 +1591,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 return;
             assertNoPrimaryKeyChange(field);
         }
+
         lock();
         try {
             Boolean stat = dirty(field, Boolean.FALSE, set == SET_USER);
@@ -1497,6 +1611,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 return;
             assertNoPrimaryKeyChange(field);
         }
+
         lock();
         try {
             Boolean stat = dirty(field, Boolean.FALSE, set == SET_USER);
@@ -1516,6 +1631,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 return;
             assertNoPrimaryKeyChange(field);
         }
+
         lock();
         try {
             Boolean stat = dirty(field, Boolean.FALSE, set == SET_USER);
@@ -1535,6 +1651,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 return;
             assertNoPrimaryKeyChange(field);
         }
+
         lock();
         try {
             Boolean stat = dirty(field, Boolean.FALSE, set == SET_USER);
@@ -1554,6 +1671,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 return;
             assertNoPrimaryKeyChange(field);
         }
+
         lock();
         try {
             Boolean stat = dirty(field, Boolean.FALSE, set == SET_USER);
@@ -1573,6 +1691,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 return;
             assertNoPrimaryKeyChange(field);
         }
+
         lock();
         try {
             Boolean stat = dirty(field, Boolean.FALSE, set == SET_USER);
@@ -1592,6 +1711,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 return;
             assertNoPrimaryKeyChange(field);
         }
+
         lock();
         try {
             Boolean stat = dirty(field, Boolean.FALSE, set == SET_USER);
@@ -1611,6 +1731,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
             if (_loaded.get(field)) {
                 if (newVal == curVal)
                     return;
+
                 // only compare new to old values if the comparison is going to
                 // be cheap -- don't compare collections, maps, UDTs
                 switch (fmd.getDeclaredTypeCode()) {
@@ -1634,10 +1755,12 @@ public class StateManagerImpl implements OpenJPAStateManager {
                     == ValueMetaData.CASCADE_AUTO)
                     curVal = fetchObjectField(field);
             }
+
             assertNoPrimaryKeyChange(field);
             if (fmd.getDeclaredTypeCode() == JavaTypes.OID)
                 assertNotManagedObjectId(newVal);
         }
+
         lock();
         try {
             Boolean stat = dirty(field, Boolean.FALSE, set == SET_USER);
@@ -1663,6 +1786,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 return;
             assertNoPrimaryKeyChange(field);
         }
+
         lock();
         try {
             Boolean stat = dirty(field, Boolean.FALSE, set == SET_USER);
@@ -1682,6 +1806,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 return;
             assertNoPrimaryKeyChange(field);
         }
+
         lock();
         try {
             Boolean stat = dirty(field, Boolean.FALSE, set == SET_USER);
@@ -1718,6 +1843,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
     ////////////////////////////
     // Delegate to FieldManager
     ////////////////////////////
+
     public void providedBooleanField(PersistenceCapable pc, int field,
         boolean curVal) {
         _fm.storeBooleanField(field, curVal);
@@ -1743,7 +1869,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
         _fm.storeFloatField(field, curVal);
     }
 
-    public void providedIntField(PersistenceCapable pc, int field, int curVal) {
+    public void providedIntField(PersistenceCapable pc, int field,
+        int curVal) {
         _fm.storeIntField(field, curVal);
     }
 
@@ -1810,10 +1937,12 @@ public class StateManagerImpl implements OpenJPAStateManager {
     //////////////////////////////////
     // Implementation of FieldManager
     //////////////////////////////////
+
     public boolean fetchBoolean(int field) {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             return fetchBooleanField(field);
+
         Object val = fetchField(field, false);
         return ((Boolean) fmd.getExternalValue(val, _broker)).booleanValue();
     }
@@ -1823,6 +1952,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         try {
             if (!_loaded.get(field))
                 loadField(field, LockLevels.LOCK_NONE, false, false);
+
             provideField(_pc, _single, field);
             return _single.fetchBooleanField(field);
         }
@@ -1835,6 +1965,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             return fetchByteField(field);
+
         Object val = fetchField(field, false);
         return ((Number) fmd.getExternalValue(val, _broker)).byteValue();
     }
@@ -1844,6 +1975,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         try {
             if (!_loaded.get(field))
                 loadField(field, LockLevels.LOCK_NONE, false, false);
+
             provideField(_pc, _single, field);
             return _single.fetchByteField(field);
         }
@@ -1856,6 +1988,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             return fetchCharField(field);
+
         Object val = fetchField(field, false);
         return ((Character) fmd.getExternalValue(val, _broker)).charValue();
     }
@@ -1865,6 +1998,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         try {
             if (!_loaded.get(field))
                 loadField(field, LockLevels.LOCK_NONE, false, false);
+
             provideField(_pc, _single, field);
             return _single.fetchCharField(field);
         }
@@ -1877,6 +2011,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             return fetchDoubleField(field);
+
         Object val = fetchField(field, false);
         return ((Number) fmd.getExternalValue(val, _broker)).doubleValue();
     }
@@ -1886,6 +2021,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         try {
             if (!_loaded.get(field))
                 loadField(field, LockLevels.LOCK_NONE, false, false);
+
             provideField(_pc, _single, field);
             return _single.fetchDoubleField(field);
         }
@@ -1898,6 +2034,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             return fetchFloatField(field);
+
         Object val = fetchField(field, false);
         return ((Number) fmd.getExternalValue(val, _broker)).floatValue();
     }
@@ -1907,6 +2044,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         try {
             if (!_loaded.get(field))
                 loadField(field, LockLevels.LOCK_NONE, false, false);
+
             provideField(_pc, _single, field);
             return _single.fetchFloatField(field);
         }
@@ -1919,6 +2057,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             return fetchIntField(field);
+
         Object val = fetchField(field, false);
         return ((Number) fmd.getExternalValue(val, _broker)).intValue();
     }
@@ -1928,6 +2067,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         try {
             if (!_loaded.get(field))
                 loadField(field, LockLevels.LOCK_NONE, false, false);
+
             provideField(_pc, _single, field);
             return _single.fetchIntField(field);
         }
@@ -1940,6 +2080,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             return fetchLongField(field);
+
         Object val = fetchField(field, false);
         return ((Number) fmd.getExternalValue(val, _broker)).longValue();
     }
@@ -1949,6 +2090,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         try {
             if (!_loaded.get(field))
                 loadField(field, LockLevels.LOCK_NONE, false, false);
+
             provideField(_pc, _single, field);
             return _single.fetchLongField(field);
         }
@@ -1961,6 +2103,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             return fetchObjectField(field);
+
         Object val = fetchField(field, false);
         return fmd.getExternalValue(val, _broker);
     }
@@ -1970,6 +2113,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         try {
             if (!_loaded.get(field))
                 loadField(field, LockLevels.LOCK_NONE, false, false);
+
             provideField(_pc, _single, field);
             return _single.fetchObjectField(field);
         }
@@ -1982,6 +2126,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             return fetchShortField(field);
+
         Object val = fetchField(field, false);
         return ((Number) fmd.getExternalValue(val, _broker)).shortValue();
     }
@@ -1991,6 +2136,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         try {
             if (!_loaded.get(field))
                 loadField(field, LockLevels.LOCK_NONE, false, false);
+
             provideField(_pc, _single, field);
             return _single.fetchShortField(field);
         }
@@ -2003,6 +2149,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             return fetchStringField(field);
+
         Object val = fetchField(field, false);
         return (String) fmd.getExternalValue(val, _broker);
     }
@@ -2012,6 +2159,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         try {
             if (!_loaded.get(field))
                 loadField(field, LockLevels.LOCK_NONE, false, false);
+
             provideField(_pc, _single, field);
             return _single.fetchStringField(field);
         }
@@ -2047,8 +2195,9 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             storeByteField(field, externalVal);
-        else storeField(field, fmd.getFieldValue(new Byte(externalVal),
-            _broker));
+        else
+            storeField(field, fmd.getFieldValue(new Byte(externalVal),
+                _broker));
     }
 
     public void storeByteField(int field, byte curVal) {
@@ -2068,8 +2217,9 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             storeCharField(field, externalVal);
-        else storeField(field, fmd.getFieldValue(new Character(externalVal),
-            _broker));
+        else
+            storeField(field, fmd.getFieldValue(new Character(externalVal),
+                _broker));
     }
 
     public void storeCharField(int field, char curVal) {
@@ -2089,8 +2239,9 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             storeDoubleField(field, externalVal);
-        else storeField(field, fmd.getFieldValue(new Double(externalVal),
-            _broker));
+        else
+            storeField(field, fmd.getFieldValue(new Double(externalVal),
+                _broker));
     }
 
     public void storeDoubleField(int field, double curVal) {
@@ -2110,8 +2261,9 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             storeFloatField(field, externalVal);
-        else storeField(field, fmd.getFieldValue(new Float(externalVal),
-            _broker));
+        else
+            storeField(field, fmd.getFieldValue(new Float(externalVal),
+                _broker));
     }
 
     public void storeFloatField(int field, float curVal) {
@@ -2131,8 +2283,9 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             storeIntField(field, externalVal);
-        else storeField(field, fmd.getFieldValue(Numbers.valueOf(externalVal),
-            _broker));
+        else
+            storeField(field, fmd.getFieldValue(Numbers.valueOf(externalVal),
+                _broker));
     }
 
     public void storeIntField(int field, int curVal) {
@@ -2152,8 +2305,9 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             storeLongField(field, externalVal);
-        else storeField(field, fmd.getFieldValue(Numbers.valueOf(externalVal),
-            _broker));
+        else
+            storeField(field, fmd.getFieldValue(Numbers.valueOf(externalVal),
+                _broker));
     }
 
     public void storeLongField(int field, long curVal) {
@@ -2174,7 +2328,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
         externalVal = fmd.order(externalVal);
         if (!fmd.isExternalized())
             storeObjectField(field, externalVal);
-        else storeField(field, fmd.getFieldValue(externalVal, _broker));
+        else
+            storeField(field, fmd.getFieldValue(externalVal, _broker));
     }
 
     public void storeObjectField(int field, Object curVal) {
@@ -2195,8 +2350,9 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             storeShortField(field, externalVal);
-        else storeField(field, fmd.getFieldValue(new Short(externalVal),
-            _broker));
+        else
+            storeField(field, fmd.getFieldValue(new Short(externalVal),
+                _broker));
     }
 
     public void storeShortField(int field, short curVal) {
@@ -2216,7 +2372,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
         FieldMetaData fmd = _meta.getField(field);
         if (!fmd.isExternalized())
             storeStringField(field, externalVal);
-        else storeField(field, fmd.getFieldValue(externalVal, _broker));
+        else
+            storeField(field, fmd.getFieldValue(externalVal, _broker));
     }
 
     public void storeStringField(int field, String curVal) {
@@ -2241,6 +2398,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
             throw new UserException(_loc.get("no-field-index",
                 String.valueOf(field), _meta.getDescribedType())).
                 setFailedObject(getManagedInstance());
+
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.BOOLEAN:
                 boolean bool = val != null && ((Boolean) val).booleanValue();
@@ -2281,6 +2439,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 fm.storeObjectField(field, val);
         }
     }
+
     /////////////
     // Utilities
     /////////////
@@ -2291,6 +2450,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
     void eraseFlush() {
         _flags &= ~FLAG_FLUSHED;
         _flags &= ~FLAG_FLUSHED_DIRTY;
+
         int fmds = _meta.getFields().length;
         for (int i = 0; i < fmds; i++)
             _flush.clear(i);
@@ -2310,7 +2470,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
         if (!val) {
             _flags &= ~FLAG_DFG;
             setDirty(false);
-        } else _flags |= FLAG_DFG;
+        } else
+            _flags |= FLAG_DFG;
     }
 
     /**
@@ -2331,19 +2492,22 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 _dirty.clear(i);
             }
         }
+
         if (val)
             _flags |= FLAG_DFG;
     }
 
     /**
      * Executes pre-clear callbacks, clears all managed fields, and calls the
-     * {@link #setLoaded} method with a value of false. Primary key fields
+     * {@link #setLoaded} method with a value of false.  Primary key fields
      * are not cleared.
      */
     void clearFields() {
         fireLifecycleEvent(LifecycleEvent.BEFORE_CLEAR);
+
         // unproxy all fields
         unproxyFields();
+
         lock();
         try {
             // clear non-pk fields
@@ -2353,6 +2517,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
                     == FieldMetaData.MANAGE_PERSISTENT)
                     replaceField(_pc, ClearFieldManager.getInstance(), i);
             }
+
             // forget version info and impl data so we re-read next time
             setLoaded(false);
             _version = null;
@@ -2363,6 +2528,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         finally {
             unlock();
         }
+
         fireLifecycleEvent(LifecycleEvent.AFTER_CLEAR);
     }
 
@@ -2374,6 +2540,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         if (_broker.getRestoreState() == RestoreState.RESTORE_NONE
             && (_flags & FLAG_INVERSES) == 0)
             return;
+
         _flags |= FLAG_SAVE;
         if (immediate) {
             for (int i = 0, len = _loaded.length(); i < len; i++)
@@ -2384,24 +2551,28 @@ public class StateManagerImpl implements OpenJPAStateManager {
 
     /**
      * If the field isn't already saved, saves the currently loaded field
-     * state of the instance. The saved values can all be restored via
+     * state of the instance.  The saved values can all be restored via
      * {@link #restoreFields}.
      */
     private void saveField(int field) {
         if ((_flags & FLAG_SAVE) == 0)
             return;
+
         // if this is a managed inverse field, load it so we're sure to have
         // the original value
         if (!_loaded.get(field) && ((_flags & FLAG_INVERSES) != 0
             && _meta.getField(field).getInverseMetaDatas().length > 0))
             loadField(field, LockLevels.LOCK_NONE, false, false);
+
         // don't bother creating the save field manager if we're not going to
         // save the old field value anyway
         if (_saved == null) {
             if (_loaded.get(field))
                 _saved = new SaveFieldManager(this, null, _dirty);
-            else return;
+            else
+                return;
         }
+
         // copy the field to save field manager; if the field is not directly
         // copyable, immediately provide and replace it via the save field
         // manager, which will copy the mutable value to prevent by-ref mods
@@ -2441,6 +2612,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 for (int i = 0, len = _loaded.length(); i < len; i++)
                     if (_loaded.get(i) && _saved.restoreField(i))
                         replaceField(_pc, _saved, i);
+
                 // rollback loaded set
                 _loaded.andNot(_saved.getUnloaded());
             }
@@ -2461,6 +2633,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         if (replaceNull)
             replaceNull = !_broker.getConfiguration().supportedOptions().
                 contains(OpenJPAConfiguration.OPTION_NULL_CONTAINER);
+
         lock();
         try {
             for (int i = 0, len = _loaded.length(); i < len; i++) {
@@ -2468,7 +2641,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
                     provideField(_pc, _single, i);
                     if (_single.proxy(reset, replaceNull))
                         replaceField(_pc, _single, i);
-                    else _single.clear();
+                    else
+                        _single.clear();
                 }
             }
         }
@@ -2483,6 +2657,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
     void unproxyFields() {
         if ((_flags & FLAG_NO_UNPROXY) != 0)
             return;
+
         lock();
         try {
             for (int i = 0, len = _loaded.length(); i < len; i++) {
@@ -2498,8 +2673,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
     }
 
     /**
-     * Get ready for a flush. Persists all persistence-capable object fields,
-     * and checks for illegal null values. Also assigns oids and field values
+     * Get ready for a flush.  Persists all persistence-capable object fields,
+     * and checks for illegal null values.  Also assigns oids and field values
      * for all strategies that don't require flushing.
      */
     void preFlush(boolean logical, OpCallbacks call) {
@@ -2507,6 +2682,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
             fireLifecycleEvent(LifecycleEvent.BEFORE_STORE);
             _flags |= FLAG_PRE_FLUSHED;
         }
+
         lock();
         try {
             if (!logical)
@@ -2517,7 +2693,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
                     provideField(_pc, _single, i);
                     if (_single.preFlush(call))
                         replaceField(_pc, _single, i);
-                    else _single.clear();
+                    else
+                        _single.clear();
                 }
             }
         }
@@ -2572,6 +2749,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         for (int i = 0; i < fmds.length; i++) {
             if (!_loaded.get(i))
                 continue;
+
             if (fmds[i].getCascadePersist() == ValueMetaData.CASCADE_IMMEDIATE
                 || fmds[i].getKey().getCascadePersist()
                 == ValueMetaData.CASCADE_IMMEDIATE
@@ -2596,6 +2774,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
             if (vfield != null)
                 fields.clear(vfield.getIndex());
         }
+
         boolean ret = false;
         setLoading(true);
         try {
@@ -2610,8 +2789,9 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 }
                 ret = true;
             }
+
             // make sure version information has been set; version info must
-            // always be set after the first state load or set(which is why
+            // always be set after the first state load or set (which is why
             // we do this even if no fields were loaded -- could be that this
             // method is being called after a field is set)... some instances
             // might not have version info, in which case this gets called
@@ -2624,6 +2804,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
         finally {
             setLoading(false);
         }
+
         // see if the dfg is now loaded; do this regardless of whether we
         // loaded any fields, cause may already have been loaded by
         // StoreManager during initialization
@@ -2650,6 +2831,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
             || (fgs && (_flags & FLAG_DFG) == 0)) {
             fields = getUnloadedInternal(fetchState, LOAD_FGS, null);
         }
+
         if (!fmd.isInDefaultFetchGroup()) {
             if (fmd.getFetchGroups() != null) {
                 FieldMetaData[] fmds = _meta.getFields();
@@ -2667,6 +2849,7 @@ public class StateManagerImpl implements OpenJPAStateManager {
                 fields.set(fmd.getIndex());
             }
         }
+
         // call this method even if there are no unloaded fields; loadFields
         // takes care of things like loading version info and setting PC
         // flags
@@ -2701,15 +2884,18 @@ public class StateManagerImpl implements OpenJPAStateManager {
         // can end up clearing _fieldImpl when we shouldn't
         if (_loaded.get(field) == isLoaded)
             return;
+
         // if loading, clear intermediate data; if unloading, clear impl data
         if (_fieldImpl != null) {
             int idx = _meta.getExtraFieldDataIndex(field);
             if (idx != -1)
                 _fieldImpl[idx] = null;
         }
+
         if (isLoaded)
             _loaded.set(field);
-        else _loaded.clear(field);
+        else
+            _loaded.clear(field);
     }
 
     /**
@@ -2719,8 +2905,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
      * might exclude some fields which are then immediately loaded in a
      * separate step before being returned to the user.
      *
-     * @param field the field index that was loaded, or -1 to indicate
-     *              that a group of possibly unknown fields was loaded
+     * @param    field    the field index that was loaded, or -1 to indicate
+     * that a group of possibly unknown fields was loaded
      */
     private void postLoad(int field, FetchState fetchState) {
         // no need for postLoad callback?
@@ -2729,15 +2915,18 @@ public class StateManagerImpl implements OpenJPAStateManager {
         LifecycleEventManager mgr = _broker.getLifecycleEventManager();
         if (mgr == null || !mgr.hasLoadListeners(getManagedInstance(), _meta))
             return;
+
         // in the middle of a group load, after which this method will be
         // called again?
         if (field != -1 && isLoading())
             return;
+
         // is this field in the dfg?
         FieldMetaData[] fmds = _meta.getDefaultFetchGroupFields();
         if (fmds.length > 0 && field != -1
             && !requiredByDefault(_meta.getField(field), fetchState))
             return;
+
         // see if the dfg is fully loaded
         boolean isLoaded = true;
         for (int i = 0; isLoaded && i < fmds.length; i++)
@@ -2757,7 +2946,8 @@ public class StateManagerImpl implements OpenJPAStateManager {
             return fm.isInDefaultFetchGroup()
                 && _broker.getFetchConfiguration().hasFetchGroup
                 (FetchGroup.getDefaultGroupName());
-        else return fetchState.isDefault(fm);
+        else
+            return fetchState.isDefault(fm);
     }
 
     /**
@@ -2775,12 +2965,14 @@ public class StateManagerImpl implements OpenJPAStateManager {
     }
 
     /**
-     * Set whether this instance requires a version check on the next flush.
+     * Set whether this instance requires a version check on the
+     * next flush.
      */
     void setCheckVersion(boolean versionCheck) {
         if (versionCheck)
             _flags |= FLAG_VERSION_CHECK;
-        else _flags &= ~FLAG_VERSION_CHECK;
+        else
+            _flags &= ~FLAG_VERSION_CHECK;
     }
 
     /**
@@ -2791,12 +2983,14 @@ public class StateManagerImpl implements OpenJPAStateManager {
     }
 
     /**
-     * Set whether this instance requires a version update on the next flush.
+     * Set whether this instance requires a version update on the
+     * next flush.
      */
     void setUpdateVersion(boolean versionUpdate) {
         if (versionUpdate)
             _flags |= FLAG_VERSION_UPDATE;
-        else _flags &= ~FLAG_VERSION_UPDATE;
+        else
+            _flags &= ~FLAG_VERSION_UPDATE;
     }
 
     /**
@@ -2821,11 +3015,12 @@ public class StateManagerImpl implements OpenJPAStateManager {
     }
 
     /**
-     * Unlock the state manager.
+     *	Unlock the state manager.
      */
-    protected void unlock() {
-        // use broker-level lock to avoid deadlock situations with the state
-        // manager lock and broker lock being obtained in different orders
-        _broker.unlock();
-    }
+	protected void unlock ()
+	{
+		// use broker-level lock to avoid deadlock situations with the state 
+		// manager lock and broker lock being obtained in different orders
+		_broker.unlock ();
+	}
 }

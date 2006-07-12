@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,11 +18,12 @@ package org.apache.openjpa.meta;
 import java.util.Comparator;
 
 /**
- * Comparator that keeps classes in inheritance order.
+ * <p>Comparator that keeps classes in inheritance order.</p>
  *
  * @author Abe White
  */
-class InheritanceComparator implements Comparator {
+class InheritanceComparator
+    implements Comparator {
 
     private Class _base = Object.class;
 
@@ -46,6 +50,7 @@ class InheritanceComparator implements Comparator {
             return -1;
         if (o2 == null)
             return 1;
+
         Class c1 = toClass(o1);
         Class c2 = toClass(o2);
         if (c1 == c2)
@@ -54,6 +59,7 @@ class InheritanceComparator implements Comparator {
             return -1;
         if (c2 == null)
             return 1;
+
         int i1 = levels(c1);
         int i2 = levels(c2);
         if (i1 == i2)
@@ -62,7 +68,7 @@ class InheritanceComparator implements Comparator {
     }
 
     /**
-     * Count the levels of inheritance between this class and our base class.
+     *	Count the levels of inheritance between this class and our base class.
      */
     private int levels(Class to) {
         for (int i = 0; to != null; i++, to = to.getSuperclass())

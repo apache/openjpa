@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -30,8 +33,8 @@ import serp.bytecode.Project;
 import serp.bytecode.TableSwitchInstruction;
 
 /**
- * Factory for creating new {@link DynamicStorage} classes. Can be
- * extended to decorate/modify the generated instances behavior.
+ * <p>Factory for creating new {@link DynamicStorage} classes.  Can be
+ * extended to decorate/modify the generated instances behavior.</p>
  *
  * @author Steve Kim
  * @nojavadoc
@@ -55,22 +58,37 @@ public class DynamicStorageGenerator {
 
     /**
      * Constant to be as silent as possible during invalid index passed
-     * to set/get type methods. On getting an Object, for example,
+     * to set/get type methods.  On getting an Object, for example,
      * null will be returned.
      * However, on primitive gets, an exception will be thrown.
      */
     protected static final int POLICY_SILENT = 2;
+
     // wrappers for primitive types
     private static final Class[][] WRAPPERS = new Class[][]{
-        { boolean.class, Boolean.class }, { byte.class, Byte.class },
-        { char.class, Character.class }, { int.class, Integer.class },
-        { short.class, Short.class }, { long.class, Long.class },
-        { float.class, Float.class }, { double.class, Double.class }, };
+        { boolean.class, Boolean.class },
+        { byte.class, Byte.class },
+        { char.class, Character.class },
+        { int.class, Integer.class },
+        { short.class, Short.class },
+        { long.class, Long.class },
+        { float.class, Float.class },
+        { double.class, Double.class },
+    };
+
     // primitive types
     private static final int[] TYPES = new int[]{
-        JavaTypes.BOOLEAN, JavaTypes.BYTE, JavaTypes.CHAR, JavaTypes.INT,
-        JavaTypes.SHORT, JavaTypes.LONG, JavaTypes.FLOAT, JavaTypes.DOUBLE,
-        JavaTypes.OBJECT };
+        JavaTypes.BOOLEAN,
+        JavaTypes.BYTE,
+        JavaTypes.CHAR,
+        JavaTypes.INT,
+        JavaTypes.SHORT,
+        JavaTypes.LONG,
+        JavaTypes.FLOAT,
+        JavaTypes.DOUBLE,
+        JavaTypes.OBJECT
+    };
+
     // the project/classloader for the classes.
     private final Project _project = new Project();
     private final BCClassLoader _loader = new BCClassLoader(_project,
@@ -84,10 +102,12 @@ public class DynamicStorageGenerator {
     public DynamicStorage generateStorage(int[] types, Object obj) {
         if (obj == null)
             return null;
+
         String name = getClassName(obj);
         BCClass bc = _project.loadClass(name);
         declareClasses(bc);
         bc.addDefaultConstructor().makePublic();
+
         int objectCount = declareFields(types, bc);
         addFactoryMethod(bc);
         addFieldCount(bc, types, objectCount);
@@ -99,7 +119,7 @@ public class DynamicStorageGenerator {
     }
 
     /**
-     * Return a class name to use for the given user key. By default,
+     * Return a class name to use for the given user key.  By default,
      * returns the stringified key prefixed by PREFIX.
      */
     protected String getClassName(Object obj) {
@@ -115,7 +135,7 @@ public class DynamicStorageGenerator {
     }
 
     /**
-     * Return the name for the generated field at the given index. Returns
+     * Return the name for the generated field at the given index.  Returns
      * <code>"field" + i</code> by default.
      */
     protected String getFieldName(int index) {
@@ -146,7 +166,8 @@ public class DynamicStorageGenerator {
                 ((Object[]) null);
             _project.clear(); // remove old refs
             return data;
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             throw new InternalException("cons-access", t).setFatal(true);
         }
     }
@@ -183,6 +204,7 @@ public class DynamicStorageGenerator {
         code.ireturn();
         code.calculateMaxLocals();
         code.calculateMaxStack();
+
         method = bc.declareMethod("getObjectCount", int.class, null);
         code = method.getCode(true);
         code.constant().setValue(objectCount);
@@ -200,7 +222,7 @@ public class DynamicStorageGenerator {
         JumpInstruction ifins = null;
         if (objectCount > 0) {
             // if (objects == null)
-            // objects = new Object[objectCount];
+            // 		objects = new Object[objectCount];
             code.aload().setThis();
             code.getfield().setField("objects", Object[].class);
             ifins = code.ifnonnull();
@@ -221,6 +243,7 @@ public class DynamicStorageGenerator {
      */
     private int declareFields(int[] types, BCClass bc) {
         bc.declareField("objects", Object[].class).makePrivate();
+
         int objectCount = 0;
         Class type;
         for (int i = 0; i < types.length; i++) {
@@ -268,8 +291,9 @@ public class DynamicStorageGenerator {
         Instruction defaultIns;
         if (handle == POLICY_SILENT)
             defaultIns = code.vreturn();
-        else defaultIns = throwException
-            (code, IllegalArgumentException.class);
+        else
+            defaultIns = throwException
+                (code, IllegalArgumentException.class);
         tabins.setDefaultTarget(defaultIns);
         int objectCount = 0;
         for (int i = 0; i < types.length; i++) {
@@ -278,10 +302,11 @@ public class DynamicStorageGenerator {
                 tabins.addTarget(tabins.getDefaultTarget());
                 continue;
             }
+
             tabins.addTarget(code.aload().setThis());
             if (typeCode >= JavaTypes.OBJECT) {
                 // if (objects == null)
-                // objects = new Object[totalObjects];
+                // 		objects = new Object[totalObjects];
                 code.aload().setThis();
                 code.getfield().setField("objects", Object[].class);
                 JumpInstruction ifins = code.ifnonnull();
@@ -289,6 +314,7 @@ public class DynamicStorageGenerator {
                 code.constant().setValue(totalObjects);
                 code.anewarray().setType(Object.class);
                 code.putfield().setField("objects", Object[].class);
+
                 // objects[objectCount] = val;
                 ifins.setTarget(code.aload().setThis());
                 code.getfield().setField("objects", Object[].class);
@@ -326,7 +352,7 @@ public class DynamicStorageGenerator {
         if (handle == POLICY_EMPTY)
             return;
         Class type = forType(typeCode);
-        // public <type> get<Type>Field(int field)
+        // public <type> get<Type>Field (int field)
         String name = Object.class.equals(type) ? "Object" :
             StringUtils.capitalize(type.getName());
         name = "get" + name;
@@ -343,8 +369,9 @@ public class DynamicStorageGenerator {
         if (typeCode == JavaTypes.OBJECT && handle == POLICY_SILENT) {
             defaultIns = code.constant().setNull();
             code.areturn();
-        } else defaultIns = throwException
-            (code, IllegalArgumentException.class);
+        } else
+            defaultIns = throwException
+                (code, IllegalArgumentException.class);
         tabins.setDefaultTarget(defaultIns);
         int objectCount = 0;
         for (int i = 0; i < types.length; i++) {
@@ -353,10 +380,11 @@ public class DynamicStorageGenerator {
                 tabins.addTarget(tabins.getDefaultTarget());
                 continue;
             }
+
             tabins.addTarget(code.aload().setThis());
             if (typeCode >= JavaTypes.OBJECT) {
                 // if (objects == null)
-                // return null;
+                // 		return null;
                 // return objects[objectCount];
                 code.aload().setThis();
                 code.getfield().setField("objects", Object[].class);
@@ -378,13 +406,14 @@ public class DynamicStorageGenerator {
         code.calculateMaxLocals();
         code.calculateMaxStack();
     }
+
     /////////////
     // Utilities
     /////////////
 
     /**
      * Clear code associated with the given method signature, and return
-     * the empty code. Will return null if the method should be empty.
+     * the empty code.  Will return null if the method should be empty.
      */
     protected Code replaceMethod(BCClass bc, String name, Class retType,
         Class[] args, boolean remove) {
@@ -405,10 +434,12 @@ public class DynamicStorageGenerator {
     protected BCField addBeanField(BCClass bc, String name, Class type) {
         if (name == null)
             throw new IllegalArgumentException("name == null");
+
         // private <type> <name>
         BCField field = bc.declareField(name, type);
         field.setAccessFlags(getFieldAccess());
         name = StringUtils.capitalize(name);
+
         // getter
         String prefix = (type == boolean.class) ? "is" : "get";
         BCMethod method = bc.declareMethod(prefix + name, type, null);
@@ -419,6 +450,7 @@ public class DynamicStorageGenerator {
         code.xreturn().setType(type);
         code.calculateMaxStack();
         code.calculateMaxLocals();
+
         // setter
         method = bc.declareMethod("set" + name, void.class,
             new Class[]{ type });
@@ -486,13 +518,13 @@ public class DynamicStorageGenerator {
     }
 
     /**
-     * Get the wrapper for the given type.
+     *  Get the wrapper for the given type.
      */
     protected Class getWrapper(Class c) {
         for (int i = 0; i < WRAPPERS.length; i++) {
-            if (WRAPPERS[i][0].equals(c))
-                return WRAPPERS[i][1];
-        }
-        return c;
-    }
+            if (WRAPPERS[i][0].equals (c))
+				return WRAPPERS[i][1];
+		}
+		return c;
+	}
 }

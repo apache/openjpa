@@ -1532,7 +1532,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      * Acts internally through the {@link Attributes} interface.
      *
      * @param add if true, a new source file attribute will be added
-     *            if not already present
+     * if not already present
      * @return the source file information, or null if none and the
      *         <code>add</code> param is set to false
      */
@@ -1558,7 +1558,7 @@ public class BCClass extends Attributes implements VisitAcceptor {
      * Acts internally through the {@link Attributes} interface.
      *
      * @param add if true, a new inner classes attribute will be added
-     *            if not already present
+     * if not already present
      * @return the inner classes information, or null if none and the
      *         <code>add</code> param is set to false
      */

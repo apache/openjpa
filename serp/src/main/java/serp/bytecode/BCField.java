@@ -118,7 +118,7 @@ public class BCField extends BCMember implements VisitAcceptor {
      * Acts internally through the {@link Attributes} interface.
      *
      * @param add if true, a new constant value attribute will be added
-     *            if not already present
+     * if not already present
      * @return the constant value information, or null if none and the
      *         <code>add</code> param is set to false
      */

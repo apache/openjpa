@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -18,12 +21,13 @@ import java.util.Collection;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 
 /**
- * Default {@link CollectionChangeTracker}.
+ * <p>Default {@link CollectionChangeTracker}.</p>
  *
  * @author Abe White
  * @nojavadoc
  */
-public class CollectionChangeTrackerImpl extends AbstractChangeTracker
+public class CollectionChangeTrackerImpl
+    extends AbstractChangeTracker
     implements CollectionChangeTracker {
 
     private final Collection _coll;
@@ -33,9 +37,10 @@ public class CollectionChangeTrackerImpl extends AbstractChangeTracker
     /**
      * Constructor.
      *
-     * @param coll  the collection to delegate to
-     * @param dups  true if the collection allows duplicates, false otherwise
-     * @param order true if the collection is ordered, false otherwise
+     * @param    coll    the collection to delegate to
+     * @param    dups    true if the collection allows duplicates, false
+     * otherwise
+     * @param    order    true if the collection is ordered, false otherwise
      */
     public CollectionChangeTrackerImpl(Collection coll, boolean dups,
         boolean order, OpenJPAConfiguration conf) {
@@ -69,7 +74,8 @@ public class CollectionChangeTrackerImpl extends AbstractChangeTracker
                 if (add == null) {
                     if (_dups || _order)
                         add = new ArrayList();
-                    else add = newSet();
+                    else
+                        add = newSet();
                 }
                 add.add(elem);
             }

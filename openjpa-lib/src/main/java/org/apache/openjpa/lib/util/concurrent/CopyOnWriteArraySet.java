@@ -161,11 +161,11 @@ public class CopyOnWriteArraySet extends AbstractSet
      * <tt>toArray()</tt>.
      *
      * @param a the array into which the elements of this set are to be
-     *          stored, if it is big enough; otherwise, a new array of the same
-     *          runtime type is allocated for this purpose.
+     * stored, if it is big enough; otherwise, a new array of the same
+     * runtime type is allocated for this purpose.
      * @return an array containing all the elements in this set
-     * @throws ArrayStoreException  if the runtime type of the specified array
-     *                              is not a supertype of the runtime type of every element in this set
+     * @throws ArrayStoreException if the runtime type of the specified array
+     * is not a supertype of the runtime type of every element in this set
      * @throws NullPointerException if the specified array is null
      */
     public Object[] toArray(Object[] a) {
@@ -252,11 +252,11 @@ public class CopyOnWriteArraySet extends AbstractSet
      *
      * @param c collection containing elements to be removed from this set
      * @return <tt>true</tt> if this set changed as a result of the call
-     * @throws ClassCastException   if the class of an element of this set
-     *                              is incompatible with the specified collection(optional)
+     * @throws ClassCastException if the class of an element of this set
+     * is incompatible with the specified collection(optional)
      * @throws NullPointerException if this set contains a null element and the
-     *                              specified collection does not permit null elements(optional),
-     *                              or if the specified collection is null
+     * specified collection does not permit null elements(optional),
+     * or if the specified collection is null
      * @see #remove(Object)
      */
     public boolean removeAll(Collection c) {
@@ -273,11 +273,11 @@ public class CopyOnWriteArraySet extends AbstractSet
      *
      * @param c collection containing elements to be retained in this set
      * @return <tt>true</tt> if this set changed as a result of the call
-     * @throws ClassCastException   if the class of an element of this set
-     *                              is incompatible with the specified collection(optional)
+     * @throws ClassCastException if the class of an element of this set
+     * is incompatible with the specified collection(optional)
      * @throws NullPointerException if this set contains a null element and the
-     *                              specified collection does not permit null elements(optional),
-     *                              or if the specified collection is null
+     * specified collection does not permit null elements(optional),
+     * or if the specified collection is null
      * @see #remove(Object)
      */
     public boolean retainAll(Collection c) {

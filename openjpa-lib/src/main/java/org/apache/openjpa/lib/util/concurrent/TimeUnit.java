@@ -390,7 +390,7 @@ public abstract class TimeUnit implements java.io.Serializable {
      * <tt>TimeUnit.MILLISECONDS.convert(10L, TimeUnit.MINUTES)</tt>
      *
      * @param sourceDuration the time duration in the given <tt>sourceUnit</tt>
-     * @param sourceUnit     the unit of the <tt>sourceDuration</tt> argument
+     * @param sourceUnit the unit of the <tt>sourceDuration</tt> argument
      * @return the converted duration in this unit,
      *         or <tt>Long.MIN_VALUE</tt> if conversion would negatively
      *         overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
@@ -495,9 +495,9 @@ public abstract class TimeUnit implements java.io.Serializable {
      * throws InterruptedException { while (empty) {
      * unit.timedWait(this, timeout); ... } }</pre>
      *
-     * @param obj     the object to wait on
+     * @param obj the object to wait on
      * @param timeout the maximum time to wait. If less than
-     *                or equal to zero, do not wait at all.
+     * or equal to zero, do not wait at all.
      * @throws InterruptedException if interrupted while waiting.
      * @see Object#wait(long, int)
      */
@@ -515,9 +515,9 @@ public abstract class TimeUnit implements java.io.Serializable {
      * This is a convenience method that converts time arguments into the
      * form required by the <tt>Thread.join</tt> method.
      *
-     * @param thread  the thread to wait for
+     * @param thread the thread to wait for
      * @param timeout the maximum time to wait. If less than
-     *                or equal to zero, do not wait at all.
+     * or equal to zero, do not wait at all.
      * @throws InterruptedException if interrupted while waiting.
      * @see Thread#join(long, int)
      */
@@ -536,7 +536,7 @@ public abstract class TimeUnit implements java.io.Serializable {
      * form required by the <tt>Thread.sleep</tt> method.
      *
      * @param timeout the maximum time to sleep. If less than
-     *                or equal to zero, do not sleep at all.
+     * or equal to zero, do not sleep at all.
      * @throws InterruptedException if interrupted while sleeping.
      * @see Thread#sleep
      */

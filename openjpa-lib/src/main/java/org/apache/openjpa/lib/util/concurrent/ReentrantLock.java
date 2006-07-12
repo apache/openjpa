@@ -569,7 +569,7 @@ public class ReentrantLock implements Lock, java.io.Serializable,
      * time.
      *
      * @param timeout the time to wait for the lock
-     * @param unit    the time unit of the timeout argument
+     * @param unit the time unit of the timeout argument
      * @return <tt>true</tt> if the lock was free and was acquired by the
      *         current thread, or the lock was already held by the current thread; and
      *         <tt>false</tt> if the waiting time elapsed before the lock could be
@@ -591,7 +591,7 @@ public class ReentrantLock implements Lock, java.io.Serializable,
      * IllegalMonitorStateException} is thrown.
      *
      * @throws IllegalMonitorStateException if the current thread does not
-     *                                      hold this lock.
+     * hold this lock.
      */
     public void unlock() {
         sync.unlock();
@@ -787,9 +787,9 @@ public class ReentrantLock implements Lock, java.io.Serializable,
      * @param condition the condition
      * @return <tt>true</tt> if there are any waiting threads.
      * @throws IllegalMonitorStateException if this lock is not held
-     * @throws IllegalArgumentException     if the given condition is
-     *                                      not associated with this lock
-     * @throws NullPointerException         if condition null
+     * @throws IllegalArgumentException if the given condition is
+     * not associated with this lock
+     * @throws NullPointerException if condition null
      */
     public boolean hasWaiters(Condition condition) {
         return asCondVar(condition).hasWaiters();
@@ -806,9 +806,9 @@ public class ReentrantLock implements Lock, java.io.Serializable,
      * @param condition the condition
      * @return the estimated number of waiting threads.
      * @throws IllegalMonitorStateException if this lock is not held
-     * @throws IllegalArgumentException     if the given condition is
-     *                                      not associated with this lock
-     * @throws NullPointerException         if condition null
+     * @throws IllegalArgumentException if the given condition is
+     * not associated with this lock
+     * @throws NullPointerException if condition null
      */
     public int getWaitQueueLength(Condition condition) {
         return asCondVar(condition).getWaitQueueLength();
@@ -827,9 +827,9 @@ public class ReentrantLock implements Lock, java.io.Serializable,
      * @param condition the condition
      * @return the collection of threads
      * @throws IllegalMonitorStateException if this lock is not held
-     * @throws IllegalArgumentException     if the given condition is
-     *                                      not associated with this lock
-     * @throws NullPointerException         if condition null
+     * @throws IllegalArgumentException if the given condition is
+     * not associated with this lock
+     * @throws NullPointerException if condition null
      */
     protected Collection getWaitingThreads(Condition condition) {
         return asCondVar(condition).getWaitingThreads();

@@ -381,7 +381,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
      * Acts internally through the {@link Attributes} interface.
      *
      * @param add if true, a new exceptions attribute will be added
-     *            if not already present
+     * if not already present
      * @return the exceptions information, or null if none and the
      *         <code>add</code> param is set to false
      */
@@ -412,7 +412,7 @@ public class BCMethod extends BCMember implements VisitAcceptor {
      * Acts internally through the {@link Attributes} interface.
      *
      * @param add if true, a new code attribute will be added
-     *            if not already present
+     * if not already present
      * @return the code for the metohd, or null if none and the
      *         <code>add</code> param is set to false
      */

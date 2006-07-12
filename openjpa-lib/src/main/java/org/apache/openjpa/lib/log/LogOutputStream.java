@@ -35,7 +35,7 @@ public class LogOutputStream extends ByteArrayOutputStream {
     /**
      * Constructor.
      *
-     * @param log   the log to log to
+     * @param log the log to log to
      * @param level the level to log at
      */
     public LogOutputStream(Log log, int level) {

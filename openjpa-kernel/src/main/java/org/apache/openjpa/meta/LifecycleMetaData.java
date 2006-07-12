@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -30,10 +33,12 @@ public class LifecycleMetaData {
     public static final int IGNORE_NONE = 0;
     public static final int IGNORE_HIGH = 2 << 0;
     public static final int IGNORE_LOW = 2 << 1;
+
     private static final LifecycleCallbacks[] EMPTY_CALLBACKS =
         new LifecycleCallbacks[0];
     private static final Localizer _loc = Localizer.forPackage
         (LifecycleMetaData.class);
+
     private final ClassMetaData _meta;
     private LifecycleCallbacks[][] _declared = null;
     private LifecycleCallbacks[][] _super = null;
@@ -100,15 +105,16 @@ public class LifecycleMetaData {
     /**
      * Set the callbacks for the given event type.
      *
-     * @param highPriority the first N given callbacks are high priority;
-     *                     high priority callbacks will be returned before
-     *                     non-high-priority superclass callbacks
+     * @param    highPriority    the first N given callbacks are high priority;
+     * high priority callbacks will be returned before
+     * non-high-priority superclass callbacks
      */
     public void setDeclaredCallbacks(int eventType,
         LifecycleCallbacks[] callbacks, int highPriority) {
         if (_resolved)
             throw new InternalException(_loc.get("lifecycle-resolved",
                 _meta, Arrays.asList(callbacks)));
+
         if (_declared == null) {
             _declared = new LifecycleCallbacks
                 [LifecycleEvent.ALL_EVENTS.length][];
@@ -121,25 +127,28 @@ public class LifecycleMetaData {
     /**
      * Return the callbacks for the non-PC superclass.
      */
-    public LifecycleCallbacks[] getNonPCSuperclassCallbacks(int eventType) {
+    public LifecycleCallbacks[] getNonPCSuperclassCallbacks
+        (int eventType) {
         return (_super == null || _super[eventType] == null)
             ? EMPTY_CALLBACKS : _super[eventType];
     }
 
     /**
      * Set the callbacks for the given event type for non-persistent
-     * superclass. Note these callbacks will only be used where the
-     * non-persistent superclass is the direct ancestor of the described class.
+     * superclass.  Note these callbacks will only be used where the
+     * non-persistent superclass is the direct ancestor of the described
+     * class.
      *
-     * @param highPriority the first N given callbacks are high priority;
-     *                     high priority callbacks will be returned before
-     *                     non-high-priority superclass callbacks
+     * @param    highPriority    the first N given callbacks are high priority;
+     * high priority callbacks will be returned before
+     * non-high-priority superclass callbacks
      */
     public void setNonPCSuperclassCallbacks(int eventType,
         LifecycleCallbacks[] callbacks, int highPriority) {
         if (_resolved)
             throw new InternalException(_loc.get("lifecycle-resolved",
                 _meta, Arrays.asList(callbacks)));
+
         if (_super == null) {
             _super = new LifecycleCallbacks
                 [LifecycleEvent.ALL_EVENTS.length][];
@@ -160,17 +169,19 @@ public class LifecycleMetaData {
     }
 
     /**
-     * Combine our callbacks with superclass callbacks as necessary.
-     * This method has the side effect of manipulating the _high array to
-     * reflect the combined callbacks rather than the declared ones.
+     *	Combine our callbacks with superclass callbacks as necessary.
+     *	This method has the side effect of manipulating the _high array to
+     *	reflect the combined callbacks rather than the declared ones.
      */
     private LifecycleCallbacks[][] combineCallbacks() {
         if (_ignoreSups == (IGNORE_HIGH | IGNORE_LOW))
             return _declared;
+
         LifecycleMetaData supMeta = (_meta.getPCSuperclass() == null) ? null
             : _meta.getPCSuperclassMetaData().getLifecycleMetaData();
         if (supMeta == null && _super == null)
             return _declared;
+
         if (supMeta != null) {
             supMeta.resolve();
             if (supMeta._all == null)
@@ -183,6 +194,7 @@ public class LifecycleMetaData {
             _super = null;
             _superHigh = null;
         }
+
         LifecycleCallbacks[][] all = new LifecycleCallbacks
             [LifecycleEvent.ALL_EVENTS.length][];
         LifecycleCallbacks[] decs, sups;
@@ -199,6 +211,7 @@ public class LifecycleMetaData {
             }
             supStart = ((_ignoreSups & IGNORE_HIGH) != 0) ? supHigh : 0;
             supEnd = ((_ignoreSups & IGNORE_LOW) != 0) ? supHigh : sups.length;
+
             if (supEnd - supStart == 0)
                 all[i] = decs;
             else if (decs.length == 0) {
@@ -215,6 +228,7 @@ public class LifecycleMetaData {
                 all[i] =
                     new LifecycleCallbacks[decs.length + supEnd - supStart];
                 count = 0;
+
                 // add superclass high priority callbacks first
                 if ((_ignoreSups & IGNORE_HIGH) == 0)
                     for (int j = 0; j < supHigh; j++)
@@ -229,10 +243,11 @@ public class LifecycleMetaData {
                 // then our low priority
                 for (int j = _high[i]; j < decs.length; j++)
                     all[i][count++] = decs[j];
+
                 if ((_ignoreSups & IGNORE_HIGH) == 0)
                     _high[i] += supHigh;
-            }
-        }
-        return all;
-    }
+			}
+		}
+		return all;
+	}
 }

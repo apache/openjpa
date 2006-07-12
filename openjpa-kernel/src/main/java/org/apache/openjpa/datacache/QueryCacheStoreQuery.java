@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -43,14 +46,17 @@ import serp.util.Numbers;
 
 /**
  * A {@link StoreQuery} implementation that caches the OIDs involved in
- * the query, and can determine whether or not the query has been dirtied.
+ * the query, and can determine whether or not the query has been
+ * dirtied.
  *
  * @author Patrick Linskey
  * @since 2.5.0
  */
-public class QueryCacheStoreQuery implements StoreQuery {
+class QueryCacheStoreQuery
+    implements StoreQuery {
 
     private static Object NULL = new Object();
+
     private final StoreQuery _query;
     private final QueryCache _cache;
     private StoreContext _sctx;
@@ -66,7 +72,8 @@ public class QueryCacheStoreQuery implements StoreQuery {
     }
 
     /**
-     * Return the {@link QueryCache} that this object is associated with.
+     * Return the {@link QueryCache} that this object is associated
+     * with.
      */
     public QueryCache getCache() {
         return _cache;
@@ -80,25 +87,30 @@ public class QueryCacheStoreQuery implements StoreQuery {
     }
 
     /**
-     * Look in the query cache for a result for the given query
+     * <p>Look in the query cache for a result for the given query
      * key. Only look if this query is being executed outside a
      * transaction or in a transaction with IgnoreChanges set to true
      * or in a transaction with IgnoreChanges set to false but in which
-     * none of the classes involved in this query have been touched.
-     * Caching is not used when using object locking.
+     * none of the classes involved in this query have been
+     * touched.</p>
+     * <p/>
+     * <p>Caching is not used when using object locking.
      * This is because we must obtain locks on the
      * data, and it is likely that making n trips to the database to
      * make the locks will be slower than running the query against
-     * the database.
-     * If the fetch configuration has query caching disabled,
-     * then this method returns <code>null</code>.
-     * Return the list if we meet the above criteria and if a list
+     * the database.</p>
+     * <p/>
+     * <p>If the fetch configuration has query caching disabled,
+     * then this method returns <code>null</code>.</p>
+     * <p/>
+     * <p>Return the list if we meet the above criteria and if a list
      * is found for <code>qk</code>. Else, return
-     * <code>null</code>.
-     * This implementation means that queries against the cache
+     * <code>null</code>.</p>
+     * <p/>
+     * <p>This implementation means that queries against the cache
      * are of READ_COMMITTED isolation level. It'd be nice to support
      * READ_SERIALIZABLE -- to do so, we'd just return false when in
-     * a transaction.
+     * a transaction.</p>
      */
     private List checkCache(QueryKey qk) {
         if (qk == null)
@@ -108,12 +120,14 @@ public class QueryCacheStoreQuery implements StoreQuery {
             return null;
         if (fetch.getReadLockLevel() > LockLevels.LOCK_NONE)
             return null;
+
         // get the cached oids
         QueryResult res = _cache.get(qk);
         if (res == null)
             return null;
         if (res.isEmpty())
             return Collections.EMPTY_LIST;
+
         int projs = getContext().getProjectionAliases().length;
         if (projs == 0) {
             // make sure the data cache contains the oids for the query result;
@@ -122,6 +136,7 @@ public class QueryCacheStoreQuery implements StoreQuery {
             ClassMetaData meta = _repos.getMetaData(getContext().
                 getCandidateType(), _sctx.getClassLoader(), true);
             BitSet idxs = meta.getDataCache().containsAll(res);
+
             // eventually we should optimize this to figure out how many objects
             // the cache is missing and if only a few do a bulk fetch for them
             int len = idxs.length();
@@ -186,13 +201,15 @@ public class QueryCacheStoreQuery implements StoreQuery {
     private static Object fromObjectId(Object oid, StoreContext sctx) {
         if (oid == null)
             return null;
+
         Object obj = sctx.find(oid, null, null, null, 0);
         if (obj == null)
             throw new ObjectNotFoundException(oid);
         return obj;
     }
 
-    public Object writeReplace() throws ObjectStreamException {
+    public Object writeReplace()
+        throws ObjectStreamException {
         return _query;
     }
 
@@ -270,7 +287,8 @@ public class QueryCacheStoreQuery implements StoreQuery {
     /**
      * Caching executor.
      */
-    private static class QueryCacheExecutor implements Executor {
+    private static class QueryCacheExecutor
+        implements Executor {
 
         private final Executor _ex;
         private final Class _candidate;
@@ -291,6 +309,7 @@ public class QueryCacheStoreQuery implements StoreQuery {
             List cached = cq.checkCache(key);
             if (cached != null)
                 return new ListResultObjectProvider(cached);
+
             ResultObjectProvider rop = _ex.executeQuery(cq.getDelegate(),
                 params, lrs, startIdx, endIdx);
             return cq.wrapResult(rop, key);
@@ -304,6 +323,7 @@ public class QueryCacheStoreQuery implements StoreQuery {
             List cached = cq.checkCache(key);
             if (cached != null)
                 return new ListResultObjectProvider(cached);
+
             ResultObjectProvider rop = _ex.executeQuery(cq.getDelegate(),
                 params, lrs, startIdx, endIdx);
             return cq.wrapResult(rop, key);
@@ -318,12 +338,15 @@ public class QueryCacheStoreQuery implements StoreQuery {
         private void clearAccesssPath(StoreQuery q) {
             if (q == null)
                 return;
+
             ClassMetaData[] cmd = getAccessPathMetaDatas(q);
             if (cmd == null || cmd.length == 0)
                 return;
+
             Class[] classes = new Class[cmd.length];
             for (int i = 0; i < cmd.length; i++)
                 classes[i] = cmd[i].getDescribedType();
+
             QueryCacheStoreQuery cq = (QueryCacheStoreQuery) q;
             cq.getCache().onTypesChanged(new TypesChangedEvent
                 (q.getContext(), Arrays.asList(classes)));
@@ -430,10 +453,11 @@ public class QueryCacheStoreQuery implements StoreQuery {
     }
 
     /**
-     * Result list implementation for a cached query result. Public visibility
+     * Result list implementation for a cached query result.  Package-protected
      * for testing.
      */
-    public static class CachedList extends AbstractList
+    static class CachedList
+        extends AbstractList
         implements Serializable {
 
         private final QueryResult _res;
@@ -449,6 +473,7 @@ public class QueryCacheStoreQuery implements StoreQuery {
         public Object get(int idx) {
             if (!_proj)
                 return fromObjectId(_res.get(idx), _sctx);
+
             Object[] cached = (Object[]) _res.get(idx);
             if (cached == null)
                 return null;
@@ -462,7 +487,8 @@ public class QueryCacheStoreQuery implements StoreQuery {
             return _res.size();
         }
 
-        public Object writeReplace() throws ObjectStreamException {
+        public Object writeReplace()
+            throws ObjectStreamException {
             return new ArrayList(this);
         }
     }
@@ -471,7 +497,8 @@ public class QueryCacheStoreQuery implements StoreQuery {
      * A wrapper around a {@link ResultObjectProvider} that builds up a list of
      * all the OIDs in this list and registers that list with the
      * query cache. Abandons monitoring and registering if one of the classes
-     * in the access path is modified while the query results are being loaded.
+     * in the access path is modified while the query results are being
+     * loaded.
      */
     private class CachingResultObjectProvider
         implements ResultObjectProvider, TypesChangedListener {
@@ -482,13 +509,14 @@ public class QueryCacheStoreQuery implements StoreQuery {
         private final TreeMap _data = new TreeMap();
         private boolean _maintainCache = true;
         private int _pos = -1;
+
         // used to determine list size without necessarily calling size(),
         // which may require a DB trip or return Integer.MAX_VALUE
         private int _max = -1;
         private int _size = Integer.MAX_VALUE;
 
         /**
-         * Constructor. Supply delegate result provider and our query key.
+         * Constructor.  Supply delegate result provider and our query key.
          */
         public CachingResultObjectProvider(ResultObjectProvider rop,
             boolean proj, QueryKey key) {
@@ -504,6 +532,7 @@ public class QueryCacheStoreQuery implements StoreQuery {
         private void abortCaching() {
             if (!_maintainCache)
                 return;
+
             // this can be called via an event from another thread
             synchronized (this) {
                 // it's important that we set this flag first so that any
@@ -546,10 +575,11 @@ public class QueryCacheStoreQuery implements StoreQuery {
                     finished = _size == _data.size();
                 }
             }
+
             if (finished) {
                 // an abortCaching call can sneak in here via onExpire; the
                 // cache is locked during event firings, so the lock here will
-                // wait for it(or will force the next firing to wait)
+                // wait for it (or will force the next firing to wait)
                 _cache.writeLock();
                 try {
                     // make sure we didn't abort
@@ -569,17 +599,20 @@ public class QueryCacheStoreQuery implements StoreQuery {
             return _rop.supportsRandomAccess();
         }
 
-        public void open() throws Exception {
+        public void open()
+            throws Exception {
             _rop.open();
         }
 
-        public Object getResultObject() throws Exception {
+        public Object getResultObject()
+            throws Exception {
             Object obj = _rop.getResultObject();
             checkFinished(obj, true);
             return obj;
         }
 
-        public boolean next() throws Exception {
+        public boolean next()
+            throws Exception {
             _pos++;
             boolean next = _rop.next();
             if (!next && _pos == _max + 1) {
@@ -590,7 +623,8 @@ public class QueryCacheStoreQuery implements StoreQuery {
             return next;
         }
 
-        public boolean absolute(int pos) throws Exception {
+        public boolean absolute(int pos)
+            throws Exception {
             _pos = pos;
             boolean valid = _rop.absolute(pos);
             if (!valid && _pos == _max + 1) {
@@ -601,7 +635,8 @@ public class QueryCacheStoreQuery implements StoreQuery {
             return valid;
         }
 
-        public int size() throws Exception {
+        public int size()
+            throws Exception {
             if (_size != Integer.MAX_VALUE)
                 return _size;
             int size = _rop.size();
@@ -610,12 +645,14 @@ public class QueryCacheStoreQuery implements StoreQuery {
             return size;
         }
 
-        public void reset() throws Exception {
+        public void reset()
+            throws Exception {
             _rop.reset();
             _pos = -1;
         }
 
-        public void close() throws Exception {
+        public void close()
+            throws Exception {
             abortCaching();
             _rop.close();
         }
@@ -631,14 +668,15 @@ public class QueryCacheStoreQuery implements StoreQuery {
     }
 
     /**
-     * Struct to recognize cached oids.
+     *	Struct to recognize cached oids.
      */
     private static class CachedObjectId {
 
         public final Object oid;
 
-        public CachedObjectId(Object oid) {
-            this.oid = oid;
-        }
-    }
+        public CachedObjectId (Object oid)
+		{
+			this.oid = oid;
+		}
+	}
 }

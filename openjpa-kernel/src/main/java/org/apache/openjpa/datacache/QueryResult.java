@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,11 +19,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * A query result.
+ * <p>A query result.</p>
  *
  * @author Abe White
  */
-public class QueryResult extends ArrayList {
+public class QueryResult
+    extends ArrayList {
 
     private final long _ex;
 
@@ -29,9 +33,11 @@ public class QueryResult extends ArrayList {
      */
     public QueryResult(QueryKey key, Collection data) {
         super(data);
+
         if (key.getTimeout() == -1)
             _ex = -1;
-        else _ex = System.currentTimeMillis() + key.getTimeout();
+        else
+            _ex = System.currentTimeMillis() + key.getTimeout();
     }
 
     /**
@@ -50,9 +56,9 @@ public class QueryResult extends ArrayList {
     }
 
     /**
-     * Whether this data is timed out.
+     *	Whether this data is timed out.
      */
     public boolean isTimedOut() {
         return _ex != -1 && _ex < System.currentTimeMillis();
-    }
+	}
 }

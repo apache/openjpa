@@ -164,8 +164,8 @@ public class Services {
      * specified class name, as resolved by the specified {@link ClassLoader}.
      *
      * @param skipMissing if true, then ignore classes that cannot be loaded by
-     *                    the classloader; otherwise, resolution failures will throw a
-     *                    {@link ClassNotFoundException}.
+     * the classloader; otherwise, resolution failures will throw a
+     * {@link ClassNotFoundException}.
      */
     public static Class[] getImplementorClasses(String serviceName,
         ClassLoader loader, boolean skipMissing) throws ClassNotFoundException {

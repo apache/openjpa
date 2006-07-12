@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -22,30 +25,33 @@ import org.apache.commons.collections.set.MapBackedSet;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 
 /**
- * Base class that provides utilities to change trackers.
+ * <p>Base class that provides utilities to change trackers.</p>
  *
  * @author Abe White
  * @nojavadoc
  */
-public abstract class AbstractChangeTracker implements ChangeTracker {
+public abstract class AbstractChangeTracker
+    implements ChangeTracker {
 
     /**
-     * Collection of added items. May be null.
+     * Collection of added items.  May be null.
      */
     protected Collection add = null;
 
     /**
-     * Collection of removed items. May be null.
+     * Collection of removed items.  May be null.
      */
     protected Collection rem = null;
 
     /**
-     * Collection of changed items. May be null.
+     * Collection of changed items.  May be null.
      */
     protected Collection change = null;
+
     // we need the configuration for context when figuring out if a type
     // is managed
     private final OpenJPAConfiguration _conf;
+
     private boolean _autoOff = true;
     private boolean _track = false;
     private Boolean _identity = null;
@@ -60,7 +66,7 @@ public abstract class AbstractChangeTracker implements ChangeTracker {
 
     /**
      * Whether to automatically stop tracking when the number of changes
-     * exceeds the container size. Defaults to true.
+     * exceeds the container size.  Defaults to true.
      */
     public boolean getAutoOff() {
         return _autoOff;
@@ -68,7 +74,7 @@ public abstract class AbstractChangeTracker implements ChangeTracker {
 
     /**
      * Whether to automatically stop tracking when the number of changes
-     * exceeds the container size. Defaults to true.
+     * exceeds the container size.  Defaults to true.
      */
     public void setAutoOff(boolean autoOff) {
         _autoOff = autoOff;
@@ -86,8 +92,8 @@ public abstract class AbstractChangeTracker implements ChangeTracker {
     }
 
     /**
-     * Return the initial sequence value for this proxy. Typically this is
-     * the container size. Assumes an unordered collection by default,
+     * Return the initial sequence value for this proxy.  Typically this is
+     * the container size.  Assumes an unordered collection by default,
      * returning 0.
      */
     protected int initialSequence() {
@@ -179,7 +185,7 @@ public abstract class AbstractChangeTracker implements ChangeTracker {
     }
 
     /**
-     * Create a new set for storing adds/removes/changes. Takes into account
+     * Create a new set for storing adds/removes/changes.  Takes into account
      * whether we need to use an identity set or standard set.
      */
     protected Set newSet() {
@@ -190,23 +196,26 @@ public abstract class AbstractChangeTracker implements ChangeTracker {
 
     /**
      * Set whether to use identity-based datastructures, and switch our current
-     * datastructures appropriately if needed. We use identity structures for
+     * datastructures appropriately if needed.  We use identity structures for
      * PC types in case the user has coded them such that two objects with
      * different identities can compare equals().
      */
     private void setIdentity(Object val) {
         if (val == null || _identity != null)
             return;
+
         if (ImplHelper.isManagedType(val.getClass()))
             _identity = Boolean.TRUE;
-        else _identity = Boolean.FALSE;
+        else
+            _identity = Boolean.FALSE;
+
         add = switchStructure(add, _identity.booleanValue());
         rem = switchStructure(rem, _identity.booleanValue());
         change = switchStructure(change, _identity.booleanValue());
     }
 
     /**
-     * Switch from an identity structure to a standard one, or vice versa.
+     *	Switch from an identity structure to a standard one, or vice versa.
      */
     private static Collection switchStructure(Collection cur,
         boolean identity) {
@@ -222,9 +231,9 @@ public abstract class AbstractChangeTracker implements ChangeTracker {
         if (!identity && !(cur instanceof HashSet) && cur instanceof Set) {
             if (cur.isEmpty())
                 return null;
-            return new HashSet(cur);
-        }
-        return cur;
-    }
+            return new HashSet (cur);
+		}
+		return cur;
+	}
 }
 

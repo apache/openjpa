@@ -145,7 +145,7 @@ public class ClassArgParser {
      * given arg.
      *
      * @param arg a class name, .java file, .class file, or metadata
-     *            file naming the type(s) to act on
+     * file naming the type(s) to act on
      */
     public Class[] parseTypes(String arg) {
         String[] names = parseTypeNames(arg);
@@ -191,7 +191,7 @@ public class ClassArgParser {
      * Return the names of the class(es) from the given arg.
      *
      * @param arg a class name, .java file, .class file, or metadata
-     *            file naming the type(s) to act on
+     * file naming the type(s) to act on
      * @throws IllegalArgumentException with appropriate message on error
      */
     public String[] parseTypeNames(String arg) {

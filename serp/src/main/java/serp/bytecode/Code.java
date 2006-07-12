@@ -389,10 +389,10 @@ public class Code extends Attribute {
     /**
      * Add an exception handler to this code block.
      *
-     * @param tryStart     the first instruction of the try {} block
-     * @param tryEnd       the last instruction of the try {} block
+     * @param tryStart the first instruction of the try {} block
+     * @param tryEnd the last instruction of the try {} block
      * @param handlerStart the first instruction of the catch {} block
-     * @param catchType    the type of exception being caught
+     * @param catchType the type of exception being caught
      */
     public ExceptionHandler addExceptionHandler(Instruction tryStart,
         Instruction tryEnd, Instruction handlerStart, String catchType) {
@@ -407,10 +407,10 @@ public class Code extends Attribute {
     /**
      * Add an exception handler to this code block.
      *
-     * @param tryStart     the first instruction of the try {} block
-     * @param tryEnd       the last instruction of the try {} block
+     * @param tryStart the first instruction of the try {} block
+     * @param tryEnd the last instruction of the try {} block
      * @param handlerStart the first instruction of the catch {} block
-     * @param catchType    the type of exception being caught
+     * @param catchType the type of exception being caught
      */
     public ExceptionHandler addExceptionHandler(Instruction tryStart,
         Instruction tryEnd, Instruction handlerStart, Class catchType) {
@@ -423,10 +423,10 @@ public class Code extends Attribute {
     /**
      * Add an exception handler to this code block.
      *
-     * @param tryStart     the first instruction of the try {} block
-     * @param tryEnd       the last instruction of the try {} block
+     * @param tryStart the first instruction of the try {} block
+     * @param tryEnd the last instruction of the try {} block
      * @param handlerStart the first instruction of the catch {} block
-     * @param catchType    the type of exception being caught
+     * @param catchType the type of exception being caught
      */
     public ExceptionHandler addExceptionHandler(Instruction tryStart,
         Instruction tryEnd, Instruction handlerStart, BCClass catchType) {
@@ -1904,7 +1904,7 @@ public class Code extends Attribute {
      * Acts internally through the {@link Attributes} interface.
      *
      * @param add if true, a new line number table will be added
-     *            if not already present
+     * if not already present
      * @return the line number information, or null if none
      *         and the <code>add</code> param is set to false
      */
@@ -1932,7 +1932,7 @@ public class Code extends Attribute {
      * Acts internally through the {@link Attributes} interface.
      *
      * @param add if true, a new local variable table will be
-     *            added if not already present
+     * added if not already present
      * @return the local variable information, or null if none
      *         and the <code>add</code> param is set to false
      */
@@ -1960,7 +1960,7 @@ public class Code extends Attribute {
      * Acts internally through the {@link Attributes} interface.
      *
      * @param add if true, a new local variable type table will be
-     *            added if not already present
+     * added if not already present
      * @return the local variable type information, or null if none
      *         and the <code>add</code> param is set to false
      */
@@ -2160,7 +2160,7 @@ public class Code extends Attribute {
      * in this code block that 'ins' is a part of.
      *
      * @throws IllegalArgumentException if this code block is not the owner
-     *                                  of ins
+     * of ins
      */
     private int indexOf(Instruction ins) {
         int i = 0;

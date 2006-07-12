@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -31,8 +34,44 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.ExcludeDefaultListeners;
+import javax.persistence.ExcludeSuperclassListeners;
+import javax.persistence.FetchType;
+import javax.persistence.FlushModeType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import static javax.persistence.GenerationType.AUTO;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
+import javax.persistence.PostLoad;
+import javax.persistence.PostPersist;
+import javax.persistence.PostRemove;
+import javax.persistence.PostUpdate;
+import javax.persistence.PrePersist;
+import javax.persistence.PreRemove;
+import javax.persistence.PreUpdate;
+import javax.persistence.QueryHint;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Version;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -69,17 +108,19 @@ import serp.util.Numbers;
 import serp.util.Strings;
 
 /**
- * Persistence annotation metadata parser. Currently does not parse
- * deployment descriptors.
+ * <p>Persistence annotation metadata parser.  Currently does not parse
+ * deployment descriptors.</p>
  *
  * @author Abe White
  * @author Steve Kim
  * @nojavadoc
  */
-public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
+public class AnnotationPersistenceMetaDataParser
+    implements MetaDataModes {
 
     private static final Localizer _loc = Localizer.forPackage
         (AnnotationPersistenceMetaDataParser.class);
+
     private static final Map<Class, MetaDataTag> _tags =
         new HashMap<Class, MetaDataTag>();
 
@@ -133,8 +174,10 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
     private ClassLoader _envLoader = null;
     private boolean _override = false;
     private int _mode = MODE_NONE;
+
     // packages and their parse modes
     private final Map<Package, Integer> _pkgs = new HashMap<Package, Integer>();
+
     // the class we were invoked to parse
     private Class _cls = null;
     private File _file = null;
@@ -162,7 +205,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
     }
 
     /**
-     * Returns the repository for this parser. If none has been set,
+     * Returns the repository for this parser.  If none has been set,
      * create a new repository and sets it.
      */
     public MetaDataRepository getRepository() {
@@ -210,7 +253,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
 
     /**
      * Whether to allow later parses of mapping information to override
-     * earlier information for the same class. Defaults to false. Useful
+     * earlier information for the same class.  Defaults to false.  Useful
      * when a tool is mapping a class, so that annotation partial mapping
      * information can be used even when mappings are stored in another
      * location.
@@ -221,7 +264,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
 
     /**
      * Whether to allow later parses of mapping information to override
-     * earlier information for the same class. Defaults to false. Useful
+     * earlier information for the same class.  Defaults to false.  Useful
      * when a tool is mapping a class, so that annotation partial mapping
      * information can be used even when mappings are stored in another
      * location.
@@ -245,7 +288,8 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
             _mode = MODE_NONE;
         else if (on)
             _mode |= mode;
-        else _mode &= ~mode;
+        else
+            _mode &= ~mode;
     }
 
     /**
@@ -299,6 +343,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
     public void parse(Class cls) {
         if (_log.isInfoEnabled())
             _log.info(_loc.get("parse-class", cls.getName()));
+
         _cls = cls;
         try {
             parsePackageAnnotations();
@@ -329,11 +374,13 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
         Package pkg = _cls.getPackage();
         if (pkg == null)
             return;
+
         int pkgMode = getSourceMode(pkg);
         if (pkgMode == 0 && _log.isInfoEnabled())
             _log.info(_loc.get("parse-package", _cls.getName()));
         if ((pkgMode & _mode) == _mode) // already visited
             return;
+
         MetaDataTag tag;
         for (Annotation anno : pkg.getDeclaredAnnotations()) {
             tag = _tags.get(anno.annotationType());
@@ -341,6 +388,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                 handleUnknownPackageAnnotation(pkg, anno);
                 continue;
             }
+
             switch (tag) {
                 case NATIVE_QUERIES:
                     if (isQueryMode() && (pkgMode & MODE_QUERY) == 0)
@@ -369,6 +417,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                         anno.toString()));
             }
         }
+
         // always parse mapping stuff after metadata stuff, in case there are
         // dependencies on metadata
         if (isMappingOverrideMode() && (pkgMode & MODE_MAPPING) == 0)
@@ -404,7 +453,8 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
         Integer num = _pkgs.get(pkg);
         if (num == null)
             num = Numbers.valueOf(mode);
-        else num = Numbers.valueOf(num.intValue() | mode);
+        else
+            num = Numbers.valueOf(num.intValue() | mode);
         _pkgs.put(pkg, num);
     }
 
@@ -419,10 +469,12 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
             && !_cls.isAnnotationPresent(Embeddable.class)
             && !_cls.isAnnotationPresent(MappedSuperclass.class))
             return null;
+
         // find / create metadata
         ClassMetaData meta = getMetaData();
         if (meta == null)
             return null;
+
         Entity entity = (Entity) _cls.getAnnotation(Entity.class);
         if (isMetaDataMode()) {
             // while the spec only provides for embedded exclusive, it doesn't
@@ -437,10 +489,12 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                     meta.setTypeAlias(entity.name());
             }
         }
+
         // track fetch groups to parse them after fields, since they
         // rely on field metadata
         FetchGroup[] fgs = null;
         DetachedState detached = null;
+
         // track listeners since we need to merge them with entity callbacks
         Collection<LifecycleCallbacks>[] listeners = null;
         MetaDataTag tag;
@@ -450,6 +504,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                 handleUnknownClassAnnotation(meta, anno);
                 continue;
             }
+
             switch (tag) {
                 case ENTITY_LISTENERS:
                     if (isMetaDataMode())
@@ -519,8 +574,10 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                         anno.toString()));
             }
         }
+
         if (isMetaDataMode()) {
             parseDetachedState(meta, detached);
+
             // merge callback methods with declared listeners
             int[] highs = null;
             if (listeners != null) {
@@ -531,6 +588,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
             }
             recordCallbacks(meta, parseCallbackMethods(_cls, listeners, false,
                 false), highs, false);
+
             // scan possibly non-PC hierarchy for callbacks.
             // redundant for PC superclass but we don't know that yet
             // so let LifecycleMetaData determine that
@@ -539,12 +597,14 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                     getSuperclass(), null, true, false), null, true);
             }
         }
+
         for (FieldMetaData fmd : meta.getDeclaredFields())
             if (fmd.getManagement() == FieldMetaData.MANAGE_PERSISTENT)
                 parseMemberAnnotations(fmd);
         // parse fetch groups after fields
         if (fgs != null)
             parseFetchGroups(meta, fgs);
+
         // always parse mapping after metadata in case there are dependencies
         if (isMappingOverrideMode()) {
             parseClassMappingAnnotations(meta);
@@ -570,7 +630,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
     }
 
     /**
-     * Find or create metadata for the given type. May return null if
+     * Find or create metadata for the given type.  May return null if
      * this class has already been parsed fully.
      */
     private ClassMetaData getMetaData() {
@@ -583,6 +643,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                 _log.warn(_loc.get("dup-metadata", _cls.getName()));
             return null;
         }
+
         if (meta == null) {
             meta = getRepository().addMetaData(_cls);
             meta.setEnvClassLoader(_envLoader);
@@ -598,9 +659,11 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
     protected File getSourceFile() {
         if (_file != null)
             return _file;
+
         Class cls = _cls;
         while (cls.getEnclosingClass() != null)
             cls = cls.getEnclosingClass();
+
         String rsrc = StringUtils.replace(cls.getName(), ".", "/");
         URL url = cls.getClassLoader().getResource(rsrc + ".java");
         if (url == null) {
@@ -610,9 +673,11 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
         }
         try {
             _file = new File(url.toURI());
-        } catch (URISyntaxException e) {
-        } catch (IllegalArgumentException iae) {
-            // this is thrown when the URI is non-hierarchical(aka JBoss)
+        }
+        catch (URISyntaxException e) {
+        }
+        catch (IllegalArgumentException iae) {
+            // this is thrown when the URI is non-hierarchical (aka JBoss)
         }
         return _file;
     }
@@ -622,8 +687,9 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
      */
     private void parseDataStoreId(ClassMetaData meta, DataStoreId id) {
         meta.setIdentityType(ClassMetaData.ID_DATASTORE);
-        int strat =
-            getGeneratedValueStrategy(meta, id.strategy(), id.generator());
+
+        int strat = getGeneratedValueStrategy(meta, id.strategy(),
+            id.generator());
         if (strat != -1)
             meta.setIdentityStrategy(strat);
         else {
@@ -636,7 +702,8 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                     if (StringUtils.isEmpty(id.generator()))
                         meta.setIdentitySequenceName(
                             SequenceMetaData.NAME_SYSTEM);
-                    else meta.setIdentitySequenceName(id.generator());
+                    else
+                        meta.setIdentitySequenceName(id.generator());
                     break;
                 case AUTO:
                     meta.setIdentityStrategy(ValueStrategies.NATIVE);
@@ -669,11 +736,12 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
         else if (cache.enabled())
             meta.setDataCacheName(
                 org.apache.openjpa.datacache.DataCache.NAME_DEFAULT);
-        else meta.setDataCacheName(null);
+        else
+            meta.setDataCacheName(null);
     }
 
     /**
-     * Parse @DetachedState. The annotation may be null.
+     * Parse @DetachedState.  The annotation may be null.
      */
     private void parseDetachedState(ClassMetaData meta,
         DetachedState detached) {
@@ -682,7 +750,8 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                 meta.setDetachedState(null);
             else if (!StringUtils.isEmpty(detached.fieldName()))
                 meta.setDetachedState(ClassMetaData.SYNTHETIC);
-            else meta.setDetachedState(detached.fieldName());
+            else
+                meta.setDetachedState(detached.fieldName());
         } else {
             Field[] fields = meta.getDescribedType().getDeclaredFields();
             for (int i = 0; i < fields.length; i++)
@@ -705,11 +774,11 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
 
     /**
      * Parse callback methods into the given array, and return that array,
-     * creating one if null. Each index into the array is a collection of
+     * creating one if null.  Each index into the array is a collection of
      * callback adapters for that numeric event type.
      *
-     * @param sups     whether to scan superclasses
-     * @param listener whether this is a listener or not
+     * @param    sups whether to scan superclasses
+     * @param    listener whether this is a listener or not
      */
     public static Collection<LifecycleCallbacks>[] parseCallbackMethods
         (Class cls, Collection<LifecycleCallbacks>[] callbacks, boolean sups,
@@ -717,6 +786,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
         // first sort / filter based on inheritance
         Set<Method> methods = new TreeSet<Method>(MethodComparator.
             getInstance());
+
         int mods;
         Class sup = cls;
         MethodKey key;
@@ -727,6 +797,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                 if (Modifier.isStatic(mods) || Modifier.isFinal(mods) ||
                     Object.class.equals(m.getDeclaringClass()))
                     continue;
+
                 key = new MethodKey(m);
                 if (!seen.contains(key)) {
                     methods.add(m);
@@ -736,21 +807,26 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
             sup = sup.getSuperclass();
         }
         while (sups && !Object.class.equals(sup));
+
         for (Method m : methods) {
             for (Annotation anno : m.getDeclaredAnnotations()) {
                 MetaDataTag tag = _tags.get(anno.annotationType());
                 if (tag == null)
                     continue;
+
                 int[] events = XMLPersistenceMetaDataParser.getEventTypes(tag);
                 if (events == null)
                     continue;
+
                 if (callbacks == null)
                     callbacks = (Collection<LifecycleCallbacks>[])
                         new Collection[LifecycleEvent.ALL_EVENTS.length];
+
                 for (int i = 0; events != null && i < events.length; i++) {
                     int e = events[i];
                     if (callbacks[e] == null)
                         callbacks[e] = new ArrayList(3);
+
                     if (listener) {
                         callbacks[e].add(new BeanLifecycleCallbacks(cls, m,
                             false));
@@ -779,6 +855,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                 continue;
             array = callbacks[event].toArray
                 (new LifecycleCallbacks[callbacks[event].size()]);
+
             if (superClass) {
                 meta.setNonPCSuperclassCallbacks(event, array,
                     (highs == null) ? 0 : highs[event]);
@@ -813,6 +890,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
             || field.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
             throw new MetaDataException(_loc.get("bad-fg-field", group,
                 meta, attr.name()));
+
         // validations passed; set fetch group
         field.addFetchGroup(group);
     }
@@ -829,6 +907,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
         if (pstrat == null)
             return;
         fmd.setExplicit(true);
+
         AnnotatedElement el = (AnnotatedElement) member;
         boolean lob = el.isAnnotationPresent(Lob.class);
         if (isMetaDataMode()) {
@@ -874,8 +953,10 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                     throw new InternalException();
             }
         }
+
         if (isMappingOverrideMode() && lob)
             parseLobMapping(fmd);
+
         // extensions
         MetaDataTag tag;
         for (Annotation anno : el.getDeclaredAnnotations()) {
@@ -884,6 +965,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                 handleUnknownMemberAnnotation(fmd, anno);
                 continue;
             }
+
             switch (tag) {
                 case FLUSH_MODE:
                     if (isMetaDataMode())
@@ -1003,7 +1085,8 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
             fmd.setUpdateStrategy(UpdateStrategies.RESTRICT);
         else if (ro.value() == UpdateAction.IGNORE)
             fmd.setUpdateStrategy(UpdateStrategies.IGNORE);
-        else throw new InternalException();
+        else
+            throw new InternalException();
     }
 
     /**
@@ -1023,7 +1106,8 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                     // the system org.apache.openjpa.Sequence setting for both
                     if (StringUtils.isEmpty(gen.generator()))
                         fmd.setValueSequenceName(SequenceMetaData.NAME_SYSTEM);
-                    else fmd.setValueSequenceName(gen.generator());
+                    else
+                        fmd.setValueSequenceName(gen.generator());
                     break;
                 case AUTO:
                     fmd.setValueSequenceName(SequenceMetaData.NAME_SYSTEM);
@@ -1046,6 +1130,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
         GenerationType strategy, String generator) {
         if (strategy != AUTO || StringUtils.isEmpty(generator))
             return -1;
+
         if (Generator.UUID_HEX.equals(generator))
             return ValueStrategies.UUID_HEX;
         if (Generator.UUID_STRING.equals(generator))
@@ -1055,7 +1140,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
     }
 
     /**
-     * Parse @Basic. Given annotation may be null.
+     * Parse @Basic.  Given annotation may be null.
      */
     private void parseBasic(FieldMetaData fmd, Basic anno, boolean lob) {
         Class type = fmd.getDeclaredType();
@@ -1075,8 +1160,9 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                 case JavaTypes.PC_UNTYPED:
                     if (Serializable.class.isAssignableFrom(type))
                         fmd.setSerialized(true);
-                    else throw new MetaDataException(_loc.get("bad-meta-anno",
-                        fmd, "Basic"));
+                    else
+                        throw new MetaDataException(_loc.get("bad-meta-anno",
+                            fmd, "Basic"));
                     break;
                 case JavaTypes.ARRAY:
                     if (type == char[].class || type == Character[].class
@@ -1085,11 +1171,13 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                     if (Serializable.class.isAssignableFrom
                         (type.getComponentType()))
                         fmd.setSerialized(true);
-                    else throw new MetaDataException(_loc.get("bad-meta-anno",
-                        fmd, "Basic"));
+                    else
+                        throw new MetaDataException(_loc.get("bad-meta-anno",
+                            fmd, "Basic"));
                     break;
             }
         }
+
         if (anno == null)
             return;
         fmd.setInDefaultFetchGroup(anno.fetch() == FetchType.EAGER);
@@ -1104,6 +1192,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
         if (!JavaTypes.maybePC(fmd.getValue()))
             throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
                 "ManyToOne"));
+
         // don't specifically exclude relation from DFG b/c that will prevent
         // us from even reading the fk when reading from the primary table,
         // which is not what most users will want
@@ -1123,6 +1212,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
         if (!JavaTypes.maybePC(fmd.getValue()))
             throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
                 "OneToOne"));
+
         // don't specifically exclude relation from DFG b/c that will prevent
         // us from even reading the fk when reading from the primary table,
         // which is not what most users will want
@@ -1130,6 +1220,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
             fmd.setInDefaultFetchGroup(true);
         if (!anno.optional())
             fmd.setNullValue(FieldMetaData.NULL_EXCEPTION);
+
         if (isMappingOverrideMode() && !StringUtils.isEmpty(anno.mappedBy()))
             fmd.setMappedBy(anno.mappedBy());
         if (anno.targetEntity() != void.class)
@@ -1138,12 +1229,13 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
     }
 
     /**
-     * Parse @Embedded. Given annotation may be null.
+     * Parse @Embedded.  Given annotation may be null.
      */
     private void parseEmbedded(FieldMetaData fmd, Embedded anno) {
         if (!JavaTypes.maybePC(fmd.getValue()))
             throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
                 "Embedded"));
+
         fmd.setInDefaultFetchGroup(true);
         fmd.setEmbedded(true);
         if (fmd.getEmbeddedMetaData() == null)
@@ -1165,6 +1257,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                 throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
                     "OneToMany"));
         }
+
         fmd.setInDefaultFetchGroup(anno.fetch() == FetchType.EAGER);
         if (isMappingOverrideMode() && !StringUtils.isEmpty(anno.mappedBy()))
             fmd.setMappedBy(anno.mappedBy());
@@ -1188,6 +1281,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                 throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
                     "OneToMany"));
         }
+
         fmd.setInDefaultFetchGroup(anno.fetch() == FetchType.EAGER);
         if (isMappingOverrideMode() && !StringUtils.isEmpty(anno.mappedBy()))
             fmd.setMappedBy(anno.mappedBy());
@@ -1203,7 +1297,8 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
         String name = anno.name();
         if (StringUtils.isEmpty(name))
             fmd.getKey().setValueMappedBy(ValueMetaData.MAPPED_BY_PK);
-        else fmd.getKey().setValueMappedBy(name);
+        else
+            fmd.getKey().setValueMappedBy(name);
     }
 
     /**
@@ -1239,6 +1334,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                 throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
                     "Persistent"));
         }
+
         if (!StringUtils.isEmpty(anno.mappedBy()))
             fmd.setMappedBy(anno.mappedBy());
         fmd.setInDefaultFetchGroup(anno.fetch() == FetchType.EAGER);
@@ -1264,6 +1360,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
             && fmd.getDeclaredTypeCode() != JavaTypes.COLLECTION)
             throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
                 "PersistentCollection"));
+
         if (!StringUtils.isEmpty(anno.mappedBy()))
             fmd.setMappedBy(anno.mappedBy());
         fmd.setInDefaultFetchGroup(anno.fetch() == FetchType.EAGER);
@@ -1287,6 +1384,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
         if (fmd.getDeclaredTypeCode() != JavaTypes.MAP)
             throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
                 "PersistentMap"));
+
         fmd.setInDefaultFetchGroup(anno.fetch() == FetchType.EAGER);
         if (anno.keyType() != void.class)
             fmd.getKey().setDeclaredType(anno.keyType());
@@ -1336,14 +1434,18 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
         String name = gen.name();
         if (StringUtils.isEmpty(name))
             throw new MetaDataException(_loc.get("no-seq-name", el));
+
         if (_log.isInfoEnabled())
             _log.info(_loc.get("parse-sequence", name));
-        SequenceMetaData meta = getRepository().getCachedSequenceMetaData(name);
+
+        SequenceMetaData meta = getRepository().getCachedSequenceMetaData
+            (name);
         if (meta != null) {
             if (_log.isWarnEnabled())
                 _log.warn(_loc.get("dup-sequence", name, el));
             return;
         }
+
         // create new sequence
         meta = getRepository().addSequenceMetaData(name);
         String seq = gen.sequenceName();
@@ -1352,12 +1454,14 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
         // don't allow initial of 0 b/c looks like def value
         if (initial == 0)
             initial = 1;
+
         // create plugin string from info
         String clsName, props;
         if (StringUtils.isEmpty(seq)) {
             clsName = SequenceMetaData.IMPL_NATIVE;
             props = null;
-        } else if (seq.indexOf('(') != -1) { // plugin
+        } else if (seq.indexOf('(') != -1)    // plugin
+        {
             seq = null;
             clsName = Configurations.getClassName(seq);
             props = Configurations.getProperties(seq);
@@ -1365,6 +1469,7 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
             clsName = SequenceMetaData.IMPL_NATIVE;
             props = null;
         }
+
         meta.setSequencePlugin(Configurations.getPlugin(clsName, props));
         meta.setSequence(seq);
         meta.setInitialValue(initial);
@@ -1385,26 +1490,31 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
             if (StringUtils.isEmpty(query.query()))
                 throw new MetaDataException(_loc.get("no-query-string",
                     query.name(), el));
+
             if (_log.isInfoEnabled())
                 _log.info(_loc.get("parse-query", query.name()));
+
             meta = getRepository().getCachedQueryMetaData(null, query.name());
             if (meta != null) {
                 if (_log.isWarnEnabled())
                     _log.warn(_loc.get("dup-query", query.name(), el));
                 return;
             }
+
             meta = getRepository().addQueryMetaData(null, query.name());
             meta.setQueryString(query.query());
             meta.setLanguage(JPQLParser.LANG_JPQL);
             for (QueryHint hint : query.hints())
                 meta.addHint(hint.name(), hint.value());
+
             meta.setSource(getSourceFile(), (el instanceof Class) ? el : null,
                 meta.SRC_ANNOTATIONS);
             if (isMetaDataMode())
                 meta.setSourceMode(MODE_META);
             else if (isMappingMode())
                 meta.setSourceMode(MODE_MAPPING);
-            else meta.setSourceMode(MODE_QUERY);
+            else
+                meta.setSourceMode(MODE_QUERY);
         }
     }
 
@@ -1421,14 +1531,17 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
             if (StringUtils.isEmpty(query.query()))
                 throw new MetaDataException(_loc.get("no-native-query-string",
                     query.name(), el));
+
             if (_log.isInfoEnabled())
                 _log.info(_loc.get("parse-native-query", query.name()));
+
             meta = getRepository().getCachedQueryMetaData(null, query.name());
             if (meta != null) {
                 if (_log.isWarnEnabled())
                     _log.warn(_loc.get("dup-query", query.name(), el));
                 return;
             }
+
             meta = getRepository().addQueryMetaData(null, query.name());
             meta.setQueryString(query.query());
             meta.setLanguage(QueryLanguages.LANG_SQL);
@@ -1437,13 +1550,15 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
                 meta.setCandidateType(res);
             else if (!void.class.equals(res))
                 meta.setResultType(res);
+
             meta.setSource(getSourceFile(), (el instanceof Class) ? el : null,
                 meta.SRC_ANNOTATIONS);
             if (isMetaDataMode())
                 meta.setSourceMode(MODE_META);
             else if (isMappingMode())
                 meta.setSourceMode(MODE_MAPPING);
-            else meta.setSourceMode(MODE_QUERY);
+            else
+                meta.setSourceMode(MODE_QUERY);
         }
     }
 
@@ -1486,17 +1601,19 @@ public class AnnotationPersistenceMetaDataParser implements MetaDataModes {
         public int compare(Object o1, Object o2) {
             Method m1 = (Method) o1;
             Method m2 = (Method) o2;
+
             Class c1 = m1.getDeclaringClass();
             Class c2 = m2.getDeclaringClass();
             if (!c1.equals(c2)) {
                 if (c1.isAssignableFrom(c2))
                     return -1;
-                else return 1;
-            }
-            int compare = m1.getName().compareTo(m2.getName());
-            if (compare == 0)
-                return m1.hashCode() - m2.hashCode();
-            return compare;
-        }
-    }
+                else
+					return 1;
+			}
+			int compare = m1.getName ().compareTo (m2.getName ());
+			if (compare == 0)
+				return m1.hashCode () - m2.hashCode ();
+			return compare;
+		}
+	}
 }

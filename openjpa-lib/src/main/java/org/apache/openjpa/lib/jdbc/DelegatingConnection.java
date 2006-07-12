@@ -19,8 +19,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.sql.Statement;
 import java.sql.Savepoint;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 

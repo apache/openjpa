@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -86,13 +89,14 @@ import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * Concrete {@link Broker}. The broker handles object-level behavior,
+ * <p>Concrete {@link Broker}.  The broker handles object-level behavior,
  * but leaves all interaction with the data store to a {@link StoreManager}
- * that must be supplied at initialization.
+ * that must be supplied at initialization.</p>
  *
  * @author Abe White
  */
-public class BrokerImpl implements Broker, FindCallbacks {
+public class BrokerImpl
+    implements Broker, FindCallbacks {
 
     /**
      * Incremental flush.
@@ -114,10 +118,12 @@ public class BrokerImpl implements Broker, FindCallbacks {
      * accessing the database.
      */
     protected static final int FLUSH_LOGICAL = 3;
+
     static final int STATUS_INIT = 0;
     static final int STATUS_TRANSIENT = 1;
     static final int STATUS_OID_ASSIGN = 2;
     static final int STATUS_COMMIT_NEW = 3;
+
     private static final int FLAG_ACTIVE = 2 << 0;
     private static final int FLAG_STORE_ACTIVE = 2 << 1;
     private static final int FLAG_CLOSE_INVOKED = 2 << 2;
@@ -130,10 +136,14 @@ public class BrokerImpl implements Broker, FindCallbacks {
     private static final int FLAG_REMOTE_LISTENER = 2 << 9;
     private static final int FLAG_RETAINED_CONN = 2 << 10;
     private static final int FLAG_SET_OPERATION = 2 << 11;
-    private static Localizer _loc = Localizer.forPackage(BrokerImpl.class);
-    // the store manager in use; this may be a decorator such as a
-    // data cache store manager around the native store manager
+
+    private static final Localizer _loc =
+        Localizer.forPackage(BrokerImpl.class);
+
+    //	the store manager in use; this may be a decorator such as a
+    //	data cache store manager around the native store manager
     private DelegatingStoreManager _store = null;
+
     // ref to producing factory and configuration
     private AbstractBrokerFactory _factory = null;
     private OpenJPAConfiguration _conf = null;
@@ -149,12 +159,15 @@ public class BrokerImpl implements Broker, FindCallbacks {
     private ReentrantLock _lock = null;
     private OpCallbacks _call = null;
     private RuntimeExceptionTranslator _extrans = null;
+
     // cache class loader associated with the broker
     private ClassLoader _loader = Thread.currentThread().
         getContextClassLoader();
+
     // user state
     private Synchronization _sync = null;
     private Map _userObjects = null;
+
     // managed object caches
     private ManagedCache _cache = null;
     private TransactionalCache _transCache = null;
@@ -167,16 +180,20 @@ public class BrokerImpl implements Broker, FindCallbacks {
     private Set _updatedClss = null;
     private Set _deletedClss = null;
     private Set _pending = null;
+
     // track instances that become transactional after the first savepoint
     // (the first uses the transactional cache)
     private Set _savepointCache = null;
     private LinkedMap _savepoints = null;
     private SavepointManager _spm = null;
+
     // track open queries and extents so we can free their resources on close
     private ReferenceHashSet _queries = null;
     private ReferenceHashSet _extents = null;
+
     // track operation stack depth
     private int _operationCount = 0;
+
     // options
     private boolean _nontransRead = false;
     private boolean _nontransWrite = false;
@@ -197,20 +214,23 @@ public class BrokerImpl implements Broker, FindCallbacks {
     private boolean _detachedNew = true;
     private int _callbackMode = CallbackModes.CALLBACK_IGNORE;
     private boolean _orderDirty = false;
+
     // status
     private int _flags = 0;
     private RuntimeException _closed = null;
+
     // event managers
     private TransactionEventManager _transEventManager = null;
     private LifecycleEventManager _lifeEventManager = null;
 
     /**
-     * Set the persistence manager's authentication. This is the first
+     * Set the persistence manager's authentication.  This is the first
      * method called after construction.
      *
      * @param user the username this broker represents; used when pooling
-     *             brokers to make sure that a request to the factory for
-     *             a connection with an explicit user is delegated to a suitable broker
+     * brokers to make sure that a request to the factory for
+     * a connection with an explicit user is delegated to a
+     * suitable broker
      * @param pass the password for the above user
      */
     public void setAuthentication(String user, String pass) {
@@ -219,19 +239,21 @@ public class BrokerImpl implements Broker, FindCallbacks {
     }
 
     /**
-     * Initialize the persistence manager. This method is called
+     * Initialize the persistence manager.  This method is called
      * automatically by the factory before use.
      *
-     * @param factory  the factory used to create this broker
-     * @param sm       a concrete StoreManager implementation to
-     *                 handle interaction with the data store
-     * @param managed  the transaction mode
+     * @param factory the factory used to create
+     * this broker
+     * @param sm a concrete StoreManager implementation to
+     * handle interaction with the data store
+     * @param managed the transaction mode
      * @param connMode the connection retain mode
      */
     public void initialize(AbstractBrokerFactory factory,
         DelegatingStoreManager sm, boolean managed, int connMode) {
         _conf = factory.getConfiguration();
         _compat = _conf.getCompatibilityInstance();
+
         _factory = factory;
         _log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
         _cache = new ManagedCache(newManagedObjectCache());
@@ -242,10 +264,13 @@ public class BrokerImpl implements Broker, FindCallbacks {
         _managed = managed;
         if (managed)
             _runtime = _conf.getManagedRuntimeInstance();
-        else _runtime = new LocalManagedRuntime(this);
+        else
+            _runtime = new LocalManagedRuntime(this);
+
         // setup default options
         _factory.configureBroker(this);
         _operating = MapBackedSet.decorate(new IdentityMap());
+
         // make sure to do this after configuring broker so that store manager
         // can look to broker configuration; we set both store and lock managers
         // before initializing them because they may each try to access the
@@ -256,10 +281,12 @@ public class BrokerImpl implements Broker, FindCallbacks {
         _spm = _conf.getSavepointManagerInstance();
         _store.setContext(this);
         _lm.setContext(this);
+
         if (_connRetainMode == CONN_RETAIN_ALWAYS)
             retainConnection();
         _fc = _store.newFetchConfiguration();
         _fc.setContext(this);
+
         // synch with the global transaction in progress, if any
         if (_factory.syncWithManagedTransaction(this, false))
             beginInternal();
@@ -268,7 +295,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
     /**
      * Close on finalize.
      */
-    protected void finalize() throws Throwable {
+    protected void finalize()
+        throws Throwable {
         super.finalize();
         if (!isClosed())
             free();
@@ -276,7 +304,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
 
     /**
      * Create a {@link Map} to be used for the primary managed object cache.
-     * Maps oids to state managers. By default, this creates a
+     * Maps oids to state managers.  By default, this creates a
      * {@link ReferenceMap} with soft values.
      */
     protected Map newManagedObjectCache() {
@@ -286,25 +314,31 @@ public class BrokerImpl implements Broker, FindCallbacks {
     //////////////////////////////////////////
     // Implementation of Connection interface
     //////////////////////////////////////////
-    public ConnectionMetaData getMetaData() throws ResourceException {
+
+    public ConnectionMetaData getMetaData()
+        throws ResourceException {
         return _jca;
     }
 
-    public Interaction createInteraction() throws ResourceException {
+    public Interaction createInteraction()
+        throws ResourceException {
         return _jca;
     }
 
-    public LocalTransaction getLocalTransaction() throws ResourceException {
+    public LocalTransaction getLocalTransaction()
+        throws ResourceException {
         return this;
     }
 
-    public ResultSetInfo getResultSetInfo() throws ResourceException {
+    public ResultSetInfo getResultSetInfo()
+        throws ResourceException {
         return _jca;
     }
 
     //////////////////////////////////
     // Implementation of StoreContext
     //////////////////////////////////
+
     public Broker getBroker() {
         return this;
     }
@@ -312,6 +346,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     //////////////
     // Properties
     //////////////
+
     public void setImplicitBehavior(OpCallbacks call,
         RuntimeExceptionTranslator ex) {
         if (_call == null)
@@ -402,11 +437,13 @@ public class BrokerImpl implements Broker, FindCallbacks {
         assertOpen();
         if ((_flags & FLAG_PRESTORING) != 0)
             throw new UserException(_loc.get("illegal-op-in-prestore"));
+
         // make sure the runtime supports it
         if (val && !_conf.supportedOptions().contains
             (_conf.OPTION_NONTRANS_READ))
             throw new UnsupportedException(_loc.get
                 ("nontrans-read-not-supported"));
+
         _nontransRead = val;
     }
 
@@ -418,6 +455,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         assertOpen();
         if ((_flags & FLAG_PRESTORING) != 0)
             throw new UserException(_loc.get("illegal-op-in-prestore"));
+
         _nontransWrite = val;
     }
 
@@ -430,10 +468,12 @@ public class BrokerImpl implements Broker, FindCallbacks {
         if ((_flags & FLAG_ACTIVE) != 0)
             throw new InvalidStateException(_loc.get("trans-active",
                 "Optimistic"));
+
         // make sure the runtime supports it
         if (val && !_conf.supportedOptions().contains(_conf.OPTION_OPTIMISTIC))
             throw new UnsupportedException(_loc.get
                 ("optimistic-not-supported"));
+
         _optimistic = val;
     }
 
@@ -446,6 +486,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         if ((_flags & FLAG_ACTIVE) != 0)
             throw new InvalidStateException(_loc.get("trans-active",
                 "Restore"));
+
         _restoreState = val;
     }
 
@@ -482,7 +523,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
         assertOpen();
         if (on)
             _autoDetach |= detachFlag;
-        else _autoDetach &= ~detachFlag;
+        else
+            _autoDetach &= ~detachFlag;
     }
 
     public int getDetachState() {
@@ -554,6 +596,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         try {
             if (val == null)
                 return (_userObjects == null) ? null : _userObjects.remove(key);
+
             if (_userObjects == null)
                 _userObjects = new HashMap();
             return _userObjects.put(key, val);
@@ -566,6 +609,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     //////////
     // Events
     //////////
+
     public void addLifecycleListener(Object listener, Class[] classes) {
         beginOperation(false);
         try {
@@ -602,14 +646,16 @@ public class BrokerImpl implements Broker, FindCallbacks {
         int eventType) {
         if (_lifeEventManager == null) // uninitialized
             return false;
+
         Exception[] exceps = _lifeEventManager.fireEvent(src, related, meta,
             eventType);
         if (exceps.length == 0
             || (_callbackMode & CallbackModes.CALLBACK_IGNORE) != 0)
             return true;
-        OpenJPAException ke =
-            new CallbackException(_loc.get("callback-err", meta)).
-                setNestedThrowables(exceps).setFatal(true);
+
+        OpenJPAException ke = new CallbackException
+            (_loc.get("callback-err", meta)).
+            setNestedThrowables(exceps).setFatal(true);
         if ((_callbackMode & CallbackModes.CALLBACK_ROLLBACK) != 0
             && (_flags & FLAG_ACTIVE) != 0)
             setRollbackOnlyInternal();
@@ -626,6 +672,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         try {
             if (_transEventManager == null)
                 _transEventManager = new TransactionEventManager();
+
             _transEventManager.addListener(tl);
             if (tl instanceof RemoteCommitEventManager)
                 _flags |= FLAG_REMOTE_LISTENER;
@@ -651,6 +698,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     ///////////
     // Lookups
     ///////////
+
     public Object find(Object oid, boolean validate, FindCallbacks call) {
         int flags = OID_COPY | OID_ALLOW_NEW | OID_NODELETED;
         if (!validate)
@@ -676,17 +724,20 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 throw new ObjectNotFoundException(_loc.get("null-oid"));
             return call.processReturn(oid, null);
         }
+
         beginOperation(true);
         if (fetchState == null)
             fetchState = _fc.newFetchState();
         try {
             assertNontransactionalRead();
+
             // cached instance?
             StateManagerImpl sm = getStateManagerImplById(oid,
                 (flags & OID_ALLOW_NEW) != 0 || (_flags & FLAG_FLUSHED) != 0);
             if (sm != null) {
                 if (!requiresLoad(sm, true, edata, flags))
                     return call.processReturn(oid, sm);
+
                 if (!sm.isLoading()) {
                     // make sure all the configured fields are loaded; do this
                     // after making instance transactional for locking
@@ -700,13 +751,15 @@ public class BrokerImpl implements Broker, FindCallbacks {
                             loaded = sm.load(fetchState,
                                 StateManagerImpl.LOAD_FGS, exclude, edata,
                                 false);
-                        } catch (ObjectNotFoundException onfe) {
+                        }
+                        catch (ObjectNotFoundException onfe) {
                             if ((flags & OID_NODELETED) != 0
                                 || (flags & OID_NOVALIDATE) != 0)
                                 throw onfe;
                             return call.processReturn(oid, null);
                         }
                     }
+
                     // if no data needed to be loaded and the user wants to
                     // validate, just make sure the object exists
                     if (!loaded && (flags & OID_NOVALIDATE) == 0
@@ -720,6 +773,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                             setFailedObject(sm.getManagedInstance());
                     }
                 }
+
                 // since the object was cached, we may need to upgrade lock
                 // if current level is higher than level of initial load
                 if ((_flags & FLAG_ACTIVE) != 0) {
@@ -731,10 +785,12 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 }
                 return call.processReturn(oid, sm);
             }
+
             // if there's no cached sm for a new/transient id type, we
             // it definitely doesn't exist
             if (oid instanceof StateManagerId)
                 return call.processReturn(oid, null);
+
             // initialize a new state manager for the datastore instance
             sm = newStateManagerImpl(oid, (flags & OID_COPY) != 0);
             boolean load = requiresLoad(sm, false, edata, flags);
@@ -744,12 +800,14 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     throw new ObjectNotFoundException(oid);
                 return call.processReturn(oid, null);
             }
+
             // make sure all configured fields were loaded
             if (load) {
                 try {
                     sm.load(fetchState, StateManagerImpl.LOAD_FGS, exclude,
                         edata, false);
-                } catch (ObjectNotFoundException onfe) {
+                }
+                catch (ObjectNotFoundException onfe) {
                     if ((flags & OID_NODELETED) != 0
                         || (flags & OID_NOVALIDATE) != 0)
                         throw onfe;
@@ -757,9 +815,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 }
             }
             return call.processReturn(oid, sm);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -773,7 +833,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
     protected StateManagerImpl initialize(StateManagerImpl sm, boolean load,
         FetchState fetchState, Object edata) {
         if (!load) {
-            sm.initialize(sm.getMetaData().getDescribedType(), PCState.HOLLOW);
+            sm.initialize(sm.getMetaData().getDescribedType(),
+                PCState.HOLLOW);
         } else {
             FetchConfiguration fetch = (fetchState == null)
                 ? _fc : fetchState.getFetchConfiguration();
@@ -814,6 +875,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
             throw new NullPointerException("oids == null");
         if ((flags & OID_NOVALIDATE) != 0 && oids.contains(null))
             throw new UserException(_loc.get("null-oids"));
+
         // we have to use a map of oid->sm rather than a simple
         // array, so that we make sure not to create multiple sms for equivalent
         // oids if the user has duplicates in the given array
@@ -826,6 +888,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         beginOperation(true);
         try {
             assertNontransactionalRead();
+
             // collection of state managers to pass to store manager
             List load = null;
             StateManagerImpl sm;
@@ -839,6 +902,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 oid = call.processArgument(obj);
                 if (oid == null || _loading.containsKey(obj))
                     continue;
+
                 // if we don't have a cached instance or it is not transactional
                 // and is hollow or we need to validate, load it
                 sm = getStateManagerImplById(oid, (flags & OID_ALLOW_NEW) != 0
@@ -846,6 +910,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 initialized = sm != null;
                 if (!initialized)
                     sm = newStateManagerImpl(oid, (flags & OID_COPY) != 0);
+
                 _loading.put(obj, sm);
                 if (requiresLoad(sm, initialized, edata, flags)) {
                     transState = transState || useTransactionalState(sm, fetch);
@@ -858,6 +923,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     sm.initialize(sm.getMetaData().getDescribedType(),
                         PCState.HOLLOW);
             }
+
             // pass all state managers in need of loading or validation to the
             // store manager
             if (load != null) {
@@ -865,6 +931,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     : PCState.PNONTRANS;
                 Collection failed = _store.loadAll(load, state,
                     StoreManager.FORCE_LOAD_NONE, fetchState, edata);
+
                 // set failed instances to null
                 if (failed != null && !failed.isEmpty()) {
                     if ((flags & OID_NOVALIDATE) != 0)
@@ -873,6 +940,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                         _loading.put(itr.next(), null);
                 }
             }
+
             // create results array; make sure all configured fields are
             // loaded in each instance
             Object[] results = new Object[oids.size()];
@@ -890,7 +958,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
                             _lm.lock(sm, level, fetch.getLockTimeout(), edata);
                             sm.readLocked(level, fetch.getWriteLockLevel());
                         }
-                    } catch (ObjectNotFoundException onfe) {
+                    }
+                    catch (ObjectNotFoundException onfe) {
                         if ((flags & OID_NODELETED) != 0
                             || (flags & OID_NOVALIDATE) != 0)
                             throw onfe;
@@ -900,9 +969,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 results[idx] = call.processReturn(oid, sm);
             }
             return results;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -919,7 +990,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         Object edata, int flags) {
         if ((flags & OID_NOVALIDATE) == 0)
             return true;
-        if (edata != null) // take advantage of existing result
+        if (edata != null)    // take advantage of existing result
             return true;
         if (initialized && sm.getPCState() != PCState.HOLLOW)
             return false;
@@ -944,6 +1015,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         oid = call.processArgument(oid);
         if (oid == null)
             return call.processReturn(oid, null);
+
         beginOperation(true);
         try {
             StateManagerImpl sm = getStateManagerImplById(oid, true);
@@ -957,6 +1029,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     public Class getObjectIdType(Class cls) {
         if (cls == null)
             return null;
+
         beginOperation(false);
         try {
             ClassMetaData meta = _conf.getMetaDataRepository().
@@ -966,10 +1039,13 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 return null;
             if (meta.getIdentityType() == ClassMetaData.ID_APPLICATION)
                 return meta.getObjectIdType();
+
             return _store.getDataStoreIdType(meta);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -980,10 +1056,12 @@ public class BrokerImpl implements Broker, FindCallbacks {
     public Object newObjectId(Class cls, Object val) {
         if (val == null)
             return null;
+
         beginOperation(false);
         try {
             ClassMetaData meta = _conf.getMetaDataRepository().
                 getMetaData(cls, _loader, true);
+
             // delegate to store manager for datastore ids
             if (meta.getIdentityType() == ClassMetaData.ID_DATASTORE) {
                 if (val instanceof String
@@ -992,6 +1070,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 return _store.newDataStoreId(val, meta);
             } else if (meta.getIdentityType() == ClassMetaData.ID_UNKNOWN)
                 throw new UserException(_loc.get("meta-unknownid", cls));
+
             if (val instanceof String
                 && !_conf.getCompatibilityInstance().getStrictIdentityValues())
             {
@@ -1003,20 +1082,25 @@ public class BrokerImpl implements Broker, FindCallbacks {
                         cls));
                 return PCRegistry.newObjectId(cls, (String) val);
             }
+
             if (meta.getObjectIdType().isAssignableFrom(val.getClass())) {
                 if (!meta.isOpenJPAIdentity() && meta.isObjectIdTypeShared())
                     return new ObjectId(cls, val);
                 return val;
             }
+
             Object[] arr = (val instanceof Object[]) ? (Object[]) val
                 : new Object[]{ val };
             return ApplicationIds.fromPKValues(arr, meta);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (ClassCastException cce) {
+        }
+        catch (ClassCastException cce) {
             throw new UserException(_loc.get("bad-id-value", val,
                 val.getClass().getName(), cls)).setCause(cce);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -1035,21 +1119,26 @@ public class BrokerImpl implements Broker, FindCallbacks {
             if (sm != null && sm.getPersistenceCapable() == null)
                 return sm;
         }
+
         // find metadata for the oid
         Class pcType = _store.getManagedType(oid);
         MetaDataRepository repos = _conf.getMetaDataRepository();
         ClassMetaData meta;
         if (pcType != null)
             meta = repos.getMetaData(pcType, _loader, true);
-        else meta = repos.getMetaData(oid, _loader, true);
+        else
+            meta = repos.getMetaData(oid, _loader, true);
+
         // copy the oid if needed
         if (copy && _compat.getCopyObjectIds()) {
             if (meta.getIdentityType() == ClassMetaData.ID_APPLICATION)
                 oid = ApplicationIds.copy(oid, meta);
             else if (meta.getIdentityType() == ClassMetaData.ID_UNKNOWN)
                 throw new UserException(_loc.get("meta-unknownid", meta));
-            else oid = _store.copyDataStoreId(oid, meta);
+            else
+                oid = _store.copyDataStoreId(oid, meta);
         }
+
         sm = newStateManagerImpl(oid, meta);
         sm.setObjectId(oid);
         return sm;
@@ -1066,6 +1155,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     ///////////////
     // Transaction
     ///////////////
+
     public void begin() {
         beginOperation(true);
         try {
@@ -1086,6 +1176,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         try {
             beginStoreManagerTransaction(_optimistic);
             _flags |= FLAG_ACTIVE;
+
             // start locking
             if (!_optimistic) {
                 _fc.setReadLockLevel(_conf.getReadLockLevelConstant());
@@ -1093,21 +1184,25 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 _fc.setLockTimeout(_conf.getLockTimeout());
             }
             _lm.beginTransaction();
-            if (_transEventManager != null &&
-                _transEventManager.hasBeginListeners())
+
+            if (_transEventManager != null
+                && _transEventManager.hasBeginListeners())
                 _transEventManager.fireEvent(new TransactionEvent(this,
                     TransactionEvent.AFTER_BEGIN, null, null, null, null));
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             // if we already started the transaction, don't let it commit
             if ((_flags & FLAG_ACTIVE) != 0)
                 setRollbackOnlyInternal();
             throw ke.setFatal(true);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             // if we already started the transaction, don't let it commit
             if ((_flags & FLAG_ACTIVE) != 0)
                 setRollbackOnlyInternal();
             throw new StoreException(re).setFatal(true);
         }
+
         if (_pending != null) {
             StateManagerImpl sm;
             for (Iterator it = _pending.iterator(); it.hasNext();) {
@@ -1126,9 +1221,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
             assertTransactionOperation();
             if ((_flags & FLAG_STORE_ACTIVE) == 0)
                 beginStoreManagerTransaction(false);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new StoreException(re);
         }
         finally {
@@ -1152,7 +1249,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     }
 
     /**
-     * End the current store manager transaction. Throws an
+     * End the current store manager transaction.  Throws an
      * exception to signal a forced rollback after failed commit, otherwise
      * returns any exception encountered during the end process.
      */
@@ -1165,12 +1262,14 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 releaseConn = _connRetainMode != CONN_RETAIN_ALWAYS;
                 if (rollback)
                     _store.rollback();
-                else _store.commit();
+                else
+                    _store.commit();
             } else {
                 releaseConn = _connRetainMode == CONN_RETAIN_TRANS;
                 _store.rollbackOptimistic();
             }
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             if (!rollback) {
                 forcedRollback = true;
                 try {
@@ -1183,14 +1282,17 @@ public class BrokerImpl implements Broker, FindCallbacks {
         finally {
             _flags &= ~FLAG_STORE_ACTIVE;
         }
+
         if (releaseConn) {
             try {
                 releaseConnection();
-            } catch (RuntimeException re) {
+            }
+            catch (RuntimeException re) {
                 if (err == null)
                     err = re;
             }
         }
+
         if (forcedRollback)
             throw err;
         return err;
@@ -1200,18 +1302,22 @@ public class BrokerImpl implements Broker, FindCallbacks {
         beginOperation(false);
         try {
             assertTransactionOperation();
+
             javax.transaction.Transaction trans =
                 _runtime.getTransactionManager().getTransaction();
             if (trans == null)
                 throw new InvalidStateException(_loc.get("null-trans"));
+
             // this commit on the transaction will cause our
             // beforeCompletion method to be invoked
             trans.commit();
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), ke);
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), e);
             throw new StoreException(e);
@@ -1225,15 +1331,18 @@ public class BrokerImpl implements Broker, FindCallbacks {
         beginOperation(false);
         try {
             assertTransactionOperation();
+
             javax.transaction.Transaction trans =
                 _runtime.getTransactionManager().getTransaction();
             if (trans != null)
                 trans.rollback();
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), ke);
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), e);
             throw new StoreException(e);
@@ -1275,7 +1384,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
         try {
             if (commit)
                 commit();
-            else rollback();
+            else
+                rollback();
             begin();
         }
         finally {
@@ -1288,14 +1398,17 @@ public class BrokerImpl implements Broker, FindCallbacks {
         try {
             if ((_flags & FLAG_ACTIVE) == 0)
                 return false;
+
             javax.transaction.Transaction trans =
                 _runtime.getTransactionManager().getTransaction();
             if (trans == null)
                 return false;
             return trans.getStatus() == Status.STATUS_MARKED_ROLLBACK;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new GeneralException(e);
         }
         finally {
@@ -1324,9 +1437,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
             if (trans == null)
                 throw new InvalidStateException(_loc.get("null-trans"));
             trans.setRollbackOnly();
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new GeneralException(e);
         }
     }
@@ -1337,10 +1452,12 @@ public class BrokerImpl implements Broker, FindCallbacks {
             assertActiveTransaction();
             if (_savepoints != null && _savepoints.containsKey(name))
                 throw new UserException(_loc.get("savepoint-exists", name));
-            if ((_flags & FLAG_FLUSHED) != 0 &&
-                !_spm.supportsIncrementalFlush())
+
+            if ((_flags & FLAG_FLUSHED) != 0
+                && !_spm.supportsIncrementalFlush())
                 throw new UnsupportedException(_loc.get
                     ("savepoint-flush-not-supported"));
+
             OpenJPASavepoint save = _spm.newSavepoint(name, this);
             if (_savepoints == null || _savepoints.isEmpty()) {
                 save.save(getTransactionalStates());
@@ -1354,9 +1471,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 }
             }
             _savepoints.put(name, save);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new GeneralException(e);
         }
         finally {
@@ -1381,10 +1500,12 @@ public class BrokerImpl implements Broker, FindCallbacks {
         beginOperation(false);
         try {
             assertActiveTransaction();
-            int index =
-                (_savepoints == null) ? -1 : _savepoints.indexOf(savepoint);
+
+            int index = (_savepoints == null) ? -1
+                : _savepoints.indexOf(savepoint);
             if (index < 0)
                 throw new UserException(_loc.get("no-savepoint", savepoint));
+
             // clear old in reverse
             OpenJPASavepoint save;
             while (_savepoints.size() > index + 1) {
@@ -1392,13 +1513,16 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     (_savepoints.size() - 1);
                 save.release(false);
             }
+
             save = (OpenJPASavepoint) _savepoints.remove(index);
             save.release(true);
             if (_savepointCache != null)
                 _savepointCache.clear();
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new GeneralException(e);
         }
         finally {
@@ -1423,10 +1547,12 @@ public class BrokerImpl implements Broker, FindCallbacks {
         beginOperation(false);
         try {
             assertActiveTransaction();
-            int index =
-                (_savepoints == null) ? -1 : _savepoints.indexOf(savepoint);
+
+            int index = (_savepoints == null) ? -1
+                : _savepoints.indexOf(savepoint);
             if (index < 0)
                 throw new UserException(_loc.get("no-savepoint", savepoint));
+
             // clear old in reverse
             OpenJPASavepoint save;
             while (_savepoints.size() > index + 1) {
@@ -1434,6 +1560,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     (_savepoints.size() - 1);
                 save.release(false);
             }
+
             save = (OpenJPASavepoint) _savepoints.remove(index);
             Collection saved = save.rollback(_savepoints.values());
             if (_savepointCache != null)
@@ -1444,6 +1571,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 TransactionalCache newTransCache = new TransactionalCache
                     (_orderDirty);
                 _transCache = null;
+
                 // currently there is the assumption that incremental
                 // flush is either a) not allowed, or b) required
                 // pre-savepoint.  this solves a number of issues including
@@ -1459,7 +1587,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     oldTransCache.remove(sm);
                     if (sm.isDirty())
                         newTransCache.addDirty(sm);
-                    else newTransCache.addClean(sm);
+                    else
+                        newTransCache.addClean(sm);
                 }
                 for (Iterator itr = oldTransCache.iterator(); itr.hasNext();) {
                     sm = (StateManagerImpl) itr.next();
@@ -1469,9 +1598,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 oldTransCache.clear();
                 _transCache = newTransCache;
             }
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new GeneralException(e);
         }
         finally {
@@ -1488,6 +1619,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
             if ((_flags & FLAG_ACTIVE) == 0
                 || (_flags & FLAG_STORE_FLUSHING) != 0)
                 return;
+
             // make sure the runtime supports it
             if (!_conf.supportedOptions().contains(_conf.OPTION_INC_FLUSH))
                 throw new UnsupportedException(_loc.get
@@ -1496,14 +1628,17 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 && !_spm.supportsIncrementalFlush())
                 throw new UnsupportedException(_loc.get
                     ("savepoint-flush-not-supported"));
+
             try {
                 flushSafe(FLUSH_INC);
                 _flags |= FLAG_FLUSHED;
-            } catch (OpenJPAException ke) {
+            }
+            catch (OpenJPAException ke) {
                 // rollback on flush error; objects may be in inconsistent state
                 setRollbackOnly();
                 throw ke.setFatal(true);
-            } catch (RuntimeException re) {
+            }
+            catch (RuntimeException re) {
                 // rollback on flush error; objects may be in inconsistent state
                 setRollbackOnly();
                 throw new StoreException(re).setFatal(true);
@@ -1535,15 +1670,19 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 flush();
                 return;
             }
+
             // make sure the runtime supports inc flush
             if (!_conf.supportedOptions().contains(_conf.OPTION_INC_FLUSH))
                 throw new UnsupportedException(_loc.get
                     ("incremental-flush-not-supported"));
+
             try {
                 flushSafe(FLUSH_ROLLBACK);
-            } catch (OpenJPAException ke) {
+            }
+            catch (OpenJPAException ke) {
                 throw ke;
-            } catch (RuntimeException re) {
+            }
+            catch (RuntimeException re) {
                 throw new StoreException(re);
             }
         }
@@ -1564,7 +1703,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
 
     public boolean isStoreActive() {
         // we need to lock here, because we might be in the middle of an
-        // atomic transaction process(e.g., commitAndResume)
+        // atomic transaction process (e.g., commitAndResume)
         beginOperation(true);
         try {
             return (_flags & FLAG_STORE_ACTIVE) != 0;
@@ -1578,21 +1717,24 @@ public class BrokerImpl implements Broker, FindCallbacks {
         lock();
         try {
             assertOpen();
+
             if (syncTrans && _operationCount == 0 && _syncManaged
                 && (_flags & FLAG_ACTIVE) == 0)
                 syncWithManagedTransaction();
             return _operationCount++ == 1;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             unlock();
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             unlock();
             throw new GeneralException(re);
         }
     }
 
     /**
-     * Mark the operation over. If outermost caller of stack, returns true
+     * Mark the operation over.  If outermost caller of stack, returns true
      * and will detach manageed instances if necessary.
      */
     public boolean endOperation() {
@@ -1604,9 +1746,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
             if (_operationCount < 1)
                 throw new InternalException();
             return _operationCount == 1;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -1629,18 +1773,22 @@ public class BrokerImpl implements Broker, FindCallbacks {
     ///////////////////////////////////////////////
     // Implementation of Synchronization interface
     ///////////////////////////////////////////////
+
     public void beforeCompletion() {
         beginOperation(false);
         try {
             // user-supplied synchronization
             if (_sync != null)
                 _sync.beforeCompletion();
+
             flushSafe(FLUSH_COMMIT);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), ke);
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), re);
             throw new StoreException(re);
@@ -1654,22 +1802,27 @@ public class BrokerImpl implements Broker, FindCallbacks {
         beginOperation(false);
         try {
             assertActiveTransaction();
+
             endTransaction(status);
             if (_sync != null)
                 _sync.afterCompletion(status);
+
             if ((_autoDetach & DETACH_COMMIT) != 0)
                 detachAllInternal(null);
+
             // in an ee context, it's possible that the user tried to close
             // us but we didn't actually close because we were waiting on this
             // transaction; if that's true, then close now
             if ((_flags & FLAG_CLOSE_INVOKED) != 0
                 && _compat.getCloseOnManagedCommit())
                 free();
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), ke);
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), re);
             throw new StoreException(re);
@@ -1677,6 +1830,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         finally {
             _flags &= ~FLAG_ACTIVE;
             _flags &= ~FLAG_FLUSHED;
+
             if (_transEventManager != null &&
                 _transEventManager.hasEndListeners()) {
                 _transEventManager.fireEvent(new TransactionEvent(this,
@@ -1685,6 +1839,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                         : TransactionEvent.AFTER_ROLLBACK_COMPLETE,
                     null, null, null, null));
             }
+
             endOperation();
         }
     }
@@ -1695,6 +1850,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     private void flushSafe(int reason) {
         if ((_flags & FLAG_FLUSHING) != 0)
             throw new InvalidStateException(_loc.get("reentrant-flush"));
+
         _flags |= FLAG_FLUSHING;
         try {
             flush(reason);
@@ -1705,19 +1861,20 @@ public class BrokerImpl implements Broker, FindCallbacks {
     }
 
     /**
-     * Flush the transactional state to the data store. Subclasses that
-     * customize commit behavior should override this method. The method
+     * Flush the transactional state to the data store.  Subclasses that
+     * customize commit behavior should override this method.  The method
      * assumes that the persistence manager is locked, is not closed,
      * and has an active transaction.
      *
      * @param reason one of {@link #FLUSH_INC}, {@link #FLUSH_COMMIT},
-     *               {@link #FLUSH_ROLLBACK}, or {@link #FLUSH_LOGICAL}
+     * {@link #FLUSH_ROLLBACK}, or {@link #FLUSH_LOGICAL}
      * @since 2.5
      */
     protected void flush(int reason) {
         // this will enlist proxied states as necessary so we know whether we
         // have anything to flush
         Collection transactional = getTransactionalStates();
+
         // do we actually have to flush?  only if our flags say so, or if
         // we have transaction listeners that need to be invoked for commit
         // (no need to invoke them on inc flush if nothing is dirty).  we
@@ -1731,6 +1888,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
             || _transEventManager.getListeners().size() > 1);
         if (!flush && (reason != FLUSH_COMMIT || !listeners))
             return;
+
         Collection mobjs = null;
         _flags |= FLAG_PRESTORING;
         try {
@@ -1740,6 +1898,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     ((StateManagerImpl) itr.next()).beforeFlush(reason, _call);
                 flushAdditions(transactional, reason);
             }
+
             // hopefully now all dependent instances that are going to end
             // up referenced have been marked as such; delete unrefed
             // dependents
@@ -1749,6 +1908,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     deleteDeref((StateManagerImpl) itr.next());
                 flushAdditions(transactional, reason);
             }
+
             if (reason != FLUSH_LOGICAL) {
                 // if no datastore transaction, start one; even if we don't
                 // think we'll need to flush at this point, our transaction
@@ -1756,9 +1916,10 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 // directly with the database
                 if ((_flags & FLAG_STORE_ACTIVE) == 0)
                     beginStoreManagerTransaction(false);
-                if (_transEventManager != null &&
-                    (_transEventManager.hasFlushListeners()
-                        || _transEventManager.hasEndListeners())
+
+                if (_transEventManager != null
+                    && (_transEventManager.hasFlushListeners()
+                    || _transEventManager.hasEndListeners())
                     && (flush || reason == FLUSH_COMMIT)) {
                     // fire events
                     mobjs = new ManagedObjectCollection(transactional);
@@ -1767,9 +1928,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
                         _transEventManager.fireEvent(new TransactionEvent
                             (this, TransactionEvent.BEFORE_COMMIT, mobjs,
                                 _persistedClss, _updatedClss, _deletedClss));
+
                         flushAdditions(transactional, reason);
                         flush = (_flags & FLAG_FLUSH_REQUIRED) != 0;
                     }
+
                     if (flush && _transEventManager.hasFlushListeners()) {
                         _transEventManager.fireEvent(new TransactionEvent
                             (this, TransactionEvent.BEFORE_FLUSH, mobjs,
@@ -1784,10 +1947,12 @@ public class BrokerImpl implements Broker, FindCallbacks {
             _flags &= ~FLAG_DEREFDELETING;
             _transAdditions = null;
             _derefAdditions = null;
+
             // also clear derefed set; the deletes have been recorded
             if (_derefCache != null)
                 _derefCache.clear();
         }
+
         // flush to store manager
         List exceps = null;
         try {
@@ -1799,20 +1964,24 @@ public class BrokerImpl implements Broker, FindCallbacks {
         }
         finally {
             _flags &= ~FLAG_STORE_FLUSHING;
+
             if (reason == FLUSH_ROLLBACK)
                 exceps = add(exceps, endStoreManagerTransaction(true));
             else if (reason != FLUSH_LOGICAL)
                 _flags &= ~FLAG_FLUSH_REQUIRED;
+
             // mark states as flushed
             if (flush) {
                 StateManagerImpl sm;
                 for (Iterator itr = transactional.iterator(); itr.hasNext();) {
                     sm = (StateManagerImpl) itr.next();
+
                     // the state may have become transient, such as if
                     // it is embedded and the owner has been deleted during
                     // this flush process; bug #1100
                     if (sm.getPCState() == PCState.TRANSIENT)
                         continue;
+
                     sm.afterFlush(reason);
                     if (reason == FLUSH_INC) {
                         // if not about to clear trans cache for commit anyway,
@@ -1825,8 +1994,10 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 }
             }
         }
+
         // throw any exceptions to shortcut listeners on fail
         throwNestedExceptions(exceps, true);
+
         if (flush && reason != FLUSH_ROLLBACK && reason != FLUSH_LOGICAL
             && _transEventManager != null
             && _transEventManager.hasFlushListeners()) {
@@ -1854,12 +2025,15 @@ public class BrokerImpl implements Broker, FindCallbacks {
     private boolean flushTransAdditions(Collection transactional, int reason) {
         if (_transAdditions == null || _transAdditions.isEmpty())
             return false;
+
         // keep local transactional list copy up to date
         transactional.addAll(_transAdditions);
+
         // copy the change set, then clear it for the next iteration
         StateManagerImpl[] states = (StateManagerImpl[]) _transAdditions.
             toArray(new StateManagerImpl[_transAdditions.size()]);
         _transAdditions.clear();
+
         for (int i = 0; i < states.length; i++)
             states[i].beforeFlush(reason, _call);
         return true;
@@ -1871,11 +2045,14 @@ public class BrokerImpl implements Broker, FindCallbacks {
     private boolean deleteDerefAdditions(Collection derefs) {
         if (_derefAdditions == null || _derefAdditions.isEmpty())
             return false;
+
         // remember these additions in case one becomes derefed again later
         derefs.addAll(_derefAdditions);
+
         StateManagerImpl[] states = (StateManagerImpl[]) _derefAdditions.
             toArray(new StateManagerImpl[_derefAdditions.size()]);
         _derefAdditions.clear();
+
         for (int i = 0; i < states.length; i++)
             deleteDeref(states[i]);
         return true;
@@ -1913,9 +2090,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
     private OpenJPAException newFlushException(Collection exceps) {
         if (exceps == null || exceps.isEmpty())
             return null;
-        Throwable[] t =
-            (Throwable[]) exceps.toArray(new Throwable[exceps.size()]);
+
+        Throwable[] t = (Throwable[]) exceps.toArray
+            (new Throwable[exceps.size()]);
         List failed = new ArrayList(t.length);
+
         // create fatal exception with nested exceptions for all the failed
         // objects; if all OL exceptions, throw a top-level OL exception
         boolean opt = true;
@@ -1943,19 +2122,24 @@ public class BrokerImpl implements Broker, FindCallbacks {
         // appropriate transaction change
         boolean rollback = status != Status.STATUS_COMMITTED;
         List exceps = null;
+
         try {
             exceps = add(exceps, endStoreManagerTransaction(rollback));
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             rollback = true;
             exceps = add(exceps, re);
         }
+
         // go back to default none lock level
         _fc.setReadLockLevel(LOCK_NONE);
         _fc.setWriteLockLevel(LOCK_NONE);
         _fc.setLockTimeout(-1);
+
         Collection transStates = _transCache;
         if (transStates == null)
             transStates = Collections.EMPTY_LIST;
+
         // fire after rollback/commit event
         Collection mobjs = null;
         if (_transEventManager != null && _transEventManager.hasEndListeners())
@@ -1966,6 +2150,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
             _transEventManager.fireEvent(new TransactionEvent(this, eventType,
                 mobjs, _persistedClss, _updatedClss, _deletedClss));
         }
+
         // null transactional caches now so that all the removeFromTransaction
         // calls as we transition each object don't have to do any work; don't
         // clear trans cache object because we still need the transStates
@@ -1977,9 +2162,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
             _updatedClss.clear();
         if (_deletedClss != null)
             _deletedClss.clear();
+
         // new cache would get cleared anyway during transitions, but doing so
         // immediately saves us some lookups
         _cache.clearNew();
+
         // tell all derefed instances they're no longer derefed; we can't
         // rely on rollback and commit calls below cause some instances might
         // not be transactional
@@ -1989,6 +2176,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     (false, false);
             _derefCache.clear();
         }
+
         // peform commit or rollback state transitions on each instance
         StateManagerImpl sm;
         for (Iterator itr = transStates.iterator(); itr.hasNext();) {
@@ -1999,13 +2187,17 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     // (and therefore deleted) to un-deref
                     sm.setDereferencedDependent(false, false);
                     sm.rollback();
-                } else sm.commit();
-            } catch (RuntimeException re) {
+                } else
+                    sm.commit();
+            }
+            catch (RuntimeException re) {
                 exceps = add(exceps, re);
             }
         }
+
         // notify the lock manager to clean up and release remaining locks
         _lm.endTransaction();
+
         // clear old savepoints in reverse
         OpenJPASavepoint save;
         while (_savepoints != null && _savepoints.size() > 0) {
@@ -2015,34 +2207,41 @@ public class BrokerImpl implements Broker, FindCallbacks {
         }
         _savepoints = null;
         _savepointCache = null;
+
         // fire after state change event
         if (_transEventManager != null && _transEventManager.hasEndListeners())
             _transEventManager.fireEvent(new TransactionEvent(this,
                 TransactionEvent.AFTER_STATE_TRANSITIONS, mobjs, null, null,
                 null));
+
         // now clear trans cache; keep cleared version rather than
         // null to avoid having to re-create the set later; more efficient
         if (transStates != Collections.EMPTY_LIST) {
             _transCache = (TransactionalCache) transStates;
             _transCache.clear();
         }
+
         throwNestedExceptions(exceps, true);
     }
 
     ////////////////////
     // Object lifecycle
     ////////////////////
+
     public void persistAll(Collection objs, OpCallbacks call) {
         if (objs.isEmpty())
             return;
+
         beginOperation(true);
         List exceps = null;
         try {
             assertWriteOperation();
+
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
                 try {
                     persist(itr.next(), call);
-                } catch (UserException ue) {
+                }
+                catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
             }
@@ -2073,7 +2272,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
         if (exceps == null || exceps.isEmpty())
             return;
         if (datastore && exceps.size() == 1)
-            throw(RuntimeException) exceps.get(0);
+            throw (RuntimeException) exceps.get(0);
+
         boolean fatal = false;
         Throwable[] t = (Throwable[]) exceps.toArray
             (new Throwable[exceps.size()]);
@@ -2085,7 +2285,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
         OpenJPAException err;
         if (datastore)
             err = new StoreException(_loc.get("nested-exceps"));
-        else err = new UserException(_loc.get("nested-exceps"));
+        else
+            err = new UserException(_loc.get("nested-exceps"));
         throw err.setNestedThrowables(t).setFatal(fatal);
     }
 
@@ -2097,23 +2298,29 @@ public class BrokerImpl implements Broker, FindCallbacks {
         OpCallbacks call) {
         if (obj == null)
             return null;
+
         beginOperation(true);
         try {
             assertWriteOperation();
+
             StateManagerImpl sm = getStateManagerImpl(obj, true);
             if (!_operating.add(obj))
                 return sm;
+
             int action = processArgument(OpCallbacks.OP_PERSIST, obj, sm, call);
             if (action == OpCallbacks.ACT_NONE)
                 return sm;
+
             // ACT_CASCADE
             if ((action & OpCallbacks.ACT_RUN) == 0) {
                 if (sm != null)
                     sm.cascadePersist(call);
-                else cascadeTransient(OpCallbacks.OP_PERSIST, obj, call,
-                    "persist");
+                else
+                    cascadeTransient(OpCallbacks.OP_PERSIST, obj, call,
+                        "persist");
                 return sm;
             }
+
             // ACT_RUN
             PersistenceCapable pc;
             if (sm != null) {
@@ -2121,6 +2328,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     throw new ObjectExistsException(_loc.get
                         ("persist-detached", Exceptions.toString(obj))).
                         setFailedObject(obj);
+
                 if (!sm.isEmbedded()) {
                     sm.persist();
                     _cache.persist(sm);
@@ -2128,6 +2336,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                         sm.cascadePersist(call);
                     return sm;
                 }
+
                 // an embedded field; notify the owner that the value has
                 // changed by becoming independently persistent
                 sm.getOwner().dirty(sm.getOwnerMetaData().
@@ -2141,36 +2350,45 @@ public class BrokerImpl implements Broker, FindCallbacks {
                         ("persist-detached", Exceptions.toString(obj))).
                         setFailedObject(obj);
             }
+
             ClassMetaData meta = _conf.getMetaDataRepository().getMetaData
                 (obj.getClass(), _loader, true);
             fireLifecycleEvent(obj, null, meta, LifecycleEvent.BEFORE_PERSIST);
+
             // create id for instance
             if (id == null) {
                 if (meta.getIdentityType() == ClassMetaData.ID_APPLICATION)
                     id = ApplicationIds.create(pc, meta);
                 else if (meta.getIdentityType() == ClassMetaData.ID_UNKNOWN)
                     throw new UserException(_loc.get("meta-unknownid", meta));
-                else id = StateManagerId.newInstance();
+                else
+                    id = StateManagerId.newInstance();
             }
+
             // make sure we don't already have the instance cached
             StateManagerImpl other = getStateManagerImplById(id, false);
             if (other != null && !other.isDeleted() && !other.isNew())
                 throw new ObjectExistsException(_loc.get("cache-exists",
                     obj.getClass().getName(), id)).setFailedObject(obj);
+
             // if had embedded sm, null it
             if (sm != null)
                 pc.pcReplaceStateManager(null);
+
             // create new sm
             sm = new StateManagerImpl(id, meta, this);
             if ((_flags & FLAG_ACTIVE) != 0)
                 sm.initialize(pc, PCState.PNEW);
-            else sm.initialize(pc, PCState.PNONTRANSNEW);
+            else
+                sm.initialize(pc, PCState.PNONTRANSNEW);
             if ((action & OpCallbacks.ACT_CASCADE) != 0)
                 sm.cascadePersist(call);
             return sm;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -2185,9 +2403,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
     private void cascadeTransient(int op, Object obj, OpCallbacks call,
         String errOp) {
         PersistenceCapable pc = assertPersistenceCapable(obj);
+
         // if using detached state manager, don't replace
         if (pc.pcGetStateManager() != null)
             throw newDetachedException(obj, errOp);
+
         ClassMetaData meta = _conf.getMetaDataRepository().getMetaData
             (obj.getClass(), _loader, true);
         StateManagerImpl sm = new StateManagerImpl(StateManagerId.
@@ -2217,6 +2437,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         beginOperation(true);
         try {
             assertWriteOperation();
+
             List exceps = null;
             Object obj;
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
@@ -2224,7 +2445,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     obj = itr.next();
                     if (obj != null)
                         delete(obj, getStateManagerImpl(obj, true), call);
-                } catch (UserException ue) {
+                }
+                catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
             }
@@ -2238,13 +2460,16 @@ public class BrokerImpl implements Broker, FindCallbacks {
     public void delete(Object obj, OpCallbacks call) {
         if (obj == null)
             return;
+
         beginOperation(true);
         try {
             assertWriteOperation();
             delete(obj, getStateManagerImpl(obj, true), call);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -2258,16 +2483,20 @@ public class BrokerImpl implements Broker, FindCallbacks {
     void delete(Object obj, StateManagerImpl sm, OpCallbacks call) {
         if (!_operating.add(obj))
             return;
+
         int action = processArgument(OpCallbacks.OP_DELETE, obj, sm, call);
         if (action == OpCallbacks.ACT_NONE)
             return;
+
         // ACT_CASCADE
         if ((action & OpCallbacks.ACT_RUN) == 0) {
             if (sm != null)
                 sm.cascadeDelete(call);
-            else cascadeTransient(OpCallbacks.OP_DELETE, obj, call, "delete");
+            else
+                cascadeTransient(OpCallbacks.OP_DELETE, obj, call, "delete");
             return;
         }
+
         // ACT_RUN
         if (sm != null) {
             if (sm.isDetached())
@@ -2296,7 +2525,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
                 try {
                     release(itr.next(), call);
-                } catch (UserException ue) {
+                }
+                catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
             }
@@ -2310,10 +2540,12 @@ public class BrokerImpl implements Broker, FindCallbacks {
     public void release(Object obj, OpCallbacks call) {
         if (obj == null)
             return;
+
         beginOperation(false);
         try {
             StateManagerImpl sm = getStateManagerImpl(obj, true);
             int action = processArgument(OpCallbacks.OP_RELEASE, obj, sm, call);
+
             if (sm == null)
                 return;
             if ((action & OpCallbacks.ACT_RUN) != 0 && sm.isPersistent()) {
@@ -2322,9 +2554,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 if (pending)
                     removeFromPendingTransaction(sm);
             }
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -2342,19 +2576,24 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 if (orig.getOwner() == owner && orig.getMetaData().
                     getEmbeddingMetaData() == ownerMeta)
                     return orig;
+
                 // otherwise make sure pc is fully loaded for when we copy its
                 // data below
                 orig.load(_fc.newFetchState(), StateManagerImpl.LOAD_ALL,
                     null, null, false);
             }
+
             // create new state manager with embedded metadata
             ClassMetaData meta = ownerMeta.getEmbeddedMetaData();
             if (meta == null)
                 throw new InternalException(_loc.get("bad-embed", ownerMeta));
+
             if (id == null)
                 id = StateManagerId.newInstance();
+
             StateManagerImpl sm = new StateManagerImpl(id, meta, this);
             sm.setOwner((StateManagerImpl) owner, ownerMeta);
+
             PersistenceCapable copy;
             PCState state;
             if (obj != null) {
@@ -2370,6 +2609,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     copySM = orig;
                     pc = orig.getPersistenceCapable();
                 }
+
                 try {
                     // copy the instance.  we do this even if it doesn't already
                     // have a state manager in case it is later assigned to a
@@ -2394,13 +2634,17 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     false);
                 if ((_flags & FLAG_ACTIVE) != 0 && !_optimistic)
                     state = PCState.ECLEAN;
-                else state = PCState.ENONTRANS;
+                else
+                    state = PCState.ENONTRANS;
             }
+
             sm.initialize(copy, state);
             return sm;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -2442,16 +2686,19 @@ public class BrokerImpl implements Broker, FindCallbacks {
     public void refreshAll(Collection objs, OpCallbacks call) {
         if (objs.isEmpty())
             return;
+
         beginOperation(true);
         try {
             assertNontransactionalRead();
+
             for (Iterator itr = objs.iterator(); itr.hasNext();)
                 gatherCascadeRefresh(itr.next(), call);
             if (_operating.isEmpty())
                 return;
             if (_operating.size() == 1)
                 refreshInternal(_operating.iterator().next(), call);
-            else refreshInternal(_operating, call);
+            else
+                refreshInternal(_operating, call);
         }
         finally {
             endOperation();
@@ -2461,15 +2708,18 @@ public class BrokerImpl implements Broker, FindCallbacks {
     public void refresh(Object obj, OpCallbacks call) {
         if (obj == null)
             return;
+
         beginOperation(true);
         try {
             assertNontransactionalRead();
+
             gatherCascadeRefresh(obj, call);
             if (_operating.isEmpty())
                 return;
             if (_operating.size() == 1)
                 refreshInternal(_operating.iterator().next(), call);
-            else refreshInternal(_operating, call);
+            else
+                refreshInternal(_operating, call);
         }
         finally {
             endOperation();
@@ -2485,13 +2735,16 @@ public class BrokerImpl implements Broker, FindCallbacks {
             return;
         if (!_operating.add(obj))
             return;
+
         StateManagerImpl sm = getStateManagerImpl(obj, false);
         int action = processArgument(OpCallbacks.OP_REFRESH, obj, sm, call);
         if ((action & OpCallbacks.ACT_CASCADE) == 0)
             return;
+
         if (sm != null)
             sm.gatherCascadeRefresh(call);
-        else cascadeTransient(OpCallbacks.OP_REFRESH, obj, call, "refresh");
+        else
+            cascadeTransient(OpCallbacks.OP_REFRESH, obj, call, "refresh");
     }
 
     /**
@@ -2509,11 +2762,13 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 obj = itr.next();
                 if (obj == null)
                     continue;
+
                 try {
                     sm = getStateManagerImpl(obj, true);
                     if ((processArgument(OpCallbacks.OP_REFRESH, obj, sm, call)
                         & OpCallbacks.ACT_RUN) == 0)
                         continue;
+
                     if (sm != null) {
                         if (sm.isDetached())
                             throw newDetachedException(obj, "refresh");
@@ -2525,31 +2780,37 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     } else if (assertPersistenceCapable(obj).pcIsDetached()
                         == Boolean.TRUE)
                         throw newDetachedException(obj, "refresh");
-                } catch (OpenJPAException ke) {
+                }
+                catch (OpenJPAException ke) {
                     exceps = add(exceps, ke);
                 }
             }
+
             // refresh all
             if (load != null) {
                 Collection failed = _store.loadAll(load, null,
                     _store.FORCE_LOAD_REFRESH, _fc.newFetchState(), null);
                 if (failed != null && !failed.isEmpty())
                     exceps = add(exceps, newObjectNotFoundException(failed));
+
                 // perform post-refresh transitions and make sure all fetch
                 // group fields are loaded
                 for (Iterator itr = load.iterator(); itr.hasNext();) {
                     sm = (StateManagerImpl) itr.next();
                     if (failed != null && failed.contains(sm.getId()))
                         continue;
+
                     try {
                         sm.afterRefresh();
                         sm.load(_fc.newFetchState(),
                             StateManagerImpl.LOAD_FGS, null, null, false);
-                    } catch (OpenJPAException ke) {
+                    }
+                    catch (OpenJPAException ke) {
                         exceps = add(exceps, ke);
                     }
                 }
             }
+
             // now invoke postRefresh on all the instances
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
                 try {
@@ -2557,13 +2818,16 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     if (sm != null && !sm.isDetached())
                         fireLifecycleEvent(sm.getManagedInstance(), null,
                             sm.getMetaData(), LifecycleEvent.AFTER_REFRESH);
-                } catch (OpenJPAException ke) {
+                }
+                catch (OpenJPAException ke) {
                     exceps = add(exceps, ke);
                 }
             }
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         throwNestedExceptions(exceps, false);
@@ -2578,6 +2842,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
             if ((processArgument(OpCallbacks.OP_REFRESH, obj, sm, call)
                 & OpCallbacks.ACT_RUN) == 0)
                 return;
+
             if (sm != null) {
                 if (sm.isDetached())
                     throw newDetachedException(obj, "refresh");
@@ -2591,9 +2856,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
             } else if (assertPersistenceCapable(obj).pcIsDetached()
                 == Boolean.TRUE)
                 throw newDetachedException(obj, "refresh");
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
     }
@@ -2606,11 +2873,13 @@ public class BrokerImpl implements Broker, FindCallbacks {
             retrieve(objs.iterator().next(), dfgOnly, call);
             return;
         }
+
         List exceps = null;
         beginOperation(true);
         try {
             assertOpen();
             assertNontransactionalRead();
+
             // collect all hollow instances for load
             Object obj;
             Collection load = null;
@@ -2620,11 +2889,13 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 obj = itr.next();
                 if (obj == null)
                     continue;
+
                 try {
                     sm = getStateManagerImpl(obj, true);
                     if ((processArgument(OpCallbacks.OP_RETRIEVE, obj, sm, call)
                         & OpCallbacks.ACT_RUN) == 0)
                         continue;
+
                     if (sm != null) {
                         if (sm.isDetached())
                             throw newDetachedException(obj, "retrieve");
@@ -2639,10 +2910,12 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     } else if (assertPersistenceCapable(obj).pcIsDetached()
                         == Boolean.TRUE)
                         throw newDetachedException(obj, "retrieve");
-                } catch (UserException ue) {
+                }
+                catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
             }
+
             // load all hollow instances
             Collection failed = null;
             if (load != null) {
@@ -2653,23 +2926,28 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 if (failed != null && !failed.isEmpty())
                     exceps = add(exceps, newObjectNotFoundException(failed));
             }
+
             // retrieve all non-failed instances
             for (Iterator itr = sms.iterator(); itr.hasNext();) {
                 sm = (StateManagerImpl) itr.next();
                 if (failed != null && failed.contains(sm.getId()))
                     continue;
-                int mode = (dfgOnly) ? StateManagerImpl.LOAD_FGS :
-                    StateManagerImpl.LOAD_ALL;
+
+                int mode = (dfgOnly) ? StateManagerImpl.LOAD_FGS
+                    : StateManagerImpl.LOAD_ALL;
                 try {
                     sm.beforeRead(-1);
                     sm.load(_fc.newFetchState(), mode, null, null, false);
-                } catch (OpenJPAException ke) {
+                }
+                catch (OpenJPAException ke) {
                     exceps = add(exceps, ke);
                 }
             }
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -2681,14 +2959,17 @@ public class BrokerImpl implements Broker, FindCallbacks {
     public void retrieve(Object obj, boolean dfgOnly, OpCallbacks call) {
         if (obj == null)
             return;
+
         beginOperation(true);
         try {
             assertOpen();
             assertNontransactionalRead();
+
             StateManagerImpl sm = getStateManagerImpl(obj, true);
             if ((processArgument(OpCallbacks.OP_RETRIEVE, obj, sm, call)
                 & OpCallbacks.ACT_RUN) == 0)
                 return;
+
             if (sm != null) {
                 if (sm.isDetached())
                     throw newDetachedException(obj, "retrieve");
@@ -2701,9 +2982,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
             } else if (assertPersistenceCapable(obj).pcIsDetached()
                 == Boolean.TRUE)
                 throw newDetachedException(obj, "retrieve");
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -2735,7 +3018,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
                 try {
                     evict(itr.next(), call);
-                } catch (UserException ue) {
+                }
+                catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
             }
@@ -2749,6 +3033,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     public void evictAll(Extent extent, OpCallbacks call) {
         if (extent == null)
             return;
+
         beginOperation(false);
         try {
             // evict all PClean and PNonTrans objects in extent
@@ -2774,6 +3059,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     public void evict(Object obj, OpCallbacks call) {
         if (obj == null)
             return;
+
         beginOperation(false);
         try {
             StateManagerImpl sm = getStateManagerImpl(obj, true);
@@ -2782,15 +3068,18 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 return;
             if (sm == null)
                 return;
+
             sm.evict();
             if (_evictDataCache && sm.getObjectId() != null) {
                 DataCache cache = sm.getMetaData().getDataCache();
                 if (cache != null)
                     cache.remove(sm.getObjectId());
             }
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -2803,12 +3092,15 @@ public class BrokerImpl implements Broker, FindCallbacks {
             return null;
         if (call == null)
             call = _call;
+
         beginOperation(true);
         try {
             return new DetachManager(this, false, call).detach(obj);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -2823,12 +3115,15 @@ public class BrokerImpl implements Broker, FindCallbacks {
             return new Object[0];
         if (call == null)
             call = _call;
+
         beginOperation(true);
         try {
             return new DetachManager(this, false, call).detachAll(objs);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -2842,9 +3137,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
             if ((_flags & FLAG_FLUSH_REQUIRED) != 0)
                 flush();
             detachAllInternal(call);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -2867,6 +3164,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         }
         if (states.isEmpty())
             return;
+
         if (call == null)
             call = _call;
         new DetachManager(this, true, call).detachAll
@@ -2876,18 +3174,22 @@ public class BrokerImpl implements Broker, FindCallbacks {
     public Object attach(Object obj, boolean copyNew, OpCallbacks call) {
         if (obj == null)
             return null;
+
         beginOperation(true);
         try {
             // make sure not to try to set rollback only if this fails
             assertWriteOperation();
             try {
                 return new AttachManager(this, copyNew, call).attach(obj);
-            } catch (OptimisticException oe) {
+            }
+            catch (OptimisticException oe) {
                 setRollbackOnly();
                 throw oe.setFatal(true);
-            } catch (OpenJPAException ke) {
+            }
+            catch (OpenJPAException ke) {
                 throw ke;
-            } catch (RuntimeException re) {
+            }
+            catch (RuntimeException re) {
                 throw new GeneralException(re);
             }
         }
@@ -2902,18 +3204,22 @@ public class BrokerImpl implements Broker, FindCallbacks {
             return null;
         if (objs.isEmpty())
             return new Object[0];
+
         beginOperation(true);
         try {
             // make sure not to try to set rollback only if this fails
             assertWriteOperation();
             try {
                 return new AttachManager(this, copyNew, call).attachAll(objs);
-            } catch (OptimisticException oe) {
+            }
+            catch (OptimisticException oe) {
                 setRollbackOnly();
                 throw oe.setFatal(true);
-            } catch (OpenJPAException ke) {
+            }
+            catch (OpenJPAException ke) {
                 throw ke;
-            } catch (RuntimeException re) {
+            }
+            catch (RuntimeException re) {
                 throw new GeneralException(re);
             }
         }
@@ -2929,7 +3235,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
                 try {
                     nontransactional(itr.next(), call);
-                } catch (UserException ue) {
+                }
+                catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
             }
@@ -2943,6 +3250,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     public void nontransactional(Object obj, OpCallbacks call) {
         if (obj == null)
             return;
+
         beginOperation(true);
         try {
             StateManagerImpl sm = getStateManagerImpl(obj, true);
@@ -2951,9 +3259,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 return;
             if (sm != null)
                 sm.nontransactional();
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -2972,6 +3282,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
             transactional(objs.iterator().next(), updateVersion, call);
             return;
         }
+
         beginOperation(true);
         try {
             // collect all hollow instances for load, and make unmananged
@@ -2986,17 +3297,20 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 obj = itr.next();
                 if (obj == null)
                     continue;
+
                 try {
                     sm = getStateManagerImpl(obj, true);
                     if ((processArgument(OpCallbacks.OP_TRANSACTIONAL, obj, sm,
                         call) & OpCallbacks.ACT_RUN) == 0)
                         continue;
+
                     if (sm == null) {
                         // manage transient instance
                         meta = _conf.getMetaDataRepository().getMetaData
                             (obj.getClass(), _loader, true);
-                        sm = new StateManagerImpl(StateManagerId.newInstance(),
-                            meta, this);
+
+                        sm = new StateManagerImpl
+                            (StateManagerId.newInstance(), meta, this);
                         sm.initialize(assertPersistenceCapable(obj),
                             PCState.TCLEAN);
                     } else if (sm.isPersistent()) {
@@ -3007,27 +3321,34 @@ public class BrokerImpl implements Broker, FindCallbacks {
                                 load = new ArrayList();
                             load.add(sm);
                         }
+
                         sm.setCheckVersion(true);
                         if (updateVersion)
                             sm.setUpdateVersion(true);
                         _flags |= FLAG_FLUSH_REQUIRED; // version check/up
                     }
-                } catch (UserException ue) {
+                }
+                catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
             }
+
             // load all hollow instances
             Collection failed = null;
             if (load != null) {
                 failed = _store.loadAll(load, null, _store.FORCE_LOAD_NONE,
                     _fc.newFetchState(), null);
                 if (failed != null && !failed.isEmpty())
-                    exceps = add(exceps, newObjectNotFoundException(failed));
+                    exceps = add(exceps,
+                        newObjectNotFoundException(failed));
             }
+
             transactionalStatesAll(sms, failed, exceps);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -3042,12 +3363,14 @@ public class BrokerImpl implements Broker, FindCallbacks {
         OpCallbacks call) {
         if (obj == null)
             return;
+
         beginOperation(true);
         try {
             StateManagerImpl sm = getStateManagerImpl(obj, true);
             if ((processArgument(OpCallbacks.OP_TRANSACTIONAL, obj, sm, call)
                 & OpCallbacks.ACT_RUN) == 0)
                 return;
+
             if (sm != null && sm.isPersistent()) {
                 assertActiveTransaction();
                 sm.transactional();
@@ -3063,11 +3386,14 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     getMetaData(obj.getClass(), _loader, true);
                 Object id = StateManagerId.newInstance();
                 sm = new StateManagerImpl(id, meta, this);
-                sm.initialize(assertPersistenceCapable(obj), PCState.TCLEAN);
+                sm.initialize(assertPersistenceCapable(obj),
+                    PCState.TCLEAN);
             }
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -3086,11 +3412,13 @@ public class BrokerImpl implements Broker, FindCallbacks {
             sm = (StateManagerImpl) itr.next();
             if (failed != null && failed.contains(sm.getId()))
                 continue;
+
             try {
                 sm.transactional();
                 sm.load(_fc.newFetchState(), StateManagerImpl.LOAD_FGS, null,
                     null, false);
-            } catch (OpenJPAException ke) {
+            }
+            catch (OpenJPAException ke) {
                 exceps = add(exceps, ke);
             }
         }
@@ -3100,6 +3428,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     /////////////////
     // Extent, Query
     /////////////////
+
     public Extent newExtent(Class type, boolean subclasses) {
         return newExtent(type, subclasses, null);
     }
@@ -3112,10 +3441,13 @@ public class BrokerImpl implements Broker, FindCallbacks {
             if (_extents == null)
                 _extents = new ReferenceHashSet(ReferenceHashSet.WEAK);
             _extents.add(extent);
+
             return extent;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -3140,6 +3472,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         // common mistakes
         if (query instanceof Extent || query instanceof Class)
             throw new UserException(_loc.get("bad-new-query"));
+
         beginOperation(false);
         try {
             StoreQuery sq = _store.newQuery(language);
@@ -3150,20 +3483,25 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     sq = new ExpressionStoreQuery(ep);
                 else if (QueryLanguages.LANG_METHODQL.equals(language))
                     sq = new MethodStoreQuery();
-                else throw new UnsupportedException(language);
+                else
+                    throw new UnsupportedException(language);
             }
+
             Query q = newQueryImpl(language, sq);
             q.setIgnoreChanges(_ignoreChanges);
             if (query != null)
                 q.setQuery(query);
+
             // track queries
             if (_queries == null)
                 _queries = new ReferenceHashSet(ReferenceHashSet.WEAK);
             _queries.add(q);
             return q;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -3198,7 +3536,9 @@ public class BrokerImpl implements Broker, FindCallbacks {
         int strategy;
         if (fmd == null)
             strategy = meta.getIdentityStrategy();
-        else strategy = fmd.getValueStrategy();
+        else
+            strategy = fmd.getValueStrategy();
+
         // we can handle non-native strategies without the store manager
         switch (strategy) {
             case ValueStrategies.UUID_HEX:
@@ -3224,10 +3564,12 @@ public class BrokerImpl implements Broker, FindCallbacks {
     ///////////
     // Locking
     ///////////
+
     public void lock(Object obj, OpCallbacks call) {
         if (obj == null)
             return;
-        beginOperation(true); // have to sync or lock level always NONE
+
+        beginOperation(true);    // have to sync or lock level always NONE
         try {
             lock(obj, _fc.getWriteLockLevel(), _fc.getLockTimeout(), call);
         }
@@ -3239,20 +3581,25 @@ public class BrokerImpl implements Broker, FindCallbacks {
     public void lock(Object obj, int level, int timeout, OpCallbacks call) {
         if (obj == null)
             return;
+
         beginOperation(true);
         try {
             assertActiveTransaction();
+
             StateManagerImpl sm = getStateManagerImpl(obj, true);
             if ((processArgument(OpCallbacks.OP_LOCK, obj, sm, call)
                 & OpCallbacks.ACT_RUN) == 0)
                 return;
             if (sm == null || !sm.isPersistent())
                 return;
+
             _lm.lock(sm, level, timeout, null);
-            sm.readLocked(level, level); // use same level for future write
-        } catch (OpenJPAException ke) {
+            sm.readLocked(level, level);    // use same level for future write
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -3263,9 +3610,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
     public void lockAll(Collection objs, OpCallbacks call) {
         if (objs.isEmpty())
             return;
-        beginOperation(true); // have to sync or lock level always NONE
+
+        beginOperation(true);    // have to sync or lock level always NONE
         try {
-            lockAll(objs, _fc.getWriteLockLevel(), _fc.getLockTimeout(), call);
+            lockAll(objs, _fc.getWriteLockLevel(), _fc.getLockTimeout(),
+                call);
         }
         finally {
             endOperation();
@@ -3280,9 +3629,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
             lock(objs.iterator().next(), level, timeout, call);
             return;
         }
+
         beginOperation(true);
         try {
             assertActiveTransaction();
+
             Collection sms = new ArrayList(objs.size());
             Object obj;
             StateManagerImpl sm;
@@ -3290,6 +3641,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 obj = itr.next();
                 if (obj == null)
                     continue;
+
                 sm = getStateManagerImpl(obj, true);
                 if ((processArgument(OpCallbacks.OP_LOCK, obj, sm, call)
                     & OpCallbacks.ACT_RUN) == 0)
@@ -3297,12 +3649,15 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 if (sm != null && sm.isPersistent())
                     sms.add(sm);
             }
+
             _lm.lockAll(sms, level, timeout, null);
             for (Iterator itr = sms.iterator(); itr.hasNext();)
                 ((StateManagerImpl) itr.next()).readLocked(level, level);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -3313,9 +3668,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
     //////////////
     // Connection
     //////////////
+
     public boolean cancelAll() {
         // this method does not lock, since we want to allow a different
         // thread to be able to cancel on a locked-up persistence manager
+
         assertOpen();
         try {
             // if we're flushing, have to set rollback only -- do this before we
@@ -3325,9 +3682,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
             if ((_flags & FLAG_STORE_FLUSHING) != 0)
                 setRollbackOnlyInternal();
             return _store.cancelAll();
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new StoreException(re);
         }
     }
@@ -3337,6 +3696,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         if (!_conf.supportedOptions().contains
             (_conf.OPTION_DATASTORE_CONNECTION))
             throw new UnsupportedException(_loc.get("conn-not-supported"));
+
         return _store.getClientConnection();
     }
 
@@ -3368,6 +3728,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     /////////
     // Cache
     /////////
+
     public Collection getManagedObjects() {
         beginOperation(false);
         try {
@@ -3439,6 +3800,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     protected Collection getDirtyStates() {
         if (_transCache == null)
             return Collections.EMPTY_LIST;
+
         return _transCache.copyDirty();
     }
 
@@ -3456,12 +3818,13 @@ public class BrokerImpl implements Broker, FindCallbacks {
      * Set the cached StateManager for the instance that had the given oid.
      * This method must not be called multiple times for new instances.
      *
-     * @param id     the id previously used by the instance
-     * @param sm     the state manager for the instance; if the state
-     *               manager is transient, we'll stop managing the instance;
-     *               if it has updated its oid, we'll re-cache under the new oid
+     * @param id the id previously used by the instance
+     * @param sm the state manager for the instance; if the state
+     * manager is transient, we'll stop managing the instance;
+     * if it has updated its oid, we'll re-cache under the
+     * new oid
      * @param status one of our STATUS constants describing why we're
-     *               setting the state manager
+     * setting the state manager
      */
     void setStateManager(Object id, StateManagerImpl sm, int status) {
         lock();
@@ -3497,6 +3860,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         // the setDirty callback
         if (sm.isDirty())
             return;
+
         lock();
         try {
             if (_transCache == null)
@@ -3510,7 +3874,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
 
     /**
      * Notify the persistence manager that the given state manager should
-     * be removed from the set of instances involved in the current transaction.
+     * be removed from the set of instances involved in the current
+     * transaction.
      */
     void removeFromTransaction(StateManagerImpl sm) {
         lock();
@@ -3526,18 +3891,20 @@ public class BrokerImpl implements Broker, FindCallbacks {
     }
 
     /**
-     * Notification that the given instance has been dirtied. This
+     * Notification that the given instance has been dirtied.  This
      * notification is given when an object first transitions to a dirty state,
      * and every time the object is modified by the user thereafter.
      */
     void setDirty(StateManagerImpl sm, boolean firstDirty) {
         if (sm.isPersistent())
             _flags |= FLAG_FLUSH_REQUIRED;
+
         if (_savepoints != null && !_savepoints.isEmpty()) {
             if (_savepointCache == null)
                 _savepointCache = new HashSet();
             _savepointCache.add(sm);
         }
+
         if (firstDirty && sm.isTransactional()) {
             lock();
             try {
@@ -3545,6 +3912,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 if (_transCache == null)
                     _transCache = new TransactionalCache(_orderDirty);
                 _transCache.addDirty(sm);
+
                 // also record that the class is dirty
                 if (sm.isNew()) {
                     if (_persistedClss == null)
@@ -3559,6 +3927,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                         _updatedClss = new HashSet();
                     _updatedClss.add(sm.getMetaData().getDescribedType());
                 }
+
                 // if tracking changes and this instance wasn't already dirty,
                 // add to changed set; we use this for detecting instances that
                 // enter the transaction during pre store
@@ -3593,7 +3962,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
 
     /**
      * Notify the persistence manager that the given state manager should
-     * be removed from the set of instances involved in the next transaction.
+     * be removed from the set of instances involved in the next
+     * transaction.
      */
     void removeFromPendingTransaction(StateManagerImpl sm) {
         lock();
@@ -3634,7 +4004,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
 
     /**
      * Remove the given previously dereferenced dependent object from the
-     * cache. It is now referenced.
+     * cache.  It is now referenced.
      */
     void removeDereferencedDependent(StateManagerImpl sm) {
         lock();
@@ -3645,7 +4015,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
             if (!removed && (_derefCache == null || !_derefCache.remove(sm)))
                 throw new InvalidStateException(_loc.get("not-derefed",
                     Exceptions.toString(sm.getManagedInstance()))).
-                    setFailedObject(sm.getManagedInstance()). setFatal(true);
+                    setFailedObject(sm.getManagedInstance()).
+                    setFatal(true);
         }
         finally {
             unlock();
@@ -3655,6 +4026,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     public void dirtyType(Class cls) {
         if (cls == null)
             return;
+
         beginOperation(false);
         try {
             if (_updatedClss == null)
@@ -3687,6 +4059,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     ///////////
     // Closing
     ///////////
+
     public boolean isClosed() {
         return _closed != null;
     }
@@ -3697,9 +4070,11 @@ public class BrokerImpl implements Broker, FindCallbacks {
             // throw an exception if closing in an active local trans
             if (!_managed && (_flags & FLAG_ACTIVE) != 0)
                 throw new InvalidStateException(_loc.get("active"));
+
             // only close if not active; if active managed trans wait
             // for completion
             _flags |= FLAG_CLOSE_INVOKED;
+
             if ((_flags & FLAG_ACTIVE) == 0)
                 free();
         }
@@ -3716,10 +4091,12 @@ public class BrokerImpl implements Broker, FindCallbacks {
         if ((_autoDetach & DETACH_CLOSE) != 0) {
             try {
                 detachAllInternal(_call);
-            } catch (RuntimeException re) {
+            }
+            catch (RuntimeException re) {
                 err = re;
             }
         }
+
         _sync = null;
         _userObjects = null;
         _cache.clear();
@@ -3732,6 +4109,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         _loader = null;
         _transEventManager = null;
         _lifeEventManager = null;
+
         OpenJPASavepoint save;
         while (_savepoints != null && !_savepoints.isEmpty()) {
             save =
@@ -3740,15 +4118,18 @@ public class BrokerImpl implements Broker, FindCallbacks {
         }
         _savepoints = null;
         _savepointCache = null;
+
         if (_queries != null) {
             for (Iterator itr = _queries.iterator(); itr.hasNext();) {
                 try {
                     ((Query) itr.next()).closeResources();
-                } catch (RuntimeException re) {
+                }
+                catch (RuntimeException re) {
                 }
             }
             _queries = null;
         }
+
         if (_extents != null) {
             Extent e;
             for (Iterator itr = _extents.iterator(); itr.hasNext();) {
@@ -3760,14 +4141,17 @@ public class BrokerImpl implements Broker, FindCallbacks {
             }
             _extents = null;
         }
+
         try {
             releaseConnection();
         } catch (RuntimeException re) {
         }
+
         _lm.close();
         _store.close();
         _closed = new IllegalStateException();
         _flags = 0;
+
         if (err != null)
             throw err;
     }
@@ -3775,6 +4159,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     ///////////////////
     // Synchronization
     ///////////////////
+
     public void lock() {
         if (_lock != null)
             _lock.lock();
@@ -3788,17 +4173,21 @@ public class BrokerImpl implements Broker, FindCallbacks {
     ////////////////////
     // State management
     ////////////////////
+
     public Object newInstance(Class cls) {
         assertOpen();
+
         //### JDO2
         if (cls.isInterface() || Modifier.isAbstract(cls.getModifiers()))
             throw new UnsupportedOperationException(_loc.get
                 ("new-abstract", cls));
+
         // 1.5 doesn't initialize classes without a true Class.forName
         if (!PCRegistry.isRegistered(cls)) {
             try {
                 Class.forName(cls.getName(), true, cls.getClassLoader());
-            } catch (Throwable t) {
+            }
+            catch (Throwable t) {
             }
         }
         return PCRegistry.newInstance(cls, null, false);
@@ -3815,6 +4204,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         assertOpen();
         if (o == null)
             return LockLevels.LOCK_NONE;
+
         OpenJPAStateManager sm = getStateManager(o);
         if (sm == null)
             return LockLevels.LOCK_NONE;
@@ -3866,10 +4256,12 @@ public class BrokerImpl implements Broker, FindCallbacks {
     public boolean isDetached(Object obj) {
         if (!(obj instanceof PersistenceCapable))
             return false;
+
         PersistenceCapable pc = (PersistenceCapable) obj;
         Boolean detached = pc.pcIsDetached();
         if (detached != null)
             return detached.booleanValue();
+
         // last resort: instance is detached if it has a store record
         ClassMetaData meta = _conf.getMetaDataRepository().
             getMetaData(pc.getClass(), _loader, true);
@@ -3888,7 +4280,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
      * Return the state manager for the given instance, or null.
      *
      * @param assertThisContext if true, thow an exception if the given
-     *                          object is managed by another broker
+     * object is managed by another broker
      */
     protected StateManagerImpl getStateManagerImpl(Object obj,
         boolean assertThisContext) {
@@ -3907,9 +4299,9 @@ public class BrokerImpl implements Broker, FindCallbacks {
      * Return the state manager for the given oid.
      *
      * @param allowNew if true, objects made persistent in the current
-     *                 transaction will be included in the search; if
-     *                 multiple new objects match the given oid, it is
-     *                 undefined which will be returned
+     * transaction will be included in the search; if
+     * multiple new objects match the given oid, it is
+     * undefined which will be returned
      */
     protected StateManagerImpl getStateManagerImplById(Object oid,
         boolean allowNew) {
@@ -3925,6 +4317,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
             return null;
         if (obj instanceof PersistenceCapable)
             return (PersistenceCapable) obj;
+
         // not enhanced
         throw new UserException(_loc.get("pc-cast",
             Exceptions.toString(obj))).setFailedObject(obj);
@@ -3933,6 +4326,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     /////////
     // Utils
     /////////
+
     public void assertOpen() {
         if (_closed != null)
             throw new InvalidStateException(_loc.get("closed"), _closed).
@@ -3980,6 +4374,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
     ////////////////////////////////
     // FindCallbacks implementation
     ////////////////////////////////
+
     public Object processArgument(Object oid) {
         return oid;
     }
@@ -3993,10 +4388,10 @@ public class BrokerImpl implements Broker, FindCallbacks {
      */
     private static class ManagedCache {
 
-        private final Map _main; // oid -> sm
-        private Map _conflicts = null; // conflict oid -> new sm
-        private Map _news = null; // tmp id -> new sm
-        private Collection _embeds = null; // embedded/non-persistent sms
+        private final Map _main;                // oid -> sm
+        private Map _conflicts = null;    // conflict oid -> new sm
+        private Map _news = null;    // tmp id -> new sm
+        private Collection _embeds = null;    // embedded/non-persistent sms
 
         /**
          * Constructor; supply primary cache map.
@@ -4012,6 +4407,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         public StateManagerImpl getById(Object oid, boolean allowNew) {
             if (oid == null)
                 return null;
+
             // check main cache for oid
             StateManagerImpl sm = (StateManagerImpl) _main.get(oid);
             StateManagerImpl sm2;
@@ -4022,6 +4418,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                     return (allowNew) ? sm : null;
                 if (!allowNew || !sm.isDeleted())
                     return sm;
+
                 // sm is deleted; check conflict cache
                 if (_conflicts != null) {
                     sm2 = (StateManagerImpl) _conflicts.get(oid);
@@ -4029,6 +4426,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                         return sm2;
                 }
             }
+
             // at this point sm is null or deleted; check the new cache for
             // any matches. this allows us to match app id objects to new
             // instances without permanant oids
@@ -4050,6 +4448,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 _embeds.add(sm);
                 return;
             }
+
             // initializing new instance; put in new cache because won't have
             // permanent oid yet
             if (sm.isNew()) {
@@ -4058,6 +4457,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 _news.put(sm.getId(), sm);
                 return;
             }
+
             // initializing persistent instance; put in main cache
             StateManagerImpl orig = (StateManagerImpl) _main.put
                 (sm.getObjectId(), sm);
@@ -4115,6 +4515,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
             StateManagerImpl orig = (StateManagerImpl) _news.remove(id);
             if (orig != null && orig != sm)
                 _news.put(id, orig); // put back
+
             // put in main cache, but make sure we don't replace another
             // instance with the same oid
             orig = (StateManagerImpl) _main.put(sm.getObjectId(), sm);
@@ -4125,6 +4526,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                         sm.getObjectId(), Exceptions.toString
                         (sm.getManagedInstance()))).
                         setFailedObject(sm.getManagedInstance());
+
                 // same oid as deleted instance; put in conflict cache
                 if (_conflicts == null)
                     _conflicts = new HashMap();
@@ -4154,11 +4556,13 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 }
                 return;
             }
+
             // oid changed, so it must previously have been a new instance
             // without an assigned oid.  remove it from the new cache; ok if
             // we end up removing another instance with same id
             if (_news != null)
                 _news.remove(id);
+
             // and put into main cache now that id is asssigned
             orig = (StateManagerImpl) _main.put(sm.getObjectId(), sm);
             if (orig != null && orig != sm && !orig.isDeleted()) {
@@ -4177,6 +4581,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         public Collection copy() {
             // proxies not included here because the state manager is always
             // present in other caches too
+
             int size = _main.size();
             if (_conflicts != null)
                 size += _conflicts.size();
@@ -4186,6 +4591,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
                 size += _embeds.size();
             if (size == 0)
                 return Collections.EMPTY_LIST;
+
             List copy = new ArrayList(size);
             for (Iterator itr = _main.values().iterator(); itr.hasNext();)
                 copy.add(itr.next());
@@ -4227,7 +4633,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
     /**
      * Transactional cache that holds soft refs to clean instances.
      */
-    private static class TransactionalCache implements Set {
+    private static class TransactionalCache
+        implements Set {
 
         private final boolean _orderDirty;
         private Set _dirty = null;
@@ -4243,6 +4650,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         public Collection copy() {
             if (isEmpty())
                 return Collections.EMPTY_LIST;
+
             // size may not be entirely accurate due to refs expiring, so
             // manually copy each object; doesn't matter this way if size too
             // big by some
@@ -4294,7 +4702,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
             if (_dirty == null) {
                 if (_orderDirty)
                     _dirty = MapBackedSet.decorate(new LinkedMap());
-                else _dirty = new HashSet();
+                else
+                    _dirty = new HashSet();
             }
             if (_dirty.add(sm))
                 removeCleanInternal(sm);
@@ -4387,10 +4796,13 @@ public class BrokerImpl implements Broker, FindCallbacks {
      * Unique id for state managers of new datastore instances without assigned
      * object ids.
      */
-    private static class StateManagerId implements Serializable {
+    private static class StateManagerId
+        implements Serializable {
 
         public static final String STRING_PREFIX = "openjpasm:";
+
         private static long _generator = System.currentTimeMillis();
+
         private final long _id;
 
         public static synchronized StateManagerId newInstance() {
@@ -4427,7 +4839,8 @@ public class BrokerImpl implements Broker, FindCallbacks {
      * Collection type that holds state managers but whose interface deals
      * with the corresponding managed objects.
      */
-    private static class ManagedObjectCollection extends AbstractCollection {
+    private static class ManagedObjectCollection
+        extends AbstractCollection {
 
         private final Collection _states;
 
@@ -4464,16 +4877,16 @@ public class BrokerImpl implements Broker, FindCallbacks {
     }
 
     /**
-     * Helper class to implement JCA interfaces. This is placed in a
+     * Helper class to implement JCA interfaces.  This is placed in a
      * separate class so that its methods do not interfere with the
      * persistence manager APIs.
      */
     private class JCAHelper
         implements Interaction, ResultSetInfo, ConnectionMetaData {
-
         ///////////////////////////////////////////
         // Implementation of Interaction interface
         ///////////////////////////////////////////
+
         public void clearWarnings() {
         }
 
@@ -4502,6 +4915,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         /////////////////////////////////////////////
         // Implementation of ResultSetInfo interface
         /////////////////////////////////////////////
+
         public boolean deletesAreDetected(int type) {
             return true;
         }
@@ -4550,6 +4964,7 @@ public class BrokerImpl implements Broker, FindCallbacks {
         ///////////////////////////////////////////////////
         // Implementation of ConnectionMetaData interface
         ///////////////////////////////////////////////////
+
         public String getEISProductName() {
             return _conf.getConnectionDriverName();
         }

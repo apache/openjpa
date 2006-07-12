@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -19,14 +22,15 @@ import org.apache.openjpa.kernel.Filters;
 import serp.util.Numbers;
 
 /**
- * Sum values.
+ * <p>Sum values.</p>
  *
  * @author Abe White
  */
-class Sum extends AggregateVal {
+class Sum
+    extends AggregateVal {
 
     /**
-     * Constructor. Provide the value to sum.
+     * Constructor.  Provide the value to sum.
      */
     public Sum(Val val) {
         super(val);
@@ -34,7 +38,9 @@ class Sum extends AggregateVal {
 
     protected Class getType(Class c) {
         Class wrap = Filters.wrap(c);
-        if (wrap == Integer.class || wrap == Short.class || wrap == Byte.class)
+        if (wrap == Integer.class
+            || wrap == Short.class
+            || wrap == Byte.class)
             return long.class;
         return c;
     }
@@ -42,6 +48,7 @@ class Sum extends AggregateVal {
     protected Object operate(Collection os, Class c) {
         if (os.isEmpty())
             return null;
+
         Class type = getType(c);
         Object sum = Filters.convert(Numbers.valueOf(0), type);
         Object cur;

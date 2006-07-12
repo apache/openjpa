@@ -138,7 +138,7 @@ public interface Configuration
      * not be automatically reflected in this Configuration object.
      *
      * @param storeDefaults if true, then properties will be written
-     *                      out even if they match the default value for a property
+     * out even if they match the default value for a property
      */
     public Map toProperties(boolean storeDefaults);
 

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,20 +19,22 @@ import java.util.Properties;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
+
 ///////////////////////////////////////////////////////////////
-// NOTE: when adding a public API method, be sure to add it to
+// NOTE: when adding a public API method, be sure to add it to 
 // JDO and JPA facades!
 ///////////////////////////////////////////////////////////////
 
 /**
- * Delegating broker factory that can also perform exception translation
- * for use in facades.
+ * <p>Delegating broker factory that can also perform exception translation
+ * for use in facades.</p>
  *
+ * @since 4.0
  * @author Abe White
  * @nojavadoc
- * @since 4.0
  */
-public class DelegatingBrokerFactory implements BrokerFactory {
+public class DelegatingBrokerFactory
+    implements BrokerFactory {
 
     private final BrokerFactory _factory;
     private final DelegatingBrokerFactory _del;
@@ -50,7 +55,8 @@ public class DelegatingBrokerFactory implements BrokerFactory {
         _factory = factory;
         if (factory instanceof DelegatingBrokerFactory)
             _del = (DelegatingBrokerFactory) factory;
-        else _del = null;
+        else
+            _del = null;
         _trans = trans;
     }
 
@@ -90,7 +96,8 @@ public class DelegatingBrokerFactory implements BrokerFactory {
     public OpenJPAConfiguration getConfiguration() {
         try {
             return _factory.getConfiguration();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -98,7 +105,8 @@ public class DelegatingBrokerFactory implements BrokerFactory {
     public Properties getProperties() {
         try {
             return _factory.getProperties();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -106,7 +114,8 @@ public class DelegatingBrokerFactory implements BrokerFactory {
     public Object putUserObject(Object key, Object val) {
         try {
             return _factory.putUserObject(key, val);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -114,7 +123,8 @@ public class DelegatingBrokerFactory implements BrokerFactory {
     public Object getUserObject(Object key) {
         try {
             return _factory.getUserObject(key);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -122,7 +132,8 @@ public class DelegatingBrokerFactory implements BrokerFactory {
     public Broker newBroker() {
         try {
             return _factory.newBroker();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -132,7 +143,8 @@ public class DelegatingBrokerFactory implements BrokerFactory {
         try {
             return _factory.newBroker(user, pass, managed, connRetainMode,
                 findExisting);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -140,7 +152,8 @@ public class DelegatingBrokerFactory implements BrokerFactory {
     public void addLifecycleListener(Object listener, Class[] classes) {
         try {
             _factory.addLifecycleListener(listener, classes);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -148,7 +161,8 @@ public class DelegatingBrokerFactory implements BrokerFactory {
     public void removeLifecycleListener(Object listener) {
         try {
             _factory.removeLifecycleListener(listener);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -156,7 +170,8 @@ public class DelegatingBrokerFactory implements BrokerFactory {
     public void close() {
         try {
             _factory.close();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -164,7 +179,8 @@ public class DelegatingBrokerFactory implements BrokerFactory {
     public boolean isClosed() {
         try {
             return _factory.isClosed();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -172,7 +188,8 @@ public class DelegatingBrokerFactory implements BrokerFactory {
     public void lock() {
         try {
             _factory.lock();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -180,8 +197,9 @@ public class DelegatingBrokerFactory implements BrokerFactory {
     public void unlock() {
         try {
             _factory.unlock();
-        } catch (RuntimeException re) {
-            throw translate(re);
         }
-    }
+        catch (RuntimeException re) {
+            throw translate(re);
+		}
+	}
 }

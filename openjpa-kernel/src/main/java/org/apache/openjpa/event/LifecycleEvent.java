@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,14 +18,15 @@ package org.apache.openjpa.event;
 import java.util.EventObject;
 
 /**
- * Lifecycle event on a persistent instance. The event source
- * is the persistent instance whose state has changed.
+ * <p>Lifecycle event on a persistent instance.  The event source
+ * is the persistent instance whose state has changed.</p>
  *
  * @author Steve Kim
  * @author Abe White
  * @since 3.3
  */
-public class LifecycleEvent extends EventObject {
+public class LifecycleEvent
+    extends EventObject {
 
     /**
      * Event type before an instance is made persistent
@@ -118,18 +122,34 @@ public class LifecycleEvent extends EventObject {
      * Convenience array of all event types.
      */
     public static final int[] ALL_EVENTS = new int[]{
-        BEFORE_PERSIST, AFTER_PERSIST, AFTER_LOAD, BEFORE_STORE, AFTER_STORE,
-        BEFORE_CLEAR, AFTER_CLEAR, BEFORE_DELETE, AFTER_DELETE, BEFORE_DIRTY,
-        AFTER_DIRTY, BEFORE_DIRTY_FLUSHED, AFTER_DIRTY_FLUSHED, BEFORE_DETACH,
-        AFTER_DETACH, BEFORE_ATTACH, AFTER_ATTACH, AFTER_REFRESH, };
+        BEFORE_PERSIST,
+        AFTER_PERSIST,
+        AFTER_LOAD,
+        BEFORE_STORE,
+        AFTER_STORE,
+        BEFORE_CLEAR,
+        AFTER_CLEAR,
+        BEFORE_DELETE,
+        AFTER_DELETE,
+        BEFORE_DIRTY,
+        AFTER_DIRTY,
+        BEFORE_DIRTY_FLUSHED,
+        AFTER_DIRTY_FLUSHED,
+        BEFORE_DETACH,
+        AFTER_DETACH,
+        BEFORE_ATTACH,
+        AFTER_ATTACH,
+        AFTER_REFRESH,
+    };
+
     private final int _type;
     private final Object _related;
 
     /**
      * Constructor.
      *
-     * @param pc   the persistent instance that triggered the event
-     * @param type the event type
+     * @param    pc        the persistent instance that triggered the event
+     * @param    type    the event type
      */
     public LifecycleEvent(Object pc, int type) {
         this(pc, null, type);
@@ -138,9 +158,9 @@ public class LifecycleEvent extends EventObject {
     /**
      * Constructor.
      *
-     * @param pc      the persistent instance that triggered the event
-     * @param type    the event type
-     * @param related the related instance such as the detached copy.
+     * @param    pc        the persistent instance that triggered the event
+     * @param    type    the event type
+     * @param    related    the related instance such as the detached copy.
      */
     public LifecycleEvent(Object pc, Object related, int type) {
         super(pc);
@@ -156,9 +176,10 @@ public class LifecycleEvent extends EventObject {
     }
 
     /**
-     * Return the related object.
-     */
-    public Object getRelated() {
-        return _related;
-    }
+     *	Return the related object.
+	 */
+	public Object getRelated ()
+	{
+		return _related;
+	}
 }

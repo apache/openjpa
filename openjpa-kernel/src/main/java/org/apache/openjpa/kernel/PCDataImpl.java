@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -18,13 +21,14 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 
 /**
- * Default {@link PCData} implementation.
+ * <p>Default {@link PCData} implementation.</p>
  *
  * @author Patrick Linskey
  * @author Abe White
  * @nojavadoc
  */
-public class PCDataImpl extends AbstractPCData {
+public class PCDataImpl
+    extends AbstractPCData {
 
     private final Object _oid;
     private final Class _type;
@@ -40,6 +44,7 @@ public class PCDataImpl extends AbstractPCData {
     public PCDataImpl(Object oid, ClassMetaData meta) {
         _oid = oid;
         _type = meta.getDescribedType();
+
         int len = meta.getFields().length;
         _data = new Object[len];
         _loaded = new BitSet(len);
@@ -110,7 +115,8 @@ public class PCDataImpl extends AbstractPCData {
     public void setLoaded(int index, boolean loaded) {
         if (loaded)
             _loaded.set(index);
-        else _loaded.clear(index);
+        else
+            _loaded.clear(index);
     }
 
     public Object getVersion() {
@@ -125,6 +131,7 @@ public class PCDataImpl extends AbstractPCData {
         Object context) {
         loadVersion(sm);
         loadImplData(sm);
+
         FieldMetaData[] fmds = sm.getMetaData().getFields();
         for (int i = 0; i < fmds.length; i++) {
             // load intermediate data for all unloaded fields and data for
@@ -140,12 +147,14 @@ public class PCDataImpl extends AbstractPCData {
         FetchState fetchState, Object context) {
         loadVersion(sm);
         loadImplData(sm);
+
         // attempt to load given fields
         int len = (fields == null) ? 0 : fields.length();
         FieldMetaData fmd;
         for (int i = 0; i < len; i++) {
             if (!fields.get(i))
                 continue;
+
             fmd = sm.getMetaData().getField(i);
             if (!isLoaded(i))
                 loadIntermediate(sm, fmd);
@@ -207,6 +216,7 @@ public class PCDataImpl extends AbstractPCData {
     public void store(OpenJPAStateManager sm) {
         storeVersion(sm);
         storeImplData(sm);
+
         FieldMetaData[] fmds = sm.getMetaData().getFields();
         for (int i = 0; i < fmds.length; i++) {
             if (sm.getLoaded().get(i)) {
@@ -220,6 +230,7 @@ public class PCDataImpl extends AbstractPCData {
     public void store(OpenJPAStateManager sm, BitSet fields) {
         storeVersion(sm);
         storeImplData(sm);
+
         FieldMetaData[] fmds = sm.getMetaData().getFields();
         for (int i = 0; i < fmds.length; i++) {
             if (fields != null && fields.get(i)) {
@@ -251,8 +262,10 @@ public class PCDataImpl extends AbstractPCData {
     protected void storeField(OpenJPAStateManager sm, FieldMetaData fmd) {
         if (fmd.getManagement() != fmd.MANAGE_PERSISTENT)
             return;
+
         int index = fmd.getIndex();
-        Object val = toData(fmd, sm.fetchField(index, false), sm.getContext());
+        Object val = toData(fmd, sm.fetchField(index, false),
+            sm.getContext());
         if (val != NULL)
             setData(index, val);
         else // unable to store field value; clear out any old values
@@ -281,14 +294,15 @@ public class PCDataImpl extends AbstractPCData {
             Object impl = sm.getImplData(index);
             if (impl != null && sm.isImplDataCacheable(index))
                 setImplData(index, impl);
-        } else setImplData(index, null);
+        } else
+            setImplData(index, null);
     }
 
     /**
-     * Return a new {@link PCData} implementation of the right type for
-     * embedded instances. Returns a {@link PCDataImpl} by default.
+     *	Return a new {@link PCData} implementation of the right type for
+     *	embedded instances.  Returns a {@link PCDataImpl} by default.
      */
     public AbstractPCData newEmbeddedPCData(OpenJPAStateManager sm) {
-        return new PCDataImpl(sm.getId(), sm.getMetaData());
-    }
+        return new PCDataImpl(sm.getId (), sm.getMetaData ());
+	}
 }

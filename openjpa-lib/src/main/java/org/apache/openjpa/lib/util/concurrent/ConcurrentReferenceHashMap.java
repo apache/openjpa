@@ -107,13 +107,13 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * Constructs a new, empty HashMap with the specified initial
      * capacity and the specified load factor.
      *
-     * @param keyType         the reference type of map keys
-     * @param valueType       the reference type of map values
+     * @param keyType the reference type of map keys
+     * @param valueType the reference type of map values
      * @param initialCapacity the initial capacity of the HashMap.
-     * @param loadFactor      a number between 0.0 and 1.0.
+     * @param loadFactor a number between 0.0 and 1.0.
      * @throws IllegalArgumentException if neither keys nor values use hard
-     *                                  references, if the initial capacity is less than or equal to zero, or if
-     *                                  the load factor is less than or equal to zero
+     * references, if the initial capacity is less than or equal to zero, or if
+     * the load factor is less than or equal to zero
      */
     public ConcurrentReferenceHashMap(int keyType, int valueType,
         int initialCapacity, float loadFactor) {
@@ -140,8 +140,8 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * Constructs a new, empty HashMap with the specified initial capacity
      * and default load factor.
      *
-     * @param keyType         the reference type of map keys
-     * @param valueType       the reference type of map values
+     * @param keyType the reference type of map keys
+     * @param valueType the reference type of map values
      * @param initialCapacity the initial capacity of the HashMap.
      */
     public ConcurrentReferenceHashMap(int keyType, int valueType,
@@ -152,7 +152,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
     /**
      * Constructs a new, empty HashMap with a default capacity and load factor.
      *
-     * @param keyType   the reference type of map keys
+     * @param keyType the reference type of map keys
      * @param valueType the reference type of map values
      */
     public ConcurrentReferenceHashMap(int keyType, int valueType) {
@@ -165,7 +165,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * of entries in the given Map or 11 (whichever is greater), and a
      * default load factor.
      *
-     * @param keyType   the reference type of map keys
+     * @param keyType the reference type of map keys
      * @param valueType the reference type of map values
      */
     public ConcurrentReferenceHashMap(int keyType, int valueType, Map t) {
@@ -314,7 +314,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      * If the HashMap previously contained a mapping for this key, the old
      * value is replaced.
      *
-     * @param key   key with which the specified value is to be associated.
+     * @param key key with which the specified value is to be associated.
      * @param value value to be associated with the specified key.
      * @return previous value associated with specified key, or null if there
      *         was no mapping for key. A null return can also indicate that

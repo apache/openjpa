@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,17 +19,18 @@ import org.apache.openjpa.kernel.StoreContext;
 import serp.util.Numbers;
 
 /**
- * Returns the number of characters in the String.
+ * <p>Returns the number of characters in the String.</p>
  *
  * @author Marc Prud'hommeaux
  */
-class StringLength extends Val {
+class StringLength
+    extends Val {
 
     private final Val _val;
     private Class _cast = null;
 
     /**
-     * Constructor. Provide value to upper-case.
+     * Constructor.  Provide value to upper-case.
      */
     public StringLength(Val val) {
         _val = val;
@@ -55,6 +59,7 @@ class StringLength extends Val {
         Object eval = _val.eval(candidate, orig, ctx, params);
         if (eval == null)
             return Numbers.valueOf(0);
+
         return Numbers.valueOf(eval.toString().length());
     }
 }

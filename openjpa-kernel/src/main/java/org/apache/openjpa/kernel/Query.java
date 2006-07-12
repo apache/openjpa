@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -20,11 +23,11 @@ import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 
 /**
- * OpenJPA query interface.
+ * <p>OpenJPA query interface.</p>
  *
+ * @since 3.0
  * @author Patrick Linskey
  * @author Abe White
- * @since 3.0
  */
 public interface Query
     extends Serializable, QueryContext, QueryOperations, QueryFlushModes {
@@ -124,14 +127,16 @@ public interface Query
     public long deleteAll(Map parameterMap);
 
     /**
-     * Performs an update of the instances that are satisfied by the query.
+     * Performs an update of the instances that are satisfied by
+     * the query.
      *
      * @return the number of instances that were update
      */
     public long updateAll();
 
     /**
-     * Performs an update of the instances that are satisfied by the query.
+     * Performs an update of the instances that are satisfied by
+     * the query.
      *
      * @param parameters the positional parameter array
      * @return the number of instances that were update
@@ -139,7 +144,8 @@ public interface Query
     public long updateAll(Object[] parameters);
 
     /**
-     * Performs an update of the instances that are satisfied by the query.
+     * Performs an update of the instances that are satisfied by
+     * the query.
      *
      * @param parameterMap the named parameter map
      * @return the number of instances that were update
@@ -152,7 +158,7 @@ public interface Query
     public void closeAll();
 
     /**
-     * Close query results that are consuming resources. Allow results that
+     * Close query results that are consuming resources.  Allow results that
      * are not consuming resources to remain open so that they continue to
      * function normally.
      */
@@ -161,7 +167,8 @@ public interface Query
     /**
      * Returns a description of the commands that will be sent to
      * the datastore in order to execute this query. This will
-     * typically be in the native query language of the database (e.g., SQL).
+     * typically be in the native query language of the database
+     * (e.g., SQL).
      *
      * @param params the named parameter map for the query invocation
      * @since 3.2
@@ -179,9 +186,9 @@ public interface Query
     public void assertNotReadOnly();
 
     /**
-     * Check that the query has not been serialized, which causes it to lose
-     * its association with its Broker.
-     */
-    public void assertNotSerialized();
+     *	Check that the query has not been serialized, which causes it to lose
+     *	its association with its Broker.
+	 */
+	public void assertNotSerialized ();
 }
 

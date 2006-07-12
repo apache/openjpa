@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,17 +19,18 @@ import org.apache.openjpa.kernel.StoreContext;
 import serp.util.Numbers;
 
 /**
- * Find the index of one string within another.
+ * <p>Find the index of one string within another.</p>
  *
  * @author Abe White
  */
-class IndexOf extends Val {
+class IndexOf
+    extends Val {
 
     private final Val _val;
     private final Val _args;
 
     /**
-     * Constructor. Provide target string and the arguments to the
+     * Constructor.  Provide target string and the arguments to the
      * indexOf method.
      */
     public IndexOf(Val val, Val args) {
@@ -58,7 +62,8 @@ class IndexOf extends Val {
             Object[] args = (Object[]) arg;
             idx = str.toString().indexOf(args[0].toString(),
                 ((Number) args[1]).intValue());
-        } else idx = str.toString().indexOf(arg.toString());
+        } else
+            idx = str.toString().indexOf(arg.toString());
         return Numbers.valueOf(idx);
     }
 }

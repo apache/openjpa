@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -29,16 +32,18 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataTool;
 
 /**
- * Executes the metadata tool on the specified files. This task can
+ * <p>Executes the metadata tool on the specified files.  This task can
  * take the following arguments:
  * <ul>
  * <li><code>file</code></li>
- * </ul>
+ * </ul></p>
  */
-public class MetaDataToolTask extends AbstractTask {
+public class MetaDataToolTask
+    extends AbstractTask {
 
     private static final Localizer _loc = Localizer.forPackage
         (MetaDataToolTask.class);
+
     protected MetaDataTool.Flags flags = new MetaDataTool.Flags();
     protected String fileName = null;
 
@@ -60,7 +65,8 @@ public class MetaDataToolTask extends AbstractTask {
         return new OpenJPAConfigurationImpl();
     }
 
-    protected void executeOn(String[] files) throws IOException {
+    protected void executeOn(String[] files)
+        throws IOException {
         ClassLoader loader = getClassLoader();
         if ("stdout".equals(fileName))
             flags.writer = new PrintWriter(System.out);
@@ -73,10 +79,11 @@ public class MetaDataToolTask extends AbstractTask {
             throw new BuildException(_loc.get("bad-conf", "MetaDataToolTask"));
     }
 
-    public static class Action extends EnumeratedAttribute {
+    public static class Action
+        extends EnumeratedAttribute {
 
         public String[] getValues() {
             return MetaDataTool.ACTIONS;
         }
-    }
+	}
 }

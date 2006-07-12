@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,7 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Representation of all members of a persistent class.
+ * <p>Representation of all members of a persistent class.</p>
  *
  * @author Abe White
  * @author Patrick Linskey
@@ -25,17 +28,19 @@ import java.util.List;
 public interface Extent {
 
     /**
-     * Return the(mutable) fetch configuration for this extent.
+     * Return the (mutable) fetch configuration for this extent.
      */
     public FetchConfiguration getFetchConfiguration();
 
     /**
-     * Whether this extent will ignore changes made in the current transaction.
+     * Whether this extent will ignore changes made in the current
+     * transaction.
      */
     public boolean getIgnoreChanges();
 
     /**
-     * Whether this extent will ignore changes made in the current transaction.
+     * Whether this extent will ignore changes made in the current
+     * transaction.
      */
     public void setIgnoreChanges(boolean ignoreChanges);
 
@@ -79,7 +84,7 @@ public interface Extent {
     public void lock();
 
     /**
-     * Release the internal lock.
+     *	Release the internal lock.
      */
-    public void unlock();
+	public void unlock ();
 }

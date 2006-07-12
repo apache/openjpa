@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -18,8 +21,8 @@ package org.apache.openjpa.enhance;
  * @author Marc Prud'hommeaux
  */
 public interface PersistenceCapable {
-
     // DO NOT ADD ADDITIONAL DEPENDENCIES TO THIS CLASS
+
     public static final byte READ_WRITE_OK = 0;
     public static final byte LOAD_REQUIRED = 1;
     public static final byte READ_OK = -1;
@@ -28,6 +31,7 @@ public interface PersistenceCapable {
     public static final byte CHECK_WRITE = 4;
     public static final byte MEDIATE_WRITE = 8;
     public static final byte SERIALIZABLE = 16;
+
     public static final Object DESERIALIZED = new Object();
 
     Object pcGetGenericContext();

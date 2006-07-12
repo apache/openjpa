@@ -174,10 +174,10 @@ public class MethodInstruction extends Instruction {
     /**
      * Set the method this instruction operates on.
      *
-     * @param dec        the full class name of the method's declaring class
-     * @param name       the method name
+     * @param dec the full class name of the method's declaring class
+     * @param name the method name
      * @param returnType the full class name of the method return type
-     * @param param      the full class names of the method param types
+     * @param param the full class names of the method param types
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethod(String dec, String name,
@@ -214,9 +214,9 @@ public class MethodInstruction extends Instruction {
      * Set the method this instruction operates on, for methods that are
      * declared by the current class.
      *
-     * @param name       the method name
+     * @param name the method name
      * @param returnType the full class name of the method return type
-     * @param param      the full class names of the method param types
+     * @param param the full class names of the method param types
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethod(String name, String returnType,
@@ -228,10 +228,10 @@ public class MethodInstruction extends Instruction {
     /**
      * Set the method this instruction operates on.
      *
-     * @param dec        the method's declaring class
-     * @param name       the method name
+     * @param dec the method's declaring class
+     * @param name the method name
      * @param returnType the class of the method return type
-     * @param param      the class of the method param types
+     * @param param the class of the method param types
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethod(Class dec, String name,
@@ -251,9 +251,9 @@ public class MethodInstruction extends Instruction {
      * Set the method this instruction operates on, for methods that are
      * declared by the current class.
      *
-     * @param name       the method name
+     * @param name the method name
      * @param returnType the class of the method return type
-     * @param param      the class of the method param types
+     * @param param the class of the method param types
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethod(String name, Class returnType,
@@ -272,10 +272,10 @@ public class MethodInstruction extends Instruction {
     /**
      * Set the method this instruction operates on.
      *
-     * @param dec        the method's declaring class
-     * @param name       the method name
+     * @param dec the method's declaring class
+     * @param name the method name
      * @param returnType the class of the method return type
-     * @param param      the class of the method param types
+     * @param param the class of the method param types
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethod(BCClass dec, String name,
@@ -295,9 +295,9 @@ public class MethodInstruction extends Instruction {
      * Set the method this instruction operates on, for methods that are
      * declared by the current class.
      *
-     * @param name       the method name
+     * @param name the method name
      * @param returnType the class of the method return type
-     * @param param      the class of the method param types
+     * @param param the class of the method param types
      * @return this instruction, for method chaining
      */
     public MethodInstruction setMethod(String name, BCClass returnType,

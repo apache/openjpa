@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -30,10 +33,12 @@ import org.apache.openjpa.util.OptimisticException;
 /**
  * Handles attaching instances using version and primary key fields.
  *
- * @author Steve Kim
  * @nojavadoc
+ * @author Steve Kim
  */
-class VersionAttachStrategy extends AttachStrategy implements DetachState {
+class VersionAttachStrategy
+    extends AttachStrategy
+    implements DetachState {
 
     private static final Localizer _loc = Localizer.forPackage
         (VersionAttachStrategy.class);
@@ -57,12 +62,14 @@ class VersionAttachStrategy extends AttachStrategy implements DetachState {
         ValueMetaData ownerMeta) {
         BrokerImpl broker = manager.getBroker();
         PersistenceCapable pc = (PersistenceCapable) toAttach;
+
         boolean embedded = ownerMeta != null && ownerMeta.isEmbeddedPC();
         boolean isNew = !broker.isDetached(pc);
         Object version = null;
         StateManagerImpl sm = null;
+
         // if the state manager for the embedded instance is null, then
-        // it should be treated as a new instance(since the
+        // it should be treated as a new instance (since the
         // newly persisted owner may create a new embedded instance
         // in the constructor); fixed bug #1075.
         // also, if the user has attached a detached obj from somewhere
@@ -84,6 +91,7 @@ class VersionAttachStrategy extends AttachStrategy implements DetachState {
             if (into == null)
                 throw new OptimisticException(_loc.get("attach-version-del",
                     pc.getClass(), id, version)).setFailedObject(toAttach);
+
             sm = manager.assertManaged(into);
             if (meta.getDescribedType()
                 != sm.getMetaData().getDescribedType()) {
@@ -92,17 +100,22 @@ class VersionAttachStrategy extends AttachStrategy implements DetachState {
                         sm.getMetaData().getDescribedType())).
                     setFailedObject(toAttach);
             }
-        } else sm = manager.assertManaged(into);
+        } else
+            sm = manager.assertManaged(into);
+
         // mark that we attached the instance *before* we
         // fill in values to avoid endless recursion
         manager.setAttachedCopy(toAttach, into);
+
         // if persisting in place, just attach field values
         if (pc == into) {
             attachFieldsInPlace(manager, sm);
             return into;
         }
+
         // invoke any preAttach on the detached instance
         manager.fireBeforeAttach(toAttach, meta);
+
         // assign the detached pc the same state manager as the object we're
         // copying into during the attach process
         pc.pcReplaceStateManager(sm);
@@ -142,6 +155,7 @@ class VersionAttachStrategy extends AttachStrategy implements DetachState {
         Object version = pc.pcGetVersion();
         if (version == null)
             return;
+
         // don't need to load unloaded fields since its implicitly
         // a single field value
         StoreManager store = sm.getBroker().getStoreManager();
@@ -170,6 +184,7 @@ class VersionAttachStrategy extends AttachStrategy implements DetachState {
         for (int i = 0; i < fmds.length; i++) {
             if (fmds[i].getManagement() != FieldMetaData.MANAGE_PERSISTENT)
                 continue;
+
             Object cur, attached;
             switch (fmds[i].getDeclaredTypeCode()) {
                 case JavaTypes.PC:
@@ -201,6 +216,7 @@ class VersionAttachStrategy extends AttachStrategy implements DetachState {
                 default:
                     continue;
             }
+
             if (cur != attached)
                 sm.settingObjectField(sm.getPersistenceCapable(), i,
                     cur, attached, StateManager.SET_REMOTE);
@@ -217,6 +233,7 @@ class VersionAttachStrategy extends AttachStrategy implements DetachState {
         Object attached = manager.getAttachedCopy(pc);
         if (attached != null)
             return attached;
+
         OpenJPAStateManager into = manager.getBroker().getStateManager(pc);
         PersistenceCapable intoPC = (into == null) ? null
             : into.getPersistenceCapable();
@@ -232,6 +249,7 @@ class VersionAttachStrategy extends AttachStrategy implements DetachState {
         FieldMetaData fmd, Object[] arr) {
         if (arr == null)
             return null;
+
         for (int i = 0; i < arr.length; i++)
             arr[i] = attachInPlace(manager, sm, fmd.getElement(), arr[i]);
         return arr;
@@ -244,6 +262,7 @@ class VersionAttachStrategy extends AttachStrategy implements DetachState {
         StateManagerImpl sm, FieldMetaData fmd, Collection coll) {
         if (coll == null || coll.isEmpty())
             return coll;
+
         // copy if elements embedded or contains detached, which will mean
         // we'll have to copy the existing elements
         Collection copy = null;
@@ -257,6 +276,7 @@ class VersionAttachStrategy extends AttachStrategy implements DetachState {
                 }
             }
         }
+
         Object attached;
         for (Iterator itr = coll.iterator(); itr.hasNext();) {
             attached = attachInPlace(manager, sm, fmd.getElement(),
@@ -268,16 +288,18 @@ class VersionAttachStrategy extends AttachStrategy implements DetachState {
     }
 
     /**
-     * Attach the given map.
+     *	Attach the given map.
      */
     private Map attachInPlace(AttachManager manager, StateManagerImpl sm,
         FieldMetaData fmd, Map map) {
         if (map == null || map.isEmpty())
             return map;
+
         Map copy = null;
         Map.Entry entry;
         boolean keyPC = fmd.getKey().isDeclaredTypePC();
         boolean valPC = fmd.getElement().isDeclaredTypePC();
+
         // copy if embedded pcs or detached pcs, which will require us to
         // copy elements
         if (fmd.getKey().isEmbeddedPC() || fmd.getElement().isEmbeddedPC())
@@ -293,6 +315,7 @@ class VersionAttachStrategy extends AttachStrategy implements DetachState {
                 }
             }
         }
+
         Object key, val;
         for (Iterator itr = map.entrySet().iterator(); itr.hasNext();) {
             entry = (Map.Entry) itr.next();
@@ -306,5 +329,5 @@ class VersionAttachStrategy extends AttachStrategy implements DetachState {
                 copy.put(key, val);
         }
         return (copy == null) ? map : copy;
-    }
+	}
 }

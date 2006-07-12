@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -24,23 +27,27 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataDefaults;
 
 /**
- * Manager that can be used to track and notify listeners on lifecycle events.
- * This class is optimized for event firing rather than for adding and
- * removing listeners, which are O(n) operations. This class also does not
+ * <p>Manager that can be used to track and notify listeners on lifecycle
+ * events.</p>
+ * <p/>
+ * <p>This class is optimized for event firing rather than for adding and
+ * removing listeners, which are O(n) operations.  This class also does not
  * maintain perfect set semantics for listeners; it is possible to wind up
  * having the same listener invoked multiple times for a single event if it
  * is added to this manager multiple times with different classes, or with
- * a base class and its subclass.
+ * a base class and its subclass.</p>
  *
  * @author Steve Kim
  * @author Abe White
- * @nojavadoc
  * @since 3.3
+ * @nojavadoc
  */
-public class LifecycleEventManager implements CallbackModes {
+public class LifecycleEventManager
+    implements CallbackModes {
 
     private static final Exception[] EMPTY_EXCEPTIONS = new Exception[0];
-    private Map _classListeners = null; // class -> listener list
+
+    private Map _classListeners = null;    // class -> listener list
     private ListenerList _listeners = null;
     private List _addListeners = new LinkedList();
     private List _remListeners = new LinkedList();
@@ -49,7 +56,7 @@ public class LifecycleEventManager implements CallbackModes {
     private boolean _fail = false;
 
     /**
-     * Register a lifecycle listener for the given classes. If the classes
+     * Register a lifecycle listener for the given classes.  If the classes
      * array is null, register for all classes.
      */
     public synchronized void addListener(Object listener, Class[] classes) {
@@ -62,12 +69,14 @@ public class LifecycleEventManager implements CallbackModes {
             _addListeners.add(classes);
             return;
         }
+
         if (classes == null) {
             if (_listeners == null)
                 _listeners = new ListenerList(5);
             _listeners.add(listener);
             return;
         }
+
         if (_classListeners == null)
             _classListeners = new HashMap();
         ListenerList listeners;
@@ -89,6 +98,7 @@ public class LifecycleEventManager implements CallbackModes {
             _remListeners.add(listener);
             return;
         }
+
         if (_listeners != null && _listeners.remove(listener))
             return;
         if (_classListeners != null) {
@@ -225,7 +235,8 @@ public class LifecycleEventManager implements CallbackModes {
     /**
      * Fire lifecycle event to all registered listeners without an argument.
      */
-    public Exception[] fireEvent(Object source, ClassMetaData meta, int type) {
+    public Exception[] fireEvent(Object source,
+        ClassMetaData meta, int type) {
         return fireEvent(source, null, meta, type);
     }
 
@@ -239,14 +250,18 @@ public class LifecycleEventManager implements CallbackModes {
         List exceptions = (reentrant) ? new LinkedList() : _exceps;
         MetaDataDefaults def = meta.getRepository().getMetaDataFactory().
             getDefaults();
+
         int mode = meta.getRepository().getMetaDataFactory().
             getDefaults().getCallbackMode();
         boolean callbacks = def.getCallbacksBeforeListeners(type);
         boolean failFast = (def.getCallbackMode() & CALLBACK_FAIL_FAST) != 0;
+
         if (callbacks)
             makeCallbacks(source, related, meta, type, failFast, exceptions);
+
         LifecycleEvent ev = (LifecycleEvent) fireEvent(null, source, related,
             type, _listeners, false, failFast, exceptions);
+
         if (_classListeners != null) {
             Class c = source == null ? meta.getDescribedType() :
                 source.getClass();
@@ -257,20 +272,25 @@ public class LifecycleEventManager implements CallbackModes {
                 c = c.getSuperclass();
             } while (c != null && c != Object.class);
         }
+
         // make system listeners
         if (!meta.getLifecycleMetaData().getIgnoreSystemListeners()) {
             ListenerList system = meta.getRepository().getSystemListeners();
             fireEvent(ev, source, related, type, system, false, failFast,
                 exceptions);
         }
+
         if (!callbacks)
             makeCallbacks(source, related, meta, type, failFast, exceptions);
+
         // create return array before clearing exceptions
         Exception[] ret;
         if (exceptions.isEmpty())
             ret = EMPTY_EXCEPTIONS;
-        else ret = (Exception[]) exceptions.toArray
-            (new Exception[exceptions.size()]);
+        else
+            ret = (Exception[]) exceptions.toArray
+                (new Exception[exceptions.size()]);
+
         // if this wasn't a reentrant call, catch up with calls to add
         // and remove listeners made while firing
         if (!reentrant) {
@@ -300,7 +320,8 @@ public class LifecycleEventManager implements CallbackModes {
         for (int i = 0; !_fail && i < callbacks.length; i++) {
             try {
                 callbacks[i].makeCallback(source, related, type);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 exceptions.add(e);
                 if (failFast)
                     _fail = true;
@@ -310,13 +331,14 @@ public class LifecycleEventManager implements CallbackModes {
 
     /**
      * Fire an event with the given source and type to the given list of
-     * listeners. The event may have already been constructed.
+     * listeners.  The event may have already been constructed.
      */
     private Object fireEvent(LifecycleEvent ev, Object source, Object rel,
         int type, ListenerList listeners, boolean mock, boolean failFast,
         List exceptions) {
         if (listeners == null || !listeners.hasListeners(type))
             return null;
+
         Object listener;
         boolean responds;
         for (int i = 0, size = listeners.size(); !_fail && i < size; i++) {
@@ -327,7 +349,9 @@ public class LifecycleEventManager implements CallbackModes {
                 responds = ((ListenerAdapter) listener).respondsTo(type);
                 if (!responds)
                     continue;
-            } else responds = false;
+            } else
+                responds = false;
+
             try {
                 switch (type) {
                     case LifecycleEvent.BEFORE_CLEAR:
@@ -339,7 +363,8 @@ public class LifecycleEventManager implements CallbackModes {
                                 ev = new LifecycleEvent(source, type);
                             if (type == LifecycleEvent.BEFORE_CLEAR)
                                 ((ClearListener) listener).beforeClear(ev);
-                            else ((ClearListener) listener).afterClear(ev);
+                            else
+                                ((ClearListener) listener).afterClear(ev);
                         }
                         break;
                     case LifecycleEvent.BEFORE_PERSIST:
@@ -351,7 +376,8 @@ public class LifecycleEventManager implements CallbackModes {
                                 ev = new LifecycleEvent(source, type);
                             if (type == LifecycleEvent.BEFORE_PERSIST)
                                 ((PersistListener) listener).beforePersist(ev);
-                            else ((PersistListener) listener).afterPersist(ev);
+                            else
+                                ((PersistListener) listener).afterPersist(ev);
                         }
                         break;
                     case LifecycleEvent.BEFORE_DELETE:
@@ -363,7 +389,8 @@ public class LifecycleEventManager implements CallbackModes {
                                 ev = new LifecycleEvent(source, type);
                             if (type == LifecycleEvent.BEFORE_DELETE)
                                 ((DeleteListener) listener).beforeDelete(ev);
-                            else ((DeleteListener) listener).afterDelete(ev);
+                            else
+                                ((DeleteListener) listener).afterDelete(ev);
                         }
                         break;
                     case LifecycleEvent.BEFORE_DIRTY:
@@ -402,7 +429,8 @@ public class LifecycleEventManager implements CallbackModes {
                                 ev = new LifecycleEvent(source, type);
                             if (type == LifecycleEvent.AFTER_LOAD)
                                 ((LoadListener) listener).afterLoad(ev);
-                            else ((LoadListener) listener).afterRefresh(ev);
+                            else
+                                ((LoadListener) listener).afterRefresh(ev);
                         }
                         break;
                     case LifecycleEvent.BEFORE_STORE:
@@ -414,7 +442,8 @@ public class LifecycleEventManager implements CallbackModes {
                                 ev = new LifecycleEvent(source, type);
                             if (type == LifecycleEvent.BEFORE_STORE)
                                 ((StoreListener) listener).beforeStore(ev);
-                            else ((StoreListener) listener).afterStore(ev);
+                            else
+                                ((StoreListener) listener).afterStore(ev);
                         }
                         break;
                     case LifecycleEvent.BEFORE_DETACH:
@@ -426,7 +455,8 @@ public class LifecycleEventManager implements CallbackModes {
                                 ev = new LifecycleEvent(source, rel, type);
                             if (type == LifecycleEvent.BEFORE_DETACH)
                                 ((DetachListener) listener).beforeDetach(ev);
-                            else ((DetachListener) listener).afterDetach(ev);
+                            else
+                                ((DetachListener) listener).afterDetach(ev);
                         }
                         break;
                     case LifecycleEvent.BEFORE_ATTACH:
@@ -438,11 +468,13 @@ public class LifecycleEventManager implements CallbackModes {
                                 ev = new LifecycleEvent(source, rel, type);
                             if (type == LifecycleEvent.BEFORE_ATTACH)
                                 ((AttachListener) listener).beforeAttach(ev);
-                            else ((AttachListener) listener).afterAttach(ev);
+                            else
+                                ((AttachListener) listener).afterAttach(ev);
                         }
                         break;
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 exceptions.add(e);
                 if (failFast)
                     _fail = true;
@@ -467,10 +499,11 @@ public class LifecycleEventManager implements CallbackModes {
     }
 
     /**
-     * Extended list that tracks what event types its elements care about.
-     * Maintains set semantics as well.
+     *	Extended list that tracks what event types its elements care about.
+     *	Maintains set semantics as well.
      */
-    public static class ListenerList extends ArrayList {
+    public static class ListenerList
+        extends ArrayList {
 
         private int _types = 0;
 
@@ -498,6 +531,7 @@ public class LifecycleEventManager implements CallbackModes {
         public boolean remove(Object listener) {
             if (!super.remove(listener))
                 return false;
+
             // recompute types mask
             _types = 0;
             for (int i = 0; i < size(); i++)
@@ -506,7 +540,7 @@ public class LifecycleEventManager implements CallbackModes {
         }
 
         /**
-         * Return a mask of the event types the given listener processes.
+         *	Return a mask of the event types the given listener processes.
          */
         private static int getEventTypes(Object listener) {
             int types = 0;
@@ -517,6 +551,7 @@ public class LifecycleEventManager implements CallbackModes {
                         types |= 2 << LifecycleEvent.ALL_EVENTS[i];
                 return types;
             }
+
             if (listener instanceof PersistListener)
                 types |= 2 << LifecycleEvent.AFTER_PERSIST;
             if (listener instanceof ClearListener) {
@@ -546,8 +581,8 @@ public class LifecycleEventManager implements CallbackModes {
             if (listener instanceof AttachListener) {
                 types |= 2 << LifecycleEvent.BEFORE_ATTACH;
                 types |= 2 << LifecycleEvent.AFTER_ATTACH;
-            }
-            return types;
-        }
-    }
+			}
+			return types;
+		}
+	}
 }

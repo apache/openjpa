@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -31,17 +34,19 @@ import org.apache.openjpa.util.Proxy;
 import org.apache.openjpa.util.UnsupportedException;
 
 /**
- * Internal state manager for detached instances. Does not fully
- * implement {@link OpenJPAStateManager} contract to allow for serialization.
+ * <p>Internal state manager for detached instances.  Does not fully
+ * implement {@link OpenJPAStateManager} contract to allow for serialization.</p>
  *
  * @author Steve Kim
  * @nojavadoc
  */
-public class DetachedStateManager extends AttachStrategy
+public class DetachedStateManager
+    extends AttachStrategy
     implements OpenJPAStateManager, Serializable {
 
     private static final Localizer _loc = Localizer.forPackage
         (DetachedStateManager.class);
+
     private final PersistenceCapable _pc;
     private final boolean _embedded;
     private final boolean _access;
@@ -54,12 +59,12 @@ public class DetachedStateManager extends AttachStrategy
     /**
      * Constructor.
      *
-     * @param pc            the managed instance
-     * @param sm            the instance's state manager
-     * @param load          the set of detached field indexes
-     * @param access        whether to allow access to unloaded fields
-     * @param multithreaded whether the instance will be used concurrently
-     *                      by multiple threads
+     * @param    pc                the managed instance
+     * @param    sm                the instance's state manager
+     * @param    load            the set of detached field indexes
+     * @param    access            whether to allow access to unloaded fields
+     * @param    multithreaded    whether the instance will be used concurrently
+     * by multiple threads
      */
     public DetachedStateManager(PersistenceCapable pc, OpenJPAStateManager sm,
         BitSet load, boolean access, boolean multithreaded) {
@@ -72,12 +77,14 @@ public class DetachedStateManager extends AttachStrategy
         _version = sm.getVersion();
         if (multithreaded)
             _lock = new ReentrantLock();
-        else _lock = null;
+        else
+            _lock = null;
     }
 
     /////////////////////////////////
     // AttachStrategy implementation
     /////////////////////////////////
+
     public Object attach(AttachManager manager, Object toAttach,
         ClassMetaData meta, PersistenceCapable into, OpenJPAStateManager owner,
         ValueMetaData ownerMeta) {
@@ -93,7 +100,9 @@ public class DetachedStateManager extends AttachStrategy
         }
         PersistenceCapable pc = sm.getPersistenceCapable();
         manager.setAttachedCopy(toAttach, pc);
+
         manager.fireBeforeAttach(toAttach, meta);
+
         // pre-load for efficiency: current field values for restore, dependent
         // for delete
         FieldMetaData[] fields = meta.getFields();
@@ -103,6 +112,7 @@ public class DetachedStateManager extends AttachStrategy
             for (int i = 0; i < fields.length; i++) {
                 if (!load.get(i))
                     continue;
+
                 switch (fields[i].getDeclaredTypeCode()) {
                     case JavaTypes.ARRAY:
                     case JavaTypes.COLLECTION:
@@ -126,10 +136,12 @@ public class DetachedStateManager extends AttachStrategy
                             load.set(i);
                 }
             }
+
             sm.loadFields(load, null, broker.getFetchConfiguration().
                 getWriteLockLevel(), null, true);
         }
         sm.setVersion(_version);
+
         BitSet loaded = sm.getLoaded();
         int set = StateManager.SET_ATTACH;
         for (int i = 0; i < fields.length; i++) {
@@ -138,61 +150,71 @@ public class DetachedStateManager extends AttachStrategy
             // don't reload already loaded non-mutable objects
             if (!_dirty.get(i) && loaded.get(i) && ignoreLoaded(fields[i]))
                 continue;
+
             provideField(i);
             switch (fields[i].getDeclaredTypeCode()) {
                 case JavaTypes.BOOLEAN:
                     if (_dirty.get(i))
                         sm.settingBooleanField(pc, i, (!loaded.get(i)) ? false
                             : sm.fetchBooleanField(i), longval == 1, set);
-                    else sm.storeBooleanField(i, longval == 1);
+                    else
+                        sm.storeBooleanField(i, longval == 1);
                     break;
                 case JavaTypes.BYTE:
                     if (_dirty.get(i))
                         sm.settingByteField(pc, i, (!loaded.get(i)) ? (byte) 0
                             : sm.fetchByteField(i), (byte) longval, set);
-                    else sm.storeByteField(i, (byte) longval);
+                    else
+                        sm.storeByteField(i, (byte) longval);
                     break;
                 case JavaTypes.CHAR:
                     if (_dirty.get(i))
                         sm.settingCharField(pc, i, (!loaded.get(i)) ? (char) 0
                             : sm.fetchCharField(i), (char) longval, set);
-                    else sm.storeCharField(i, (char) longval);
+                    else
+                        sm.storeCharField(i, (char) longval);
                     break;
                 case JavaTypes.INT:
                     if (_dirty.get(i))
                         sm.settingIntField(pc, i, (!loaded.get(i)) ? 0
                             : sm.fetchIntField(i), (int) longval, set);
-                    else sm.storeIntField(i, (int) longval);
+                    else
+                        sm.storeIntField(i, (int) longval);
                     break;
                 case JavaTypes.LONG:
                     if (_dirty.get(i))
                         sm.settingLongField(pc, i, (!loaded.get(i)) ? 0L
                             : sm.fetchLongField(i), longval, set);
-                    else sm.storeLongField(i, longval);
+                    else
+                        sm.storeLongField(i, longval);
                     break;
                 case JavaTypes.SHORT:
                     if (_dirty.get(i))
                         sm.settingShortField(pc, i, (!loaded.get(i)) ? (short) 0
                             : sm.fetchShortField(i), (short) longval, set);
-                    else sm.storeShortField(i, (short) longval);
+                    else
+                        sm.storeShortField(i, (short) longval);
                     break;
                 case JavaTypes.FLOAT:
                     if (_dirty.get(i))
                         sm.settingFloatField(pc, i, (!loaded.get(i)) ? 0F
                             : sm.fetchFloatField(i), (float) dblval, set);
-                    else sm.storeFloatField(i, (float) dblval);
+                    else
+                        sm.storeFloatField(i, (float) dblval);
                     break;
                 case JavaTypes.DOUBLE:
                     if (_dirty.get(i))
                         sm.settingDoubleField(pc, i, (!loaded.get(i)) ? 0D
                             : sm.fetchDoubleField(i), dblval, set);
-                    else sm.storeDoubleField(i, dblval);
+                    else
+                        sm.storeDoubleField(i, dblval);
                     break;
                 case JavaTypes.STRING:
                     if (_dirty.get(i))
                         sm.settingStringField(pc, i, (!loaded.get(i)) ? null
                             : sm.fetchStringField(i), (String) objval, set);
-                    else sm.storeStringField(i, (String) objval);
+                    else
+                        sm.storeStringField(i, (String) objval);
                     objval = null;
                     break;
                 case JavaTypes.PC:
@@ -209,7 +231,8 @@ public class DetachedStateManager extends AttachStrategy
                     if (_dirty.get(i))
                         sm.settingObjectField(pc, i, (!loaded.get(i)) ? null
                             : sm.fetchObjectField(i), objval, set);
-                    else sm.storeObjectField(i, objval);
+                    else
+                        sm.storeObjectField(i, objval);
                     objval = null;
                     break;
                 case JavaTypes.COLLECTION:
@@ -220,7 +243,8 @@ public class DetachedStateManager extends AttachStrategy
                     if (_dirty.get(i))
                         sm.settingObjectField(pc, i, (!loaded.get(i)) ? null
                             : sm.fetchObjectField(i), coll, set);
-                    else sm.storeObjectField(i, coll);
+                    else
+                        sm.storeObjectField(i, coll);
                     break;
                 case JavaTypes.MAP:
                     Map map = (Map) objval;
@@ -230,13 +254,15 @@ public class DetachedStateManager extends AttachStrategy
                     if (_dirty.get(i))
                         sm.settingObjectField(pc, i, (!loaded.get(i)) ? null
                             : sm.fetchObjectField(i), map, set);
-                    else sm.storeObjectField(i, map);
+                    else
+                        sm.storeObjectField(i, map);
                     break;
                 default:
                     if (_dirty.get(i))
                         sm.settingObjectField(pc, i, (!loaded.get(i)) ? null
                             : sm.fetchObjectField(i), objval, set);
-                    else sm.storeObjectField(i, objval);
+                    else
+                        sm.storeObjectField(i, objval);
                     objval = null;
             }
         }
@@ -288,6 +314,7 @@ public class DetachedStateManager extends AttachStrategy
     ///////////////////////////////
     // StateManager implementation
     ///////////////////////////////
+
     public Object getGenericContext() {
         return null;
     }
@@ -359,7 +386,8 @@ public class DetachedStateManager extends AttachStrategy
         return false;
     }
 
-    public boolean writeDetached(ObjectOutput out) throws IOException {
+    public boolean writeDetached(ObjectOutput out)
+        throws IOException {
         out.writeObject(_pc.pcGetDetachedState());
         out.writeObject(this);
         return false;
@@ -631,6 +659,7 @@ public class DetachedStateManager extends AttachStrategy
     ///////////////////////////////////
     // OpenJPAStateManager implementation
     ///////////////////////////////////
+
     public void initialize(Class forType, PCState state) {
         throw new UnsupportedOperationException();
     }
@@ -897,5 +926,5 @@ public class DetachedStateManager extends AttachStrategy
     public void unlock() {
         if (_lock != null)
             _lock.unlock();
-    }
+	}
 }

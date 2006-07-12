@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -33,20 +36,27 @@ import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
- * Tool for generating default metadata.
+ * <p>Tool for generating default metadata.</p>
  *
- * @author Abe White
  * @since 3.0
+ * @author Abe White
  */
-public class MetaDataTool implements MetaDataModes {
+public class MetaDataTool
+    implements MetaDataModes {
 
     public static final String ACTION_ADD = "add";
     public static final String ACTION_DROP = "drop";
+
     public static final String[] ACTIONS = new String[]{
-        ACTION_ADD, ACTION_DROP, };
+        ACTION_ADD,
+        ACTION_DROP,
+    };
+
     private static Localizer _loc = Localizer.forPackage(MetaDataTool.class);
+
     private final OpenJPAConfiguration _conf;
     private final String _action;
+
     private final Set _drop;
     private MetaDataRepository _repos = null;
     private File _file = null;
@@ -54,14 +64,16 @@ public class MetaDataTool implements MetaDataModes {
     private boolean _flush = false;
 
     /**
-     * Constructor. Supply configuration and action.
+     * Constructor.  Supply configuration and action.
      */
     public MetaDataTool(OpenJPAConfiguration conf, String action) {
         _conf = conf;
         _action = (action == null) ? ACTION_ADD : action;
+
         if (ACTION_DROP.equals(_action))
             _drop = new HashSet();
-        else _drop = null;
+        else
+            _drop = null;
     }
 
     /**
@@ -128,7 +140,7 @@ public class MetaDataTool implements MetaDataModes {
     }
 
     /**
-     * Reset state. This is called automatically after every {@link #record}.
+     * Reset state.  This is called automatically after every {@link #record}.
      */
     public void clear() {
         _repos = null;
@@ -147,7 +159,8 @@ public class MetaDataTool implements MetaDataModes {
             _drop.add(cls);
         else if (ACTION_ADD.equals(_action))
             add(cls);
-        else throw new IllegalArgumentException("action == " + _action);
+        else
+            throw new IllegalArgumentException("action == " + _action);
     }
 
     private void add(Class cls) {
@@ -179,8 +192,10 @@ public class MetaDataTool implements MetaDataModes {
             }
             if (!_flush)
                 return;
+
             ClassMetaData[] metas = repos.getMetaDatas();
             Map output = null;
+
             // if we're outputting to stream, set all metas to same file so
             // they get placed in single string
             if (_writer != null) {
@@ -206,32 +221,35 @@ public class MetaDataTool implements MetaDataModes {
     }
 
     /**
-     * Usage: java org.apache.openjpa.meta.MetaDataTool [option]*
+     * <p>Usage: java org.apache.openjpa.meta.MetaDataTool [option]*
      * [-action/-a &lt;add | drop&gt;]
-     * &lt;class name | .java file | .class file&gt;+
-     * Where the following options are recognized.
+     * &lt;class name | .java file | .class file&gt;+</p>
+     * <p/>
+     * <p>Where the following options are recognized.
      * <ul>
      * <li><i>-properties/-p &lt;properties file or resource&gt;</i>: The path
      * or resource name of a OpenJPA properties file containing information
-     * such as the license key data as outlined in
-     * {@link OpenJPAConfiguration}. Optional.</li>
+     * such as the license key	data as outlined in
+     * {@link OpenJPAConfiguration}.  Optional.</li>
      * <li><i>-&lt;property name&gt; &lt;property value&gt;</i>: All bean
      * properties of the OpenJPA {@link OpenJPAConfiguration} can be set by
-     * using their names and supplying a value. For example:
+     * using their	names and supplying a value.  For example:
      * <code>-licenseKey adslfja83r3lkadf</code></li>
      * <li><i>-file/-f &lt;stdout | output file or resource&gt;</i>: The path
      * or resource name of a file the metadata should be generated to.
      * If the given file already contains metadata, the generated
      * metadata will be merged into the existing document.</li>
-     * </ul>
-     * The available actions are:
+     * </ul></p>
+     * <p/>
+     * <p>The available actions are:
      * <ul>
-     * <li><i>add</i>: Generate default metadata for the given classes. This
+     * <li><i>add</i>: Generate default metadata for the given classes.  This
      * is the default action.</li>
      * <li><i>drop</i>: Remove existing metadata for the given classes.</li>
-     * </ul>
+     * </ul></p>
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args)
+        throws IOException {
         Options opts = new Options();
         args = opts.setFromCmdLine(args);
         OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
@@ -245,13 +263,15 @@ public class MetaDataTool implements MetaDataModes {
     }
 
     /**
-     * Run the tool. Returns false if any invalid options were given.
+     * Run the tool.  Returns false if any invalid options were given.
      */
     public static boolean run(OpenJPAConfiguration conf, String[] args,
-        Options opts) throws IOException {
+        Options opts)
+        throws IOException {
         if (args.length == 0 || opts.containsKey("help")
             || opts.containsKey("-help"))
             return false;
+
         Flags flags = new Flags();
         flags.action = opts.removeProperty("action", "a", flags.action);
         String fileName = opts.removeProperty("file", "f", null);
@@ -262,16 +282,18 @@ public class MetaDataTool implements MetaDataModes {
             flags.writer = new PrintWriter(System.err);
             fileName = null;
         }
+
         Configurations.populateConfiguration(conf, opts);
         ClassLoader loader = conf.getClassResolverInstance().
             getClassLoader(MetaDataTool.class, null);
+
         if (fileName != null)
             flags.file = Files.getFile(fileName, loader);
         return run(conf, args, flags, null, loader);
     }
 
     /**
-     * Run the tool. Return false if invalid options were given. The given
+     * Run the tool.  Return false if invalid options were given.  The given
      * repository may be null.
      */
     public static boolean run(OpenJPAConfiguration conf, String[] args,
@@ -281,6 +303,7 @@ public class MetaDataTool implements MetaDataModes {
             return false;
         if (flags.action == null)
             flags.action = ACTION_ADD;
+
         MetaDataTool tool = new MetaDataTool(conf, flags.action);
         if (repos != null) {
             MetaDataFactory factory = repos.getMetaDataFactory();
@@ -292,6 +315,7 @@ public class MetaDataTool implements MetaDataModes {
             tool.setFile(flags.file);
         if (flags.writer != null)
             tool.setWriter(flags.writer);
+
         Log log = conf.getLog(OpenJPAConfiguration.LOG_TOOL);
         ClassArgParser cap = conf.getMetaDataRepository().
             getMetaDataFactory().newClassArgParser();
@@ -303,23 +327,25 @@ public class MetaDataTool implements MetaDataModes {
                 log.info(_loc.get("tool-running", classes[j], flags.action));
                 try {
                     tool.run(classes[j]);
-                } catch (IllegalArgumentException iae) {
+                }
+                catch (IllegalArgumentException iae) {
                     return false;
                 }
             }
         }
+
         log.info(_loc.get("tool-record"));
         tool.record();
         return true;
     }
 
     /**
-     * Run flags.
+     *	Run flags.
      */
     public static class Flags {
 
         public String action = ACTION_ADD;
         public File file = null;
-        public Writer writer = null;
-    }
+		public Writer writer = null;
+	}
 }

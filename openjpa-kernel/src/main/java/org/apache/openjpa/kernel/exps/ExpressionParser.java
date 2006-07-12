@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -20,12 +23,13 @@ import org.apache.openjpa.meta.ClassMetaData;
 /**
  * Parser for query languages that will be used by a {@link ExpressionQuery}.
  * A QueryParser is responsible for translating from some string-based query
- * language into {@link Expression}s. Parsers should be stateless.
+ * language into {@link Expression}s.  Parsers should be stateless.
  *
  * @author Marc Prud'hommeaux
  * @nojavadoc
  */
-public interface ExpressionParser extends Serializable {
+public interface ExpressionParser
+    extends Serializable {
 
     /**
      * Return a string key describing the language that this instance parses.
@@ -50,7 +54,7 @@ public interface ExpressionParser extends Serializable {
         ExpressionFactory factory, ClassMetaData candidate);
 
     /**
-     * Parse the given value clauses.
+     *	Parse the given value clauses.
      */
     public Value[] eval(String[] vals, ExpressionStoreQuery query,
         ExpressionFactory factory, ClassMetaData candidate);

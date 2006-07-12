@@ -63,9 +63,9 @@ public interface MetaDataParser {
     /**
      * Parse the metadata in the given reader.
      *
-     * @param content    reader containing the metadata to parse
+     * @param content reader containing the metadata to parse
      * @param sourceName the name of the source being parsed, for use
-     *                   in error messages
+     * in error messages
      */
     public void parse(Reader content, String sourceName) throws IOException;
 

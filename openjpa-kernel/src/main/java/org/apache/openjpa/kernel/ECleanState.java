@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -13,14 +16,16 @@
 package org.apache.openjpa.kernel;
 
 /**
- * Lifecycle state.
- * Represents an embedded instance that is managed by a StateManager and
- * may be participating in the current transaction, but has not yet been
- * modified.
+ * <p>Lifecycle state.</p>
+ * <p/>
+ * <p>Represents an embedded instance that is managed by a StateManager and
+ * may be participating in the current	transaction, but has not yet been
+ * modified.</p>
  *
  * @author Abe White
  */
-class ECleanState extends PCState {
+class ECleanState
+    extends PCState {
 
     void initialize(StateManagerImpl context) {
         context.setDirty(false);

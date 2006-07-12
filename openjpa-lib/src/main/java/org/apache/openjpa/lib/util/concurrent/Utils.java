@@ -178,14 +178,14 @@ public final class Utils {
      * must ensure that the signal is redirected to another waiting thread, if
      * there is one.
      *
-     * @param cond         the condition to wait for
+     * @param cond the condition to wait for
      * @param nanosTimeout the maximum time to wait, in nanoseconds
      * @return A value less than or equal to zero if the wait has
      *         timed out; otherwise an estimate, that
      *         is strictly less than the <tt>nanosTimeout</tt> argument,
      *         of the time still remaining when this method returned.
      * @throws InterruptedException if the current thread is interrupted(and
-     *                              interruption of thread suspension is supported).
+     * interruption of thread suspension is supported).
      */
     public static long awaitNanos(Condition cond, long nanosTimeout)
         throws InterruptedException {

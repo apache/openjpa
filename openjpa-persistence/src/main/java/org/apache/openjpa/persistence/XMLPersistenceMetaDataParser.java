@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -59,13 +62,14 @@ import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.UnsupportedException;
 
 /**
- * Custom SAX parser used by the system to quickly parse persistence i
- * metadata files.
+ * <p>Custom SAX parser used by the system to quickly parse persistence i
+ * metadata files.</p>
  *
  * @author Steve Kim
  * @nojavadoc
  */
-public class XMLPersistenceMetaDataParser extends CFMetaDataParser
+public class XMLPersistenceMetaDataParser
+    extends CFMetaDataParser
     implements PersistenceMetaDataFactory.Parser {
 
     // parse constants
@@ -81,6 +85,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     protected static final String ELEM_CASCADE_REF = "cascade-refresh";
     protected static final String ELEM_PU_META = "persistence-unit-metadata";
     protected static final String ELEM_PU_DEF = "persistence-unit-defaults";
+
     private static final Map<String, Object> _elems =
         new HashMap<String, Object>();
 
@@ -97,6 +102,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         _elems.put(ELEM_CASCADE_REF, ELEM_CASCADE_REF);
         _elems.put(ELEM_PU_META, ELEM_PU_META);
         _elems.put(ELEM_PU_DEF, ELEM_PU_DEF);
+
         _elems.put("entity-listeners", ENTITY_LISTENERS);
         _elems.put("pre-persist", PRE_PERSIST);
         _elems.put("post-persist", POST_PERSIST);
@@ -108,11 +114,14 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         _elems.put("exclude-default-listeners", EXCLUDE_DEFAULT_LISTENERS);
         _elems.put("exclude-superclass-listeners",
             EXCLUDE_SUPERCLASS_LISTENERS);
+
         _elems.put("named-query", QUERY);
         _elems.put("named-native-query", NATIVE_QUERY);
         _elems.put("query-hint", QUERY_HINT);
+
         _elems.put("flush-mode", FLUSH_MODE);
         _elems.put("sequence-generator", SEQ_GENERATOR);
+
         _elems.put("id", ID);
         _elems.put("id-class", ID_CLASS);
         _elems.put("embedded-id", EMBEDDED_ID);
@@ -121,6 +130,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         _elems.put("map-key", MAP_KEY);
         _elems.put("order-by", ORDER_BY);
         _elems.put("lob", LOB);
+
         _elems.put("basic", BASIC);
         _elems.put("many-to-one", MANY_ONE);
         _elems.put("one-to-one", ONE_ONE);
@@ -132,14 +142,17 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
 
     private static final Localizer _loc = Localizer.forPackage
         (XMLPersistenceMetaDataParser.class);
+
     private final OpenJPAConfiguration _conf;
     private MetaDataRepository _repos = null;
     private AnnotationPersistenceMetaDataParser _parser = null;
     private ClassLoader _envLoader = null;
     private int _mode = MODE_NONE;
     private boolean _override = false;
+
     private final Stack _elements = new Stack();
     private final Stack _parents = new Stack();
+
     private Class _cls = null;
     private int _fieldPos = 0;
     private int _clsPos = 0;
@@ -147,6 +160,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     private PersistenceStrategy _strategy = null;
     private Set<CascadeType> _cascades = null;
     private Set<CascadeType> _pkgCascades = null;
+
     private Class _listener = null;
     private Collection<LifecycleCallbacks>[] _callbacks = null;
     private int[] _highs = null;
@@ -171,7 +185,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     }
 
     /**
-     * The annotation parser. When class is discovered in an XML file,
+     * The annotation parser.  When class is discovered in an XML file,
      * we first parse any annotations present, then override with the XML.
      */
     public AnnotationPersistenceMetaDataParser getAnnotationParser() {
@@ -179,7 +193,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     }
 
     /**
-     * The annotation parser. When class is discovered in an XML file,
+     * The annotation parser.  When class is discovered in an XML file,
      * we first parse any annotations present, then override with the XML.
      */
     public void setAnnotationParser(
@@ -188,7 +202,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     }
 
     /**
-     * Returns the repository for this parser. If none has been set, creates
+     * Returns the repository for this parser.  If none has been set, creates
      * a new repository and sets it.
      */
     public MetaDataRepository getRepository() {
@@ -239,7 +253,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
 
     /**
      * Whether to allow later parses of mapping information to override
-     * earlier information for the same class. Defaults to false. Useful
+     * earlier information for the same class.  Defaults to false.  Useful
      * when a tool is mapping a class, so that .jdo file partial mapping
      * information can be used even when mappings are stored in .orm files
      * or other locations.
@@ -250,7 +264,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
 
     /**
      * Whether to allow later parses of mapping information to override
-     * earlier information for the same class. Defaults to false. Useful
+     * earlier information for the same class.  Defaults to false.  Useful
      * when a tool is mapping a class, so that .jdo file partial mapping
      * information can be used even when mappings are stored in .orm files
      * or other locations.
@@ -260,7 +274,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     }
 
     /**
-     * The parse mode according to the expected document type. The
+     * The parse mode according to the expected document type.  The
      * mode constants act as bit flags, and therefore can be combined.
      */
     public int getMode() {
@@ -275,7 +289,8 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
             setMode(MODE_NONE);
         else if (on)
             setMode(_mode | mode);
-        else setMode(_mode & ~mode);
+        else
+            setMode(_mode & ~mode);
     }
 
     /**
@@ -315,6 +330,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     protected boolean isMappingOverrideMode() {
         return isMappingMode() || (_override && isMetaDataMode());
     }
+
     ///////////////
     // XML parsing
     ///////////////
@@ -334,7 +350,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     }
 
     /**
-     * Return the current element being parsed. May be a class metadata,
+     * Return the current element being parsed.  May be a class metadata,
      * field metadata, query metadata, etc.
      */
     protected Object currentElement() {
@@ -403,6 +419,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         _cls = null;
         _fieldPos = 0;
         _clsPos = 0;
+
         _access = ClassMetaData.ACCESS_UNKNOWN;
         _strategy = null;
         _listener = null;
@@ -456,13 +473,15 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
             || tag == ELEM_CASCADE_MER || tag == ELEM_CASCADE_REM
             || tag == ELEM_CASCADE_REF)
             ret = startCascade(tag, attrs);
+
         if (ret)
             _parents.push(tag);
         return ret;
     }
 
     @Override
-    protected void endSystemElement(String name) throws SAXException {
+    protected void endSystemElement(String name)
+        throws SAXException {
         Object tag = _elems.get(name);
         if (tag == null && isMappingOverrideMode())
             endSystemMappingElement(name);
@@ -485,6 +504,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
             endAccess();
         else if (tag == ELEM_LISTENER)
             endEntityListener();
+
         _parents.pop();
     }
 
@@ -501,7 +521,8 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     /**
      * Implement to parse a mapping element outside of any class.
      */
-    protected void endSystemMappingElement(String name) throws SAXException {
+    protected void endSystemMappingElement(String name)
+        throws SAXException {
     }
 
     @Override
@@ -587,13 +608,15 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
             || tag == ELEM_CASCADE_MER || tag == ELEM_CASCADE_REM
             || tag == ELEM_CASCADE_REF)
             ret = startCascade(tag, attrs);
+
         if (ret)
             _parents.push(tag);
         return ret;
     }
 
     @Override
-    protected void endClassElement(String name) throws SAXException {
+    protected void endClassElement(String name)
+        throws SAXException {
         Object tag = _elems.get(name);
         if (tag == null && isMappingOverrideMode())
             endClassMappingElement(name);
@@ -639,6 +662,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
             endAccess();
         else if (tag == ELEM_LISTENER)
             endEntityListener();
+
         _parents.pop();
     }
 
@@ -664,13 +688,15 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     /**
      * Implement to parse a mapping element within a class.
      */
-    protected void endClassMappingElement(String name) throws SAXException {
+    protected void endClassMappingElement(String name)
+        throws SAXException {
     }
 
     @Override
     protected boolean startClass(String elem, Attributes attrs)
         throws SAXException {
         super.startClass(elem, attrs);
+
         // query mode only?
         _cls = classForName(currentClassName());
         if (_mode == MODE_QUERY) {
@@ -678,9 +704,11 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
                 _parser.parse(_cls);
             return true;
         }
+
         Log log = getLog();
         if (log.isInfoEnabled())
             log.info(_loc.get("parse-class", _cls.getName()));
+
         MetaDataRepository repos = getRepository();
         ClassMetaData meta = repos.getCachedMetaData(_cls);
         if (meta != null
@@ -692,16 +720,19 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
             _cls = null;
             return false;
         }
+
         if (meta == null) {
             // add metadata for this type
             int access = toAccessType(attrs.getValue("access"), _access);
             meta = repos.addMetaData(_cls, access);
             meta.setEnvClassLoader(_envLoader);
             meta.setSourceMode(MODE_NONE);
+
             // parse annotations first so XML overrides them
             if (_parser != null)
                 _parser.parse(_cls);
         }
+
         boolean mappedSuper = "mapped-superclass".equals(elem);
         if (isMetaDataMode()) {
             meta.setSource(getSourceFile(), meta.SRC_XML);
@@ -717,6 +748,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
             startClassMapping(meta, mappedSuper, attrs);
         if (isQueryMode())
             meta.setSourceMode(MODE_QUERY, true);
+
         _clsPos++;
         _fieldPos = 0;
         addComments(meta);
@@ -725,7 +757,8 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     }
 
     @Override
-    protected void endClass(String elem) throws SAXException {
+    protected void endClass(String elem)
+        throws SAXException {
         if (_mode != MODE_QUERY) {
             ClassMetaData meta = (ClassMetaData) popElement();
             storeCallbacks(meta);
@@ -740,13 +773,15 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
      * Implement to add mapping attributes to class.
      */
     protected void startClassMapping(ClassMetaData mapping,
-        boolean mappedSuper, Attributes attrs) throws SAXException {
+        boolean mappedSuper, Attributes attrs)
+        throws SAXException {
     }
 
     /**
      * Implement to finalize class mapping.
      */
-    protected void endClassMapping(ClassMetaData mapping) throws SAXException {
+    protected void endClassMapping(ClassMetaData mapping)
+        throws SAXException {
     }
 
     /**
@@ -771,7 +806,8 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     /**
      * Parse flush-mode element.
      */
-    private boolean startFlushMode(Attributes attrs) throws SAXException {
+    private boolean startFlushMode(Attributes attrs)
+        throws SAXException {
         Log log = getLog();
         if (log.isWarnEnabled())
             log.warn(_loc.get("unsupported", "flush-mode", getSourceName()));
@@ -784,32 +820,40 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     protected boolean startSequenceGenerator(Attributes attrs) {
         if (!isMappingOverrideMode())
             return false;
+
         String name = attrs.getValue("name");
         Log log = getLog();
         if (log.isInfoEnabled())
             log.info(_loc.get("parse-sequence", name));
-        SequenceMetaData meta = getRepository().getCachedSequenceMetaData(name);
+
+        SequenceMetaData meta = getRepository().getCachedSequenceMetaData
+            (name);
         if (meta != null && log.isWarnEnabled())
             log.warn(_loc.get("override-sequence", name));
+
         meta = getRepository().addSequenceMetaData(name);
         String seq = attrs.getValue("sequence-name");
         String val = attrs.getValue("initial-value");
         int initial = val == null ? 1 : Integer.parseInt(val);
         val = attrs.getValue("allocation-size");
         int allocate = val == null ? 50 : Integer.parseInt(val);
+
         String clsName, props;
         if (seq == null || seq.indexOf('(') == -1) {
             clsName = SequenceMetaData.IMPL_NATIVE;
             props = null;
-        } else { // plugin
+        } else // plugin
+        {
             seq = null;
             clsName = Configurations.getClassName(seq);
             props = Configurations.getProperties(seq);
         }
+
         meta.setSequencePlugin(Configurations.getPlugin(clsName, props));
         meta.setSequence(seq);
         meta.setInitialValue(initial);
         meta.setAllocate(allocate);
+
         Object cur = currentElement();
         Object scope = (cur instanceof ClassMetaData)
             ? ((ClassMetaData) cur).getDescribedType() : null;
@@ -823,21 +867,24 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     /**
      * Parse id.
      */
-    protected boolean startId(Attributes attrs) throws SAXException {
+    protected boolean startId(Attributes attrs)
+        throws SAXException {
         FieldMetaData fmd = parseField(attrs);
         fmd.setExplicit(true);
         fmd.setPrimaryKey(true);
         return true;
     }
 
-    protected void endId() throws SAXException {
+    protected void endId()
+        throws SAXException {
         finishField();
     }
 
     /**
      * Parse embedded-id.
      */
-    protected boolean startEmbeddedId(Attributes attrs) throws SAXException {
+    protected boolean startEmbeddedId(Attributes attrs)
+        throws SAXException {
         FieldMetaData fmd = parseField(attrs);
         fmd.setExplicit(true);
         fmd.setPrimaryKey(true);
@@ -847,35 +894,41 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         return true;
     }
 
-    protected void endEmbeddedId() throws SAXException {
+    protected void endEmbeddedId()
+        throws SAXException {
         finishField();
     }
 
     /**
      * Parse id-class.
      */
-    protected boolean startIdClass(Attributes attrs) throws SAXException {
+    protected boolean startIdClass(Attributes attrs)
+        throws SAXException {
         if (!isMetaDataMode())
             return false;
+
         ClassMetaData meta = (ClassMetaData) currentElement();
         String cls = attrs.getValue("class");
         Class idCls = null;
         try {
             idCls = classForName(cls);
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             throw getException(_loc.get("invalid-id-class", meta, cls), t);
         }
         meta.setObjectIdType(idCls, true);
         return true;
     }
 
-    protected void endIdClass() throws SAXException {
+    protected void endIdClass()
+        throws SAXException {
     }
 
     /**
      * Parse lob.
      */
-    protected boolean startLob(Attributes attrs) throws SAXException {
+    protected boolean startLob(Attributes attrs)
+        throws SAXException {
         FieldMetaData fmd = (FieldMetaData) currentElement();
         if (fmd.getDeclaredTypeCode() != JavaTypes.STRING
             && fmd.getDeclaredType() != char[].class
@@ -886,7 +939,8 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         return true;
     }
 
-    protected void endLob() throws SAXException {
+    protected void endLob()
+        throws SAXException {
     }
 
     /**
@@ -896,8 +950,10 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         throws SAXException {
         if (!isMappingOverrideMode())
             return false;
+
         String strategy = attrs.getValue("strategy");
         String generator = attrs.getValue("generator");
+
         // TODO UUID_HEX / UUID_STRING
         FieldMetaData fmd = (FieldMetaData) currentElement();
         if (StringUtils.isEmpty(strategy) || "AUTO".equals(strategy))
@@ -905,14 +961,17 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         else if ("TABLE".equals(strategy) || "SEQUENCE".equals(strategy)) {
             if (StringUtils.isEmpty(generator))
                 fmd.setValueSequenceName(SequenceMetaData.NAME_SYSTEM);
-            else fmd.setValueSequenceName(generator);
+            else
+                fmd.setValueSequenceName(generator);
         } else if ("IDENTITY".equals(strategy))
             fmd.setValueStrategy(ValueStrategies.AUTOASSIGN);
-        else throw new UnsupportedException(strategy);
+        else
+            throw new UnsupportedException(strategy);
         return true;
     }
 
-    protected void endGeneratedValue() throws SAXException {
+    protected void endGeneratedValue()
+        throws SAXException {
     }
 
     /**
@@ -922,6 +981,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         throws SAXException {
         if (!isMetaDataMode())
             return false;
+
         Set<CascadeType> cascades = null;
         if (currentElement() instanceof FieldMetaData) {
             if (_cascades == null)
@@ -953,6 +1013,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
             cascades = _pkgCascades;
         if (cascades == null)
             return;
+
         ValueMetaData vmd = fmd;
         switch (_strategy) {
             case ONE_MANY:
@@ -981,7 +1042,8 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     /**
      * Parse common field attributes.
      */
-    private FieldMetaData parseField(Attributes attrs) throws SAXException {
+    private FieldMetaData parseField(Attributes attrs)
+        throws SAXException {
         ClassMetaData meta = (ClassMetaData) currentElement();
         String name = attrs.getValue("name");
         FieldMetaData field = meta.getDeclaredField(name);
@@ -1000,11 +1062,13 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
                     try {
                         member = type.getDeclaredMethod("get" + cap,
                             (Class[]) null); // varargs disambiguate
-                    } catch (Exception excep) {
+                    }
+                    catch (Exception excep) {
                         try {
                             member = type.getDeclaredMethod("is" + cap,
                                 (Class[]) null);
-                        } catch (Exception excep2) {
+                        }
+                        catch (Exception excep2) {
                             throw excep;
                         }
                     }
@@ -1013,9 +1077,11 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
                     member = meta.getDescribedType().getDeclaredField(name);
                     type = ((Field) member).getType();
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 throw getException(_loc.get("invalid-attr", name, meta), e);
             }
+
             if (field == null) {
                 field = meta.addDeclaredField(name, type);
                 PersistenceMetaDataDefaults.setCascadeNone(field);
@@ -1030,11 +1096,14 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
             PersistenceMetaDataDefaults.setCascadeNone(field.getKey());
             PersistenceMetaDataDefaults.setCascadeNone(field.getElement());
         }
+
         if (isMetaDataMode())
             field.setListingIndex(_fieldPos);
+
         _fieldPos++;
         pushElement(field);
         addComments(field);
+
         if (isMappingOverrideMode())
             startFieldMapping(field, attrs);
         return field;
@@ -1043,7 +1112,8 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     /**
      * Pops field element.
      */
-    private void finishField() throws SAXException {
+    private void finishField()
+        throws SAXException {
         FieldMetaData field = (FieldMetaData) popElement();
         setCascades(field);
         if (isMappingOverrideMode())
@@ -1052,29 +1122,32 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     }
 
     /**
-     * Implement to add field mapping data. Does nothing by default.
+     * Implement to add field mapping data.  Does nothing by default.
      */
     protected void startFieldMapping(FieldMetaData field, Attributes attrs)
         throws SAXException {
     }
 
     /**
-     * Implement to finalize field mapping. Does nothing by default.
+     * Implement to finalize field mapping.  Does nothing by default.
      */
-    protected void endFieldMapping(FieldMetaData field) throws SAXException {
+    protected void endFieldMapping(FieldMetaData field)
+        throws SAXException {
     }
 
     /**
      * Parse version.
      */
-    protected boolean startVersion(Attributes attrs) throws SAXException {
+    protected boolean startVersion(Attributes attrs)
+        throws SAXException {
         FieldMetaData fmd = parseField(attrs);
         fmd.setExplicit(true);
         fmd.setVersion(true);
         return true;
     }
 
-    protected void endVersion() throws SAXException {
+    protected void endVersion()
+        throws SAXException {
         finishField();
     }
 
@@ -1082,10 +1155,12 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
      * Parse strategy element.
      */
     private boolean startStrategy(PersistenceStrategy strategy,
-        Attributes attrs) throws SAXException {
+        Attributes attrs)
+        throws SAXException {
         FieldMetaData fmd = parseField(attrs);
         fmd.setExplicit(true);
         fmd.setManagement(FieldMetaData.MANAGE_PERSISTENT);
+
         String val = attrs.getValue("fetch");
         if (val != null)
             fmd.setInDefaultFetchGroup("EAGER".equals(val));
@@ -1101,7 +1176,8 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         return true;
     }
 
-    private void endStrategy(PersistenceStrategy strategy) throws SAXException {
+    private void endStrategy(PersistenceStrategy strategy)
+        throws SAXException {
         finishField();
     }
 
@@ -1109,7 +1185,8 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
      * Parse strategy specific attributes.
      */
     private void parseStrategy(FieldMetaData fmd,
-        PersistenceStrategy strategy, Attributes attrs) throws SAXException {
+        PersistenceStrategy strategy, Attributes attrs)
+        throws SAXException {
         switch (strategy) {
             case BASIC:
                 parseBasic(fmd, attrs);
@@ -1149,7 +1226,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         throws SAXException {
         assertPC(fmd, "Embedded");
         fmd.setEmbedded(true);
-        fmd.setSerialized(false); // override any Lob annotation
+        fmd.setSerialized(false);    // override any Lob annotation
         if (fmd.getEmbeddedMetaData() == null)
             fmd.addEmbeddedMetaData();
     }
@@ -1158,7 +1235,8 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
      * Throw proper exception if given value is not possibly persistence
      * capable.
      */
-    private void assertPC(FieldMetaData fmd, String attr) throws SAXException {
+    private void assertPC(FieldMetaData fmd, String attr)
+        throws SAXException {
         if (!JavaTypes.maybePC(fmd))
             throw getException(_loc.get("bad-meta-anno", fmd, attr));
     }
@@ -1172,7 +1250,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         if (val != null)
             fmd.setDeclaredType(classForName(val));
         assertPC(fmd, "OneToOne");
-        fmd.setSerialized(false); // override any Lob annotation
+        fmd.setSerialized(false);    // override any Lob annotation
         if (!fmd.isDefaultFetchGroupExplicit())
             fmd.setInDefaultFetchGroup(true);
     }
@@ -1186,7 +1264,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         if (val != null)
             fmd.setDeclaredType(classForName(val));
         assertPC(fmd, "ManyToOne");
-        fmd.setSerialized(false); // override any Lob annotation
+        fmd.setSerialized(false);    // override any Lob annotation
         if (!fmd.isDefaultFetchGroupExplicit())
             fmd.setInDefaultFetchGroup(true);
     }
@@ -1200,7 +1278,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         if (val != null)
             fmd.getElement().setDeclaredType(classForName(val));
         assertPCCollection(fmd, "ManyToMany");
-        fmd.setSerialized(false); // override Lob in annotation
+        fmd.setSerialized(false);    // override Lob in annotation
     }
 
     /**
@@ -1230,27 +1308,31 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         if (val != null)
             fmd.getElement().setDeclaredType(classForName(val));
         assertPCCollection(fmd, "OneToMany");
-        fmd.setSerialized(false); // override any Lob annotation
+        fmd.setSerialized(false);    // override any Lob annotation
     }
 
     /**
      * Parse map-key.
      */
-    private boolean startMapKey(Attributes attrs) throws SAXException {
+    private boolean startMapKey(Attributes attrs)
+        throws SAXException {
         if (!isMappingOverrideMode())
             return false;
+
         FieldMetaData fmd = (FieldMetaData) currentElement();
         String mapKey = attrs.getValue("name");
         if (mapKey == null)
             fmd.getKey().setValueMappedBy(ValueMetaData.MAPPED_BY_PK);
-        else fmd.getKey().setValueMappedBy(mapKey);
+        else
+            fmd.getKey().setValueMappedBy(mapKey);
         return true;
     }
 
     /**
      * Parse order-by.
      */
-    private void endOrderBy() throws SAXException {
+    private void endOrderBy()
+        throws SAXException {
         FieldMetaData fmd = (FieldMetaData) currentElement();
         String dec = currentText();
         if (StringUtils.isEmpty(dec))
@@ -1261,20 +1343,26 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     /**
      * Parse named-query.
      */
-    protected boolean startNamedQuery(Attributes attrs) throws SAXException {
+    protected boolean startNamedQuery(Attributes attrs)
+        throws SAXException {
         if (!isQueryMode())
             return false;
+
         String name = attrs.getValue("name");
         Log log = getLog();
         if (log.isInfoEnabled())
             log.info(_loc.get("parse-query", name));
-        QueryMetaData meta = getRepository().getCachedQueryMetaData(null, name);
+
+        QueryMetaData meta = getRepository().getCachedQueryMetaData
+            (null, name);
         if (meta != null && log.isWarnEnabled())
             log.warn(_loc.get("override-query", name, currentLocation()));
+
         meta = getRepository().addQueryMetaData(null, name);
         meta.setDefiningType(_cls);
         meta.setQueryString(attrs.getValue("query"));
         meta.setLanguage(JPQLParser.LANG_JPQL);
+
         Object cur = currentElement();
         Object scope = (cur instanceof ClassMetaData)
             ? ((ClassMetaData) cur).getDescribedType() : null;
@@ -1283,25 +1371,29 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
             meta.setSourceMode(MODE_META);
         else if (isMappingMode())
             meta.setSourceMode(MODE_MAPPING);
-        else meta.setSourceMode(MODE_QUERY);
+        else
+            meta.setSourceMode(MODE_QUERY);
         pushElement(meta);
         return true;
     }
 
-    protected void endNamedQuery() throws SAXException {
+    protected void endNamedQuery()
+        throws SAXException {
         popElement();
     }
 
     /**
      * Parse query-hint.
      */
-    protected boolean startQueryHint(Attributes attrs) throws SAXException {
+    protected boolean startQueryHint(Attributes attrs)
+        throws SAXException {
         QueryMetaData meta = (QueryMetaData) currentElement();
         meta.addHint(attrs.getValue("name"), attrs.getValue("value"));
         return true;
     }
 
-    protected void endQueryHint() throws SAXException {
+    protected void endQueryHint()
+        throws SAXException {
     }
 
     /**
@@ -1311,13 +1403,17 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         throws SAXException {
         if (!isQueryMode())
             return false;
+
         String name = attrs.getValue("name");
         Log log = getLog();
         if (log.isInfoEnabled())
             log.info(_loc.get("parse-native-query", name));
-        QueryMetaData meta = getRepository().getCachedQueryMetaData(null, name);
+
+        QueryMetaData meta = getRepository().getCachedQueryMetaData
+            (null, name);
         if (meta != null && log.isWarnEnabled())
             log.warn(_loc.get("override-query", name, currentLocation()));
+
         meta = getRepository().addQueryMetaData(null, name);
         meta.setDefiningType(_cls);
         meta.setQueryString(attrs.getValue("query"));
@@ -1327,8 +1423,10 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
             Class type = classForName(val);
             if (ImplHelper.isManagedType(type))
                 meta.setCandidateType(type);
-            else meta.setResultType(type);
+            else
+                meta.setResultType(type);
         }
+
         Object cur = currentElement();
         Object scope = (cur instanceof ClassMetaData)
             ? ((ClassMetaData) cur).getDescribedType() : null;
@@ -1337,23 +1435,27 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
             meta.setSourceMode(MODE_META);
         else if (isMappingMode())
             meta.setSourceMode(MODE_MAPPING);
-        else meta.setSourceMode(MODE_QUERY);
+        else
+            meta.setSourceMode(MODE_QUERY);
         pushElement(meta);
         return true;
     }
 
-    protected void endNamedNativeQuery() throws SAXException {
+    protected void endNamedNativeQuery()
+        throws SAXException {
         popElement();
     }
 
     /**
      * Start entity-listeners
      */
-    private boolean startEntityListeners(Attributes attrs) throws SAXException {
+    private boolean startEntityListeners(Attributes attrs)
+        throws SAXException {
         if (!isMetaDataMode())
             return false;
         if (currentElement() == null)
             return true;
+
         // reset listeners declared in annotations.
         LifecycleMetaData meta = ((ClassMetaData) currentElement()).
             getLifecycleMetaData();
@@ -1390,7 +1492,8 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     /**
      * Parse entity-listener.
      */
-    private boolean startEntityListener(Attributes attrs) throws SAXException {
+    private boolean startEntityListener(Attributes attrs)
+        throws SAXException {
         _listener = classForName(attrs.getValue("class"));
         boolean system = currentElement() == null;
         Collection<LifecycleCallbacks>[] parsed =
@@ -1398,6 +1501,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
                 null, true, true);
         if (parsed == null)
             return true;
+
         if (_callbacks == null) {
             _callbacks = (Collection<LifecycleCallbacks>[])
                 new Collection[LifecycleEvent.ALL_EVENTS.length];
@@ -1409,14 +1513,16 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
                 continue;
             if (_callbacks[i] == null)
                 _callbacks[i] = parsed[i];
-            else _callbacks[i].addAll(parsed[i]);
+            else
+                _callbacks[i].addAll(parsed[i]);
             if (!system)
                 _highs[i] += parsed[i].size();
         }
         return true;
     }
 
-    private void endEntityListener() throws SAXException {
+    private void endEntityListener()
+        throws SAXException {
         // should be in endEntityListeners I think to merge callbacks
         // into a single listener.  But then the user cannot remove.
         if (currentElement() == null && _callbacks != null) {
@@ -1432,21 +1538,26 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         if (!isMetaDataMode())
             return false;
         boolean system = currentElement() == null;
+
         if (_callbacks == null) {
             _callbacks = (Collection<LifecycleCallbacks>[])
                 new Collection[LifecycleEvent.ALL_EVENTS.length];
             if (!system)
                 _highs = new int[LifecycleEvent.ALL_EVENTS.length];
         }
+
         LifecycleCallbacks adapter;
         if (_listener != null)
             adapter = new BeanLifecycleCallbacks(_listener,
                 attrs.getValue("method-name"), false);
-        else adapter = new MethodLifecycleCallbacks(_cls,
-            attrs.getValue("method-name"), false);
+        else
+            adapter = new MethodLifecycleCallbacks(_cls,
+                attrs.getValue("method-name"), false);
+
         int[] events = getEventTypes(callback);
         if (events == null)
             return true;
+
         for (int i = 0; i < events.length; i++) {
             int event = events[i];
             if (_callbacks[event] == null)
@@ -1501,6 +1612,7 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
         }
         if (_callbacks == null)
             return;
+
         for (int event : LifecycleEvent.ALL_EVENTS) {
             if (_callbacks[event] == null)
                 continue;
@@ -1514,11 +1626,13 @@ public class XMLPersistenceMetaDataParser extends CFMetaDataParser
     }
 
     /**
-     * Instantiate the given class, taking into account the default package.
-     */
-    protected Class classForName(String name) throws SAXException {
-        if ("Entity".equals(name))
-            return PersistenceCapable.class;
-        return super.classForName(name, isRuntime());
-    }
+     *	Instantiate the given class, taking into account the default package.
+	 */
+	protected Class classForName (String name)
+		throws SAXException
+	{
+		if ("Entity".equals (name))
+			return PersistenceCapable.class;
+		return super.classForName (name, isRuntime ());
+	}
 }

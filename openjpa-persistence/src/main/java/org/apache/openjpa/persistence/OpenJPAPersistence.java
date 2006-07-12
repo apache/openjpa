@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -45,14 +48,15 @@ import org.apache.openjpa.util.ShortId;
 import org.apache.openjpa.util.StringId;
 
 /**
- * Static helper method for JPA users, including switching
- * between OpenJPA native and Java Persistence APIs.
+ * <p>Static helper method for JPA users, including switching
+ * between OpenJPA native and Java Persistence APIs.</p>
  *
  * @author Abe White
  * @published
  * @since 4.0
  */
-public class OpenJPAPersistence extends Persistence {
+public class OpenJPAPersistence
+    extends Persistence {
 
     public static final String EM_KEY =
         "org.apache.openjpa.persistence.EntityManager";
@@ -69,6 +73,7 @@ public class OpenJPAPersistence extends Persistence {
         (BrokerFactory factory) {
         if (factory == null)
             return null;
+
         factory.lock();
         try {
             OpenJPAEntityManagerFactory emf = (OpenJPAEntityManagerFactory)
@@ -78,7 +83,8 @@ public class OpenJPAPersistence extends Persistence {
                 factory.putUserObject(EMF_KEY, emf);
             }
             return emf;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
         finally {
@@ -102,6 +108,7 @@ public class OpenJPAPersistence extends Persistence {
     public static OpenJPAEntityManager toEntityManager(Broker broker) {
         if (broker == null)
             return null;
+
         broker.lock();
         try {
             OpenJPAEntityManager em = (OpenJPAEntityManager)
@@ -112,8 +119,10 @@ public class OpenJPAPersistence extends Persistence {
                 em = new EntityManagerImpl(emf, broker);
                 broker.putUserObject(EM_KEY, em);
             }
+
             return em;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
         finally {
@@ -151,7 +160,7 @@ public class OpenJPAPersistence extends Persistence {
 
     /**
      * Returns the {@link OpenJPAEntityManagerFactory} specified by
-     * your OpenJPA defaults. This method will return the same logical factory
+     * your OpenJPA defaults.  This method will return the same logical factory
      * for each invocation.
      */
     public static OpenJPAEntityManagerFactory getEntityManagerFactory() {
@@ -160,7 +169,7 @@ public class OpenJPAPersistence extends Persistence {
 
     /**
      * Returns the {@link OpenJPAEntityManagerFactory} specified by
-     * your OpenJPA defaults, using <code>map</code> as overrides. This method
+     * your OpenJPA defaults, using <code>map</code> as overrides.  This method
      * will return the same logical factory for invocations with the same
      * overrides.
      */
@@ -169,20 +178,24 @@ public class OpenJPAPersistence extends Persistence {
         try {
             return toEntityManagerFactory(Bootstrap.getBrokerFactory
                 (cp, null));
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
 
     /**
-     * Returns a new {@link OpenJPAEntityManagerFactory} specified by
+     * <p>Returns a new {@link OpenJPAEntityManagerFactory} specified by
      * <code>name</code> in an XML configuration file at the resource location
      * <code>resource</code>. If <code>name</code> is <code>null</code>, uses
      * the first resource found in the specified location, regardless of the
      * name specified in the XML resource or the name of the jar that the
      * resource is contained in. If <code>resource</code> is <code>null</code>,
-     * uses the spec-defined <code>META-INF/persistence.xml</code> resource.
-     * This method only resolves {@link OpenJPAEntityManagerFactory} instances.
+     * uses the spec-defined <code>META-INF/persistence.xml</code>
+     * resource.</p>
+     * <p/>
+     * <p>This method only resolves {@link OpenJPAEntityManagerFactory}
+     * instances.</p>
      */
     public static OpenJPAEntityManagerFactory createEntityManagerFactory
         (String name, String resource) {
@@ -190,7 +203,7 @@ public class OpenJPAPersistence extends Persistence {
     }
 
     /**
-     * Returns a new {@link OpenJPAEntityManagerFactory} specified by
+     * <p>Returns a new {@link OpenJPAEntityManagerFactory} specified by
      * <code>name</code> in an XML configuration file at the resource location
      * <code>resource</code>, applying the properties specified in
      * <code>map</code> as overrides. If <code>name</code> is
@@ -198,8 +211,10 @@ public class OpenJPAPersistence extends Persistence {
      * location, regardless of the name specified in the XML resource or the
      * name of the jar that the resource is contained in.
      * If <code>resource</code> is <code>null</code>, uses the spec-defined
-     * <code>META-INF/persistence.xml</code> resource.
-     * This method only resolves {@link OpenJPAEntityManagerFactory} instances.
+     * <code>META-INF/persistence.xml</code> resource.</p>
+     * <p/>
+     * <p>This method only resolves {@link OpenJPAEntityManagerFactory}
+     * instances.</p>
      */
     public static OpenJPAEntityManagerFactory createEntityManagerFactory
         (String name, String resource, Map map) {
@@ -217,13 +232,16 @@ public class OpenJPAPersistence extends Persistence {
         (String jndiLocation, Context context) {
         if (jndiLocation == null)
             throw new NullPointerException("jndiLocation == null");
+
         try {
             if (context == null)
                 context = new InitialContext();
+
             Object o = context.lookup(jndiLocation);
             return (OpenJPAEntityManagerFactory) PortableRemoteObject.narrow(o,
                 OpenJPAEntityManagerFactory.class);
-        } catch (NamingException ne) {
+        }
+        catch (NamingException ne) {
             throw new ArgumentException(_loc.get("naming-exception",
                 jndiLocation), new Throwable[]{ ne }, null, true);
         }
@@ -232,7 +250,7 @@ public class OpenJPAPersistence extends Persistence {
     /**
      * Return the entity manager for the given object, if one can be determined
      * from just the object alone. This method will succeed for instances that
-     * are enhanced, that were loaded from the database(rather than
+     * are enhanced, that were loaded from the database (rather than
      * being constructed with <code>new</code>), or that were created through
      * {@link OpenJPAEntityManager#createInstance}.
      */
@@ -241,8 +259,10 @@ public class OpenJPAPersistence extends Persistence {
             if (o instanceof PersistenceCapable)
                 return toEntityManager((Broker) ((PersistenceCapable) o).
                     pcGetGenericContext());
-            else return null;
-        } catch (Exception e) {
+            else
+                return null;
+        }
+        catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -265,11 +285,13 @@ public class OpenJPAPersistence extends Persistence {
     public static ClassMetaData getMetaData(EntityManager em, Class cls) {
         if (em == null)
             throw new NullPointerException("em == null");
+
         OpenJPAEntityManager kem = cast(em);
         try {
             return kem.getConfiguration().getMetaDataRepository().
                 getMetaData(cls, kem.getClassLoader(), false);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -282,24 +304,27 @@ public class OpenJPAPersistence extends Persistence {
         Class cls) {
         if (emf == null)
             throw new NullPointerException("emf == null");
+
         OpenJPAEntityManagerFactory kemf = cast(emf);
         try {
             return kemf.getConfiguration().getMetaDataRepository().
                 getMetaData(cls, null, false);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
 
     /**
-     * Close the given resource. The resource can be an extent iterator,
+     * Close the given resource.  The resource can be an extent iterator,
      * query result, large result set relation, or any closeable OpenJPA
      * component.
      */
     public static void close(Object o) {
         try {
             ImplHelper.close(o);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -310,7 +335,8 @@ public class OpenJPAPersistence extends Persistence {
     public static boolean isManagedType(EntityManager em, Class cls) {
         try {
             return ImplHelper.isManagedType(cls);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -321,7 +347,8 @@ public class OpenJPAPersistence extends Persistence {
     public static boolean isManagedType(EntityManagerFactory emf, Class cls) {
         try {
             return ImplHelper.isManagedType(cls);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -341,9 +368,11 @@ public class OpenJPAPersistence extends Persistence {
     public static Object toOpenJPAObjectId(ClassMetaData meta, Object oid) {
         if (oid == null || meta == null)
             return null;
+
         Class cls = meta.getDescribedType();
         if (meta.getIdentityType() == ClassMetaData.ID_DATASTORE)
             return new Id(cls, ((Number) oid).longValue());
+
         if (oid instanceof Byte)
             return new ByteId(cls, (Byte) oid);
         if (oid instanceof Character)
@@ -366,11 +395,13 @@ public class OpenJPAPersistence extends Persistence {
         Object... oids) {
         if (oids == null || oids.length == 0)
             return oids;
+
         // since the class if fixed for all oids, we can tell if we have to
         // translate the array based on whether the first oid needs translating
         Object oid = toOpenJPAObjectId(meta, oids[0]);
         if (oid == oids[0])
             return oids;
+
         Object[] copy = new Object[oids.length];
         copy[0] = oid;
         for (int i = 1; i < oids.length; i++)
@@ -385,6 +416,7 @@ public class OpenJPAPersistence extends Persistence {
         Collection oids) {
         if (oids == null || oids.isEmpty())
             return oids;
+
         // since the class if fixed for all oids, we can tell if we have to
         // translate the array based on whether the first oid needs translating
         Iterator itr = oids.iterator();
@@ -392,6 +424,7 @@ public class OpenJPAPersistence extends Persistence {
         Object oid = toOpenJPAObjectId(meta, orig);
         if (oid == orig)
             return oids;
+
         Collection copy = new ArrayList(oids.size());
         copy.add(oid);
         while (itr.hasNext())
@@ -400,7 +433,7 @@ public class OpenJPAPersistence extends Persistence {
     }
 
     /**
-     * Translate from a OpenJPA identity class to a native one.
+     *	Translate from a OpenJPA identity class to a native one.
      */
     public static Class fromOpenJPAObjectIdClass(Class oidClass) {
         if (oidClass == null)
@@ -418,7 +451,7 @@ public class OpenJPAPersistence extends Persistence {
         if (oidClass == ShortId.class)
             return Short.class;
         if (oidClass == StringId.class)
-            return String.class;
-        return oidClass;
-    }
+			return String.class;
+		return oidClass;
+	}
 }

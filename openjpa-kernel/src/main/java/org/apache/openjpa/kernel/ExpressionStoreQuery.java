@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -45,35 +48,41 @@ import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * Implementation of an expression-based query, which can handle
+ * <p>Implementation of an expression-based query, which can handle
  * String-based query expressions such as JPQL and JDOQL.
  * This implementation is suitable for in-memory operation.
- * Override the following methods to also support datastore operation:
+ * Override the following methods to also support
+ * datastore operation:
  * <ul>
  * <li>Override {@link #supportsDataStoreExecution} to return
  * <code>true</code>.</li>
  * <li>Override {@link #executeQuery}, {@link #executeDelete}, and
  * {@link #executeUpdate} to execute the query against the data store.
  * Keep in mind that the parameters passed to this method might be in use
- * by several threads in different query instances. Thus components like
+ * by several threads in different query instances.  Thus components like
  * the expression factory must either be thread safe, or this method must
  * synchronize on them.</li>
  * <li>Override {@link #getDataStoreActions} to return a representation of
- * the actions that will be taken on the data store. For use in visual
+ * the actions that will be taken on the data store.  For use in visual
  * tools.</li>
  * <li>Override {@link #getExpressionFactory} to return a factory for creating
- * expressions in the datastore's language. The factory must be cachable.</li>
- * </ul>
+ * expressions in the datastore's language.  The factory must be
+ * cachable.</li>
+ * </ul></p>
  *
  * @author Abe White
  */
-public class ExpressionStoreQuery extends AbstractStoreQuery {
+public class ExpressionStoreQuery
+    extends AbstractStoreQuery {
 
     private static final Localizer _loc = Localizer.forPackage
         (ExpressionStoreQuery.class);
+
     // maintain support for a couple of deprecated extensions
     private static final FilterListener[] _listeners = new FilterListener[]{
-        new StringContains(), new WildcardMatch(), };
+        new StringContains(), new WildcardMatch(),
+    };
+
     private final ExpressionParser _parser;
     private transient Object _parsed;
 
@@ -151,6 +160,7 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
         return new DataStoreExecutor(this, meta, subs, _parser,
             ctx.getCompilation());
     }
+
     ////////////////////////
     // Methods for Override
     ////////////////////////
@@ -158,20 +168,22 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
     /**
      * Execute the given expression against the given candidate extent.
      *
-     * @param ex         current executor
-     * @param base       the base type the query should match
-     * @param types      the independent candidate types
-     * @param subclasses true if subclasses should be included in the results
-     * @param facts      the expression factory used to build the query for
-     *                   each base type
-     * @param parsed     the parsed query values
-     * @param params     parameter values, or empty array
-     * @param lrs        whether the result will be handled as a potentially
-     *                   large result set, or will be consumed greedily
-     * @param startIdx   0-based inclusive index for first result to return
-     *                   from result object provider
-     * @param endIdx     0-based exclusive index for last result to return
-     *                   from result object provider, or {@link Long#MAX_VALUE} for no max
+     * @param    ex            current executor
+     * @param    base        the base type the query should match
+     * @param    types        the independent candidate types
+     * @param    subclasses    true if subclasses should be included in the
+     * results
+     * @param    facts        the expression factory used to build the query for
+     * each base type
+     * @param    parsed        the parsed query values
+     * @param    params        parameter values, or empty array
+     * @param    lrs            whether the result will be handled as a potentially
+     * large result set, or will be consumed greedily
+     * @param    startIdx    0-based inclusive index for first result to return
+     * from result object provider
+     * @param    endIdx        0-based exclusive index for last result to return
+     * from result object provider, or
+     * {@link Long#MAX_VALUE} for no max
      * @return a provider for matching objects
      */
     protected ResultObjectProvider executeQuery(Executor ex,
@@ -185,16 +197,17 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
      * Execute the given expression against the given candidate extent
      * and delete the instances.
      *
-     * @param ex         current executor
-     * @param base       the base type the query should match
-     * @param types      the independent candidate types
-     * @param subclasses true if subclasses should be included in the results
-     * @param facts      the expression factory used to build the query for
-     *                   each base type
-     * @param parsed     the parsed query values
-     * @param params     parameter values, or empty array
+     * @param    ex            current executor
+     * @param    base        the base type the query should match
+     * @param    types        the independent candidate types
+     * @param    subclasses    true if subclasses should be included in the
+     * results
+     * @param    facts        the expression factory used to build the query for
+     * each base type
+     * @param    parsed        the parsed query values
+     * @param    params        parameter values, or empty array
      * @return a number indicating the number of instances deleted,
-     *         or null to execute the delete in memory
+     * or null to execute the delete in memory
      */
     protected Number executeDelete(Executor ex, ClassMetaData base,
         ClassMetaData[] types, boolean subclasses, ExpressionFactory[] facts,
@@ -206,16 +219,17 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
      * Execute the given expression against the given candidate extent
      * and updates the instances.
      *
-     * @param ex         current executor
-     * @param base       the base type the query should match
-     * @param types      the independent candidate types
-     * @param subclasses true if subclasses should be included in the results
-     * @param facts      the expression factory used to build the query for
-     *                   each base type
-     * @param parsed     the parsed query values
-     * @param params     parameter values, or empty array
+     * @param    ex            current executor
+     * @param    base        the base type the query should match
+     * @param    types        the independent candidate types
+     * @param    subclasses    true if subclasses should be included in the
+     * results
+     * @param    facts        the expression factory used to build the query for
+     * each base type
+     * @param    parsed        the parsed query values
+     * @param    params        parameter values, or empty array
      * @return a number indicating the number of instances updated,
-     *         or null to execute the update in memory.
+     * or null to execute the update in memory.
      */
     protected Number executeUpdate(Executor ex, ClassMetaData base,
         ClassMetaData[] types, boolean subclasses, ExpressionFactory[] facts,
@@ -227,18 +241,20 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
      * Return the commands that will be sent to the datastore in order
      * to execute the query, typically in the database's native language.
      *
-     * @param ex         current executor
-     * @param base       the base type the query should match
-     * @param types      the independent candidate types
-     * @param subclasses true if subclasses should be included in the results
-     * @param facts      the expression factory used to build the query for
-     *                   each base type
-     * @param parsed     the parsed query values
-     * @param params     parameter values, or empty array
-     * @param startIdx   0-based inclusive index for first result to return
-     *                   from result object provider
-     * @param endIdx     0-based exclusive index for last result to return
-     *                   from result object provider, or {@link Long#MAX_VALUE} for no max
+     * @param    ex            current executor
+     * @param    base        the base type the query should match
+     * @param    types        the independent candidate types
+     * @param    subclasses    true if subclasses should be included in the
+     * results
+     * @param    facts        the expression factory used to build the query for
+     * each base type
+     * @param    parsed        the parsed query values
+     * @param    params        parameter values, or empty array
+     * @param    startIdx    0-based inclusive index for first result to return
+     * from result object provider
+     * @param    endIdx        0-based exclusive index for last result to return
+     * from result object provider, or
+     * {@link Long#MAX_VALUE} for no max
      * @return a textual description of the query to execute
      */
     protected String[] getDataStoreActions(Executor ex, ClassMetaData base,
@@ -259,8 +275,8 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
 
     /**
      * Return an {@link ExpressionFactory} to use to create an expression to
-     * be executed against an extent. Each factory will be used to compile
-     * one filter only. The factory must be cachable.
+     * be executed against an extent.  Each factory will be used to compile
+     * one filter only.  The factory must be cachable.
      */
     protected ExpressionFactory getExpressionFactory(ClassMetaData type) {
         throw new UnsupportedException();
@@ -273,7 +289,8 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
      * @author Marc Prud'hommeaux
      */
     private static abstract class AbstractExpressionExecutor
-        extends AbstractExecutor implements Executor {
+        extends AbstractExecutor
+        implements Executor {
 
         abstract QueryExpressions[] getQueryExpressions();
 
@@ -281,6 +298,7 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
             QueryExpressions[] exp = getQueryExpressions();
             if (exp == null || exp.length < 1)
                 throw new InvalidStateException(_loc.get("no-expressions"));
+
             return exp[0];
         }
 
@@ -292,7 +310,9 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
             if (val instanceof Path) {
                 FieldMetaData fmd = ((Path) val).last();
                 type = (fmd == null) ? val.getType() : fmd.getDeclaredType();
-            } else type = val.getType();
+            } else
+                type = val.getType();
+
             switch (JavaTypes.getTypeCode(type)) {
                 case JavaTypes.ARRAY:
                 case JavaTypes.COLLECTION:
@@ -342,6 +362,7 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
             QueryExpressions[] exps = getQueryExpressions();
             if (exps.length == 1)
                 return exps[0].accessPath;
+
             List metas = null;
             for (int i = 0; i < exps.length; i++)
                 metas = Filters.addAccessPathMetaDatas(metas,
@@ -360,7 +381,8 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
     /**
      * Runs the expression query in memory.
      */
-    private static class InMemoryExecutor extends AbstractExpressionExecutor
+    private static class InMemoryExecutor
+        extends AbstractExpressionExecutor
         implements Executor {
 
         private final ClassMetaData _meta;
@@ -375,6 +397,7 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
             _meta = candidate;
             _subs = subclasses;
             _factory = new InMemoryExpressionFactory();
+
             _exps = new QueryExpressions[]{
                 parser.eval(parsed, q, _factory, _meta)
             };
@@ -417,10 +440,12 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
             Iterator itr;
             if (coll != null)
                 itr = coll.iterator();
-            else itr = q.getContext().getStoreContext().
-                extentIterator(_meta.getDescribedType(), _subs,
-                    q.getContext().getFetchConfiguration(),
-                    q.getContext().getIgnoreChanges());
+            else
+                itr = q.getContext().getStoreContext().
+                    extentIterator(_meta.getDescribedType(), _subs,
+                        q.getContext().getFetchConfiguration(),
+                        q.getContext().getIgnoreChanges());
+
             // find matching objects
             List results = new ArrayList();
             StoreContext ctx = q.getContext().getStoreContext();
@@ -436,8 +461,10 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
             finally {
                 ImplHelper.close(itr);
             }
+
             // group results
             results = _factory.group(_exps[0], results, ctx, params);
+
             // apply having to filter groups
             if (_exps[0].having != null) {
                 List matches = new ArrayList(results.size());
@@ -450,10 +477,12 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
                 }
                 results = matches;
             }
+
             // apply projections, order results, and filter duplicates
             results = _factory.project(_exps[0], results, ctx, params);
             results = _factory.order(_exps[0], results, ctx, params);
             results = _factory.distinct(_exps[0], coll == null, results);
+
             ResultObjectProvider rop = new ListResultObjectProvider(results);
             if (startIdx != 0 || endIdx != Long.MAX_VALUE)
                 rop = new RangeResultObjectProvider(rop, startIdx, endIdx);
@@ -481,10 +510,12 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
                 for (int i = 0; i < _exps[0].projectionClauses.length; i++)
                     if (ordering.equals(_exps[0].projectionClauses[i]))
                         return ((Object[]) resultObject)[i];
+
                 throw new InvalidStateException(_loc.get
                     ("merged-order-with-result", q.getContext().getLanguage(),
                         q.getContext().getQueryString(), ordering));
             }
+
             // use the parsed ordering expression to extract the ordering value
             Val val = (Val) _exps[0].ordering[orderIndex];
             return val.evaluate(resultObject, resultObject, q.getContext().
@@ -497,12 +528,13 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
     }
 
     /**
-     * The DataStoreExecutor executes the query against the
-     * implementation's overridden {@link #executeQuery} method.
+     *  The DataStoreExecutor executes the query against the
+     *  implementation's overridden {@link #executeQuery} method.
      *
-     * @author Marc Prud'hommeaux
+     *  @author Marc Prud'hommeaux
      */
-    private static class DataStoreExecutor extends AbstractExpressionExecutor
+    private static class DataStoreExecutor
+        extends AbstractExpressionExecutor
         implements Executor {
 
         private final ClassMetaData _meta;
@@ -521,9 +553,11 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
             _metas = q.getIndependentExpressionCandidates(meta, subclasses);
             _subs = subclasses;
             _parser = parser;
+
             _facts = new ExpressionFactory[_metas.length];
             for (int i = 0; i < _facts.length; i++)
                 _facts[i] = q.getExpressionFactory(_metas[i]);
+
             _exps = new QueryExpressions[_metas.length];
             for (int i = 0; i < _exps.length; i++) {
                 _exps[i] = parser.eval(parsed, q, _facts[i], _metas[i]);
@@ -590,10 +624,12 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
                 for (int i = 0; i < _exps[0].projectionClauses.length; i++)
                     if (ordering.equals(_exps[0].projectionClauses[i]))
                         return ((Object[]) resultObject)[i];
+
                 throw new InvalidStateException(_loc.get
                     ("merged-order-with-result", q.getContext().getLanguage(),
                         q.getContext().getQueryString(), ordering));
             }
+
             // need to parse orderings?
             synchronized (this) {
                 if (_inMemOrdering == null) {
@@ -601,6 +637,7 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
                     _inMemOrdering = _parser.eval(_exps[0].orderingClauses,
                         (ExpressionStoreQuery) q, factory, _meta);
                 }
+
                 // use the parsed ordering expression to extract the ordering
                 // value
                 Val val = (Val) _inMemOrdering[orderIndex];
@@ -612,6 +649,7 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
         public Class[] getProjectionTypes(StoreQuery q) {
             if (_exps[0].projections.length == 0)
                 return StoreQuery.EMPTY_CLASSES;
+
             synchronized (this) {
                 if (_projTypes == null) {
                     // delay creating this array until it is requested b/c
@@ -619,9 +657,9 @@ public class ExpressionStoreQuery extends AbstractStoreQuery {
                     _projTypes = new Class[_exps[0].projections.length];
                     for (int i = 0; i < _exps[0].projections.length; i++)
                         _projTypes[i] = _exps[0].projections[i].getType();
-                }
-                return _projTypes;
-            }
-        }
-    }
+				}
+				return _projTypes;
+			}
+		}
+	}
 }

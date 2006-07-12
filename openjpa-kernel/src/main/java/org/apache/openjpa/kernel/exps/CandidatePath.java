@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -25,11 +28,13 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 
 /**
- * A path represents a traversal into fields of a candidate object.
+ * <p>A path represents a traversal into fields of a candidate object.</p>
  *
  * @author Abe White
  */
-class CandidatePath extends Val implements Path {
+class CandidatePath
+    extends Val
+    implements Path {
 
     private LinkedList _actions = null;
 
@@ -50,6 +55,7 @@ class CandidatePath extends Val implements Path {
     public Class getType() {
         if (_actions == null)
             return getCandidateType();
+
         Object last = _actions.getLast();
         if (last instanceof Class)
             return (Class) last;
@@ -74,6 +80,7 @@ class CandidatePath extends Val implements Path {
     public FieldMetaData last() {
         if (_actions == null)
             return null;
+
         ListIterator itr = _actions.listIterator(_actions.size());
         Object prev;
         while (itr.hasPrevious()) {
@@ -97,11 +104,13 @@ class CandidatePath extends Val implements Path {
         StoreContext ctx, Object[] params) {
         if (_actions == null)
             return candidate;
+
         Object action;
         OpenJPAStateManager sm;
         Broker tmpBroker = null;
         for (Iterator itr = _actions.iterator(); itr.hasNext();) {
             action = itr.next();
+
             // fail on null value
             if (candidate == null) {
                 if (action instanceof Traversal
@@ -109,11 +118,13 @@ class CandidatePath extends Val implements Path {
                     return null;
                 throw new NullPointerException();
             }
+
             // check that the cast is valid
             if (action instanceof Class) {
                 candidate = Filters.convert(candidate, (Class) action);
                 continue;
             }
+
             // make sure we can access the instance; even non-pc vals might
             // be proxyable
             sm = null;
@@ -126,6 +137,7 @@ class CandidatePath extends Val implements Path {
                 tmpBroker.transactional(candidate, false, null);
                 sm = tmpBroker.getStateManager(candidate);
             }
+
             try {
                 // get the specified field value and switch candidate
                 Traversal traversal = (Traversal) action;
@@ -143,7 +155,7 @@ class CandidatePath extends Val implements Path {
     }
 
     /**
-     * Represents a traversal through a field.
+     *	Represents a traversal through a field.
      */
     private static class Traversal {
 
@@ -154,5 +166,5 @@ class CandidatePath extends Val implements Path {
             this.field = field;
             this.nullTraversal = nullTraversal;
         }
-    }
+	}
 }

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -26,13 +29,14 @@ import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 
 /**
- * Interface implemented by OpenJPA queries.
+ * <p>Interface implemented by OpenJPA queries.</p>
  *
+ * @since 4.0
  * @author Abe White
  * @published
- * @since 4.0
  */
-public interface OpenJPAQuery extends Query, QueryOperations, QueryFlushModes {
+public interface OpenJPAQuery
+    extends Query, QueryOperations, QueryFlushModes {
 
     /**
      * The owning entity manage.
@@ -171,7 +175,8 @@ public interface OpenJPAQuery extends Query, QueryOperations, QueryFlushModes {
     /**
      * Returns a description of the commands that will be sent to
      * the datastore in order to execute this query. This will
-     * typically be in the native query language of the database (e.g., SQL).
+     * typically be in the native query language of the database
+     * (e.g., SQL).
      *
      * @param params the named parameter map for the query invocation
      */
@@ -202,7 +207,7 @@ public interface OpenJPAQuery extends Query, QueryOperations, QueryFlushModes {
     public OpenJPAQuery setFlushMode(FlushModeType flushMode);
 
     /**
-     * Return the current flush mode.
-     */
-    public FlushModeType getFlushMode();
+     *	Return the current flush mode.
+	 */
+	public FlushModeType getFlushMode ();
 }

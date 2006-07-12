@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,8 +18,8 @@ package org.apache.openjpa.kernel.exps;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
- * The ExpressionFactory must be implemented by a particular runtime
- * to form {@link Expression}s in its native query language.
+ * <p>The ExpressionFactory must be implemented by a particular runtime
+ * to form {@link Expression}s in its native query language.</p>
  *
  * @author Abe White
  * @nojavadoc
@@ -131,10 +134,10 @@ public interface ExpressionFactory {
     /**
      * Return whether the string matches the matching pattern.
      *
-     * @param str    the value to compare
+     * @param str the value to compare
      * @param regexp the pattern against which to compare
      * @param single the token that signifies a single-character match
-     * @param multi  the token that signifies a multi-character match
+     * @param multi the token that signifies a multi-character match
      * @param escape the escape token that escapes the matching tokens
      */
     public Expression matches(Value str, Value regexp,
@@ -143,10 +146,10 @@ public interface ExpressionFactory {
     /**
      * Return whether the string does not match the given pattern.
      *
-     * @param str    the value to compare
+     * @param str the value to compare
      * @param regexp the pattern against which to compare
      * @param single the token that signifies a single-character match
-     * @param multi  the token that signifies a multi-character match
+     * @param multi the token that signifies a multi-character match
      * @param escape the escape token that escapes the matching tokens
      */
     public Expression notMatches(Value str, Value regexp, String single,
@@ -165,22 +168,22 @@ public interface ExpressionFactory {
     /**
      * Trims the specified specified trimChar from the specified value.
      *
-     * @param str      the value from which to trim
+     * @param str the value from which to trim
      * @param trimChar the characters to trim off
-     * @param where    which side of the String to trim: null
-     *                 indicates both sides, true indicates
-     *                 leading, and false indicates trailing
+     * @param where which side of the String to trim: null
+     * indicates both sides, true indicates
+     * leading, and false indicates trailing
      */
     public Value trim(Value str, Value trimChar, Boolean where);
 
     /**
-     * Return a subquery. Paths for the candidates of the subquery are
+     * Return a subquery.  Paths for the candidates of the subquery are
      * created with {@link #newPath(Value)}, passing in the subquery as the
      * value.
      *
-     * @param candidate the candidate class of the subquery
-     * @param subs      whether the query includes subclasses
-     * @param alias     the alias given to the query candidate class
+     * @param    candidate    the candidate class of the subquery
+     * @param    subs        whether the query includes subclasses
+     * @param    alias        the alias given to the query candidate class
      */
     public Subquery newSubquery(ClassMetaData candidate, boolean subs,
         String alias);
@@ -188,14 +191,16 @@ public interface ExpressionFactory {
     /**
      * Return a value representing a path which will consist
      * of a chain of 1 or more field names starting in the namespace of the
-     * candidate class.<br /> Example: <code>parent.address.city</code>
+     * candidate class.<br />
+     * Example: <code>parent.address.city</code>
      */
     public Path newPath();
 
     /**
      * Return a value representing a path which will consist
      * of a chain of 1 or more field names starting in the namespace of the
-     * given value.<br /> Example: <code>var.address.city</code>
+     * given value.<br />
+     * Example: <code>var.address.city</code>
      */
     public Path newPath(Value val);
 
@@ -231,7 +236,7 @@ public interface ExpressionFactory {
     public Value getCurrentTimestamp();
 
     /**
-     * Return a value representing a parameter for the given value. The
+     * Return a value representing a parameter for the given value.  The
      * type may be <code>Object</code> if the parameter is not declared.
      */
     public Parameter newParameter(String name, Class type);
@@ -254,8 +259,8 @@ public interface ExpressionFactory {
     public Arguments newArgumentList(Value arg1, Value arg2);
 
     /**
-     * Return an unbound variable. This method will only be called once for
-     * a given named unbound variable. The type may be <code>Object</code>
+     * Return an unbound variable.  This method will only be called once for
+     * a given named unbound variable.  The type may be <code>Object</code>
      * if the variable is not declared.
      */
     public Value newUnboundVariable(String name, Class type);
@@ -264,7 +269,7 @@ public interface ExpressionFactory {
      * This method will be called only once per variable bound in a
      * <code>contains</code> clause, and the returned value will be reused
      * for any further instances of the variable in subexpression of the
-     * filter string. The type may be <code>Object</code> if the variable is
+     * filter string.  The type may be <code>Object</code> if the variable is
      * not declared.
      */
     public Value newBoundVariable(String name, Class type);
@@ -384,15 +389,16 @@ public interface ExpressionFactory {
     public Value size(Value target);
 
     /**
-     * Return distinct values of the given value. This is typically used
-     * within aggregates, for example: max(distinct(path))
-     *
-     * @since 4.0.0
-     */
-    public Value distinct(Value obj);
+     *	Return distinct values of the given value.  This is typically used
+     *	within aggregates, for example: max(distinct(path))
+	 *
+	 *	@since 4.0.0
+	 */
+	public Value distinct (Value obj);
 
-    /**
-     * Return the object id of the given value.
-     */
-    public Value getObjectId(Value val);
+
+	/**
+	 *	Return the object id of the given value.
+	 */
+	public Value getObjectId (Value val);
 }

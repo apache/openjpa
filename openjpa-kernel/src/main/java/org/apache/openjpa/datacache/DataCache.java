@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -19,18 +22,20 @@ import java.util.Map;
 import org.apache.openjpa.lib.util.Closeable;
 
 /**
- * Interface that must be implemented by any level 2 cache used by
+ * <p>Interface that must be implemented by any level 2 cache used by
  * OpenJPA. Most data caches will choose to implement the
  * {@link org.apache.openjpa.lib.conf.Configurable} interface as well so that
- * they will be given the system configuration just after construction.
- * Implementations should take care not to return timed out data.
+ * they will be given the system configuration just after construction.</p>
+ * <p/>
+ * <p>Implementations should take care not to return timed out data.</p>
  *
+ * @see        AbstractDataCache
+ * @see        DataCachePCData#isTimedOut
  * @author Patrick Linskey
  * @author Abe White
- * @see AbstractDataCache
- * @see DataCachePCData#isTimedOut
  */
-public interface DataCache extends Closeable {
+public interface DataCache
+    extends Closeable {
 
     /**
      * The name of the default data cache: <code>default</code>
@@ -46,7 +51,8 @@ public interface DataCache extends Closeable {
     public String getName();
 
     /**
-     * Sets a string name to be used to identify this cache to end-user needs.
+     * Sets a string name to be used to identify this cache to
+     * end-user needs.
      *
      * @since 2.5.0
      */
@@ -59,35 +65,40 @@ public interface DataCache extends Closeable {
     public void initialize(DataCacheManager manager);
 
     /**
-     * Perform a batch update of the cache. Add all {@link DataCachePCData}
+     * <p>Perform a batch update of the cache. Add all {@link DataCachePCData}
      * objects in <code>additions</code> and in
      * <code>newUpdates</code>, make the appropriate modifications to
      * all DataCachePCDatas in <code>existingUpdates</code>, and delete all
-     * OIDs in <code>deletes</code>.
-     * All changes made to cached data must be made via this
+     * OIDs in <code>deletes</code>.</p>
+     * <p/>
+     * <p>All changes made to cached data must be made via this
      * method. It is this method that is responsible for performing
-     * any side-effects that should happen on meaningful cache changes.
-     * Implementations should bear in mind that the
+     * any side-effects that should happen on meaningful cache
+     * changes.</p>
+     * <p/>
+     * <p>Implementations should bear in mind that the
      * <code>deletes</code> collection may contain oids that are also
      * in the <code>additions</code> map. This is possible because it
      * is valid for a user to delete an object with a particular oid
-     * and then add that object in the same batch.
+     * and then add that object in the same batch.</p>
      *
-     * @param additions       A collection of {@link DataCachePCData} objects.
-     *                        These represent data that have been newly created,
-     *                        and thus must be added to the cache.
-     * @param newUpdates      A collection of {@link DataCachePCData} objects.
-     *                        These represent data that have been modified but
-     *                        were not originally in the cache, and thus must be added to the cache.
-     * @param existingUpdates A collection of {@link DataCachePCData} objects.
-     *                        These represent data that have been modified and
-     *                        were originally loaded from the cache. It is
-     *                        up to the cache implementation to decide if
-     *                        these values must be re-enlisted in the cache.
-     *                        Some caches may return live data from {@link #get}
-     *                        invocations, in which case these values need not be re-enlisted.
-     * @param deletes         A collection of object IDs that have been deleted
-     *                        and must therefore be dropped from the cache.
+     * @param    additions    A collection of {@link DataCachePCData} objects.
+     * These represent data that have been newly created,
+     * and thus must be added to the cache.
+     * @param    newUpdates    A collection of {@link DataCachePCData} objects.
+     * These represent data that have been modified but
+     * were not originally in the cache, and thus
+     * must be added to the cache.
+     * @param    existingUpdates    A collection of {@link DataCachePCData} objects.
+     * These represent data that have been modified and
+     * were originally loaded from the cache. It is
+     * up to the cache implementation to decide if
+     * these values must be re-enlisted in the cache.
+     * Some caches may return live data from {@link #get}
+     * invocations, in which case these values need
+     * not be re-enlisted.
+     * @param    deletes        A collection of object IDs that have been deleted
+     * and must therefore be dropped from the cache.
      */
     public void commit(Collection additions, Collection newUpdates,
         Collection existingUpdates, Collection deletes);
@@ -105,7 +116,7 @@ public interface DataCache extends Closeable {
     public BitSet containsAll(Collection oids);
 
     /**
-     * Return the cached object for the given oid. Modifying the returned
+     * Return the cached object for the given oid.  Modifying the returned
      * object may or may not change the cached value; the {@link #update}
      * method should be used to re-cache any changed objects.
      *
@@ -120,21 +131,24 @@ public interface DataCache extends Closeable {
      * to the state of the cache should be made via the {@link #commit} method.
      *
      * @return The previously cached value, or <code>null</code> if
-     *         the value was not previously cached. See {@link Map#put}
-     *         for more information.
+     * the value was not previously cached. See {@link Map#put}
+     * for more information.
      */
     public DataCachePCData put(DataCachePCData value);
 
     /**
-     * Update the cached value for the given instance. This does
+     * <p>Update the cached value for the given instance. This does
      * <em>not</em> result in an update of other caches. Rather, it should
      * only be used for loading clean data into the cache. Meaningful changes
-     * to the state of the cache should be made via the {@link #commit} method.
-     * A cache implementation may or may not return a live object
+     * to the state of the cache should be made via the {@link #commit}
+     * method.</p>
+     * <p/>
+     * <p>A cache implementation may or may not return a live object
      * from {@link #get} invocations. If an object retrieved from a
      * {@link #get} operation needs to be updated, this method can be
      * invoked instead of invoking {@link #put}. The DataCache implementation
-     * can then make optimizations based on how its {@link #get} method works.
+     * can then make optimizations based on how its {@link #get} method
+     * works.</p>
      */
     public void update(DataCachePCData value);
 
@@ -146,8 +160,8 @@ public interface DataCache extends Closeable {
      * via the {@link #commit} method.
      *
      * @return The previously cached value, or <code>null</code> if
-     *         the oid was not previously cached. See {@link Map#remove}
-     *         for more information.
+     * the oid was not previously cached. See {@link Map#remove}
+     * for more information.
      */
     public DataCachePCData remove(Object oid);
 
@@ -155,7 +169,7 @@ public interface DataCache extends Closeable {
      * Remove the values stored under the given oids.
      *
      * @return the indexes of the removed oids
-     * @see #remove
+     * @see        #remove
      */
     public BitSet removeAll(Collection oids);
 
@@ -179,7 +193,8 @@ public interface DataCache extends Closeable {
      * affect the behavior of {@link #remove}.
      *
      * @return <code>true</code> if <code>oid</code>'s value was
-     *         pinned into the cache; <code>false</code> if the oid is not in the cache.
+     *         pinned into the cache; <code>false</code> if the
+     *         oid is not in the cache.
      */
     public boolean pin(Object oid);
 
@@ -187,7 +202,7 @@ public interface DataCache extends Closeable {
      * Pin all oids to the cache.
      *
      * @return the indexes of the pinned oids
-     * @see #pin
+     * @see        #pin
      */
     public BitSet pinAll(Collection oids);
 
@@ -195,7 +210,8 @@ public interface DataCache extends Closeable {
      * Unpin the value stored under <code>oid</code> from the cache.
      * This method reverses a previous invocation of {@link #pin}.
      * This method does not remove anything from the cache; it merely
-     * makes <code>oid</code>'s value a candidate for flushing from the cache.
+     * makes <code>oid</code>'s value a candidate for flushing from
+     * the cache.
      *
      * @return <code>true</code> if <code>oid</code>'s value was
      *         unpinned from the cache; <code>false</code> if the
@@ -207,7 +223,7 @@ public interface DataCache extends Closeable {
      * Unpin all oids from the cache.
      *
      * @return the indexes of the unpinned oids
-     * @see #unpin
+     * @see        #unpin
      */
     public BitSet unpinAll(Collection oids);
 
@@ -236,7 +252,7 @@ public interface DataCache extends Closeable {
     public boolean removeExpirationListener(ExpirationListener listen);
 
     /**
-     * Free the resources used by this cache.
-     */
-    public void close();
+     *	Free the resources used by this cache.
+	 */
+	public void close ();
 }

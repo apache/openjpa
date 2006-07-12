@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,14 +18,15 @@ package org.apache.openjpa.datacache;
 import java.util.EventObject;
 
 /**
- * An event indicating the expiration of an object from the data cache,
+ * <p>An event indicating the expiration of an object from the data cache,
  * or an expiration of a result list from the query cache.
- * The source of the event will be the cache.
+ * The source of the event will be the cache.</p>
  *
- * @author Abe White
  * @since 3.0
+ * @author Abe White
  */
-public class ExpirationEvent extends EventObject {
+public class ExpirationEvent
+    extends EventObject {
 
     private final Object _key;
     private final boolean _expired;
@@ -30,10 +34,10 @@ public class ExpirationEvent extends EventObject {
     /**
      * Constructor.
      *
-     * @param source  the data or query cache
-     * @param key     the expired object oid or query key
-     * @param expired <code>true</code> if the object was expired
-     *                naturally; else <code>false</code>.
+     * @param    source    the data or query cache
+     * @param    key        the expired object oid or query key
+     * @param    expired    <code>true</code> if the object was expired
+     * naturally; else <code>false</code>.
      */
     public ExpirationEvent(Object source, Object key, boolean expired) {
         super(source);
@@ -49,10 +53,10 @@ public class ExpirationEvent extends EventObject {
     }
 
     /**
-     * Return whether the expired object was expired naturally, or if
-     * the object was explicitly removed.
+     *	Return whether the expired object was expired naturally, or if
+     *	the object was explicitly removed.
      */
     public boolean getExpired() {
         return _expired;
-    }
+	}
 }

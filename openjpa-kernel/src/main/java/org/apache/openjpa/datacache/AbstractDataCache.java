@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -34,10 +37,12 @@ import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
  * @author Patrick Linskey
  * @author Abe White
  */
-public abstract class AbstractDataCache extends AbstractConcurrentEventManager
+public abstract class AbstractDataCache
+    extends AbstractConcurrentEventManager
     implements DataCache, Configurable {
 
     private static final BitSet EMPTY_BITSET = new BitSet(0);
+
     private static final Localizer s_loc =
         Localizer.forPackage(AbstractDataCache.class);
 
@@ -50,6 +55,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
      * The log to use.
      */
     protected Log log;
+
     private String _name = null;
     private boolean _closed = false;
     private String _schedule = null;
@@ -82,23 +88,28 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
         Collection existingUpdates, Collection deletes) {
         // remove all objects in deletes list
         removeAllInternal(deletes);
+
         // next, add all the new additions
         putAllInternal(additions);
         putAllInternal(newUpdates);
+
         // possibly add the existing updates, depending on the
         // semantics of the cache, as dictated by recacheUpdates()
         if (recacheUpdates())
             putAllInternal(existingUpdates);
+
         if (log.isTraceEnabled()) {
             Collection addIds = new ArrayList(additions.size());
             Collection upIds = new ArrayList(newUpdates.size());
             Collection exIds = new ArrayList(existingUpdates.size());
+
             for (Iterator iter = additions.iterator(); iter.hasNext();)
                 addIds.add(((DataCachePCData) iter.next()).getId());
             for (Iterator iter = newUpdates.iterator(); iter.hasNext();)
                 upIds.add(((DataCachePCData) iter.next()).getId());
             for (Iterator iter = existingUpdates.iterator(); iter.hasNext();)
                 exIds.add(((DataCachePCData) iter.next()).getId());
+
             log.trace(s_loc.get("cache-commit",
                 new Object[]{ addIds, upIds, exIds, deletes }));
         }
@@ -118,6 +129,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     public BitSet containsAll(Collection keys) {
         if (keys.isEmpty())
             return EMPTY_BITSET;
+
         BitSet set = new BitSet(keys.size());
         int i = 0;
         for (Iterator iter = keys.iterator(); iter.hasNext(); i++)
@@ -134,11 +146,14 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
             if (log.isTraceEnabled())
                 log.trace(s_loc.get("cache-timeout", key));
         }
+
         if (log.isTraceEnabled()) {
             if (o == null)
                 log.trace(s_loc.get("cache-miss", key));
-            else log.trace(s_loc.get("cache-hit", key));
+            else
+                log.trace(s_loc.get("cache-hit", key));
         }
+
         return o;
     }
 
@@ -161,7 +176,8 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
         if (log.isTraceEnabled()) {
             if (o == null)
                 log.trace(s_loc.get("cache-remove-miss", key));
-            else log.trace(s_loc.get("cache-remove-hit", key));
+            else
+                log.trace(s_loc.get("cache-remove-hit", key));
         }
         return o;
     }
@@ -169,6 +185,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     public BitSet removeAll(Collection keys) {
         if (keys.isEmpty())
             return EMPTY_BITSET;
+
         BitSet set = new BitSet(keys.size());
         int i = 0;
         for (Iterator iter = keys.iterator(); iter.hasNext(); i++)
@@ -189,7 +206,8 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
         if (log.isTraceEnabled()) {
             if (bool)
                 log.trace(s_loc.get("cache-pin-hit", key));
-            else log.trace(s_loc.get("cache-pin-miss", key));
+            else
+                log.trace(s_loc.get("cache-pin-miss", key));
         }
         return bool;
     }
@@ -197,6 +215,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     public BitSet pinAll(Collection keys) {
         if (keys.isEmpty())
             return EMPTY_BITSET;
+
         BitSet set = new BitSet(keys.size());
         int i = 0;
         for (Iterator iter = keys.iterator(); iter.hasNext(); i++)
@@ -210,7 +229,8 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
         if (log.isTraceEnabled()) {
             if (bool)
                 log.trace(s_loc.get("cache-unpin-hit", key));
-            else log.trace(s_loc.get("cache-unpin-miss", key));
+            else
+                log.trace(s_loc.get("cache-unpin-miss", key));
         }
         return bool;
     }
@@ -218,6 +238,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     public BitSet unpinAll(Collection keys) {
         if (keys.isEmpty())
             return EMPTY_BITSET;
+
         BitSet set = new BitSet(keys.size());
         int i = 0;
         for (Iterator iter = keys.iterator(); iter.hasNext(); i++)
@@ -261,14 +282,15 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     }
 
     /**
-     * This method is part of the {@link RemoteCommitListener} interface. If
+     * This method is part of the {@link RemoteCommitListener} interface.  If
      * your cache subclass relies on OpenJPA for clustering support, make it
-     * implement <code>RemoteCommitListener</code>. This method will take
+     * implement <code>RemoteCommitListener</code>.  This method will take
      * care of invalidating entries from remote commits.
      */
     public void afterCommit(RemoteCommitEvent event) {
         if (_closed)
             return;
+
         if (event.getPayloadType() == RemoteCommitEvent.PAYLOAD_EXTENTS) {
             removeAllTypeNamesInternal(event.getUpdatedTypeNames());
             removeAllTypeNamesInternal(event.getDeletedTypeNames());
@@ -290,14 +312,15 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
         // Notify any expiration listeners of the expiration.
         if (hasListeners())
             fireEvent(new ExpirationEvent(this, key, expired));
+
         if (expired && log.isTraceEnabled())
             log.trace(s_loc.get("cache-expired", key));
     }
 
     /**
      * Return <code>true</code> if updates to data already in the
-     * cache(either in {@link #commit} or the {@link #update})
-     * should be put back into the cache. Returns false by default.
+     * cache (either in {@link #commit} or the {@link #update})
+     * should be put back into the cache.  Returns false by default.
      */
     protected boolean recacheUpdates() {
         return false;
@@ -351,6 +374,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
         Collection classes = Caches.addTypesByName(conf, classNames, null);
         if (classes == null)
             return;
+
         Class cls;
         for (Iterator iter = classes.iterator(); iter.hasNext();) {
             cls = (Class) iter.next();
@@ -376,6 +400,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     protected abstract boolean unpinInternal(Object oid);
 
     // ---------- Configurable implementation ----------
+
     public void setConfiguration(Configuration conf) {
         this.conf = (OpenJPAConfiguration) conf;
         this.log = conf.getLog(OpenJPAConfiguration.LOG_DATACACHE);
@@ -390,14 +415,16 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     }
 
     // ---------- AbstractEventManager implementation ----------
+
     protected void fireEvent(Object event, Object listener) {
         ExpirationListener listen = (ExpirationListener) listener;
         ExpirationEvent ev = (ExpirationEvent) event;
         try {
             listen.onExpire(ev);
-        } catch (Exception e) {
-            if (log.isWarnEnabled())
-                log.warn(s_loc.get("exp-listener-ex"), e);
         }
-    }
+        catch (Exception e) {
+            if (log.isWarnEnabled())
+                log.warn(s_loc.get ("exp-listener-ex"), e);
+		}
+	}
 }

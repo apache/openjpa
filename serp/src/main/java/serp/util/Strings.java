@@ -36,9 +36,9 @@ public class Strings {
      * Replace all instances of <code>from</code> in <code>str</code>
      * with <code>to</code>.
      *
-     * @param str  the candidate string to replace
+     * @param str the candidate string to replace
      * @param from the token to replace
-     * @param to   the new token
+     * @param to the new token
      * @return the string with all the replacements made
      */
     public static String replace(String str, String from, String to) {
@@ -241,13 +241,13 @@ public class Strings {
      * <code>null</code>s are converted to the Java default for the
      * primitive type.
      *
-     * @param val  The string value to parse
+     * @param val The string value to parse
      * @param type The type to parse. This must be a primitive or a
-     *             primitive wrapper, or one of {@link BigDecimal},
-     *             {@link BigInteger}, {@link String}, {@link Date}.
+     * primitive wrapper, or one of {@link BigDecimal},
+     * {@link BigInteger}, {@link String}, {@link Date}.
      * @throws IllegalArgumentException if <code>type</code> is not a
-     *                                  supported type, or if <code>val</code> cannot be
-     *                                  converted into an instance of type <code>type</code>.
+     * supported type, or if <code>val</code> cannot be
+     * converted into an instance of type <code>type</code>.
      */
     public static Object parse(String val, Class type) {
         if (!canParse(type))

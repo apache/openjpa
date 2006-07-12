@@ -160,9 +160,9 @@ public class Files {
      * file. If no resource exists, then it is interpreted as a path
      * to a file that does not exist yet.
      *
-     * @param name   the file path or resource name
+     * @param name the file path or resource name
      * @param loader a class loader to use in resource lookup, or null
-     *               to use the thread's context loader
+     * to use the thread's context loader
      */
     public static File getFile(String name, ClassLoader loader) {
         if (name == null)

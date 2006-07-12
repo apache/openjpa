@@ -114,9 +114,9 @@ public class ConcurrentHashMap extends AbstractMap
      * capacity and load factor.
      *
      * @param initialCapacity The initial capacity.
-     * @param loadFactor      The load factor.
+     * @param loadFactor The load factor.
      * @throws IllegalArgumentException if the initial capacity is negative
-     *                                  or the load factor is nonpositive.
+     * or the load factor is nonpositive.
      */
     public ConcurrentHashMap(int initialCapacity, float loadFactor) {
         if (initialCapacity < 0) {
@@ -312,7 +312,7 @@ public class ConcurrentHashMap extends AbstractMap
      * If the map previously contained a mapping for this key, the old
      * value is replaced.
      *
-     * @param key   key with which the specified value is to be associated.
+     * @param key key with which the specified value is to be associated.
      * @param value value to be associated with the specified key.
      * @return previous value associated with specified key, or <tt>null</tt>
      *         if there was no mapping for key. A <tt>null</tt> return can

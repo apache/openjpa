@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -43,6 +46,7 @@ public abstract class AbstractExpressionBuilder {
     protected static final int EX_USER = 0;
     protected static final int EX_FATAL = 1;
     protected static final int EX_UNSUPPORTED = 2;
+
     // common implicit type settings
     protected static final Class TYPE_OBJECT = Object.class;
     protected static final Class TYPE_STRING = String.class;
@@ -50,14 +54,18 @@ public abstract class AbstractExpressionBuilder {
     protected static final Class TYPE_NUMBER = Number.class;
     protected static final Class TYPE_COLLECTION = Collection.class;
     protected static final Class TYPE_MAP = Map.class;
+
     // contains types for setImplicitTypes
     protected static final int CONTAINS_TYPE_ELEMENT = 1;
     protected static final int CONTAINS_TYPE_KEY = 2;
     protected static final int CONTAINS_TYPE_VALUE = 3;
+
     private static final Localizer _loc = Localizer.forPackage
         (AbstractExpressionBuilder.class);
+
     protected final Resolver resolver;
     protected ExpressionFactory factory;
+
     private final Set _accessPath = new HashSet();
     private Map _seenVars = null;
     private Set _boundVars = null;
@@ -65,10 +73,10 @@ public abstract class AbstractExpressionBuilder {
     /**
      * Constructor.
      *
-     * @param factory  the expression factory to use
-     * @param meta     candidate class metadata
-     * @param resolver used to resolve variables, parameters, and class
-     *                 names used in the query
+     * @param    factory        the expression factory to use
+     * @param    meta        candidate class metadata
+     * @param    resolver    used to resolve variables, parameters, and class
+     * names used in the query
      */
     public AbstractExpressionBuilder(ExpressionFactory factory,
         Resolver resolver) {
@@ -78,7 +86,7 @@ public abstract class AbstractExpressionBuilder {
 
     /**
      * Returns the class loader that should be used for resolving
-     * class names(in addition to the resolver in the query).
+     * class names (in addition to the resolver in the query).
      */
     protected abstract ClassLoader getClassLoader();
 
@@ -91,8 +99,11 @@ public abstract class AbstractExpressionBuilder {
         String argStr;
         if (args == null)
             argStr = getLocalizer().get(token);
-        else argStr = getLocalizer().get(token, args);
+        else
+            argStr = getLocalizer().get(token, args);
+
         String msg = _loc.get("parse-error", argStr, currentQuery());
+
         switch (e) {
             case EX_FATAL:
                 throw new InternalException(msg, nest);
@@ -142,20 +153,26 @@ public abstract class AbstractExpressionBuilder {
         // check for already constructed var
         if (isSeenVariable(id))
             return (Value) _seenVars.get(id);
+
         // create and cache var
         Class type = getDeclaredVariableType(id);
+
         // add this type to the set of classes in the filter's access path
         ClassMetaData meta = null;
         if (type == null)
             type = TYPE_OBJECT;
-        else meta = getMetaData(type, false);
+        else
+            meta = getMetaData(type, false);
         if (meta != null)
             _accessPath.add(meta);
+
         Value var;
         if (bind)
             var = factory.newBoundVariable(id, type);
-        else var = factory.newUnboundVariable(id, type);
+        else
+            var = factory.newUnboundVariable(id, type);
         var.setMetaData(meta);
+
         if (_seenVars == null)
             _seenVars = new HashMap();
         _seenVars.put(id, var);
@@ -163,13 +180,14 @@ public abstract class AbstractExpressionBuilder {
     }
 
     /**
-     * Validate that all unbound variables are of a PC type. If not, assume
+     * Validate that all unbound variables are of a PC type.  If not, assume
      * that the user actually made a typo that we took for an implicit
      * unbound variable.
      */
     protected void assertUnboundVariablesValid() {
         if (_seenVars == null)
             return;
+
         Map.Entry entry;
         Value var;
         for (Iterator itr = _seenVars.entrySet().iterator(); itr.hasNext();) {
@@ -232,23 +250,29 @@ public abstract class AbstractExpressionBuilder {
         if (meta == null)
             throw parseException(EX_USER, "path-no-meta",
                 new Object[]{ field, path.getType() }, null);
+
         FieldMetaData fmd = meta.getField(field);
         if (fmd == null) {
             Object val = traverseStaticField(meta.getDescribedType(), field);
             if (val == null)
                 throw parseException(EX_USER, "no-field",
                     new Object[]{ meta.getDescribedType(), field }, null);
+
             return factory.newLiteral(val, Literal.TYPE_UNKNOWN);
         }
+
         if (fmd.isEmbedded())
             meta = fmd.getEmbeddedMetaData();
-        else meta = fmd.getDeclaredTypeMetaData();
+        else
+            meta = fmd.getDeclaredTypeMetaData();
         if (meta != null) {
             addAccessPath(meta);
             path.setMetaData(meta);
         }
+
         if (meta != null || !pcOnly)
             path.get(fmd, allowNull);
+
         return path;
     }
 
@@ -258,7 +282,8 @@ public abstract class AbstractExpressionBuilder {
     protected Object traverseStaticField(Class cls, String field) {
         try {
             return cls.getField(field).get(null);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // count not locate the field: return null
             return null;
         }
@@ -273,11 +298,13 @@ public abstract class AbstractExpressionBuilder {
      * Set the implicit types of the given values based on the fact that
      * they're used together, and based on the operator type.
      */
-    protected void setImplicitTypes(Value val1, Value val2, Class expected) {
+    protected void setImplicitTypes(Value val1, Value val2,
+        Class expected) {
         Class c1 = val1.getType();
         Class c2 = val2.getType();
         boolean o1 = c1 == TYPE_OBJECT;
         boolean o2 = c2 == TYPE_OBJECT;
+
         if (o1 && !o2) {
             val1.setImplicitType(c2);
             if (val1.getMetaData() == null)
@@ -294,7 +321,8 @@ public abstract class AbstractExpressionBuilder {
             if (resolver.getConfiguration().getCompatibilityInstance().
                 getQuotedNumbersInQueries())
                 convertTypesQuotedNumbers(val1, val2);
-            else convertTypes(val1, val2);
+            else
+                convertTypes(val1, val2);
         }
     }
 
@@ -304,6 +332,7 @@ public abstract class AbstractExpressionBuilder {
     private void convertTypes(Value val1, Value val2) {
         Class t1 = val1.getType();
         Class t2 = val2.getType();
+
         // allow string-to-char conversions
         if (t1 == TYPE_STRING && (Filters.wrap(t2) == TYPE_CHAR_OBJ
             && !(val2 instanceof Path))) {
@@ -315,6 +344,7 @@ public abstract class AbstractExpressionBuilder {
             val1.setImplicitType(String.class);
             return;
         }
+
         // if the non-numeric side is a string of length 1, cast it
         // to a character
         if (t1 == TYPE_STRING && val1 instanceof Literal
@@ -327,17 +357,20 @@ public abstract class AbstractExpressionBuilder {
             val2.setImplicitType(Character.class);
             return;
         }
+
         // error
         String left;
         String right;
         if (val1 instanceof Path && ((Path) val1).last() != null)
             left = _loc.get("non-numeric-path", ((Path) val1).last().
                 getName(), t1.getName());
-        else left = _loc.get("non-numeric-value", t1.getName());
+        else
+            left = _loc.get("non-numeric-value", t1.getName());
         if (val2 instanceof Path && ((Path) val2).last() != null)
             right = _loc.get("non-numeric-path", ((Path) val2).last().
                 getName(), t2.getName());
-        else right = _loc.get("non-numeric-value", t2.getName());
+        else
+            right = _loc.get("non-numeric-value", t2.getName());
         throw new UserException(_loc.get("non-numeric-comparison",
             left, right));
     }
@@ -348,6 +381,7 @@ public abstract class AbstractExpressionBuilder {
     private void convertTypesQuotedNumbers(Value val1, Value val2) {
         Class t1 = val1.getType();
         Class t2 = val2.getType();
+
         // if we're comparing to a single-quoted string, convert
         // the value according to the 3.1 rules.
         if (t1 == TYPE_STRING && val1 instanceof Literal
@@ -366,6 +400,7 @@ public abstract class AbstractExpressionBuilder {
                 val2.setImplicitType(Character.TYPE);
             }
         }
+
         // if we're comparing to a double-quoted string, convert the
         // value directly to a number
         if (t1 == TYPE_STRING && val1 instanceof Literal
@@ -399,8 +434,10 @@ public abstract class AbstractExpressionBuilder {
         if (val1.getType() == TYPE_OBJECT) {
             if (op == CONTAINS_TYPE_ELEMENT)
                 val1.setImplicitType(Collection.class);
-            else val1.setImplicitType(Map.class);
+            else
+                val1.setImplicitType(Map.class);
         }
+
         if (val2.getType() == TYPE_OBJECT && val1 instanceof Path) {
             FieldMetaData fmd = ((Path) val1).last();
             ClassMetaData meta;
@@ -440,8 +477,8 @@ public abstract class AbstractExpressionBuilder {
     protected abstract Localizer getLocalizer();
 
     /**
-     * Returns the current string being parsed; used for error messages.
-     */
-    protected abstract String currentQuery();
+     *  Returns the current string being parsed; used for error messages.
+	 */
+	protected abstract String currentQuery ();
 }
 

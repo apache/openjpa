@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -13,14 +16,15 @@
 package org.apache.openjpa.kernel.exps;
 
 /**
- * Expression that compares two others.
+ * <p>Expression that compares two others.</p>
  *
  * @author Abe White
  */
-class LessThanExpression extends CompareExpression {
+class LessThanExpression
+    extends CompareExpression {
 
     /**
-     * Constructor. Supply values to compare.
+     * Constructor.  Supply values to compare.
      */
     public LessThanExpression(Val val1, Val val2) {
         super(val1, val2);
@@ -32,4 +36,5 @@ class LessThanExpression extends CompareExpression {
         return ((Comparable) o1).compareTo(o2) < 0;
     }
 }
+
 

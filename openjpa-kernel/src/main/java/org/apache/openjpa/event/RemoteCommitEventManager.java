@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -28,33 +31,36 @@ import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 import org.apache.openjpa.util.UserException;
 
 /**
- * Manager that can be used to track and notify
+ * <p>Manager that can be used to track and notify
  * {@link RemoteCommitListener}s on remote commit events. If remote events
  * are enabled, this manager should be installed as a transaction listener on
- * all brokers so that it knows when commits are made.
+ * all brokers so that it knows when commits are made.</p>
  *
  * @author Patrick Linskey
  * @author Abe White
  * @since 3.0
  */
-public class RemoteCommitEventManager extends AbstractConcurrentEventManager
+public class RemoteCommitEventManager
+    extends AbstractConcurrentEventManager
     implements EndTransactionListener, Closeable {
 
     private static final Localizer _loc = Localizer.forPackage
         (RemoteCommitEventManager.class);
+
     private final RemoteCommitProvider _provider;
     private final Log _log;
     private boolean _transmitPersIds = false;
 
     /**
-     * Constructor. Supply configuration.
+     * Constructor.  Supply configuration.
      */
     public RemoteCommitEventManager(OpenJPAConfiguration conf) {
         _provider = conf.newRemoteCommitProviderInstance();
         if (_provider != null) {
             _provider.setRemoteCommitEventManager(this);
             _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
-        } else _log = null;
+        } else
+            _log = null;
     }
 
     /**
@@ -114,6 +120,7 @@ public class RemoteCommitEventManager extends AbstractConcurrentEventManager
     //////////////////////////////////////
     // TransactionListener implementation
     //////////////////////////////////////
+
     public void afterCommit(TransactionEvent event) {
         if (_provider != null) {
             RemoteCommitEvent rce = createRemoteCommitEvent(event);
@@ -132,6 +139,7 @@ public class RemoteCommitEventManager extends AbstractConcurrentEventManager
         Collection addClassNames = null;
         Collection updates = null;
         Collection deletes = null;
+
         if (broker.isLargeTransaction()) {
             payload = RemoteCommitEvent.PAYLOAD_EXTENTS;
             addClassNames = toClassNames(event.getPersistedTypes());
@@ -143,6 +151,7 @@ public class RemoteCommitEventManager extends AbstractConcurrentEventManager
             Collection trans = event.getTransactionalObjects();
             if (trans.isEmpty())
                 return null;
+
             payload = (_transmitPersIds)
                 ? RemoteCommitEvent.PAYLOAD_OIDS_WITH_ADDS
                 : RemoteCommitEvent.PAYLOAD_OIDS;
@@ -152,10 +161,12 @@ public class RemoteCommitEventManager extends AbstractConcurrentEventManager
             for (Iterator itr = trans.iterator(); itr.hasNext();) {
                 obj = itr.next();
                 sm = broker.getStateManager(obj);
+
                 if (sm == null || !sm.isPersistent() || !sm.isDirty())
                     continue;
                 if (sm.isNew() && sm.isDeleted())
                     continue;
+
                 oid = sm.fetchObjectId();
                 if (sm.isNew()) {
                     if (_transmitPersIds) {
@@ -189,6 +200,7 @@ public class RemoteCommitEventManager extends AbstractConcurrentEventManager
     private static Collection toClassNames(Collection clss) {
         if (clss.isEmpty())
             return null;
+
         List names = new ArrayList(clss);
         for (int i = 0; i < names.size(); i++)
             names.set(i, ((Class) names.get(i)).getName());
@@ -207,6 +219,7 @@ public class RemoteCommitEventManager extends AbstractConcurrentEventManager
     public void afterRollbackComplete(TransactionEvent event) {
     }
 
-    public void afterStateTransitions(TransactionEvent event) {
-    }
+    public void afterStateTransitions(TransactionEvent event)
+	{
+	}
 }

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,23 +20,28 @@ import org.apache.openjpa.lib.conf.Value;
 import serp.util.Strings;
 
 /**
- * Value type used to represent auto detach flags. Separate to
- * optimize translation of Strings to bit flags.
+ * <p>Value type used to represent auto detach flags. Separate to
+ * optimize translation of Strings to bit flags.</p>
  *
  * @author Steve Kim
  * @nojavadoc
  */
-class AutoDetachValue extends Value {
+class AutoDetachValue
+    extends Value {
 
     public static final String DETACH_CLOSE = "close";
     public static final String DETACH_COMMIT = "commit";
     public static final String DETACH_NONTXREAD = "nontx-read";
+
     private static String[] ALIASES = new String[]{
         DETACH_CLOSE, String.valueOf(AutoDetach.DETACH_CLOSE),
         DETACH_COMMIT, String.valueOf(AutoDetach.DETACH_COMMIT),
         DETACH_NONTXREAD, String.valueOf(AutoDetach.DETACH_NONTXREAD),
         // for compatibility with JDO DetachAllOnCommit
-        "true", String.valueOf(AutoDetach.DETACH_COMMIT), "false", "0", };
+        "true", String.valueOf(AutoDetach.DETACH_COMMIT),
+        "false", "0",
+    };
+
     private int _flags;
 
     public AutoDetachValue(String prop) {
@@ -62,7 +70,8 @@ class AutoDetachValue extends Value {
                 buf.append(aliases[i]);
                 if (start)
                     buf.append(", ");
-                else start = true;
+                else
+                    start = true;
             }
         }
         return buf.toString();

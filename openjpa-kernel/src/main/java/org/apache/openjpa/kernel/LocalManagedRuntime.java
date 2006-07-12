@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -27,9 +30,9 @@ import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.StoreException;
 
 /**
- * Uses a local implementation of the {@link TransactionManager} interface.
+ * <p>Uses a local implementation of the {@link TransactionManager} interface.
  * This manager is valid only for a single {@link Broker}.
- * It duplicates non-managed transaction control.
+ * It duplicates non-managed transaction control.</p>
  *
  * @author Abe White
  */
@@ -38,13 +41,14 @@ class LocalManagedRuntime
 
     private static final Localizer _loc = Localizer.forPackage
         (LocalManagedRuntime.class);
+
     private Synchronization _broker = null;
     private Synchronization _factorySync = null;
     private boolean _active = false;
     private boolean _rollbackOnly = false;
 
     /**
-     * Constructor. Provide broker that will be requesting managed
+     * Constructor.  Provide broker that will be requesting managed
      * transaction info.
      */
     public LocalManagedRuntime(Broker broker) {
@@ -64,6 +68,7 @@ class LocalManagedRuntime
     public synchronized void commit() {
         if (!_active)
             throw new InvalidStateException(_loc.get("not-active"));
+
         // try to invoke before completion in preparation for commit
         RuntimeException err = null;
         if (!_rollbackOnly) {
@@ -71,31 +76,37 @@ class LocalManagedRuntime
                 _broker.beforeCompletion();
                 if (_factorySync != null)
                     _factorySync.beforeCompletion();
-            } catch (RuntimeException re) {
+            }
+            catch (RuntimeException re) {
                 _rollbackOnly = true;
                 err = re;
             }
         } else // previously marked rollback only
             err = new StoreException(_loc.get("marked-rollback")).
                 setFatal(true);
+
         if (!_rollbackOnly) {
             try {
                 _broker.afterCompletion(Status.STATUS_COMMITTED);
                 notifyAfterCompletion(Status.STATUS_COMMITTED);
-            } catch (RuntimeException re) {
+            }
+            catch (RuntimeException re) {
                 if (err == null)
                     err = re;
             }
         }
+
         // if we haven't managed to commit, rollback
         if (_active) {
             try {
                 rollback();
-            } catch (RuntimeException re) {
+            }
+            catch (RuntimeException re) {
                 if (err == null)
                     err = re;
             }
         }
+
         // throw the first exception we encountered, if any
         if (err != null)
             throw err;
@@ -104,31 +115,37 @@ class LocalManagedRuntime
     public synchronized void rollback() {
         if (!_active)
             throw new InvalidStateException(_loc.get("not-active"));
+
         // rollback broker
         RuntimeException err = null;
         try {
             _broker.afterCompletion(Status.STATUS_ROLLEDBACK);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             err = re;
         }
+
         // rollback synch, even if broker throws exception
         try {
             notifyAfterCompletion(Status.STATUS_ROLLEDBACK);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             if (err == null)
                 err = re;
         }
+
         if (err != null)
             throw err;
     }
 
     /**
      * Notifies the factory sync that the transaction has ended with
-     * the given status. Clears all transaction state regardless
+     * the given status.  Clears all transaction state regardless
      * of any exceptions during the callback.
      */
     private void notifyAfterCompletion(int status) {
         _active = false;
+
         try {
             if (_factorySync != null)
                 _factorySync.afterCompletion(status);
@@ -155,15 +172,18 @@ class LocalManagedRuntime
         return this;
     }
 
-    public void resume(Transaction tobj) throws SystemException {
+    public void resume(Transaction tobj)
+        throws SystemException {
         throw new SystemException(NotSupportedException.class.getName());
     }
 
-    public void setTransactionTimeout(int sec) throws SystemException {
+    public void setTransactionTimeout(int sec)
+        throws SystemException {
         throw new SystemException(NotSupportedException.class.getName());
     }
 
-    public Transaction suspend() throws SystemException {
+    public Transaction suspend()
+        throws SystemException {
         throw new SystemException(NotSupportedException.class.getName());
     }
 
@@ -172,7 +192,8 @@ class LocalManagedRuntime
         throw new SystemException(NotSupportedException.class.getName());
     }
 
-    public boolean enlistResource(XAResource xaRes) throws SystemException {
+    public boolean enlistResource(XAResource xaRes)
+        throws SystemException {
         throw new SystemException(NotSupportedException.class.getName());
     }
 

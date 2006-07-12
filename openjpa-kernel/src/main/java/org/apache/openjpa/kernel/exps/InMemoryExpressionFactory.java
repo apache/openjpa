@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -32,17 +35,19 @@ import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.UserException;
 
 /**
- * Expression factory implementation that can be used to execute queries
- * in memory.
+ * <p>Expression factory implementation that can be used to execute queries
+ * in memory.</p>
  *
  * @author Abe White
  * @nojavadoc
  */
-public class InMemoryExpressionFactory implements ExpressionFactory {
+public class InMemoryExpressionFactory
+    implements ExpressionFactory {
 
     private static final Value NULL = new Null();
     private static final Value CURRENT_DATE = new CurrentDate();
     private static final Object UNIQUE = new Object();
+
     // list of unbound variables in this query
     private List _unbounds = null;
 
@@ -60,6 +65,7 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
         if (subs && !type.getDescribedType().isAssignableFrom
             (candidate.getClass()))
             return false;
+
         // evaluate the expression for all possible combinations of values
         // of the unbound variables; the candidate matches if any combination
         // matches
@@ -68,7 +74,7 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
 
     /**
      * Recursive method to evaluate the expression for all possible
-     * combinations of unbound variables. This method simulates a sequence
+     * combinations of unbound variables.  This method simulates a sequence
      * of embedded procedural loops over the extents of all variables in the
      * unbounds list.
      */
@@ -78,6 +84,7 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
         // values
         if (_unbounds == null || i == _unbounds.size())
             return exp.evaluate(candidate, candidate, ctx, params);
+
         // grab the extent for this variable
         UnboundVariable var = (UnboundVariable) _unbounds.get(i);
         Iterator itr = ctx.extentIterator(var.getType(), true, null, false);
@@ -87,6 +94,7 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
                 var.setValue(null);
                 return matches(exp, candidate, ctx, params, i + 1);
             }
+
             // try every value, short-circuiting on match
             while (itr.hasNext()) {
                 // set the variable to each extent value and recurse
@@ -94,6 +102,7 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
                 if (matches(exp, candidate, ctx, params, i + 1))
                     return true;
             }
+
             // no match
             return false;
         }
@@ -109,8 +118,10 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
         StoreContext ctx, Object[] params) {
         if (matches == null || matches.isEmpty() || exps.grouping.length == 0)
             return matches;
+
         // to form groups we first order on the grouping criteria
         matches = order(exps, exps.grouping, false, matches, ctx, params);
+
         // now we combine all results whose values for each grouping clause
         // are the same, relying on the fact that these values will already be
         // together due to the sorting
@@ -129,6 +140,7 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
                     params);
                 eq = eq && ObjectUtils.equals(prevs[i], curs[i]);
             }
+
             // if this object's grouping values differ from the prev,
             // start a new group
             if (!eq) {
@@ -142,6 +154,7 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
         // add the last group formed
         if (group != null)
             grouped.add(group);
+
         return grouped;
     }
 
@@ -154,6 +167,7 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
             return false;
         if (exps.having == null)
             return true;
+
         // evaluate the expression for all possible combinations of values
         // of the unbound variables; the group matches if any combination
         // matches
@@ -162,7 +176,7 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
 
     /**
      * Recursive method to evaluate the expression for all possible
-     * combinations of unbound variables. This method simulates a sequence
+     * combinations of unbound variables.  This method simulates a sequence
      * of embedded procedural loops over the extents of all variables in the
      * unbounds list.
      */
@@ -172,6 +186,7 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
         // values
         if (_unbounds == null || i == _unbounds.size())
             return exp.evaluate(group, ctx, params);
+
         // grab the extent for this variable
         UnboundVariable var = (UnboundVariable) _unbounds.get(i);
         Extent extent = ctx.getBroker().newExtent(var.getType(), true);
@@ -182,6 +197,7 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
                 var.setValue(null);
                 return matches(exp, group, ctx, params, i + 1);
             }
+
             // try every value, short-circuiting on match
             while (itr.hasNext()) {
                 // set the variable to each extent value and recurse
@@ -189,6 +205,7 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
                 if (matches(exp, group, ctx, params, i + 1))
                     return true;
             }
+
             // no match
             return false;
         }
@@ -204,11 +221,13 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
         StoreContext ctx, Object[] params) {
         if (exps.projections.length == 0)
             return matches;
+
         // if an ungrouped aggregate, evaluate the whole matches list
         if (exps.grouping.length == 0 && exps.aggregate) {
             Object[] projection = project(matches, exps, true, ctx, params);
             return Arrays.asList(new Object[]{ projection });
         }
+
         // evaluate each candidate
         List projected = new ArrayList(matches.size());
         for (Iterator itr = matches.iterator(); itr.hasNext();)
@@ -224,16 +243,19 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
         boolean agg, StoreContext ctx, Object[] params) {
         Object[] projection = new Object[exps.projections.length
             + exps.ordering.length];
+
         // calcualte result values
         Object result = null;
         for (int i = 0; i < exps.projections.length; i++) {
             if (agg)
                 result = ((Val) exps.projections[i]).evaluate((Collection)
                     candidate, null, ctx, params);
-            else result = ((Val) exps.projections[i]).evaluate(candidate,
-                candidate, ctx, params);
+            else
+                result = ((Val) exps.projections[i]).evaluate(candidate,
+                    candidate, ctx, params);
             projection[i] = result;
         }
+
         // tack on ordering values
         boolean repeat;
         for (int i = 0; i < exps.ordering.length; i++) {
@@ -245,14 +267,17 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
                     repeat = true;
                 }
             }
+
             // not selected as result; calculate value
             if (!repeat) {
                 if (agg)
                     result = ((Val) exps.ordering[i]).evaluate((Collection)
                         candidate, null, ctx, params);
-                else result = ((Val) exps.ordering[i]).evaluate(candidate,
-                    candidate, ctx, params);
+                else
+                    result = ((Val) exps.ordering[i]).evaluate(candidate,
+                        candidate, ctx, params);
             }
+
             projection[i + exps.projections.length] = result;
         }
         return projection;
@@ -269,13 +294,15 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
     /**
      * Order the given list of matches on the given value.
      *
-     * @param projected whether projections have been applied to the matches yet
+     * @param    projected    whether projections have been applied to the
+     * matches yet
      */
     private List order(QueryExpressions exps, Value[] orderValues,
         boolean projected, List matches, StoreContext ctx, Object[] params) {
         if (matches == null || matches.isEmpty()
             || orderValues == null || orderValues.length == 0)
             return matches;
+
         int results = (projected) ? exps.projections.length : 0;
         boolean[] asc = (projected) ? exps.ascending : null;
         int idx;
@@ -297,12 +324,14 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
         List matches) {
         if (matches == null || matches.isEmpty())
             return matches;
+
         // no need to do distinct if not instructed to, or if these are
         // candidate objects from an extent
         int len = exps.projections.length;
         if ((exps.distinct & exps.DISTINCT_TRUE) == 0
             || (fromExtent && len == 0))
             return matches;
+
         Set seen = new HashSet(matches.size());
         List distinct = null;
         Object cur;
@@ -310,6 +339,7 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
         for (ListIterator li = matches.listIterator(); li.hasNext();) {
             cur = li.next();
             key = (len > 0 && cur != null) ? new ArrayKey((Object[]) cur) : cur;
+
             if (seen.add(key)) {
                 // key hasn't been seen before; if we've created a distinct
                 // list, keep adding to it
@@ -317,7 +347,7 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
                     distinct.add(cur);
             } else if (distinct == null) {
                 // we need to copy the matches list because the distinct list
-                // will be different(we've come across a non-unique key); add
+                // will be different (we've come across a non-unique key); add
                 // all the elements we've skipped over so far
                 distinct = new ArrayList(matches.size());
                 distinct.addAll(matches.subList(0, li.previousIndex()));
@@ -500,7 +530,8 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
             ((CandidatePath) val).castTo(cls);
         else if (val instanceof BoundVariable)
             ((BoundVariable) val).castTo(cls);
-        else val = new Cast((Val) val, cls);
+        else
+            val = new Cast((Val) val, cls);
         return val;
     }
 
@@ -623,6 +654,7 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
                 return true;
             if (other == null)
                 return false;
+
             Object[] arr = ((ArrayKey) other)._arr;
             if (_arr.length != arr.length)
                 return false;
@@ -634,11 +666,12 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
     }
 
     /**
-     * Comparator that uses the result of eval'ing a Value to sort on. Null
-     * values are placed last if sorting in ascending order, first if
-     * descending.
+     *	Comparator that uses the result of eval'ing a Value to sort on.  Null
+     *	values are placed last if sorting in ascending order, first if
+     *	descending.
      */
-    private static class OrderValueComparator implements Comparator {
+    private static class OrderValueComparator
+        implements Comparator {
 
         private final StoreContext _ctx;
         private final Val _val;
@@ -663,26 +696,30 @@ public class InMemoryExpressionFactory implements ExpressionFactory {
                 o1 = _val.evaluate(o1, o1, _ctx, _params);
                 o2 = _val.evaluate(o2, o2, _ctx, _params);
             }
+
             if (o1 == null && o2 == null)
                 return 0;
             if (o1 == null)
                 return (_asc) ? 1 : -1;
             if (o2 == null)
                 return (_asc) ? -1 : 1;
+
             if (o1 instanceof Boolean && o2 instanceof Boolean) {
                 int i1 = ((Boolean) o1).booleanValue() ? 1 : 0;
                 int i2 = ((Boolean) o2).booleanValue() ? 1 : 0;
                 return i1 - i2;
             }
+
             try {
                 if (_asc)
                     return ((Comparable) o1).compareTo(o2);
                 return ((Comparable) o2).compareTo(o1);
-            } catch (ClassCastException cce) {
+            }
+            catch (ClassCastException cce) {
                 Localizer loc = Localizer.forPackage
                     (InMemoryExpressionFactory.class);
                 throw new UserException(loc.get("not-comp", o1, o2));
-            }
-        }
-    }
+			}
+		}
+	}
 }

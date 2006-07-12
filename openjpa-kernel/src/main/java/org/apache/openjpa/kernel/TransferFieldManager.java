@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,11 +18,12 @@ package org.apache.openjpa.kernel;
 import org.apache.openjpa.enhance.FieldManager;
 
 /**
- * FieldManager type used to transfer a single field value.
+ * <p>FieldManager type used to transfer a single field value.</p>
  *
  * @author Abe White
  */
-class TransferFieldManager implements FieldManager {
+class TransferFieldManager
+    implements FieldManager {
 
     protected double dblval = 0;
     protected long longval = 0;
@@ -120,7 +124,8 @@ class TransferFieldManager implements FieldManager {
     }
 
     /**
-     * Clear any held state. Fields are also cleared automatically when fetched.
+     * Clear any held state.  Fields are also cleared automatically when
+     * fetched.
      */
     public void clear() {
         dblval = 0;

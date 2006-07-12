@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -14,19 +17,21 @@ package org.apache.openjpa.kernel;
 
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
+
 ///////////////////////////////////////////////////////////////
-// NOTE: when adding a public API method, be sure to add it to
+// NOTE: when adding a public API method, be sure to add it to 
 // JDO and JPA facades!
 ///////////////////////////////////////////////////////////////
 
 /**
- * Delegating sequence that can also perform exception translation for use
- * in facades.
+ * <p>Delegating sequence that can also perform exception translation for use
+ * in facades.</p>
  *
  * @author Abe White
  * @nojavadoc
  */
-public class DelegatingSeq implements Seq {
+public class DelegatingSeq
+    implements Seq {
 
     private final Seq _seq;
     private final DelegatingSeq _del;
@@ -46,7 +51,8 @@ public class DelegatingSeq implements Seq {
         _seq = seq;
         if (seq instanceof DelegatingSeq)
             _del = (DelegatingSeq) seq;
-        else _del = null;
+        else
+            _del = null;
         _trans = trans;
     }
 
@@ -86,7 +92,8 @@ public class DelegatingSeq implements Seq {
     public void setType(int type) {
         try {
             _seq.setType(type);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -94,7 +101,8 @@ public class DelegatingSeq implements Seq {
     public Object next(StoreContext ctx, ClassMetaData meta) {
         try {
             return _seq.next(ctx, meta);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -102,7 +110,8 @@ public class DelegatingSeq implements Seq {
     public Object current(StoreContext ctx, ClassMetaData meta) {
         try {
             return _seq.current(ctx, meta);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -110,7 +119,8 @@ public class DelegatingSeq implements Seq {
     public void allocate(int additional, StoreContext ctx, ClassMetaData meta) {
         try {
             _seq.allocate(additional, ctx, meta);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -118,8 +128,9 @@ public class DelegatingSeq implements Seq {
     public void close() {
         try {
             _seq.close();
-        } catch (RuntimeException re) {
-            throw translate(re);
         }
-    }
+        catch (RuntimeException re) {
+            throw translate(re);
+		}
+	}
 }

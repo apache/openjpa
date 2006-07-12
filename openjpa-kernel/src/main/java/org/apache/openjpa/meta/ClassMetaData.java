@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -55,16 +58,18 @@ import org.apache.openjpa.util.UnsupportedException;
 import serp.util.Strings;
 
 /**
- * Contains metadata about a persistent type.
- * This metadata is available both at enhancement time and runtime.
- * Note that this class employs aggressive caching, and therefore it is
+ * <p>Contains metadata about a persistent type.
+ * This metadata is available both at enhancement time and runtime.</p>
+ * <p/>
+ * <p>Note that this class employs aggressive caching, and therefore it is
  * important to finalize the configuration of field metadatas before invoking
  * methods that depend on that configuration, such as
- * {@link #getPrimaryKeyFields}.
+ * {@link #getPrimaryKeyFields}.</p>
  *
  * @author Abe White
  */
-public class ClassMetaData extends Extensions
+public class ClassMetaData
+    extends Extensions
     implements Comparable, SourceTracker, MetaDataContext, MetaDataModes,
     Commentable {
 
@@ -89,12 +94,12 @@ public class ClassMetaData extends Extensions
     public static final int ACCESS_UNKNOWN = 0;
 
     /**
-     * Persistent attributes are accessed via direct field access. Bit flag.
+     * Persistent attributes are accessed via direct field access.  Bit flag.
      */
     public static final int ACCESS_FIELD = 2 << 0;
 
     /**
-     * Persistent attributes are accessed via setters and getters. Bit flag.
+     * Persistent attributes are accessed via setters and getters.  Bit flag.
      */
     public static final int ACCESS_PROPERTY = 2 << 1;
 
@@ -102,9 +107,12 @@ public class ClassMetaData extends Extensions
      * Value for using a synthetic detached state field, which is the default.
      */
     public static final String SYNTHETIC = "`syn";
+
     protected static final String DEFAULT_STRING = "`";
+
     private static final Localizer _loc = Localizer.forPackage
         (ClassMetaData.class);
+
     // the repository this class belongs to, if any, and source file
     private final MetaDataRepository _repos;
     private final ValueMetaData _owner;
@@ -115,15 +123,18 @@ public class ClassMetaData extends Extensions
     private int _listIndex = -1;
     private int _srcMode = MODE_META | MODE_MAPPING;
     private int _resMode = MODE_NONE;
+
     private Class _type = Object.class;
     private final Map _fieldMap = new TreeMap();
     private Map _supFieldMap = null;
     private boolean _defSupFields = false;
     private Collection _staticFields = null;
     private int[] _fieldDataTable = null;
+
     ////////////////////////////////////////////////////////////////////
     // Note: if you add additional state, make sure to add it to copy()
     ////////////////////////////////////////////////////////////////////
+
     private Class _objectId = null;
     private Boolean _objectIdShared = null;
     private Boolean _openjpaId = null;
@@ -132,6 +143,7 @@ public class ClassMetaData extends Extensions
     private int _identity = -1;
     private int _idStrategy = ValueStrategies.NONE;
     private int _accessType = ACCESS_UNKNOWN;
+
     private String _seqName = DEFAULT_STRING;
     private SequenceMetaData _seqMeta = null;
     private Map _fgs = new HashMap();
@@ -143,11 +155,13 @@ public class ClassMetaData extends Extensions
     private Boolean _auditable = null;
     private String _alias = null;
     private int _versionIdx = Integer.MIN_VALUE;
+
     private Class _super = null;
     private ClassMetaData _superMeta = null;
     private Class[] _subs = null;
     private ClassMetaData[] _subMetas = null;
     private ClassMetaData[] _mapSubMetas = null;
+
     private FieldMetaData[] _fields = null;
     private FieldMetaData[] _unmgdFields = null;
     private FieldMetaData[] _allFields = null;
@@ -156,10 +170,11 @@ public class ClassMetaData extends Extensions
     private FieldMetaData[] _definedFields = null;
     private FieldMetaData[] _listingFields = null;
     private FieldMetaData[] _allListingFields = null;
+
     private final LifecycleMetaData _lifeMeta = new LifecycleMetaData(this);
 
     /**
-     * Constructor. Supply described type and repository.
+     * Constructor.  Supply described type and repository.
      */
     protected ClassMetaData(Class type, MetaDataRepository repos) {
         _repos = repos;
@@ -168,7 +183,7 @@ public class ClassMetaData extends Extensions
     }
 
     /**
-     * Embedded constructor. Supply embedding value.
+     * Embedded constructor.  Supply embedding value.
      */
     protected ClassMetaData(ValueMetaData owner) {
         _owner = owner;
@@ -199,7 +214,7 @@ public class ClassMetaData extends Extensions
     }
 
     /**
-     * Set the class descibed by this metadata. The type may be reset when
+     * Set the class descibed by this metadata.  The type may be reset when
      * an embedded value changes its declared type.
      */
     protected void setDescribedType(Class type) {
@@ -251,7 +266,8 @@ public class ClassMetaData extends Extensions
             if (_owner != null) {
                 _superMeta = _repos.newEmbeddedClassMetaData(_owner);
                 _superMeta.setDescribedType(_super);
-            } else _superMeta = _repos.getMetaData(_super, _loader, true);
+            } else
+                _superMeta = _repos.getMetaData(_super, _loader, true);
         }
         return _superMeta;
     }
@@ -267,7 +283,7 @@ public class ClassMetaData extends Extensions
     }
 
     /**
-     * Whether this class is mapped to the datastore. By default, only
+     * Whether this class is mapped to the datastore.  By default, only
      * returns false if class is embedded-only, but subclasses might override
      * to allow unmapped other types.
      */
@@ -292,6 +308,7 @@ public class ClassMetaData extends Extensions
     public Class[] getPCSubclasses() {
         if (_owner != null)
             return _repos.EMPTY_CLASSES;
+
         _repos.processRegisteredClasses();
         if (_subs == null) {
             Collection subs = _repos.getPCSubclasses(_type);
@@ -308,7 +325,8 @@ public class ClassMetaData extends Extensions
     public ClassMetaData[] getPCSubclassMetaDatas() {
         if (_owner != null)
             return _repos.EMPTY_METAS;
-        Class[] subs = getPCSubclasses(); // checks for new
+
+        Class[] subs = getPCSubclasses();    // checks for new
         if (_subMetas == null) {
             if (subs.length == 0)
                 _subMetas = _repos.EMPTY_METAS;
@@ -329,7 +347,8 @@ public class ClassMetaData extends Extensions
     public ClassMetaData[] getMappedPCSubclassMetaDatas() {
         if (_owner != null)
             return _repos.EMPTY_METAS;
-        ClassMetaData[] subs = getPCSubclassMetaDatas(); // checks for new
+
+        ClassMetaData[] subs = getPCSubclassMetaDatas();    // checks for new
         if (_mapSubMetas == null) {
             if (subs.length == 0)
                 _mapSubMetas = subs;
@@ -346,14 +365,15 @@ public class ClassMetaData extends Extensions
     }
 
     /**
-     * The type of identity being used. This will be one of:
+     * The type of identity being used.  This will be one of:
      * <ul>
      * <li>{@link #ID_UNKNOWN}: unknown identity type</li>
      * <li>{@link #ID_DATASTORE}: identity managed by the data store and
-     * independent of the fields of the instance</li>
+     * independent	of the fields of the instance</li>
      * <li>{@link #ID_APPLICATION}: identity managed by the application and
      * defined by one or more fields of the instance</li>
-     * </ul> If unspecified, defaults to {@link #ID_DATASTORE} if there are no
+     * </ul>
+     * If unspecified, defaults to {@link #ID_DATASTORE} if there are no
      * primary key fields, and {@link #ID_APPLICATION} otherwise.
      */
     public int getIdentityType() {
@@ -366,7 +386,8 @@ public class ClassMetaData extends Extensions
                     FieldMetaData[] pks = getPrimaryKeyFields();
                     if (pks.length > 0)
                         _identity = ID_APPLICATION;
-                    else _identity = ID_DATASTORE;
+                    else
+                        _identity = ID_DATASTORE;
                 }
                 break;
             case ID_UNKNOWN:
@@ -378,14 +399,15 @@ public class ClassMetaData extends Extensions
     }
 
     /**
-     * The type of identity being used. This will be one of:
+     * The type of identity being used.  This will be one of:
      * <ul>
      * <li>{@link #ID_UNKNOWN}: unknown identity type</li>
      * <li>{@link #ID_DATASTORE}: identity managed by the data store and
-     * independent of the fields of the instance</li>
+     * independent	of the fields of the instance</li>
      * <li>{@link #ID_APPLICATION}: identity managed by the application and
      * defined by one or more fields of the instance</li>
-     * </ul> If unspecified, defaults to {@link #ID_DATASTORE} if there are no
+     * </ul>
+     * If unspecified, defaults to {@link #ID_DATASTORE} if there are no
      * primary key fields, and {@link #ID_APPLICATION} otherwise.
      */
     public void setIdentityType(int type) {
@@ -409,6 +431,7 @@ public class ClassMetaData extends Extensions
             _objectId = sup.getObjectIdType();
             return _objectId;
         }
+
         // figure out openjpa identity type based on primary key field
         FieldMetaData[] pks = getPrimaryKeyFields();
         if (pks.length != 1)
@@ -501,7 +524,8 @@ public class ClassMetaData extends Extensions
             ClassMetaData sup = getPCSuperclassMetaData();
             if (sup != null && sup.getIdentityType() != ID_UNKNOWN)
                 _idStrategy = sup.getIdentityStrategy();
-            else _idStrategy = ValueStrategies.NATIVE;
+            else
+                _idStrategy = ValueStrategies.NATIVE;
         }
         return _idStrategy;
     }
@@ -523,7 +547,8 @@ public class ClassMetaData extends Extensions
         if (_seqName == DEFAULT_STRING) {
             if (_super != null)
                 _seqName = getPCSuperclassMetaData().getIdentitySequenceName();
-            else _seqName = null;
+            else
+                _seqName = null;
         }
         return _seqName;
     }
@@ -558,7 +583,8 @@ public class ClassMetaData extends Extensions
     /**
      * Returns the alias for the described type, or <code>null</code> if none
      * has been set.
-     * #see setTypeAlias
+     * <p/>
+     * #see	setTypeAlias
      */
     public String getTypeAlias() {
         if (_alias == null)
@@ -608,12 +634,14 @@ public class ClassMetaData extends Extensions
     public boolean getRequiresExtent() {
         if (_owner != null || isEmbeddedOnly())
             return false;
+
         if (_extent == null) {
             ClassMetaData sup = getPCSuperclassMetaData();
             if (sup != null)
                 _extent = (sup.getRequiresExtent()) ? Boolean.TRUE
                     : Boolean.FALSE;
-            else _extent = Boolean.TRUE;
+            else
+                _extent = Boolean.TRUE;
         }
         return _extent.booleanValue();
     }
@@ -634,7 +662,8 @@ public class ClassMetaData extends Extensions
             if (sup != null)
                 _embedded = (sup.isEmbeddedOnly()) ? Boolean.TRUE
                     : Boolean.FALSE;
-            else _embedded = Boolean.FALSE;
+            else
+                _embedded = Boolean.FALSE;
         }
         return _embedded.booleanValue();
     }
@@ -662,7 +691,7 @@ public class ClassMetaData extends Extensions
      * Return the impl / intermediate field data index of the given field
      * in the compacted array, or -1 if the field does not use extra data.
      *
-     * @see #getExtraFieldDataLength
+     * @see    #getExtraFieldDataLength
      */
     public int getExtraFieldDataIndex(int field) {
         return getExtraFieldDataTable()[field];
@@ -680,7 +709,8 @@ public class ClassMetaData extends Extensions
                 if (fmds[i].usesIntermediate()
                     || fmds[i].usesImplData() != Boolean.FALSE)
                     table[i] = idx++;
-                else table[i] = -1;
+                else
+                    table[i] = -1;
             }
             _fieldDataTable = table;
         }
@@ -720,10 +750,12 @@ public class ClassMetaData extends Extensions
                 FieldMetaData[] fields = getDeclaredFields();
                 FieldMetaData[] supFields = getPCSuperclassMetaData().
                     getFields();
+
                 FieldMetaData[] allFields = _repos.newFieldMetaDataArray
                     (fields.length + supFields.length);
                 System.arraycopy(supFields, 0, allFields, 0, supFields.length);
                 replaceDefinedSuperclassFields(allFields, supFields.length);
+
                 for (int i = 0; i < fields.length; i++) {
                     fields[i].setIndex(supFields.length + i);
                     allFields[supFields.length + i] = fields[i];
@@ -741,6 +773,7 @@ public class ClassMetaData extends Extensions
         int len) {
         if (_supFieldMap == null || !_defSupFields)
             return;
+
         // don't assume fields are in order; this method is used for
         // listing order as well
         FieldMetaData supField;
@@ -788,7 +821,7 @@ public class ClassMetaData extends Extensions
     }
 
     /**
-     * Return primary key fields, or empty array if none. The order
+     * Return primary key fields, or empty array if none.  The order
      * in which the keys are returned will be the order in which
      * the fields are declared, starting at the least-derived superclass
      * and ending with the primary key fields of the most-derived subclass.
@@ -802,6 +835,7 @@ public class ClassMetaData extends Extensions
             for (int i = 0; i < fields.length; i++)
                 if (fields[i].isPrimaryKey())
                     num++;
+
             if (num == 0)
                 _allPKFields = _repos.EMPTY_FIELDS;
             else {
@@ -831,6 +865,7 @@ public class ClassMetaData extends Extensions
             for (int i = 0; i < fields.length; i++)
                 if (fields[i].isInDefaultFetchGroup())
                     num++;
+
             FieldMetaData[] dfgs = _repos.newFieldMetaDataArray(num);
             num = 0;
             for (int i = 0; i < fields.length; i++)
@@ -965,7 +1000,8 @@ public class ClassMetaData extends Extensions
     }
 
     /**
-     * Return the defined superclass field with the given name, or null if none.
+     * Return the defined superclass field with the given name, or null if
+     * none.
      */
     public FieldMetaData getDefinedSuperclassField(String name) {
         if (_supFieldMap == null)
@@ -1005,14 +1041,16 @@ public class ClassMetaData extends Extensions
 
     /**
      * Incorporate superclass fields redefined in this subclass into this
-     * metadata. This method is generally called after metadata is resolved
+     * metadata.  This method is generally called after metadata is resolved
      * and mapping information is loaded, but before mapping resolve.
      *
-     * @param force whether to force re-mapping of even mapped superclass fields
+     * @param    force    whether to force re-mapping of even mapped superclass
+     * fields
      */
     public void defineSuperclassFields(boolean force) {
         if (_defSupFields)
             return;
+
         ClassMetaData sup = getPCSuperclassMetaData();
         if (isMapped() && sup != null) {
             // redefine all unmapped superclass fields
@@ -1026,8 +1064,9 @@ public class ClassMetaData extends Extensions
             }
         }
         resolveDefinedSuperclassFields();
+
         // this ensures that all field indexes get set when fields are cached.
-        // I don't like doing this twice(it's also done in resolveMeta), but
+        // I don't like doing this twice (it's also done in resolveMeta), but
         // we have to re-cache in case this class or any superclass replaced
         // some fields with redefined versions, and I don't want outside code
         // to have to call this method after resolve just to get field indexes,
@@ -1043,11 +1082,13 @@ public class ClassMetaData extends Extensions
         _defSupFields = true;
         if (_supFieldMap == null)
             return;
+
         FieldMetaData fmd;
         FieldMetaData sup;
         for (Iterator itr = _supFieldMap.values().iterator(); itr.hasNext();) {
             fmd = (FieldMetaData) itr.next();
             sup = getSuperclassField(fmd);
+
             // jpa metadata doesn't qualify superclass field names, so we
             // might not know the declaring type until now
             if (fmd.getDeclaringType() == Object.class) {
@@ -1082,7 +1123,7 @@ public class ClassMetaData extends Extensions
 
     /**
      * Returns all fields in the order they are listed in the metadata
-     * file. Unlisted fields are placed after listed ones.
+     * file.  Unlisted fields are placed after listed ones.
      */
     public FieldMetaData[] getFieldsInListingOrder() {
         if (_allListingFields == null) {
@@ -1094,6 +1135,7 @@ public class ClassMetaData extends Extensions
             System.arraycopy(dec, 0, decListing, 0, dec.length);
             System.arraycopy(unmgd, 0, decListing, dec.length, unmgd.length);
             Arrays.sort(decListing, ListingOrderComparator.getInstance());
+
             if (_super == null)
                 _allListingFields = decListing;
             else {
@@ -1115,7 +1157,7 @@ public class ClassMetaData extends Extensions
 
     /**
      * Returns all fields defined by this class in the order they are listed
-     * in the metadata file. Unlisted fields are placed after listed ones.
+     * in the metadata file.  Unlisted fields are placed after listed ones.
      * This array includes declared transactional and unmanaged fields.
      */
     public FieldMetaData[] getDefinedFieldsInListingOrder() {
@@ -1144,34 +1186,36 @@ public class ClassMetaData extends Extensions
         if (_cacheName == DEFAULT_STRING) {
             if (_super != null)
                 _cacheName = getPCSuperclassMetaData().getDataCacheName();
-            else _cacheName = DataCache.NAME_DEFAULT;
+            else
+                _cacheName = DataCache.NAME_DEFAULT;
         }
         return _cacheName;
     }
 
     /**
-     * Set the cache name for this class. Set to null to disable caching.
+     * Set the cache name for this class.  Set to null to disable caching.
      */
     public void setDataCacheName(String name) {
         _cacheName = name;
     }
 
     /**
-     * The cache timeout for this class. -1 indicates no timeout.
+     * The cache timeout for this class.  -1 indicates no timeout.
      */
     public int getDataCacheTimeout() {
         if (_cacheTimeout == Integer.MIN_VALUE) {
             if (_super != null)
                 _cacheTimeout = getPCSuperclassMetaData().
                     getDataCacheTimeout();
-            else _cacheTimeout = _repos.getConfiguration().
-                getDataCacheTimeout();
+            else
+                _cacheTimeout = _repos.getConfiguration().
+                    getDataCacheTimeout();
         }
         return _cacheTimeout;
     }
 
     /**
-     * The cache timeout for this class. -1 indicates no timeout.
+     * The cache timeout for this class.  -1 indicates no timeout.
      */
     public void setDataCacheTimeout(int timeout) {
         _cacheTimeout = timeout;
@@ -1196,7 +1240,8 @@ public class ClassMetaData extends Extensions
             if (_super != null)
                 _detachable = (getPCSuperclassMetaData().isDetachable())
                     ? Boolean.TRUE : Boolean.FALSE;
-            else _detachable = Boolean.FALSE;
+            else
+                _detachable = Boolean.FALSE;
         }
         return _detachable.booleanValue();
     }
@@ -1239,11 +1284,13 @@ public class ClassMetaData extends Extensions
         String fieldName = getDetachedState();
         if (fieldName == null || SYNTHETIC.equals(fieldName))
             return null;
+
         for (Class type = _type; type != null && type != Object.class;
             type = type.getSuperclass()) {
             try {
                 return type.getDeclaredField(fieldName);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
             }
         }
         throw new MetaDataException(_loc.get("no-detach-state", fieldName,
@@ -1254,8 +1301,8 @@ public class ClassMetaData extends Extensions
      * Whether an instance of this type has detached state.
      *
      * @return true if a detached instance must have detached state, false
-     *         if it does not, and null if it may use a
-     *         manually-constructed instance without detached state
+     * if it does not, and null if it may use a
+     * manually-constructed instance without detached state
      */
     public Boolean usesDetachedState() {
         // no need to let conf disallow because it's taken into account in
@@ -1268,25 +1315,29 @@ public class ClassMetaData extends Extensions
      * detached state field.
      *
      * @return true if a detached instance must have detached state, false
-     *         if it does not, and null if it may use a
-     *         manually-constructed instance without detached state
+     * if it does not, and null if it may use a
+     * manually-constructed instance without detached state
      */
     private Boolean usesDetachedState(String detachedField,
         boolean confDisallows) {
         if (!isDetachable())
             return Boolean.FALSE;
+
         // if we declare a detached state field, have to use it
         if (detachedField == null)
             return Boolean.FALSE;
         if (!SYNTHETIC.equals(detachedField))
             return Boolean.TRUE;
+
         // allow conf to disallow
         if (confDisallows && !_repos.getConfiguration().
             getDetachStateInstance().getDetachedStateField())
             return Boolean.FALSE;
+
         // have to use detached state to store datastore id
         if (getIdentityType() == ID_DATASTORE)
             return Boolean.TRUE;
+
         // allow detached state use, but don't require
         return null;
     }
@@ -1299,7 +1350,8 @@ public class ClassMetaData extends Extensions
             if (_super != null)
                 _auditable = (getPCSuperclassMetaData().isAuditable())
                     ? Boolean.TRUE : Boolean.FALSE;
-            else _auditable = Boolean.FALSE;
+            else
+                _auditable = Boolean.FALSE;
         }
         return _auditable.booleanValue();
     }
@@ -1388,6 +1440,7 @@ public class ClassMetaData extends Extensions
     public String toString() {
         return getDescribedType().getName();
     }
+
     ////////////////////////
     // Resolve and validate
     ////////////////////////
@@ -1414,21 +1467,24 @@ public class ClassMetaData extends Extensions
             _resMode = mode;
         else if (on)
             _resMode |= mode;
-        else _resMode &= ~mode;
+        else
+            _resMode &= ~mode;
     }
 
     /**
-     * Resolve and validate metadata. Return true if already resolved.
+     * Resolve and validate metadata.  Return true if already resolved.
      */
     public boolean resolve(int mode) {
         if ((_resMode & mode) == mode)
             return true;
         int cur = _resMode;
         _resMode |= mode;
+
         int val = _repos.getValidate();
         boolean runtime = (val & _repos.VALIDATE_RUNTIME) != 0;
         boolean validate = !PersistenceCapable.class.isAssignableFrom(_type)
             || (val & MetaDataRepository.VALIDATE_UNENHANCED) == 0;
+
         // we only do any actions for metadata mode
         if ((mode & MODE_META) != 0 && (cur & MODE_META) == 0) {
             resolveMeta(runtime);
@@ -1454,19 +1510,24 @@ public class ClassMetaData extends Extensions
         if (log.isTraceEnabled())
             log.trace(_loc.get((embed) ? "resolve-embed-meta" : "resolve-meta",
                 this + "@" + System.identityHashCode(this)));
+
         if (runtime && !PersistenceCapable.class.isAssignableFrom(_type))
             throw new MetaDataException(_loc.get("not-enhanced", _type));
+
         // are we the target of an embedded value?
         if (embed) {
             if (_owner.getFieldMetaData().getDefiningMetaData().
                 getDescribedType().isAssignableFrom(_type))
                 throw new MetaDataException(_loc.get("recurse-embed", _owner));
+
             // copy info from the "real" metadata for this type
             ClassMetaData meta = _repos.getMetaData(_type, _loader, true);
             meta.resolve(MODE_META);
             copy(this, meta);
-            _embedded = Boolean.FALSE; // embedded instance isn't embedded-only
+            _embedded =
+                Boolean.FALSE;    // embedded instance isn't embedded-only
         }
+
         // make sure superclass is resolved
         ClassMetaData sup = getPCSuperclassMetaData();
         if (sup != null) {
@@ -1484,6 +1545,7 @@ public class ClassMetaData extends Extensions
                 }
             }
         }
+
         // resolve fields and remove invalids
         FieldMetaData fmd;
         for (Iterator itr = _fieldMap.values().iterator(); itr.hasNext();) {
@@ -1491,6 +1553,7 @@ public class ClassMetaData extends Extensions
             // resolved before any other resolve modes our subclasses pass along
             fmd = (FieldMetaData) itr.next();
             fmd.resolve(MODE_META);
+
             if (!fmd.isExplicit()
                 && (fmd.getDeclaredTypeCode() == JavaTypes.OBJECT
                 || fmd.getDeclaredTypeCode() == JavaTypes.PC_UNTYPED
@@ -1500,19 +1563,24 @@ public class ClassMetaData extends Extensions
                 _repos.getLog().warn(_loc.get("rm-field", fmd));
                 if (fmd.getListingIndex() != -1)
                     fmd.setManagement(fmd.MANAGE_NONE);
-                else itr.remove();
+                else
+                    itr.remove();
                 clearFieldCache();
             }
         }
+
         // embedded instances must embed all superclass fields too
         if (embed) {
             clearAllFieldCache();
             resolveDefinedSuperclassFields();
         }
+
         // this ensures that all field indexes get set when fields are cached
         cacheFields();
+
         // resolve lifecycle metadata now to prevent lazy threading problems
         _lifeMeta.resolve();
+
         // if this is runtime, create a pc instance and scan it for comparators
         if (runtime && !Modifier.isAbstract(_type.getModifiers())) {
             ProxySetupStateManager sm = new ProxySetupStateManager();
@@ -1532,13 +1600,15 @@ public class ClassMetaData extends Extensions
     }
 
     /**
-     * Resolve mapping data. Logs resolve message and resolves super by default.
+     * Resolve mapping data.  Logs resolve message and resolves super
+     * by default.
      */
     protected void resolveMapping(boolean runtime) {
         Log log = _repos.getLog();
         if (log.isTraceEnabled())
             log.trace(_loc.get("resolve-mapping", this + "@"
                 + System.identityHashCode(this)));
+
         // make sure superclass is resolved first
         ClassMetaData sup = getPCSuperclassMetaData();
         if (sup != null)
@@ -1554,7 +1624,7 @@ public class ClassMetaData extends Extensions
     }
 
     /**
-     * Initialize mapping. Logs init message by default.
+     * Initialize mapping.  Logs init message by default.
      */
     protected void initializeMapping() {
         Log log = _repos.getLog();
@@ -1571,11 +1641,13 @@ public class ClassMetaData extends Extensions
         if (timeout < -1 || timeout == 0)
             throw new MetaDataException(_loc.get("cache-timeout-invalid",
                 _type, String.valueOf(timeout)));
+
         if (_super == null)
             return;
         String cache = getDataCacheName();
         if (cache == null)
             return;
+
         String superCache = getPCSuperclassMetaData().getDataCacheName();
         if (!StringUtils.equals(cache, superCache))
             throw new MetaDataException(_loc.get("cache-names", new Object[]
@@ -1590,6 +1662,7 @@ public class ClassMetaData extends Extensions
         if (_super != null && _identity != -1
             && getPCSuperclassMetaData().getIdentityType() != _identity)
             throw new MetaDataException(_loc.get("id-types", _type));
+
         // check for things the data store doesn't support
         Collection opts = _repos.getConfiguration().supportedOptions();
         if (getIdentityType() == ID_APPLICATION
@@ -1602,15 +1675,19 @@ public class ClassMetaData extends Extensions
             throw new UnsupportedException(_loc.get
                 ("datastoreid-not-supported", _type));
         }
+
         if (getIdentityType() == ID_APPLICATION) {
             if (_idStrategy != ValueStrategies.NONE)
                 throw new MetaDataException(_loc.get("appid-strategy", _type));
             validateAppIdClass(runtime);
-        } else validateNoPKFields();
+        } else
+            validateNoPKFields();
+
         int strategy = getIdentityStrategy();
         if (strategy == ValueStrategies.SEQUENCE
             && getIdentitySequenceName() == null)
             throw new MetaDataException(_loc.get("no-seq-name", _type));
+
         ValueStrategies.assertSupported(strategy, this,
             "datastore identity strategy");
     }
@@ -1630,6 +1707,7 @@ public class ClassMetaData extends Extensions
         }
         if (_objectId == null)
             return;
+
         if (isOpenJPAIdentity()) {
             if (pks[0].getDeclaredTypeCode() == JavaTypes.OID) {
                 ClassMetaData embed = pks[0].getEmbeddedMetaData();
@@ -1639,6 +1717,7 @@ public class ClassMetaData extends Extensions
             }
             return;
         }
+
         if (_super != null) {
             // concrete superclass oids must match or be parent of ours
             ClassMetaData sup = getPCSuperclassMetaData();
@@ -1646,17 +1725,20 @@ public class ClassMetaData extends Extensions
                 throw new MetaDataException(_loc.get("id-classes",
                     new Object[]{ _type, _objectId, _super,
                         sup.getObjectIdType() }));
+
             // validate that no other pks are declared if we have a
             // concrete PC superclass
             if (hasConcretePCSuperclass())
                 validateNoPKFields();
         }
+
         // if this class has its own oid class, do some more validation
         if (_super == null
             || _objectId != getPCSuperclassMetaData().getObjectIdType()) {
             // make sure non-abstract oid classes override the proper methods
             if (!Modifier.isAbstract(_objectId.getModifiers()))
                 validateAppIdClassMethods(_objectId);
+
             // make sure the app id class has all pk fields
             validateAppIdClassPKs(this, pks, _objectId, runtime);
         }
@@ -1680,25 +1762,31 @@ public class ClassMetaData extends Extensions
     private void validateAppIdClassMethods(Class oid) {
         try {
             oid.getConstructor((Class[]) null);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new MetaDataException(_loc.get("null-cons", _type)).
                 setCause(e);
         }
+
         // check for equals and hashcode overrides; don't enforce it
         // for abstract app id classes, since they may not necessarily
         // declare primary key fields
         Method method;
         try {
             method = oid.getMethod("equals", new Class[]{ Object.class });
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new GeneralException(e).setFatal(true);
         }
+
         boolean abs = Modifier.isAbstract(_type.getModifiers());
         if (!abs && method.getDeclaringClass() == Object.class)
             throw new MetaDataException(_loc.get("eq-method", _type));
+
         try {
             method = oid.getMethod("hashCode", (Class[]) null);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new GeneralException(e).setFatal(true);
         }
         if (!abs && method.getDeclaringClass() == Object.class)
@@ -1713,6 +1801,7 @@ public class ClassMetaData extends Extensions
         if (fmds.length == 0 && !Modifier.isAbstract(meta.getDescribedType().
             getModifiers()))
             throw new MetaDataException(_loc.get("no-pk", _type));
+
         // check that the oid type contains all pk fields
         try {
             Field f;
@@ -1737,6 +1826,7 @@ public class ClassMetaData extends Extensions
                         throw new MetaDataException(_loc.get("bad-pk-type",
                             fmds[i]));
                 }
+
                 if (access == ACCESS_FIELD) {
                     f = findField(oid, fmds[i].getName(), runtime);
                     if (f == null || !f.getType().isAssignableFrom(fmds[i].
@@ -1746,6 +1836,7 @@ public class ClassMetaData extends Extensions
                 } else if (access == ACCESS_PROPERTY) {
                     cap = StringUtils.capitalize(fmds[i].getName());
                     type = fmds[i].getDeclaredTypeCode();
+
                     m = findMethod(oid, "get" + cap, null, runtime);
                     if (m == null && (type == JavaTypes.BOOLEAN
                         || type == JavaTypes.BOOLEAN_OBJ))
@@ -1754,6 +1845,7 @@ public class ClassMetaData extends Extensions
                         isAssignableFrom(fmds[i].getDeclaredType()))
                         throw new MetaDataException(_loc.get("invalid-id",
                             _type)).setFailedObject("get" + cap);
+
                     m = findMethod(oid, "set" + cap,
                         new Class[]{ fmds[i].getDeclaredType() }, runtime);
                     if (m == null || m.getReturnType() != void.class)
@@ -1761,9 +1853,11 @@ public class ClassMetaData extends Extensions
                             _type)).setFailedObject("set" + cap);
                 }
             }
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             throw new MetaDataException(_loc.get("invalid-id", _type)).
                 setCause(t);
         }
@@ -1776,9 +1870,11 @@ public class ClassMetaData extends Extensions
         throws Exception {
         if (c == null || c == Object.class)
             return null;
+
         try {
             return (pub) ? c.getField(name) : c.getDeclaredField(name);
-        } catch (NoSuchFieldException nsfe) {
+        }
+        catch (NoSuchFieldException nsfe) {
             return (pub) ? null : findField(c.getSuperclass(), name, false);
         }
     }
@@ -1787,13 +1883,16 @@ public class ClassMetaData extends Extensions
      * Find the named method, recursing to superclasses if necessary.
      */
     private static Method findMethod(Class c, String name, Class[] params,
-        boolean pub) throws Exception {
+        boolean pub)
+        throws Exception {
         if (c == null || c == Object.class)
             return null;
+
         try {
             return (pub) ? c.getMethod(name, params)
                 : c.getDeclaredMethod(name, params);
-        } catch (NoSuchMethodException nsfe) {
+        }
+        catch (NoSuchMethodException nsfe) {
             return (pub) ? null : findMethod(c.getSuperclass(), name, params,
                 false);
         }
@@ -1835,6 +1934,7 @@ public class ClassMetaData extends Extensions
             if (parent.isDetachable())
                 first = false;
         }
+
         Field field = getDetachedStateField();
         if (field != null) {
             if (!first)
@@ -1848,6 +1948,7 @@ public class ClassMetaData extends Extensions
                     field.getName(), _type));
         }
     }
+
     /////////////////////
     // Fetch Group
     /////////////////////
@@ -1856,8 +1957,8 @@ public class ClassMetaData extends Extensions
      * Adds fecth group of the given name.
      *
      * @param name a non-null, non-empty name. Must be unique within this
-     *             receiver's scope. The super class <em>may</em> have a group with
-     *             the same name.
+     * receiver's scope. The super class <em>may</em> have a group with
+     * the same name.
      */
     public synchronized FetchGroup addFetchGroup(String name) {
         FetchGroup fg = (FetchGroup) _fgs.get(name);
@@ -1865,6 +1966,7 @@ public class ClassMetaData extends Extensions
             fg = newFetchGroup(name);
             _fgs.put(name, fg);
         }
+
         return fg;
     }
 
@@ -1873,9 +1975,9 @@ public class ClassMetaData extends Extensions
      * up the inheritence hierarchy. Creates if it does not exist and
      * <code>mustBe</code> is false.
      *
-     * @param name   name of a fetch group.
+     * @param name name of a fetch group.
      * @param mustBe if true then the named group must exist in this receiver
-     *               or any of its persistent super classes.
+     * or any of its persistent super classes.
      * @return an existing or newly created fecth group of the given name.
      */
     public synchronized FetchGroup getFetchGroup(String name, boolean mustBe) {
@@ -1885,10 +1987,13 @@ public class ClassMetaData extends Extensions
             if (scm != null)
                 fg = scm.getFetchGroup(name, false);
         }
+
         if (fg == null)
             if (mustBe)
                 return null;
-            else fg = addFetchGroup(name);
+            else
+                fg = addFetchGroup(name);
+
         return fg;
     }
 
@@ -1900,6 +2005,7 @@ public class ClassMetaData extends Extensions
     /////////////////
     // SourceTracker
     /////////////////
+
     public File getSourceFile() {
         return _srcFile;
     }
@@ -1943,11 +2049,12 @@ public class ClassMetaData extends Extensions
             _srcMode = mode;
         else if (on)
             _srcMode |= mode;
-        else _srcMode &= ~mode;
+        else
+            _srcMode &= ~mode;
     }
 
     /**
-     * The index in which this class was listed in the metadata. Defaults to
+     * The index in which this class was listed in the metadata.  Defaults to
      * <code>-1</code> if this class was not listed in the metadata.
      */
     public int getListingIndex() {
@@ -1955,7 +2062,7 @@ public class ClassMetaData extends Extensions
     }
 
     /**
-     * The index in which this field was listed in the metadata. Defaults to
+     * The index in which this field was listed in the metadata.  Defaults to
      * <code>-1</code> if this class was not listed in the metadata.
      */
     public void setListingIndex(int index) {
@@ -1965,6 +2072,7 @@ public class ClassMetaData extends Extensions
     ///////////////
     // Commentable
     ///////////////
+
     public String[] getComments() {
         return (_comments == null) ? EMPTY_COMMENTS : _comments;
     }
@@ -1972,18 +2080,20 @@ public class ClassMetaData extends Extensions
     public void setComments(String[] comments) {
         _comments = comments;
     }
+
     //////////////
     // State copy
     //////////////
 
     /**
-     * Copy the metadata from the given instance to this one. Do not
+     * Copy the metadata from the given instance to this one.  Do not
      * copy mapping information.
      */
     public void copy(ClassMetaData meta) {
         if (meta.getDescribedType() != _type)
             throw new InternalException();
         super.copy(meta);
+
         // copy class-level info; use get methods to force resolution of
         // lazy data
         _super = meta.getPCSuperclass();
@@ -1996,6 +2106,7 @@ public class ClassMetaData extends Extensions
         _seqMeta = null;
         _alias = meta.getTypeAlias();
         _accessType = meta.getAccessType();
+
         // only copy this information if it wasn't set explicitly for this
         // instance
         if (_cacheName == DEFAULT_STRING)
@@ -2008,9 +2119,11 @@ public class ClassMetaData extends Extensions
             _detachState = meta.getDetachedState();
         if (_auditable == null)
             _auditable = (meta.isAuditable()) ? Boolean.TRUE : Boolean.FALSE;
+
         // synch field information; first remove extra fields
         clearFieldCache();
         _fieldMap.keySet().retainAll(meta._fieldMap.keySet());
+
         // add copies of declared fields; other defined fields already copied
         FieldMetaData[] fields = meta.getDeclaredFields();
         FieldMetaData field;
@@ -2042,9 +2155,10 @@ public class ClassMetaData extends Extensions
     }
 
     /**
-     * Comparator used to put field metadatas into listing order.
+     *	Comparator used to put field metadatas into listing order.
      */
-    private static class ListingOrderComparator implements Comparator {
+    private static class ListingOrderComparator
+        implements Comparator {
 
         private static final ListingOrderComparator _instance
             = new ListingOrderComparator();
@@ -2063,22 +2177,23 @@ public class ClassMetaData extends Extensions
                 return 1;
             if (o2 == null)
                 return -1;
+
             FieldMetaData f1 = (FieldMetaData) o1;
             FieldMetaData f2 = (FieldMetaData) o2;
             if (f1.getListingIndex() == f2.getListingIndex()) {
                 if (f1.getIndex() == f2.getIndex())
-                    return f1.getFullName().compareTo(f2.getFullName());
-                if (f1.getIndex() == -1)
-                    return 1;
-                if (f2.getIndex() == -1)
-                    return -1;
-                return f1.getIndex() - f2.getIndex();
-            }
-            if (f1.getListingIndex() == -1)
-                return 1;
-            if (f2.getListingIndex() == -1)
-                return -1;
-            return f1.getListingIndex() - f2.getListingIndex();
-        }
-    }
+                    return f1.getFullName ().compareTo (f2.getFullName ());
+				if (f1.getIndex () == -1)
+					return 1;
+				if (f2.getIndex () == -1)
+					return -1;
+				return f1.getIndex () - f2.getIndex ();
+			}	
+			if (f1.getListingIndex () == -1)
+				return 1;
+			if (f2.getListingIndex () == -1)
+				return -1;
+			return f1.getListingIndex () - f2.getListingIndex ();
+		}
+	}
 }

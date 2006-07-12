@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,13 +19,14 @@ import java.io.Serializable;
 import java.util.BitSet;
 
 /**
- * Holds data about a single persistence capable instance. This interface is
+ * Holds data about a single persistence capable instance.  This interface is
  * used in the caching framework, and may also be used by simple store manager
  * back-ends to hold persistent state.
  *
  * @author Patrick Linskey
  */
-public interface PCData extends Serializable {
+public interface PCData
+    extends Serializable {
 
     /**
      * Return the id of this instance.
@@ -45,12 +49,14 @@ public interface PCData extends Serializable {
     public void setImplData(Object val);
 
     /**
-     * Returns the current version object that this data was loaded from.
+     * Returns the current version object that this data was loaded
+     * from.
      */
     public Object getVersion();
 
     /**
-     * Sets the current version object that this data was loaded from.
+     * Sets the current version object that this data was loaded
+     * from.
      */
     public void setVersion(Object version);
 
@@ -58,10 +64,10 @@ public interface PCData extends Serializable {
      * Loads all fields that are currently stored in the cache
      * into the given state manager.
      *
-     * @param sm         the state manager to load
-     * @param fetchState the fetch configuration to use for loading related
-     *                   objects
-     * @param context    current context information
+     * @param    sm        the state manager to load
+     * @param    fetchState    the fetch configuration to use for loading related
+     * objects
+     * @param    context    current context information
      */
     public void load(OpenJPAStateManager sm, FetchState fetchState,
         Object context);
@@ -70,12 +76,12 @@ public interface PCData extends Serializable {
      * Loads some or all of the marked fields from the cache into the
      * given state manager.
      *
-     * @param sm         the state manager to load
-     * @param fields     the fields to load; clear the bits for the fields
-     *                   that are successfully loaded
-     * @param fetchState the fetch configuration to use for loading related
-     *                   objects
-     * @param context    current context information
+     * @param    sm            the state manager to load
+     * @param    fields        the fields to load; clear the bits for the fields
+     * that are successfully loaded
+     * @param    fetchState        the fetch configuration to use for loading related
+     * objects
+     * @param    context        current context information
      */
     public void load(OpenJPAStateManager sm, BitSet fields,
         FetchState fetchState, Object context);
@@ -96,7 +102,7 @@ public interface PCData extends Serializable {
     public Object getData(int i);
 
     /**
-     * Whether the given field index has stored data.
+     *	Whether the given field index has stored data.
      */
-    public boolean isLoaded(int i);
+    public boolean isLoaded (int i);
 }

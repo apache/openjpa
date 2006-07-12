@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -43,18 +46,20 @@ class AttachManager {
 
     private static final Localizer _loc = Localizer.forPackage
         (AttachManager.class);
+
     private final BrokerImpl _broker;
     private final ProxyManager _proxy;
     private final OpCallbacks _call;
     private final boolean _copyNew;
     private final boolean _failFast;
     private final IdentityMap _attached = new IdentityMap();
+
     // reusable strategies
     private AttachStrategy _version = null;
     private AttachStrategy _detach = null;
 
     /**
-     * Constructor. Supply broker attaching to.
+     * Constructor.  Supply broker attaching to.
      */
     public AttachManager(BrokerImpl broker, boolean copyNew, OpCallbacks call) {
         _broker = broker;
@@ -86,18 +91,21 @@ class AttachManager {
     public Object attach(Object pc) {
         if (pc == null)
             return null;
+
         CallbackException excep = null;
         try {
             return attach(pc, null, null, null);
-        } catch (CallbackException ce) {
+        }
+        catch (CallbackException ce) {
             excep = ce;
-            return null; // won't be reached as the exceps will be rethrown
+            return null;    // won't be reached as the exceps will be rethrown
         }
         finally {
             List exceps = null;
             if (excep == null || !_failFast)
                 exceps = invokeAfterAttach(null);
-            else exceps = Collections.singletonList(excep);
+            else
+                exceps = Collections.singletonList(excep);
             _attached.clear();
             throwExceptions(exceps, null, false);
         }
@@ -117,18 +125,21 @@ class AttachManager {
             for (Iterator itr = instances.iterator(); itr.hasNext(); i++) {
                 try {
                     attached[i] = attach(itr.next(), null, null, null);
-                } catch (OpenJPAException ke) {
+                }
+                catch (OpenJPAException ke) {
                     // track exceptions and optimistic failed objects
                     if (opt && !(ke instanceof OptimisticException))
                         opt = false;
                     if (opt && ke.getFailedObject() != null)
                         failed = add(failed, ke.getFailedObject());
                     exceps = add(exceps, ke);
+
                     if (ke instanceof CallbackException && _failFast) {
                         failFast = true;
                         break;
                     }
-                } catch (RuntimeException re) {
+                }
+                catch (RuntimeException re) {
                     exceps = add(exceps, re);
                 }
             }
@@ -160,7 +171,8 @@ class AttachManager {
             try {
                 _broker.fireLifecycleEvent(attached, entry.getKey(),
                     sm.getMetaData(), LifecycleEvent.AFTER_ATTACH);
-            } catch (RuntimeException re) {
+            }
+            catch (RuntimeException re) {
                 exceps = add(exceps, re);
                 if (_failFast && re instanceof CallbackException)
                     break;
@@ -186,9 +198,10 @@ class AttachManager {
         if (exceps == null)
             return;
         if (exceps.size() == 1)
-            throw(RuntimeException) exceps.get(0);
-        Throwable[] t =
-            (Throwable[]) exceps.toArray(new Throwable[exceps.size()]);
+            throw (RuntimeException) exceps.get(0);
+
+        Throwable[] t = (Throwable[]) exceps.toArray
+            (new Throwable[exceps.size()]);
         if (opt && failed != null)
             throw new OptimisticException(failed, t);
         if (opt)
@@ -200,23 +213,26 @@ class AttachManager {
     /**
      * Attach.
      *
-     * @param toAttach  the detached object
-     * @param into      the instance we're attaching into
-     * @param owner     state manager for <code>into</code>
-     * @param ownerMeta the field we traversed to find <code>toAttach</code>
+     * @param    toAttach    the detached object
+     * @param    into        the instance we're attaching into
+     * @param    owner        state manager for <code>into</code>
+     * @param    ownerMeta    the field we traversed to find <code>toAttach</code>
      */
     Object attach(Object toAttach, PersistenceCapable into,
         OpenJPAStateManager owner, ValueMetaData ownerMeta) {
         if (toAttach == null)
             return null;
+
         // check if already attached
         Object attached = _attached.get(toAttach);
         if (attached != null)
             return attached;
+
         //### need to handle ACT_CASCADE
         int action = processArgument(toAttach);
         if ((action & OpCallbacks.ACT_RUN) == 0)
             return toAttach;
+
         //### need to handle ACT_RUN without also ACT_CASCADE
         ClassMetaData meta = _broker.getConfiguration().
             getMetaDataRepository().getMetaData(toAttach.getClass(),
@@ -242,6 +258,7 @@ class AttachManager {
         PersistenceCapable pc = (PersistenceCapable) toAttach;
         if (pc.pcGetStateManager() instanceof AttachStrategy)
             return (AttachStrategy) pc.pcGetStateManager();
+
         Object obj = pc.pcGetDetachedState();
         if (obj instanceof AttachStrategy)
             return (AttachStrategy) obj;
@@ -251,6 +268,7 @@ class AttachManager {
                 _version = new VersionAttachStrategy();
             return _version;
         }
+
         // detached state
         if (_detach == null)
             _detach = new DetachedStateAttachStrategy();
@@ -273,7 +291,7 @@ class AttachManager {
 
     /**
      * If the passed in argument has already been attached, return
-     * the(cached) attached copy.
+     * the (cached) attached copy.
      */
     PersistenceCapable getAttachedCopy(Object pc) {
         return (PersistenceCapable) _attached.get(pc);
@@ -304,14 +322,14 @@ class AttachManager {
     }
 
     /**
-     * Throw an exception if the given object is not managed; otherwise
-     * return its state manager.
+     *	Throw an exception if the given object is not managed; otherwise
+     *	return its state manager.
      */
     StateManagerImpl assertManaged(Object obj) {
         StateManagerImpl sm = _broker.getStateManagerImpl(obj, true);
         if (sm == null)
             throw new UserException(_loc.get("not-managed",
-                Exceptions.toString(obj))).setFailedObject(obj);
-        return sm;
-    }
+                Exceptions.toString(obj))).setFailedObject (obj);
+		return sm;
+	}
 }

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -26,16 +29,18 @@ import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.meta.MetaDataRepository;
 
 /**
- * Executes the enhancer on the specified files. This task can take
+ * <p>Executes the enhancer on the specified files.  This task can take
  * the following arguments:
  * <ul>
  * <li><code>directory</code></li>
  * <li><code>addDefaultConstructor</code></li>
  * <li><code>tmpClassLoader</code></li>
+ * <li><code>jdoEnhance</code></li>
  * <li><code>enforcePropertyRestrictions</code></li>
- * </ul>
+ * </ul></p>
  */
-public class PCEnhancerTask extends AbstractTask {
+public class PCEnhancerTask
+    extends AbstractTask {
 
     protected PCEnhancer.Flags flags = new PCEnhancer.Flags();
     protected String dirName = null;
@@ -53,6 +58,13 @@ public class PCEnhancerTask extends AbstractTask {
      */
     public void setAddDefaultConstructor(boolean addDefCons) {
         flags.addDefaultConstructor = addDefCons;
+    }
+
+    /**
+     * Whether to perform JDO enhancement in addition to OpenJPA enhancement.
+     */
+    public void setJdoEnhance(boolean jdoEnhance) {
+        flags.jdoEnhance = jdoEnhance;
     }
 
     /**
@@ -76,11 +88,12 @@ public class PCEnhancerTask extends AbstractTask {
         return new OpenJPAConfigurationImpl();
     }
 
-    protected void executeOn(String[] files) throws IOException {
+    protected void executeOn(String[] files)
+        throws IOException {
         flags.directory = (dirName == null) ? null
             : Files.getFile(dirName, getClassLoader());
         OpenJPAConfiguration conf = (OpenJPAConfiguration) getConfiguration();
         MetaDataRepository repos = new MetaDataRepository(conf);
-        PCEnhancer.run(conf, files, flags, repos, null, getClassLoader());
-    }
+        PCEnhancer.run(conf, files, flags, repos, null, getClassLoader ());
+	}
 }

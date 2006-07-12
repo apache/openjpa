@@ -214,7 +214,7 @@ public class MergedResultObjectProvider implements ResultObjectProvider {
      *
      * @param val the result value
      * @param idx the index of the result object provider in the array
-     *            given on construction that produced the result value
+     * given on construction that produced the result value
      * @param rop the result object provider that produced the result value
      */
     protected Object getOrderingValue(Object val, int idx,

@@ -31,7 +31,7 @@ public class SourceTrackers {
      * the location(s) that <code>trackers</code> were loaded from.
      *
      * @param trackers the source-trackers for which location info should
-     *                 be provided.
+     * be provided.
      */
     public static String getSourceLocationMessage(SourceTracker[] trackers) {
         StringBuffer buf = new StringBuffer(20 * (trackers.length + 1));

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,12 +18,13 @@ package org.apache.openjpa.conf;
 import org.apache.openjpa.kernel.DetachState;
 
 /**
- * Detach options.
+ * <p>Detach options.</p>
  *
  * @author Abe White
  * @nojavadoc
  */
-public abstract class DetachOptions implements DetachState {
+public abstract class DetachOptions
+    implements DetachState {
 
     private boolean _field = true;
     private boolean _transient = true;
@@ -49,7 +53,7 @@ public abstract class DetachOptions implements DetachState {
     }
 
     /**
-     * For auto-configuration of the detached state field. Accepts values
+     * For auto-configuration of the detached state field.  Accepts values
      * "true", "false", or "transient".
      */
     public void setDetachedStateField(String val) {
@@ -64,7 +68,8 @@ public abstract class DetachOptions implements DetachState {
         } else if ("false".equals(val)) {
             setDetachedStateField(false);
             _transient = false;
-        } else throw new IllegalArgumentException("DetachedStateField=" + val);
+        } else
+            throw new IllegalArgumentException("DetachedStateField=" + val);
     }
 
     /**
@@ -85,7 +90,7 @@ public abstract class DetachOptions implements DetachState {
      * Whether to use a detached state manager on types that allow it.
      * Types that do not use detached state or that declare a custom detached
      * state field to maintain serialization compatibility will never use
-     * a detached state manager. Defaults to true.
+     * a detached state manager.  Defaults to true.
      */
     public boolean getDetachedStateManager() {
         return _manager;
@@ -95,14 +100,14 @@ public abstract class DetachOptions implements DetachState {
      * Whether to use a detached state manager on types that allow it.
      * Types that do not use detached state or that declare a custom detached
      * state field to maintain serialization compatibility will never use
-     * a detached state manager. Defaults to true.
+     * a detached state manager.  Defaults to true.
      */
     public void setDetachedStateManager(boolean val) {
         _manager = val;
     }
 
     /**
-     * Whether to allow access to unloaded detached fields. This setting only
+     * Whether to allow access to unloaded detached fields.  This setting only
      * applies to instances with detached state managers.
      */
     public boolean getAccessUnloaded() {
@@ -110,7 +115,7 @@ public abstract class DetachOptions implements DetachState {
     }
 
     /**
-     * Whether to allow access to unloaded detached fields. This setting only
+     * Whether to allow access to unloaded detached fields.  This setting only
      * applies to instances with detached state managers.
      */
     public void setAccessUnloaded(boolean val) {
@@ -120,7 +125,8 @@ public abstract class DetachOptions implements DetachState {
     /**
      * Detach loaded state.
      */
-    public static class Loaded extends DetachOptions {
+    public static class Loaded
+        extends DetachOptions {
 
         public int getDetachState() {
             return DETACH_LOADED;
@@ -130,7 +136,8 @@ public abstract class DetachOptions implements DetachState {
     /**
      * Public to allow reflection.
      */
-    public static class FetchGroups extends DetachOptions {
+    public static class FetchGroups
+        extends DetachOptions {
 
         public int getDetachState() {
             return DETACH_FGS;
@@ -138,12 +145,13 @@ public abstract class DetachOptions implements DetachState {
     }
 
     /**
-     * Public to allow reflection.
+     *	Public to allow reflection.
      */
-    public static class All extends DetachOptions {
+    public static class All
+        extends DetachOptions {
 
         public int getDetachState() {
             return DETACH_ALL;
-        }
-    }
+		}		
+	}
 }

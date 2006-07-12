@@ -38,10 +38,10 @@ public class NameCache {
     /**
      * Converts the given class name to its internal form.
      *
-     * @param className  the name to convert
+     * @param className the name to convert
      * @param descriptor true if the name is to be used for a descriptor
-     *                   section -- the difference seems to be that for
-     *                   descriptors, non-primitives are prefixed with 'L' and ended with ';'
+     * section -- the difference seems to be that for
+     * descriptors, non-primitives are prefixed with 'L' and ended with ';'
      */
     public String getInternalForm(String className, boolean descriptor) {
         if (className == null || className.length() == 0)
@@ -94,11 +94,11 @@ public class NameCache {
     /**
      * Given the internal name of the class, return the 'normal' java name.
      *
-     * @param internalName  the internal name being used
+     * @param internalName the internal name being used
      * @param humanReadable if the returned name should be in human-readable
-     *                      form, rather than a form suitable for a
-     *                      {@link Class#forName} call -- the difference
-     *                      lies in the handling of arrays
+     * form, rather than a form suitable for a
+     * {@link Class#forName} call -- the difference
+     * lies in the handling of arrays
      */
     public String getExternalForm(String internalName, boolean humanReadable) {
         if (internalName == null || internalName.length() == 0)

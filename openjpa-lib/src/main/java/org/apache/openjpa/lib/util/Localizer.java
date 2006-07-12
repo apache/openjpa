@@ -67,11 +67,11 @@ public class Localizer {
      * Return a Localizer instance that will access the properties file
      * in the package of the given class using the given locale.
      *
-     * @param cls    the class whose package to check for the localized
-     *               properties file; if null, the system will check for
-     *               a top-level properties file
+     * @param cls the class whose package to check for the localized
+     * properties file; if null, the system will check for
+     * a top-level properties file
      * @param locale the locale to which strings should be localized; if
-     *               null, the system default will be assumed
+     * null, the system default will be assumed
      */
     public static Localizer forPackage(Class cls, Locale locale) {
         if (locale == null)

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -13,13 +16,14 @@
 package org.apache.openjpa.meta;
 
 /**
- * Holds metadata on a value; this could be a field value, key value, or
- * element value.
+ * <p>Holds metadata on a value; this could be a field value, key value, or
+ * element value.</p>
  *
- * @author Abe White
  * @since 4.0
+ * @author Abe White
  */
-public interface ValueMetaData extends MetaDataContext, MetaDataModes {
+public interface ValueMetaData
+    extends MetaDataContext, MetaDataModes {
 
     /**
      * The operation is not cascaded to this field.
@@ -32,7 +36,7 @@ public interface ValueMetaData extends MetaDataContext, MetaDataModes {
     public int CASCADE_IMMEDIATE = 1;
 
     /**
-     * Use automatic cascade behavior. Persistence-by-reachability,
+     * Use automatic cascade behavior.  Persistence-by-reachability,
      * delete-dependent, attach-if-detached, etc.
      */
     public int CASCADE_AUTO = 2;
@@ -79,7 +83,7 @@ public interface ValueMetaData extends MetaDataContext, MetaDataModes {
     public ClassMetaData getTypeMetaData();
 
     /**
-     * Return the declared class of the value. This can differ
+     * Return the declared class of the value.  This can differ
      * from the return value of {@link #getType} if the user indicates
      * a different type or the value has an externalizer.
      */
@@ -91,14 +95,14 @@ public interface ValueMetaData extends MetaDataContext, MetaDataModes {
     public void setDeclaredType(Class type);
 
     /**
-     * Return the declared type code of the value. This can differ
+     * Return the declared type code of the value.  This can differ
      * from the return value of {@link #getTypeCode} if the user indicates
      * a different type or the value has an externalizer.
      */
     public int getDeclaredTypeCode();
 
     /**
-     * Set the type code for the value. The type code is usually
+     * Set the type code for the value.  The type code is usually
      * computed automatically, but it can be useful to set it explicitly
      * when creating metadatas from scratch.
      */
@@ -117,7 +121,7 @@ public interface ValueMetaData extends MetaDataContext, MetaDataModes {
     /**
      * This attribute is a hint to the implementation to store this value
      * in the same structure as the class, rather than as a separate datastore
-     * structure. Defaults to true if the field is not a collection or map
+     * structure.  Defaults to true if the field is not a collection or map
      * or persistence-capable object; defaults to false otherwise.
      * Implementations are permitted to ignore this attribute.
      */
@@ -126,7 +130,7 @@ public interface ValueMetaData extends MetaDataContext, MetaDataModes {
     /**
      * This attribute is a hint to the implementation to store this value
      * in the same structure as the class, rather than as a separate datastore
-     * structure. Defaults to true if the field is not a collection or map
+     * structure.  Defaults to true if the field is not a collection or map
      * or persistence-capable objects; defaults to false otherwise.
      * Implementations are permitted to ignore this attribute.
      */
@@ -148,8 +152,8 @@ public interface ValueMetaData extends MetaDataContext, MetaDataModes {
     public ClassMetaData addEmbeddedMetaData();
 
     /**
-     * Cascade behavior for delete operation. Only applies to
-     * persistence-capable values. Options are:<br />
+     * Cascade behavior for delete operation.  Only applies to
+     * persistence-capable values.  Options are:<br />
      * <ul>
      * <li><code>CASCADE_NONE</code>: No cascades.</li>
      * <li><code>CASCADE_IMMEDIATE</code>: Value is deleted immediately when
@@ -165,15 +169,15 @@ public interface ValueMetaData extends MetaDataContext, MetaDataModes {
     /**
      * Cascade behavior for deletion.
      *
-     * @see #getCascadeDelete
+     * @see    #getCascadeDelete
      */
     public void setCascadeDelete(int cascade);
 
     /**
-     * Cascade behavior for persist operation. Only applies to
-     * persistence-capable values. Options are:<br />
+     * Cascade behavior for persist operation.  Only applies to
+     * persistence-capable values.  Options are:<br />
      * <ul>
-     * <li><code>CASCADE_NONE</code>: No cascades. If a transient relation
+     * <li><code>CASCADE_NONE</code>: No cascades.  If a transient relation
      * is held at flush, an error is thrown.</li>
      * <li><code>CASCADE_IMMEDIATE</code>: Value is persisted immediately when
      * the owning object is persisted.</li>
@@ -185,15 +189,15 @@ public interface ValueMetaData extends MetaDataContext, MetaDataModes {
     /**
      * Cascade behavior for persist operation.
      *
-     * @see #getCascadePersist
+     * @see    #getCascadePersist
      */
     public void setCascadePersist(int cascade);
 
     /**
-     * Cascade behavior for attach operation. Only applies to
-     * persistence-capable values. Options are:<br />
+     * Cascade behavior for attach operation.  Only applies to
+     * persistence-capable values.  Options are:<br />
      * <ul>
-     * <li><code>CASCADE_NONE</code>: No cascades of attach. Relation
+     * <li><code>CASCADE_NONE</code>: No cascades of attach.  Relation
      * remains detached.</li>
      * <li><code>CASCADE_IMMEDIATE</code>: Value is attached immediately.</li>
      * </ul>
@@ -203,13 +207,13 @@ public interface ValueMetaData extends MetaDataContext, MetaDataModes {
     /**
      * Cascade behavior for attach operation.
      *
-     * @see #getCascadeAttach
+     * @see    #getCascadeAttach
      */
     public void setCascadeAttach(int cascade);
 
     /**
-     * Cascade behavior for refresh operation. Only applies to
-     * persistence-capable values. Options are:<br />
+     * Cascade behavior for refresh operation.  Only applies to
+     * persistence-capable values.  Options are:<br />
      * <ul>
      * <li><code>CASCADE_NONE</code>: No cascades of refresh.</li>
      * <li><code>CASCADE_IMMEDIATE</code>: Persistent value object is also
@@ -223,7 +227,7 @@ public interface ValueMetaData extends MetaDataContext, MetaDataModes {
     /**
      * Cascade behavior for refresh operation.
      *
-     * @see #getCascadeRefresh
+     * @see    #getCascadeRefresh
      */
     public void setCascadeRefresh(int cascade);
 
@@ -238,21 +242,21 @@ public interface ValueMetaData extends MetaDataContext, MetaDataModes {
     public void setSerialized(boolean serialized);
 
     /**
-     * The field that this value shares a mapping with. Currently the only
+     * The field that this value shares a mapping with.  Currently the only
      * supported use for a mapped-by value is when a map field key is
      * determined by a field of the persistence-capable map value.
      */
     public String getValueMappedBy();
 
     /**
-     * The field that this value shares a mapping with. Currently the only
+     * The field that this value shares a mapping with.  Currently the only
      * supported use for a mapped-by value is when a map field key is
      * determined by a field of the persistence-capable map value.
      */
     public void setValueMappedBy(String mapped);
 
     /**
-     * The field that this value shares a mapping with. Currently the only
+     * The field that this value shares a mapping with.  Currently the only
      * supported use for a mapped-by value is when a map field key is
      * determined by a field of the persistence-capable map value.
      */
@@ -284,13 +288,13 @@ public interface ValueMetaData extends MetaDataContext, MetaDataModes {
     public void setResolve(int mode, boolean on);
 
     /**
-     * Resolve and validate metadata. Return true if already resolved.
+     * Resolve and validate metadata.  Return true if already resolved.
      */
     public boolean resolve(int mode);
 
     /**
-     * Copy state from the given value to this one. Do not copy mapping
-     * information.
+     *	Copy state from the given value to this one.  Do not copy mapping
+      *	information.
      */
-    public void copy(ValueMetaData vmd);
+    public void copy (ValueMetaData vmd);
 }

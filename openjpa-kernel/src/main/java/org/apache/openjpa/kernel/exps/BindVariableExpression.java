@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,11 +20,12 @@ import java.util.Collection;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * Binds a variable to a collection.
+ * <p>Binds a variable to a collection.</p>
  *
  * @author Abe White
  */
-class BindVariableExpression extends Exp {
+class BindVariableExpression
+    extends Exp {
 
     private final BoundVariable _var;
     private final Val _val;
@@ -29,8 +33,8 @@ class BindVariableExpression extends Exp {
     /**
      * Constructor.
      *
-     * @param var the bound variable
-     * @param val the value the variable is bound to
+     * @param    var        the bound variable
+     * @param    val        the value the variable is bound to
      */
     public BindVariableExpression(BoundVariable var, Val val) {
         _var = var;
@@ -52,7 +56,7 @@ class BindVariableExpression extends Exp {
 
     /**
      * Return a collection for the given object, produced by
-     * <code>eval</code>'ing the value of this expression. Simply casts
+     * <code>eval</code>'ing the value of this expression.  Simply casts
      * the object to a collection by default.
      */
     protected Collection getCollection(Object values) {
@@ -74,6 +78,6 @@ class BindVariableExpression extends Exp {
             return false;
         Object obj = candidates.iterator().next();
         return eval(obj, obj, ctx, params);
-    }
+	}
 }
 

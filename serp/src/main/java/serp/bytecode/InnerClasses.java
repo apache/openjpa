@@ -113,8 +113,8 @@ public class InnerClasses extends Attribute {
     /**
      * Add an inner class.
      *
-     * @param name  the simple name of the class, or null if anonymous
-     * @param type  the full class name of the inner class
+     * @param name the simple name of the class, or null if anonymous
+     * @param type the full class name of the inner class
      * @param owner the declaring class, or null if not a member class
      */
     public InnerClass addInnerClass(String name, String type, String owner) {
@@ -128,8 +128,8 @@ public class InnerClasses extends Attribute {
     /**
      * Add an inner class.
      *
-     * @param name  the simple name of the class, or null if anonymous
-     * @param type  the class of the inner class
+     * @param name the simple name of the class, or null if anonymous
+     * @param type the class of the inner class
      * @param owner the declaring class, or null if not a member class
      */
     public InnerClass addInnerClass(String name, Class type, Class owner) {
@@ -141,8 +141,8 @@ public class InnerClasses extends Attribute {
     /**
      * Add an inner class.
      *
-     * @param name  the simple name of the class, or null if anonymous
-     * @param type  the class of the inner class
+     * @param name the simple name of the class, or null if anonymous
+     * @param type the class of the inner class
      * @param owner the declaring class, or null if not a member class
      */
     public InnerClass addInnerClass(String name, BCClass type, BCClass owner) {

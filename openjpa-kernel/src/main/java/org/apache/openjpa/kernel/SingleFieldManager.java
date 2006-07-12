@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -37,16 +40,18 @@ import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.UserException;
 
 /**
- * FieldManager type used to hold onto a single field value and then
- * dispense it via the fetch methods. The manager can also perform actions
- * on the held field.
+ * <p>FieldManager type used to hold onto a single field value and then
+ * dispense it via the fetch methods.  The manager can also perform actions
+ * on the held field.</p>
  *
  * @author Abe White
  */
-class SingleFieldManager extends TransferFieldManager {
+class SingleFieldManager
+    extends TransferFieldManager {
 
     private static final Localizer _loc = Localizer.forPackage
         (SingleFieldManager.class);
+
     private final StateManagerImpl _sm;
     private final BrokerImpl _broker;
 
@@ -56,7 +61,7 @@ class SingleFieldManager extends TransferFieldManager {
     }
 
     /**
-     * Proxy the held field if needed. Return true if the field needs to
+     * Proxy the held field if needed.  Return true if the field needs to
      * be replaced with the now-proxied instance.
      */
     public boolean proxy(boolean reset, boolean replaceNull) {
@@ -121,6 +126,7 @@ class SingleFieldManager extends TransferFieldManager {
                     ret = proxy != null;
                 }
         }
+
         if (proxy != null) {
             proxy.setOwner(_sm, field);
             ChangeTracker tracker = proxy.getChangeTracker();
@@ -143,6 +149,7 @@ class SingleFieldManager extends TransferFieldManager {
     private Proxy checkProxy() {
         if (!(objval instanceof Proxy))
             return null;
+
         Proxy proxy = (Proxy) objval;
         if (proxy.getOwner() == null || Proxies.isOwner(proxy, _sm, field))
             return proxy;
@@ -155,6 +162,7 @@ class SingleFieldManager extends TransferFieldManager {
     public void unproxy() {
         if (objval == null)
             return;
+
         FieldMetaData fmd = _sm.getMetaData().getField(field);
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.COLLECTION:
@@ -171,11 +179,12 @@ class SingleFieldManager extends TransferFieldManager {
     }
 
     /**
-     * Release the currently embedded field(make it transient).
+     * Release the currently embedded field (make it transient).
      */
     public void releaseEmbedded() {
         if (objval == null)
             return;
+
         FieldMetaData fmd = _sm.getMetaData().getField(field);
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.PC:
@@ -221,19 +230,22 @@ class SingleFieldManager extends TransferFieldManager {
     private void releaseEmbedded(ValueMetaData vmd, Object obj) {
         if (obj == null)
             return;
+
         StateManagerImpl sm = _broker.getStateManagerImpl(obj, false);
-        if (sm != null && sm.getOwner() == _sm && sm.getOwnerMetaData() == vmd)
+        if (sm != null && sm.getOwner() == _sm
+            && sm.getOwnerMetaData() == vmd)
             sm.release(true);
     }
 
     /**
      * Persist the stored field safely, preventing infinite recursion using
-     * the given set of already-persisted objects. This method is only called
+     * the given set of already-persisted objects.  This method is only called
      * for fields that we know have cascade-immediate settings.
      */
     public void persist(OpCallbacks call) {
         if (objval == null)
             return;
+
         FieldMetaData fmd = _sm.getMetaData().getField(field);
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.PC:
@@ -279,6 +291,7 @@ class SingleFieldManager extends TransferFieldManager {
     private void delete(boolean immediate, OpCallbacks call) {
         if (objval == null)
             return;
+
         FieldMetaData fmd = _sm.getMetaData().getField(field);
         if (fmd.getCascadeDelete() != ValueMetaData.CASCADE_NONE) {
             // immediate cascade works on field value; dependent deref
@@ -290,6 +303,7 @@ class SingleFieldManager extends TransferFieldManager {
                 dereferenceDependent(fmd.getExternalValue(objval, _broker));
             return;
         }
+
         Object external = null;
         ValueMetaData vmd = fmd.getKey();
         if ((immediate || vmd.isEmbeddedPC())
@@ -301,6 +315,7 @@ class SingleFieldManager extends TransferFieldManager {
                 return;
             dereferenceDependent(((Map) external).keySet());
         }
+
         vmd = fmd.getElement();
         if ((immediate || vmd.isEmbeddedPC())
             && vmd.getCascadeDelete() == ValueMetaData.CASCADE_IMMEDIATE) {
@@ -321,6 +336,7 @@ class SingleFieldManager extends TransferFieldManager {
                 if (external == null)
                     return;
             }
+
             switch (fmd.getTypeCode()) {
                 case JavaTypes.COLLECTION:
                     dereferenceDependent((Collection) external);
@@ -357,6 +373,7 @@ class SingleFieldManager extends TransferFieldManager {
     void delete(ValueMetaData vmd, Object obj, OpCallbacks call) {
         if (obj == null)
             return;
+
         // delete if unknowned or this isn't an embedded field or if owned by us
         StateManagerImpl sm = _broker.getStateManagerImpl(obj, false);
         if (sm != null && (sm.getOwner() == null || !vmd.isEmbeddedPC()
@@ -393,12 +410,13 @@ class SingleFieldManager extends TransferFieldManager {
 
     /**
      * Recursively invoke the broker to gather cascade-refresh objects in
-     * the current field into the given set. This method is only called
+     * the current field into the given set.  This method is only called
      * for fields that we know have cascade-refresh settings.
      */
     public void gatherCascadeRefresh(OpCallbacks call) {
         if (objval == null)
             return;
+
         FieldMetaData fmd = _sm.getMetaData().getField(field);
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.PC:
@@ -439,9 +457,9 @@ class SingleFieldManager extends TransferFieldManager {
     }
 
     /**
-     * Perform pre-flush tasks on the current field. This includes checking
+     * Perform pre-flush tasks on the current field.  This includes checking
      * for nulls, persisting pcs, embedding embedded fields, and ref'ing
-     * pc fields. Return true if the field needs to be replaced with the
+     * pc fields.  Return true if the field needs to be replaced with the
      * new value.
      */
     public boolean preFlush(OpCallbacks call) {
@@ -449,8 +467,10 @@ class SingleFieldManager extends TransferFieldManager {
         FieldMetaData fmd = _sm.getMetaData().getField(field);
         if (fmd.getDeclaredTypeCode() < JavaTypes.OBJECT)
             return false;
+
         // perform pers-by-reach and dependent refs
         boolean ret = preFlush(fmd, call);
+
         // manage inverses
         InverseManager manager = _broker.getInverseManager();
         if (manager != null)
@@ -469,7 +489,8 @@ class SingleFieldManager extends TransferFieldManager {
     /**
      * Write the stored field or its default value to the given stream.
      */
-    public void serialize(ObjectOutput out, boolean def) throws IOException {
+    public void serialize(ObjectOutput out, boolean def)
+        throws IOException {
         FieldMetaData fmd = _sm.getMetaData().getField(field);
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.BOOLEAN:
@@ -510,12 +531,15 @@ class SingleFieldManager extends TransferFieldManager {
             if (fmd.getNullValue() == FieldMetaData.NULL_EXCEPTION
                 || fmd.getDeclaredTypeCode() == JavaTypes.OID)
                 throw new InvalidStateException(_loc.get("null-value",
-                    fmd.getName(), _sm.getManagedInstance())). setFatal(true);
+                    fmd.getName(), _sm.getManagedInstance())).
+                    setFatal(true);
             return false;
         }
+
         // nothing else to do for non-persistent
         if (fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
             return false;
+
         // don't allow managed objectid field value
         if (fmd.getDeclaredTypeCode() == JavaTypes.OID) {
             _sm.assertNotManagedObjectId(objval);
@@ -526,11 +550,13 @@ class SingleFieldManager extends TransferFieldManager {
                     Exceptions.toString(_sm.getManagedInstance()))).
                     setFatal(true);
         }
+
         // check for pcs in field value
         if (preFlush(fmd, fmd.getDeclaredTypeCode(),
             fmd.getKey().getDeclaredTypeCode(),
             fmd.getElement().getDeclaredTypeCode(), false, call))
             return true;
+
         // also check for pcs in externalized values
         if (fmd.isExternalized())
             preFlush(fmd, fmd.getTypeCode(), fmd.getKey().getTypeCode(),
@@ -547,6 +573,7 @@ class SingleFieldManager extends TransferFieldManager {
         Object val = objval;
         if (val == null)
             return false;
+
         boolean copy = false;
         switch (type) {
             case JavaTypes.PC:
@@ -608,8 +635,9 @@ class SingleFieldManager extends TransferFieldManager {
                     objval = embed(fmd, (Map) val, keyEmbed, valEmbed);
                     copy = keyEmbed;
                 }
-                if (!keyEmbed && (keyType == JavaTypes.PC ||
-                    keyType == JavaTypes.PC_UNTYPED)) {
+
+                if (!keyEmbed && (keyType == JavaTypes.PC
+                    || keyType == JavaTypes.PC_UNTYPED)) {
                     boolean flushed = false;
                     if (external) {
                         val = fmd.getExternalValue(val, _broker);
@@ -629,6 +657,7 @@ class SingleFieldManager extends TransferFieldManager {
                     if (!flushed && val != null)
                         preFlushPCs(fmd.getKey(), ((Map) val).keySet(), call);
                 }
+
                 if (!valEmbed && (elemType == JavaTypes.PC
                     || elemType == JavaTypes.PC_UNTYPED)) {
                     boolean flushed = false;
@@ -699,10 +728,12 @@ class SingleFieldManager extends TransferFieldManager {
     private void preFlushPC(ValueMetaData vmd, Object obj, OpCallbacks call) {
         if (obj == null)
             return;
+
         OpenJPAStateManager sm;
         if (vmd.getCascadePersist() == ValueMetaData.CASCADE_NONE) {
             if (!_broker.isDetachedNew() && _broker.isDetached(obj))
                 return; // allow but ignore
+
             sm = _broker.getStateManager(obj);
             if (sm == null || !sm.isPersistent())
                 throw new InvalidStateException
@@ -710,7 +741,9 @@ class SingleFieldManager extends TransferFieldManager {
                         Exceptions.toString(obj), vmd,
                         Exceptions.toString(_sm.getManagedInstance()))).
                     setFailedObject(obj);
-        } else sm = _broker.persist(obj, null, call);
+        } else
+            sm = _broker.persist(obj, null, call);
+
         if (sm != null) {
             // if deleted and not managed inverse, die
             if (sm.isDeleted() && (_broker.getInverseManager() == null
@@ -741,6 +774,7 @@ class SingleFieldManager extends TransferFieldManager {
         if (coll == null)
             throw new UserException(_loc.get("not-copyable",
                 vmd.getFieldMetaData()));
+
         coll.clear();
         for (Iterator itr = orig.iterator(); itr.hasNext();)
             coll.add(embed(vmd, itr.next()));
@@ -754,6 +788,7 @@ class SingleFieldManager extends TransferFieldManager {
         boolean valEmbed) {
         Map map;
         Map.Entry entry;
+
         // if we have to replace keys, we need to copy the map; otherwise
         // we can mutate the values directly
         if (keyEmbed) {
@@ -762,6 +797,7 @@ class SingleFieldManager extends TransferFieldManager {
             map = getProxyManager().copyMap(orig);
             if (map == null)
                 throw new UserException(_loc.get("not-copyable", fmd));
+
             map.clear();
             Object key, val;
             for (Iterator itr = orig.entrySet().iterator(); itr.hasNext();) {
@@ -776,7 +812,8 @@ class SingleFieldManager extends TransferFieldManager {
             map = orig;
             for (Iterator itr = map.entrySet().iterator(); itr.hasNext();) {
                 entry = (Map.Entry) itr.next();
-                entry.setValue(embed(fmd.getElement(), entry.getValue()));
+                entry.setValue(embed(fmd.getElement(),
+                    entry.getValue()));
             }
         }
         return map;
@@ -792,9 +829,10 @@ class SingleFieldManager extends TransferFieldManager {
     }
 
     /**
-     * Return the proxy manager.
+     *	Return the proxy manager.
      */
-    private ProxyManager getProxyManager() {
-        return _broker.getConfiguration().getProxyManagerInstance();
-    }
+    private ProxyManager getProxyManager ()
+	{
+		return _broker.getConfiguration ().getProxyManagerInstance ();
+	}
 }

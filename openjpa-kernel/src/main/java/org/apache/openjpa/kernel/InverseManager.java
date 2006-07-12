@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -28,9 +31,10 @@ import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.InvalidStateException;
 
 /**
- * Class which manages inverse relations before flushing
- * to the datastore. Ensures that inverse fields are set.
- * Currently limited to managing PC and Collection-type relations.
+ * <p>Class which manages inverse relations before flushing
+ * to the datastore.  Ensures that inverse fields are set.</p>
+ * <p/>
+ * <p>Currently limited to managing PC and Collection-type relations.</p>
  *
  * @author Steve Kim
  */
@@ -38,6 +42,7 @@ public class InverseManager implements Configurable {
 
     private static final Localizer _loc = Localizer.forPackage
         (InverseManager.class);
+
     protected static final Object NONE = new Object();
 
     /**
@@ -54,6 +59,7 @@ public class InverseManager implements Configurable {
      * Constant representing the {@link #ACTION_EXCEPTION} action
      */
     public static final int ACTION_EXCEPTION = 2;
+
     private boolean _manageLRS = false;
     private int _action = ACTION_MANAGE;
     private Log _log;
@@ -66,7 +72,7 @@ public class InverseManager implements Configurable {
     }
 
     /**
-     * Set whether to false LRS relations. Defaults to false.
+     * Set whether to false LRS relations.  Defaults to false.
      */
     public void setManageLRS(boolean manage) {
         _manageLRS = manage;
@@ -100,7 +106,8 @@ public class InverseManager implements Configurable {
             _action = ACTION_WARN;
         else if ("manage".equals(action))
             _action = ACTION_MANAGE;
-        else throw new IllegalArgumentException(action);
+        else
+            throw new IllegalArgumentException(action);
     }
 
     public void startConfiguration() {
@@ -116,7 +123,7 @@ public class InverseManager implements Configurable {
     /**
      * Correct relations from the given dirty field to inverse instances.
      * Field <code>fmd</code> of the instance managed by <code>sm</code> has
-     * value <code>value</code>. Ensure that all inverses relations from
+     * value <code>value</code>.  Ensure that all inverses relations from
      * <code>value</code> are consistent with this.
      */
     public void correctRelations(OpenJPAStateManager sm, FieldMetaData fmd,
@@ -125,14 +132,18 @@ public class InverseManager implements Configurable {
             (fmd.getDeclaredTypeCode() != JavaTypes.COLLECTION ||
                 fmd.getElement().getDeclaredTypeCode() != JavaTypes.PC))
             return;
+
         // ignore LRS fields
         if (!getManageLRS() && fmd.isLRS())
             return;
+
         FieldMetaData[] inverses = fmd.getInverseMetaDatas();
         if (inverses.length == 0)
             return;
+
         // clear any restorable relations
         clearInverseRelations(sm, fmd, inverses, value);
+
         if (value != null) {
             StoreContext ctx = sm.getContext();
             switch (fmd.getDeclaredTypeCode()) {
@@ -161,16 +172,19 @@ public class InverseManager implements Configurable {
         OpenJPAStateManager other = ctx.getStateManager(toRef);
         if (other == null || other.isDeleted())
             return;
+
         boolean owned;
         for (int i = 0; i < inverses.length; i++) {
             if (!getManageLRS() && inverses[i].isLRS())
                 continue;
+
             // if this is the owned side of the relation and has not yet been
             // loaded, no point in setting it now, cause it'll have the correct
             // value the next time it is loaded after the flush
             owned = fmd == inverses[i].getMappedByMetaData()
                 && _action == ACTION_MANAGE
                 && !isLoaded(other, inverses[i].getIndex());
+
             switch (inverses[i].getDeclaredTypeCode()) {
                 case JavaTypes.PC:
                     if (!owned || inverses[i].getCascadeDelete()
@@ -192,16 +206,19 @@ public class InverseManager implements Configurable {
     private boolean isLoaded(OpenJPAStateManager sm, int field) {
         if (sm.getLoaded().get(field))
             return true;
+
         // if the field isn't loaded in the state manager, it still might be
         // loaded in the data cache, in which case we still have to correct
         // it to keep the cache in sync
         DataCache cache = sm.getMetaData().getDataCache();
         if (cache == null)
             return false;
+
         // can't retrieve an embedded object directly, so always assume the
         // field is loaded and needs to be corrected
         if (sm.isEmbedded())
             return true;
+
         PCData pc = cache.get(sm.getObjectId());
         if (pc == null)
             return false;
@@ -210,7 +227,7 @@ public class InverseManager implements Configurable {
 
     /**
      * Remove all relations between the initial value of <code>fmd</code> for
-     * the instance managed by <code>sm</code> and its inverses. Relations
+     * the instance managed by <code>sm</code> and its inverses.  Relations
      * shared with <code>newValue</code> can be left intact.
      */
     protected void clearInverseRelations(OpenJPAStateManager sm,
@@ -226,6 +243,7 @@ public class InverseManager implements Configurable {
                 sm.fetchInitialField(fmd.getIndex());
             if (initial == null)
                 return;
+
             // clear all relations not also in the new value
             Collection coll = (Collection) newValue;
             Object elem;
@@ -248,16 +266,19 @@ public class InverseManager implements Configurable {
         OpenJPAStateManager other = sm.getContext().getStateManager(val);
         if (other == null || other.isDeleted())
             return;
+
         boolean owned;
         for (int i = 0; i < inverses.length; i++) {
             if (!getManageLRS() && inverses[i].isLRS())
                 continue;
+
             // if this is the owned side of the relation and has not yet been
             // loaded, no point in setting it now, cause it'll have the correct
             // value the next time it is loaded after the flush
             owned = fmd == inverses[i].getMappedByMetaData()
                 && _action == ACTION_MANAGE
                 && !isLoaded(other, inverses[i].getIndex());
+
             switch (inverses[i].getDeclaredTypeCode()) {
                 case JavaTypes.PC:
                     if (!owned || inverses[i].getCascadeDelete()
@@ -275,8 +296,8 @@ public class InverseManager implements Configurable {
     }
 
     /**
-     * Store null value at the given field. Verify that the given compare
-     * value is the value being nulled. Pass NONE for no comparison.
+     * Store null value at the given field.  Verify that the given compare
+     * value is the value being nulled.  Pass NONE for no comparison.
      */
     protected void storeNull(OpenJPAStateManager sm, FieldMetaData fmd,
         Object compare) {
@@ -284,7 +305,7 @@ public class InverseManager implements Configurable {
     }
 
     /**
-     * Store a given value at the given field. Compare the given
+     * Store a given value at the given field.  Compare the given
      * argument if not NONE.
      */
     protected void storeField(OpenJPAStateManager sm, FieldMetaData fmd,
@@ -294,6 +315,7 @@ public class InverseManager implements Configurable {
             return;
         if (compare != NONE && oldValue != compare)
             return;
+
         switch (_action) {
             case ACTION_MANAGE:
                 sm.settingObjectField(sm.getPersistenceCapable(),
@@ -381,5 +403,5 @@ public class InverseManager implements Configurable {
         throw new InvalidStateException(_loc.get("inverse-consistency",
             fmd, sm.getId(), sm.getContext())).setFailedObject
             (sm.getManagedInstance()).setFatal(true);
-    }
+	}
 }

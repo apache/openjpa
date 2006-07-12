@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,19 +20,22 @@ import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * Default {@link ValueMetaData} implementation.
+ * <p>Default {@link ValueMetaData} implementation.</p>
  *
  * @author Abe White
  * @nojavadoc
  */
-public class ValueMetaDataImpl implements ValueMetaData {
+public class ValueMetaDataImpl
+    implements ValueMetaData {
 
     private static final Localizer _loc = Localizer.forPackage
         (ValueMetaDataImpl.class);
+
     ///////////////////////////////////////////////////////////////
     // Note: if you add additional state that should be copied to
     // embedded metadata, make sure to add it to the copy() method
     ///////////////////////////////////////////////////////////////
+
     private final FieldMetaData _owner;
     private Class _decType = Object.class;
     private int _decCode = JavaTypes.OBJECT;
@@ -176,6 +182,7 @@ public class ValueMetaDataImpl implements ValueMetaData {
         _embeddedMeta.setDescribedType(_decType);
         repos.getMetaDataFactory().getDefaults().populate(_embeddedMeta,
             ClassMetaData.ACCESS_UNKNOWN);
+
         setEmbedded(true);
         return _embeddedMeta;
     }
@@ -185,6 +192,7 @@ public class ValueMetaDataImpl implements ValueMetaData {
             return CASCADE_NONE;
         if (isEmbeddedPC())
             return CASCADE_IMMEDIATE;
+
         switch (_delete) {
             case CASCADE_NONE:
                 // if the user marks the owning field dependent and we externalize
@@ -227,7 +235,7 @@ public class ValueMetaDataImpl implements ValueMetaData {
 
     public int getCascadeAttach() {
         if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT
-            || !isDeclaredTypePC()) // attach acts on declared type
+            || !isDeclaredTypePC())    // attach acts on declared type
             return CASCADE_NONE;
         return _attach;
     }
@@ -240,7 +248,7 @@ public class ValueMetaDataImpl implements ValueMetaData {
 
     public int getCascadeRefresh() {
         if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT
-            || !isDeclaredTypePC()) // refresh acts on declared type
+            || !isDeclaredTypePC())    // refresh acts on declared type
             return CASCADE_NONE;
         return _refresh;
     }
@@ -322,6 +330,7 @@ public class ValueMetaDataImpl implements ValueMetaData {
     ////////////////////////
     // Resolve and validate
     ////////////////////////
+
     public int getResolve() {
         return _resMode;
     }
@@ -335,7 +344,8 @@ public class ValueMetaDataImpl implements ValueMetaData {
             _resMode = mode;
         else if (on)
             _resMode |= mode;
-        else _resMode &= ~mode;
+        else
+            _resMode &= ~mode;
     }
 
     public boolean resolve(int mode) {
@@ -343,17 +353,20 @@ public class ValueMetaDataImpl implements ValueMetaData {
             return true;
         int cur = _resMode;
         _resMode |= mode;
+
         // we only perform actions for meta mode
         if ((mode & MODE_META) == 0 || (cur & MODE_META) != 0)
             return false;
+
         // check for type extension
         int codeOverride = JavaTypes.OBJECT;
         if (_typeOverride != null) {
             codeOverride = JavaTypes.getTypeCode(_typeOverride);
+
             // if there is no externalizer method or this value is a key or
             // element, set our type to the type extension; otherwise, use the
             // type extension as a hint to the actual type of the declared
-            // value(e.g. marking an interface as non-pc)
+            // value (e.g. marking an interface as non-pc)
             if (_owner.getExternalizerMethod() == null
                 || _owner.getValue() != this) {
                 _type = _typeOverride;
@@ -364,6 +377,7 @@ public class ValueMetaDataImpl implements ValueMetaData {
                     resolveDeclaredType(_typeOverride);
             }
         }
+
         // see if actual type is pc
         if (JavaTypes.maybePC(_code, _type)) {
             _typeMeta = _owner.getRepository().getMetaData(_type,
@@ -371,6 +385,7 @@ public class ValueMetaDataImpl implements ValueMetaData {
             if (_typeMeta != null)
                 _code = JavaTypes.PC;
         }
+
         // if there is no externalizer, set our declared type code to the
         // actual type so that we treat the value correctly at runtime
         // (pers by reach, etc)
@@ -382,15 +397,19 @@ public class ValueMetaDataImpl implements ValueMetaData {
             _decTypeMeta = _typeMeta;
         } else if (JavaTypes.maybePC(_decCode, _decType))
             resolveDeclaredType(_decType);
+
         // resolves mapped by
         getValueMappedBy();
+
         ClassMetaData embed = getEmbeddedMetaData();
         if (embed != null)
             embed.resolve(MODE_META);
+
         // oid as primary key field?
         if (_decCode == JavaTypes.PC && isEmbedded()
             && _owner.isPrimaryKey() && _owner.getValue() == this)
             _code = _decCode = JavaTypes.OID;
+
         return false;
     }
 
@@ -416,6 +435,7 @@ public class ValueMetaDataImpl implements ValueMetaData {
         _typeOverride = vmd.getTypeOverride();
         if (_embeddedMeta != null)
             _embeddedMeta.setDescribedType(vmd.getDeclaredType());
+
         // don't allow copy to override embedded; don't copy serialized at all
         if (_embedded == null)
             setEmbedded(vmd.isEmbedded());

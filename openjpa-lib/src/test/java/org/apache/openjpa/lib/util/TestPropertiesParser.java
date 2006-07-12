@@ -139,9 +139,9 @@ public class TestPropertiesParser extends TestCase {
      * Test that special characters work.
      *
      * @param formattingProps if true, test against the
-     *                        FormatPreservingProperties, otherwise test
-     *                        against a normal Properties instance(for validation of the test case).
-     * @param value           whether to test the key or the value
+     * FormatPreservingProperties, otherwise test
+     * against a normal Properties instance(for validation of the test case).
+     * @param value whether to test the key or the value
      */
     public void testSpecialChars(boolean formattingProps, boolean value)
         throws Throwable {

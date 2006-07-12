@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -20,14 +23,15 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 
 /**
- * Exception type for all OpenJPA exceptions. Meant to be easily
+ * <p>Exception type for all OpenJPA exceptions.  Meant to be easily
  * transformed into an appropriate exception at the API layer, since most APIs
- * define their own exception types.
+ * define their own exception types.</p>
  *
  * @author Abe White
  * @since 4.0
  */
-public abstract class OpenJPAException extends RuntimeException
+public abstract class OpenJPAException
+    extends RuntimeException
     implements Serializable, ExceptionInfo {
 
     private transient boolean _fatal = false;
@@ -98,7 +102,8 @@ public abstract class OpenJPAException extends RuntimeException
     public Throwable getCause() {
         if (_nested == null || _nested.length == 0)
             return null;
-        else return _nested[0];
+        else
+            return _nested[0];
     }
 
     /**
@@ -160,7 +165,8 @@ public abstract class OpenJPAException extends RuntimeException
         Exceptions.printNestedThrowables(this, out);
     }
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
+    private void writeObject(ObjectOutputStream out)
+        throws IOException {
         out.writeBoolean(_fatal);
         out.writeObject(Exceptions.replaceFailedObject(_failed));
         out.writeObject(Exceptions.replaceNestedThrowables(_nested));
@@ -170,7 +176,7 @@ public abstract class OpenJPAException extends RuntimeException
         throws IOException, ClassNotFoundException {
         _fatal = in.readBoolean();
         _failed = in.readObject();
-        _nested = (Throwable[]) in.readObject();
-    }
+        _nested = (Throwable[]) in.readObject ();
+	}
 }
 

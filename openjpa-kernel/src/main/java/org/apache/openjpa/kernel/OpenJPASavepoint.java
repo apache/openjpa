@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -18,8 +21,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Represents a savepoint where operations afterwards can be rolled
- * back and restored to this point
+ * <p>Represents a savepoint where operations afterwards can be rolled
+ * back and restored to this point<p>
  *
  * @author Steve Kim
  * @since 3.4
@@ -29,11 +32,12 @@ public class OpenJPASavepoint {
     private final Broker _broker;
     private final String _name;
     private final boolean _copy;
+
     // <StateManagerImpl, SavepointFieldManager>
     private Map _saved;
 
     /**
-     * Constructor. Indicate whether to copy field data into memory.
+     * Constructor.  Indicate whether to copy field data into memory.
      */
     public OpenJPASavepoint(Broker broker, String name, boolean copy) {
         _broker = broker;
@@ -76,6 +80,7 @@ public class OpenJPASavepoint {
     public void save(Collection states) {
         if (_saved != null)
             throw new IllegalStateException();
+
         _saved = new HashMap((int) (states.size() * 1.33 + 1));
         StateManagerImpl sm;
         for (Iterator i = states.iterator(); i.hasNext();) {
@@ -85,21 +90,21 @@ public class OpenJPASavepoint {
     }
 
     /**
-     * Release this savepoint and any associated resources. Releases
+     * Release this savepoint and any associated resources.  Releases
      * will happen in reverse order of creation.
      *
-     * @param user if true, user initiated, otherwise a side effect of
-     *             another savepoint's release/rollback
+     * @param    user    if true, user initiated, otherwise a side effect of
+     * another savepoint's release/rollback
      */
     public void release(boolean user) {
         _saved = null;
     }
 
     /**
-     * Handle the rolled back state, returning saved data.
-     * Subclasses should return the collection returned from this method.
+     *	Handle the rolled back state, returning saved data.
+     *	Subclasses should return the collection returned from this method.
      *
-     * @param previous previous savepoints set in the transaction
+     *	@param    previous    previous savepoints set in the transaction
      */
     public Collection rollback(Collection previous) {
         Map saved;
@@ -114,6 +119,6 @@ public class OpenJPASavepoint {
             saved.putAll(_saved);
         }
         _saved = null;
-        return saved.values();
-    }
+        return saved.values ();
+	}
 }

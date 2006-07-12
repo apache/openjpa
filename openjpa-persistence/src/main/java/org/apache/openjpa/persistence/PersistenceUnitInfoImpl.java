@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -47,10 +50,12 @@ public class PersistenceUnitInfoImpl
 
     private static final Localizer s_loc = Localizer.forPackage
         (PersistenceUnitInfoImpl.class);
+
     private String _name;
     private final Properties _props = new Properties();
     private PersistenceUnitTransactionType _transType =
         PersistenceUnitTransactionType.RESOURCE_LOCAL;
+
     private String _providerClassName;
     private List<String> _mappingFileNames;
     private List<String> _entityClassNames;
@@ -61,6 +66,7 @@ public class PersistenceUnitInfoImpl
     private DataSource _nonJtaDataSource;
     private boolean _excludeUnlisted;
     private URL _persistenceXmlFile;
+
     // A persistence unit is defined by a persistence.xml file. The jar
     // file or directory whose META-INF directory contains the
     // persistence.xml file is termed the root of the persistence unit.
@@ -194,6 +200,7 @@ public class PersistenceUnitInfoImpl
             addJarFile(url);
             return;
         }
+
         // jar file is not a resource; check classpath
         String[] cp = System.getProperty("java.class.path").
             split(System.getProperty("path.separator"));
@@ -203,7 +210,8 @@ public class PersistenceUnitInfoImpl
                 try {
                     addJarFile(new File(cp[i]).toURL());
                     return;
-                } catch (MalformedURLException mue) {
+                }
+                catch (MalformedURLException mue) {
                     break;
                 }
             }
@@ -235,14 +243,14 @@ public class PersistenceUnitInfoImpl
     }
 
     /**
-     * The location of the persistence.xml resource. May be null.
+     * The location of the persistence.xml resource.  May be null.
      */
     public URL getPersistenceXmlFileUrl() {
         return _persistenceXmlFile;
     }
 
     /**
-     * The location of the persistence.xml resource. May be null.
+     * The location of the persistence.xml resource.  May be null.
      */
     public void setPersistenceXmlFileUrl(URL url) {
         _persistenceXmlFile = url;
@@ -255,6 +263,7 @@ public class PersistenceUnitInfoImpl
     public void fromUserProperties(Map map) {
         if (map == null)
             return;
+
         Object key;
         Object val;
         for (Object o : map.entrySet()) {
@@ -267,16 +276,19 @@ public class PersistenceUnitInfoImpl
                 if (val instanceof String)
                     ttype = Enum.valueOf
                         (PersistenceUnitTransactionType.class, (String) val);
-                else ttype = (PersistenceUnitTransactionType) val;
+                else
+                    ttype = (PersistenceUnitTransactionType) val;
                 setTransactionType(ttype);
             } else if ("javax.persistence.jtaDataSource".equals(key)) {
                 if (val instanceof String)
                     setJtaDataSourceName((String) val);
-                else setJtaDataSource((DataSource) val);
+                else
+                    setJtaDataSource((DataSource) val);
             } else if ("javax.persistence.nonJtaDataSource".equals(key)) {
                 if (val instanceof String)
                     setNonJtaDataSourceName((String) val);
-                else setNonJtaDataSource((DataSource) val);
+                else
+                    setNonJtaDataSource((DataSource) val);
             } else if (key instanceof String && val instanceof String)
                 setProperty((String) key, (String) val);
         }
@@ -291,6 +303,7 @@ public class PersistenceUnitInfoImpl
         Map map = new HashMap();
         if (info.getTransactionType() == PersistenceUnitTransactionType.JTA)
             map.put("org.apache.openjpa.TransactionMode", "managed");
+
         boolean hasJta = false;
         DataSource ds = info.getJtaDataSource();
         if (ds != null) {
@@ -306,11 +319,13 @@ public class PersistenceUnitInfoImpl
             map.put("org.apache.openjpa.ConnectionFactoryMode", "managed");
             hasJta = true;
         }
+
         ds = info.getNonJtaDataSource();
         if (ds != null) {
             if (!hasJta)
                 map.put("org.apache.openjpa.ConnectionFactory", ds);
-            else map.put("org.apache.openjpa.ConnectionFactory2", ds);
+            else
+                map.put("org.apache.openjpa.ConnectionFactory2", ds);
         } else if (info instanceof PersistenceUnitInfoImpl
             && ((PersistenceUnitInfoImpl) info).getNonJtaDataSourceName()
             != null) {
@@ -322,15 +337,18 @@ public class PersistenceUnitInfoImpl
                 map.put("org.apache.openjpa.ConnectionFactory2Name",
                     nonJtaName);
         }
+
         if (info.getClassLoader() != null)
             map.put("org.apache.openjpa.ClassResolver", new ClassResolverImpl
                 (info.getClassLoader()));
+
         Properties props = info.getProperties();
         if (props != null) {
             map.putAll(props);
             // this isn't a real config property; remove it.
             map.remove(PersistenceProviderImpl.CLASS_TRANSFORMER_OPTIONS);
         }
+
         Properties metaFactoryProps = new Properties();
         if (info.getManagedClassNames() != null &&
             !info.getManagedClassNames().isEmpty()) {
@@ -352,7 +370,8 @@ public class PersistenceUnitInfoImpl
                 URL url = info.getPersistenceUnitRootUrl();
                 if ("file".equals(url.getProtocol())) // exploded jar?
                     file = URLDecoder.decode(url.getPath());
-                else jars.append(url);
+                else
+                    jars.append(url);
             }
             for (URL jar : info.getJarFileUrls()) {
                 if (jars.length() > 0)
@@ -393,12 +412,15 @@ public class PersistenceUnitInfoImpl
     }
 
     // --------------------
+
     public File getSourceFile() {
         if (_persistenceXmlFile == null)
             return null;
+
         try {
             return new File(_persistenceXmlFile.toURI());
-        } catch (URISyntaxException e) {
+        }
+        catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }
     }
@@ -416,9 +438,10 @@ public class PersistenceUnitInfoImpl
     }
 
     /**
-     * Simple class resolver built around the persistence unit loader.
+     *	Simple class resolver built around the persistence unit loader.
      */
-    private static class ClassResolverImpl implements ClassResolver {
+    private static class ClassResolverImpl
+        implements ClassResolver {
 
         private final ClassLoader _loader;
 
@@ -429,5 +452,5 @@ public class PersistenceUnitInfoImpl
         public ClassLoader getClassLoader(Class ctx, ClassLoader env) {
             return _loader;
         }
-    }
+	}
 }

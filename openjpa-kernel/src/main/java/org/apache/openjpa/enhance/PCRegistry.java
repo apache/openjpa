@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -20,20 +23,22 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * Tracks registered persistence-capable classes.
+ * <p>Tracks registered persistence-capable classes.</p>
  *
- * @author Abe White
  * @since 4.0
+ * @author Abe White
  */
 public class PCRegistry {
-
     // DO NOT ADD ADDITIONAL DEPENDENCIES TO THIS CLASS
+
     // intentionally left unlocalized to minimize dependencies
     private static final String COPY_NO_ID = "Cannot copy identity for "
         + "abstract class ";
     private static final String NO_META = "No metadata found for class ";
+
     // map of pc classes to meta structs; weak so the VM can GC classes
     private static final Map _metas = new WeakHashMap();
+
     // register class listeners
     private static final Collection _listeners = new LinkedList();
 
@@ -43,6 +48,7 @@ public class PCRegistry {
     public static void addRegisterClassListener(RegisterClassListener rcl) {
         if (rcl == null)
             return;
+
         synchronized (_listeners) {
             _listeners.add(rcl);
         }
@@ -142,6 +148,7 @@ public class PCRegistry {
         Meta meta = getMeta(pcClass);
         if (meta.pc == null)
             throw new IllegalStateException(COPY_NO_ID + pcClass.getName());
+
         meta.pc.pcCopyKeyFieldsToObjectId(fm, oid);
     }
 
@@ -154,25 +161,27 @@ public class PCRegistry {
         Meta meta = getMeta(pcClass);
         if (meta.pc == null)
             throw new IllegalStateException(COPY_NO_ID + pcClass.getName());
+
         meta.pc.pcCopyKeyFieldsFromObjectId(fm, oid);
     }
 
     /**
      * Register metadata by class.
      *
-     * @param pcClass    the <code>PersistenceCapable</code> class
-     * @param fieldNames managed field names
      * @param fieldTypes managed field types
      * @param fieldFlags managed field flags
-     * @param sup        the most immediate persistent superclass
-     * @param alias      the class alias
-     * @param pc         an instance of the class, if not abstract
+     * @param sup the most immediate persistent superclass
+     * @param    pcClass        the <code>PersistenceCapable</code> class
+     * @param    fieldNames managed field names
+     * @param    alias        the class alias
+     * @param    pc an instance of the class, if not abstract
      */
     public static void register(Class pcClass, String[] fieldNames,
         Class[] fieldTypes, byte[] fieldFlags, Class sup, String alias,
         PersistenceCapable pc) {
         if (pcClass == null)
             throw new NullPointerException();
+
         Meta meta = new Meta(pc, fieldNames, fieldTypes, sup, alias);
         synchronized (_metas) {
             _metas.put(pcClass, meta);
@@ -225,7 +234,8 @@ public class PCRegistry {
     }
 
     /**
-     * This is a helper class to manage metadata per persistence-capable class.
+     *	This is a helper class to manage metadata per persistence-capable
+     *	class.
      */
     private static class Meta {
 
@@ -241,7 +251,7 @@ public class PCRegistry {
             this.fieldNames = fieldNames;
             this.fieldTypes = fieldTypes;
             this.pcSuper = pcSuper;
-            this.alias = alias;
-        }
-    }
+			this.alias = alias;
+		}
+	}
 }

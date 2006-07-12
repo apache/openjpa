@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -27,16 +30,18 @@ import org.apache.openjpa.lib.util.StringDistance;
 import serp.util.Strings;
 
 /**
- * Vendor extensions. This class is thread safe for reads, but not for
- * mutations.
+ * <p>Vendor extensions.  This class is thread safe for reads, but not for
+ * mutations.</p>
  *
  * @author Abe White
  */
 public abstract class Extensions {
 
     public static final String OPENJPA = "openjpa";
-    private static final Localizer _loc =
-        Localizer.forPackage(Extensions.class);
+
+    private static final Localizer _loc = Localizer.forPackage
+        (Extensions.class);
+
     private Map _exts = null;
     private Map _embed = null;
 
@@ -54,6 +59,7 @@ public abstract class Extensions {
     public String[] getExtensionVendors() {
         if (_exts == null || _exts.isEmpty())
             return new String[0];
+
         Set vendors = new TreeSet();
         for (Iterator itr = _exts.keySet().iterator(); itr.hasNext();)
             vendors.add(getVendor(itr.next()));
@@ -73,6 +79,7 @@ public abstract class Extensions {
     public String[] getExtensionKeys(String vendor) {
         if (_exts == null || _exts.isEmpty())
             return new String[0];
+
         Collection keys = new TreeSet();
         Object key;
         for (Iterator itr = _exts.keySet().iterator(); itr.hasNext();) {
@@ -223,6 +230,7 @@ public abstract class Extensions {
             return null;
         if (_embed == null)
             _embed = new HashMap();
+
         Object hk = getHashKey(vendor, key);
         Extensions exts = (Extensions) _embed.get(hk);
         if (exts == null && !create)
@@ -230,6 +238,7 @@ public abstract class Extensions {
         if (exts == null) {
             exts = new EmbeddedExtensions(this);
             _embed.put(hk, exts);
+
             // required to recognize embedded extensions without values
             if (_exts == null)
                 _exts = new HashMap();
@@ -255,9 +264,11 @@ public abstract class Extensions {
     protected void copy(Extensions exts) {
         if (exts.isEmpty())
             return;
+
         if (exts._exts != null && !exts._exts.isEmpty()) {
             if (_exts == null)
                 _exts = new HashMap();
+
             Map.Entry entry;
             for (Iterator itr = exts._exts.entrySet().iterator();
                 itr.hasNext();) {
@@ -266,9 +277,11 @@ public abstract class Extensions {
                     _exts.put(entry.getKey(), entry.getValue());
             }
         }
+
         if (exts._embed != null && !exts._embed.isEmpty()) {
             if (_embed == null)
                 _embed = new HashMap();
+
             Map.Entry entry;
             Extensions embedded;
             for (Iterator itr = exts._embed.entrySet().iterator();
@@ -293,12 +306,15 @@ public abstract class Extensions {
     public void validateExtensionKeys() {
         if (_exts == null || _exts.isEmpty())
             return;
+
         OpenJPAConfiguration conf = getRepository().getConfiguration();
         Log log = conf.getLog(conf.LOG_METADATA);
         if (!log.isWarnEnabled())
             return;
+
         Collection validNames = new TreeSet();
         addExtensionKeys(validNames);
+
         // this is where we store things like "jdbc-" for a
         // prefix for an extension name that we won't validate; that
         // way a new vendor could theoretically add in their
@@ -308,6 +324,7 @@ public abstract class Extensions {
         String[] allowedPrefixes = null;
         if (prefixes != null)
             allowedPrefixes = Strings.split(prefixes, ",", 0);
+
         Object next;
         String key;
         outer:
@@ -318,6 +335,7 @@ public abstract class Extensions {
             key = getKey(next);
             if (validNames.contains(key))
                 continue;
+
             if (allowedPrefixes != null) {
                 for (int j = 0; j < allowedPrefixes.length; j++) {
                     if (key.startsWith(allowedPrefixes[j])
@@ -326,15 +344,18 @@ public abstract class Extensions {
                         continue outer;
                 }
             }
+
             // try to determine if there are any other names that are
             // similiar to this one, so we can add in a hint
             String closestName = StringDistance.getClosestLevenshteinDistance
                 (key, validNames, 0.5f);
+
             if (closestName == null)
                 log.warn(_loc.get("unrecognized-extension", this,
                     key, validNames));
-            else log.warn(_loc.get("unrecognized-extension-hint",
-                new Object[]{ this, key, validNames, closestName }));
+            else
+                log.warn(_loc.get("unrecognized-extension-hint",
+                    new Object[]{ this, key, validNames, closestName }));
         }
     }
 
@@ -420,9 +441,10 @@ public abstract class Extensions {
     }
 
     /**
-     * Embedded extensions implementation.
+     *	Embedded extensions implementation.
      */
-    private static class EmbeddedExtensions extends Extensions {
+    private static class EmbeddedExtensions
+        extends Extensions {
 
         private final Extensions _parent;
 
@@ -430,8 +452,9 @@ public abstract class Extensions {
             _parent = parent;
         }
 
-        public MetaDataRepository getRepository() {
-            return _parent.getRepository();
-        }
-    }
+        public MetaDataRepository getRepository ()
+		{
+			return _parent.getRepository ();
+		}
+	}
 }

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -27,7 +30,7 @@ import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAException;
 
 /**
- * Metadata about a named sequence.
+ * <p>Metadata about a named sequence.</p>
  *
  * @author Abe White
  * @since 4.0
@@ -50,13 +53,16 @@ public class SequenceMetaData
      * Time-based sequence values.
      */
     public static final String IMPL_TIME = "time";
+
     // plugin property names for standard props
     private static final String PROP_SEQUENCE = "Sequence";
     private static final String PROP_INITIAL_VALUE = "InitialValue";
     private static final String PROP_ALLOCATE = "Allocate";
     private static final String PROP_INCREMENT = "Increment";
+
     private static final Localizer _loc = Localizer.forPackage
         (SequenceMetaData.class);
+
     private final MetaDataRepository _repos;
     private final String _name;
     private int _type = Seq.TYPE_DEFAULT;
@@ -70,6 +76,7 @@ public class SequenceMetaData
     private int _increment = -1;
     private int _allocate = -1;
     private int _initial = -1;
+
     // instantiated lazily
     private Seq _instance = null;
 
@@ -232,16 +239,19 @@ public class SequenceMetaData
     protected Seq instantiate(ClassLoader envLoader) {
         if (NAME_SYSTEM.equals(_name))
             return _repos.getConfiguration().getSequenceInstance();
+
         try {
             PluginValue plugin = newPluginValue("sequence-plugin");
             plugin.setString(_plugin);
             String clsName = plugin.getClassName();
-            Class cls =
-                Class.forName(clsName, true, Seq.class.getClassLoader());
+
+            Class cls = Class.forName(clsName, true,
+                Seq.class.getClassLoader());
             StringBuffer props = new StringBuffer();
             if (plugin.getProperties() != null)
                 props.append(plugin.getProperties());
             addStandardProperties(props);
+
             // allow user-class specification of either our sequence
             // interface or a factory class
             Seq seq;
@@ -252,19 +262,22 @@ public class SequenceMetaData
                 seq.setType(_type);
             } else if (_factory != null)
                 seq = _factory.toSequence(cls, props.toString());
-            else throw new MetaDataException(_loc.get("not-seq-cls", _name,
-                cls));
+            else
+                throw new MetaDataException(_loc.get("not-seq-cls", _name,
+                    cls));
             return seq;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new MetaDataException(_loc.get("cant-init-seq", _name)).
                 setCause(e);
         }
     }
 
     /**
-     * Create a new plugin value for sequences. Returns a standard
+     * Create a new plugin value for sequences.  Returns a standard
      * {@link SeqValue} by default.
      */
     protected PluginValue newPluginValue(String property) {
@@ -282,7 +295,7 @@ public class SequenceMetaData
     }
 
     /**
-     * Add a string property to the buffer. Nothing will be added if value
+     * Add a string property to the buffer.  Nothing will be added if value
      * is null or empty string.
      */
     protected void appendProperty(StringBuffer props, String name, String val) {
@@ -294,7 +307,8 @@ public class SequenceMetaData
     }
 
     /**
-     * Add an int property to the buffer. Nothing will be added if value is -1.
+     * Add an int property to the buffer.  Nothing will be added if value
+     * is -1.
      */
     protected void appendProperty(StringBuffer props, String name, int val) {
         if (val == -1)
@@ -322,6 +336,7 @@ public class SequenceMetaData
     ///////////////
     // Commentable
     ///////////////
+
     public String[] getComments() {
         return (_comments == null) ? EMPTY_COMMENTS : _comments;
     }
@@ -331,14 +346,15 @@ public class SequenceMetaData
     }
 
     /**
-     * Allow facades to supply adapters from a spec sequence type to the
-     * OpenJPA sequence type.
+     *	Allow facades to supply adapters from a spec sequence type to the
+     *	OpenJPA sequence type.
      */
     public static interface SequenceFactory {
 
         /**
-         * Transform the given class named in metadata into a sequence.
+         *	Transform the given class named in metadata into a sequence.
          */
-        public Seq toSequence(Class cls, String props) throws Exception;
-    }
+		public Seq toSequence (Class cls, String props)
+			throws Exception;
+	}
 }

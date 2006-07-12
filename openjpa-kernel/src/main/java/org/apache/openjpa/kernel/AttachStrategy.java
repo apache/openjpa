@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -37,7 +40,8 @@ import org.apache.openjpa.util.UserException;
  * @author Steve Kim
  * @nojavadoc
  */
-abstract class AttachStrategy extends TransferFieldManager {
+abstract class AttachStrategy
+    extends TransferFieldManager {
 
     private static final Localizer _loc = Localizer.forPackage
         (AttachStrategy.class);
@@ -45,12 +49,12 @@ abstract class AttachStrategy extends TransferFieldManager {
     /**
      * Attach.
      *
-     * @param manager   manager holding cache of attached instances
-     * @param toAttach  detached instance
-     * @param meta      metadata for the instance being attached
-     * @param into      instance we're attaching into
-     * @param owner     state manager for <code>into</code>
-     * @param ownerMeta field we traversed to find <code>toAttach</code>
+     * @param    manager        manager holding cache of attached instances
+     * @param    toAttach    detached instance
+     * @param    meta        metadata for the instance being attached
+     * @param    into        instance we're attaching into
+     * @param    owner        state manager for <code>into</code>
+     * @param    ownerMeta    field we traversed to find <code>toAttach</code>
      */
     public abstract Object attach(AttachManager manager,
         Object toAttach, ClassMetaData meta, PersistenceCapable into,
@@ -80,6 +84,7 @@ abstract class AttachStrategy extends TransferFieldManager {
             newInstance = pc.pcNewInstance(null, false);
         else // application identity: use existing fields
             newInstance = pc.pcNewInstance(null, appId, false);
+
         return (StateManagerImpl) manager.getBroker().persist
             (newInstance, appId, manager.getBehavior());
     }
@@ -87,21 +92,24 @@ abstract class AttachStrategy extends TransferFieldManager {
     /**
      * Attach the given field into the given instance.
      *
-     * @param toAttach   the detached persistent instance
-     * @param sm         state manager for the managed instance we're copying
-     *                   into; <code>toAttach</code> also uses this state manager
-     * @param fmd        metadata on the field we're copying
-     * @param nullLoaded if false, nulls will be considered unloaded and will
-     *                   not be attached
+     * @param    toAttach the detached persistent instance
+     * @param    sm            state manager for the managed instance we're copying
+     * into; <code>toAttach</code> also uses this state
+     * manager
+     * @param    fmd            metadata on the field we're copying
+     * @param    nullLoaded    if false, nulls will be considered unloaded and will
+     * not be attached
      */
     protected boolean attachField(AttachManager manager, Object toAttach,
         StateManagerImpl sm, FieldMetaData fmd, boolean nullLoaded) {
         if (fmd.isVersion()
             || fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
             return false;
+
         PersistenceCapable into = sm.getPersistenceCapable();
         int i = fmd.getIndex();
         provideField(toAttach, sm, i);
+
         int set = StateManager.SET_ATTACH;
         Object val;
         switch (fmd.getDeclaredTypeCode()) {
@@ -222,7 +230,8 @@ abstract class AttachStrategy extends TransferFieldManager {
                     else if (tom == null)
                         sm.settingObjectField(into, i, null,
                             attachMap(manager, frmm, sm, fmd), set);
-                    else replaceMap(manager, frmm, tom, sm, fmd);
+                    else
+                        replaceMap(manager, frmm, tom, sm, fmd);
                 }
                 break;
             case JavaTypes.ARRAY:
@@ -234,8 +243,9 @@ abstract class AttachStrategy extends TransferFieldManager {
                     || (frma != null && Array.getLength(frma) > 0)) {
                     if (frma == null)
                         sm.settingObjectField(into, i, toa, null, set);
-                    else sm.settingObjectField(into, i, toa,
-                        replaceArray(manager, frma, toa, sm, fmd), set);
+                    else
+                        sm.settingObjectField(into, i, toa,
+                            replaceArray(manager, frma, toa, sm, fmd), set);
                 }
                 break;
             default:
@@ -265,7 +275,7 @@ abstract class AttachStrategy extends TransferFieldManager {
 
     /**
      * Replace the contents of <code>toc</code> with the contents of
-     * <code>frmc</code>. Neither collection is null.
+     * <code>frmc</code>.  Neither collection is null.
      */
     private void replaceCollection(AttachManager manager, Collection frmc,
         Collection toc, OpenJPAStateManager sm, FieldMetaData fmd) {
@@ -275,12 +285,15 @@ abstract class AttachStrategy extends TransferFieldManager {
                 toc.clear();
             return;
         }
+
         // if this is a pc collection, attach all instances
         boolean pc = fmd.getElement().isDeclaredTypePC();
         if (pc)
             frmc = attachCollection(manager, frmc, sm, fmd);
+
         // remove all elements from the toc collection that aren't in frmc
         toc.retainAll(frmc);
+
         // now add all elements that are in frmc but not toc
         if (frmc.size() != toc.size()) {
             for (Iterator i = frmc.iterator(); i.hasNext();) {
@@ -300,13 +313,15 @@ abstract class AttachStrategy extends TransferFieldManager {
         ValueMetaData vmd = fmd.getElement();
         if (!vmd.isDeclaredTypePC())
             return coll;
+
         // unfortunately we have to clear the original and re-add
         coll.clear();
         Object elem;
         for (Iterator itr = orig.iterator(); itr.hasNext();) {
             if (vmd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                 elem = getReference(manager, itr.next(), sm, vmd);
-            else elem = manager.attach(itr.next(), null, sm, vmd);
+            else
+                elem = manager.attach(itr.next(), null, sm, vmd);
             coll.add(elem);
         }
         return coll;
@@ -326,13 +341,14 @@ abstract class AttachStrategy extends TransferFieldManager {
     /**
      * Returns an attached version of the <code>frml</code>
      * list if it is different than <code>tol</code>. If the lists
-     * will be identical, returns <code>tol</code>. Neither list is null.
+     * will be identical, returns <code>tol</code>.  Neither list is null.
      */
     private Collection replaceList(AttachManager manager, Collection frml,
         Collection tol, OpenJPAStateManager sm, FieldMetaData fmd) {
         boolean pc = fmd.getElement().isDeclaredTypePC();
         if (pc)
             frml = attachCollection(manager, frml, sm, fmd);
+
         // if the only diff between frml and tol is some added elements at
         // the end, make the changes directly in tol
         if (frml.size() >= tol.size()) {
@@ -343,18 +359,20 @@ abstract class AttachStrategy extends TransferFieldManager {
                 if (!equals(frmi.next(), toi.next(), pc))
                     return (pc) ? frml : copyCollection(manager, frml, fmd);
             }
+
             // just add the extra elements in frml to tol and return tol
             while (frmi.hasNext())
                 tol.add(frmi.next());
             return tol;
         }
+
         // the lists are different; just make sure frml is copied and return it
         return (pc) ? frml : copyCollection(manager, frml, fmd);
     }
 
     /**
      * Replace the contents of <code>tom</code> with the contents of
-     * <code>frmm</code>. Neither map is null.
+     * <code>frmm</code>.  Neither map is null.
      */
     private void replaceMap(AttachManager manager, Map frmm, Map tom,
         OpenJPAStateManager sm, FieldMetaData fmd) {
@@ -363,11 +381,13 @@ abstract class AttachStrategy extends TransferFieldManager {
                 tom.clear();
             return;
         }
+
         // if this is a pc map, attach all instances
         boolean keyPC = fmd.getKey().isDeclaredTypePC();
         boolean valPC = fmd.getElement().isDeclaredTypePC();
         if (keyPC || valPC)
             frmm = attachMap(manager, frmm, sm, fmd);
+
         // make sure all the keys in the from map are in the two map, and
         // that they have the same values
         for (Iterator i = frmm.entrySet().iterator(); i.hasNext();) {
@@ -377,6 +397,7 @@ abstract class AttachStrategy extends TransferFieldManager {
                 tom.put(entry.getKey(), entry.getValue());
             }
         }
+
         // remove any keys in the to map that aren't in the from map
         if (tom.size() != frmm.size()) {
             for (Iterator i = tom.keySet().iterator(); i.hasNext();) {
@@ -394,10 +415,12 @@ abstract class AttachStrategy extends TransferFieldManager {
         Map map = manager.getProxyManager().copyMap(orig);
         if (map == null)
             throw new UserException(_loc.get("not-copyable", fmd));
+
         ValueMetaData keymd = fmd.getKey();
         ValueMetaData valmd = fmd.getElement();
         if (!keymd.isDeclaredTypePC() && !valmd.isDeclaredTypePC())
             return map;
+
         // if we have to replace keys, just clear and re-add; otherwise
         // we can use the entry set to reset the values only
         Map.Entry entry;
@@ -409,12 +432,14 @@ abstract class AttachStrategy extends TransferFieldManager {
                 key = entry.getKey();
                 if (keymd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                     key = getReference(manager, key, sm, keymd);
-                else key = manager.attach(key, null, sm, keymd);
+                else
+                    key = manager.attach(key, null, sm, keymd);
                 val = entry.getValue();
                 if (valmd.isDeclaredTypePC()) {
                     if (valmd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                         val = getReference(manager, val, sm, valmd);
-                    else val = manager.attach(val, null, sm, valmd);
+                    else
+                        val = manager.attach(val, null, sm, valmd);
                 }
                 map.put(key, val);
             }
@@ -424,7 +449,8 @@ abstract class AttachStrategy extends TransferFieldManager {
                 entry = (Map.Entry) itr.next();
                 if (valmd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                     val = getReference(manager, entry.getValue(), sm, valmd);
-                else val = manager.attach(entry.getValue(), null, sm, valmd);
+                else
+                    val = manager.attach(entry.getValue(), null, sm, valmd);
                 entry.setValue(val);
             }
         }
@@ -440,6 +466,7 @@ abstract class AttachStrategy extends TransferFieldManager {
         Object toa, OpenJPAStateManager sm, FieldMetaData fmd) {
         int len = Array.getLength(frma);
         boolean diff = toa == null || len != Array.getLength(toa);
+
         // populate an array copy on the initial assumption that the array
         // is dirty
         Object newa = Array.newInstance(fmd.getElement().getDeclaredType(),
@@ -452,7 +479,8 @@ abstract class AttachStrategy extends TransferFieldManager {
             if (pc) {
                 if (vmd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                     elem = getReference(manager, elem, sm, vmd);
-                else elem = manager.attach(elem, null, sm, vmd);
+                else
+                    elem = manager.attach(elem, null, sm, vmd);
             }
             diff = diff || !equals(elem, Array.get(toa, i), pc);
             Array.set(newa, i, elem);
@@ -461,14 +489,14 @@ abstract class AttachStrategy extends TransferFieldManager {
     }
 
     /**
-     * Return true if the given objects are equal. PCs are compared for
-     * on JVM identity.
+     *	Return true if the given objects are equal.  PCs are compared for
+     *	on JVM identity.
      */
     private static boolean equals(Object a, Object b, boolean pc) {
         if (a == b)
             return true;
         if (pc || a == null || b == null)
             return false;
-        return a.equals(b);
-    }
+		return a.equals (b);
+	}
 }

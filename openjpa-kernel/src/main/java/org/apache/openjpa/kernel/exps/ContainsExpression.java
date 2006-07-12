@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,11 +20,12 @@ import java.util.Collection;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * Tests that a Collection contains a value.
+ * <p>Tests that a Collection contains a value.</p>
  *
  * @author Abe White
  */
-class ContainsExpression extends Exp {
+class ContainsExpression
+    extends Exp {
 
     private final Val _val1;
     private final Val _val2;
@@ -29,8 +33,8 @@ class ContainsExpression extends Exp {
     /**
      * Constructor.
      *
-     * @param val1 the container value
-     * @param val2 the containee to test
+     * @param    val1    the container value
+     * @param    val2    the containee to test
      */
     public ContainsExpression(Val val1, Val val2) {
         _val1 = val1;
@@ -53,6 +57,7 @@ class ContainsExpression extends Exp {
         coll = getCollection(coll.iterator().next());
         if (coll == null || coll.isEmpty())
             return false;
+
         Collection coll2 = _val2.eval(candidates, null, ctx, params);
         if (coll2 == null || coll2.isEmpty())
             return false;

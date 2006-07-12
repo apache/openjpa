@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -22,13 +25,14 @@ import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.util.InternalException;
 
 /**
- * Mostly-unimplemented state manager type whose sole purpose is to
+ * <p>Mostly-unimplemented state manager type whose sole purpose is to
  * check the initial value of all SCO container fields for their initialized
- * types and comparators.
+ * types and comparators.</p>
  *
  * @author Abe White
  */
-class ProxySetupStateManager implements StateManager {
+class ProxySetupStateManager
+    implements StateManager {
 
     private Object _object = null;
 
@@ -37,6 +41,7 @@ class ProxySetupStateManager implements StateManager {
         for (int i = 0; i < fmds.length; i++) {
             if (fmds[i].getDefiningMetaData() != meta)
                 continue;
+
             switch (fmds[i].getDeclaredTypeCode()) {
                 case JavaTypes.CALENDAR:
                     pc.pcProvideField(fmds[i].getIndex());
@@ -52,6 +57,7 @@ class ProxySetupStateManager implements StateManager {
                         // more specific type?
                         if (_object.getClass() != fmds[i].getDeclaredType())
                             fmds[i].setProxyType(_object.getClass());
+
                         // custom comparator?
                         if (_object instanceof SortedSet)
                             fmds[i].setInitializer(((SortedSet) _object).
@@ -64,6 +70,7 @@ class ProxySetupStateManager implements StateManager {
                         // more specific type?
                         if (_object.getClass() != fmds[i].getDeclaredType())
                             fmds[i].setProxyType(_object.getClass());
+
                         // custom comparator?
                         if (_object instanceof SortedMap)
                             fmds[i].setInitializer(((SortedMap) _object).

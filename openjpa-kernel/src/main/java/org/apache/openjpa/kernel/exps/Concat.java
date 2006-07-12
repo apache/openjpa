@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,17 +18,18 @@ package org.apache.openjpa.kernel.exps;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * Concatenate two strings together.
+ * <p>Concatenate two strings together.</p>
  *
  * @author Marc Prud'hommeaux
  */
-class Concat extends Val {
+class Concat
+    extends Val {
 
     private final Val _val;
     private final Val _args;
 
     /**
-     * Constructor. Provide target string and the arguments to the
+     * Constructor.  Provide target string and the arguments to the
      * indexOf method.
      */
     public Concat(Val val, Val args) {
@@ -52,12 +56,15 @@ class Concat extends Val {
         StoreContext ctx, Object[] params) {
         Object str = _val.eval(candidate, orig, ctx, params);
         StringBuffer cat = new StringBuffer(str.toString());
+
         Object arg = _args.eval(candidate, orig, ctx, params);
         int idx;
         if (arg instanceof Object[]) {
             for (int i = 0; i < ((Object[]) arg).length; i++)
                 cat.append((((Object[]) arg)[i]).toString());
-        } else cat.append(arg.toString());
+        } else
+            cat.append(arg.toString());
+
         return cat.toString();
     }
 }

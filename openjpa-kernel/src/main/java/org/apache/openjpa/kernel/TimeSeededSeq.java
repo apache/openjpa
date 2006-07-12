@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -14,19 +17,21 @@ package org.apache.openjpa.kernel;
 
 import org.apache.openjpa.meta.ClassMetaData;
 import serp.util.Numbers;
+
 ////////////////////////////////////////////////////////////
-// NOTE: Do not change property names; see SequenceMetaData
+// NOTE: Do not change property names; see SequenceMetaData 
 // for standard property names.
 ////////////////////////////////////////////////////////////
 
 /**
- * A simplistic implementation of a {@link Seq} used
- * to provide datastore ids. Starts with an id equal to the system's
- * current time in milliseconds and increments from there.
+ * <p>A simplistic implementation of a {@link Seq} used
+ * to provide datastore ids.  Starts with an id equal to the system's
+ * current time in milliseconds and increments from there.</p>
  *
  * @author Greg Campbell
  */
-public class TimeSeededSeq implements Seq {
+public class TimeSeededSeq
+    implements Seq {
 
     private long _id = System.currentTimeMillis();
     private int _increment = 1;

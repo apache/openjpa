@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -47,9 +50,11 @@ import org.apache.openjpa.util.UserException;
  * @author Marc Prud'hommeaux
  * @nojavadoc
  */
-public class DetachManager implements DetachState {
+public class DetachManager
+    implements DetachState {
 
     private static Localizer _loc = Localizer.forPackage(DetachManager.class);
+
     private final BrokerImpl _broker;
     private final boolean _copy;
     private final boolean _full;
@@ -58,6 +63,7 @@ public class DetachManager implements DetachState {
     private final OpCallbacks _call;
     private final boolean _failFast;
     private boolean _flushed = false;
+
     // if we're not detaching full, we need to track all detached objects;
     // if we are, then we use a special field manager for more efficient
     // detachment than the standard one
@@ -71,12 +77,15 @@ public class DetachManager implements DetachState {
     static boolean preSerialize(StateManagerImpl sm) {
         if (!sm.isPersistent())
             return false;
+
         flushDirty(sm);
+
         ClassMetaData meta = sm.getMetaData();
         boolean setState = meta.getDetachedState() != null
             && !ClassMetaData.SYNTHETIC.equals(meta.getDetachedState());
         BitSet idxs = (setState) ? new BitSet(meta.getFields().length) : null;
         preDetach(sm.getBroker(), sm, idxs);
+
         if (setState) {
             sm.getPersistenceCapable().pcSetDetachedState(getDetachedState
                 (sm, idxs));
@@ -91,16 +100,20 @@ public class DetachManager implements DetachState {
      * @return whether to use a detached state manager
      */
     static boolean writeDetachedState(StateManagerImpl sm, ObjectOutput out,
-        BitSet idxs) throws IOException {
+        BitSet idxs)
+        throws IOException {
         if (!sm.isPersistent()) {
             out.writeObject(null); // state
             out.writeObject(null); // sm
             return false;
         }
+
         // dirty state causes flush
         flushDirty(sm);
+
         Broker broker = sm.getBroker();
         preDetach(broker, sm, idxs);
+
         // write detached state object and state manager
         DetachOptions opts = broker.getConfiguration().
             getDetachStateInstance();
@@ -120,8 +133,8 @@ public class DetachManager implements DetachState {
      * Ready the object for detachment, including loading the fields to be
      * detached and updating version information.
      *
-     * @param idxs the indexes of fields to detach will be set as a side
-     *             effect of this method
+     * @param    idxs    the indexes of fields to detach will be set as a side
+     * effect of this method
      */
     private static void preDetach(Broker broker, StateManagerImpl sm,
         BitSet idxs) {
@@ -138,12 +151,14 @@ public class DetachManager implements DetachState {
         FetchState fetchState = broker.getFetchConfiguration().
             newFetchState();
         sm.load(fetchState, loadMode, exclude, null, false);
+
         // create bitset of fields to detach; if mode is all we can use
         // currently loaded bitset clone, since we know all fields are loaded
         if (idxs != null) {
             if (detachMode == DETACH_FGS)
                 setFetchGroupFields(broker, sm, idxs);
-            else idxs.or(sm.getLoaded());
+            else
+                idxs.or(sm.getLoaded());
         }
     }
 
@@ -154,17 +169,21 @@ public class DetachManager implements DetachState {
         // if datastore, store id in first element
         int offset = (sm.getMetaData().getIdentityType() ==
             ClassMetaData.ID_DATASTORE) ? 1 : 0;
+
         // make version state array one larger for new instances; marks new
         // instances without affecting serialization size much
         Object[] state;
         if (sm.isNew())
             state = new Object[3 + offset];
-        else state = new Object[2 + offset];
+        else
+            state = new Object[2 + offset];
+
         if (offset > 0) {
             Object id;
             if (sm.isEmbedded() || sm.getObjectId() == null)
                 id = sm.getId();
-            else id = sm.getObjectId();
+            else
+                id = sm.getObjectId();
             state[0] = id.toString();
         }
         state[offset] = sm.getVersion();
@@ -174,11 +193,12 @@ public class DetachManager implements DetachState {
 
     /**
      * Flush or invoke pre-store callbacks on the given broker if
-     * needed. Return true if flushed/stored, false otherwise.
+     * needed.  Return true if flushed/stored, false otherwise.
      */
     private static boolean flushDirty(StateManagerImpl sm) {
         if (!sm.isDirty())
             return false;
+
         // only flush if there are actually any dirty non-flushed fields
         BitSet dirtyFields = sm.getDirty();
         BitSet flushedFields = sm.getFlushed();
@@ -186,7 +206,8 @@ public class DetachManager implements DetachState {
             if (dirtyFields.get(i) && !flushedFields.get(i)) {
                 if (sm.getBroker().getRollbackOnly())
                     sm.getBroker().preFlush();
-                else sm.getBroker().flush();
+                else
+                    sm.getBroker().flush();
                 return true;
             }
         }
@@ -211,10 +232,10 @@ public class DetachManager implements DetachState {
     /**
      * Constructor.
      *
-     * @param broker owning broker
-     * @param full   whether the entire broker cache is being detached; if
-     *               this is the case, we assume the broker has already
-     *               flushed if needed, and that we're detaching in-place
+     * @param    broker    owning broker
+     * @param    full    whether the entire broker cache is being detached; if
+     * this is the case, we assume the broker has already
+     * flushed if needed, and that we're detaching in-place
      */
     public DetachManager(BrokerImpl broker, boolean full, OpCallbacks call) {
         _broker = broker;
@@ -226,6 +247,7 @@ public class DetachManager implements DetachState {
         _failFast = (broker.getConfiguration().getMetaDataRepository().
             getMetaDataFactory().getDefaults().getCallbackMode()
             & CallbackModes.CALLBACK_FAIL_FAST) != 0;
+
         // we can only rely on our "all" shortcuts if we know we won't be
         // loading any more data
         _full = full && broker.getDetachState() == DetachState.DETACH_LOADED;
@@ -245,16 +267,19 @@ public class DetachManager implements DetachState {
         CallbackException excep = null;
         try {
             return detachInternal(toDetach);
-        } catch (CallbackException ce) {
+        }
+        catch (CallbackException ce) {
             excep = ce;
             return null; // won't be reached as exception will be rethrown
         }
         finally {
             List exceps = null;
+
             if (excep == null || !_failFast) {
                 exceps = invokeAfterDetach(Collections.singleton(toDetach),
                     null);
-            } else exceps = Collections.singletonList(excep);
+            } else
+                exceps = Collections.singletonList(excep);
             if (_detached != null)
                 _detached.clear();
             throwExceptions(exceps);
@@ -262,7 +287,7 @@ public class DetachManager implements DetachState {
     }
 
     /**
-     * Return detached versions of all the given instances. If not copying,
+     * Return detached versions of all the given instances.  If not copying,
      * null will be returned.
      */
     public Object[] detachAll(Collection instances) {
@@ -270,6 +295,7 @@ public class DetachManager implements DetachState {
         List detached = null;
         if (_copy)
             detached = new ArrayList(instances.size());
+
         boolean failFast = false;
         try {
             Object detach;
@@ -278,7 +304,8 @@ public class DetachManager implements DetachState {
                 if (_copy)
                     detached.add(detach);
             }
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             if (re instanceof CallbackException && _failFast)
                 failFast = true;
             exceps = add(exceps, re);
@@ -293,6 +320,7 @@ public class DetachManager implements DetachState {
                 _detached.clear();
         }
         throwExceptions(exceps);
+
         if (_copy)
             return detached.toArray();
         return null;
@@ -307,6 +335,7 @@ public class DetachManager implements DetachState {
     private List invokeAfterDetach(Collection objs, List exceps) {
         Iterator itr = (_full) ? objs.iterator()
             : _detached.entrySet().iterator();
+
         Object orig, detached;
         Map.Entry entry;
         while (itr.hasNext()) {
@@ -318,12 +347,14 @@ public class DetachManager implements DetachState {
                 orig = entry.getKey();
                 detached = entry.getValue();
             }
+
             StateManagerImpl sm = _broker.getStateManagerImpl(orig, true);
             try {
                 if (sm != null)
                     _broker.fireLifecycleEvent(detached, orig,
                         sm.getMetaData(), LifecycleEvent.AFTER_DETACH);
-            } catch (CallbackException ce) {
+            }
+            catch (CallbackException ce) {
                 exceps = add(exceps, ce);
                 if (_failFast)
                     break; // don't continue processing
@@ -348,8 +379,9 @@ public class DetachManager implements DetachState {
     private void throwExceptions(List exceps) {
         if (exceps == null)
             return;
+
         if (exceps.size() == 1)
-            throw(RuntimeException) exceps.get(0);
+            throw (RuntimeException) exceps.get(0);
         throw new UserException(_loc.get("nested-exceps")).
             setNestedThrowables((Throwable[]) exceps.toArray
                 (new Throwable[exceps.size()]));
@@ -361,34 +393,41 @@ public class DetachManager implements DetachState {
     private Object detachInternal(Object toDetach) {
         if (toDetach == null)
             return null;
+
         // already detached?
         if (_detached != null) {
             Object detached = _detached.get(toDetach);
             if (detached != null)
                 return detached;
         }
+
         StateManagerImpl sm = _broker.getStateManagerImpl(toDetach, true);
         if (_call != null && (_call.processArgument(OpCallbacks.OP_DETACH,
             toDetach, sm) & OpCallbacks.ACT_RUN) == 0)
             return toDetach;
         if (sm == null)
             return toDetach;
+
         // Call PreDetach first as we can't tell if the new system
         // fired an event or just did not fail.
         _broker.fireLifecycleEvent(toDetach, null, sm.getMetaData(),
             LifecycleEvent.BEFORE_DETACH);
+
         // any dirty instances cause a flush to occur
         _flushed = _flushed || flushDirty(sm);
         BitSet fields = new BitSet();
         preDetach(_broker, sm, fields);
+
         // create and store new object before copy to avoid endless recursion
         PersistenceCapable pc = sm.getPersistenceCapable();
         PersistenceCapable detachedPC;
         if (_copy)
             detachedPC = pc.pcNewInstance(null, true);
-        else detachedPC = pc;
+        else
+            detachedPC = pc;
         if (_detached != null)
             _detached.put(toDetach, detachedPC);
+
         // detach fields and set detached variables
         DetachedStateManager detSM = null;
         ClassMetaData meta = sm.getMetaData();
@@ -407,6 +446,7 @@ public class DetachManager implements DetachState {
             fm.setStateManager(sm);
             fm.detachFields(fields);
         }
+
         if (!Boolean.FALSE.equals(sm.getMetaData().usesDetachedState()))
             detachedPC.pcSetDetachedState(getDetachedState(sm, fields));
         if (!_copy)
@@ -427,7 +467,8 @@ public class DetachManager implements DetachState {
     /**
      * Base detach field manager.
      */
-    private static class DetachFieldManager extends TransferFieldManager {
+    private static class DetachFieldManager
+        extends TransferFieldManager {
 
         protected StateManagerImpl sm;
 
@@ -446,7 +487,9 @@ public class DetachManager implements DetachState {
             FieldMetaData fmd = sm.getMetaData().getVersionField();
             if (fmd == null)
                 return;
-            Object val = JavaTypes.convert(sm.getVersion(), fmd.getTypeCode());
+
+            Object val = JavaTypes.convert(sm.getVersion(),
+                fmd.getTypeCode());
             val = fmd.getFieldValue(val, sm.getBroker());
             switch (fmd.getDeclaredTypeCode()) {
                 case JavaTypes.LONG:
@@ -486,7 +529,8 @@ public class DetachManager implements DetachState {
                                 proxy.getChangeTracker().stopTracking();
                             if (dsm == null)
                                 proxy.setOwner(null, -1);
-                            else proxy.setOwner(dsm, i);
+                            else
+                                proxy.setOwner(dsm, i);
                         }
                 }
             }
@@ -502,20 +546,21 @@ public class DetachManager implements DetachState {
     }
 
     /**
-     * FieldManager that can copy all the fields from one
-     * PersistenceCapable instance to another. One of the
-     * instances must be managed by a StateManager, and the
-     * other must be unmanaged.
+     *	FieldManager that can copy all the fields from one
+     *	PersistenceCapable instance to another. One of the
+     *	instances must be managed by a StateManager, and the
+     *	other must be unmanaged.
      *
-     * @author Marc Prud'hommeaux
+     *	@author Marc Prud'hommeaux
      */
-    private class InstanceDetachFieldManager extends DetachFieldManager {
+    private class InstanceDetachFieldManager
+        extends DetachFieldManager {
 
         private final PersistenceCapable _to;
         private final DetachedStateManager _detSM;
 
         /**
-         * Constructor. Supply instance to to copy to.
+         * Constructor.  Supply instance to to copy to.
          */
         public InstanceDetachFieldManager(PersistenceCapable to,
             DetachedStateManager detSM) {
@@ -536,6 +581,7 @@ public class DetachManager implements DetachState {
             PersistenceCapable from = sm.getPersistenceCapable();
             FieldMetaData[] pks = sm.getMetaData().getPrimaryKeyFields();
             FieldMetaData[] fmds = sm.getMetaData().getFields();
+
             if (_copy)
                 _to.pcReplaceStateManager(sm);
             try {
@@ -558,7 +604,7 @@ public class DetachManager implements DetachState {
         }
 
         /**
-         * Detach(or clear) the given field index.
+         * Detach (or clear) the given field index.
          */
         private void detachField(PersistenceCapable from, int i, boolean fg) {
             // tell the state manager to provide the fields from the source to
@@ -638,13 +684,15 @@ public class DetachManager implements DetachState {
         private Object detachField(Object curVal, int field) {
             if (curVal == null)
                 return null;
+
             FieldMetaData fmd = sm.getMetaData().getField(field);
             Object newVal = null;
             switch (fmd.getDeclaredTypeCode()) {
                 case JavaTypes.ARRAY:
                     if (_copy)
                         newVal = _proxy.copyArray(curVal);
-                    else newVal = curVal;
+                    else
+                        newVal = curVal;
                     detachArray(newVal, fmd);
                     return newVal;
                 case JavaTypes.COLLECTION:
@@ -659,7 +707,8 @@ public class DetachManager implements DetachState {
                             ((Collection) newVal).addAll((Collection) curVal);
                         } else
                             newVal = _proxy.copyCollection((Collection) curVal);
-                    } else newVal = curVal;
+                    } else
+                        newVal = curVal;
                     detachCollection((Collection) newVal, (Collection) curVal,
                         fmd);
                     return reproxy(newVal, field);
@@ -672,8 +721,10 @@ public class DetachManager implements DetachState {
                                 fmd.getInitializer() instanceof Comparator ?
                                     (Comparator) fmd.getInitializer() : null);
                             ((Map) newVal).putAll((Map) curVal);
-                        } else newVal = _proxy.copyMap((Map) curVal);
-                    } else newVal = curVal;
+                        } else
+                            newVal = _proxy.copyMap((Map) curVal);
+                    } else
+                        newVal = curVal;
                     detachMap((Map) newVal, (Map) curVal, fmd);
                     return reproxy(newVal, field);
                 case JavaTypes.CALENDAR:
@@ -701,6 +752,7 @@ public class DetachManager implements DetachState {
         private void detachArray(Object array, FieldMetaData fmd) {
             if (!fmd.getElement().isDeclaredTypePC())
                 return;
+
             int len = Array.getLength(array);
             for (int i = 0; i < len; i++)
                 Array.set(array, i, detachInternal(Array.get(array, i)));
@@ -711,11 +763,12 @@ public class DetachManager implements DetachState {
          */
         private void detachCollection(Collection coll, Collection orig,
             FieldMetaData fmd) {
-            // coll can be null if not copyable(lrs, for instance)
+            // coll can be null if not copyable (lrs, for instance)
             if (_copy && coll == null)
                 throw new UserException(_loc.get("not-copyable", fmd));
             if (!fmd.getElement().isDeclaredTypePC())
                 return;
+
             // unfortunately we have to clear the original and re-add to copy
             if (_copy)
                 coll.clear();
@@ -728,16 +781,17 @@ public class DetachManager implements DetachState {
         }
 
         /**
-         * Make sure all the values in the given map are detached.
+         *	Make sure all the values in the given map are detached.
          */
         private void detachMap(Map map, Map orig, FieldMetaData fmd) {
-            // map can be null if not copyable(lrs, for instance)
+            // map can be null if not copyable (lrs, for instance)
             if (_copy && map == null)
                 throw new UserException(_loc.get("not-copyable", fmd));
             boolean keyPC = fmd.getKey().isDeclaredTypePC();
             boolean valPC = fmd.getElement().isDeclaredTypePC();
             if (!keyPC && !valPC)
                 return;
+
             // if we have to copy keys, just clear and re-add; otherwise
             // we can use the entry set to reset the values only
             Map.Entry entry;
@@ -759,10 +813,10 @@ public class DetachManager implements DetachState {
                 }
             } else {
                 for (Iterator itr = map.entrySet().iterator(); itr.hasNext();) {
-                    entry = (Map.Entry) itr.next();
-                    entry.setValue(detachInternal(entry.getValue()));
-                }
-            }
-        }
-    }
+                    entry = (Map.Entry) itr.next ();
+					entry.setValue (detachInternal (entry.getValue ()));
+				}
+			}
+		}
+	}
 }
