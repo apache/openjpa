@@ -353,8 +353,8 @@ public interface StoreManager
      * Return a query implementation suitable for this store.  If the query
      * is iterated within a data store transaction, returned instances should
      * be locked.  Return null if this store does not support native execution
-     * of the given language.  OpenJPA can execute JDOQL and JPQL in memory
-     * even without back end support.
+     * of the given language.  OpenJPA can execute JPQL in memory even without 
+     * back end support.
      *
      * @param    language the query language
      */

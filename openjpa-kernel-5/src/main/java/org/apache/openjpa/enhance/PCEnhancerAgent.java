@@ -30,13 +30,13 @@ import org.apache.openjpa.util.ClassResolver;
  * {@link PersistenceCapable} interface at runtime.  The agent is launched
  * at JVM startup from the command line:</p>
  * <p/>
- * <code>java -javaagent:org.apache.openjpa.jar[=&lt;options&gt;]</code>
+ * <code>java -javaagent:openjpa.jar[=&lt;options&gt;]</code>
  * <p/>
- * <p>The options string should be formatted as a OpenJPA plugin, and may contain
- * any properties understood by the OpenJPA enhancer or any configuration
- * properties.  For example:</p>
+ * <p>The options string should be formatted as a OpenJPA plugin, and may 
+ * contain any properties understood by the OpenJPA enhancer or any 
+ * configuration properties.  For example:</p>
  * <p/>
- * <code>java -javaagent:org.apache.openjpa.jar=JdoEnhance=true,LicenseKey=xxx</code>
+ * <code>java -javaagent:openjpa.jar</code>
  *
  * @author Abe White
  */

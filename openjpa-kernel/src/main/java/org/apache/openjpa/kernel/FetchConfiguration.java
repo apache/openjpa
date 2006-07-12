@@ -48,8 +48,6 @@ public interface FetchConfiguration
     /**
      * Return the context assiciated with this configuration;
      * may be null if it has not been set or this object has been serialized.
-     * In this case, the fetch configuration may not allow the setting of
-     * certain properties that require non-standard license capabilities.
      */
     public StoreContext getContext();
 

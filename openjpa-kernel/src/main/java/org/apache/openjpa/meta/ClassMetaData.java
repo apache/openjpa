@@ -152,7 +152,6 @@ public class ClassMetaData
     private int _cacheTimeout = Integer.MIN_VALUE;
     private Boolean _detachable = null;
     private String _detachState = DEFAULT_STRING;
-    private Boolean _auditable = null;
     private String _alias = null;
     private int _versionIdx = Integer.MIN_VALUE;
 
@@ -1343,27 +1342,6 @@ public class ClassMetaData
     }
 
     /**
-     * Whether this class is auditable.
-     */
-    public boolean isAuditable() {
-        if (_auditable == null) {
-            if (_super != null)
-                _auditable = (getPCSuperclassMetaData().isAuditable())
-                    ? Boolean.TRUE : Boolean.FALSE;
-            else
-                _auditable = Boolean.FALSE;
-        }
-        return _auditable.booleanValue();
-    }
-
-    /**
-     * Whether this class is auditable.
-     */
-    public void setAuditable(boolean auditable) {
-        _auditable = (auditable) ? Boolean.TRUE : Boolean.FALSE;
-    }
-
-    /**
      * Clear cached field data.
      */
     protected void clearAllFieldCache() {
@@ -2117,8 +2095,6 @@ public class ClassMetaData
             _detachable = meta._detachable;
         if (_detachState == DEFAULT_STRING)
             _detachState = meta.getDetachedState();
-        if (_auditable == null)
-            _auditable = (meta.isAuditable()) ? Boolean.TRUE : Boolean.FALSE;
 
         // synch field information; first remove extra fields
         clearFieldCache();

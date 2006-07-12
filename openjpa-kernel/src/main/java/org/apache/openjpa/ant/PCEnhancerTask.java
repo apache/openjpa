@@ -35,7 +35,6 @@ import org.apache.openjpa.meta.MetaDataRepository;
  * <li><code>directory</code></li>
  * <li><code>addDefaultConstructor</code></li>
  * <li><code>tmpClassLoader</code></li>
- * <li><code>jdoEnhance</code></li>
  * <li><code>enforcePropertyRestrictions</code></li>
  * </ul></p>
  */
@@ -58,13 +57,6 @@ public class PCEnhancerTask
      */
     public void setAddDefaultConstructor(boolean addDefCons) {
         flags.addDefaultConstructor = addDefCons;
-    }
-
-    /**
-     * Whether to perform JDO enhancement in addition to OpenJPA enhancement.
-     */
-    public void setJdoEnhance(boolean jdoEnhance) {
-        flags.jdoEnhance = jdoEnhance;
     }
 
     /**

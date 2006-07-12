@@ -229,12 +229,10 @@ public class MetaDataTool
      * <ul>
      * <li><i>-properties/-p &lt;properties file or resource&gt;</i>: The path
      * or resource name of a OpenJPA properties file containing information
-     * such as the license key	data as outlined in
-     * {@link OpenJPAConfiguration}.  Optional.</li>
+     * as outlined in {@link OpenJPAConfiguration}.  Optional.</li>
      * <li><i>-&lt;property name&gt; &lt;property value&gt;</i>: All bean
      * properties of the OpenJPA {@link OpenJPAConfiguration} can be set by
-     * using their	names and supplying a value.  For example:
-     * <code>-licenseKey adslfja83r3lkadf</code></li>
+     * using their names and supplying a value.</li>
      * <li><i>-file/-f &lt;stdout | output file or resource&gt;</i>: The path
      * or resource name of a file the metadata should be generated to.
      * If the given file already contains metadata, the generated

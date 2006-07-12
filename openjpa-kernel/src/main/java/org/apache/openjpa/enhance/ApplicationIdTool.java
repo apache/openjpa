@@ -1228,12 +1228,11 @@ public class ApplicationIdTool {
      * <p>Where the following options are recognized.
      * <ul>
      * <li><i>-properties/-p &lt;properties file&gt;</i>: The path to a OpenJPA
-     * properties file containing information such as the license key,
-     * as outlined in {@link Configuration}; optional.</li>
+     * properties file containing information as outlined in 
+     * {@link Configuration}; optional.</li>
      * <li><i>-&lt;property name&gt; &lt;property value&gt;</i>: All bean
      * properties of the standard OpenJPA {@link OpenJPAConfiguration} can be
-     * set by using their names and supplying a value; for example:
-     * <code>-licenseKey adslfja83r3lkadf</code></li>
+     * set by using their names and supplying a value.</li>
      * <li><i>-directory/-d &lt;output directory&gt;</i>: Path to the base
      * source directory.  The package structure will be created beneath
      * this directory if necessary.  If not specified, the tool will try

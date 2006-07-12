@@ -49,6 +49,7 @@ import org.apache.openjpa.lib.util.BytecodeWriter;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.lib.util.Services;
 import org.apache.openjpa.lib.util.TemporaryClassLoader;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -114,9 +115,8 @@ public class PCEnhancer {
     private Collection _oids = null;
 
     private boolean _defCons = true;
-    private boolean _jdo = false;
     private boolean _fail = false;
-    private AuxiliaryEnhancer _auxEnhance = null;
+    private AuxiliaryEnhancer[] _auxEnhancers = null;
     private File _dir = null;
     private BytecodeWriter _writer = null;
     private Map _backingFields = null;
@@ -203,20 +203,6 @@ public class PCEnhancer {
      */
     public void setAddDefaultConstructor(boolean addDefaultConstructor) {
         _defCons = addDefaultConstructor;
-    }
-
-    /**
-     * Whether to perform JDO enhancement in addition to OpenJPA enhancement.
-     */
-    public boolean getJDOEnhance() {
-        return _jdo;
-    }
-
-    /**
-     * Whether to perform JDO enhancement in addition to OpenJPA enhancement.
-     */
-    public void setJDOEnhance(boolean jdoEnhance) {
-        _jdo = jdoEnhance;
     }
 
     /**
@@ -460,7 +446,6 @@ public class PCEnhancer {
         if (meth.isStatic())
             return null;
 
-        boolean nonFieldsFound = false;
         Code code = meth.getCode(false);
         if (code == null)
             return null;
@@ -2647,23 +2632,18 @@ public class PCEnhancer {
      * Allow any registered auxiliary code generators to run.
      */
     private void runAuxiliaryEnhancers() {
-        if (!_jdo)
-            return;
-
-        if (_auxEnhance == null) {
-            try {
-                // make sure JDO libs are available before creating a JDO
-                // enhancer
-                Class c = Class.forName("javax.jdo.spi.PersistenceCapable");
-                c = Class.forName("org.apache.openjpa.jdo.JDOEnhancer", true,
-                    AuxiliaryEnhancer.class.getClassLoader());
-                _auxEnhance = (AuxiliaryEnhancer) c.newInstance();
-            }
-            catch (Throwable t) {
-                throw new GeneralException(t);
-            }
-        }
-        _auxEnhance.run(_pc, _meta);
+	if (_auxEnhancers == null) {
+	    try {
+		Class[] classes = Services
+		    .getImplementorClasses(AuxiliaryEnhancer.class);
+		_auxEnhancers = new AuxiliaryEnhancer[classes.length];
+		for (int i = 0; i < _auxEnhancers.length; i++)
+		    _auxEnhancers[i] = (AuxiliaryEnhancer) classes[i]
+			.newInstance();
+	    } catch (Throwable t) {
+		throw new GeneralException(t);
+	    }
+	}
     }
 
     /**
@@ -3364,21 +3344,17 @@ public class PCEnhancer {
      * <p>Where the following options are recognized.
      * <ul>
      * <li><i>-properties/-p &lt;properties file&gt;</i>: The path to a OpenJPA
-     * properties file containing information such as the license key,
-     * as outlined in {@link Configuration}; optional.</li>
+     * properties file containing information as outlined in 
+     * {@link Configuration}; optional.</li>
      * <li><i>-&lt;property name&gt; &lt;property value&gt;</i>: All bean
      * properties of the standard OpenJPA {@link OpenJPAConfiguration} can be
      * set by using their names and supplying a value; for example:
-     * <code>-licenseKey adslfja83r3lkadf</code></li>
      * <li><i>-directory/-d &lt;build directory&gt;</i>: The path to the base
      * directory where enhanced classes are stored.  By default, the
      * enhancer overwrites the original .class file with the enhanced
      * version.  Use this option to store the generated .class file in
      * another directory.  The package structure will be created beneath
      * the given directory.</li>
-     * <li><i>-jdoEnhance/-jdo [true/t | false/f]</i>: Whether to
-     * enhance to implement JDO <code>PersistenceCapable</code> interface
-     * in addition to OpenJPA enhancement.  Defaults to false.</li>
      * <li><i>-addDefaultConstructor/-adc [true/t | false/f]</i>: Whether to
      * add a default constructor to persistent classes missing one, as
      * opposed to throwing an exception.  Defaults to true.</li>
@@ -3434,8 +3410,6 @@ public class PCEnhancer {
             ("addDefaultConstructor", "adc", flags.addDefaultConstructor);
         flags.tmpClassLoader = opts.removeBooleanProperty
             ("tmpClassLoader", "tcl", flags.tmpClassLoader);
-        flags.jdoEnhance = opts.removeBooleanProperty("jdoEnhance", "jdo",
-            flags.jdoEnhance);
         flags.enforcePropertyRestrictions = opts.removeBooleanProperty
             ("enforcePropertyRestrictions", "epr",
                 flags.enforcePropertyRestrictions);
@@ -3491,7 +3465,6 @@ public class PCEnhancer {
                 enhancer.setBytecodeWriter(writer);
             enhancer.setDirectory(flags.directory);
             enhancer.setAddDefaultConstructor(flags.addDefaultConstructor);
-            enhancer.setJDOEnhance(flags.jdoEnhance);
             status = enhancer.run();
             if (status == ENHANCE_NONE)
                 log.info(_loc.get("enhance-norun"));
@@ -3527,7 +3500,6 @@ public class PCEnhancer {
         public File directory = null;
         public boolean addDefaultConstructor = true;
         public boolean tmpClassLoader = true;
-		public boolean jdoEnhance = false;
 		public boolean enforcePropertyRestrictions = false;
 	}
 
