@@ -192,9 +192,6 @@ public class FetchConfigurationImpl
 
     /**
      * Adds a fetch group of the given name to this receiver.
-     * Checks if license allows for adding custom fetch groups. Makes
-     * an exception if the given name matches with the default fetch group
-     * name.
      *
      * @param name must not be null or empty.
      */

@@ -31,7 +31,7 @@ import org.apache.openjpa.lib.util.Localizer;
  * the configuration as a bean-like task. E.g., you can do:
  * <p/>
  * <code> &lt;mytask&rt;<br />
- * &nbsp;&nbsp;&lt;config licenseKey="key" connectionUserName="foo"/&rt;<br />
+ * &nbsp;&nbsp;&lt;config connectionUserName="foo"/&rt;<br />
  * &lt;/mytask&rt;
  * </code>
  * The defailt configuration for the system will be used if the

@@ -70,8 +70,6 @@ public class PCClassFileTransformer
         flags.addDefaultConstructor = opts.removeBooleanProperty
             ("addDefaultConstructor", "AddDefaultConstructor",
                 flags.addDefaultConstructor);
-        flags.jdoEnhance = opts.removeBooleanProperty
-            ("jdoEnhance", "JdoEnhance", flags.jdoEnhance);
         flags.enforcePropertyRestrictions = opts.removeBooleanProperty
             ("enforcePropertyRestrictions", "EnforcePropertyRestrictions",
                 flags.enforcePropertyRestrictions);
@@ -118,7 +116,6 @@ public class PCClassFileTransformer
                 new Project().loadClass(new ByteArrayInputStream(bytes),
                     _loader), _repos);
             enhancer.setAddDefaultConstructor(_flags.addDefaultConstructor);
-            enhancer.setJDOEnhance(_flags.jdoEnhance);
             enhancer.setEnforcePropertyRestrictions
                 (_flags.enforcePropertyRestrictions);
 
