@@ -6,8 +6,8 @@
     <artifactId>openjpa-xmlstore</artifactId>
     <packaging>jar</packaging>
 
-    <name>JPA</name>
-    <description>JPA</description>
+    <name>XML Store</name>
+    <description>XML Store for OpenJPA</description>
     <url>http://incubator.apache.org/projects/openjpa</url>
     <parent>
 
@@ -22,7 +22,7 @@
 
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-kernel</artifactId>
-            <version>0.0.1</version>
+            <version>${pom.version}</version>
             <scope>compile</scope>
 
         </dependency>

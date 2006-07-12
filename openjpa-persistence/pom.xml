@@ -22,7 +22,7 @@
 
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-kernel-5</artifactId>
-            <version>0.0.1</version>
+            <version>${pom.version}</version>
             <scope>compile</scope>
 
         </dependency>
