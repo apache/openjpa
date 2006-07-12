@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -13,9 +16,9 @@
 package org.apache.openjpa.enhance;
 
 /**
- * Interface for dynamically generated classes. Certain getters/setters
+ * <p>Interface for dynamically generated classes.  Certain getters/setters
  * may either return null or throw an exception depending on the
- * {@link DynamicStorageGenerator}'s field policy.
+ * {@link DynamicStorageGenerator}'s field policy.</p>
  *
  * @author Steve Kim
  * @nojavadoc
@@ -129,7 +132,7 @@ public interface DynamicStorage {
     public void setObject(int field, Object val);
 
     /**
-     * Ensure object capacity
+     *  Ensure object capacity
      */
-    public void initialize();
+    public void initialize ();
 }

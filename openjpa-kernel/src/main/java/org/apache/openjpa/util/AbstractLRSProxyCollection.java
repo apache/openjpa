@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -29,14 +32,14 @@ import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
- * A collection proxy designed for collections backed by extremely large
+ * <p>A collection proxy designed for collections backed by extremely large
  * result sets in which each call to {@link #iterator} may perform a database
- * query. Changes to the collection are tracked through a
- * {@link ChangeTracker}. This collection has the following limitations:
+ * query.  Changes to the collection are tracked through a
+ * {@link ChangeTracker}.  This collection has the following limitations:
  * <ul>
  * <li>The <code>size</code> method may return {@link Integer#MAX_VALUE}.</li>
  * <li>The collection cannot contain duplicate elements.</li>
- * </ul>
+ * </ul></p>
  *
  * @author Abe White
  */
@@ -45,6 +48,7 @@ public abstract class AbstractLRSProxyCollection
 
     private static final Localizer _loc = Localizer.forPackage
         (AbstractLRSProxyCollection.class);
+
     private Class _elementType = null;
     private CollectionChangeTrackerImpl _ct = null;
     private OpenJPAStateManager _sm = null;
@@ -57,9 +61,9 @@ public abstract class AbstractLRSProxyCollection
     /**
      * Constructor.
      *
-     * @param elementType the allowed type of elements, or null for no
-     *                    restrictions
-     * @param ordered     true if this collection is ordered
+     * @param    elementType        the allowed type of elements, or null for no
+     * restrictions
+     * @param    ordered            true if this collection is ordered
      */
     public AbstractLRSProxyCollection(Class elementType, boolean ordered,
         OpenJPAConfiguration conf) {
@@ -75,8 +79,10 @@ public abstract class AbstractLRSProxyCollection
             throw new InvalidStateException(_loc.get("transfer-lrs",
                 _origOwner.getMetaData().getField(_origField)));
         }
+
         _sm = sm;
         _field = field;
+
         // keep track of original owner so we can detect transfer attempts
         if (sm != null) {
             _origOwner = sm;
@@ -150,6 +156,7 @@ public abstract class AbstractLRSProxyCollection
             clear();
             return true;
         }
+
         Proxies.dirty(this);
         Itr itr = (Itr) iterator();
         try {
@@ -240,8 +247,10 @@ public abstract class AbstractLRSProxyCollection
 
     public Iterator iterator() {
         _iterated = true;
+
         IteratorChain chain = new IteratorChain();
         chain.addIterator(new FilterIterator(itr(), this));
+
         // note have to copy _ct.getAdded to prevent concurrent mod errors
         chain.addIterator(new ArrayList(_ct.getAdded()).iterator());
         return new Itr(chain);
@@ -263,13 +272,14 @@ public abstract class AbstractLRSProxyCollection
         _iterated = it;
     }
 
-    protected Object writeReplace() throws ObjectStreamException {
+    protected Object writeReplace()
+        throws ObjectStreamException {
         return asList();
     }
 
     /**
      * Implement this method to return an iterator over the contents of the
-     * collection. This method may be invoked multiple times. The returned
+     * collection.  This method may be invoked multiple times.  The returned
      * iterator does not have to support the {@link Iterator#remove} method,
      * and may implement {@link org.apache.openjpa.lib.util.Closeable}.
      */
@@ -289,6 +299,7 @@ public abstract class AbstractLRSProxyCollection
     ////////////////////////////
     // Predicate Implementation
     ////////////////////////////
+
     public boolean evaluate(Object o) {
         return !_ct.getRemoved().contains(o);
     }
@@ -296,6 +307,7 @@ public abstract class AbstractLRSProxyCollection
     //////////////////////////////////////////
     // CollectionChangeTracker Implementation
     //////////////////////////////////////////
+
     public boolean isTracking() {
         return _ct.isTracking();
     }
@@ -344,13 +356,15 @@ public abstract class AbstractLRSProxyCollection
     }
 
     /**
-     * Wrapper around our filtering iterator chain.
+     *	Wrapper around our filtering iterator chain.
      */
-    private class Itr implements Iterator, Closeable {
+    private class Itr
+        implements Iterator, Closeable {
 
         private static final int OPEN = 0;
         private static final int LAST_ELEM = 1;
         private static final int CLOSED = 2;
+
         private final IteratorChain _itr;
         private Object _last = null;
         private int _state = OPEN;
@@ -362,6 +376,7 @@ public abstract class AbstractLRSProxyCollection
         public boolean hasNext() {
             if (_state == CLOSED)
                 return false;
+
             // close automatically if no more elements
             if (!_itr.hasNext()) {
                 free();
@@ -395,6 +410,7 @@ public abstract class AbstractLRSProxyCollection
         private void free() {
             if (_state != OPEN)
                 return;
+
             List itrs = _itr.getIterators();
             Iterator itr;
             for (int i = 0; i < itrs.size(); i++) {
@@ -407,6 +423,6 @@ public abstract class AbstractLRSProxyCollection
 
         protected void finalize() {
             close();
-        }
-    }
+		}
+	}
 }

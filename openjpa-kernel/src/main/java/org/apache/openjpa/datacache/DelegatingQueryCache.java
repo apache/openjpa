@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,22 +19,23 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
 /**
- * Delegating query cache that can also perform exception translation for
- * use in facades. This cache allows its delegate to be null, in which case
- * it returns default values or all methods.
+ * <p>Delegating query cache that can also perform exception translation for
+ * use in facades.  This cache allows its delegate to be null, in which case
+ * it returns default values or all methods.</p>
  *
  * @author Abe White
- * @nojavadoc
  * @since 4.0
+ * @nojavadoc
  */
-public class DelegatingQueryCache implements QueryCache {
+public class DelegatingQueryCache
+    implements QueryCache {
 
     private final QueryCache _cache;
     private final DelegatingQueryCache _del;
     private final RuntimeExceptionTranslator _trans;
 
     /**
-     * Constructor. Supply delegate.
+     * Constructor.  Supply delegate.
      */
     public DelegatingQueryCache(QueryCache cache) {
         this(cache, null);
@@ -43,7 +47,8 @@ public class DelegatingQueryCache implements QueryCache {
         _trans = trans;
         if (cache instanceof DelegatingQueryCache)
             _del = (DelegatingQueryCache) _cache;
-        else _del = null;
+        else
+            _del = null;
     }
 
     /**
@@ -84,7 +89,8 @@ public class DelegatingQueryCache implements QueryCache {
             return;
         try {
             _cache.initialize(mgr);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -94,7 +100,8 @@ public class DelegatingQueryCache implements QueryCache {
             return;
         try {
             _cache.onTypesChanged(e);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -104,7 +111,8 @@ public class DelegatingQueryCache implements QueryCache {
             return null;
         try {
             return _cache.get(qk);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -114,7 +122,8 @@ public class DelegatingQueryCache implements QueryCache {
             return null;
         try {
             return _cache.put(qk, oids);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -124,7 +133,8 @@ public class DelegatingQueryCache implements QueryCache {
             return null;
         try {
             return _cache.remove(qk);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -134,7 +144,8 @@ public class DelegatingQueryCache implements QueryCache {
             return;
         try {
             _cache.clear();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -144,7 +155,8 @@ public class DelegatingQueryCache implements QueryCache {
             return false;
         try {
             return _cache.pin(qk);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -154,7 +166,8 @@ public class DelegatingQueryCache implements QueryCache {
             return false;
         try {
             return _cache.unpin(qk);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -164,7 +177,8 @@ public class DelegatingQueryCache implements QueryCache {
             return;
         try {
             _cache.writeLock();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -174,7 +188,8 @@ public class DelegatingQueryCache implements QueryCache {
             return;
         try {
             _cache.writeUnlock();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -184,7 +199,8 @@ public class DelegatingQueryCache implements QueryCache {
             return;
         try {
             _cache.addTypesChangedListener(listen);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -194,7 +210,8 @@ public class DelegatingQueryCache implements QueryCache {
             return false;
         try {
             return _cache.removeTypesChangedListener(listen);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -204,8 +221,9 @@ public class DelegatingQueryCache implements QueryCache {
             return;
         try {
             _cache.close();
-        } catch (RuntimeException re) {
-            throw translate(re);
         }
-    }
+        catch (RuntimeException re) {
+            throw translate(re);
+		}
+	}
 }

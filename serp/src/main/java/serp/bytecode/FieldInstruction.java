@@ -105,7 +105,7 @@ public abstract class FieldInstruction extends Instruction {
     /**
      * Set the field this instruction operates on.
      *
-     * @param dec  the full class name of the field's declaring class
+     * @param dec the full class name of the field's declaring class
      * @param name the field name
      * @param type the full class name of the field type
      * @return this instruction, for method chaining
@@ -143,7 +143,7 @@ public abstract class FieldInstruction extends Instruction {
     /**
      * Set the field this instruction operates on.
      *
-     * @param dec  the field's declaring class
+     * @param dec the field's declaring class
      * @param name the field name
      * @param type the class of the field type
      * @return this instruction, for method chaining
@@ -171,7 +171,7 @@ public abstract class FieldInstruction extends Instruction {
     /**
      * Set the field this instruction operates on.
      *
-     * @param dec  the field's declaring class
+     * @param dec the field's declaring class
      * @param name the field name
      * @param type the class of the field type
      * @return this instruction, for method chaining

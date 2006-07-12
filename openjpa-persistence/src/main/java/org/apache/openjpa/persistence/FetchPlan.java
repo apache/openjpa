@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -22,12 +25,12 @@ import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
 
 /**
- * The fetch plan allows you to dynamically alter eager fetching
- * configuration and other aspects of data loading.
+ * <p>The fetch plan allows you to dynamically alter eager fetching
+ * configuration and other aspects of data loading.</p>
  *
  * @author Abe White
- * @published
  * @since 4.0
+ * @published
  */
 public class FetchPlan {
 
@@ -41,6 +44,7 @@ public class FetchPlan {
      * Constant to revert any setting to its default value.
      */
     public static final int DEFAULT = FetchConfiguration.DEFAULT;
+
     private final DelegatingFetchConfiguration _fetch;
 
     /**
@@ -68,7 +72,7 @@ public class FetchPlan {
 
     /**
      * Return the fetch batch size for large result set support.
-     * Defaults to the <code>org.apache.openjpa.FetchBatchSize</code> setting. Note
+     * Defaults to the	<code>org.apache.openjpa.FetchBatchSize</code> setting.  Note
      * that this property will be ignored under some data stores.
      */
     public int getFetchBatchSize() {
@@ -77,7 +81,7 @@ public class FetchPlan {
 
     /**
      * Set the fetch batch size for large result set support.
-     * Defaults to the <code>org.apache.openjpa.FetchBatchSize</code> setting. Note
+     * Defaults to the	<code>org.apache.openjpa.FetchBatchSize</code> setting.  Note
      * that this property will be ignored under some data stores.
      */
     public FetchPlan setFetchBatchSize(int fetchBatchSize) {
@@ -86,7 +90,7 @@ public class FetchPlan {
     }
 
     /**
-     * Return whether or not query caching is enabled. If this returns
+     * Return whether or not query caching is enabled.  If this returns
      * <code>true</code> but the datacache plugin is not installed, caching
      * will not be enabled. If this
      * returns <code>false</code>, query caching will not be used
@@ -97,7 +101,7 @@ public class FetchPlan {
     }
 
     /**
-     * Control whether or not query caching is enabled. This has no effect
+     * Control whether or not query caching is enabled.  This has no effect
      * if the datacache plugin is not installed, or if the query cache size
      * is set to zero.
      */
@@ -108,11 +112,11 @@ public class FetchPlan {
 
     /**
      * Returns the names of the fetch groups that this component will use
-     * when loading objects. Defaults to the
+     * when loading objects.  Defaults to the
      * <code>org.apache.openjpa.FetchGroups</code> setting.
      */
     public Collection<String> getFetchGroups() {
-// return new FetchGroupSet();
+//		return new FetchGroupSet ();
         return _fetch.getFetchGroups();
     }
 
@@ -170,7 +174,7 @@ public class FetchPlan {
     /**
      * Clears the set of fetch group names to use wen loading
      * data. After this operation is invoked, only those fields in
-     * the default fetch group(and any requested field) will be
+     * the default fetch group (and any requested field) will be
      * loaded when loading an object.
      */
     public FetchPlan clearFetchGroups() {
@@ -188,10 +192,10 @@ public class FetchPlan {
 
     /**
      * Returns the fully qualified names of the fields that this component
-     * will use when loading objects. Defaults to the empty set.
+     * will use when loading objects.  Defaults to the empty set.
      */
     public Collection<String> getFields() {
-// return new FetchFieldSet();
+//		return new FetchFieldSet ();
         return (Collection<String>) _fetch.getFields();
     }
 
@@ -396,64 +400,64 @@ public class FetchPlan {
     }
 
     /**
-     * View of fetch groups as collection.
+     *	View of fetch groups as collection.
      */
-// private class FetchGroupSet
-// extends AbstractCollection<String>
-// {
-// private String[] _groups = null;
+//	private class FetchGroupSet
+//		extends AbstractCollection<String>
+//	{
+//		private String[] _groups = null;
 //
 //
-// public boolean contains(Object o)
-// {
-// return o instanceof String && _fetch.hasFetchGroup((String) o);
-// }
+//		public boolean contains (Object o)
+//		{
+//			return o instanceof String && _fetch.hasFetchGroup ((String) o);
+//		}
 //
 //
-// public Iterator iterator()
-// {
-// if (_groups == null)
-// _groups = _fetch.getFetchGroups();
-// return new ObjectArrayIterator(_groups);
-// }
+//		public Iterator iterator ()
+//		{
+//			if (_groups == null)
+//				_groups = _fetch.getFetchGroups ();
+//			return new ObjectArrayIterator (_groups);
+//		}
 //
 //
-// public int size()
-// {
-// if (_groups == null)
-// _groups = _fetch.getFetchGroups();
-// return _groups.length;
-// }
-// }
+//		public int size ()
+//		{
+//			if (_groups == null)
+//				_groups = _fetch.getFetchGroups ();
+//			return _groups.length;
+//		}
+//	}
 
     /**
-     * View of fetch fields as collection.
+     *	View of fetch fields as collection.
      */
-// private class FetchFieldSet
-// extends AbstractCollection<String>
-// {
-// private String[] _fields = null;
+//	private class FetchFieldSet
+//		extends AbstractCollection<String>
+//	{
+//		private String[] _fields = null;
 //
 //
-// public boolean contains(Object o)
-// {
-// return o instanceof String && _fetch.hasField((String) o);
-// }
+//		public boolean contains (Object o)
+//		{
+//			return o instanceof String && _fetch.hasField ((String) o);
+//		}
 //
 //
-// public Iterator iterator()
-// {
-// if (_fields == null)
-// _fields = _fetch.getFields();
-// return new ObjectArrayIterator(_fields);
-// }
+//		public Iterator iterator ()
+//		{
+//			if (_fields == null)
+//				_fields = _fetch.getFields ();
+//			return new ObjectArrayIterator (_fields);
+//		}
 //
 //
-// public int size()
-// {
-// if (_fields == null)
-// _fields = _fetch.getFields();
-// return _fields.length;
-// }
-// }
+//		public int size ()
+//		{
+//			if (_fields == null)
+//				_fields = _fetch.getFields ();
+//			return _fields.length;
+//		}
+//	}
 }

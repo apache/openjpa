@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -28,11 +31,11 @@ import org.apache.openjpa.kernel.RestoreState;
 import org.apache.openjpa.lib.util.Closeable;
 
 /**
- * Interface implemented by OpenJPA entity managers.
+ * <p>Interface implemented by OpenJPA entity managers.</p>
  *
+ * @since 4.0
  * @author Abe White
  * @published
- * @since 4.0
  */
 public interface OpenJPAEntityManager
     extends EntityManager, EntityTransaction, javax.resource.cci.Connection,
@@ -51,7 +54,7 @@ public interface OpenJPAEntityManager
     public OpenJPAConfiguration getConfiguration();
 
     /**
-     * Return the(mutable) fetch plan for loading objects from this
+     * Return the (mutable) fetch plan for loading objects from this
      * entity manager.
      */
     public FetchPlan getFetchPlan();
@@ -59,7 +62,7 @@ public interface OpenJPAEntityManager
     /**
      * Return the connection retain mode for this entity manager.
      *
-     * @see ConnectionRetainModes
+     * @see    ConnectionRetainModes
      */
     public int getConnectionRetainMode();
 
@@ -75,13 +78,13 @@ public interface OpenJPAEntityManager
 
     /**
      * Whether to check for a global transaction upon every managed,
-     * non-transactional operation. Defaults to false.
+     * non-transactional operation.  Defaults to false.
      */
     public boolean getSyncWithManagedTransactions();
 
     /**
      * Whether to check for a global transaction upon every managed,
-     * non-transactional operation. Defaults to false.
+     * non-transactional operation.  Defaults to false.
      */
     public void setSyncWithManagedTransactions(boolean resync);
 
@@ -158,14 +161,14 @@ public interface OpenJPAEntityManager
     /**
      * Whether to restore an object's original state on rollback.
      *
-     * @see RestoreState
+     * @see    RestoreState
      */
     public int getRestoreState();
 
     /**
      * Whether to restore an object's original state on rollback.
      *
-     * @see RestoreState
+     * @see    RestoreState
      */
     public void setRestoreState(int restore);
 
@@ -183,7 +186,7 @@ public interface OpenJPAEntityManager
      * Detach mode constant to determine which fields are part of the
      * detached graph.
      *
-     * @see DetachState
+     * @see    DetachState
      */
     public int getDetachState();
 
@@ -191,21 +194,21 @@ public interface OpenJPAEntityManager
      * Detach mode constant to determine which fields are part of the
      * detached graph.
      *
-     * @see DetachState
+     * @see    DetachState
      */
     public void setDetachState(int mode);
 
     /**
      * Whether to clear state when entering a transaction.
      *
-     * @see AutoClear
+     * @see    AutoClear
      */
     public int getAutoClear();
 
     /**
      * Whether to clear state when entering a transaction.
      *
-     * @see AutoClear
+     * @see    AutoClear
      */
     public void setAutoClear(int clear);
 
@@ -273,7 +276,7 @@ public interface OpenJPAEntityManager
     public void setLargeTransaction(boolean largeTransaction);
 
     /**
-     * Put the specified key-value pair into the map of user objects. Use
+     * Put the specified key-value pair into the map of user objects.  Use
      * a value of null to remove the key.
      */
     public Object putUserObject(Object key, Object val);
@@ -282,6 +285,7 @@ public interface OpenJPAEntityManager
      * Get the value for the specified key from the map of user objects.
      */
     public Object getUserObject(Object key);
+
     //////////
     // Events
     //////////
@@ -298,7 +302,7 @@ public interface OpenJPAEntityManager
 
     /**
      * Register a listener for lifecycle-related events on the specified
-     * classes. If the classes are null, all events will be propagated to
+     * classes.  If the classes are null, all events will be propagated to
      * the listener.
      */
     public void addLifecycleListener(Object listener, Class... classes);
@@ -307,6 +311,7 @@ public interface OpenJPAEntityManager
      * Remove a listener for lifecycle-related events.
      */
     public void removeLifecycleListener(Object listener);
+
     ///////////
     // Lookups
     ///////////
@@ -314,20 +319,20 @@ public interface OpenJPAEntityManager
     /**
      * Return the objects with the given oids.
      *
-     * @param oids the oids of the objects to return
+     * @param    oids    the oids of the objects to return
      * @return the objects that were looked up, in the
-     *         same order as the oids parameter.
-     * @see #find(Class,Object)
+     * same order as the oids parameter.
+     * @see    #find(Class,Object)
      */
     public <T> T[] findAll(Class<T> cls, Object... oids);
 
     /**
      * Return the objects with the given oids.
      *
-     * @param oids the oids of the objects to return
+     * @param    oids    the oids of the objects to return
      * @return the objects that were looked up, in the
-     *         same order as the oids parameter.
-     * @see #find(Class,Object)
+     * same order as the oids parameter.
+     * @see    #find(Class,Object)
      */
     public <T> Collection<T> findAll(Class<T> cls, Collection oids);
 
@@ -335,7 +340,7 @@ public interface OpenJPAEntityManager
      * Return the cached instance for the given oid/object, or null if not
      * cached.
      *
-     * @param oid the object's id
+     * @param    oid        the object's id
      * @return the cached object, or null if not cached
      */
     public <T> T findCached(Class<T> cls, Object oid);
@@ -345,29 +350,36 @@ public interface OpenJPAEntityManager
      * for object ids, or null if not a type that uses application identity.
      */
     public Class getObjectIdClass(Class pcClass);
+
     ////////////////
     // Transactions
     ////////////////
 
     /**
      * Issue a commit and then start a new transaction. This is identical to:
-     * <pre> manager.commit(); manager.begin();
-     * </pre> except that the entity manager's internal atomic lock is utilized,
+     * <pre>
+     * 	manager.commit ();
+     * 	manager.begin ();
+     * 	</pre>
+     * except that the entity manager's internal atomic lock is utilized,
      * so this method can be safely executed from multiple threads.
      *
-     * @see #commit()
-     * @see #begin()
+     * @see    #commit()
+     * @see    #begin()
      */
     public void commitAndResume();
 
     /**
      * Issue a rollback and then start a new transaction. This is identical to:
-     * <pre> manager.rollback(); manager.begin();
-     * </pre> except that the entity manager's internal atomic lock is utilized,
+     * <pre>
+     * 	manager.rollback ();
+     * 	manager.begin ();
+     * 	</pre>
+     * except that the entity manager's internal atomic lock is utilized,
      * so this method can be safely executed from multiple threads.
      *
-     * @see #rollback()
-     * @see #begin()
+     * @see    #rollback()
+     * @see    #begin()
      */
     public void rollbackAndResume();
 
@@ -423,9 +435,9 @@ public interface OpenJPAEntityManager
 
     /**
      * Validate the changes made in this transaction, reporting any optimistic
-     * violations, constraint violations, etc. In a datastore transaction or
+     * violations, constraint violations, etc.  In a datastore transaction or
      * a flushed optimistic transaction, this method will act just like
-     * {@link #flush}. In an optimistic transaction that has not yet begun a
+     * {@link #flush}.  In an optimistic transaction that has not yet begun a
      * datastore-level transaction, however, it will only report exceptions
      * that would occur on flush, without retaining any datastore resources.
      */
@@ -437,10 +449,11 @@ public interface OpenJPAEntityManager
     public boolean isStoreActive();
 
     /**
-     * Begins a store transaction if one isn't already started. The
+     * Begins a store transaction if one isn't already started.  The
      * entity manager must already be in a logical transaction.
      */
     public void beginStore();
+
     ////////////////////
     // Object Lifecycle
     ////////////////////
@@ -476,28 +489,28 @@ public interface OpenJPAEntityManager
     public void removeAll(Collection pcs);
 
     /**
-     * Release the given object from management. This operation is not
+     * Release the given object from management.  This operation is not
      * recursive.
      */
     public void release(Object pc);
 
     /**
-     * Release the given object from management. This operation is not
+     * Release the given object from management.  This operation is not
      * recursive.
      */
     public void releaseAll(Object... pcs);
 
     /**
-     * Release the given objects from management. This operation is not
+     * Release the given objects from management.  This operation is not
      * recursive.
      */
     public void releaseAll(Collection pcs);
 
     /**
-     * Immediately load the given object's persistent fields. One might
+     * Immediately load the given object's persistent fields.  One might
      * use this action to make sure that an instance's fields are loaded
-     * before transitioning it to transient. Note that this action is not
-     * recursive. Any related objects that are loaded will not necessarily
+     * before transitioning it to transient.  Note that this action is not
+     * recursive.  Any related objects that are loaded will not necessarily
      * have their fields loaded.
      */
     public void retrieve(Object pc);
@@ -505,14 +518,14 @@ public interface OpenJPAEntityManager
     /**
      * Retrieve the persistent state of the given objects.
      *
-     * @see #retrieve
+     * @see    #retrieve
      */
     public void retrieveAll(Object... pcs);
 
     /**
      * Retrieve the persistent state of the given objects.
      *
-     * @see #retrieve
+     * @see    #retrieve
      */
     public void retrieveAll(Collection pcs);
 
@@ -553,7 +566,7 @@ public interface OpenJPAEntityManager
 
     /**
      * Evict all persistent-clean and persistent-nontransactional
-     * instances in the extent of the given class(including subclasses).
+     * instances in the extent of the given class (including subclasses).
      */
     public void evictAll(Class cls);
 
@@ -606,27 +619,27 @@ public interface OpenJPAEntityManager
     /**
      * Make the given object transactional.
      *
-     * @param pc            instance to make transactional
+     * @param pc instance to make transactional
      * @param updateVersion if true, the instance's version will be
-     *                      incremented at the next flush
+     * incremented at the next flush
      */
     public void transactional(Object pc, boolean updateVersion);
 
     /**
      * Make the given objects transactional.
      *
-     * @param objs          instances to make transactional
+     * @param objs instances to make transactional
      * @param updateVersion if true, the instance's version will be
-     *                      incremented at the next flush
+     * incremented at the next flush
      */
     public void transactionalAll(Collection objs, boolean updateVersion);
 
     /**
      * Make the given objects transactional.
      *
-     * @param objs          instances to make transactional
+     * @param objs instances to make transactional
      * @param updateVersion if true, the instance's version will be
-     *                      incremented at the next flush
+     * incremented at the next flush
      */
     public void transactionalAll(Object[] objs, boolean updateVersion);
 
@@ -644,6 +657,7 @@ public interface OpenJPAEntityManager
      * Make the given objects nontransactional.
      */
     public void nontransactionalAll(Object[] objs);
+
     ////////////////////////////
     // Extent, Query, Generator
     ////////////////////////////
@@ -690,6 +704,7 @@ public interface OpenJPAEntityManager
      * Create a new query in the given language.
      */
     public OpenJPAQuery createQuery(String language, String query);
+
     ///////////
     // Locking
     ///////////
@@ -702,10 +717,10 @@ public interface OpenJPAEntityManager
     /**
      * Ensure that the given instance is locked at the given lock level.
      *
-     * @param pc      the object to lock
-     * @param mode    the lock level to use
+     * @param pc the object to lock
+     * @param mode the lock level to use
      * @param timeout the number of milliseconds to wait for the lock before
-     *                giving up, or -1 for no limit
+     * giving up, or -1 for no limit
      */
     public void lock(Object pc, LockModeType mode, int timeout);
 
@@ -718,10 +733,10 @@ public interface OpenJPAEntityManager
     /**
      * Ensure that the given instances are locked at the given lock level.
      *
-     * @param pcs     the objects to lock
-     * @param mode    the lock level to use
+     * @param pcs the objects to lock
+     * @param mode the lock level to use
      * @param timeout the number of milliseconds to wait for the lock before
-     *                giving up, or -1 for no limit
+     * giving up, or -1 for no limit
      */
     public void lockAll(Collection pcs, LockModeType mode, int timeout);
 
@@ -734,10 +749,10 @@ public interface OpenJPAEntityManager
     /**
      * Ensure that the given instances are locked at the given lock level.
      *
-     * @param pcs     the objects to lock
-     * @param mode    the lock level to use
+     * @param pcs the objects to lock
+     * @param mode the lock level to use
      * @param timeout the number of milliseconds to wait for the lock before
-     *                giving up, or -1 for no limit
+     * giving up, or -1 for no limit
      */
     public void lockAll(Object[] pcs, LockModeType mode, int timeout);
 
@@ -746,12 +761,13 @@ public interface OpenJPAEntityManager
      * as set in the {@link FetchPlan} for the entity manager.
      */
     public void lockAll(Object... pcs);
+
     //////////////
     // Connection
     //////////////
 
     /**
-     * Cancel all pending data store statements. If statements are cancelled
+     * Cancel all pending data store statements.  If statements are cancelled
      * while a flush is in progress, the transaction rollback only flag will
      * be set.
      *
@@ -764,6 +780,7 @@ public interface OpenJPAEntityManager
      * connection if none.
      */
     public Object getConnection();
+
     /////////
     // Cache
     /////////
@@ -835,7 +852,7 @@ public interface OpenJPAEntityManager
      * {@link org.apache.openjpa.enhance.PersistenceCapable},
      * following the property-based persistent attribute access rules, or
      * will raise an exception if the class does not meet the requirements
-     * for subclassing. Otherwise, this will return an instance of the
+     * for subclassing.  Otherwise, this will return an instance of the
      * specified class.
      */
     public <T> T createInstance(Class<T> cls);
@@ -877,15 +894,16 @@ public interface OpenJPAEntityManager
     public boolean isRemoved(Object o);
 
     /**
-     * Returns <code>true</code> if <code>pc</code> is a detached object
-     * (one that can be reattached to a {@link EntityManager} via a call
-     * to {@link EntityManager#merge}); otherwise returns
-     * <code>false</code>.
-     */
-    public boolean isDetached(Object o);
+     * 	Returns <code>true</code> if <code>pc</code> is a detached object
+	 * 	(one that can be reattached to a {@link EntityManager} via a call
+	 *	to {@link EntityManager#merge}); otherwise returns
+	 *	<code>false</code>.
+	 */
+	public boolean isDetached (Object o);
 
-    /**
-     * Returns the current version indicator for <code>o</code>.
-     */
-    public Object getVersion(Object o);
+
+	/**
+	 *	Returns the current version indicator for <code>o</code>.
+	 */
+	public Object getVersion (Object o);
 }

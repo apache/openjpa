@@ -41,7 +41,7 @@ public class ClassEntry extends Entry implements ConstantEntry {
      * Constructor.
      *
      * @param nameIndex the constant pool index of the {@link UTF8Entry}
-     *                  containing the class name
+     * containing the class name
      */
     public ClassEntry(int nameIndex) {
         _nameIndex = nameIndex;

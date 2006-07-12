@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,20 +18,21 @@ package org.apache.openjpa.kernel.exps;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * Represents a bound variable. Variables are aliased to the
+ * <p>Represents a bound variable.   Variables are aliased to the
  * collection that is stated to contain them in the query.
  * When the query is evaluated, expressions containing variables will be
- * executed once for every element in the collection.
+ * executed once for every element in the collection.</p>
  *
  * @author Abe White
  */
-class BoundVariable extends Val {
+class BoundVariable
+    extends Val {
 
     private Class _type = null;
     private Object _val = null;
 
     /**
-     * Constructor. Provide variable name and type.
+     * Constructor.  Provide variable name and type.
      */
     public BoundVariable(Class type) {
         _type = type;
@@ -38,7 +42,7 @@ class BoundVariable extends Val {
      * Set the value this variable should take for the current iteration.
      *
      * @return false if the type is incompatible with the variable's
-     *         declared type
+     * declared type
      */
     public boolean setValue(Object value) {
         if (value != null && !_type.isAssignableFrom(value.getClass()))
@@ -77,6 +81,6 @@ class BoundVariable extends Val {
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         return _val;
-    }
+	}
 }
 

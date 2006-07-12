@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -28,13 +31,15 @@ import org.apache.openjpa.lib.util.JavaVersions;
  * Utility methods for externalizing and handling exceptions.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  * @since 2.5
+ * @nojavadoc
  */
 public class Exceptions {
 
     public static final Throwable[] EMPTY_THROWABLES = new Throwable[0];
+
     static final String SEP = System.getProperty("line.separator");
+
     private static final OutputStream DEV_NULL = new OutputStream() {
         public void write(int b) {
         }
@@ -52,16 +57,19 @@ public class Exceptions {
     private static boolean isSerializable(Object ob) {
         if (!(ob instanceof Serializable))
             return false;
+
         // don't serialize persistent objects exceptions to prevent
         // reading in all the state
         if (!ImplHelper.isManagedType(ob.getClass()))
             return false;
+
         // now do an actual test to see if we will be
         // able to perform the serialization
         try {
             new ObjectOutputStream(DEV_NULL).writeObject(ob);
             return true;
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             return false;
         }
     }
@@ -72,19 +80,22 @@ public class Exceptions {
     public static String toString(Object ob) {
         if (ob == null)
             return "null";
+
         // don't take oid of new objects since it can cause a flush if auto-inc
         // and the id is meaningless anyway
         Object oid = getObjectId(ob);
+
         if (oid != null) {
             if (oid instanceof Id)
                 return oid.toString();
             return ob.getClass().getName() + "-" + oid.toString();
         }
+
         if (ImplHelper.isManagedType(ob.getClass())) {
             // never call toString() on a PersistenceCapable, since
             // it may access persistent fields; fall-back to using
             // the standard object stringification mechanism. New
-            // instances that use proxying(property-access instances,
+            // instances that use proxying (property-access instances,
             // for example) that were created with the 'new' keyword
             // will not end up in this code, which is ok since they
             // don't do lazy loading anyways, so they will stringify
@@ -92,12 +103,14 @@ public class Exceptions {
             return ob.getClass().getName() + "@"
                 + Integer.toHexString(System.identityHashCode(ob));
         }
+
         try {
             String s = ob.toString();
             if (s.indexOf(ob.getClass().getName()) == -1)
                 s += " [" + ob.getClass().getName() + "]";
             return s;
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             return ob.getClass().getName();
         }
     }
@@ -122,13 +135,16 @@ public class Exceptions {
      */
     public static String toString(ExceptionInfo e) {
         StringBuffer buf = new StringBuffer();
-        buf.append("<").append(e.getType()). append('|').append(e.isFatal()).
-            append('|').append(OpenJPAVersion.VERSION_NUMBER). append("> ");
+        buf.append("<").append(e.getType()).
+            append('|').append(e.isFatal()).
+            append('|').append(OpenJPAVersion.VERSION_NUMBER).
+            append("> ");
         buf.append(e.getClass().getName()).append(": ").
             append(e.getMessage());
         Object failed = e.getFailedObject();
         if (failed != null)
-            buf.append(SEP).append("FailedObject: "). append(toString(failed));
+            buf.append(SEP).append("FailedObject: ").
+                append(toString(failed));
         return buf.toString();
     }
 
@@ -186,11 +202,13 @@ public class Exceptions {
             return null;
         if (isSerializable(ob))
             return ob;
+
         // don't take oid of new objects since it can cause a flush if auto-inc
         // and the id is meaningless anyway
         Object oid = getObjectId(ob);
         if (oid != null && isSerializable(oid))
             return oid;
+
         // last ditch: stringify the object
         return toString(ob);
     }
@@ -205,23 +223,26 @@ public class Exceptions {
             return nested;
         if (isSerializable(nested))
             return nested;
+
         Throwable[] newNested = new Throwable[nested.length];
         for (int i = 0; i < nested.length; i++) {
             if (isSerializable(nested[i]))
                 newNested[i] = nested[i];
-            else newNested[i] = new Exception(nested[i].toString());
+            else
+                newNested[i] = new Exception(nested[i].toString());
         }
         return newNested;
     }
 
     /**
-     * Return the object id for <code>ob</code> if it has one, or
-     * <code>null</code> otherwise.
+     *	Return the object id for <code>ob</code> if it has one, or
+     *	<code>null</code> otherwise.
      */
     private static Object getObjectId(Object ob) {
         if (ob instanceof PersistenceCapable
             && !((PersistenceCapable) ob).pcIsNew())
             return ((PersistenceCapable) ob).pcFetchObjectId();
-        else return null;
-    }
+        else
+			return null;
+	}
 }

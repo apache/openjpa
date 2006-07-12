@@ -171,8 +171,8 @@ public interface Lock {
      * be documented by that <tt>Lock</tt> implementation.
      *
      * @throws InterruptedException if the current thread is interrupted
-     *                              while acquiring the lock(and interruption of lock acquisition is
-     *                              supported).
+     * while acquiring the lock(and interruption of lock acquisition is
+     * supported).
      * @see Thread#interrupt
      */
     void lockInterruptibly() throws InterruptedException;
@@ -239,8 +239,8 @@ public interface Lock {
      * @return <tt>true</tt> if the lock was acquired and <tt>false</tt>
      *         if the waiting time elapsed before the lock was acquired.
      * @throws InterruptedException if the current thread is interrupted
-     *                              while acquiring the lock(and interruption of lock acquisition is
-     *                              supported).
+     * while acquiring the lock(and interruption of lock acquisition is
+     * supported).
      * @see Thread#interrupt
      */
     boolean tryLock(long time, TimeUnit unit) throws InterruptedException;
@@ -271,7 +271,7 @@ public interface Lock {
      *
      * @return A new {@link Condition} instance for this <tt>Lock</tt> instance.
      * @throws UnsupportedOperationException if this <tt>Lock</tt>
-     *                                       implementation does not support conditions.
+     * implementation does not support conditions.
      */
     Condition newCondition();
 }

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -31,6 +34,7 @@ class PersistenceListenerAdapter
 
     private static final Localizer _loc = Localizer.forPackage
         (PersistenceListenerAdapter.class);
+
     private final LifecycleCallbacks[][] _callbacks;
 
     public PersistenceListenerAdapter(LifecycleCallbacks[][] callbacks) {
@@ -59,11 +63,13 @@ class PersistenceListenerAdapter
         for (LifecycleCallbacks callback : _callbacks[eventType]) {
             try {
                 callback.makeCallback(src, ev.getRelated(), eventType);
-            } catch (Throwable t) {
+            }
+            catch (Throwable t) {
                 if (t instanceof InvocationTargetException)
                     t = t.getCause();
                 if (t instanceof RuntimeException)
-                    throw(RuntimeException) t;
+                    throw (RuntimeException) t;
+
                 throw new CallbackException(_loc.get("system-listener-err",
                     src)).setCause(t).setFatal(true);
             }

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -29,20 +32,26 @@ import org.apache.openjpa.util.UserException;
 import serp.util.Strings;
 
 /**
- * Cron-style cache eviction. Understands schedules based on cron format:
+ * <p>Cron-style cache eviction.  Understands schedules based on cron
+ * format:<p>
  * <code>minute hour mday month wday</code>
- * For example:
+ * <p/>
+ * <p>For example:</p>
  * <code>15,30 6,19 2,10 1 2 </code>
- * Would run at 15 and 30 past the 6AM and 7PM, on the 2nd and 10th
- * of January when its a Monday.
+ * <p/>
+ * <p>Would run at 15 and 30 past the 6AM and 7PM, on the 2nd and 10th
+ * of January when its a Monday</p>.
  *
  * @author Steve Kim
  */
-public class DataCacheScheduler implements Runnable {
+public class DataCacheScheduler
+    implements Runnable {
 
     private static final Localizer _loc = Localizer.forPackage
         (DataCacheScheduler.class);
+
     private static final DateFormat _fom = new SimpleDateFormat("E HH:mm:ss");
+
     private Map _caches = new ConcurrentHashMap();
     private boolean _stop = false;
     private int _interval = 2;
@@ -54,14 +63,14 @@ public class DataCacheScheduler implements Runnable {
     }
 
     /**
-     * The interval time in minutes between cache checks. Defaults to 2.
+     * The interval time in minutes between cache checks.  Defaults to 2.
      */
     public int getInterval() {
         return _interval;
     }
 
     /**
-     * The interval time in minutes between cache checks. Defaults to 2.
+     * The interval time in minutes between cache checks.  Defaults to 2.
      */
     public void setInterval(int interval) {
         _interval = interval;
@@ -79,12 +88,13 @@ public class DataCacheScheduler implements Runnable {
     }
 
     /**
-     * Schedule the given cache for eviction. Starts the scheduling thread
+     * Schedule the given cache for eviction.  Starts the scheduling thread
      * if not started.
      */
     public synchronized void scheduleEviction(DataCache cache, String times) {
         if (times == null)
             return;
+
         Schedule schedule = new Schedule(times);
         _caches.put(cache, schedule);
         _stop = false;
@@ -108,10 +118,12 @@ public class DataCacheScheduler implements Runnable {
     public void run() {
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("scheduler-interval", _interval + ""));
+
         Date lastRun = new Date();
         while (!isStopped()) {
             try {
                 Thread.sleep(_interval * 60 * 1000);
+
                 Date now = new Date();
                 DataCache cache;
                 Schedule schedule;
@@ -128,11 +140,13 @@ public class DataCacheScheduler implements Runnable {
                     }
                 }
                 lastRun = now;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 throw new InvalidStateException(_loc.get("scheduler-fail"), e).
                     setFatal(true);
             }
         }
+
         _log.info(_loc.get("scheduler-stop"));
         synchronized (this) {
             if (isStopped())
@@ -145,14 +159,18 @@ public class DataCacheScheduler implements Runnable {
     }
 
     /**
-     * Simple class which represents the given time schedule.
+     *	Simple class which represents the given time schedule.
      */
     private static class Schedule {
 
         static final int[] WILDCARD = new int[0];
         static final int[] UNITS = {
-            Calendar.MONTH, Calendar.DAY_OF_MONTH, Calendar.DAY_OF_WEEK,
-            Calendar.HOUR_OF_DAY, Calendar.MINUTE };
+            Calendar.MONTH,
+            Calendar.DAY_OF_MONTH,
+            Calendar.DAY_OF_WEEK,
+            Calendar.HOUR_OF_DAY,
+            Calendar.MINUTE
+        };
         final int[] month;
         final int[] dayOfMonth;
         final int[] dayOfWeek;
@@ -170,7 +188,8 @@ public class DataCacheScheduler implements Runnable {
                 dayOfMonth = parse(token.nextToken(), 1, 31);
                 month = parse(token.nextToken(), 1, 13);
                 dayOfWeek = parse(token.nextToken(), 1, 8);
-            } catch (Throwable t) {
+            }
+            catch (Throwable t) {
                 throw new UserException(_loc.get("bad-schedule", date), t).
                     setFatal(true);
             }
@@ -184,7 +203,8 @@ public class DataCacheScheduler implements Runnable {
             for (int i = 0; i < tokens.length; i++) {
                 try {
                     times[i] = Integer.parseInt(tokens[i]);
-                } catch (Throwable t) {
+                }
+                catch (Throwable t) {
                     throw new UserException(_loc.get("not-number", token)).
                         setFatal(true);
                 }
@@ -201,6 +221,7 @@ public class DataCacheScheduler implements Runnable {
             time.setTime(now);
             time.set(Calendar.SECOND, 0);
             time.set(Calendar.MILLISECOND, 0);
+
             int[][] all =
                 new int[][]{ month, dayOfMonth, dayOfWeek, hour, min };
             return matches(last, now, time, all, 0);
@@ -213,6 +234,7 @@ public class DataCacheScheduler implements Runnable {
                 return compare.compareTo(last) >= 0 &&
                     compare.compareTo(now) < 0;
             }
+
             if (times[depth] != WILDCARD) {
                 for (int i = 0; i < times[depth].length; i++) {
                     time.set(UNITS[depth], times[depth][i]);
@@ -221,6 +243,6 @@ public class DataCacheScheduler implements Runnable {
                 }
             }
             return matches(last, now, time, times, depth + 1);
-        }
-    }
+		}
+	}
 }

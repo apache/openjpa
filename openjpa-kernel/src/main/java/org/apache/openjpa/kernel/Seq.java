@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,11 +19,12 @@ import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
- * Internal OpenJPA sequence interface.
+ * <p>Internal OpenJPA sequence interface.</p>
  *
  * @author Abe White
  */
-public interface Seq extends Closeable {
+public interface Seq
+    extends Closeable {
 
     public static final int TYPE_DEFAULT = 0;
     public static final int TYPE_NONTRANSACTIONAL = 1;
@@ -35,32 +39,32 @@ public interface Seq extends Closeable {
     /**
      * Return the next value in the sequence.
      *
-     * @param ctx the current context
-     * @param cls if this is a datastore identity sequence, the
-     *            persistent class the identity value is for; else null
+     * @param    ctx        the current context
+     * @param    cls        if this is a datastore identity sequence, the
+     * persistent class the identity value is for; else null
      */
     public Object next(StoreContext ctx, ClassMetaData cls);
 
     /**
      * Return the current value of the sequence, or null if not available.
      *
-     * @param ctx the current context
-     * @param cls if this is a datastore identity sequence, the
-     *            persistent class the identity value is for; else null
+     * @param    ctx        the current context
+     * @param    cls        if this is a datastore identity sequence, the
+     * persistent class the identity value is for; else null
      */
     public Object current(StoreContext ctx, ClassMetaData cls);
 
     /**
      * Allocate additional values efficiently.
      *
-     * @param ctx the current context
-     * @param cls if this is a datastore identity sequence, the
-     *            persistent class the identity value is for; else null
+     * @param    ctx        the current context
+     * @param    cls        if this is a datastore identity sequence, the
+     * persistent class the identity value is for; else null
      */
     public void allocate(int additional, StoreContext ctx, ClassMetaData cls);
 
     /**
-     * Free resources used by this sequence.
+     *	Free resources used by this sequence.
      */
-    public void close();
+    public void close ();
 }

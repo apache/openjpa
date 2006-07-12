@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,14 +20,16 @@ import org.apache.openjpa.lib.util.Localizer;
 import serp.util.Numbers;
 
 /**
- * Datastore identity type. Implementations may choose to use this type,
- * or choose to use their own datastore identity values.
+ * <p>Datastore identity type.  Implementations may choose to use this type,
+ * or choose to use their own datastore identity values.</p>
  *
  * @author Abe White
  */
-public final class Id extends OpenJPAId {
+public final class Id
+    extends OpenJPAId {
 
     private static final Localizer _loc = Localizer.forPackage(Id.class);
+
     private final long _id;
 
     /**
@@ -68,13 +73,15 @@ public final class Id extends OpenJPAId {
     public Id(String str, ClassLoader loader) {
         if (loader == null)
             loader = Thread.currentThread().getContextClassLoader();
+
         if (str == null)
             _id = 0L;
         else {
             int dash = str.indexOf('-');
             try {
                 type = Class.forName(str.substring(0, dash), true, loader);
-            } catch (Throwable t) {
+            }
+            catch (Throwable t) {
                 throw new UserException(_loc.get("string-id", str), t);
             }
             _id = Long.parseLong(str.substring(dash + 1));
@@ -87,12 +94,13 @@ public final class Id extends OpenJPAId {
      */
     public Id(Class cls, String key) {
         super(cls);
+
         if (key == null)
             _id = 0L;
         else {
             // allow either stringified long or result of Id.toString
             int dash = key.indexOf('-');
-            if (dash > 0) // don't check for -1; might be negative number
+            if (dash > 0)    // don't check for -1; might be negative number
                 key = key.substring(dash + 1);
             _id = Long.parseLong(key);
         }
@@ -138,5 +146,5 @@ public final class Id extends OpenJPAId {
 
     protected boolean idEquals(OpenJPAId other) {
         return _id == ((Id) other)._id;
-    }
+	}
 }

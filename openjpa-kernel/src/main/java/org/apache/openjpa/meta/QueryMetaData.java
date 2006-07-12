@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -21,9 +24,10 @@ import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.xml.Commentable;
 
 /**
- * Holds metadata about named queries.
- * Information stored in this instance gets transfered to
- * new {@link Query} instances.
+ * <p>Holds metadata about named queries.</p>
+ * <p/>
+ * <p>Information stored in this instance gets transfered to
+ * new {@link Query} instances.</p>
  *
  * @author Steve Kim
  */
@@ -32,6 +36,7 @@ public class QueryMetaData
 
     private static final String[] EMPTY_KEYS = new String[0];
     private static final Object[] EMPTY_VALS = new Object[0];
+
     private final String _name;
     private Boolean _readOnly;
     private File _file;
@@ -174,7 +179,7 @@ public class QueryMetaData
 
     /**
      * Set query template information into the given concrete
-     * query instance. However, the language, query string, and
+     * query instance.  However, the language, query string, and
      * candidate class are assumed to be declared in the query
      * instantiation, and hints are not transferred.
      */
@@ -221,6 +226,7 @@ public class QueryMetaData
     ///////////////
     // Commentable
     ///////////////
+
     public String[] getComments() {
         return (_comments == null) ? EMPTY_COMMENTS : _comments;
     }
@@ -232,6 +238,7 @@ public class QueryMetaData
     ////////////////////////////////
     // SourceTracker implementation
     ////////////////////////////////
+
     public File getSourceFile() {
         return _file;
     }
@@ -251,6 +258,6 @@ public class QueryMetaData
     }
 
     public String getResourceName() {
-        return (_class == null) ? _name : _class.getName() + ":" + _name;
-    }
+        return (_class == null) ? _name : _class.getName () + ":" + _name;
+	}
 }

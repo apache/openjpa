@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -35,19 +38,22 @@ import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.NoTransactionException;
 
 /**
- * Allows configuration and optimization of how objects are loaded from
- * the data store.
+ * <p>Allows configuration and optimization of how objects are loaded from
+ * the data store.</p>
  *
+ * @since 3.0
  * @author Abe White
  * @nojavadoc
- * @since 3.0
  */
-public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
+public class FetchConfigurationImpl
+    implements FetchConfiguration, Cloneable {
 
     private static final Localizer _loc = Localizer.forPackage
         (FetchConfigurationImpl.class);
+
     // transient state
     private transient StoreContext _ctx = null;
+
     private int _fetchBatchSize = 0;
     private int _maxFetchDepth = 1;
     private boolean _queryCache = true;
@@ -60,6 +66,7 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
     private Set _rootClasses;
     private Set _rootInstances;
     private Map _hints = null;
+
     private static final String[] EMPTY_STRINGS = new String[0];
 
     public StoreContext getContext() {
@@ -73,7 +80,9 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
         _ctx = ctx;
         if (ctx == null)
             return;
+
         OpenJPAConfiguration conf = ctx.getConfiguration();
+
         // initialize to conf info
         setFetchBatchSize(conf.getFetchBatchSize());
         setFlushBeforeQueries(conf.getFlushBeforeQueriesConstant());
@@ -92,7 +101,7 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
     }
 
     /**
-     * Return a new hollow instance. Subclasses should override to return
+     * Return a new hollow instance.  Subclasses should override to return
      * a new instance of their type, with cached permissions set appropriately.
      */
     protected FetchConfigurationImpl newInstance() {
@@ -108,6 +117,7 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
         addFetchGroups(fetch.getFetchGroups());
         clearFields();
         addFields(fetch.getFields());
+
         // don't use setters because require active transaction
         _readLockLevel = fetch.getReadLockLevel();
         _writeLockLevel = fetch.getWriteLockLevel();
@@ -122,6 +132,7 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
             fetchBatchSize = _ctx.getConfiguration().getFetchBatchSize();
         if (fetchBatchSize != DEFAULT)
             _fetchBatchSize = fetchBatchSize;
+
         return this;
     }
 
@@ -131,6 +142,7 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
 
     public FetchConfiguration setMaxFetchDepth(int depth) {
         _maxFetchDepth = depth;
+
         return this;
     }
 
@@ -181,13 +193,15 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
     /**
      * Adds a fetch group of the given name to this receiver.
      * Checks if license allows for adding custom fetch groups. Makes
-     * an exception if the given name matches with the default fetch group name.
+     * an exception if the given name matches with the default fetch group
+     * name.
      *
      * @param name must not be null or empty.
      */
     public synchronized FetchConfiguration addFetchGroup(String name) {
         if (StringUtils.isEmpty(name))
             throw new MetaDataException(_loc.get("null-fg", name));
+
         if (_fetchGroups == null)
             _fetchGroups = new HashSet();
         _fetchGroups.add(name);
@@ -197,6 +211,7 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
     public synchronized FetchConfiguration addFetchGroups(Collection groups) {
         if (groups == null || groups.isEmpty())
             return this;
+
         Iterator iter = groups.iterator();
         while (iter.hasNext()) {
             Object group = iter.next();
@@ -251,6 +266,7 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
     public synchronized FetchConfiguration addFields(Collection fields) {
         if (fields.isEmpty())
             return this;
+
         if (_fields == null)
             _fields = new HashSet();
         _fields.addAll(fields);
@@ -298,7 +314,8 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
         if (level == DEFAULT)
             _readLockLevel = _ctx.getConfiguration().
                 getReadLockLevelConstant();
-        else _readLockLevel = level;
+        else
+            _readLockLevel = level;
         return this;
     }
 
@@ -313,7 +330,8 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
         if (level == DEFAULT)
             _writeLockLevel = _ctx.getConfiguration().
                 getWriteLockLevelConstant();
-        else _writeLockLevel = level;
+        else
+            _writeLockLevel = level;
         return this;
     }
 
@@ -343,6 +361,7 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
         if ((_fetchGroups == null || _fetchGroups.isEmpty())
             && (_fields == null || _fields.isEmpty()))
             return "Default";
+
         StringBuffer buf = new StringBuffer();
         if (_fetchGroups != null && !_fetchGroups.isEmpty()) {
             for (Iterator itr = _fetchGroups.iterator(); itr.hasNext();) {
@@ -364,6 +383,7 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
     public synchronized void setHint(String name, Object value) {
         if (_hints == null)
             _hints = new HashMap();
+
         synchronized (_hints) {
             _hints.put(name, value);
         }
@@ -372,6 +392,7 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
     public Object getHint(String name) {
         if (_hints == null)
             return null;
+
         synchronized (_hints) {
             return _hints.get(name);
         }
@@ -384,9 +405,12 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
     public FetchConfiguration setRootClasses(Collection classes) {
         if (classes == null || classes.isEmpty())
             return this;
+
         if (_rootClasses == null)
             _rootClasses = new HashSet(classes.size());
+
         _rootClasses.addAll(classes);
+
         return this;
     }
 
@@ -399,12 +423,14 @@ public class FetchConfigurationImpl implements FetchConfiguration, Cloneable {
             return this;
         if (_rootInstances == null)
             _rootInstances = new HashSet(roots.size());
+
         _rootInstances.addAll(roots);
+
         return this;
     }
 
     private Set getImmutableSet(Set input) {
         return (input == null) ? Collections.EMPTY_SET
             : Collections.unmodifiableSet(input);
-    }
+	}
 }

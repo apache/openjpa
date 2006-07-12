@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -23,13 +26,14 @@ import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.Exceptions;
 
 /**
- * Extended {@link IllegalArgumentException}.
+ * <p>Extended {@link IllegalArgumentException}.</p>
  *
  * @author Abe White
- * @nojavadoc
  * @since 4.0
+ * @nojavadoc
  */
-public class ArgumentException extends IllegalArgumentException
+public class ArgumentException
+    extends IllegalArgumentException
     implements Serializable, ExceptionInfo {
 
     private transient boolean _fatal = false;
@@ -86,7 +90,8 @@ public class ArgumentException extends IllegalArgumentException
         Exceptions.printNestedThrowables(this, out);
     }
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
+    private void writeObject(ObjectOutputStream out)
+        throws IOException {
         out.writeBoolean(_fatal);
         out.writeObject(Exceptions.replaceFailedObject(_failed));
         out.writeObject(Exceptions.replaceNestedThrowables(_nested));

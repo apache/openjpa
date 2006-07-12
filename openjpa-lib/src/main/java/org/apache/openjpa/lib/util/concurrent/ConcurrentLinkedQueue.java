@@ -178,7 +178,7 @@ public class ConcurrentLinkedQueue extends AbstractQueue
      *
      * @param c the collection of elements to initially contain
      * @throws NullPointerException if the specified collection or any
-     *                              of its elements are null
+     * of its elements are null
      */
     public ConcurrentLinkedQueue(Collection c) {
         for (Iterator it = c.iterator(); it.hasNext();)

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -18,15 +21,17 @@ import java.sql.Date;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 
 /**
- * Extension of the {@link Date} type that calls the <code>dirty</code>
- * method on its owning persistence capable instance on modification. This
+ * <p>Extension of the {@link Date} type that calls the <code>dirty</code>
+ * method on its owning persistence capable instance on modification.  This
  * class does not support modification via any deprecated method of the
- * date class.
+ * date class.</p>
  *
  * @author Abe White
  * @nojavadoc
  */
-public class ProxySQLDate extends Date implements ProxyDate {
+public class ProxySQLDate
+    extends Date
+    implements ProxyDate {
 
     private transient OpenJPAStateManager _sm = null;
     private transient int _field = -1;
@@ -99,7 +104,8 @@ public class ProxySQLDate extends Date implements ProxyDate {
         super.setTime(millis);
     }
 
-    protected Object writeReplace() throws ObjectStreamException {
+    protected Object writeReplace()
+        throws ObjectStreamException {
         if (_sm != null && _sm.isDetached())
             return this;
         return new Date(getTime());

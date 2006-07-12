@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -23,13 +26,14 @@ import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.Exceptions;
 
 /**
- * Rollback occurred on attempt to commit.
+ * <p>Rollback occurred on attempt to commit.</p>
  *
  * @author Abe White
- * @nojavadoc
  * @since 4.0
+ * @nojavadoc
  */
-class RollbackException extends javax.persistence.RollbackException
+public class RollbackException
+    extends javax.persistence.RollbackException
     implements Serializable, ExceptionInfo {
 
     private transient Throwable[] _nested;
@@ -81,7 +85,8 @@ class RollbackException extends javax.persistence.RollbackException
         Exceptions.printNestedThrowables(this, out);
     }
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
+    private void writeObject(ObjectOutputStream out)
+        throws IOException {
         out.writeObject(Exceptions.replaceNestedThrowables(_nested));
     }
 

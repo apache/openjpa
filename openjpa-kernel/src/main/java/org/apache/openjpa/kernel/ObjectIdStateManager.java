@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -29,18 +32,21 @@ import org.apache.openjpa.util.GeneralException;
 import serp.util.Numbers;
 
 /**
- * State manager used to access state of embedded object id primary key fields.
+ * <p>State manager used to access state of embedded object id primary key
+ * fields.</p>
  *
  * @author Abe White
  * @nojavadoc
  */
-public class ObjectIdStateManager implements OpenJPAStateManager {
+public class ObjectIdStateManager
+    implements OpenJPAStateManager {
 
     private static final Byte ZERO_BYTE = new Byte((byte) 0);
     private static final Character ZERO_CHAR = new Character((char) 0);
     private static final Double ZERO_DOUBLE = new Double(0);
     private static final Float ZERO_FLOAT = new Float(0);
     private static final Short ZERO_SHORT = new Short((short) 0);
+
     private Object _oid;
     private final OpenJPAStateManager _owner;
     private final ValueMetaData _vmd;
@@ -48,7 +54,7 @@ public class ObjectIdStateManager implements OpenJPAStateManager {
     /**
      * Constructor; supply embedded object id and its owner.
      *
-     * @param owner may be null
+     * @param    owner    may be null
      */
     public ObjectIdStateManager(Object oid, OpenJPAStateManager owner,
         ValueMetaData ownerVal) {
@@ -125,7 +131,8 @@ public class ObjectIdStateManager implements OpenJPAStateManager {
         throw new UnsupportedOperationException();
     }
 
-    public boolean writeDetached(ObjectOutput out) throws IOException {
+    public boolean writeDetached(ObjectOutput out)
+        throws IOException {
         throw new UnsupportedOperationException();
     }
 
@@ -270,6 +277,7 @@ public class ObjectIdStateManager implements OpenJPAStateManager {
     ///////////////////////////////////
     // OpenJPAStateManager implementation
     ///////////////////////////////////
+
     public void initialize(Class forType, PCState state) {
         throw new UnsupportedOperationException();
     }
@@ -338,6 +346,7 @@ public class ObjectIdStateManager implements OpenJPAStateManager {
         Object val = getValue(field);
         if (val == null)
             return true;
+
         FieldMetaData fmd = getMetaData().getField(field);
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.BOOLEAN:
@@ -671,6 +680,7 @@ public class ObjectIdStateManager implements OpenJPAStateManager {
     private Object getValue(int field) {
         if (_oid == null)
             return null;
+
         FieldMetaData fmd = getMetaData().getField(field);
         try {
             if (fmd.getBackingMember() instanceof Field)
@@ -678,38 +688,44 @@ public class ObjectIdStateManager implements OpenJPAStateManager {
             if (fmd.getBackingMember() instanceof Method)
                 return ((Method) fmd.getBackingMember()).
                     invoke(_oid, (Object[]) null);
+
             if (fmd.getDefiningMetaData().getAccessType()
                 == ClassMetaData.ACCESS_FIELD)
                 return _oid.getClass().getField(fmd.getName()).get(_oid);
+
             // property
             Method meth;
             try {
                 meth = _oid.getClass().getMethod("get"
                     + StringUtils.capitalize(fmd.getName()), (Class[]) null);
-            } catch (NoSuchMethodException nsme) {
+            }
+            catch (NoSuchMethodException nsme) {
                 meth = _oid.getClass().getMethod("is"
                     + StringUtils.capitalize(fmd.getName()), (Class[]) null);
             }
             return meth.invoke(_oid, (Object[]) null);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new GeneralException(e);
         }
     }
 
     /**
-     * Set the value of the given field using reflection.
-     * Relies on the fact that all oid fields/properties are made public
-     * during enhancement.
+     *	Set the value of the given field using reflection.
+     *	Relies on the fact that all oid fields/properties are made public
+     *	during enhancement.
      */
     private void setValue(int field, Object val, boolean forceInst) {
         if (_oid == null && forceInst) {
             try {
                 _oid = getMetaData().getDescribedType().newInstance();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 throw new GeneralException(e);
             }
         } else if (_oid == null)
             return;
+
         FieldMetaData fmd = getMetaData().getField(field);
         try {
             if (fmd.getBackingMember() instanceof Field)
@@ -721,8 +737,9 @@ public class ObjectIdStateManager implements OpenJPAStateManager {
                 _oid.getClass().getMethod("set" + StringUtils.capitalize
                     (fmd.getName()), new Class[]{ fmd.getDeclaredType() }).
                     invoke(_oid, new Object[]{ val });
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new GeneralException(e);
         }
-    }
+	}
 }

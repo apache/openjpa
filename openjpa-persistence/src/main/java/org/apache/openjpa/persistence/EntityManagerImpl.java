@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -49,7 +52,7 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.UserException;
 
 /**
- * Implementation of {@link EntityManager} interface.
+ * <p>Implementation of {@link EntityManager} interface.</p>
  *
  * @author Patrick Linskey
  * @author Abe White
@@ -60,6 +63,7 @@ public class EntityManagerImpl
 
     private static final Localizer _loc = Localizer.forPackage
         (EntityManagerImpl.class);
+
     private final DelegatingBroker _broker;
     private final EntityManagerFactoryImpl _emf;
     private FetchPlan _fetch = null;
@@ -67,7 +71,8 @@ public class EntityManagerImpl
     /**
      * Constructor; supply factory and delegate.
      */
-    public EntityManagerImpl(EntityManagerFactoryImpl factory, Broker broker) {
+    public EntityManagerImpl(EntityManagerFactoryImpl factory,
+        Broker broker) {
         _emf = factory;
         RuntimeExceptionTranslator translator =
             PersistenceExceptions.getRollbackTranslator(this);
@@ -82,19 +87,23 @@ public class EntityManagerImpl
         return _broker.getDelegate();
     }
 
-    public ConnectionMetaData getMetaData() throws ResourceException {
+    public ConnectionMetaData getMetaData()
+        throws ResourceException {
         return _broker.getMetaData();
     }
 
-    public Interaction createInteraction() throws ResourceException {
+    public Interaction createInteraction()
+        throws ResourceException {
         return _broker.createInteraction();
     }
 
-    public LocalTransaction getLocalTransaction() throws ResourceException {
+    public LocalTransaction getLocalTransaction()
+        throws ResourceException {
         return this;
     }
 
-    public ResultSetInfo getResultSetInfo() throws ResourceException {
+    public ResultSetInfo getResultSetInfo()
+        throws ResourceException {
         return _broker.getResultSetInfo();
     }
 
@@ -349,11 +358,14 @@ public class EntityManagerImpl
     public void commit() {
         try {
             _broker.commit();
-        } catch (RollbackException e) {
+        }
+        catch (RollbackException e) {
             throw e;
-        } catch (IllegalStateException e) {
+        }
+        catch (IllegalStateException e) {
             throw e;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // RollbackExceptions are special and aren't handled by the
             // normal exception translator, since the spec says they
             // should be thrown whenever the commit fails for any reason at
@@ -378,6 +390,7 @@ public class EntityManagerImpl
     public boolean getRollbackOnly() {
         if (!isActive())
             throw new IllegalStateException(_loc.get("no-transaction"));
+
         return _broker.getRollbackOnly();
     }
 
@@ -604,7 +617,8 @@ public class EntityManagerImpl
                 _broker.getClassLoader(), true);
             Seq seq = meta.getInstance(_broker.getClassLoader());
             return new Generator(seq, name, _broker, null);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw PersistenceExceptions.toPersistenceException(re);
         }
     }
@@ -617,7 +631,8 @@ public class EntityManagerImpl
             Seq seq = _broker.getIdentitySequence(meta);
             return (seq == null) ? null : new Generator(seq, null, _broker,
                 meta);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -631,10 +646,12 @@ public class EntityManagerImpl
             if (fmd == null)
                 throw new ArgumentException(_loc.get("no-named-field",
                     forClass, fieldName), null, null, false);
+
             Seq seq = _broker.getValueSequence(fmd);
             return (seq == null) ? null : new Generator(seq, null, _broker,
                 meta);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -655,7 +672,8 @@ public class EntityManagerImpl
         if (query == null)
             return createQuery((String) null);
         org.apache.openjpa.kernel.Query q = ((QueryImpl) query).getDelegate();
-        return new QueryImpl(this, _broker.newQuery(q.getLanguage(), q));
+        return new QueryImpl(this, _broker.newQuery(q.getLanguage(),
+            q));
     }
 
     public OpenJPAQuery createNamedQuery(String name) {
@@ -667,13 +685,15 @@ public class EntityManagerImpl
                 _broker.newQuery(meta.getLanguage(), null);
             meta.setInto(del);
             del.compile();
+
             OpenJPAQuery q = new QueryImpl(this, del);
             String[] hints = meta.getHintKeys();
             Object[] values = meta.getHintValues();
             for (int i = 0; i < hints.length; i++)
                 q.setHint(hints[i], values[i]);
             return q;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw PersistenceExceptions.toPersistenceException(re);
         }
     }
@@ -793,7 +813,8 @@ public class EntityManagerImpl
     }
 
     /**
-     * Translate the javax.persistence enum value to our internal lock level.
+     * Translate the javax.persistence enum value to our internal
+     * lock level.
      */
     static int toLockLevel(LockModeType mode) {
         if (mode == null)
@@ -873,7 +894,8 @@ public class EntityManagerImpl
         try {
             if (sm != null)
                 sm.dirty(field);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -913,6 +935,7 @@ public class EntityManagerImpl
     ////////////////////////////////
     // FindCallbacks implementation
     ////////////////////////////////
+
     public Object processArgument(Object arg) {
         return arg;
     }
@@ -924,6 +947,7 @@ public class EntityManagerImpl
     //////////////////////////////
     // OpCallbacks implementation
     //////////////////////////////
+
     public int processArgument(int op, Object obj, OpenJPAStateManager sm) {
         switch (op) {
             case OP_DELETE:
@@ -965,5 +989,5 @@ public class EntityManagerImpl
         if (!(other instanceof EntityManagerImpl))
             return false;
         return _broker.equals(((EntityManagerImpl) other)._broker);
-    }
+	}
 }

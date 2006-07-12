@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -18,17 +21,18 @@ import java.util.Iterator;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * Any contains(var) expression must be followed by at least one
- * AND clause using the variable 'var'. This expression type represents
- * one of those and AND clauses. It is responsible for evaluating the
- * right subexpression for every possible value of the variable.
+ * <p>Any contains(var) expression must be followed by at least one
+ * AND clause using the variable 'var'.  This expression type represents
+ * one of those and AND clauses.  It is responsible for evaluating the
+ * right subexpression for every possible value of the variable.</p>
  *
  * @author Abe White
  */
-class BindVariableAndExpression extends AndExpression {
+class BindVariableAndExpression
+    extends AndExpression {
 
     /**
-     * Constructor. Provide expression binding the variable and the
+     * Constructor.  Provide expression binding the variable and the
      * expression it is AND'd with.
      */
     public BindVariableAndExpression(BindVariableExpression var, Exp exp) {
@@ -42,12 +46,15 @@ class BindVariableAndExpression extends AndExpression {
         // iteration so that variable paths within the tree can
         // use the current value; the expression is true if true for any
         // value of the collection
+
         // if the collection is empty it cannot contain any variable
         BindVariableExpression bind = (BindVariableExpression)
             getExpression1();
-        Collection vals = bind.getVariableValues(candidate, orig, ctx, params);
+        Collection vals = bind.getVariableValues(candidate, orig, ctx,
+            params);
         if (vals == null || vals.isEmpty())
             return false;
+
         // the subtree is true if true for any variable in the collection
         BoundVariable var = bind.getVariable();
         for (Iterator itr = vals.iterator(); itr.hasNext();) {

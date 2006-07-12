@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -33,7 +36,7 @@ import serp.util.Numbers;
 import serp.util.Strings;
 
 /**
- * Helper methods for dealing with query filters.
+ * <p>Helper methods for dealing with query filters.</p>
  *
  * @author Abe White
  * @nojavadoc
@@ -42,11 +45,13 @@ public class Filters {
 
     private static final BigDecimal ZERO_BIGDECIMAL = new BigDecimal(0D);
     private static final BigInteger ZERO_BIGINTEGER = new BigInteger("0");
+
     private static final int OP_ADD = 0;
     private static final int OP_SUBTRACT = 1;
     private static final int OP_MULTIPLY = 2;
     private static final int OP_DIVIDE = 3;
     private static final int OP_MOD = 4;
+
     private static final Localizer _loc = Localizer.forPackage(Filters.class);
 
     /**
@@ -109,6 +114,7 @@ public class Filters {
         c2 = wrap(c2);
         if (c1 == c2)
             return c1;
+
         // not numbers?
         boolean c1Number = Number.class.isAssignableFrom(c1);
         boolean c2Number = Number.class.isAssignableFrom(c2);
@@ -129,6 +135,7 @@ public class Filters {
                 if (!c1Number && c2 == Character.class && c1 == String.class)
                     return String.class;
             }
+
             // if neither are numbers and one is a superclass of the
             // other, return the least-derived of the two types
             if (!c1Number && !c2Number) {
@@ -137,8 +144,10 @@ public class Filters {
                 if (c2.isAssignableFrom(c1))
                     return c2;
             }
+
             return c1;
         }
+
         if (c1 == BigDecimal.class || c2 == BigDecimal.class)
             return BigDecimal.class;
         if (c1 == BigInteger.class) {
@@ -169,6 +178,7 @@ public class Filters {
         c2 = wrap(c2);
         if (c2.isAssignableFrom(c1))
             return true;
+
         boolean c1Number = Number.class.isAssignableFrom(c1);
         boolean c2Number = Number.class.isAssignableFrom(c2);
         if (c1Number && c2Number)
@@ -192,9 +202,11 @@ public class Filters {
             return null;
         if (o.getClass() == type)
             return o;
+
         type = wrap(type);
         if (type.isAssignableFrom(o.getClass()))
             return o;
+
         // the only non-numeric conversions we do are to string, or from
         // string/char to number, or calendar/date
         boolean num = o instanceof Number;
@@ -219,6 +231,7 @@ public class Filters {
                     i = Numbers.valueOf(((Character) o).charValue());
                 else if (o instanceof String && ((String) o).length() == 1)
                     i = Numbers.valueOf(((String) o).charAt(0));
+
                 if (i != null) {
                     if (type == Integer.class)
                         return i;
@@ -229,6 +242,7 @@ public class Filters {
         if (!num)
             throw new ClassCastException(_loc.get("cant-convert", o,
                 o.getClass(), type));
+
         if (type == Integer.class) {
             return Numbers.valueOf(((Number) o).intValue());
         } else if (type == Float.class) {
@@ -245,9 +259,11 @@ public class Filters {
             double dval = ((Number) o).doubleValue();
             if (Double.isNaN(dval) || Double.isInfinite(dval))
                 return new Double(dval);
+
             float fval = ((Number) o).floatValue();
             if (Float.isNaN(fval) || Float.isInfinite(fval))
                 return new Float(fval);
+
             return new BigDecimal(o.toString());
         } else if (type == BigInteger.class) {
             return new BigInteger(o.toString());
@@ -489,23 +505,25 @@ public class Filters {
 
     /**
      * Parses the given declarations into a list of type, name, type, name...
-     * Returns null if no declarations. Assumes declaration is not an empty
-     * string and is already trimmed(valid assumptions given the checks made
+     * Returns null if no declarations.  Assumes declaration is not an empty
+     * string and is already trimmed (valid assumptions given the checks made
      * in our setters).
      *
-     * @param decType the type of declaration being parsed, for use in
-     *                error messages
+     * @param    decType        the type of declaration being parsed, for use in
+     * error messages
      */
     public static List parseDeclaration(String dec, char split,
         String decType) {
         if (dec == null)
             return null;
+
         // watch for common mixups between commas and semis
         char bad = (char) 0;
         if (split == ',')
             bad = ';';
         else if (split == ';')
             bad = ',';
+
         char sentinal = ' ';
         char cur;
         int start = 0;
@@ -519,26 +537,31 @@ public class Filters {
                 start++;
                 continue;
             }
+
             skipSpace = false;
             if (cur != sentinal)
                 continue;
+
             // if looking for spaces, look for split char, or vice versa
             sentinal = (sentinal == ' ') ? split : ' ';
             results.add(dec.substring(start, i).trim());
             start = i + 1;
             skipSpace = true;
         }
+
         // add last token, if any
         if (start < dec.length())
             results.add(dec.substring(start));
+
         // if not an even number of elements, something is wrong
         if (results.isEmpty() || results.size() % 2 != 0)
             throw new UserException(_loc.get("bad-dec", dec, decType));
+
         return results;
     }
 
     /**
-     * Split the given expression list into distinct expressions. Assumes the
+     * Split the given expression list into distinct expressions.  Assumes the
      * given string is not null or of zero length and is already trimmed
      * (valid assumptions given the checks in our setters and before
      * this method call).
@@ -546,6 +569,7 @@ public class Filters {
     public static List splitExpressions(String str, char split, int expected) {
         if (str == null)
             return null;
+
         List exps = null;
         int parenDepth = 0;
         int begin = 0, pos = 0;
@@ -563,6 +587,7 @@ public class Filters {
                 escape = false;
                 continue;
             }
+
             switch (c) {
                 case '\'':
                 case '"':
@@ -607,12 +632,14 @@ public class Filters {
             }
             escape = false;
         }
+
         if (exps == null) {
             // Collections.singletonList wasn't added until 1.3
             exps = new ArrayList(1);
             exps.add(str);
             return exps;
         }
+
         // add last exp and return array
         String last = str.substring(begin).trim();
         if (last.length() > 0)
@@ -622,16 +649,19 @@ public class Filters {
 
     /**
      * Add the given access path metadatas to the full path list, making sure
-     * to maintain only base metadatas in the list. The given list may be null.
+     * to maintain only base metadatas in the list.  The given list may
+     * be null.
      */
     public static List addAccessPathMetaDatas(List metas,
         ClassMetaData[] path) {
         if (path == null || path.length == 0)
             return metas;
+
         // create set of base class metadatas in access path
         if (metas == null)
             metas = new ArrayList();
         int last = metas.size();
+
         // for every element in the path of this executor, compare it
         // to already-gathered elements to see if it should replace
         // a subclass in the list or should be added as a new base;
@@ -642,8 +672,9 @@ public class Filters {
             add = true;
             for (int j = 0; add && j < last; j++) {
                 meta = (ClassMetaData) metas.get(j);
-                if (meta.getDescribedType()
-                    .isAssignableFrom(path[i].getDescribedType())) {
+
+                if (meta.getDescribedType().isAssignableFrom
+                    (path[i].getDescribedType())) {
                     // list already contains base class
                     add = false;
                 } else if (path[i].getDescribedType().isAssignableFrom
@@ -653,6 +684,7 @@ public class Filters {
                     metas.set(j, path[i]);
                 }
             }
+
             // if no base class of current path element already in
             // list and path element didn't replace a subclass in the
             // list, then add it now as a new base
@@ -672,12 +704,14 @@ public class Filters {
             return null;
         if (hint instanceof AggregateListener)
             return (AggregateListener) hint;
+
         Exception cause = null;
         if (hint instanceof String) {
             try {
                 return (AggregateListener) Class.forName((String) hint, true,
                     loader).newInstance();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 cause = e;
             }
         }
@@ -703,6 +737,7 @@ public class Filters {
             return (AggregateListener[]) c.toArray
                 (new AggregateListener[c.size()]);
         }
+
         Exception cause = null;
         if (hint instanceof String) {
             String[] clss = Strings.split((String) hint, ",", 0);
@@ -712,7 +747,8 @@ public class Filters {
                     aggs[i] = (AggregateListener) Class.forName(clss[i], true,
                         loader).newInstance();
                 return aggs;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 cause = e;
             }
         }
@@ -730,12 +766,14 @@ public class Filters {
             return null;
         if (hint instanceof FilterListener)
             return (FilterListener) hint;
+
         Exception cause = null;
         if (hint instanceof String) {
             try {
                 return (FilterListener) Class.forName((String) hint, true,
                     loader).newInstance();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 cause = e;
             }
         }
@@ -760,6 +798,7 @@ public class Filters {
             Collection c = (Collection) hint;
             return (FilterListener[]) c.toArray(new FilterListener[c.size()]);
         }
+
         Exception cause = null;
         if (hint instanceof String) {
             String[] clss = Strings.split((String) hint, ",", 0);
@@ -769,7 +808,8 @@ public class Filters {
                     filts[i] = (FilterListener) Class.forName(clss[i], true,
                         loader).newInstance();
                 return filts;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 cause = e;
             }
         }
@@ -783,10 +823,12 @@ public class Filters {
     public static Object hintToGetter(Object target, String hintKey) {
         if (target == null || hintKey == null)
             return null;
+
         Method getter = ImplHelper.getGetter(target.getClass(), hintKey);
         try {
             return getter.invoke(target, (Object[]) null);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             Throwable t = e;
             if (e instanceof InvocationTargetException)
                 t = ((InvocationTargetException) e).getTargetException();
@@ -796,27 +838,30 @@ public class Filters {
     }
 
     /**
-     * Set the value of the property named by the hint key.
+     *	Set the value of the property named by the hint key.
      */
     public static void hintToSetter(Object target, String hintKey,
         Object value) {
         if (target == null || hintKey == null)
             return;
+
         Method setter = ImplHelper.getSetter(target.getClass(), hintKey);
         try {
             if (value instanceof String) {
                 if ("null".equals(value))
                     value = null;
-                else value = Strings.parse((String) value,
-                    setter.getParameterTypes()[0]);
+                else
+                    value = Strings.parse((String) value,
+                        setter.getParameterTypes()[0]);
             }
             setter.invoke(target, new Object[]{ value });
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             Throwable t = e;
             if (e instanceof InvocationTargetException)
                 t = ((InvocationTargetException) e).getTargetException();
             throw new UserException(_loc.get("bad-setter-hint",
-                target.getClass(), hintKey, value)).setCause(t);
-        }
-    }
+				target.getClass (), hintKey, value)).setCause (t);
+		}
+	}
 }

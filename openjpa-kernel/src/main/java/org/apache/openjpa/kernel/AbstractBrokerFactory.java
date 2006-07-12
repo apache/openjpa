@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -42,34 +45,42 @@ import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * Abstract implementation of the {@link BrokerFactory}
- * that must be subclassed for a specific runtime.
+ * <p>Abstract implementation of the {@link BrokerFactory}
+ * that must be subclassed for a specific runtime.</p>
  *
  * @author Abe White
  */
-public abstract class AbstractBrokerFactory implements BrokerFactory {
+public abstract class AbstractBrokerFactory
+    implements BrokerFactory {
 
     private static final Localizer _loc = Localizer.forPackage
         (AbstractBrokerFactory.class);
+
     // static mapping of configurations to pooled broker factories
     private static final Map _pool = Collections.synchronizedMap
         (new HashMap());
+
     // configuration
     private final OpenJPAConfiguration _conf;
     private transient boolean _readOnly = false;
     private transient RuntimeException _closed = null;
     private Map _userObjects = null;
+
     // internal lock: spec forbids synchronization on this object
     private final ReentrantLock _lock = new ReentrantLock();
+
     // maps global transactions to associated brokers
     private transient Map _transactional = new HashMap();
+
     // weak-ref tracking of open brokers
     private transient Collection _brokers = new ReferenceHashSet
         (ReferenceHashSet.WEAK);
+
     // cache the class names loaded from the persistent classes property so
     // that we can re-load them for each new broker
     private transient Collection _pcClassNames = null;
     private transient Collection _pcClassLoaders = null;
+
     // lifecycle listeners to pass to each broker
     private transient Map _lifecycleListeners = null;
 
@@ -95,7 +106,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     }
 
     /**
-     * Constructor. Configuration must be provided on construction.
+     * Constructor.  Configuration must be provided on construction.
      */
     protected AbstractBrokerFactory(OpenJPAConfiguration config) {
         _conf = config;
@@ -134,6 +145,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
         try {
             assertOpen();
             makeReadOnly();
+
             BrokerImpl broker = null;
             if (findExisting)
                 broker = findBroker(user, pass, managed);
@@ -148,22 +160,28 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
                     != null)
                     dsm = new DataCacheStoreManager(sm);
                 dsm = new ROPStoreManager((dsm == null) ? sm : dsm);
+
                 broker = newBrokerImpl(user, pass);
                 broker.initialize(this, dsm, managed, connRetainMode);
                 addLifecycleListeners(broker);
+
                 // if we're using remote events, register the event manager so
                 // that it can broadcast commit notifications from the broker
                 RemoteCommitEventManager remote = _conf.
                     getRemoteCommitEventManager();
                 if (remote.areRemoteEventsEnabled())
                     broker.addTransactionListener(remote);
+
                 loadPersistentTypes(broker.getClassLoader());
             }
             _brokers.add(broker);
+
             return broker;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -177,6 +195,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     protected void addLifecycleListeners(BrokerImpl broker) {
         if (_lifecycleListeners == null || _lifecycleListeners.isEmpty())
             return;
+
         Map.Entry entry;
         for (Iterator itr = _lifecycleListeners.entrySet().iterator();
             itr.hasNext();) {
@@ -187,13 +206,14 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     }
 
     /**
-     * Load the configured persistent classes list. Performed automatically
+     * Load the configured persistent classes list.  Performed automatically
      * whenever a broker is created.
      */
     private void loadPersistentTypes(ClassLoader envLoader) {
         // no listed persistent types?
         if (_pcClassNames != null && _pcClassNames.isEmpty())
             return;
+
         // cache persistent type names if not already
         ClassLoader loader = _conf.getClassResolverInstance().
             getClassLoader(getClass(), envLoader);
@@ -211,12 +231,14 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
             }
             return;
         }
+
         // reload with this loader
         if (_pcClassLoaders.add(loader)) {
             for (Iterator itr = _pcClassNames.iterator(); itr.hasNext();) {
                 try {
                     Class.forName((String) itr.next(), true, loader);
-                } catch (Throwable t) {
+                }
+                catch (Throwable t) {
                     _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME).warn(t, t);
                 }
             }
@@ -260,12 +282,14 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
         try {
             assertOpen();
             assertNoActiveTransaction();
+
             // remove from factory pool
             Map map = toPoolKey(_conf);
             synchronized (_pool) {
                 if (_pool.get(map) == this)
                     _pool.remove(map);
             }
+
             // close all brokers
             Broker broker;
             for (Iterator itr = _brokers.iterator(); itr.hasNext();) {
@@ -273,9 +297,11 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
                 if (!broker.isClosed())
                     broker.close();
             }
+
             // remove metadata repository from listener list
             PCRegistry.removeRegisterClassListener
                 (_conf.getMetaDataRepository());
+
             _conf.close();
             _closed = new IllegalStateException();
         }
@@ -315,6 +341,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
             assertOpen();
             if (val == null)
                 return (_userObjects == null) ? null : _userObjects.remove(key);
+
             if (_userObjects == null)
                 _userObjects = new HashMap();
             return _userObjects.put(key, val);
@@ -333,34 +360,38 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     }
 
     /**
-     * Replaces the factory with this JVMs pooled version if it exists. Also
+     * Replaces the factory with this JVMs pooled version if it exists.  Also
      * freezes the factory.
      */
-    protected Object readResolve() throws ObjectStreamException {
+    protected Object readResolve()
+        throws ObjectStreamException {
         AbstractBrokerFactory factory = getPooledFactory(_conf);
         if (factory != null)
             return factory;
+
         // reset these transient fields to empty values
         _transactional = new HashMap();
         _brokers = new ReferenceHashSet(ReferenceHashSet.WEAK);
+
         makeReadOnly();
         return this;
     }
+
     ////////////////////////
     // Methods for Override
     ////////////////////////
 
     /**
-     * Return a new StoreManager for this runtime. Note that the instance
+     * Return a new StoreManager for this runtime.  Note that the instance
      * returned here may be wrapped before being passed to the
      * {@link #newBroker} method.
      */
     protected abstract StoreManager newStoreManager();
 
     /**
-     * Find a pooled broker, or return null if none. If using
+     * Find a pooled broker, or return null if none.  If using
      * managed transactions, looks for a transactional broker;
-     * otherwise returns null by default. This method will be called before
+     * otherwise returns null by default.  This method will be called before
      * {@link #newStoreManager} so that factory subclasses implementing
      * pooling can return a matching manager before a new {@link StoreManager}
      * is created.
@@ -381,18 +412,20 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
         if (broker == null)
             throw new UserException(_loc.get("no-broker-class",
                 _conf.getBrokerImpl()));
+
         return broker;
     }
 
     /**
      * Setup transient state used by this factory based on the
-     * current configuration, which will subsequently be locked down. This
+     * current configuration, which will subsequently be locked down.  This
      * method will be called before the first broker is requested,
      * and will be re-called each time the factory is deserialized into a JVM
      * that has no configuration for this data store.
      */
     protected void setup() {
     }
+
     /////////////
     // Utilities
     /////////////
@@ -406,15 +439,19 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
         try {
             trans = _conf.getManagedRuntimeInstance().getTransactionManager().
                 getTransaction();
-            if (trans == null ||
-                trans.getStatus() == Status.STATUS_NO_TRANSACTION
+
+            if (trans == null
+                || trans.getStatus() == Status.STATUS_NO_TRANSACTION
                 || trans.getStatus() == Status.STATUS_UNKNOWN)
                 return null;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new GeneralException(e);
         }
+
         synchronized (_transactional) {
             Collection brokers = (Collection) _transactional.get(trans);
             if (brokers != null) {
@@ -464,12 +501,14 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     public void makeReadOnly() {
         if (_readOnly)
             return;
+
         lock();
         try {
             // check again
             if (_readOnly)
                 return;
             _readOnly = true;
+
             Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
             if (log.isInfoEnabled())
                 log.info(_loc.get("factory-init",
@@ -489,14 +528,17 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
                 }
                 log.trace(buf.toString());
             }
+
             // setup transient state
             setup();
+
             // register the metdata repository to auto-load persistent types
             // and make sure types are enhanced
             MetaDataRepository repos = _conf.getMetaDataRepository();
             repos.setValidate(repos.VALIDATE_RUNTIME, true);
             repos.setResolve(repos.MODE_MAPPING_INIT, true);
             PCRegistry.addRegisterClassListener(repos);
+
             // freeze underlying configuration and eagerly initialize to
             // avoid synchronization
             _conf.setReadOnly(true);
@@ -515,12 +557,13 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
             throw new InvalidStateException(_loc.get("closed-factory")).
                 setCause(_closed);
     }
+
     ////////////////////
     // Broker utilities
     ////////////////////
 
     /**
-     * Throws a {@link UserException} if a transaction is active. The thrown
+     * Throws a {@link UserException} if a transaction is active.  The thrown
      * exception will contain all the Brokers with active transactions as
      * failed objects in the nested exceptions.
      */
@@ -529,6 +572,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
         synchronized (_transactional) {
             if (_transactional.isEmpty())
                 return;
+
             excs = new ArrayList(_transactional.size());
             for (Iterator trans = _transactional.values().iterator();
                 trans.hasNext();) {
@@ -539,6 +583,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
                 }
             }
         }
+
         if (!excs.isEmpty())
             throw new InvalidStateException(_loc.get("nested-exceps")).
                 setNestedThrowables((Throwable[]) excs.toArray
@@ -561,18 +606,22 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
                 && (trans.getStatus() == Status.STATUS_NO_TRANSACTION
                 || trans.getStatus() == Status.STATUS_UNKNOWN))
                 trans = null;
+
             if (trans == null && begin) {
                 tm.begin();
                 trans = tm.getTransaction();
             } else if (trans == null)
                 return false;
+
             // synch broker and trans
             trans.registerSynchronization(broker);
+
             synchronized (_transactional) {
                 Collection brokers = (Collection) _transactional.get(trans);
                 if (brokers == null) {
                     brokers = new ArrayList(2);
                     _transactional.put(trans, brokers);
+
                     // register a callback to remove the trans from the
                     // cache when it ends
                     trans.registerSynchronization
@@ -580,19 +629,23 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
                 }
                 brokers.add(broker);
             }
+
             return true;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new GeneralException(e);
         }
     }
 
     /**
-     * Simple synchronization listener to remove completed transactions
-     * from our cache.
+     *	Simple synchronization listener to remove completed transactions
+     *	from our cache.
      */
-    private class RemoveTransactionSync implements Synchronization {
+    private class RemoveTransactionSync
+        implements Synchronization {
 
         private final Transaction _trans;
 
@@ -604,9 +657,10 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
         }
 
         public void afterCompletion(int status) {
-            synchronized (_transactional) {
-                _transactional.remove(_trans);
-            }
-        }
-    }
+            synchronized (_transactional)
+			{
+				_transactional.remove (_trans);
+			}
+		}
+	}
 }

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -44,11 +47,13 @@ import org.apache.openjpa.util.UserException;
  * @author Patrick Linskey
  * @since 2.5.0
  */
-public class JMSRemoteCommitProvider extends AbstractRemoteCommitProvider
+public class JMSRemoteCommitProvider
+    extends AbstractRemoteCommitProvider
     implements Configurable, GenericConfigurable, ExceptionListener {
 
     private static Localizer s_loc = Localizer.forPackage
         (JMSRemoteCommitProvider.class);
+
     private String _topicName = "topic/OpenJPACommitProviderTopic";
     private String _tcfName = "java:/ConnectionFactory";
     private Properties _ctxProps = null;
@@ -75,7 +80,7 @@ public class JMSRemoteCommitProvider extends AbstractRemoteCommitProvider
 
     /**
      * The number of times to attempt to reconnect after a JMS send exception
-     * is detected. Defaults to 0, meaning no attempt to reconnect is made;
+     * is detected.  Defaults to 0, meaning no attempt to reconnect is made;
      * the exception is logged and ignored.
      */
     public void setExceptionReconnectAttempts(int attempts) {
@@ -84,7 +89,7 @@ public class JMSRemoteCommitProvider extends AbstractRemoteCommitProvider
 
     /**
      * Set a map of properties to pass to the {@link InitialContext}
-     * constructor for JNDI lookups. Implementation of
+     * constructor for JNDI lookups.  Implementation of
      * {@link GenericConfigurable}.
      */
     public void setInto(Map m) {
@@ -92,25 +97,30 @@ public class JMSRemoteCommitProvider extends AbstractRemoteCommitProvider
             _ctxProps = new Properties();
             _ctxProps.putAll(m);
             m.clear();
-        } else _ctxProps = null;
+        } else
+            _ctxProps = null;
     }
 
     /**
-     * Returns a new {@link Context} object for use by this provider.
+     * Returns a new {@link Context} object for use by this
+     * provider.
      */
-    protected Context newContext() throws NamingException {
+    protected Context newContext()
+        throws NamingException {
         if (_ctxProps == null)
             return new InitialContext();
         return new InitialContext(_ctxProps);
     }
 
     // ---------- RemoteCommitProvider implementation ----------
+
     public void broadcast(RemoteCommitEvent event) {
         try {
             _publisher.publish(createMessage(event));
             if (log.isTraceEnabled())
                 log.trace(s_loc.get("jms-sent-update", _topicName));
-        } catch (JMSException jmse) {
+        }
+        catch (JMSException jmse) {
             if (log.isWarnEnabled())
                 log.warn(s_loc.get("jms-send-error", _topicName), jmse);
         }
@@ -123,7 +133,8 @@ public class JMSRemoteCommitProvider extends AbstractRemoteCommitProvider
                 if (log.isInfoEnabled())
                     log.info(s_loc.get("jms-close-listener", _topicName));
             }
-        } catch (JMSException jmse) {
+        }
+        catch (JMSException jmse) {
             if (log.isWarnEnabled())
                 log.warn(s_loc.get("jms-close-error", _topicName), jmse);
         }
@@ -131,6 +142,7 @@ public class JMSRemoteCommitProvider extends AbstractRemoteCommitProvider
             _connection = null;
         }
     }
+
     // ---------- Configurable implementation ----------
 
     /**
@@ -149,12 +161,16 @@ public class JMSRemoteCommitProvider extends AbstractRemoteCommitProvider
                 (TopicConnectionFactory) ctx.lookup(_tcfName);
             Topic topic = (Topic) ctx.lookup(_topicName);
             ctx.close();
+
             _connection = tcf.createTopicConnection();
+
             // false == not transacted.
             _session = _connection.createTopicSession
                 (false, Session.AUTO_ACKNOWLEDGE);
+
             // create a publisher
             _publisher = _session.createPublisher(topic);
+
             // create a subscriber.
             TopicSubscriber s = _session.createSubscriber(topic, null,
                 /* noLocal: */ true);
@@ -174,11 +190,13 @@ public class JMSRemoteCommitProvider extends AbstractRemoteCommitProvider
         }
     }
 
-    /* *
-     * Returns a {@link javax.jms.MessageListener} capable of
-     * understanding and processing messages created by {@link #createMessage}.
-     *  The listener returned by this method is responsible for
-     * notifying the provider that a remote event has been received.
+    /**
+     * <p>Returns a {@link javax.jms.MessageListener} capable of
+     * understanding and processing messages created by
+     * {@link #createMessage}.</p>
+     * <p/>
+     * <p>The listener returned by this method is responsible for
+     * notifying the provider that a remote event has been received.</p>
      */
     protected MessageListener getMessageListener() {
         return new MessageListener() {
@@ -189,19 +207,23 @@ public class JMSRemoteCommitProvider extends AbstractRemoteCommitProvider
                             _topicName, m.getClass().getName()));
                     return;
                 }
+
                 ObjectMessage om = (ObjectMessage) m;
                 Object o;
                 try {
                     o = om.getObject();
-                } catch (JMSException jmse) {
+                }
+                catch (JMSException jmse) {
                     if (log.isWarnEnabled())
                         log.warn(s_loc.get("jms-receive-error-1"), jmse);
                     return;
                 }
+
                 if (o instanceof RemoteCommitEvent) {
                     if (log.isTraceEnabled())
                         log.trace(s_loc.get("jms-received-update",
                             _topicName));
+
                     RemoteCommitEvent rce = (RemoteCommitEvent) o;
                     fireEvent(rce);
                 } else {
@@ -227,6 +249,7 @@ public class JMSRemoteCommitProvider extends AbstractRemoteCommitProvider
             log.warn(s_loc.get("jms-listener-error", _topicName), ex);
         if (_reconnectAttempts <= 0)
             return;
+
         close();
         boolean connected = false;
         for (int i = 0; i < _reconnectAttempts; i++) {
@@ -236,20 +259,23 @@ public class JMSRemoteCommitProvider extends AbstractRemoteCommitProvider
                         String.valueOf(i + 1)));
                 connect();
                 connected = true;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 if (log.isInfoEnabled())
                     log.info(s_loc.get("jms-reconnect-fail", _topicName), e);
                 try {
                     Thread.sleep(1000);
-                } catch (InterruptedException ie) {
+                }
+                catch (InterruptedException ie) {
                     break;
                 }
             }
         }
+
         if (!connected && log.isErrorEnabled())
             log.error(s_loc.get("jms-cant-reconnect", _topicName,
                 String.valueOf(_reconnectAttempts)));
         else if (connected && log.isInfoEnabled())
             log.info(s_loc.get("jms-reconnected", _topicName));
-    }
+	}
 }

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -26,7 +29,7 @@ import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * Helper methods for acquiring {@link BrokerFactory} objects
+ * <p>Helper methods for acquiring {@link BrokerFactory} objects</p>
  *
  * @since 4.0.0
  */
@@ -34,6 +37,7 @@ public class Bootstrap {
 
     private static final Class[] FACTORY_ARGS =
         new Class[]{ ConfigurationProvider.class };
+
     private static Localizer s_loc = Localizer.forPackage(Bootstrap.class);
 
     /**
@@ -44,8 +48,8 @@ public class Bootstrap {
     }
 
     /**
-     * Return a new factory for the given configuration. The classloader
-     * will be used to load the factory class. If no classloader is given,
+     * Return a new factory for the given configuration.  The classloader
+     * will be used to load the factory class.  If no classloader is given,
      * the thread's context classloader is used.
      */
     public static BrokerFactory newBrokerFactory(ConfigurationProvider conf,
@@ -53,17 +57,20 @@ public class Bootstrap {
         if (conf == null)
             conf = new MapConfigurationProvider();
         ProductDerivations.beforeConfigurationConstruct(conf);
+
         Class cls = getFactoryClass(conf, loader);
         try {
             Method meth = cls.getMethod("newInstance", FACTORY_ARGS);
             return (BrokerFactory) meth.invoke(null, new Object[]{ conf });
-        } catch (InvocationTargetException ite) {
+        }
+        catch (InvocationTargetException ite) {
             Throwable cause = ite.getTargetException();
             if (cause instanceof OpenJPAException)
-                throw(OpenJPAException) cause;
+                throw (OpenJPAException) cause;
             throw new InternalException(s_loc.get("new-brokerfactory-excep",
                 cls), cause);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new UserException(s_loc.get("bad-new-brokerfactory", cls),
                 e).setFatal(true);
         }
@@ -77,8 +84,8 @@ public class Bootstrap {
     }
 
     /**
-     * Return a pooled factory for the given configuration. The classloader
-     * will be used to load the factory class. If no classloader is given,
+     * Return a pooled factory for the given configuration.  The classloader
+     * will be used to load the factory class.  If no classloader is given,
      * the thread's context classloader is used.
      */
     public static BrokerFactory getBrokerFactory(ConfigurationProvider conf,
@@ -86,44 +93,51 @@ public class Bootstrap {
         if (conf == null)
             conf = new MapConfigurationProvider();
         ProductDerivations.beforeConfigurationConstruct(conf);
+
         Class cls = getFactoryClass(conf, loader);
         try {
             Method meth = cls.getMethod("getInstance", FACTORY_ARGS);
             return (BrokerFactory) meth.invoke(null, new Object[]{ conf });
-        } catch (InvocationTargetException ite) {
+        }
+        catch (InvocationTargetException ite) {
             Throwable cause = ite.getTargetException();
             if (cause instanceof OpenJPAException)
-                throw(OpenJPAException) cause;
+                throw (OpenJPAException) cause;
             throw new InternalException(s_loc.get("brokerfactory-excep", cls),
                 cause);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new UserException(s_loc.get("bad-brokerfactory", cls), e).
                 setFatal(true);
         }
     }
 
     /**
-     * Instantiate the factory class designated in properties.
+     *	Instantiate the factory class designated in properties.
      */
     private static Class getFactoryClass(ConfigurationProvider conf,
         ClassLoader loader) {
         if (loader == null)
             loader = Thread.currentThread().getContextClassLoader();
+
         Map props = conf.getProperties();
         Object cls = props.get(BrokerFactoryValue.KEY);
         if (cls instanceof Class)
             return (Class) cls;
+
         BrokerFactoryValue value = new BrokerFactoryValue();
         value.setString((String) cls);
         String clsName = value.getClassName();
         if (clsName == null)
             throw new UserException(s_loc.get("no-brokerfactory", props)).
                 setFatal(true);
+
         try {
             return Class.forName(clsName, true, loader);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new UserException(s_loc.get("bad-brokerfactory-class",
                 clsName), e).setFatal(true);
-        }
-    }
+		}
+	}
 }

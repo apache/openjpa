@@ -52,11 +52,11 @@ public abstract class TypedInstruction extends Instruction {
      * the given mappings and the demote flag.
      *
      * @param mappings mappings of one type to another; for example,
-     *                 array instruction treat booleans as ints, so
-     *                 to reflect that there should be an index x of the
-     *                 array such that mappings[x][0] = boolean.class and
-     *                 mappings[x][1] = int.class; may be null if no special mappings are needed
-     * @param demote   if true, all object types will be demoted to Object.class
+     * array instruction treat booleans as ints, so
+     * to reflect that there should be an index x of the
+     * array such that mappings[x][0] = boolean.class and
+     * mappings[x][1] = int.class; may be null if no special mappings are needed
+     * @param demote if true, all object types will be demoted to Object.class
      */
     String mapType(String type, Class[][] mappings, boolean demote) {
         if (type == null)

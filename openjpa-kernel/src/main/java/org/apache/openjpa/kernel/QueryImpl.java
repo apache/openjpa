@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -50,48 +53,58 @@ import serp.util.Numbers;
 import serp.util.Strings;
 
 /**
- * Implementation of the {@link Query} interface.
+ * <p>Implementation of the {@link Query} interface.</p>
  *
  * @author Abe White
  * @nojavadoc
  */
-public class QueryImpl implements Query {
+public class QueryImpl
+    implements Query {
 
     private static Localizer _loc = Localizer.forPackage(QueryImpl.class);
+
     private final String _language;
     private final StoreQuery _storeQuery;
     private transient final BrokerImpl _broker;
     private transient final Log _log;
     private transient ClassLoader _loader = null;
+
     // query has its own internal lock
     private final ReentrantLock _lock = new ReentrantLock();
+
     // unparsed state
     private Class _class = null;
     private boolean _subclasses = true;
     private boolean _readOnly = false;
     private String _query = null;
     private String _params = null;
+
     // parsed state
     private transient Compilation _compiled = null;
     private transient boolean _compiling = false;
     private transient ResultPacker _packer = null;
+
     // candidates
     private transient Collection _collection = null;
     private transient Extent _extent = null;
+
     // listeners
     private Map _filtListeners = null;
     private Map _aggListeners = null;
+
     // configuration for loading objects
     private FetchConfiguration _fc = null;
     private boolean _ignoreChanges = false;
     private Class _resultMappingScope = null;
     private String _resultMappingName = null;
+
     // these fields should only be used directly after we have a compilation,
     // because their values may be encoded in the query string
     private Boolean _unique = null;
     private Class _resultClass = null;
     private transient long _startIdx = 0;
     private transient long _endIdx = Long.MAX_VALUE;
+
     // remember the list of all the results we have returned so we
     // can free their resources when close or closeAll is called
     private transient final Collection _resultLists = new ReferenceHashSet
@@ -212,12 +225,14 @@ public class QueryImpl implements Query {
             if (listen != null)
                 return listen;
         }
+
         // check user-defined listeners from configuration
         FilterListener[] confListeners = _broker.getConfiguration().
             getFilterListenerInstances();
         for (int i = 0; i < confListeners.length; i++)
             if (confListeners[i].getTag().equals(tag))
                 return confListeners[i];
+
         // check store listeners
         return _storeQuery.getFilterListener(tag);
     }
@@ -262,12 +277,14 @@ public class QueryImpl implements Query {
             if (listen != null)
                 return listen;
         }
+
         // check user-defined listeners from configuration
         AggregateListener[] confListeners = _broker.getConfiguration().
             getAggregateListenerInstances();
         for (int i = 0; i < confListeners.length; i++)
             if (confListeners[i].getTag().equals(tag))
                 return confListeners[i];
+
         // check store listeners
         return _storeQuery.getAggregateListener(tag);
     }
@@ -275,7 +292,7 @@ public class QueryImpl implements Query {
     public Extent getCandidateExtent() {
         // if just the class is set, fetch the corresponding extent; if the
         // extent is already set but its ignore cache setting is wrong,
-        // get a new extent with the correct setting(don't modify orig extent
+        // get a new extent with the correct setting (don't modify orig extent
         // in case the user has a reference to it and might use it)
         lock();
         try {
@@ -302,15 +319,18 @@ public class QueryImpl implements Query {
         try {
             assertOpen();
             assertNotReadOnly();
+
             if (candidateExtent == _extent)
                 return;
             if (candidateExtent == null) {
                 _extent = null;
                 return;
             }
+
             // if extent then not collection
             _extent = candidateExtent;
             _collection = null;
+
             boolean invalidate = false;
             if (_extent.getElementType() != _class) {
                 _class = _extent.getElementType();
@@ -338,9 +358,11 @@ public class QueryImpl implements Query {
         if (!_storeQuery.supportsInMemoryExecution())
             throw new UnsupportedException(_loc.get("query-nosupport",
                 _language));
+
         lock();
         try {
             assertOpen();
+
             // if collection then not extent
             _collection = candidateCollection;
             if (_collection != null)
@@ -358,6 +380,7 @@ public class QueryImpl implements Query {
             if (_class != null || _compiled != null || _query == null
                 || _broker == null)
                 return _class;
+
             // check again after compilation; maybe encoded in string
             compileForCompilation();
             return _class;
@@ -417,12 +440,14 @@ public class QueryImpl implements Query {
                 return _unique.booleanValue();
             if (_query == null || _compiling || _broker == null)
                 return false;
+
             // check again after compilation; maybe encoded in string
             if (_compiled == null) {
                 compileForCompilation();
                 if (_unique != null)
                     return _unique.booleanValue();
             }
+
             // no explicit setting; default
             StoreQuery.Executor ex = compileForExecutor();
             if (!ex.isAggregate(_storeQuery))
@@ -453,6 +478,7 @@ public class QueryImpl implements Query {
             if (_resultClass != null || _compiled != null || _query == null
                 || _broker == null)
                 return _resultClass;
+
             // check again after compilation; maybe encoded in string
             compileForCompilation();
             return _resultClass;
@@ -482,6 +508,7 @@ public class QueryImpl implements Query {
             if (_startIdx != 0 || _endIdx != Long.MAX_VALUE
                 || _compiled != null || _query == null || _broker == null)
                 return _startIdx;
+
             // check again after compilation; maybe encoded in string
             compileForCompilation();
             return _startIdx;
@@ -498,6 +525,7 @@ public class QueryImpl implements Query {
             if (_startIdx != 0 || _endIdx != Long.MAX_VALUE
                 || _compiled != null || _query == null || _broker == null)
                 return _endIdx;
+
             // check again after compilation; maybe encoded in string
             compileForCompilation();
             return _endIdx;
@@ -511,9 +539,11 @@ public class QueryImpl implements Query {
         if (start < 0 || end < 0)
             throw new UserException(_loc.get("invalid-range",
                 String.valueOf(start), String.valueOf(end)));
+
         if (end - start > Integer.MAX_VALUE && end != Long.MAX_VALUE)
             throw new UserException(_loc.get("range-too-big",
                 String.valueOf(start), String.valueOf(end)));
+
         lock();
         try {
             assertOpen();
@@ -533,6 +563,7 @@ public class QueryImpl implements Query {
             if (_params != null || _compiled != null || _compiling
                 || _broker == null)
                 return _params;
+
             compileForCompilation();
             return _params;
         }
@@ -545,6 +576,7 @@ public class QueryImpl implements Query {
         if (!_storeQuery.supportsParameterDeclarations())
             throw new UnsupportedException(_loc.get("query-nosupport",
                 _language));
+
         lock();
         try {
             assertOpen();
@@ -578,17 +610,21 @@ public class QueryImpl implements Query {
     private Compilation compileForCompilation() {
         if (_compiled != null || _compiling)
             return _compiled;
+
         assertNotSerialized();
         assertOpen();
+
         boolean readOnly = _readOnly;
         _readOnly = false;
         _compiling = true;
         try {
             _compiled = newCompilation();
             return _compiled;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         finally {
@@ -622,6 +658,7 @@ public class QueryImpl implements Query {
                 return compileForDataStore(comp);
             return compileForInMemory(comp);
         }
+
         if (comp.memory != null)
             return comp.memory;
         if (comp.datastore != null)
@@ -654,10 +691,12 @@ public class QueryImpl implements Query {
      */
     private StoreQuery.Executor createExecutor(boolean inMem) {
         assertCandidateType();
+
         MetaDataRepository repos = _broker.getConfiguration().
             getMetaDataRepository();
         ClassMetaData meta = repos.getMetaData(_class,
             _broker.getClassLoader(), false);
+
         ClassMetaData[] metas;
         if (_class == null || _storeQuery.supportsAbstractExecutors())
             metas = new ClassMetaData[]{ meta };
@@ -666,7 +705,9 @@ public class QueryImpl implements Query {
         else if (_subclasses)
             metas = repos.getImplementorMetaDatas(_class,
                 _broker.getClassLoader(), true);
-        else metas = StoreQuery.EMPTY_METAS;
+        else
+            metas = StoreQuery.EMPTY_METAS;
+
         if (metas.length == 0)
             throw new UserException(_loc.get("no-impls", _class));
         try {
@@ -676,17 +717,21 @@ public class QueryImpl implements Query {
                         _subclasses);
                 return _storeQuery.newDataStoreExecutor(metas[0], _subclasses);
             }
+
             // multiple implementors
             StoreQuery.Executor[] es = new StoreQuery.Executor[metas.length];
             for (int i = 0; i < es.length; i++) {
                 if (inMem)
                     es[i] = _storeQuery.newInMemoryExecutor(metas[i], true);
-                else es[i] = _storeQuery.newDataStoreExecutor(metas[i], true);
+                else
+                    es[i] = _storeQuery.newDataStoreExecutor(metas[i], true);
             }
             return new MergedExecutor(es, this);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw new GeneralException(re);
         }
     }
@@ -723,6 +768,7 @@ public class QueryImpl implements Query {
     private Object execute(int operation, Object[] params) {
         if (params == null)
             params = StoreQuery.EMPTY_OBJECTS;
+
         lock();
         try {
             assertNotSerialized();
@@ -730,14 +776,17 @@ public class QueryImpl implements Query {
             try {
                 assertOpen();
                 _broker.assertNontransactionalRead();
+
                 // get executor
                 Compilation comp = compileForCompilation();
                 StoreQuery.Executor ex = (isInMemory(operation))
                     ? compileForInMemory(comp) : compileForDataStore(comp);
+
                 assertParameters(ex, params);
                 if (_log.isTraceEnabled())
                     logExecution(operation, ex.getParameterTypes(_storeQuery),
                         params);
+
                 if (operation == OP_SELECT)
                     return execute(ex, params);
                 if (operation == OP_DELETE)
@@ -745,9 +794,11 @@ public class QueryImpl implements Query {
                 if (operation == OP_UPDATE)
                     return update(ex, params);
                 throw new UnsupportedException();
-            } catch (OpenJPAException ke) {
+            }
+            catch (OpenJPAException ke) {
                 throw ke;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 throw new UserException(e);
             }
             finally {
@@ -762,6 +813,7 @@ public class QueryImpl implements Query {
     private Object execute(int operation, Map params) {
         if (params == null)
             params = Collections.EMPTY_MAP;
+
         lock();
         try {
             _broker.beginOperation(true);
@@ -769,13 +821,16 @@ public class QueryImpl implements Query {
                 assertNotSerialized();
                 assertOpen();
                 _broker.assertNontransactionalRead();
+
                 // get executor
                 Compilation comp = compileForCompilation();
                 StoreQuery.Executor ex = (isInMemory(operation))
                     ? compileForInMemory(comp) : compileForDataStore(comp);
+
                 assertParameters(ex, params);
                 if (_log.isTraceEnabled())
                     logExecution(operation, params);
+
                 if (operation == OP_SELECT)
                     return execute(ex, params);
                 if (operation == OP_DELETE)
@@ -783,9 +838,11 @@ public class QueryImpl implements Query {
                 if (operation == OP_UPDATE)
                     return update(ex, params);
                 throw new UnsupportedException();
-            } catch (OpenJPAException ke) {
+            }
+            catch (OpenJPAException ke) {
                 throw ke;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 throw new UserException(e);
             }
             finally {
@@ -824,6 +881,7 @@ public class QueryImpl implements Query {
     public Object[] toParameterArray(LinkedMap paramTypes, Map params) {
         if (params == null || params.isEmpty())
             return StoreQuery.EMPTY_OBJECTS;
+
         Object[] arr = new Object[params.size()];
         Map.Entry entry;
         Object key;
@@ -833,6 +891,7 @@ public class QueryImpl implements Query {
             entry = (Map.Entry) itr.next();
             key = entry.getKey();
             idx = (paramTypes == null) ? -1 : paramTypes.indexOf(key);
+
             // allow positional parameters and natural order parameters
             if (idx != -1)
                 arr[idx] = entry.getValue();
@@ -840,13 +899,14 @@ public class QueryImpl implements Query {
                 if (base == -1)
                     base = positionalParameterBase(params.keySet());
                 arr[((Number) key).intValue() - base] = entry.getValue();
-            } else throw new UserException(_loc.get("bad-param-name", key));
+            } else
+                throw new UserException(_loc.get("bad-param-name", key));
         }
         return arr;
     }
 
     /**
-     * Return the base(generally 0 or 1) to use for positional parameters.
+     * Return the base (generally 0 or 1) to use for positional parameters.
      */
     private static int positionalParameterBase(Collection params) {
         int low = Integer.MAX_VALUE;
@@ -855,7 +915,8 @@ public class QueryImpl implements Query {
         for (Iterator itr = params.iterator(); itr.hasNext();) {
             obj = itr.next();
             if (!(obj instanceof Number))
-                return 0; // use 0 base when params are mixed types
+                return 0;    // use 0 base when params are mixed types
+
             val = ((Number) obj).intValue();
             if (val == 0)
                 return val;
@@ -874,6 +935,7 @@ public class QueryImpl implements Query {
             _extent = _broker.newExtent(_class, _subclasses);
             _extent.setIgnoreChanges(_ignoreChanges);
         }
+
         // if there are any dirty instances in the current trans that are
         // involved in this query, we have to execute in memory or flush
         boolean inMem = !_storeQuery.supportsDataStoreExecution()
@@ -894,6 +956,7 @@ public class QueryImpl implements Query {
                 inMem = true;
             }
         }
+
         if (inMem && !_storeQuery.supportsInMemoryExecution())
             throw new InvalidStateException(_loc.get("cant-exec-inmem",
                 _language));
@@ -902,7 +965,7 @@ public class QueryImpl implements Query {
 
     /**
      * Execute the query using the given compilation, executor, and parameter
-     * values. All other execute methods delegate to this one or to
+     * values.  All other execute methods delegate to this one or to
      * {@link #execute(StoreQuery.Executor,Map)} after validation and locking.
      */
     private Object execute(StoreQuery.Executor ex, Object[] params)
@@ -910,6 +973,7 @@ public class QueryImpl implements Query {
         // if this is an impossible result range, return null / empty list
         if (_startIdx >= _endIdx)
             return emptyResult(ex);
+
         // execute; if we have a result class or we have only one result
         // and so need to remove it from its array, wrap in a packing rop
         boolean lrs = isLRS();
@@ -917,7 +981,8 @@ public class QueryImpl implements Query {
             _startIdx, _endIdx);
         try {
             return toResult(ex, rop, lrs);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             if (rop != null)
                 try {
                     rop.close();
@@ -929,7 +994,7 @@ public class QueryImpl implements Query {
 
     /**
      * Execute the query using the given compilation, executor, and parameter
-     * values. All other execute methods delegate to this one or to
+     * values.  All other execute methods delegate to this one or to
      * {@link #execute(StoreQuery.Executor,Object[])} after validation and
      * locking.
      */
@@ -938,6 +1003,7 @@ public class QueryImpl implements Query {
         // if this is an impossible result range, return null / empty list
         if (_startIdx >= _endIdx)
             return emptyResult(ex);
+
         // execute; if we have a result class or we have only one result
         // and so need to remove it from its array, wrap in a packing rop
         boolean lrs = isLRS();
@@ -945,7 +1011,8 @@ public class QueryImpl implements Query {
             _startIdx, _endIdx);
         try {
             return toResult(ex, rop, lrs);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             if (rop != null)
                 try {
                     rop.close();
@@ -957,19 +1024,20 @@ public class QueryImpl implements Query {
 
     /**
      * Delete the query using the given executor, and parameter
-     * values. All other execute methods delegate to this one or to
+     * values.  All other execute methods delegate to this one or to
      * {@link #delete(StoreQuery.Executor,Object[])} after validation and
      * locking. The return value will be a Number indicating the number of
      * instances deleted.
      */
-    private Number delete(StoreQuery.Executor ex, Map params) throws Exception {
+    private Number delete(StoreQuery.Executor ex, Map params)
+        throws Exception {
         assertBulkModify();
         return ex.executeDelete(_storeQuery, params);
     }
 
     /**
      * Delete the query using the given executor, and parameter
-     * values. All other execute methods delegate to this one or to
+     * values.  All other execute methods delegate to this one or to
      * {@link #delete(StoreQuery.Executor,Map)} after validation and locking.
      * The return value will be a Number indicating the number of
      * instances deleted.
@@ -986,32 +1054,36 @@ public class QueryImpl implements Query {
             Object o = execute(executor, params);
             if (!(o instanceof Collection))
                 o = Collections.singleton(o);
+
             int size = 0;
             for (Iterator i = ((Collection) o).iterator(); i.hasNext(); size++)
                 _broker.delete(i.next(), null);
             return Numbers.valueOf(size);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new UserException(e);
         }
     }
 
     /**
      * Update the query using the given executor and parameter
-     * values. All other execute methods delegate to this one or to
+     * values.  All other execute methods delegate to this one or to
      * {@link #update(StoreQuery.Executor,Object[])} after validation and
      * locking. The return value will be a Number indicating the number of
      * instances updated.
      */
-    private Number update(StoreQuery.Executor ex, Map params) throws Exception {
+    private Number update(StoreQuery.Executor ex, Map params)
+        throws Exception {
         assertBulkModify();
         return ex.executeUpdate(_storeQuery, params);
     }
 
     /**
      * Update the query using the given compilation, executor, and parameter
-     * values. All other execute methods delegate to this one or to
+     * values.  All other execute methods delegate to this one or to
      * {@link #update(StoreQuery.Executor,Map)} after validation and locking.
      * The return value will be a Number indicating the number of
      * instances updated.
@@ -1028,13 +1100,16 @@ public class QueryImpl implements Query {
             Object o = execute(executor, params);
             if (!(o instanceof Collection))
                 o = Collections.singleton(o);
+
             int size = 0;
             for (Iterator i = ((Collection) o).iterator(); i.hasNext(); size++)
                 updateInMemory(i.next(), params);
             return Numbers.valueOf(size);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new UserException(e);
         }
     }
@@ -1042,7 +1117,7 @@ public class QueryImpl implements Query {
     /**
      * Set the values for the updates in memory.
      *
-     * @param ob     the persistent instance to change
+     * @param ob the persistent instance to change
      * @param params the parameters passed to the query
      */
     private void updateInMemory(Object ob, Object[] params) {
@@ -1054,9 +1129,11 @@ public class QueryImpl implements Query {
                 throw new UserException(_loc.get("only-update-primitives"));
             Constant value = (Constant) e.getValue();
             Object val = value.getValue(params);
+
             OpenJPAStateManager sm = _broker.getStateManager(ob);
             int i = fmd.getIndex();
             PersistenceCapable into = (PersistenceCapable) ob;
+
             // set the actual field in the instance
             int set = OpenJPAStateManager.SET_USER;
             switch (fmd.getDeclaredTypeCode()) {
@@ -1147,9 +1224,11 @@ public class QueryImpl implements Query {
         String s = _query;
         if (s == null || s.length() == 0)
             s = toString();
+
         String msg = "executing-query";
         if (!params.isEmpty())
             msg += "-with-params";
+
         _log.trace(_loc.get(msg, s, params));
     }
 
@@ -1167,7 +1246,8 @@ public class QueryImpl implements Query {
      * Return the query result for the given result object provider.
      */
     protected Object toResult(StoreQuery.Executor ex, ResultObjectProvider rop,
-        boolean lrs) throws Exception {
+        boolean lrs)
+        throws Exception {
         // pack projections if necessary
         String[] aliases = ex.getProjectionAliases(_storeQuery);
         if (!ex.isPacking(_storeQuery)) {
@@ -1176,10 +1256,12 @@ public class QueryImpl implements Query {
                 rop = new PackingResultObjectProvider(rop, packer,
                     aliases.length);
         }
+
         // if single result, extract it
         if (_unique == Boolean.TRUE || (aliases.length > 0
             && !ex.hasGrouping(_storeQuery) && ex.isAggregate(_storeQuery)))
             return singleResult(rop);
+
         // now that we've executed the query, we can call isAggregate and
         // hasGrouping efficiently
         boolean detach = (_broker.getAutoDetach() &
@@ -1188,6 +1270,7 @@ public class QueryImpl implements Query {
             && !ex.hasGrouping(_storeQuery);
         ResultList res = (!detach && lrs) ? _fc.newResultList(rop)
             : new EagerResultList(rop);
+
         _resultLists.add(decorateResultList(res));
         return res;
     }
@@ -1205,10 +1288,12 @@ public class QueryImpl implements Query {
     private ResultPacker getResultPacker(StoreQuery.Executor ex) {
         if (_packer != null)
             return _packer;
+
         Class resultClass = (_resultClass != null) ? _resultClass
             : ex.getResultClass(_storeQuery);
         if (resultClass == null)
             return null;
+
         String[] aliases = ex.getProjectionAliases(_storeQuery);
         if (aliases.length == 0) {
             // result class but no result; means candidate is being set
@@ -1233,14 +1318,16 @@ public class QueryImpl implements Query {
     }
 
     /**
-     * Extract an expected single result from the given provider. Used when
+     * Extract an expected single result from the given provider.  Used when
      * the result is an ungrouped aggregate or the unique flag is set to true.
      */
-    private Object singleResult(ResultObjectProvider rop) throws Exception {
+    private Object singleResult(ResultObjectProvider rop)
+        throws Exception {
         rop.open();
         try {
             // move to expected result
             boolean next = rop.next();
+
             // extract single result; throw an exception if multiple results
             // match and not constrainted by range, as per spec
             Object single = null;
@@ -1250,6 +1337,7 @@ public class QueryImpl implements Query {
                     throw new InvalidStateException(_loc.get("not-unique",
                         _class, _query));
             }
+
             // if unique set to false, use collection
             if (_unique == Boolean.FALSE) {
                 if (!next)
@@ -1257,6 +1345,7 @@ public class QueryImpl implements Query {
                 // Collections.singletonList is JDK 1.3, so...
                 return Arrays.asList(new Object[]{ single });
             }
+
             // return single result
             return single;
         }
@@ -1280,10 +1369,12 @@ public class QueryImpl implements Query {
         Collection deleted = broker.getDeletedTypes();
         if (persisted.isEmpty() && updated.isEmpty() && deleted.isEmpty())
             return false;
+
         // if no access metas, assume every dirty object affects path just
         // to be safe
         if (accessMetas.length == 0)
             return true;
+
         // compare dirty classes to the access path classes
         Class accClass;
         for (int i = 0; i < accessMetas.length; i++) {
@@ -1292,6 +1383,7 @@ public class QueryImpl implements Query {
             if (persisted.contains(accClass) || updated.contains(accClass)
                 || deleted.contains(accClass))
                 return true;
+
             // check for dirty subclass
             for (Iterator dirty = persisted.iterator(); dirty.hasNext();)
                 if (accClass.isAssignableFrom((Class) dirty.next()))
@@ -1303,6 +1395,7 @@ public class QueryImpl implements Query {
                 if (accClass.isAssignableFrom((Class) dirty.next()))
                     return true;
         }
+
         // no intersection
         return false;
     }
@@ -1322,6 +1415,7 @@ public class QueryImpl implements Query {
         lock();
         try {
             assertOpen();
+
             RemoveOnCloseResultList res;
             for (Iterator itr = _resultLists.iterator(); itr.hasNext();) {
                 res = (RemoveOnCloseResultList) itr.next();
@@ -1338,18 +1432,22 @@ public class QueryImpl implements Query {
     public String[] getDataStoreActions(Map params) {
         if (params == null)
             params = Collections.EMPTY_MAP;
+
         lock();
         try {
             assertNotSerialized();
             assertOpen();
+
             StoreQuery.Executor ex = compileForExecutor();
             assertParameters(ex, params);
             Object[] arr = toParameterArray(ex.getParameterTypes(_storeQuery),
                 params);
             return ex.getDataStoreActions(_storeQuery, arr, _startIdx, _endIdx);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new UserException(e);
         }
         finally {
@@ -1362,6 +1460,7 @@ public class QueryImpl implements Query {
         try {
             assertOpen();
             assertNotReadOnly();
+
             if (query == null || query instanceof String) {
                 invalidateCompilation();
                 _query = (String) query;
@@ -1371,6 +1470,7 @@ public class QueryImpl implements Query {
             }
             if (!(query instanceof QueryImpl))
                 return _storeQuery.setQuery(query);
+
             // copy all non-transient state from the given query
             invalidateCompilation();
             QueryImpl q = (QueryImpl) query;
@@ -1384,6 +1484,7 @@ public class QueryImpl implements Query {
             _resultMappingScope = q._resultMappingScope;
             _resultMappingName = q._resultMappingName;
             _readOnly = q._readOnly;
+
             // don't share mutable objects
             _fc.copy(q._fc);
             if (q._filtListeners != null)
@@ -1515,11 +1616,13 @@ public class QueryImpl implements Query {
     /////////
     // Utils
     /////////
+
     public Class classForName(String name, String[] imports) {
         // full class name or primitive type?
         Class type = toClass(name);
         if (type != null)
             return type;
+
         // first check the aliases map in the MetaDataRepository
         ClassLoader loader = (_class == null) ? _loader
             : _class.getClassLoader();
@@ -1527,6 +1630,7 @@ public class QueryImpl implements Query {
             getMetaDataRepository().getMetaData(name, loader, false);
         if (meta != null)
             return meta.getDescribedType();
+
         // try the name in the package of the candidate class
         if (_class != null) {
             String fullName = _class.getName().substring
@@ -1535,16 +1639,19 @@ public class QueryImpl implements Query {
             if (type != null)
                 return type;
         }
+
         // try java.lang
         type = toClass("java.lang." + name);
         if (type != null)
             return type;
+
         // try each import
         if (imports != null && imports.length > 0) {
             String dotName = "." + name;
             String importName;
             for (int i = 0; i < imports.length; i++) {
                 importName = imports[i];
+
                 // full class name import
                 if (importName.endsWith(dotName))
                     type = toClass(importName);
@@ -1570,8 +1677,10 @@ public class QueryImpl implements Query {
                 getClassLoader(_class, _broker.getClassLoader());
         try {
             return Strings.toClass(name, _loader);
-        } catch (RuntimeException re) {
-        } catch (NoClassDefFoundError ncdfe) {
+        }
+        catch (RuntimeException re) {
+        }
+        catch (NoClassDefFoundError ncdfe) {
         }
         return null;
     }
@@ -1601,7 +1710,8 @@ public class QueryImpl implements Query {
 
     /**
      * Check that we are in a state to be able to perform a bulk operation;
-     * also flush the current modfications if any elements are currently dirty.
+     * also flush the current modfications if any elements are currently
+     * dirty.
      */
     private void assertBulkModify() {
         _broker.assertActiveTransaction();
@@ -1617,6 +1727,7 @@ public class QueryImpl implements Query {
     private void assertParameters(StoreQuery.Executor ex, Map params) {
         if (!_storeQuery.requiresParameterDeclarations())
             return;
+
         // check that all declared parameters are given compatible values
         LinkedMap paramTypes = ex.getParameterTypes(_storeQuery);
         if (paramTypes != null && !paramTypes.isEmpty()) {
@@ -1634,6 +1745,7 @@ public class QueryImpl implements Query {
                         entry.getKey()));
             }
         }
+
         // check that there are no extra params
         int typeCount = (paramTypes == null) ? 0 : paramTypes.size();
         int paramCount = (params == null) ? 0 : params.size();
@@ -1648,6 +1760,7 @@ public class QueryImpl implements Query {
     protected void assertParameters(StoreQuery.Executor ex, Object[] params) {
         if (!_storeQuery.requiresParameterDeclarations())
             return;
+
         LinkedMap paramTypes = ex.getParameterTypes(_storeQuery);
         int typeCount = paramTypes.size();
         if (typeCount > params.length)
@@ -1656,6 +1769,7 @@ public class QueryImpl implements Query {
         if (typeCount < params.length)
             throw new UserException(_loc.get("extra-params", new Object[]
                 { new Integer(typeCount), new Integer(params.length) }));
+
         Iterator itr = paramTypes.entrySet().iterator();
         Map.Entry entry;
         for (int i = 0; itr.hasNext(); i++) {
@@ -1686,16 +1800,16 @@ public class QueryImpl implements Query {
 
     /**
      * A merged executor executes multiple Queries and returns
-     * a merged result list with the appropriate ordering(if more than
-     * one query needs to be executed). This executor has the following
+     * a merged result list with the appropriate ordering (if more than
+     * one query needs to be executed).  This executor has the following
      * limitations:
      * <ul>
-     * <li>It cannot combine aggregates.
+     * <li>It cannot combine aggregates.</p>
      * <li>It cannot collate the result lists if ordering is specified and
      * a result string is given, but does not include the ordering
      * criteria.</li>
      * <li>It cannot filter duplicate results from different result lists if
-     * the result is marked distinct. This would require tracking all
+     * the result is marked distinct.  This would require tracking all
      * previous results, which would interfere with large result set
      * handling.</li>
      * </ul>
@@ -1703,7 +1817,8 @@ public class QueryImpl implements Query {
      * @author Marc Prud'hommeaux
      * @nojavadoc
      */
-    private static class MergedExecutor implements StoreQuery.Executor {
+    private static class MergedExecutor
+        implements StoreQuery.Executor {
 
         private final StoreQuery.Executor[] _executors;
         private final QueryContext _ctx;
@@ -1719,22 +1834,27 @@ public class QueryImpl implements Query {
             if (_executors.length == 1)
                 return _executors[0].executeQuery(q, params, lrs, startIdx,
                     endIdx);
+
             // use lrs settings if we couldn't take advantage of the start index
             // so that hopefully the skip to the start will be efficient
             lrs = lrs || (startIdx > 0
                 && _ctx.getFetchConfiguration().getFetchBatchSize() >= 0);
+
             // execute the query; we cannot use the lower bound of the result
             // range, but we can take advantage of the upper bound
             ResultObjectProvider[] rops =
                 new ResultObjectProvider[_executors.length];
             for (int i = 0; i < _executors.length; i++)
                 rops[i] = _executors[i].executeQuery(q, params, lrs, 0, endIdx);
+
             boolean[] asc = _executors[0].getAscending(q);
             ResultObjectProvider rop;
             if (asc.length == 0)
                 rop = new MergedResultObjectProvider(rops);
-            else rop = new OrderingMergedResultObjectProvider(rops, asc,
-                _executors, q, params);
+            else
+                rop = new OrderingMergedResultObjectProvider(rops, asc,
+                    _executors, q, params);
+
             // if there is a lower bound, wrap in range rop
             if (startIdx != 0)
                 rop = new RangeResultObjectProvider(rop, startIdx, endIdx);
@@ -1746,23 +1866,28 @@ public class QueryImpl implements Query {
             if (_executors.length == 1)
                 return _executors[0].executeQuery(q, params, lrs, startIdx,
                     endIdx);
+
             // use lrs settings if we couldn't take advantage of the start index
             // so that hopefully the skip to the start will be efficient
             lrs = lrs || (startIdx > 0
                 && _ctx.getFetchConfiguration().getFetchBatchSize() >= 0);
+
             // execute the query; we cannot use the lower bound of the result
             // range, but we can take advantage of the upper bound
             ResultObjectProvider[] rops =
                 new ResultObjectProvider[_executors.length];
             for (int i = 0; i < _executors.length; i++)
                 rops[i] = _executors[i].executeQuery(q, params, lrs, 0, endIdx);
+
             boolean[] asc = _executors[0].getAscending(q);
             ResultObjectProvider rop;
             if (asc.length == 0)
                 rop = new MergedResultObjectProvider(rops);
-            else rop = new OrderingMergedResultObjectProvider(rops, asc,
-                _executors, q, _ctx.toParameterArray
-                (_executors[0].getParameterTypes(q), params));
+            else
+                rop = new OrderingMergedResultObjectProvider(rops, asc,
+                    _executors, q, _ctx.toParameterArray
+                    (_executors[0].getParameterTypes(q), params));
+
             // if there is a lower bound, wrap in range rop
             if (startIdx != 0)
                 rop = new RangeResultObjectProvider(rop, startIdx, endIdx);
@@ -1802,6 +1927,7 @@ public class QueryImpl implements Query {
             if (_executors.length == 1)
                 return _executors[0].getDataStoreActions(q, params,
                     startIdx, endIdx);
+
             List results = new ArrayList(_executors.length);
             String[] actions;
             for (int i = 0; i < _executors.length; i++) {
@@ -1815,7 +1941,7 @@ public class QueryImpl implements Query {
 
         public Object getOrderingValue(StoreQuery q, Object[] params,
             Object resultObject, int idx) {
-            // unfortunately, at this point(must be a merged rop containing
+            // unfortunately, at this point (must be a merged rop containing
             // other merged rops) we have no idea which executor to extract
             // the value from
             return _executors[0].getOrderingValue(q, params, resultObject, idx);
@@ -1848,6 +1974,7 @@ public class QueryImpl implements Query {
         public ClassMetaData[] getAccessPathMetaDatas(StoreQuery q) {
             if (_executors.length == 1)
                 return _executors[0].getAccessPathMetaDatas(q);
+
             // create set of base class metadatas in access path
             List metas = null;
             for (int i = 0; i < _executors.length; i++)
@@ -1862,6 +1989,7 @@ public class QueryImpl implements Query {
         public boolean isAggregate(StoreQuery q) {
             if (!_executors[0].isAggregate(q))
                 return false;
+
             // we can't merge aggregates
             throw new UnsupportedException(_loc.get("merged-aggregate",
                 q.getContext().getCandidateType(),
@@ -1906,11 +2034,13 @@ public class QueryImpl implements Query {
             return _delegate.supportsRandomAccess();
         }
 
-        public void open() throws Exception {
+        public void open()
+            throws Exception {
             _delegate.open();
         }
 
-        public Object getResultObject() throws Exception {
+        public Object getResultObject()
+            throws Exception {
             Object ob = _delegate.getResultObject();
             if (_packer == null && _len == 1)
                 return ((Object[]) ob)[0];
@@ -1921,23 +2051,28 @@ public class QueryImpl implements Query {
             return _packer.pack((Object[]) ob);
         }
 
-        public boolean next() throws Exception {
+        public boolean next()
+            throws Exception {
             return _delegate.next();
         }
 
-        public boolean absolute(int pos) throws Exception {
+        public boolean absolute(int pos)
+            throws Exception {
             return _delegate.absolute(pos);
         }
 
-        public int size() throws Exception {
+        public int size()
+            throws Exception {
             return _delegate.size();
         }
 
-        public void reset() throws Exception {
+        public void reset()
+            throws Exception {
             _delegate.reset();
         }
 
-        public void close() throws Exception {
+        public void close()
+            throws Exception {
             _delegate.close();
         }
 
@@ -1947,10 +2082,11 @@ public class QueryImpl implements Query {
     }
 
     /**
-     * Result list that removes itself from the query's open result list
-     * when it is closed. Public for testing.
+     *	Result list that removes itself from the query's open result list
+     *	when it is closed.  Public for testing.
      */
-    public class RemoveOnCloseResultList implements ResultList {
+    public class RemoveOnCloseResultList
+        implements ResultList {
 
         private final ResultList _res;
 
@@ -1977,9 +2113,11 @@ public class QueryImpl implements Query {
         public void close(boolean remove) {
             if (isClosed())
                 return;
+
             _res.close();
             if (!remove)
                 return;
+
             lock();
             try {
                 // don't use standard _resultLists.remove method b/c relies on
@@ -2097,12 +2235,15 @@ public class QueryImpl implements Query {
             return _res.hashCode();
         }
 
-        public String toString() {
-            return _res.toString();
-        }
+        public String toString ()
+		{
+			return _res.toString ();
+		}
 
-        public Object writeReplace() {
-            return _res;
-        }
-    }
+	
+		public Object writeReplace ()
+		{
+			return _res;
+		}
+	}
 }

@@ -377,8 +377,8 @@ public class FormatPreservingProperties extends Properties {
      * decode unicode characters. Finally, just add the character explicitly.
      *
      * @param source the source of the characters
-     * @param pos    the position at which to start reading
-     * @param value  the value we are appending to
+     * @param pos the position at which to start reading
+     * @param value the value we are appending to
      * @return the position after the reading is done
      */
     private static int readEscape(String source, int pos, StringBuffer value) {
@@ -509,10 +509,10 @@ public class FormatPreservingProperties extends Properties {
      * Format the given string as an encoded value for storage. This will
      * perform any necessary escaping of special characters.
      *
-     * @param str   the value to encode
-     * @param buf   the buffer to which to append the encoded value
+     * @param str the value to encode
+     * @param buf the buffer to which to append the encoded value
      * @param isKey if true, then the string is a Property key, otherwise
-     *              it is a value
+     * it is a value
      */
     private static void formatValue(String str, StringBuffer buf,
         boolean isKey) {

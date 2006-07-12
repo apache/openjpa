@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -42,14 +45,16 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 
 /**
- * Default implementation of the {@link ProxyManager} interface.
+ * <p>Default implementation of the {@link ProxyManager} interface.</p>
  *
  * @author Abe White
  */
-public class ProxyManagerImpl implements ProxyManager, Configurable {
+public class ProxyManagerImpl
+    implements ProxyManager, Configurable {
 
     private static final Localizer _loc = Localizer.forPackage
         (ProxyManagerImpl.class);
+
     // date proxy cache
     private static final Map _dates = new HashMap();
 
@@ -69,8 +74,10 @@ public class ProxyManagerImpl implements ProxyManager, Configurable {
             cal = (ProxyGregorianCalendar) JavaVersions.
                 getVersionSpecificClass(ProxyGregorianCalendar.class).
                 newInstance();
-        } catch (Exception e) {
         }
+        catch (Exception e) {
+        }
+
         _calendars.put(Calendar.class, cal);
         _calendars.put(GregorianCalendar.class, cal);
     }
@@ -110,6 +117,7 @@ public class ProxyManagerImpl implements ProxyManager, Configurable {
     // allow subclasses to manipulate collection and map templates
     private final Map _collections = new ConcurrentHashMap(_stdCollections);
     private final Map _maps = new ConcurrentHashMap(_stdMaps);
+
     protected OpenJPAConfiguration conf = null;
     private boolean _trackChanges = true;
     private boolean _assertType = false;
@@ -117,7 +125,7 @@ public class ProxyManagerImpl implements ProxyManager, Configurable {
     /**
      * Whether proxies produced by this factory will use {@link ChangeTracker}s
      * to try to cut down on data store operations at the cost of some extra
-     * bookkeeping overhead. Defaults to true.
+     * bookkeeping overhead.  Defaults to true.
      */
     public boolean getTrackChanges() {
         return _trackChanges;
@@ -126,7 +134,7 @@ public class ProxyManagerImpl implements ProxyManager, Configurable {
     /**
      * Whether proxies produced by this factory will use {@link ChangeTracker}s
      * to try to cut down on data store operations at the cost of some extra
-     * bookkeeping overhead. Defaults to true.
+     * bookkeeping overhead.  Defaults to true.
      */
     public void setTrackChanges(boolean track) {
         _trackChanges = track;
@@ -135,7 +143,7 @@ public class ProxyManagerImpl implements ProxyManager, Configurable {
     /**
      * Whether to perform runtime checks to ensure that all elements
      * added to collection and map proxies are the proper element/key/value
-     * type as defined by the metadata. Defaults to false.
+     * type as defined by the metadata.  Defaults to false.
      */
     public boolean getAssertAllowedType() {
         return _assertType;
@@ -144,7 +152,7 @@ public class ProxyManagerImpl implements ProxyManager, Configurable {
     /**
      * Whether to perform runtime checks to ensure that all elements
      * added to collection and map proxies are the proper element/key/value
-     * type as defined by the metadata. Defaults to false.
+     * type as defined by the metadata.  Defaults to false.
      */
     public void setAssertAllowedType(boolean assertType) {
         _assertType = assertType;
@@ -174,6 +182,7 @@ public class ProxyManagerImpl implements ProxyManager, Configurable {
             return null;
         if (orig instanceof Proxy)
             return ((Proxy) orig).copy(orig);
+
         Class type = orig.getClass();
         Proxy proxy = (Proxy) proxies.get(type);
         if (proxy == null)
@@ -184,13 +193,16 @@ public class ProxyManagerImpl implements ProxyManager, Configurable {
     public Object copyArray(Object orig) {
         if (orig == null)
             return null;
+
         try {
             int length = Array.getLength(orig);
             Object array = Array.newInstance(orig.getClass().
                 getComponentType(), length);
+
             System.arraycopy(orig, 0, array, 0, length);
             return array;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new UnsupportedException(_loc.get("bad-array",
                 e.getMessage()), e);
         }
@@ -237,17 +249,20 @@ public class ProxyManagerImpl implements ProxyManager, Configurable {
      */
     private static Proxy findProxy(Class type, Class proxyType, Map proxies) {
         Proxy p = (Proxy) proxies.get(type);
+
         if (p == null) {
             // check for custom proxy
             if (proxyType.isAssignableFrom(type)) {
                 try {
                     p = (Proxy) type.newInstance();
                     proxies.put(type, p);
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     throw new UnsupportedException(_loc.get("no-proxy-cons",
                         type), e);
                 }
-            } else throw new UnsupportedException(_loc.get("bad-proxy", type));
+            } else
+                throw new UnsupportedException(_loc.get("bad-proxy", type));
         }
         return p;
     }
@@ -277,6 +292,7 @@ public class ProxyManagerImpl implements ProxyManager, Configurable {
     public void startConfiguration() {
     }
 
-    public void endConfiguration() {
-    }
+    public void endConfiguration ()
+	{
+	}
 }

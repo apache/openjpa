@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,12 +20,13 @@ import javax.naming.InitialContext;
 import javax.transaction.TransactionManager;
 
 /**
- * Implementation of the {@link ManagedRuntime} interface that uses JNDI to
- * find the TransactionManager.
+ * <p>Implementation of the {@link ManagedRuntime} interface that uses JNDI to
+ * find the TransactionManager.</p>
  *
  * @author Abe White
  */
-public class JNDIManagedRuntime implements ManagedRuntime {
+public class JNDIManagedRuntime
+    implements ManagedRuntime {
 
     private String _tmLoc = "java:/TransactionManager";
 
@@ -40,7 +44,8 @@ public class JNDIManagedRuntime implements ManagedRuntime {
         _tmLoc = name;
     }
 
-    public TransactionManager getTransactionManager() throws Exception {
+    public TransactionManager getTransactionManager()
+        throws Exception {
         Context ctx = new InitialContext();
         try {
             return (TransactionManager) ctx.lookup(_tmLoc);
@@ -48,5 +53,5 @@ public class JNDIManagedRuntime implements ManagedRuntime {
         finally {
             ctx.close();
         }
-    }
+	}
 }

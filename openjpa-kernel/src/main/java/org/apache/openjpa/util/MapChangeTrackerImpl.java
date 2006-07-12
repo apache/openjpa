@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -17,12 +20,13 @@ import java.util.Map;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 
 /**
- * Default {@link MapChangeTracker}.
+ * <p>Default {@link MapChangeTracker}.</p>
  *
  * @author Abe White
  * @nojavadoc
  */
-public class MapChangeTrackerImpl extends AbstractChangeTracker
+public class MapChangeTrackerImpl
+    extends AbstractChangeTracker
     implements MapChangeTracker {
 
     private final Map _map;
@@ -47,13 +51,15 @@ public class MapChangeTrackerImpl extends AbstractChangeTracker
     public void added(Object key, Object val) {
         if (_keys)
             super.added(key);
-        else super.added(val);
+        else
+            super.added(val);
     }
 
     public void removed(Object key, Object val) {
         if (_keys)
             super.removed(key);
-        else super.removed(val);
+        else
+            super.removed(val);
     }
 
     public void changed(Object key, Object oldVal, Object newVal) {
@@ -89,6 +95,7 @@ public class MapChangeTrackerImpl extends AbstractChangeTracker
         // no longer a change, if it was before
         if (change != null)
             change.remove(obj);
+
         // if it was a new addition, just forget it; otherwise remember
         // that it was removed
         if (add == null || !add.remove(obj)) {
@@ -110,6 +117,7 @@ public class MapChangeTrackerImpl extends AbstractChangeTracker
         if ((change != null && change.contains(key))
             || (add != null && add.contains(key)))
             return;
+
         // after a point it becomes inefficient to track changes
         if (getAutoOff() && getAdded().size() + getChanged().size()
             + getRemoved().size() >= _map.size())

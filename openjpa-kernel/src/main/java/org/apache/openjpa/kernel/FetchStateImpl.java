@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -34,9 +37,11 @@ import org.apache.openjpa.meta.JavaTypes;
  * @author <A HREF="mailto:pinaki.poddar@gmail.com>Pinaki Poddar</A>
  * @nojavadoc
  */
-public class FetchStateImpl implements FetchState, Serializable {
+public class FetchStateImpl
+    implements FetchState, Serializable {
 
     private final FetchConfiguration _config;
+
     private Map _selectTraversals;
     private Map _loadTraversals;
     private Map _recursionDepths;
@@ -77,11 +82,14 @@ public class FetchStateImpl implements FetchState, Serializable {
             || _config.hasField(fm.getFullName());
         if (!selectable)
             _knownExcludes.add(fm);
-        if (selectable && JavaTypes.maybePC(fm)) { // relation field
+
+        if (selectable && JavaTypes.maybePC(fm)) // relation field
+        {
             if (canTraverse(fm)) {
                 if (changeState)
                     traverse(fm);
-            } else selectable = false;
+            } else
+                selectable = false;
         }
         return selectable;
     }
@@ -105,7 +113,7 @@ public class FetchStateImpl implements FetchState, Serializable {
     /**
      * Get the recusion depth for the given field.
      *
-     * @param fm     is the field to look for
+     * @param fm is the field to look for
      * @param depths is the map of field to integer depth.
      * @return 0 if the field does not appear in the given map.
      */
@@ -128,8 +136,9 @@ public class FetchStateImpl implements FetchState, Serializable {
         Set commonFGNs = new HashSet();
         commonFGNs.addAll(_config.getFetchGroups());
         commonFGNs.retainAll(fm.getFetchGroups());
-        int dMax =
-            (commonFGNs.isEmpty()) ? FetchGroup.DEFAULT_RECURSION_DEPTH : 0;
+
+        int dMax = (commonFGNs.isEmpty()) ? FetchGroup.DEFAULT_RECURSION_DEPTH
+            : 0;
         Iterator i = commonFGNs.iterator();
         while (i.hasNext()) {
             FetchGroup fg = fm.getDeclaringMetaData()
@@ -142,6 +151,7 @@ public class FetchStateImpl implements FetchState, Serializable {
             dMax = Math.max(d, dMax);
         }
         _recursionDepths.put(fm, new Integer(dMax));
+
         return dMax;
     }
 
@@ -159,7 +169,9 @@ public class FetchStateImpl implements FetchState, Serializable {
             || (recursionDepth == INFINITE_DEPTH);
         if (isRecursive)
             traversable = traversable || (traversalCount < recursionDepth);
-        else traversable = traversable || (newtargetDepth <= maxDepth);
+        else
+            traversable = traversable || (newtargetDepth <= maxDepth);
+
         return traversable;
     }
 
@@ -229,5 +241,5 @@ public class FetchStateImpl implements FetchState, Serializable {
         public String toString() {
             return _sm + "." + _fm;
         }
-    }
+	}
 }

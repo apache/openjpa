@@ -102,9 +102,9 @@ public class StringDistance {
      * Returns the candidate string with the closest Levenshtein distance
      * to the given string.
      *
-     * @param str        the string to check
+     * @param str the string to check
      * @param candidates the list of strings to test against
-     * @param threshold  the threshold distance a candidate must meet
+     * @param threshold the threshold distance a candidate must meet
      * @see #getLevenshteinDistance
      */
     public static String getClosestLevenshteinDistance(String str,

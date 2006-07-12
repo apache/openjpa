@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -19,22 +22,24 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
 /**
- * Delegating data cache that can also perform exception translation for
- * use in facades. This cache allows its delegate to be null, in which
- * case it returns default values for all operations.
+ * <p>Delegating data cache that can also perform exception translation for
+ * use in facades.  This cache allows its delegate to be null, in which
+ * case it returns default values for all operations.</p>
  *
  * @author Abe White
  * @nojavadoc
  */
-public class DelegatingDataCache implements DataCache {
+public class DelegatingDataCache
+    implements DataCache {
 
     private static final BitSet EMPTY_BITSET = new BitSet(0);
+
     private final DataCache _cache;
     private final DelegatingDataCache _del;
     private final RuntimeExceptionTranslator _trans;
 
     /**
-     * Constructor. Supply delegate.
+     * Constructor.  Supply delegate.
      */
     public DelegatingDataCache(DataCache cache) {
         this(cache, null);
@@ -46,7 +51,8 @@ public class DelegatingDataCache implements DataCache {
         _trans = trans;
         if (cache instanceof DelegatingDataCache)
             _del = (DelegatingDataCache) _cache;
-        else _del = null;
+        else
+            _del = null;
     }
 
     /**
@@ -89,7 +95,8 @@ public class DelegatingDataCache implements DataCache {
             return null;
         try {
             return _cache.getName();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -99,7 +106,8 @@ public class DelegatingDataCache implements DataCache {
             return;
         try {
             _cache.setName(name);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -109,7 +117,8 @@ public class DelegatingDataCache implements DataCache {
             return;
         try {
             _cache.initialize(manager);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -120,7 +129,8 @@ public class DelegatingDataCache implements DataCache {
             return;
         try {
             _cache.commit(additions, newUpdates, existingUpdates, deletes);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -130,7 +140,8 @@ public class DelegatingDataCache implements DataCache {
             return false;
         try {
             return _cache.contains(oid);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -140,7 +151,8 @@ public class DelegatingDataCache implements DataCache {
             return EMPTY_BITSET;
         try {
             return _cache.containsAll(oids);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -150,7 +162,8 @@ public class DelegatingDataCache implements DataCache {
             return null;
         try {
             return _cache.get(oid);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -160,7 +173,8 @@ public class DelegatingDataCache implements DataCache {
             return null;
         try {
             return _cache.put(value);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -170,7 +184,8 @@ public class DelegatingDataCache implements DataCache {
             return;
         try {
             _cache.update(value);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -180,7 +195,8 @@ public class DelegatingDataCache implements DataCache {
             return null;
         try {
             return _cache.remove(oid);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -190,7 +206,8 @@ public class DelegatingDataCache implements DataCache {
             return EMPTY_BITSET;
         try {
             return _cache.removeAll(oids);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -200,7 +217,8 @@ public class DelegatingDataCache implements DataCache {
             return;
         try {
             _cache.removeAll(cls, subclasses);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -210,7 +228,8 @@ public class DelegatingDataCache implements DataCache {
             return;
         try {
             _cache.clear();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -220,7 +239,8 @@ public class DelegatingDataCache implements DataCache {
             return false;
         try {
             return _cache.pin(oid);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -230,7 +250,8 @@ public class DelegatingDataCache implements DataCache {
             return EMPTY_BITSET;
         try {
             return _cache.pinAll(oids);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -240,7 +261,8 @@ public class DelegatingDataCache implements DataCache {
             return false;
         try {
             return _cache.unpin(oid);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -250,7 +272,8 @@ public class DelegatingDataCache implements DataCache {
             return EMPTY_BITSET;
         try {
             return _cache.unpinAll(oids);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -260,7 +283,8 @@ public class DelegatingDataCache implements DataCache {
             return;
         try {
             _cache.writeLock();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -270,7 +294,8 @@ public class DelegatingDataCache implements DataCache {
             return;
         try {
             _cache.writeUnlock();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -280,7 +305,8 @@ public class DelegatingDataCache implements DataCache {
             return;
         try {
             _cache.addExpirationListener(listen);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -290,7 +316,8 @@ public class DelegatingDataCache implements DataCache {
             return false;
         try {
             return _cache.removeExpirationListener(listen);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -300,8 +327,9 @@ public class DelegatingDataCache implements DataCache {
             return;
         try {
             _cache.close();
-        } catch (RuntimeException re) {
-            throw translate(re);
         }
-    }
+        catch (RuntimeException re) {
+            throw translate(re);
+		}
+	}
 }

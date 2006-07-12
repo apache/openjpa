@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -28,7 +31,8 @@ import org.apache.openjpa.util.UserException;
  * @author Marc Prud'hommeaux
  * @nojavadoc
  */
-public class JPQLParser implements ExpressionParser {
+public class JPQLParser
+    implements ExpressionParser {
 
     private static Localizer _loc = Localizer.forPackage(JPQLParser.class);
     public static final String LANG_JPQL = "javax.persistence.JPQL";
@@ -36,6 +40,7 @@ public class JPQLParser implements ExpressionParser {
     public Object parse(String ql, ExpressionStoreQuery query) {
         if (query.getContext().getParameterDeclaration() != null)
             throw new UserException(_loc.get("param-decs-invalid"));
+
         return new JPQLExpressionBuilder.ParsedJPQL(ql);
     }
 
@@ -43,6 +48,7 @@ public class JPQLParser implements ExpressionParser {
         if (!(parsed instanceof JPQLExpressionBuilder.ParsedJPQL))
             throw new ClassCastException(parsed == null ? null + ""
                 : parsed.getClass().getName());
+
         ((JPQLExpressionBuilder.ParsedJPQL) parsed).populate(query);
     }
 
@@ -51,9 +57,11 @@ public class JPQLParser implements ExpressionParser {
         try {
             return new JPQLExpressionBuilder(factory, query, parsed).
                 getQueryExpressions();
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new UserException(_loc.get("bad-jpql", parsed), e);
         }
     }

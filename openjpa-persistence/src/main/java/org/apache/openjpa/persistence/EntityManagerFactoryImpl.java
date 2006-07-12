@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -44,17 +47,19 @@ import serp.util.Strings;
  * @author Marc Prud'hommeaux
  * @nojavadoc
  */
-public class EntityManagerFactoryImpl implements OpenJPAEntityManagerFactory {
+public class EntityManagerFactoryImpl
+    implements OpenJPAEntityManagerFactory {
 
     private static final Localizer _loc = Localizer.forPackage
         (EntityManagerFactoryImpl.class);
+
     private final DelegatingBrokerFactory _factory;
     private transient Constructor<FetchPlan> _plan = null;
     private transient StoreCache _cache = null;
     private transient QueryResultCache _queryCache = null;
 
     /**
-     * Constructor. Delegate must be provided on construction.
+     * Constructor.  Delegate must be provided on construction.
      */
     protected EntityManagerFactoryImpl(BrokerFactory factory) {
         _factory = new DelegatingBrokerFactory(factory,
@@ -126,6 +131,7 @@ public class EntityManagerFactoryImpl implements OpenJPAEntityManagerFactory {
             props = Collections.EMPTY_MAP;
         else if (!props.isEmpty())
             props = new HashMap(props);
+
         OpenJPAConfiguration conf = getConfiguration();
         String user =
             (String) props.remove("org.apache.openjpa.ConnectionUserName");
@@ -135,6 +141,7 @@ public class EntityManagerFactoryImpl implements OpenJPAEntityManagerFactory {
             (String) props.remove("org.apache.openjpa.ConnectionPassword");
         if (pass == null)
             pass = conf.getConnectionPassword();
+
         String str =
             (String) props.remove("org.apache.openjpa.TransactionMode");
         boolean managed;
@@ -144,6 +151,7 @@ public class EntityManagerFactoryImpl implements OpenJPAEntityManagerFactory {
             Value val = conf.getValue("org.apache.openjpa.TransactionMode");
             managed = Boolean.parseBoolean(val.unalias(str));
         }
+
         Object obj = props.remove("org.apache.openjpa.ConnectionRetainMode");
         int retainMode;
         if (obj instanceof Number)
@@ -153,20 +161,24 @@ public class EntityManagerFactoryImpl implements OpenJPAEntityManagerFactory {
                 conf.getValue("org.apache.openjpa.ConnectionRetainMode");
             try {
                 retainMode = Integer.parseInt(val.unalias((String) obj));
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 throw new ArgumentException(_loc.get("bad-em-prop",
                     "org.apache.openjpa.ConnectionRetainMode", obj),
                     new Throwable[]{ e },
                     obj, true);
             }
-        } else retainMode = conf.getConnectionRetainModeConstant();
-        Broker broker =
-            _factory.newBroker(user, pass, managed, retainMode, false);
+        } else
+            retainMode = conf.getConnectionRetainModeConstant();
+
+        Broker broker = _factory.newBroker(user, pass, managed, retainMode,
+            false);
         // we should allow the user to specify these settings in conf
         // regardless of PersistenceContextType
         broker.setAutoDetach(AutoDetach.DETACH_CLOSE);
         broker.setDetachedNew(false);
         OpenJPAEntityManager em = OpenJPAPersistence.toEntityManager(broker);
+
         // allow setting of other bean properties of EM
         List<RuntimeException> errs = null;
         Method setter = null;
@@ -179,22 +191,26 @@ public class EntityManagerFactoryImpl implements OpenJPAEntityManagerFactory {
             prop = prop.substring(5);
             try {
                 setter = ImplHelper.getSetter(em.getClass(), prop);
-            } catch (OpenJPAException ke) {
+            }
+            catch (OpenJPAException ke) {
                 if (errs == null)
                     errs = new LinkedList<RuntimeException>();
                 errs.add(PersistenceExceptions.toPersistenceException(ke));
                 continue;
             }
+
             val = entry.getValue();
             try {
                 if (val instanceof String) {
                     if ("null".equals(val))
                         val = null;
-                    else val = Strings.parse((String) val,
-                        setter.getParameterTypes()[0]);
+                    else
+                        val = Strings.parse((String) val,
+                            setter.getParameterTypes()[0]);
                 }
                 setter.invoke(em, new Object[]{ val });
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 ArgumentException err = new ArgumentException(_loc.get
                     ("bad-em-prop", prop, entry.getValue()),
                     new Throwable[]{ e }, null, true);
@@ -203,6 +219,7 @@ public class EntityManagerFactoryImpl implements OpenJPAEntityManagerFactory {
                 errs.add(err);
             }
         }
+
         if (errs != null) {
             em.close();
             if (errs.size() == 1)
@@ -211,6 +228,7 @@ public class EntityManagerFactoryImpl implements OpenJPAEntityManagerFactory {
                 (Throwable[]) errs.toArray(new Throwable[errs.size()]),
                 null, true);
         }
+
         return em;
     }
 
@@ -243,22 +261,24 @@ public class EntityManagerFactoryImpl implements OpenJPAEntityManagerFactory {
     }
 
     /**
-     * Create a store-specific facade for the given fetch configuration.
-     * The name of the facade class is formed by taking the top-most org.apache.openjpa.xxx
-     * package and class name prefix from the fetch configuration class and
-     * combining it as
-     * <code>org.apache.openjpa.persistence.xxx.PrefixFetchConfiguration</code>.
-     * The class must have a constructor that takes a
-     * <code>FetchConfiguration</code> argument. If no facade class
-     * exists, we use the default {@link FetchConfiguration}.
+     *	Create a store-specific facade for the given fetch configuration.
+     *	The name of the facade class is formed by taking the top-most org.apache.openjpa.xxx
+     *	package and class name prefix from the fetch configuration class and
+     *	combining it as
+     *	<code>org.apache.openjpa.persistence.xxx.PrefixFetchConfiguration</code>.
+     *	The class must have a constructor that takes a
+     *	<code>FetchConfiguration</code> argument.  If no facade class
+     *	exists, we use the default {@link FetchConfiguration}.
      */
     FetchPlan toFetchPlan(FetchConfiguration fetch) {
         if (fetch == null)
             return null;
+
         FetchConfiguration inner = fetch;
         if (inner instanceof DelegatingFetchConfiguration)
             inner = ((DelegatingFetchConfiguration) inner).
                 getInnermostDelegate();
+
         _factory.lock();
         try {
             if (_plan == null) {
@@ -270,14 +290,16 @@ public class EntityManagerFactoryImpl implements OpenJPAEntityManagerFactory {
                 _plan = cls.getConstructor(FetchConfiguration.class);
             }
             return _plan.newInstance(fetch);
-        } catch (InvocationTargetException ite) {
+        }
+        catch (InvocationTargetException ite) {
             throw PersistenceExceptions.toPersistenceException
                 (ite.getTargetException());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
         finally {
             _factory.unlock();
         }
-    }
+	}
 }

@@ -15,7 +15,6 @@ package org.apache.openjpa.lib.jdbc;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-
 import javax.sql.DataSource;
 
 import org.apache.openjpa.lib.util.Closeable;

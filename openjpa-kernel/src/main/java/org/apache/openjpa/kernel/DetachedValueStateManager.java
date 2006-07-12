@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -28,17 +31,19 @@ import org.apache.openjpa.util.UnsupportedException;
 import serp.util.Numbers;
 
 /**
- * Implementation of {@link OpenJPAStateManager} designed to retrieve
+ * <p>Implementation of {@link OpenJPAStateManager} designed to retrieve
  * values from a detached instance, including when managed by a
  * {@link DetachedStateManager}.
  *
  * @author Abe White
  */
-public class DetachedValueStateManager extends TransferFieldManager
+public class DetachedValueStateManager
+    extends TransferFieldManager
     implements OpenJPAStateManager {
 
     private static final Localizer _loc = Localizer.forPackage
         (DetachedValueStateManager.class);
+
     private PersistenceCapable _pc;
     private StoreContext _ctx;
     private ClassMetaData _meta;
@@ -269,7 +274,8 @@ public class DetachedValueStateManager extends TransferFieldManager
         StateManager sm = _pc.pcGetStateManager();
         if (sm != null) {
             if (sm instanceof DetachedStateManager)
-                return fetchFromDetachedSM((DetachedStateManager) sm, field);
+                return fetchFromDetachedSM((DetachedStateManager) sm,
+                    field);
             throw new UnsupportedException(_loc.get("detach-val-badsm", _pc));
         }
         provideField(field);
@@ -288,14 +294,15 @@ public class DetachedValueStateManager extends TransferFieldManager
         FieldMetaData fmd = _meta.getField(field);
         if (fmd == null)
             throw new InternalException();
+
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.STRING:
                 return fm.fetchStringField(field);
             case JavaTypes.OBJECT:
                 return fm.fetchObjectField(field);
             case JavaTypes.BOOLEAN:
-                return (fm.fetchBooleanField(field)) ? Boolean.TRUE :
-                    Boolean.FALSE;
+                return (fm.fetchBooleanField(field)) ? Boolean.TRUE
+                    : Boolean.FALSE;
             case JavaTypes.BYTE:
                 return new Byte(fm.fetchByteField(field));
             case JavaTypes.CHAR:
@@ -386,6 +393,7 @@ public class DetachedValueStateManager extends TransferFieldManager
     ///////////////////////////////
     // StateManager implementation
     ///////////////////////////////
+
     public Object getGenericContext() {
         return _ctx;
     }

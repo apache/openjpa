@@ -38,10 +38,10 @@ public class NameAndTypeEntry extends Entry {
     /**
      * Constructor.
      *
-     * @param nameIndex       the constant pool index of the
-     *                        {@link UTF8Entry} containing the name of this entity
+     * @param nameIndex the constant pool index of the
+     * {@link UTF8Entry} containing the name of this entity
      * @param descriptorIndex the constant pool index of the
-     *                        {@link UTF8Entry} containing the descriptor for this entity
+     * {@link UTF8Entry} containing the descriptor for this entity
      */
     public NameAndTypeEntry(int nameIndex, int descriptorIndex) {
         _nameIndex = nameIndex;

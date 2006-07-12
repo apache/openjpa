@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -23,17 +26,19 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 
 /**
- * Extension of the {@link ArrayList} type that dirties the
+ * <p>Extension of the {@link ArrayList} type that dirties the
  * persistent/transactional field it is assigned to on modification.
  * The need to dirty the field on <b>any</b> modification mandates that
  * this class must override all mutator methods of the base type.
  * This may lead to multiple calls to <code>dirty</code> for one state
- * change if one mutator method of the base type calls another.
+ * change if one mutator method of the base type calls another.</p>
  *
  * @author Abe White
  * @nojavadoc
  */
-public class ProxyArrayList extends ArrayList implements ProxyCollection {
+public class ProxyArrayList
+    extends ArrayList
+    implements ProxyCollection {
 
     private transient Class _elementType = null;
     private transient OpenJPAStateManager _sm = null;
@@ -178,7 +183,8 @@ public class ProxyArrayList extends ArrayList implements ProxyCollection {
         return rem;
     }
 
-    protected Object writeReplace() throws ObjectStreamException {
+    protected Object writeReplace()
+        throws ObjectStreamException {
         if (_sm != null && _sm.isDetached())
             return this;
         return copy(this);

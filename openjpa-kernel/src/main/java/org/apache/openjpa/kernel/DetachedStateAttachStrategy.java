@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -27,10 +30,11 @@ import org.apache.openjpa.util.OptimisticException;
 /**
  * Handles attaching instances with detached state.
  *
- * @author Marc Prud'hommeaux
  * @nojavadoc
+ * @author Marc Prud'hommeaux
  */
-class DetachedStateAttachStrategy extends AttachStrategy {
+class DetachedStateAttachStrategy
+    extends AttachStrategy {
 
     private static final Localizer _loc = Localizer.forPackage
         (DetachedStateAttachStrategy.class);
@@ -39,11 +43,13 @@ class DetachedStateAttachStrategy extends AttachStrategy {
         Object toAttach) {
         if (toAttach == null)
             return null;
+
         PersistenceCapable pc = (PersistenceCapable) toAttach;
         Broker broker = manager.getBroker();
         ClassMetaData meta = broker.getConfiguration().
             getMetaDataRepository().getMetaData(toAttach.getClass(),
             broker.getClassLoader(), true);
+
         switch (meta.getIdentityType()) {
             case ClassMetaData.ID_DATASTORE:
                 Object[] state = (Object[]) pc.pcGetDetachedState();
@@ -68,13 +74,15 @@ class DetachedStateAttachStrategy extends AttachStrategy {
         ValueMetaData ownerMeta) {
         BrokerImpl broker = manager.getBroker();
         PersistenceCapable pc = (PersistenceCapable) toAttach;
+
         Object[] state = (Object[]) pc.pcGetDetachedState();
         boolean embedded = ownerMeta != null && ownerMeta.isEmbeddedPC();
         int offset;
         StateManagerImpl sm;
+
         // state == null means this is a new instance; also, if the
         // state manager for the embedded instance is null, then
-        // it should be treated as a new instance(since the
+        // it should be treated as a new instance (since the
         // newly persisted owner may create a new embedded instance
         // in the constructor); fixed bug #1075.
         // also, if the user has attached a detached obj from somewhere
@@ -98,11 +106,13 @@ class DetachedStateAttachStrategy extends AttachStrategy {
                 // extra element in their detached state array
                 offset = meta.getIdentityType() == meta.ID_DATASTORE ? 1 : 0;
                 boolean isNew = state.length == 3 + offset;
+
                 // attempting to attach an instance that has been deleted
                 // will throw an OVE if it was not PNEW when it was detached
                 if (!isNew)
                     throw new OptimisticException(_loc.get("attach-deleted",
                         pc.getClass(), id)).setFailedObject(id);
+
                 // if the instance does not exist, we assume that it was
                 // made persistent in a new transaction, detached, and then
                 // the transaction was rolled back; the danger is that
@@ -110,19 +120,25 @@ class DetachedStateAttachStrategy extends AttachStrategy {
                 // and then deleted, but this is an uncommon case
                 sm = persist(manager, pc, meta, id);
                 into = sm.getPersistenceCapable();
+
                 // nullify the state, since the new instance won't have one
                 state = null;
-            } else sm = manager.assertManaged(into);
-        } else sm = manager.assertManaged(into);
+            } else
+                sm = manager.assertManaged(into);
+        } else
+            sm = manager.assertManaged(into);
+
         // invoke any preAttach on the detached instance
         broker.fireLifecycleEvent(pc, null, meta,
             LifecycleEvent.BEFORE_DETACH);
+
         // mark that we attached the instance *before* we
         // fill in values to avoid endless recursion
         manager.setAttachedCopy(pc, into);
         meta = sm.getMetaData();
         manager.fireBeforeAttach(pc, meta);
         offset = meta.getIdentityType() == meta.ID_DATASTORE ? 1 : 0;
+
         // assign the detached pc the same state manager as the object we're
         // copying into during the attach process
         pc.pcReplaceStateManager(sm);
@@ -139,6 +155,7 @@ class DetachedStateAttachStrategy extends AttachStrategy {
         finally {
             pc.pcReplaceStateManager(null);
         }
+
         // set the next version for non-new instances that are not embedded
         if (state != null && !embedded) {
             // make sure that all the fields in the original FG are loaded
@@ -152,6 +169,7 @@ class DetachedStateAttachStrategy extends AttachStrategy {
                 //### we should calculate lock level above
             }
             Object version = state[offset];
+
             StoreManager store = broker.getStoreManager();
             switch (store.compareVersion(sm, version, sm.getVersion())) {
                 case StoreManager.VERSION_LATER:

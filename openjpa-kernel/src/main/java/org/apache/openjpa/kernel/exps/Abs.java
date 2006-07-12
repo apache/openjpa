@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -19,14 +22,15 @@ import org.apache.openjpa.kernel.Filters;
 import serp.util.Numbers;
 
 /**
- * Take the absolute value of a number.
+ * <p>Take the absolute value of a number.</p>
  *
  * @author Abe White
  */
-class Abs extends UnaryMathVal {
+class Abs
+    extends UnaryMathVal {
 
     /**
-     * Constructor. Provide the number whose absolute value to calculate.
+     * Constructor.  Provide the number whose absolute value to calculate.
      */
     public Abs(Val val) {
         super(val);
@@ -34,9 +38,12 @@ class Abs extends UnaryMathVal {
 
     protected Class getType(Class c) {
         Class wrap = Filters.wrap(c);
-        if (wrap == Integer.class || wrap == Float.class
-            || wrap == Double.class || wrap == Long.class
-            || wrap == BigDecimal.class || wrap == BigInteger.class)
+        if (wrap == Integer.class
+            || wrap == Float.class
+            || wrap == Double.class
+            || wrap == Long.class
+            || wrap == BigDecimal.class
+            || wrap == BigInteger.class)
             return c;
         return int.class;
     }
@@ -54,6 +61,7 @@ class Abs extends UnaryMathVal {
             return ((BigDecimal) o).abs();
         if (c == BigInteger.class)
             return ((BigInteger) o).abs();
+
         // default to int
         return Numbers.valueOf(Math.abs(((Number) o).intValue()));
     }

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -20,10 +23,10 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.meta.ValueMetaData;
 
 /**
- * Represents a set of managed objects and their environment.
+ * <p>Represents a set of managed objects and their environment.</p>
  *
- * @author Abe White
  * @since 4.0
+ * @author Abe White
  */
 public interface StoreContext {
 
@@ -32,13 +35,14 @@ public interface StoreContext {
      * the <code>find</code> methods of this interface.
      */
     public static final BitSet EXCLUDE_ALL = new BitSet(0);
+
     public static final int OID_NOVALIDATE = 2 << 0;
     public static final int OID_NODELETED = 2 << 1;
     public static final int OID_COPY = 2 << 2;
     public static final int OID_ALLOW_NEW = 2 << 3;
 
     /**
-     * Return the broker for this context, if possible. Note that a broker
+     * Return the broker for this context, if possible.  Note that a broker
      * will be unavailable in remote contexts, and this method may throw
      * an exception to that effect.
      */
@@ -50,7 +54,7 @@ public interface StoreContext {
     public OpenJPAConfiguration getConfiguration();
 
     /**
-     * Return the(mutable) fetch configuration for loading objects from this
+     * Return the (mutable) fetch configuration for loading objects from this
      * context.
      */
     public FetchConfiguration getFetchConfiguration();
@@ -67,7 +71,7 @@ public interface StoreContext {
     public LockManager getLockManager();
 
     /**
-     * Return the store manager in use. This will be a wrapper around the
+     * Return the store manager in use.  This will be a wrapper around the
      * native store manager, which you can retrieve via
      * {@link DelegatingStoreManager#getInnermostDelegate}.
      */
@@ -87,48 +91,48 @@ public interface StoreContext {
      * Return the cached instance for the given oid/object, or null if not
      * cached.
      *
-     * @param oid the object's id
+     * @param    oid        the object's id
      * @return the cached object, or null if not cached
      */
     public Object findCached(Object oid, FindCallbacks call);
 
     /**
-     * Find the persistence object with the given oid. If
+     * Find the persistence object with the given oid.  If
      * <code>validate</code> is true, the broker will check the store
-     * for the object, and return null if it does not exist. If
-     * <code>validate</code> is false, this method never returns null. The
+     * for the object, and return null if it does not exist.  If
+     * <code>validate</code> is false, this method never returns null.  The
      * broker will either return its cached instance, attempt to create a
      * hollow instance, or throw an <code>ObjectNotFoundException</code> if
      * unable to return a hollow instance.
      *
-     * @param validate if true, validate that the instance exists in the
-     *                 store and load fetch group fields, otherwise return
-     *                 any cached or hollow instance
+     * @param    validate    if true, validate that the instance exists in the
+     * store and load fetch group fields, otherwise return
+     * any cached or hollow instance
      */
     public Object find(Object oid, boolean validate, FindCallbacks call);
 
     /**
      * Return the objects with the given oids.
      *
-     * @param oids the oids of the objects to return
+     * @param    oids        the oids of the objects to return
      * @return the objects that were looked up, in the same order as the oids
-     *         parameter
-     * @see #find(Object,boolean)
+     * parameter
+     * @see    #find(Object,boolean)
      */
     public Object[] findAll(Collection oids, boolean validate,
         FindCallbacks call);
 
     /**
-     * Return the object with the given oid. If present, the
-     * cached instance will be returned. Otherwise, the instance will be
+     * Return the object with the given oid.  If present, the
+     * cached instance will be returned.  Otherwise, the instance will be
      * initialized through the store as usual; however, in this case
      * the store will be passed the given execution data, and the
      * system will load the object according to the given fetch configuratiion
      * (or the context's configuration, if the given one is null).
      * Fields can optionally be excluded from required loading using the
-     * <code>exclude</code> mask. By default this method does not find new
+     * <code>exclude</code> mask.  By default this method does not find new
      * unflushed instances, validates, and does not throw an exception
-     * if a cached instance has been deleted concurrently. These options
+     * if a cached instance has been deleted concurrently.  These options
      * are controllable through the given <code>OID_XXX</code> flags.
      */
     public Object find(Object oid, FetchState fetchState, BitSet exclude,
@@ -137,13 +141,13 @@ public interface StoreContext {
     /**
      * Return the objects with the given oids.
      *
-     * @see #find(Object,FetchState,BitSet,Object,int)
+     * @see    #find(Object,FetchState,BitSet,Object,int)
      */
     public Object[] findAll(Collection oids, FetchState fetchState,
         BitSet exclude, Object edata, int flags);
 
     /**
-     * Return an iterator over all instances of the given type. The iterator
+     * Return an iterator over all instances of the given type.  The iterator
      * should be closed with {@link ImplHelper#close} when no longer needed.
      * This method delegates to {@link StoreManager#executeExtent}.
      */
@@ -151,35 +155,36 @@ public interface StoreContext {
         FetchConfiguration fetch, boolean ignoreChanges);
 
     /**
-     * Immediately load the given object's persistent fields. One might
+     * Immediately load the given object's persistent fields.  One might
      * use this action to make sure that an instance's fields are loaded
-     * before transitioning it to transient. Note that this action is not
-     * recursive. Any related objects that are loaded will not necessarily
-     * have their fields loaded. Unmanaged target is ignored.
+     * before transitioning it to transient.  Note that this action is not
+     * recursive.  Any related objects that are loaded will not necessarily
+     * have their fields loaded.  Unmanaged target is ignored.
      *
-     * @param fgOnly indicator as to whether to retrieve only fields
-     *               in the current fetch groups, or all fields
-     * @see #retrieve
+     * @param    fgOnly        indicator as to whether to retrieve only fields
+     * in the current fetch groups, or all fields
+     * @see    #retrieve
      */
     public void retrieve(Object pc, boolean fgOnly, OpCallbacks call);
 
     /**
-     * Retrieve the given objects' persistent state. Unmanaged targets are
+     * Retrieve the given objects' persistent state.  Unmanaged targets are
      * ignored.
      *
-     * @param fgOnly indicator as to whether to retrieve only fields
-     * @see #retrieve
+     * @param    fgOnly        indicator as to whether to retrieve only fields
+     * @see    #retrieve
      */
     public void retrieveAll(Collection objs, boolean fgOnly, OpCallbacks call);
 
     /**
      * Make the given instance embedded.
      *
-     * @param obj       the instance to embed; may be null to create a new instance
-     * @param id        the id to give the embedded state manager; may be
-     *                  null for default
-     * @param owner     the owning state manager
-     * @param ownerMeta the value in which the object is embedded
+     * @param    obj            the instance to embed; may be null to create a
+     * new instance
+     * @param    id            the id to give the embedded state manager; may be
+     * null for default
+     * @param    owner        the owning state manager
+     * @param    ownerMeta    the value in which the object is embedded
      * @return the state manager for the embedded instance
      */
     public OpenJPAStateManager embed(Object obj, Object id,
@@ -196,7 +201,7 @@ public interface StoreContext {
      *
      * @param cls the persitent class that uses this identity value
      * @param val an object id instance, stringified object id, or primary
-     *            key value
+     * key value
      */
     public Object newObjectId(Class cls, Object val);
 
@@ -247,13 +252,13 @@ public interface StoreContext {
 
     /**
      * Whether to maintain the order in which objects are dirtied for
-     * {@link #getDirtyObjects}. Default is the store manager's decision.
+     * {@link #getDirtyObjects}.  Default is the store manager's decision.
      */
     public boolean getOrderDirtyObjects();
 
     /**
      * Whether to maintain the order in which objects are dirtied for
-     * {@link #getDirtyObjects}. Default is the store manager's decision.
+     * {@link #getDirtyObjects}.  Default is the store manager's decision.
      */
     public void setOrderDirtyObjects(boolean order);
 
@@ -287,9 +292,9 @@ public interface StoreContext {
     /**
      * Make the given object transactional.
      *
-     * @param pc            instance to make transactional
+     * @param pc instance to make transactional
      * @param updateVersion if true, the instance's version will be
-     *                      incremented at the next flush
+     * incremented at the next flush
      */
     public void transactional(Object pc, boolean updateVersion,
         OpCallbacks call);
@@ -297,9 +302,9 @@ public interface StoreContext {
     /**
      * Make the given objects transactional.
      *
-     * @param objs          instances to make transactional
+     * @param objs instances to make transactional
      * @param updateVersion if true, the instance's version will be
-     *                      incremented at the next flush
+     * incremented at the next flush
      */
     public void transactionalAll(Collection objs, boolean updateVersion,
         OpCallbacks call);
@@ -337,13 +342,13 @@ public interface StoreContext {
 
     /**
      * Detach mode constant to determine which fields are part of the
-     * detached graph. Defaults to {@link DetachState#DETACH_LOADED}.
+     * detached graph.  Defaults to {@link DetachState#DETACH_LOADED}.
      */
     public int getDetachState();
 
     /**
      * Detach mode constant to determine which fields are part of the
-     * detached graph. Defaults to {@link DetachState#DETACH_LOADED}.
+     * detached graph.  Defaults to {@link DetachState#DETACH_LOADED}.
      */
     public void setDetachState(int mode);
 
@@ -374,7 +379,7 @@ public interface StoreContext {
     /**
      * If a large number of objects will be created, modified, or deleted
      * during this transaction setting this option to true will reduce memory
-     * usage if you perform periodic flushes. Upon transaction commit the
+     * usage if you perform periodic flushes.  Upon transaction commit the
      * data cache will have to more aggressively flush objects. The store cache
      * will have to flush instances of objects for each class of object
      * modified during the transaction. A side benefit of large transaction
@@ -412,19 +417,21 @@ public interface StoreContext {
     public boolean hasConnection();
 
     /**
-     * Return the connection in use by the context, or a new connection if none.
+     * Return the connection in use by the context, or a new connection if
+     * none.
      */
     public Object getConnection();
 
     /**
-     * Synchronizes on an internal lock if the
-     * <code>Multithreaded</code> flag is set to true. Make sure to call
-     * {@link #unlock} in a finally clause of the same method.
-     */
-    public void lock();
+     *	Synchronizes on an internal lock if the
+     *	<code>Multithreaded</code> flag is set to true.  Make sure to call
+	 *	{@link #unlock} in a finally clause of the same method.
+	 */
+	public void lock ();
 
-    /**
-     * Releases the internal lock.
-     */
-    public void unlock();
+
+	/**
+	 *	Releases the internal lock.
+	 */
+	public void unlock ();
 }

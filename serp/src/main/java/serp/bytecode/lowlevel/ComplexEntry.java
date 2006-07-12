@@ -38,10 +38,10 @@ public abstract class ComplexEntry extends Entry {
     /**
      * Constructor.
      *
-     * @param classIndex       the constant pool index of the
-     *                         {@link ClassEntry} describing the owner of this entity
+     * @param classIndex the constant pool index of the
+     * {@link ClassEntry} describing the owner of this entity
      * @param nameAndTypeIndex the constant pool index of the
-     *                         {@link NameAndTypeEntry} describing this entity
+     * {@link NameAndTypeEntry} describing this entity
      */
     public ComplexEntry(int classIndex, int nameAndTypeIndex) {
         _classIndex = classIndex;

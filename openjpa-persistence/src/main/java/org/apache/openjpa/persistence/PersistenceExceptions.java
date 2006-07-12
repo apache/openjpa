@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -22,13 +25,14 @@ import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * Converts from OpenJPA to persistence exception types.
+ * <p>Converts from OpenJPA to persistence exception types.</p>
  *
  * @author Abe White
  * @author Marc Prud'hommeaux
  * @nojavadoc
  */
-public class PersistenceExceptions extends Exceptions {
+public class PersistenceExceptions
+    extends Exceptions {
 
     public static final RuntimeExceptionTranslator TRANSLATOR =
         new RuntimeExceptionTranslator() {
@@ -64,6 +68,7 @@ public class PersistenceExceptions extends Exceptions {
                         throwing = false;
                     }
                 }
+
                 return ex;
             }
         };
@@ -79,14 +84,16 @@ public class PersistenceExceptions extends Exceptions {
     /**
      * Translate the given exception.
      *
-     * @param checked whether to translate checked exceptions
+     * @param    checked        whether to translate checked exceptions
      */
     private static Throwable translateException(Throwable t, boolean checked) {
         if (isPersistenceException(t))
             return t;
+
         // immediately throw errors
         if (t instanceof Error)
-            throw(Error) t;
+            throw (Error) t;
+
         OpenJPAException ke;
         if (!(t instanceof OpenJPAException)) {
             if (!checked || t instanceof RuntimeException)
@@ -95,11 +102,13 @@ public class PersistenceExceptions extends Exceptions {
             ke.setStackTrace(t.getStackTrace());
             return ke;
         }
+
         // if only nested exception is a persistence one, return it directly
         ke = (OpenJPAException) t;
         if (ke.getNestedThrowables().length == 1
             && isPersistenceException(ke.getCause()))
             return ke.getCause();
+
         // RuntimeExceptions thrown from callbacks should be thrown directly
         if (ke.getType() == OpenJPAException.USER
             && ke.getSubtype() == UserException.CALLBACK
@@ -107,9 +116,11 @@ public class PersistenceExceptions extends Exceptions {
             Throwable e = ke.getCause();
             if (e instanceof InvocationTargetException)
                 e = e.getCause();
+
             if (e instanceof RuntimeException)
                 return e;
         }
+
         // perform intelligent translation of openjpa exceptions
         switch (ke.getType()) {
             case OpenJPAException.STORE:
@@ -204,6 +215,7 @@ public class PersistenceExceptions extends Exceptions {
         Throwable[] nested = ke.getNestedThrowables();
         if (nested.length == 0)
             return nested;
+
         Throwable[] trans = new Throwable[nested.length];
         for (int i = 0; i < nested.length; i++)
             trans[i] = translateException(nested[i], false);
@@ -224,12 +236,12 @@ public class PersistenceExceptions extends Exceptions {
     }
 
     /**
-     * Helper method to extract a nested exception from an internal nested
-     * array in a safe way.
+     *	Helper method to extract a nested exception from an internal nested
+     *	array in a safe way.
      */
     static Throwable getCause(Throwable[] nested) {
         if (nested == null || nested.length == 0)
             return null;
-        return nested[0];
-    }
+		return nested[0];
+	}
 }

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -20,7 +23,7 @@ import org.apache.openjpa.lib.util.Services;
 import org.apache.openjpa.util.InternalException;
 
 /**
- * Constants and utilities for query languages.
+ * <p>Constants and utilities for query languages.</p>
  *
  * @author Abe White
  * @since 4.0
@@ -29,6 +32,7 @@ public class QueryLanguages {
 
     public static final String LANG_SQL = "org.apache.openjpa.SQL";
     public static final String LANG_METHODQL = "org.apache.openjpa.MethodQL";
+
     private static Map _expressionParsers = new HashMap();
 
     static {
@@ -39,9 +43,11 @@ public class QueryLanguages {
             ExpressionParser ep;
             try {
                 ep = (ExpressionParser) classes[i].newInstance();
-            } catch (InstantiationException e) {
+            }
+            catch (InstantiationException e) {
                 throw new InternalException(e);
-            } catch (IllegalAccessException e) {
+            }
+            catch (IllegalAccessException e) {
                 throw new InternalException(e);
             }
             _expressionParsers.put(ep.getLanguage(), ep);

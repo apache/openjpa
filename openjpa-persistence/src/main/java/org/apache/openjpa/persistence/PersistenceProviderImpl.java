@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -36,20 +39,22 @@ import org.apache.openjpa.meta.MetaDataRepository;
  *
  * @see Persistence#createEntityManagerFactory(String,Map)
  */
-public class PersistenceProviderImpl implements PersistenceProvider {
+public class PersistenceProviderImpl
+    implements PersistenceProvider {
 
     static final String CLASS_TRANSFORMER_OPTIONS =
         "org.apache.openjpa.ClassTransformerOptions";
 
     /**
-     * Loads the entity manager specified by <code>name</code>, applying
+     * <p>Loads the entity manager specified by <code>name</code>, applying
      * the properties in <code>m</code> as overrides to the properties defined
      * in the XML configuration file for <code>name</code>. If <code>name</code>
      * is <code>null</code>, this method loads the XML in the resource
      * identified by <code>resource</code>, and uses the first resource found
      * when doing this lookup, regardless of the name specified in the XML
-     * resource or the name of the jar that the resource is contained in.
-     * This does no pooling of EntityManagersFactories.
+     * resource or the name of the jar that the resource is contained in.</p>
+     * <p/>
+     * <p>This does no pooling of EntityManagersFactories.</p>
      */
     public EntityManagerFactory createEntityManagerFactory(String name,
         String resource, Map m) {
@@ -58,8 +63,10 @@ public class PersistenceProviderImpl implements PersistenceProvider {
             if (cp.load(name, resource, m))
                 return OpenJPAPersistence.toEntityManagerFactory(
                     Bootstrap.newBrokerFactory(cp, cp.getClassLoader()));
-            else return null;
-        } catch (Exception e) {
+            else
+                return null;
+        }
+        catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -81,8 +88,10 @@ public class PersistenceProviderImpl implements PersistenceProvider {
                     (CLASS_TRANSFORMER_OPTIONS),
                     pui.getNewTempClassLoader()));
                 return emf;
-            } else return null;
-        } catch (Exception e) {
+            } else
+                return null;
+        }
+        catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -90,7 +99,8 @@ public class PersistenceProviderImpl implements PersistenceProvider {
     /**
      * JEE 5 class transformer.
      */
-    private static class ClassTransformerImpl implements ClassTransformer {
+    private static class ClassTransformerImpl
+        implements ClassTransformer {
 
         private final ClassFileTransformer _trans;
 
@@ -108,5 +118,5 @@ public class PersistenceProviderImpl implements PersistenceProvider {
             throws IllegalClassFormatException {
             return _trans.transform(cl, name, previousVersion, pd, bytes);
         }
-    }
+	}
 }

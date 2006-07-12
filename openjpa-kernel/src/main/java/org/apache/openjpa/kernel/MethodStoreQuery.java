@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -35,23 +38,29 @@ import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * A query that is executed by a user-defined method.
+ * <p>A query that is executed by a user-defined method.</p>
  *
  * @author Abe White
  * @nojavadoc
  */
-public class MethodStoreQuery extends AbstractStoreQuery {
+public class MethodStoreQuery
+    extends AbstractStoreQuery {
 
     public static final String LANGUAGE = QueryLanguages.LANG_METHODQL;
+
     private static final Class[] ARGS_DATASTORE = new Class[]{
         StoreContext.class, ClassMetaData.class, boolean.class, Map.class,
-        FetchConfiguration.class };
+        FetchConfiguration.class
+    };
     private static final Class[] ARGS_INMEM = new Class[]{
         StoreContext.class, ClassMetaData.class, boolean.class,
-        Object.class, Map.class, FetchConfiguration.class };
+        Object.class, Map.class, FetchConfiguration.class
+    };
     private static final int OBJ_INDEX = 3;
+
     private static final Localizer _loc = Localizer.forPackage
         (MethodStoreQuery.class);
+
     private LinkedMap _params = null;
 
     public void invalidateCompilation() {
@@ -86,6 +95,7 @@ public class MethodStoreQuery extends AbstractStoreQuery {
             String params = ctx.getParameterDeclaration();
             if (params == null)
                 return EMPTY_PARAMS;
+
             List decs = Filters.parseDeclaration(params, ',', "parameters");
             if (_params == null)
                 _params = new LinkedMap((int) (decs.size() / 2 * 1.33 + 1));
@@ -109,7 +119,8 @@ public class MethodStoreQuery extends AbstractStoreQuery {
      * Uses a user-defined method named by the filter string to execute the
      * query.
      */
-    private static class MethodExecutor extends AbstractExecutor
+    private static class MethodExecutor
+        extends AbstractExecutor
         implements Executor {
 
         private final ClassMetaData _meta;
@@ -145,18 +156,22 @@ public class MethodStoreQuery extends AbstractStoreQuery {
             Map params, boolean lrs, long startIdx, long endIdx) {
             FetchConfiguration fetch = q.getContext().getFetchConfiguration();
             StoreContext sctx = q.getContext().getStoreContext();
+
             ResultObjectProvider rop;
             Object[] args;
             if (_inMem) {
                 args = new Object[]{ sctx, _meta, (_subs) ? Boolean.TRUE
                     : Boolean.FALSE, null, params, fetch };
+
                 Iterator itr = null;
                 Collection coll = q.getContext().getCandidateCollection();
                 if (coll == null) {
                     Extent ext = q.getContext().getQuery().
                         getCandidateExtent();
                     itr = ext.iterator();
-                } else itr = coll.iterator();
+                } else
+                    itr = coll.iterator();
+
                 List results = new ArrayList();
                 try {
                     Object obj;
@@ -165,6 +180,7 @@ public class MethodStoreQuery extends AbstractStoreQuery {
                         if (obj == null
                             || !_meta.getDescribedType().isInstance(obj))
                             continue;
+
                         args[OBJ_INDEX] = obj;
                         if (((Boolean) invoke(q, args)).booleanValue())
                             results.add(obj);
@@ -180,6 +196,7 @@ public class MethodStoreQuery extends AbstractStoreQuery {
                     : Boolean.FALSE, params, fetch };
                 rop = (ResultObjectProvider) invoke(q, args);
             }
+
             if (startIdx != 0 || endIdx != Long.MAX_VALUE)
                 rop = new RangeResultObjectProvider(rop, startIdx, endIdx);
             return rop;
@@ -195,6 +212,7 @@ public class MethodStoreQuery extends AbstractStoreQuery {
                 String methName = q.getContext().getQueryString();
                 if (methName == null || methName.length() == 0)
                     throw new UserException(_loc.get("no-method"));
+
                 int dotIdx = methName.lastIndexOf('.');
                 Class cls;
                 if (dotIdx == -1)
@@ -207,10 +225,12 @@ public class MethodStoreQuery extends AbstractStoreQuery {
                             methName.substring(0, dotIdx), methName));
                     methName = methName.substring(dotIdx + 1);
                 }
+
                 Class[] types = (_inMem) ? ARGS_INMEM : ARGS_DATASTORE;
                 try {
                     meth = cls.getMethod(methName, types);
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     String msg = (_inMem) ? "bad-inmem-method"
                         : "bad-datastore-method";
                     throw new UserException(_loc.get(msg, methName, cls));
@@ -220,11 +240,14 @@ public class MethodStoreQuery extends AbstractStoreQuery {
                         meth));
                 _meth = meth;
             }
+
             try {
                 return meth.invoke(null, args);
-            } catch (OpenJPAException ke) {
+            }
+            catch (OpenJPAException ke) {
                 throw ke;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 throw new UserException(_loc.get("method-error", _meth,
                     Exceptions.toString(Arrays.asList(args))), e);
             }
@@ -232,6 +255,6 @@ public class MethodStoreQuery extends AbstractStoreQuery {
 
         public LinkedMap getParameterTypes(StoreQuery q) {
             return ((MethodStoreQuery) q).bindParameterTypes();
-        }
-    }
+		}
+	}
 }

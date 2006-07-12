@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -19,7 +22,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringDistance;
 
 /**
- * Strategies for persistent value updates.
+ * <p>Strategies for persistent value updates.</p>
  *
  * @author Abe White
  * @since 4.0
@@ -40,6 +43,7 @@ public class UpdateStrategies {
      * Throw an exception on attempt to update.
      */
     public static final int RESTRICT = 2;
+
     private static final Localizer _loc = Localizer.forPackage
         (UpdateStrategies.class);
 
@@ -60,7 +64,7 @@ public class UpdateStrategies {
     }
 
     /**
-     * Convert the given strategy name to its constant.
+     *	Convert the given strategy name to its constant.
      */
     public static int getCode(String val, Object context) {
         if ("none".equals(val))
@@ -69,6 +73,7 @@ public class UpdateStrategies {
             return IGNORE;
         if ("restrict".equals(val))
             return RESTRICT;
+
         List opts = Arrays.asList(new String[]{ "none", "ignore", "restrict" });
         String closest = StringDistance.getClosestLevenshteinDistance(val,
             opts, .5F);
@@ -76,7 +81,8 @@ public class UpdateStrategies {
         if (closest != null)
             msg = _loc.get("bad-update-strategy-hint", new Object[]{
                 context, val, closest, opts });
-        else msg = _loc.get("bad-update-strategy", context, val, opts);
+        else
+            msg = _loc.get("bad-update-strategy", context, val, opts);
         throw new IllegalArgumentException(msg);
-    }
+	}
 }

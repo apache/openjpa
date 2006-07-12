@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -23,7 +26,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 
 /**
- * A query execution context.
+ * <p>A query execution context.</p>
  *
  * @author Abe White
  * @since 4.0
@@ -31,7 +34,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 public interface QueryContext {
 
     /**
-     * Return the query for this context. Note that the query will be
+     * Return the query for this context.  Note that the query will be
      * unavailable in remote contexts, and this method may throw an exception
      * to that effect.
      */
@@ -48,7 +51,8 @@ public interface QueryContext {
     public FetchConfiguration getFetchConfiguration();
 
     /**
-     * Returns the operation that this query will be expected to perform.
+     * Returns the operation that this query will be expected
+     * to perform.
      *
      * @see QueryOperations
      * @since 4.0
@@ -73,7 +77,8 @@ public interface QueryContext {
 
     /**
      * Return the class of the objects that this query will return,
-     * or <code>null</code> if this information is not available / not relevant.
+     * or <code>null</code> if this information is not available /
+     * not relevant.
      */
     public Class getCandidateType();
 
@@ -104,7 +109,7 @@ public interface QueryContext {
 
     /**
      * Specify that the query will return only 1
-     * result, rather than a collection. The execute method will return null
+     * result, rather than a collection.  The execute method will return null
      * if the query result size is 0.
      *
      * @since 3.0
@@ -155,9 +160,9 @@ public interface QueryContext {
     /**
      * Set the range of results to return.
      *
-     * @param start 0-based inclusive start index
-     * @param end   0-based exclusive end index, or
-     *              {@link Long#MAX_VALUE} for no limit
+     * @param    start    0-based inclusive start index
+     * @param    end        0-based exclusive end index, or
+     * {@link Long#MAX_VALUE} for no limit
      * @since 3.2
      */
     public void setRange(long start, long end);
@@ -173,7 +178,7 @@ public interface QueryContext {
     public void declareParameters(String params);
 
     /**
-     * Return a map of parameter name to type for this query. The returned
+     * Return a map of parameter name to type for this query.  The returned
      * map will iterate in the order that the parameters were declared or,
      * if they're implicit, used.
      */
@@ -266,17 +271,19 @@ public interface QueryContext {
     /**
      * Helper method to instantiate the class with the given name, taking
      * into account the query's candidate package, automatic imports, and
-     * the given imports(if any). Returns null if the type cannot be found.
+     * the given imports (if any).  Returns null if the type cannot be
+     * found.
      */
     public Class classForName(String name, String[] imports);
 
     /**
-     * Synchronize on the query's internal lock.
-     */
-    public void lock();
+     *	Synchronize on the query's internal lock.
+	 */
+	public void lock (); 
 
-    /**
-     * Unlock the query's internal lock.
-     */
-    public void unlock();
+
+	/**
+	 *	Unlock the query's internal lock.
+	 */
+	public void unlock (); 
 }

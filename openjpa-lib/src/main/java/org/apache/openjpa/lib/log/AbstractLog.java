@@ -31,9 +31,9 @@ public abstract class AbstractLog implements Log {
     /**
      * Send the specified log message to the handler.
      *
-     * @param level   the level of the log message
+     * @param level the level of the log message
      * @param message the message to send
-     * @param t       the Throwable, or null if this is not an error
+     * @param t the Throwable, or null if this is not an error
      */
     protected abstract void log(short level, String message, Throwable t);
 

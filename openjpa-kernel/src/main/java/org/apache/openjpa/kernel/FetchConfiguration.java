@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -20,12 +23,12 @@ import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 
 /**
- * Allows configuration and optimization of how objects are loaded from
- * the data store.
+ * <p>Allows configuration and optimization of how objects are loaded from
+ * the data store.</p>
  *
+ * @since 3.0
  * @author Abe White
  * @author Patrick Linskey
- * @since 3.0
  */
 public interface FetchConfiguration
     extends Serializable, Cloneable, LockLevels, QueryFlushModes {
@@ -52,8 +55,8 @@ public interface FetchConfiguration
 
     /**
      * Called automatically by the system to associate the fetch configuration
-     * with a context before use. The fetch configuration properties should
-     * be synchronized with the context's configuration object. Subclasses
+     * with a context before use.  The fetch configuration properties should
+     * be synchronized with the context's configuration object.  Subclasses
      * for specific back ends cannot rely on the context's configuration
      * implementing their back end's configuration sub-interface.
      */
@@ -71,14 +74,14 @@ public interface FetchConfiguration
 
     /**
      * Return the fetch batch size for large result set support.
-     * Defaults to the <code>org.apache.openjpa.FetchBatchSize</code> setting. Note
+     * Defaults to the	<code>org.apache.openjpa.FetchBatchSize</code> setting.  Note
      * that this property will be ignored under some data stores.
      */
     public int getFetchBatchSize();
 
     /**
      * Set the fetch batch size for large result set support.
-     * Defaults to the <code>org.apache.openjpa.FetchBatchSize</code> setting. Note
+     * Defaults to the	<code>org.apache.openjpa.FetchBatchSize</code> setting.  Note
      * that this property will be ignored under some data stores.
      */
     public FetchConfiguration setFetchBatchSize(int fetchBatchSize);
@@ -93,13 +96,13 @@ public interface FetchConfiguration
      * Set the maximum depth of the fetched instance graph.
      *
      * @param max denotes limiting length of traversal path from a root
-     *            instance. <code>-1</code> implies no limit. <code>0</code> is not
-     *            permissible.
+     * instance. <code>-1</code> implies no limit. <code>0</code> is not
+     * permissible.
      */
     public FetchConfiguration setMaxFetchDepth(int max);
 
     /**
-     * Return whether or not query caching is enabled. If this returns
+     * Return whether or not query caching is enabled.  If this returns
      * <code>true</code> but the datacache plugin is not installed, caching
      * will not be enabled. If this
      * returns <code>false</code>, query caching will not be used
@@ -108,7 +111,7 @@ public interface FetchConfiguration
     public boolean getQueryCache();
 
     /**
-     * Control whether or not query caching is enabled. This has no effect
+     * Control whether or not query caching is enabled.  This has no effect
      * if the datacache plugin is not installed, or if the query cache size
      * is set to zero.
      */
@@ -126,7 +129,7 @@ public interface FetchConfiguration
 
     /**
      * Returns immutable set of names of the fetch groups that this component
-     * will use when loading objects. Defaults to the
+     * will use when loading objects.  Defaults to the
      * <code>org.apache.openjpa.FetchGroups</code> setting.
      *
      * @return empty set if no group has been added.
@@ -171,7 +174,7 @@ public interface FetchConfiguration
     /**
      * Clears the set of fetch group names to use when loading
      * data. After this operation is invoked, only those fields in
-     * the default fetch group(and any requested field) will be
+     * the default fetch group (and any requested field) will be
      * loaded when loading an object.
      */
     public FetchConfiguration clearFetchGroups();
@@ -183,7 +186,7 @@ public interface FetchConfiguration
 
     /**
      * Returns the set of fully-qualified field names that this component
-     * will use when loading objects. Defaults to the empty set.
+     * will use when loading objects.  Defaults to the empty set.
      */
     public Set getFields();
 
@@ -295,18 +298,19 @@ public interface FetchConfiguration
      * Sets an arbitrary query hint that may be utilized during
      * execution. The hint may be datastore-specific.
      *
-     * @param name  the name of the hint
+     * @param name the name of the hint
      * @param value the value of the hint
      * @since 4.0
      */
     public void setHint(String name, Object value);
 
     /**
-     * Returns the hint for the specific key, or null if the hint
-     * is not specified.
+     *  Returns the hint for the specific key, or null if the hint
+     *  is not specified.
      *
-     * @param name the hint name
-     * @since 4.0
-     */
-    public Object getHint(String name);
+	 *  @param  name   the hint name
+	 *
+	 *	@since	4.0
+	 */
+	public Object getHint (String name);
 }

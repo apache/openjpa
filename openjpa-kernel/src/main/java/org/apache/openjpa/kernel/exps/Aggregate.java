@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -20,18 +23,20 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
 
 /**
- * A value produced from evaluating a result aggregate.
+ * <p>A value produced from evaluating a result aggregate.</p>
  *
  * @author Abe White
  */
-class Aggregate extends Val {
+class Aggregate
+    extends Val {
 
     private static final Localizer _loc = Localizer.forPackage(Aggregate.class);
+
     private final AggregateListener _listener;
     private final Val _arg;
 
     /**
-     * Constructor. Supply aggregate listener and its argument value, if any.
+     * Constructor.  Supply aggregate listener and its argument value, if any.
      */
     public Aggregate(AggregateListener listener, Val arg) {
         _listener = listener;
@@ -57,6 +62,7 @@ class Aggregate extends Val {
         StoreContext ctx, Object[] params) {
         if (candidate == null)
             candidate = Collections.EMPTY_LIST;
+
         // allow aggregates to be used in filter expressions so long as a
         // collection is passed in
         if (candidate instanceof Collection)
@@ -70,7 +76,8 @@ class Aggregate extends Val {
         Collection args = null;
         if (_arg != null)
             args = _arg.eval(candidates, orig, ctx, params);
-        Object agg = _listener.evaluate(args, getArgTypes(), candidates, ctx);
+        Object agg = _listener.evaluate(args, getArgTypes(), candidates,
+            ctx);
         return Collections.singleton(agg);
     }
 

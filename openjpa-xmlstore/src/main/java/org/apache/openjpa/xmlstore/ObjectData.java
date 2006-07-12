@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -37,9 +40,11 @@ import org.apache.openjpa.util.UnsupportedException;
 import serp.util.Numbers;
 
 /**
- * In-memory form of data in datastore backing a single persistent object.
+ * <p>In-memory form of data in datastore backing a single persistent
+ * object.</p>
  */
-public final class ObjectData implements Cloneable {
+public final class ObjectData
+    implements Cloneable {
 
     private Object _oid;
     private Object[] _data;
@@ -47,7 +52,7 @@ public final class ObjectData implements Cloneable {
     private ClassMetaData _meta;
 
     /**
-     * Create the object without underlying data. Just pass in type specific
+     * Create the object without underlying data.  Just pass in type specific
      * metadata and the oid.
      */
     public ObjectData(Object oid, ClassMetaData meta) {
@@ -101,12 +106,13 @@ public final class ObjectData implements Cloneable {
 
     /**
      * Load the data and version information for this object into the
-     * given state manager. Only fields in the given fetch configuration are
+     * given state manager.  Only fields in the given fetch configuration are
      * loaded.
      */
     public void load(OpenJPAStateManager sm, FetchState fetchState) {
         if (sm.getVersion() == null)
             sm.setVersion(_version);
+
         FieldMetaData[] fmds = _meta.getFields();
         for (int i = 0; i < fmds.length; i++) {
             if (fmds[i].getManagement() == fmds[i].MANAGE_PERSISTENT
@@ -118,12 +124,14 @@ public final class ObjectData implements Cloneable {
 
     /**
      * Load the data and version information for this object into the
-     * given state manager. Only fields in the given bit set will be loaded.
+     * given state manager.  Only fields in the given bit set will be
+     * loaded.
      */
     public void load(OpenJPAStateManager sm, BitSet fields,
         FetchState fetchState) {
         if (sm.getVersion() == null)
             sm.setVersion(_version);
+
         FieldMetaData[] fmds = _meta.getFields();
         for (int i = 0; i < fmds.length; i++)
             if (fields.get(i))
@@ -138,29 +146,35 @@ public final class ObjectData implements Cloneable {
         FieldMetaData fmd, Object val, FetchState fetchState) {
         if (val == null)
             return null;
+
         Collection c;
         switch (fmd.getTypeCode()) {
             case JavaTypes.COLLECTION:
                 // the stored value must be a collection
                 c = (Collection) val;
+
                 // the state manager will create a proxy collection of the needed
                 // type depending on the declared type of the user's field; the
                 // proxy will perform dirty tracking, etc
                 Collection c2 = (Collection) sm.newFieldProxy(fmd.getIndex());
+
                 // populate the proxy collection with our stored data, converting
                 // it to the right type from its stored form
                 for (Iterator itr = c.iterator(); itr.hasNext();)
                     c2.add(toNestedLoadable(sm, fmd.getElement(), itr.next(),
                         fetchState));
                 return c2;
+
             case JavaTypes.ARRAY:
                 // the stored value must be a collection; we put arrays into
                 // collections for storage
                 c = (Collection) val;
+
                 // create a new array of the right type; unlike collections in
                 // the case above, arrays cannot be proxied
-                Object a =
-                    Array.newInstance(fmd.getElement().getType(), c.size());
+                Object a = Array.newInstance(fmd.getElement().getType(),
+                    c.size());
+
                 // populate the array with our stored data, converting it to the
                 // right type from its stored form
                 int idx = 0;
@@ -168,13 +182,16 @@ public final class ObjectData implements Cloneable {
                     Array.set(a, idx, toNestedLoadable(sm, fmd.getElement(),
                         itr.next(), fetchState));
                 return a;
+
             case JavaTypes.MAP:
                 // the stored value must be a map
                 Map m = (Map) val;
+
                 // the state manager will create a proxy map of the needed
                 // type depending on the declared type of the user's field; the
                 // proxy will perform dirty tracking, etc
                 Map m2 = (Map) sm.newFieldProxy(fmd.getIndex());
+
                 // populate the proxy map with our stored data, converting
                 // it to the right type from its stored form
                 for (Iterator itr = m.entrySet().iterator(); itr.hasNext();) {
@@ -185,6 +202,7 @@ public final class ObjectData implements Cloneable {
                             fetchState));
                 }
                 return m2;
+
             default:
                 // just convert the stored value into its loadable equivalent.
                 return toNestedLoadable(sm, fmd, val, fetchState);
@@ -193,17 +211,19 @@ public final class ObjectData implements Cloneable {
 
     /**
      * Convert the given stored value <code>val</code> to a value for loading
-     * into a state manager. The value <code>val</code> must be a singular
+     * into a state manager.  The value <code>val</code> must be a singular
      * value; it cannot be a container.
      */
     private static Object toNestedLoadable(OpenJPAStateManager sm,
         ValueMetaData vmd, Object val, FetchState fetchState) {
         if (val == null)
             return null;
+
         switch (vmd.getTypeCode()) {
             // clone the date to prevent direct modification of our stored value
             case JavaTypes.DATE:
                 return ((Date) val).clone();
+
             case JavaTypes.PC:
             case JavaTypes.PC_UNTYPED:
                 // for relations to other persistent objects, we store the related
@@ -222,14 +242,16 @@ public final class ObjectData implements Cloneable {
 
     /**
      * Store the data and version information for this object from the
-     * given state manager. Only dirty fields will be stored.
+     * given state manager.  Only dirty fields will be stored.
      */
     public void store(OpenJPAStateManager sm) {
         _version = (Long) sm.getVersion();
-        // if the version has not been set in the state manager(only true
+
+        // if the version has not been set in the state manager (only true
         // when the object is new), set the version number to 0
         if (_version == null)
             _version = Numbers.valueOf(0L);
+
         // run through each persistent field in the state manager and store it
         FieldMetaData[] fmds = _meta.getFields();
         for (int i = 0; i < fmds.length; i++) {
@@ -246,16 +268,19 @@ public final class ObjectData implements Cloneable {
         StoreContext ctx) {
         if (val == null)
             return null;
+
         Collection c;
         switch (fmd.getTypeCode()) {
             case JavaTypes.COLLECTION:
                 c = (Collection) val;
+
                 // create a collection to copy the elements into for storage, and
                 // populate it with converted element values
                 Collection c2 = new ArrayList();
                 for (Iterator itr = c.iterator(); itr.hasNext();)
                     c2.add(toNestedStorable(fmd.getElement(), itr.next(), ctx));
                 return c2;
+
             case JavaTypes.ARRAY:
                 // create a collection to copy the elements into for storage, and
                 // populate it with converted element values
@@ -264,8 +289,10 @@ public final class ObjectData implements Cloneable {
                     c.add(toNestedStorable(fmd.getElement(), Array.get(val, i),
                         ctx));
                 return c;
+
             case JavaTypes.MAP:
                 Map m = (Map) val;
+
                 // create a map to copy the entries into for storage, and
                 // populate it with converted entry values
                 Map m2 = new HashMap();
@@ -275,6 +302,7 @@ public final class ObjectData implements Cloneable {
                         toNestedStorable(fmd.getElement(), e.getValue(), ctx));
                 }
                 return m2;
+
             default:
                 // just convert the loaded value into its storable equivalent
                 return toNestedStorable(fmd, val, ctx);
@@ -290,24 +318,28 @@ public final class ObjectData implements Cloneable {
         StoreContext ctx) {
         if (val == null)
             return null;
+
         switch (vmd.getTypeCode()) {
             case JavaTypes.DATE:
-                // if the date is a proxy(since Dates are second class
-                // objects(SCOs) they can be proxied for dirty tracking,
+                // if the date is a proxy (since Dates are second class
+                // objects (SCOs) they can be proxied for dirty tracking,
                 // etc) then copy the value out of it for storage
                 if (val instanceof Proxy)
                     return ((Proxy) val).copy(val);
                 return ((Date) val).clone();
+
             case JavaTypes.PC:
             case JavaTypes.PC_UNTYPED:
                 return ctx.getObjectId(val);
+
             case JavaTypes.COLLECTION:
             case JavaTypes.ARRAY:
             case JavaTypes.MAP:
-                // nested relation types(e.g. collections of collections)
+                // nested relation types (e.g. collections of collections)
                 // are not currently supported
                 throw new UnsupportedException("This store does not support "
-                    + "nested containers(e.g. collections of collections).");
+                    + "nested containers (e.g. collections of collections).");
+
             default:
                 return val;
         }
@@ -319,6 +351,7 @@ public final class ObjectData implements Cloneable {
     public Object clone() {
         ObjectData data = new ObjectData(_oid, _meta);
         data.setVersion(_version);
+
         // copy each field
         FieldMetaData[] fmds = _meta.getFields();
         for (int i = 0; i < fmds.length; i++) {
@@ -327,6 +360,7 @@ public final class ObjectData implements Cloneable {
                 data.setField(i, null);
                 continue;
             }
+
             switch (fmds[i].getTypeCode()) {
                 case JavaTypes.COLLECTION:
                 case JavaTypes.ARRAY:
@@ -352,7 +386,7 @@ public final class ObjectData implements Cloneable {
             buf.append("  Field: (" + i + ")\n");
             buf.append("  Name: (" + fmds[i].getName() + ")\n");
             buf.append("  Value: (" + _data[i] + ")\n");
-        }
-        return buf.toString();
-    }
+		}
+		return buf.toString ();
+	}
 }

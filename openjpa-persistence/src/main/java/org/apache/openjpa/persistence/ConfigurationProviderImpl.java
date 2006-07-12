@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -34,10 +37,10 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.GeneralException;
 
 /**
- * Configuration provider capable of loading a {@link Configuration} from
- * the current environment's JPA-style XML configuration data.
+ * <p>Configuration provider capable of loading a {@link Configuration} from
+ * the current environment's JPA-style XML configuration data.</p>
  * <p/>
- * For defaults, looks in <code>org.apache.openjpa.properties</code> system property for
+ * <p>For defaults, looks in <code>org.apache.openjpa.properties</code> system property for
  * the location of a file to parse. If no system property is defined, the
  * default resource location of <code>org.apache.openjpa.xml</code> is used.
  * If it exists, the resource is parsed as an XML file.
@@ -45,12 +48,15 @@ import org.apache.openjpa.util.GeneralException;
  * @nojavadoc
  * @since 4.0.0
  */
-public class ConfigurationProviderImpl extends MapConfigurationProvider {
+public class ConfigurationProviderImpl
+    extends MapConfigurationProvider {
 
     private static final String RSRC_DEFAULT = "org.apache.openjpa.xml";
     private static final String RSRC_SPEC = "META-INF/persistence.xml";
+
     private static final Localizer _loc = Localizer.forPackage
         (ConfigurationProviderImpl.class);
+
     private ClassLoader _loader = null;
     private String _source = null;
 
@@ -66,7 +72,8 @@ public class ConfigurationProviderImpl extends MapConfigurationProvider {
      * Load configuration from the given persistence unit with the specified
      * user properties.
      */
-    public boolean load(PersistenceUnitInfo pinfo) throws IOException {
+    public boolean load(PersistenceUnitInfo pinfo)
+        throws IOException {
         return load(pinfo, null);
     }
 
@@ -74,31 +81,36 @@ public class ConfigurationProviderImpl extends MapConfigurationProvider {
      * Load configuration from the given persistence unit with the specified
      * user properties.
      */
-    public boolean load(PersistenceUnitInfo pinfo, Map m) throws IOException {
+    public boolean load(PersistenceUnitInfo pinfo, Map m)
+        throws IOException {
         if (pinfo == null)
             return false;
         String providerName = pinfo.getPersistenceProviderClassName();
         if (providerName != null && providerName.length() != 0
             && !PersistenceProviderImpl.class.getName().equals(providerName))
             return false;
+
         addProperties(PersistenceUnitInfoImpl.toOpenJPAProperties(pinfo));
         if (m != null)
             addProperties(m);
+
         _loader = pinfo.getClassLoader();
         if (pinfo instanceof PersistenceUnitInfoImpl) {
             PersistenceUnitInfoImpl impl = (PersistenceUnitInfoImpl) pinfo;
             if (impl.getPersistenceXmlFileUrl() != null)
                 _source = impl.getPersistenceXmlFileUrl().toString();
         }
+
         return true;
     }
 
     /**
      * Load configuration from the given resource, with the given map of
-     * overrides. If the resource is null, tries to load from persistence.xml,
+     * overrides.  If the resource is null, tries to load from persistence.xml,
      * but still returns true if persistence.xml does not exist.
      */
-    public boolean load(String name, String rsrc, Map m) throws IOException {
+    public boolean load(String name, String rsrc, Map m)
+        throws IOException {
         boolean explicit = rsrc != null && rsrc.length() > 0;
         if (!explicit)
             rsrc = RSRC_SPEC;
@@ -107,6 +119,7 @@ public class ConfigurationProviderImpl extends MapConfigurationProvider {
             return ret.booleanValue();
         if (explicit)
             return false;
+
         // persistence.xml does not exist; just load map
         PersistenceUnitInfoImpl punit = new PersistenceUnitInfoImpl();
         punit.fromUserProperties(m);
@@ -114,7 +127,8 @@ public class ConfigurationProviderImpl extends MapConfigurationProvider {
     }
 
     @Override
-    public boolean loadDefaults(ClassLoader loader) throws IOException {
+    public boolean loadDefaults(ClassLoader loader)
+        throws IOException {
         String rsrc = System.getProperty("org.apache.openjpa.properties");
         String name = null;
         boolean explicit = false;
@@ -141,13 +155,15 @@ public class ConfigurationProviderImpl extends MapConfigurationProvider {
      * resource into a new {@link PersistenceUnitInfo}. Then, applies the
      * overrides in <code>m</code>.
      *
-     * @return {@link Boolean#TRUE} if the resource was loaded, null if it
-     *         does not exist, or {@link Boolean#FALSE} if it is not for OpenJPA
+     * @return    {@link Boolean#TRUE} if the resource was loaded, null if it
+     * does not exist, or {@link Boolean#FALSE} if it is not for OpenJPA
      */
     private Boolean load(String name, String rsrc, Map m, ClassLoader loader,
-        boolean explicit) throws IOException {
+        boolean explicit)
+        throws IOException {
         if (loader == null)
             loader = Thread.currentThread().getContextClassLoader();
+
         Enumeration<URL> urls = loader.getResources(rsrc);
         if (!urls.hasMoreElements()) {
             if (!rsrc.startsWith("META-INF"))
@@ -155,6 +171,7 @@ public class ConfigurationProviderImpl extends MapConfigurationProvider {
             if (!urls.hasMoreElements())
                 return null;
         }
+
         ConfigurationParser parser = new ConfigurationParser(m);
         PersistenceUnitInfo pinfo = parseResources(parser, urls, name, loader);
         if (pinfo == null || !load(pinfo)) {
@@ -207,6 +224,7 @@ public class ConfigurationProviderImpl extends MapConfigurationProvider {
     public boolean load(File file) {
         if (!file.getName().endsWith(".xml"))
             return false;
+
         try {
             ConfigurationParser parser = new ConfigurationParser(null);
             parser.parse(file);
@@ -215,7 +233,8 @@ public class ConfigurationProviderImpl extends MapConfigurationProvider {
                 if (load(pinfo))
                     return true;
             return false;
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new GeneralException(ioe);
         }
     }
@@ -226,18 +245,21 @@ public class ConfigurationProviderImpl extends MapConfigurationProvider {
             ((OpenJPAConfiguration) conf).setSpecification
                 (PersistenceProductDerivation.SPEC_JPA);
         super.setInto(conf, null);
+
         Log log = conf.getConfigurationLog();
         if (log.isTraceEnabled())
             log.trace(_loc.get("conf-load", _source, getProperties()));
     }
 
     /**
-     * SAX handler capable of parsing an JPA persistence.xml file.
-     * Package-protected for testing.
+     *	SAX handler capable of parsing an JPA persistence.xml file.
+     *	Package-protected for testing.
      */
-    static class ConfigurationParser extends XMLMetaDataParser {
+    static class ConfigurationParser
+        extends XMLMetaDataParser {
 
         private final Map _map;
+
         private PersistenceUnitInfoImpl _info = null;
         private URL _source = null;
 
@@ -249,13 +271,15 @@ public class ConfigurationProviderImpl extends MapConfigurationProvider {
         }
 
         @Override
-        public void parse(URL url) throws IOException {
+        public void parse(URL url)
+            throws IOException {
             _source = url;
             super.parse(url);
         }
 
         @Override
-        public void parse(File file) throws IOException {
+        public void parse(File file)
+            throws IOException {
             _source = file.toURL();
             super.parse(file);
         }
@@ -282,13 +306,15 @@ public class ConfigurationProviderImpl extends MapConfigurationProvider {
             return true;
         }
 
-        protected void endElement(String name) throws SAXException {
+        protected void endElement(String name)
+            throws SAXException {
             if (currentDepth() == 1) {
                 _info.fromUserProperties(_map);
                 addResult(_info);
             }
             if (currentDepth() != 2)
                 return;
+
             switch (name.charAt(0)) {
                 case 'c': // class
                     _info.addManagedClassName(currentText());
@@ -299,10 +325,12 @@ public class ConfigurationProviderImpl extends MapConfigurationProvider {
                 case 'j':
                     if ("jta-data-source".equals(name))
                         _info.setJtaDataSourceName(currentText());
-                    else { // jar-file
+                    else // jar-file
+                    {
                         try {
                             _info.addJarFileName(currentText());
-                        } catch (IllegalArgumentException iae) {
+                        }
+                        catch (IllegalArgumentException iae) {
                             throw getException(iae.getMessage());
                         }
                     }
@@ -321,20 +349,23 @@ public class ConfigurationProviderImpl extends MapConfigurationProvider {
         }
 
         /**
-         * Parse persistence-unit element.
+         *	Parse persistence-unit element.
          */
         private void startPersistenceUnit(Attributes attrs)
             throws SAXException {
             _info = new PersistenceUnitInfoImpl();
             _info.setPersistenceUnitName(attrs.getValue("name"));
+
             // default is JTA according to spec
             String val = attrs.getValue("transaction-type");
             if (val == null)
                 _info.setTransactionType(PersistenceUnitTransactionType.JTA);
-            else _info.setTransactionType(Enum.valueOf
-                (PersistenceUnitTransactionType.class, val));
+            else
+                _info.setTransactionType(Enum.valueOf
+                    (PersistenceUnitTransactionType.class, val));
+
             if (_source != null)
                 _info.setPersistenceXmlFileUrl(_source);
-        }
-    }
+		}
+	}
 }

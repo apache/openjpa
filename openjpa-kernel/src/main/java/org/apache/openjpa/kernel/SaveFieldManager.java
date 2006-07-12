@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -23,17 +26,19 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ProxyManager;
 
 /**
- * FieldManager type used to store information for rollback.
+ * <p>FieldManager type used to store information for rollback.</p>
  *
  * @author Abe White
  */
-class SaveFieldManager extends ClearFieldManager {
+class SaveFieldManager
+    extends ClearFieldManager {
 
     private final StateManagerImpl _sm;
     private final BitSet _unloaded;
     private BitSet _saved = null;
     private int[] _copyField = null;
     private PersistenceCapable _state = null;
+
     // used to track field value during store/fetch cycle
     private Object _field = null;
 
@@ -43,6 +48,7 @@ class SaveFieldManager extends ClearFieldManager {
     SaveFieldManager(StateManagerImpl sm, PersistenceCapable pc, BitSet dirty) {
         _sm = sm;
         _state = pc;
+
         // if instance is new or transient all fields will be marked dirty even
         // though they have their original values, so we can restore them;
         // otherwise, we need to record already-dirty persistent fields as
@@ -66,14 +72,15 @@ class SaveFieldManager extends ClearFieldManager {
     }
 
     /**
-     * Return the currently-loaded fields that will be unloaded after rollback.
+     * Return the currently-loaded fields that will be unloaded after
+     * rollback.
      */
     public BitSet getUnloaded() {
         return _unloaded;
     }
 
     /**
-     * Save the given field. If this method returns true, then you need
+     * Save the given field.  If this method returns true, then you need
      * to use this field manager to replace the given field in the instance
      * returned by {@link #getState}.
      */
@@ -83,9 +90,11 @@ class SaveFieldManager extends ClearFieldManager {
             _unloaded.set(field);
             return false;
         }
+
         // already saved?
         if (_saved != null && _saved.get(field))
             return false;
+
         FieldMetaData fmd = _sm.getMetaData().getField(field);
         boolean mutable = false;
         switch (fmd.getDeclaredTypeCode()) {
@@ -96,8 +105,10 @@ class SaveFieldManager extends ClearFieldManager {
             case JavaTypes.OBJECT:
                 mutable = true;
         }
+
         // if this is not an inverse field and the proper restore flag is
         // not set, skip it
+
         if (_sm.getBroker().getInverseManager() == null
             || fmd.getInverseMetaDatas().length == 0) {
             // use sm's restore directive, not broker's
@@ -108,16 +119,20 @@ class SaveFieldManager extends ClearFieldManager {
                 return false;
             }
         }
+
         // prepare to save the field
         if (_state == null)
             _state = _sm.getPersistenceCapable().pcNewInstance(_sm, true);
         if (_saved == null)
             _saved = new BitSet(_sm.getMetaData().getFields().length);
+
         _saved.set(field);
+
         // if mutable, return true to indicate that the field needs to be
         // copied by providing and replacing it using this field manager
         if (mutable)
             return true;
+
         // immutable fields can just be copied over
         if (_copyField == null)
             _copyField = new int[1];
@@ -127,7 +142,7 @@ class SaveFieldManager extends ClearFieldManager {
     }
 
     /**
-     * Restore the given field. If this method returns true, then you need
+     * Restore the given field.  If this method returns true, then you need
      * to use this field manager to replace the given field in the state
      * manager's instance.
      */
@@ -136,10 +151,12 @@ class SaveFieldManager extends ClearFieldManager {
         // replaced with a default value
         if (_unloaded.get(field))
             return true;
+
         // if the field was not saved, it must not have gotten dirty; just
         // return false so that the current value is kept
         if (_saved == null || !_saved.get(field))
             return false;
+
         // copy the saved field over
         if (_copyField == null)
             _copyField = new int[1];
@@ -181,10 +198,11 @@ class SaveFieldManager extends ClearFieldManager {
             default:
                 _field = curVal;
         }
+
         // if we couldn't get a copy of the sco, act like it wasn't saved
         if (curVal != null && _field == null) {
             _unloaded.set(field);
             _saved.clear(field);
-        }
-    }
+		}
+	}
 }

@@ -41,9 +41,9 @@ public class RangeResultObjectProvider implements ResultObjectProvider {
      *
      * @param delegate the result object provider to delegate to
      * @param startIdx 0-based inclusive start index of the range
-     *                 to present; must be &lt; Integer.MAX_VALUE
-     * @param endIdx   0-based exclusive end index of the range to
-     *                 present; must be &lt; Integer.MAX_VALUE, or Long.MAX_VALUE for no limit
+     * to present; must be &lt; Integer.MAX_VALUE
+     * @param endIdx 0-based exclusive end index of the range to
+     * present; must be &lt; Integer.MAX_VALUE, or Long.MAX_VALUE for no limit
      */
     public RangeResultObjectProvider(ResultObjectProvider delegate,
         long startIdx, long endIdx) {

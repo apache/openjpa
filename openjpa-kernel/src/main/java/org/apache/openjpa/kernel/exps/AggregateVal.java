@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -20,18 +23,20 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
 
 /**
- * An aggregate of some value.
+ * <p>An aggregate of some value.</p>
  *
  * @author Abe White
  */
-abstract class AggregateVal extends Val {
+abstract class AggregateVal
+    extends Val {
 
     private static final Localizer _loc = Localizer.forPackage
         (AggregateVal.class);
+
     private final Val _val;
 
     /**
-     * Constructor. Supply value to aggregate.
+     * Constructor.  Supply value to aggregate.
      */
     public AggregateVal(Val val) {
         _val = val;
@@ -56,6 +61,7 @@ abstract class AggregateVal extends Val {
         StoreContext ctx, Object[] params) {
         if (candidate == null)
             candidate = Collections.EMPTY_LIST;
+
         // allow aggregates to be used in filter expressions so long as a
         // collection is passed in
         if (candidate instanceof Collection)
@@ -76,7 +82,7 @@ abstract class AggregateVal extends Val {
     protected abstract Class getType(Class c);
 
     /**
-     * Aggregate the given values.
+     *	Aggregate the given values.
      */
     protected abstract Object operate(Collection os, Class c);
 }

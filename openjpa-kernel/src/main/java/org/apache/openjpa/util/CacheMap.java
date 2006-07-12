@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -39,7 +42,8 @@ import org.apache.openjpa.lib.util.concurrent.ReentrantLock;
  * @author Patrick Linskey
  * @author Abe White
  */
-public class CacheMap implements Map {
+public class CacheMap
+    implements Map {
 
     /**
      * The map for non-expired and non-pinned references.
@@ -55,13 +59,15 @@ public class CacheMap implements Map {
      * The set of objects pinned into the cache.
      */
     protected final Map pinnedMap;
-    // number of pinned values(not including keys not mapped to values)
+
+    // number of pinned values (not including keys not mapped to values)
     private int _pinnedSize = 0;
+
     private final ReentrantLock _writeLock = new ReentrantLock();
     private final ReentrantLock _readLock;
 
     /**
-     * Create a non-LRU(and therefore highly concurrent) cache map with a
+     * Create a non-LRU (and therefore highly concurrent) cache map with a
      * size of 1000.
      */
     public CacheMap() {
@@ -127,7 +133,8 @@ public class CacheMap implements Map {
     protected void cacheMapOverflowRemoved(Object key, Object value) {
         if (softMap.size() < softMap.getMaxSize())
             put(softMap, key, value);
-        else entryRemoved(key, value, true);
+        else
+            entryRemoved(key, value, true);
     }
 
     /**
@@ -145,7 +152,7 @@ public class CacheMap implements Map {
     }
 
     /**
-     * Put the given entry into the given map. Allows subclasses to
+     * Put the given entry into the given map.  Allows subclasses to
      * take additional actions.
      */
     protected Object put(Map map, Object key, Object value) {
@@ -153,7 +160,7 @@ public class CacheMap implements Map {
     }
 
     /**
-     * Remove the given key from the given map. Allows subclasses to
+     * Remove the given key from the given map.  Allows subclasses to
      * take additional actions.
      */
     protected Object remove(Map map, Object key) {
@@ -253,12 +260,12 @@ public class CacheMap implements Map {
     }
 
     /**
-     * Locks the given key and its value into the map. Objects pinned into
+     * Locks the given key and its value into the map.  Objects pinned into
      * the map are not counted towards the maximum cache size, and are never
-     * evicted implicitly. You may pin keys for which no value is in the map.
+     * evicted implicitly.  You may pin keys for which no value is in the map.
      *
      * @return true if the givne key's value was pinned; false if no value
-     *         for the given key is cached
+     * for the given key is cached
      */
     public boolean pin(Object key) {
         writeLock();
@@ -267,10 +274,12 @@ public class CacheMap implements Map {
             // pinned map already contains the key, nothing to do
             if (pinnedMap.containsKey(key))
                 return pinnedMap.get(key) != null;
+
             // check other maps for key
             Object val = remove(cacheMap, key);
             if (val == null)
                 val = remove(softMap, key);
+
             // pin key
             put(pinnedMap, key, val);
             if (val != null) {
@@ -311,18 +320,18 @@ public class CacheMap implements Map {
      * requirements or through garbage collection of soft references.
      * It is invoked with <code>expired</code> set to <code>false</code>
      * when an object is explicitly removed via the {@link #remove} or
-     * {@link #clear} methods. This may be invoked more than once for a
+     * {@link #clear} methods.  This may be invoked more than once for a
      * given entry.
      *
-     * @param value may be null if the value was a soft reference that has
-     *              been GCd
+     * @param    value    may be null if the value was a soft reference that has
+     * been GCd
      * @since 2.5.0
      */
     protected void entryRemoved(Object key, Object value, boolean expired) {
     }
 
     /**
-     * Invoked when an entry is added to the cache. This may be invoked
+     * Invoked when an entry is added to the cache.  This may be invoked
      * more than once for an entry.
      */
     protected void entryAdded(Object key, Object value) {
@@ -334,6 +343,7 @@ public class CacheMap implements Map {
             Object val = pinnedMap.get(key);
             if (val != null)
                 return val;
+
             val = cacheMap.get(key);
             if (val == null) {
                 // if we find the key in the soft map, move it back into
@@ -365,9 +375,11 @@ public class CacheMap implements Map {
                 }
                 return val;
             }
+
             // if no hard refs, don't put anything
             if (cacheMap.getMaxSize() == 0)
                 return null;
+
             // otherwise, put the value into the map and clear it from the
             // soft map
             val = put(cacheMap, key, value);
@@ -417,11 +429,13 @@ public class CacheMap implements Map {
                 }
                 return val;
             }
+
             val = remove(cacheMap, key);
             if (val == null)
                 val = softMap.remove(key);
             if (val != null)
                 entryRemoved(key, val, false);
+
             return val;
         }
         finally {
@@ -438,8 +452,10 @@ public class CacheMap implements Map {
             notifyEntryRemovals(pinnedMap.entrySet());
             pinnedMap.clear();
             _pinnedSize = 0;
+
             notifyEntryRemovals(cacheMap.entrySet());
             cacheMap.clear();
+
             notifyEntryRemovals(softMap.entrySet());
             softMap.clear();
         }
@@ -474,7 +490,8 @@ public class CacheMap implements Map {
     public boolean containsKey(Object key) {
         readLock();
         try {
-            return pinnedMap.get(key) != null || cacheMap.containsKey(key)
+            return pinnedMap.get(key) != null
+                || cacheMap.containsKey(key)
                 || softMap.containsKey(key);
         }
         finally {
@@ -520,7 +537,8 @@ public class CacheMap implements Map {
     /**
      * View of the entry set.
      */
-    private class EntrySet extends AbstractSet {
+    private class EntrySet
+        extends AbstractSet {
 
         public int size() {
             return CacheMap.this.size();
@@ -540,7 +558,8 @@ public class CacheMap implements Map {
     /**
      * View of the key set.
      */
-    private class KeySet extends AbstractSet {
+    private class KeySet
+        extends AbstractSet {
 
         public int size() {
             return CacheMap.this.size();
@@ -554,7 +573,8 @@ public class CacheMap implements Map {
     /**
      * View of the value collection.
      */
-    private class ValueCollection extends AbstractCollection {
+    private class ValueCollection
+        extends AbstractCollection {
 
         public int size() {
             return CacheMap.this.size();
@@ -566,13 +586,15 @@ public class CacheMap implements Map {
     }
 
     /**
-     * Iterator over all entries.
+     *	Iterator over all entries.
      */
-    private class EntryIterator implements Iterator, Predicate {
+    private class EntryIterator
+        implements Iterator, Predicate {
 
         public static final int ENTRY = 0;
         public static final int KEY = 1;
         public static final int VALUE = 2;
+
         private final IteratorChain _itr = new IteratorChain();
         private final int _type;
 
@@ -589,6 +611,7 @@ public class CacheMap implements Map {
         private Iterator getView(Map m) {
             if (m == null)
                 return null;
+
             switch (_type) {
                 case KEY:
                     return m.keySet().iterator();
@@ -615,12 +638,13 @@ public class CacheMap implements Map {
             switch (_type) {
                 case ENTRY:
                     return ((Map.Entry) obj).getValue() != null;
-                case VALUE:
-                    return obj != null;
-                default:
-                    return true;
-            }
-        }
-    }
+			case VALUE:
+				return obj != null;
+			default:
+				return true;
+			}
+		}
+	}
 }
+
 

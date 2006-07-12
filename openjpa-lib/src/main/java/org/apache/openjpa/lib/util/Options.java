@@ -275,10 +275,10 @@ public class Options extends TypedProperties {
     /**
      * Matches a key to an object/setter pair.
      *
-     * @param key   the key given at the command line; may be of the form
-     *              'foo.bar' to signify the 'bar' property of the 'foo' owned object
+     * @param key the key given at the command line; may be of the form
+     * 'foo.bar' to signify the 'bar' property of the 'foo' owned object
      * @param match an array of length 2, where the first index is set
-     *              to the object to retrieve the setter for
+     * to the object to retrieve the setter for
      * @return true if a match was made, false otherwise; additionally,
      *         the first index of the match array will be set to
      *         the matching object and the second index will be

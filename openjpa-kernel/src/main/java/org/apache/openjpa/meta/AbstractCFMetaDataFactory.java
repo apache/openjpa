@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -46,8 +49,8 @@ import org.apache.openjpa.util.UserException;
 import serp.util.Strings;
 
 /**
- * Base class for factory implementations built around XML metadata files
- * in the common fomat.
+ * <p>Base class for factory implementations built around XML metadata files
+ * in the common fomat.</p>
  *
  * @author Abe White
  * @since 4.0
@@ -57,10 +60,12 @@ public abstract class AbstractCFMetaDataFactory
 
     private static final Localizer _loc = Localizer.forPackage
         (AbstractMetaDataFactory.class);
+
     protected Collection files = null;
     protected Collection urls = null;
     protected Collection rsrcs = null;
     protected Collection cpath = null;
+
     private Set _typeNames = null;
 
     /**
@@ -80,6 +85,7 @@ public abstract class AbstractCFMetaDataFactory
         else {
             String[] strs = Strings.split(files, ";", 0);
             this.files = new HashSet((int) (strs.length * 1.33 + 1));
+
             File file;
             for (int i = 0; i < strs.length; i++) {
                 file = new File(strs[i]);
@@ -109,7 +115,8 @@ public abstract class AbstractCFMetaDataFactory
             try {
                 for (int i = 0; i < strs.length; i++)
                     this.urls.add(new URL(strs[i]));
-            } catch (MalformedURLException mue) {
+            }
+            catch (MalformedURLException mue) {
                 throw new UserException(mue);
             }
         }
@@ -156,6 +163,7 @@ public abstract class AbstractCFMetaDataFactory
             return true;
         if (isMappingOnlyFactory() && (mode & MODE_MAPPING) == 0)
             return true;
+
         if (!strict && (mode & MODE_META) != 0)
             mode |= MODE_MAPPING;
         Class cls = (metas.length == 0) ? null : metas[0].getDescribedType();
@@ -164,7 +172,8 @@ public abstract class AbstractCFMetaDataFactory
         Map clsNames = new HashMap((int) (metas.length * 1.33 + 1));
         for (int i = 0; i < metas.length; i++)
             clsNames.put(metas[i].getDescribedType().getName(), metas[i]);
-        // assign default files if in metadata mode(in other modes we assume
+
+        // assign default files if in metadata mode (in other modes we assume
         // the files would have to be read already to create the metadatas)
         Set metaFiles = null;
         Set queryFiles = null;
@@ -173,6 +182,7 @@ public abstract class AbstractCFMetaDataFactory
                 clsNames);
         if (!isMappingOnlyFactory() && (mode & MODE_QUERY) != 0)
             queryFiles = assignDefaultQueryFiles(queries, clsNames);
+
         // parse all files to be sure we don't delete existing metadata when
         // writing out new metadata, then serialize
         Serializer ser;
@@ -186,13 +196,16 @@ public abstract class AbstractCFMetaDataFactory
                 parser.setMode(sermode);
                 parser.setClassLoader(loader);
                 parse(parser, metaFiles);
+
                 MetaDataRepository pr = parser.getRepository();
                 pr.setSourceMode(mode);
                 if (isMappingOnlyFactory())
                     pr.setResolve(MODE_NONE);
-                else pr.setResolve(MODE_MAPPING, false);
+                else
+                    pr.setResolve(MODE_MAPPING, false);
                 ser.addAll(pr);
             }
+
             for (int i = 0; i < metas.length; i++)
                 ser.addMetaData(metas[i]);
             if ((mode & MODE_MAPPING) != 0)
@@ -202,11 +215,13 @@ public abstract class AbstractCFMetaDataFactory
                 if (queries[i].getSourceMode() != MODE_QUERY
                     && (queries[i].getSourceMode() & mode) != 0)
                     ser.addQueryMetaData(queries[i]);
+
             int flags = ser.PRETTY;
             if ((store & STORE_VERBOSE) != 0)
                 flags |= ser.VERBOSE;
             serialize(ser, output, flags);
         }
+
         // do we have any queries stored in query files?
         if (!isMappingOnlyFactory()) {
             boolean qFiles = queryFiles != null;
@@ -236,10 +251,12 @@ public abstract class AbstractCFMetaDataFactory
             return true;
         if (isMappingOnlyFactory() && (mode & MODE_MAPPING) == 0)
             return true;
+
         Parser parser = newParser(false);
         MetaDataRepository pr = parser.getRepository();
         pr.setSourceMode(MODE_MAPPING, false);
         pr.setResolve(MODE_MAPPING, false);
+
         // parse metadata for all these classes
         if ((mode & (MODE_META | MODE_MAPPING)) != 0) {
             parser.setMode((isMappingOnlyFactory()) ? mode
@@ -250,6 +267,7 @@ public abstract class AbstractCFMetaDataFactory
             parser.setMode(MODE_QUERY);
             parse(parser, cls);
         }
+
         // remove metadatas from repository or clear their mappings
         Set files = new HashSet();
         Set clsNames = null;
@@ -259,7 +277,8 @@ public abstract class AbstractCFMetaDataFactory
             for (int i = 0; i < cls.length; i++) {
                 if (cls[i] == null)
                     clsNames.add(null);
-                else clsNames.add(cls[i].getName());
+                else
+                    clsNames.add(cls[i].getName());
                 meta = pr.getMetaData(cls[i], envLoader, false);
                 if (meta != null) {
                     if (getSourceFile(meta) != null)
@@ -271,6 +290,7 @@ public abstract class AbstractCFMetaDataFactory
                 }
             }
         }
+
         // remove query mode metadatas so we can store them separately
         QueryMetaData[] queries = pr.getQueryMetaDatas();
         List qqs = (!isMappingOnlyFactory() && (mode & MODE_QUERY) == 0)
@@ -289,6 +309,7 @@ public abstract class AbstractCFMetaDataFactory
             if (qqs != null && queries[i].getSourceMode() == MODE_QUERY && !rem)
                 qqs.add(queries[i]);
         }
+
         // write new metadata without removed instances
         backupAndDelete(files);
         Serializer ser;
@@ -317,9 +338,9 @@ public abstract class AbstractCFMetaDataFactory
     /**
      * Assign default source files to the given metadatas.
      *
-     * @param clsNames map of class names to metadatas
+     * @param    clsNames    map of class names to metadatas
      * @return set of existing files used by these metadatas, or
-     *         null if no existing files
+     * null if no existing files
      */
     private Set assignDefaultMetaDataFiles(ClassMetaData[] metas,
         QueryMetaData[] queries, SequenceMetaData[] seqs, int mode,
@@ -366,11 +387,12 @@ public abstract class AbstractCFMetaDataFactory
     /**
      * Assign default source files to the given queries.
      *
-     * @param clsNames map of class names to metadatas
+     * @param    clsNames    map of class names to metadatas
      * @return set of existing files used by these metadatas, or
-     *         null if no existing files
+     * null if no existing files
      */
-    private Set assignDefaultQueryFiles(QueryMetaData[] queries, Map clsNames) {
+    private Set assignDefaultQueryFiles(QueryMetaData[] queries,
+        Map clsNames) {
         Set files = null;
         for (int i = 0; i < queries.length; i++) {
             if (queries[i].getSourceMode() != MODE_QUERY)
@@ -402,7 +424,8 @@ public abstract class AbstractCFMetaDataFactory
         try {
             for (Iterator itr = files.iterator(); itr.hasNext();)
                 parser.parse((File) itr.next());
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new GeneralException(ioe);
         }
     }
@@ -414,13 +437,14 @@ public abstract class AbstractCFMetaDataFactory
         try {
             for (int i = 0; i < cls.length; i++)
                 parser.parse(cls[i], isParseTopDown());
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new GeneralException(ioe);
         }
     }
 
     /**
-     * Whether to parse classes top down. Defaults to false.
+     * Whether to parse classes top down.  Defaults to false.
      */
     protected boolean isParseTopDown() {
         return false;
@@ -433,8 +457,10 @@ public abstract class AbstractCFMetaDataFactory
         try {
             if (output == null)
                 ser.serialize(flags);
-            else ser.serialize(output, flags);
-        } catch (IOException ioe) {
+            else
+                ser.serialize(output, flags);
+        }
+        catch (IOException ioe) {
             throw new GeneralException(ioe);
         }
     }
@@ -507,8 +533,8 @@ public abstract class AbstractCFMetaDataFactory
     /**
      * Create a new metadata parser.
      *
-     * @param loading if true, this will be the cached parser used for
-     *                loading metadata
+     * @param    loading        if true, this will be the cached parser used for
+     * loading metadata
      */
     protected abstract Parser newParser(boolean loading);
 
@@ -520,13 +546,14 @@ public abstract class AbstractCFMetaDataFactory
     /**
      * Return the metadata that defines the given query, if any.
      *
-     * @param clsNames map of class names to metadatas
+     * @param    clsNames    map of class names to metadatas
      */
     protected ClassMetaData getDefiningMetaData(QueryMetaData query,
         Map clsNames) {
         Class def = query.getDefiningType();
         if (def != null)
             return (ClassMetaData) clsNames.get(def.getName());
+
         Map.Entry entry;
         String pkg;
         for (Iterator itr = clsNames.entrySet().iterator(); itr.hasNext();) {
@@ -544,22 +571,26 @@ public abstract class AbstractCFMetaDataFactory
         // any locations
         if (_typeNames != null)
             return (_typeNames.isEmpty()) ? null : _typeNames;
+
         try {
             ClassLoader loader = repos.getConfiguration().
                 getClassResolverInstance().getClassLoader(getClass(),
                 envLoader);
             long start = System.currentTimeMillis();
+
             Set names = parsePersistentTypeNames(loader);
             if (names.isEmpty() && devpath)
                 scan(new ClasspathMetaDataIterator(null, newMetaDataFilter()),
                     newClassArgParser(), names, false);
             else // we don't cache a full dev cp scan
                 _typeNames = names;
+
             if (log.isInfoEnabled())
                 log.info(_loc.get("found-pcs", String.valueOf(names.size()),
                     String.valueOf(System.currentTimeMillis() - start)));
             return (names.isEmpty()) ? null : names;
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             throw new GeneralException(ioe);
         }
     }
@@ -646,7 +677,8 @@ public abstract class AbstractCFMetaDataFactory
      * Scan for persistent type names using the given metadata iterator.
      */
     private void scan(MetaDataIterator mitr, ClassArgParser cparser, Set names,
-        boolean mapNames) throws IOException {
+        boolean mapNames)
+        throws IOException {
         Map map;
         try {
             map = cparser.mapTypeNames(mitr);
@@ -654,6 +686,7 @@ public abstract class AbstractCFMetaDataFactory
         finally {
             mitr.close();
         }
+
         Map.Entry entry;
         for (Iterator itr = map.entrySet().iterator(); itr.hasNext();) {
             entry = (Map.Entry) itr.next();
@@ -666,7 +699,7 @@ public abstract class AbstractCFMetaDataFactory
 
     /**
      * Implement this method to map metadata resources to the persistent
-     * types contained within them. The method will be called when
+     * types contained within them.  The method will be called when
      * {@link #getPersistentTypeNames} is invoked.
      */
     protected void mapPersistentTypeNames(Object rsrc, String[] names) {
@@ -686,10 +719,11 @@ public abstract class AbstractCFMetaDataFactory
     /**
      * Internal parser interface.
      */
-    public static interface Parser extends MetaDataParser {
+    public static interface Parser
+        extends MetaDataParser {
 
         /**
-         * Returns the repository for this parser. If none has been set,
+         * Returns the repository for this parser.  If none has been set,
          * creates a new repository and sets it.
          */
         public MetaDataRepository getRepository();
@@ -701,12 +735,13 @@ public abstract class AbstractCFMetaDataFactory
     }
 
     /**
-     * Internal serializer interface.
+     *	Internal serializer interface.
      */
-    public static interface Serializer extends MetaDataSerializer {
+    public static interface Serializer
+        extends MetaDataSerializer {
 
         /**
-         * The serialization mode according to the expected document type. The
+         * The serialization mode according to the expected document type.  The
          * mode constants act as bit flags, and therefore can be combined.
          */
         public void setMode(int mode);
@@ -732,9 +767,9 @@ public abstract class AbstractCFMetaDataFactory
         public void addQueryMetaData(QueryMetaData meta);
 
         /**
-         * Add all components in the given repository to the set to be
-         * serialized.
-         */
-        public void addAll(MetaDataRepository repos);
-    }
+         *	Add all components in the given repository to the set to be
+		 *	serialized.
+		 */
+		public void addAll (MetaDataRepository repos);
+	}
 }

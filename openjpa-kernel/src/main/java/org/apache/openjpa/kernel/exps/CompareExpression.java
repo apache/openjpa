@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -18,17 +21,18 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * Expression that compares two others.
+ * <p>Expression that compares two others.</p>
  *
  * @author Abe White
  */
-abstract class CompareExpression extends Exp {
+abstract class CompareExpression
+    extends Exp {
 
     private final Val _val1;
     private final Val _val2;
 
     /**
-     * Constructor. Supply values to compare.
+     * Constructor.  Supply values to compare.
      */
     public CompareExpression(Val val1, Val val2) {
         _val1 = val1;
@@ -51,8 +55,11 @@ abstract class CompareExpression extends Exp {
         Object[] params) {
         Collection c1 = _val1.eval(candidates, null, ctx, params);
         Collection c2 = _val2.eval(candidates, null, ctx, params);
-        Object o1 = (c1 == null || c1.isEmpty()) ? null : c1.iterator().next();
-        Object o2 = (c2 == null || c2.isEmpty()) ? null : c2.iterator().next();
+        Object o1 = (c1 == null || c1.isEmpty()) ? null
+            : c1.iterator().next();
+        Object o2 = (c2 == null || c2.isEmpty()) ? null
+            : c2.iterator().next();
+
         if (o1 != null && o2 != null) {
             Class c = Filters.promote(o1.getClass(), o2.getClass());
             o1 = Filters.convert(o1, c);

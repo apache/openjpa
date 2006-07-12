@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -21,7 +24,7 @@ import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.util.Services;
 
 /**
- * Utilities for running product derivations.
+ * <p>Utilities for running product derivations.</p>
  *
  * @author Abe White
  * @nojavadoc
@@ -36,7 +39,8 @@ public class ProductDerivations {
         for (int i = 0; i < pdcls.length; i++) {
             try {
                 derivations.add(pdcls[i].newInstance());
-            } catch (Throwable t) {
+            }
+            catch (Throwable t) {
                 // invalid service
             }
         }
@@ -47,13 +51,14 @@ public class ProductDerivations {
 
     /**
      * Apply {@link ProductDerivation#beforeConfigurationConstruct} callbacks
-     * to the the given instance. Exceptions are swallowed.
+     * to the the given instance.  Exceptions are swallowed.
      */
     public static void beforeConfigurationConstruct(ConfigurationProvider cp) {
         for (int i = 0; i < _derivations.length; i++) {
             try {
                 _derivations[i].beforeConfigurationConstruct(cp);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 // can't log; no configuration yet
                 e.printStackTrace();
             }
@@ -62,13 +67,14 @@ public class ProductDerivations {
 
     /**
      * Apply {@link ProductDerivation#beforeConfigurationLoad} callbacks
-     * to the the given instance. Exceptions are swallowed.
+     * to the the given instance.  Exceptions are swallowed.
      */
     public static void beforeConfigurationLoad(OpenJPAConfiguration conf) {
         for (int i = 0; i < _derivations.length; i++) {
             try {
                 _derivations[i].beforeConfigurationLoad(conf);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 // logging not configured yet
                 e.printStackTrace();
             }
@@ -77,13 +83,14 @@ public class ProductDerivations {
 
     /**
      * Apply {@link ProductDerivation#afterSpecificationSet} callbacks
-     * to the the given instance. Exceptions are swallowed.
+     * to the the given instance.  Exceptions are swallowed.
      */
     public static void afterSpecificationSet(OpenJPAConfiguration conf) {
         for (int i = 0; i < _derivations.length; i++) {
             try {
                 _derivations[i].afterSpecificationSet(conf);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 // logging not configured yet
                 e.printStackTrace();
             }
@@ -92,13 +99,14 @@ public class ProductDerivations {
 
     /**
      * Apply {@link ProductDerivation#afterClose} callbacks
-     * to the the given instance. Exceptions are swallowed.
+     * to the the given instance.  Exceptions are swallowed.
      */
     public static void afterClose(OpenJPAConfigurationImpl impl) {
         for (int i = 0; i < _derivations.length; i++) {
             try {
                 _derivations[i].afterClose(impl);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 // logging not available
                 e.printStackTrace();
             }
@@ -106,18 +114,21 @@ public class ProductDerivations {
     }
 
     /**
-     * Compare {@link ProductDerivation}s.
+     *	Compare {@link ProductDerivation}s.
      */
-    private static class ProductDerivationComparator implements Comparator {
+    private static class ProductDerivationComparator
+        implements Comparator {
 
         public int compare(Object o1, Object o2) {
             int type1 = ((ProductDerivation) o1).getType();
             int type2 = ((ProductDerivation) o2).getType();
             if (type1 != type2)
                 return type1 - type2;
+
             // arbitrary but consistent order
-            return o1.getClass().getName().compareTo(o2.getClass(). getName());
-        }
-    }
+            return o1.getClass().getName().compareTo(o2.getClass().
+                getName());
+		}
+	}
 }
 

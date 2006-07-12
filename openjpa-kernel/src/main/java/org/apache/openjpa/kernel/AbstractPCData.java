@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -32,13 +35,14 @@ import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.Proxy;
 
 /**
- * Abstract base class which implements core PCData behavior.
+ * <p>Abstract base class which implements core PCData behavior.</p>
  *
  * @author Patrick Linskey
  * @author Abe White
  * @nojavadoc
  */
-public abstract class AbstractPCData implements PCData {
+public abstract class AbstractPCData
+    implements PCData {
 
     public static final Object NULL = new Object();
 
@@ -63,6 +67,7 @@ public abstract class AbstractPCData implements PCData {
         Object data, FetchState fetchState, Object context) {
         if (data == null)
             return null;
+
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.COLLECTION:
                 ProxyDataList c = (ProxyDataList) data;
@@ -106,13 +111,14 @@ public abstract class AbstractPCData implements PCData {
     }
 
     /**
-     * Transform the given data value to its field value. The data value
+     * Transform the given data value to its field value.  The data value
      * may be a key, value, or element of a map or collection.
      */
     protected Object toNestedField(OpenJPAStateManager sm, ValueMetaData vmd,
         Object data, FetchState fetchState, Object context) {
         if (data == null)
             return null;
+
         switch (vmd.getDeclaredTypeCode()) {
             case JavaTypes.DATE:
                 return ((Date) data).clone();
@@ -136,7 +142,7 @@ public abstract class AbstractPCData implements PCData {
     }
 
     /**
-     * Transform the given data into a relation field value. Default
+     * Transform the given data into a relation field value.  Default
      * implementation assumes the data is an oid.
      */
     protected Object toRelationField(OpenJPAStateManager sm, ValueMetaData vmd,
@@ -145,7 +151,7 @@ public abstract class AbstractPCData implements PCData {
     }
 
     /**
-     * Transform the given data into an embedded PC field value. Default
+     * Transform the given data into an embedded PC field value.  Default
      * implementation assumes the data is an {@link AbstractPCData}.
      */
     protected Object toEmbeddedField(OpenJPAStateManager sm, ValueMetaData vmd,
@@ -159,12 +165,13 @@ public abstract class AbstractPCData implements PCData {
     }
 
     /**
-     * Transform the given field value to a data value for caching. Return
+     * Transform the given field value to a data value for caching.  Return
      * {@link #NULL} if unable to cache.
      */
     protected Object toData(FieldMetaData fmd, Object val, StoreContext ctx) {
         if (val == null)
             return null;
+
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.COLLECTION:
                 Collection c = (Collection) val;
@@ -183,7 +190,8 @@ public abstract class AbstractPCData implements PCData {
                             ChangeTracker ct = ((Proxy) c).getChangeTracker();
                             if (ct != null)
                                 c2.nextSequence = ct.getNextSequence();
-                        } else c2.nextSequence = size;
+                        } else
+                            c2.nextSequence = size;
                     }
                     c2.add(val);
                 }
@@ -229,13 +237,14 @@ public abstract class AbstractPCData implements PCData {
     }
 
     /**
-     * Transform the given nested value to a cachable value. Return
+     * Transform the given nested value to a cachable value.  Return
      * {@link #NULL} if the value cannot be cached.
      */
     protected Object toNestedData(ValueMetaData vmd, Object val,
         StoreContext ctx) {
         if (val == null)
             return null;
+
         switch (vmd.getDeclaredTypeCode()) {
             case JavaTypes.PC:
                 if (vmd.isEmbedded())
@@ -246,20 +255,22 @@ public abstract class AbstractPCData implements PCData {
             case JavaTypes.DATE:
                 if (val instanceof Proxy)
                     return ((Proxy) val).copy(val);
-                else return ((Date) val).clone();
+                else
+                    return ((Date) val).clone();
             case JavaTypes.LOCALE:
                 return (Locale) val;
             case JavaTypes.OBJECT:
                 if (val instanceof Proxy)
                     return ((Proxy) val).copy(val);
-                else return val;
+                else
+                    return val;
             default:
                 return val;
         }
     }
 
     /**
-     * Return the value to cache for the given object. Caches its oid by
+     * Return the value to cache for the given object.  Caches its oid by
      * default.
      */
     protected Object toRelationData(Object val, StoreContext ctx) {
@@ -267,33 +278,38 @@ public abstract class AbstractPCData implements PCData {
     }
 
     /**
-     * Return the value to cache for the given embedded PC. Caches a
+     * Return the value to cache for the given embedded PC.  Caches a
      * {@link PCData} from {@link #newEmbeddedPCData} by default.
      */
     protected Object toEmbeddedData(Object val, StoreContext ctx) {
         if (ctx == null)
             return NULL;
+
         OpenJPAStateManager sm = ctx.getStateManager(val);
         if (sm == null)
             return NULL;
+
         // have to cache all data, so make sure it's all loaded
-        // ### prevent loading of things that aren't cached(lobs, lrs, etc)
+        // ### prevent loading of things that aren't cached (lobs, lrs, etc)
         ctx.retrieve(val, false, null);
+
         PCData pcdata = newEmbeddedPCData(sm);
         pcdata.store(sm);
         return pcdata;
     }
 
     /**
-     * Tracks proxy data along with list elements.
+     *	Tracks proxy data along with list elements.
      */
-    private static class ProxyDataList extends ArrayList {
+    private static class ProxyDataList
+        extends ArrayList {
 
         public static final ProxyDataList EMPTY_LIST = new ProxyDataList(0);
+
         public int nextSequence = 0;
 
         public ProxyDataList(int size) {
-            super(size);
-        }
-    }
+			super (size);
+		}
+	}
 }

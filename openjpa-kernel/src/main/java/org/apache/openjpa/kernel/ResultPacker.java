@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -32,7 +35,7 @@ import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * Helper class to pack results into the result class set on the query.
+ * <p>Helper class to pack results into the result class set on the query.</p>
  *
  * @author Abe White
  * @author Patrick Linskey
@@ -84,9 +87,9 @@ public class ResultPacker {
     /**
      * Constructor for standard projection.
      *
-     * @param types       the projection value types
-     * @param aliases     the alias for each projection value
-     * @param resultClass the class to pack into
+     * @param    types        the projection value types
+     * @param    aliases        the alias for each projection value
+     * @param    resultClass    the class to pack into
      */
     public ResultPacker(Class[] types, String[] aliases, Class resultClass) {
         this(null, types, aliases, resultClass);
@@ -110,15 +113,18 @@ public class ResultPacker {
             if (types != null && types.length > 0) {
                 try {
                     cons = _resultClass.getConstructor(types);
-                } catch (NoSuchMethodException nsme) {
+                }
+                catch (NoSuchMethodException nsme) {
                 }
             }
             _constructor = cons;
+
             if (cons == null) {
                 Method[] methods = _resultClass.getMethods();
                 Field[] fields = _resultClass.getFields();
                 _put = findPut(methods);
                 _sets = new Member[aliases.length];
+
                 Class type;
                 for (int i = 0; i < _sets.length; i++) {
                     type = (types == null) ? candidate : types[i];
@@ -169,9 +175,11 @@ public class ResultPacker {
             map.put(_aliases[0], result);
             return map;
         }
+
         // primitive or simple type?
         if (_constructor == null && _sets == null)
             return Filters.convert(result, _resultClass);
+
         // this is some complex case, so worth it to create the array and
         // use the general pack method
         return packUserType(new Object[]{ result });
@@ -183,6 +191,7 @@ public class ResultPacker {
     public Object pack(Object[] result) {
         if (result == null || result.length == 0)
             return null;
+
         // special cases for object arrays and maps
         if (_resultClass == Object[].class) {
             // the result might contain extra data at the end
@@ -201,9 +210,11 @@ public class ResultPacker {
                 map.put(_aliases[i], result[i]);
             return map;
         }
+
         // primitive or simple type?
         if (_sets == null && _constructor == null)
             return Filters.convert(result[0], _resultClass);
+
         // must be a user-defined type
         return packUserType(result);
     }
@@ -216,6 +227,7 @@ public class ResultPacker {
             // use the constructor first, if we have one
             if (_constructor != null)
                 return _constructor.newInstance(result);
+
             Object user = _resultClass.newInstance();
             for (int i = 0; i < _aliases.length; i++) {
                 if (_sets[i] instanceof Method) {
@@ -231,12 +243,15 @@ public class ResultPacker {
                 }
             }
             return user;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (InstantiationException ie) {
+        }
+        catch (InstantiationException ie) {
             throw new UserException(_loc.get("pack-instantiation-err",
                 _resultClass), ie);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new UserException(_loc.get("pack-err", _resultClass), e);
         }
     }
@@ -250,6 +265,7 @@ public class ResultPacker {
             return null;
         if (type == Object.class)
             type = null;
+
         // check public fields first
         Field field = null;
         for (int i = 0; i < fields.length; i++) {
@@ -261,6 +277,7 @@ public class ResultPacker {
                     return fields[i];
                 break;
             }
+
             // otherwise if we find a field with the right name but the
             // wrong case, record it and if we don't find an exact match
             // for a field or setter we'll use it
@@ -269,10 +286,12 @@ public class ResultPacker {
                 || Filters.canConvert(type, fields[i].getType(), true)))
                 field = fields[i];
         }
+
         // check setter methods
         String setName = "set" + Character.toUpperCase(alias.charAt(0));
         if (alias.length() > 1)
             setName = setName + alias.substring(1);
+
         Method method = null;
         boolean eqName = false;
         Class[] params;
@@ -282,6 +301,7 @@ public class ResultPacker {
             params = methods[i].getParameterTypes();
             if (params.length != 1)
                 continue;
+
             if (type != null && params[0] == Object.class) {
                 // we found a generic object setter; now see if the name
                 // is an exact match, and if so record this setter.  if we
@@ -305,6 +325,7 @@ public class ResultPacker {
                     method = methods[i];
             }
         }
+
         // if we have an exact method name match, return it; otherwise favor
         // an inexact field to an inexact method
         if (eqName || field == null)
@@ -313,18 +334,20 @@ public class ResultPacker {
     }
 
     /**
-     * Return the put method if one exists.
+     *	Return the put method if one exists.
      */
     private static Method findPut(Method[] methods) {
         Class[] params;
         for (int i = 0; i < methods.length; i++) {
             if (!methods[i].getName().equals("put"))
                 continue;
+
             params = methods[i].getParameterTypes();
-            if (params.length == 2 && params[0] == Object.class
+            if (params.length == 2
+                && params[0] == Object.class
                 && params[1] == Object.class)
                 return methods[i];
         }
-        return null;
-    }
+		return null;
+	}
 }

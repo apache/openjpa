@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -20,19 +23,22 @@ import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.util.Options;
 
 /**
- * Value type used to represent a {@link RemoteCommitProvider}. This
+ * <p>Value type used to represent a {@link RemoteCommitProvider}.  This
  * plugin allows users to specify whether to transmit the ids of added objects
- * in the remote commit events distributed.
+ * in the remote commit events distributed.</p>
  *
  * @author Abe White
  * @nojavadoc
  */
-public class RemoteCommitProviderValue extends PluginValue {
+public class RemoteCommitProviderValue
+    extends PluginValue {
 
     private static final String[] ALIASES = new String[]{
         "sjvm", "org.apache.openjpa.event.SingleJVMRemoteCommitProvider",
         "jms", "org.apache.openjpa.event.JMSRemoteCommitProvider",
-        "tcp", "org.apache.openjpa.event.TCPRemoteCommitProvider", };
+        "tcp", "org.apache.openjpa.event.TCPRemoteCommitProvider",
+    };
+
     private Options _opts = null;
     private Boolean _transmitPersIds = null;
 
@@ -120,13 +126,14 @@ public class RemoteCommitProviderValue extends PluginValue {
     private void parseOptions() {
         if (_opts != null)
             return;
+
         _opts = Configurations.parseProperties(getProperties());
         String transmit = _opts.removeProperty("transmitPersistedObjectIds",
             "TransmitPersistedObjectIds", null);
         if (transmit != null) {
             transmit = transmit.trim();
             if (transmit.length() > 0)
-                _transmitPersIds = Boolean.valueOf(transmit);
-        }
-    }
+                _transmitPersIds = Boolean.valueOf (transmit);
+		}
+	}
 }

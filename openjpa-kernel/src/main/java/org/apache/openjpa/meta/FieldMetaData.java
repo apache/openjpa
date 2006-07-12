@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -52,11 +55,12 @@ import org.apache.openjpa.util.UnsupportedException;
 import serp.util.Strings;
 
 /**
- * Metadata for a managed class field.
+ * <p>Metadata for a managed class field.</p>
  *
  * @author Abe White
  */
-public class FieldMetaData extends Extensions
+public class FieldMetaData
+    extends Extensions
     implements ValueMetaData, MetaDataContext, MetaDataModes, Commentable {
 
     /**
@@ -96,17 +100,21 @@ public class FieldMetaData extends Extensions
      * Constant specifying the management level of a field.
      */
     public static final int MANAGE_NONE = 0;
+
     private static final Localizer _loc = Localizer.forPackage
         (FieldMetaData.class);
+
     private static final int DFG_FALSE = 1;
     private static final int DFG_TRUE = 2;
     private static final int DFG_EXPLICIT = 4;
+
     private static final Method DEFAULT_METHOD;
 
     static {
         try {
             DEFAULT_METHOD = Object.class.getMethod("wait", (Class[]) null);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // shouldn't ever happen
             throw new InternalException(e);
         }
@@ -122,12 +130,15 @@ public class FieldMetaData extends Extensions
     private ClassMetaData _decMeta = null;
     private String _fullName = null;
     private int _resMode = MODE_NONE;
+
     // load/store info
     private String[] _comments = null;
     private int _listIndex = -1;
+
     ////////////////////////////////////////////////////////////////////
     // Note: if you add additional state, make sure to add it to copy()
     ////////////////////////////////////////////////////////////////////
+
     // misc info
     private Class _proxyClass = null;
     private Object _initializer = null;
@@ -151,19 +162,23 @@ public class FieldMetaData extends Extensions
     private Map _extValues = Collections.EMPTY_MAP;
     private Map _fieldValues = Collections.EMPTY_MAP;
     private Member _backingMember = null;
+
     // intermediate and impl data
     private boolean _intermediate = true;
     private Boolean _implData = Boolean.TRUE;
+
     // value generation
     private int _valStrategy = -1;
     private int _upStrategy = -1;
     private String _seqName = ClassMetaData.DEFAULT_STRING;
     private SequenceMetaData _seqMeta = null;
+
     // inverses
     private String _mappedBy = null;
     private FieldMetaData _mappedByMeta = null;
     private FieldMetaData[] _inverses = null;
     private String _inverse = ClassMetaData.DEFAULT_STRING;
+
     // ordering on load
     private Order[] _orders = null;
     private String _orderDec = null;
@@ -171,9 +186,9 @@ public class FieldMetaData extends Extensions
     /**
      * Constructor.
      *
-     * @param name  the field name
-     * @param type  the field type
-     * @param owner the owning class metadata
+     * @param    name    the field name
+     * @param    type    the field type
+     * @param    owner    the owning class metadata
      */
     protected FieldMetaData(String name, Class type, ClassMetaData owner) {
         _name = name;
@@ -183,6 +198,7 @@ public class FieldMetaData extends Extensions
         _val = owner.getRepository().newValueMetaData(this);
         _key = owner.getRepository().newValueMetaData(this);
         _elem = owner.getRepository().newValueMetaData(this);
+
         setDeclaredType(type);
     }
 
@@ -195,7 +211,9 @@ public class FieldMetaData extends Extensions
             return;
         if (Modifier.isTransient(member.getModifiers()))
             _transient = true;
+
         _backingMember = member;
+
         Class type;
         Class[] types;
         if (member instanceof Field) {
@@ -207,9 +225,11 @@ public class FieldMetaData extends Extensions
             type = meth.getReturnType();
             types = JavaVersions.getParameterizedTypes(meth);
         }
+
         setDeclaredType(type);
         if (Collection.class.isAssignableFrom(type)
-            && _elem.getDeclaredType() == Object.class && types.length == 1) {
+            && _elem.getDeclaredType() == Object.class
+            && types.length == 1) {
             _elem.setDeclaredType(types[0]);
         } else if (Map.class.isAssignableFrom(type)
             && types.length == 2) {
@@ -307,7 +327,7 @@ public class FieldMetaData extends Extensions
     }
 
     /**
-     * Return whether this field is mapped to the datastore. By default,
+     * Return whether this field is mapped to the datastore.  By default,
      * returns true for all persistent fields whose defining class is mapped.
      */
     public boolean isMapped() {
@@ -393,7 +413,7 @@ public class FieldMetaData extends Extensions
     }
 
     /**
-     * The index in which this field was listed in the metadata. Defaults to
+     * The index in which this field was listed in the metadata.  Defaults to
      * <code>-1</code> if this field was not listed in the metadata.
      */
     public int getListingIndex() {
@@ -401,7 +421,7 @@ public class FieldMetaData extends Extensions
     }
 
     /**
-     * The index in which this field was listed in the metadata. Defaults to
+     * The index in which this field was listed in the metadata.  Defaults to
      * <code>-1</code> if this field was not listed in the metadata.
      */
     public void setListingIndex(int index) {
@@ -410,7 +430,7 @@ public class FieldMetaData extends Extensions
 
     /**
      * The absolute primary key index for this field, or -1 if not a primary
-     * key. The first primary key field has index 0, the second index 1, etc.
+     * key.  The first primary key field has index 0, the second index 1, etc.
      */
     public int getPrimaryKeyIndex() {
         return _pkIndex;
@@ -418,33 +438,35 @@ public class FieldMetaData extends Extensions
 
     /**
      * The absolute primary key index for this field, or -1 if not a primary
-     * key. The first primary key field has index 0, the second index 1, etc.
+     * key.  The first primary key field has index 0, the second index 1, etc.
      */
     public void setPrimaryKeyIndex(int index) {
         _pkIndex = index;
     }
 
     /**
-     * Return the management level for the field. Will be one of:
+     * Return the management level for the field.  Will be one of:
      * <ul>
      * <li>{@link #MANAGE_PERSISTENT}: the field is persistent</li>
      * <li>{@link #MANAGE_TRANSACTIONAL}: the field is transactional but not
      * persistent</li>
      * <li>{@link #MANAGE_NONE}: the field is not managed</li>
-     * </ul> Defaults to {@link #MANAGE_PERSISTENT}.
+     * </ul>
+     * Defaults to {@link #MANAGE_PERSISTENT}.
      */
     public int getManagement() {
         return _manage;
     }
 
     /**
-     * Return the management level for the field. Will be one of:
+     * Return the management level for the field.  Will be one of:
      * <ul>
      * <li>{@link #MANAGE_PERSISTENT}: the field is persistent</li>
      * <li>{@link #MANAGE_TRANSACTIONAL}: the field is transactional but not
      * persistent</li>
      * <li>{@link #MANAGE_NONE}: the field is not managed</li>
-     * </ul> Defaults to {@link #MANAGE_PERSISTENT}.
+     * </ul>
+     * Defaults to {@link #MANAGE_PERSISTENT}.
      */
     public void setManagement(int manage) {
         _manage = manage;
@@ -510,7 +532,8 @@ public class FieldMetaData extends Extensions
     public void setInDefaultFetchGroup(boolean dfg) {
         if (dfg)
             _dfg = DFG_TRUE;
-        else _dfg = DFG_FALSE;
+        else
+            _dfg = DFG_FALSE;
         _dfg |= DFG_EXPLICIT;
     }
 
@@ -522,13 +545,14 @@ public class FieldMetaData extends Extensions
     }
 
     /**
-     * Whether the default fetch group setting is explicit. Allow setting
+     * Whether the default fetch group setting is explicit.  Allow setting
      * for testing.
      */
     public void setDefaultFetchGroupExplicit(boolean explicit) {
         if (explicit)
             _dfg |= DFG_EXPLICIT;
-        else _dfg &= ~DFG_EXPLICIT;
+        else
+            _dfg &= ~DFG_EXPLICIT;
     }
 
     /**
@@ -540,7 +564,8 @@ public class FieldMetaData extends Extensions
      * at commit</li>
      * <li>{@link #NULL_DEFAULT}: use the database default if this field is
      * null at commit</li>
-     * </ul> Defaults to {@link #NULL_UNSET}.
+     * </ul>
+     * Defaults to {@link #NULL_UNSET}.
      */
     public int getNullValue() {
         return _nullValue;
@@ -555,7 +580,8 @@ public class FieldMetaData extends Extensions
      * at commit</li>
      * <li>{@link #NULL_DEFAULT}: use the database default if this field is
      * null at commit</li>
-     * </ul> Defaults to {@link #NULL_UNSET}.
+     * </ul>
+     * Defaults to {@link #NULL_UNSET}.
      */
     public void setNullValue(int nullValue) {
         _nullValue = nullValue;
@@ -606,8 +632,9 @@ public class FieldMetaData extends Extensions
                     meta = _elem.getTypeMetaData();
                     break;
             }
-            FieldMetaData field =
-                (meta == null) ? null : meta.getField(_mappedBy);
+
+            FieldMetaData field = (meta == null) ? null
+                : meta.getField(_mappedBy);
             if (field == null)
                 throw new MetaDataException(_loc.get("no-mapped-by", this,
                     _mappedBy));
@@ -646,6 +673,7 @@ public class FieldMetaData extends Extensions
             if (_mappedBy != null && inv != null && !_mappedBy.equals(inv))
                 throw new MetaDataException(_loc.get("mapped-not-inverse",
                     this));
+
             // get the metadata for the type on the other side of this relation
             ClassMetaData meta = null;
             switch (getTypeCode()) {
@@ -657,6 +685,7 @@ public class FieldMetaData extends Extensions
                     meta = _elem.getTypeMetaData();
                     break;
             }
+
             Collection inverses = null;
             if (meta != null) {
                 // add mapped by and named inverse, if any
@@ -677,6 +706,7 @@ public class FieldMetaData extends Extensions
                     inverses = new ArrayList(3);
                     inverses.add(field);
                 }
+
                 // scan rel type for fields that name this field as an inverse
                 FieldMetaData[] fields = meta.getFields();
                 Class type = getDeclaringMetaData().getDescribedType();
@@ -696,8 +726,9 @@ public class FieldMetaData extends Extensions
                         default:
                             continue;
                     }
+
                     // if the field declares us as its inverse and we haven't
-                    // already added it(we might have if we also declared it
+                    // already added it (we might have if we also declared it
                     // as our inverse), add it now
                     if (_name.equals(fields[i].getMappedBy())
                         || _name.equals(fields[i].getInverse())) {
@@ -708,11 +739,13 @@ public class FieldMetaData extends Extensions
                     }
                 }
             }
+
             MetaDataRepository repos = getRepository();
             if (inverses == null)
                 _inverses = repos.EMPTY_FIELDS;
-            else _inverses = (FieldMetaData[]) inverses.toArray
-                (repos.newFieldMetaDataArray(inverses.size()));
+            else
+                _inverses = (FieldMetaData[]) inverses.toArray
+                    (repos.newFieldMetaDataArray(inverses.size()));
         }
         return _inverses;
     }
@@ -817,7 +850,7 @@ public class FieldMetaData extends Extensions
      * Add the fetch group of given name for this field.
      *
      * @param fg is the name of a fetch group that must be present in the
-     *           class that declared this field or any of its persistent superclasses.
+     * class that declared this field or any of its persistent superclasses.
      */
     public void addFetchGroup(String fg) {
         if (StringUtils.isEmpty(fg))
@@ -843,6 +876,7 @@ public class FieldMetaData extends Extensions
         Set other = that.getFetchGroups();
         if (_fgs == null || other == null || other.isEmpty())
             return false;
+
         for (Iterator fg = _fgs.iterator(); fg.hasNext();)
             if (other.contains(fg.next()))
                 return true;
@@ -855,9 +889,9 @@ public class FieldMetaData extends Extensions
 
     /**
      * Whether this field uses intermediate data when loading/storing
-     * information through a {@link OpenJPAStateManager}. Defaults to true.
+     * information through a {@link OpenJPAStateManager}.  Defaults to true.
      *
-     * @see OpenJPAStateManager#setIntermediate(int,Object)
+     * @see    OpenJPAStateManager#setIntermediate(int,Object)
      */
     public boolean usesIntermediate() {
         return _intermediate;
@@ -865,9 +899,9 @@ public class FieldMetaData extends Extensions
 
     /**
      * Whether this field uses intermediate data when loading/storing
-     * information through a {@link OpenJPAStateManager}. Defaults to true.
+     * information through a {@link OpenJPAStateManager}.  Defaults to true.
      *
-     * @see OpenJPAStateManager#setIntermediate(int,Object)
+     * @see    OpenJPAStateManager#setIntermediate(int,Object)
      */
     public void setUsesIntermediate(boolean intermediate) {
         _intermediate = intermediate;
@@ -879,11 +913,11 @@ public class FieldMetaData extends Extensions
      * field data when acting on a {@link OpenJPAStateManager}.
      * Defaults to {@link Boolean#TRUE} (non-cachable impl data).
      *
-     * @return {@link Boolean#FALSE} if this field does not use impl data,
-     *         {@link Boolean#TRUE} if this field uses non-cachable impl
-     *         data, or <code>null</code> if this field uses impl data that
-     *         should be cached across instances
-     * @see OpenJPAStateManager#setImplData(int,Object)
+     * @return        {@link Boolean#FALSE} if this field does not use impl data,
+     * {@link Boolean#TRUE} if this field uses non-cachable impl
+     * data, or <code>null</code> if this field uses impl data that
+     * should be cached across instances
+     * @see    OpenJPAStateManager#setImplData(int,Object)
      */
     public Boolean usesImplData() {
         return _implData;
@@ -893,8 +927,8 @@ public class FieldMetaData extends Extensions
      * Whether this field uses impl data in conjunction with standard
      * field data when acting on a {@link OpenJPAStateManager}.
      *
-     * @see OpenJPAStateManager#setImplData(int,Object)
-     * @see #usesImplData
+     * @see    OpenJPAStateManager#setImplData(int,Object)
+     * @see    #usesImplData
      */
     public void setUsesImplData(Boolean implData) {
         _implData = implData;
@@ -941,7 +975,7 @@ public class FieldMetaData extends Extensions
 
     /**
      * String declaring the orderings for this field to be applied on load,
-     * or null. The string is of the form:<br />
+     * or null.  The string is of the form:<br />
      * <code>orderable[ asc|desc][, ...]</code><br />
      * The orderable <code>#element</code> is used to denote the value of
      * the field's elements.
@@ -962,7 +996,7 @@ public class FieldMetaData extends Extensions
 
     /**
      * String declaring the orderings for this field to be applied on load,
-     * or null. The string is of the form:<br />
+     * or null.  The string is of the form:<br />
      * <code>orderable[ asc|desc][, ...]</code><br />
      * The orderable <code>#element</code> is used to denote the value of
      * the field's elements.
@@ -983,9 +1017,11 @@ public class FieldMetaData extends Extensions
     public Object order(Object val) {
         if (val == null)
             return null;
+
         Order[] orders = getOrders();
         if (orders.length == 0)
             return val;
+
         // create a comparator for the elements of the value
         Comparator comp;
         if (orders.length == 1)
@@ -1006,10 +1042,13 @@ public class FieldMetaData extends Extensions
             }
             if (comps == null)
                 comp = null;
-            else comp = new ComparatorChain(comps);
+            else
+                comp = new ComparatorChain(comps);
         }
+
         if (comp == null)
             return val;
+
         // sort
         switch (getTypeCode()) {
             case JavaTypes.ARRAY:
@@ -1041,15 +1080,18 @@ public class FieldMetaData extends Extensions
         Map extValues = getExternalValueMap();
         if (extValues != null)
             return extValues.get(val);
+
         Method externalizer = getExternalizerMethod();
         if (externalizer == null)
             return val;
+
         // special case for queries: allow the given value to pass through
         // as-is if it is already in externalized form
         if (val != null && getType().isInstance(val)
             && (!getDeclaredType().isInstance(val)
             || getDeclaredType() == Object.class))
             return val;
+
         try {
             // either invoke the static toExternal(val[, ctx]) method, or the
             // non-static val.toExternal([ctx]) method
@@ -1063,9 +1105,11 @@ public class FieldMetaData extends Extensions
             if (externalizer.getParameterTypes().length == 0)
                 return externalizer.invoke(val, (Object[]) null);
             return externalizer.invoke(val, new Object[]{ ctx });
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new MetaDataException(_loc.get("externalizer-err", this,
                 Exceptions.toString(val), e.toString())).setCause(e);
         }
@@ -1073,19 +1117,22 @@ public class FieldMetaData extends Extensions
 
     /**
      * Return the result of passing the given external value through the
-     * factory to get the field value. If no factory is present,
+     * factory to get the field value.  If no factory is present,
      * the given value is returned as-is.
      */
     public Object getFieldValue(Object val, StoreContext ctx) {
         Map fieldValues = getFieldValueMap();
         if (fieldValues != null)
             return fieldValues.get(val);
+
         Member factory = getFactoryMethod();
         if (factory == null)
             return val;
+
         try {
             if (val == null && getNullValue() == NULL_DEFAULT)
                 return getDeclaredType().newInstance();
+
             // invoke either the constructor for the field type,
             // or the static type.toField(val[, ctx]) method
             if (factory instanceof Constructor) {
@@ -1094,26 +1141,30 @@ public class FieldMetaData extends Extensions
                 return ((Constructor) factory).newInstance
                     (new Object[]{ val });
             }
+
             Method meth = (Method) factory;
             if (meth.getParameterTypes().length == 1)
                 return meth.invoke(null, new Object[]{ val });
             return meth.invoke(null, new Object[]{ val, ctx });
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // unwrap cause
             if (e instanceof InvocationTargetException) {
                 Throwable t = ((InvocationTargetException) e).
                     getTargetException();
                 if (t instanceof Error)
-                    throw(Error) t;
+                    throw (Error) t;
                 e = (Exception) t;
+
                 // allow null values to cause NPEs and illegal arg exceptions
                 // without error
                 if (val == null && (e instanceof NullPointerException
                     || e instanceof IllegalArgumentException))
                     return null;
             }
+
             if (e instanceof OpenJPAException)
-                throw(OpenJPAException) e;
+                throw (OpenJPAException) e;
             throw new MetaDataException(_loc.get("factory-err", this,
                 Exceptions.toString(val), e.toString())).setCause(e);
         }
@@ -1187,16 +1238,19 @@ public class FieldMetaData extends Extensions
         if (_extValues != Collections.EMPTY_MAP
             && _fieldValues != Collections.EMPTY_MAP)
             return;
+
         if (_extString == null) {
             _extValues = null;
             _fieldValues = null;
             return;
         }
+
         // parse string into options; this takes care of proper trimming etc
         Options values = Configurations.parseProperties(_extString);
         if (values.isEmpty())
             throw new MetaDataException(_loc.get("no-external-values", this,
                 _extString));
+
         Map extValues = new HashMap((int) (values.size() * 1.33 + 1));
         Map fieldValues = new HashMap((int) (values.size() * 1.33 + 1));
         Map.Entry entry;
@@ -1206,20 +1260,23 @@ public class FieldMetaData extends Extensions
             fieldValue = transform((String) entry.getKey(),
                 getDeclaredTypeCode());
             extValue = transform((String) entry.getValue(), getTypeCode());
+
             extValues.put(fieldValue, extValue);
             fieldValues.put(extValue, fieldValue);
         }
+
         _extValues = extValues;
         _fieldValues = fieldValues;
     }
 
     /**
-     * Return the string value converted to the given type code. The string
+     * Return the string value converted to the given type code.  The string
      * must be non-null and trimmed.
      */
     private Object transform(String val, int typeCode) {
         if ("null".equals(val))
             return null;
+
         switch (typeCode) {
             case JavaTypes.BOOLEAN:
             case JavaTypes.BOOLEAN_OBJ:
@@ -1263,7 +1320,8 @@ public class FieldMetaData extends Extensions
                 if (_extMethod == null)
                     throw new MetaDataException(_loc.get("bad-externalizer",
                         this, _extName));
-            } else _extMethod = null;
+            } else
+                _extMethod = null;
         }
         return _extMethod;
     }
@@ -1282,11 +1340,15 @@ public class FieldMetaData extends Extensions
                     if (_factName == null)
                         _factMethod = getDeclaredType().getConstructor
                             (new Class[]{ getType() });
-                    else _factMethod = findMethod(_factName);
-                } catch (OpenJPAException ke) {
-                    throw ke;
-                } catch (Exception e) {
+                    else
+                        _factMethod = findMethod(_factName);
                 }
+                catch (OpenJPAException ke) {
+                    throw ke;
+                }
+                catch (Exception e) {
+                }
+
                 if (!(_factMethod instanceof Constructor)
                     && !(_factMethod instanceof Method))
                     throw new MetaDataException(_loc.get("bad-factory", this));
@@ -1309,24 +1371,30 @@ public class FieldMetaData extends Extensions
     private Method findMethod(String method) {
         if (method == null || method.length() == 0)
             return null;
+
         // get class name and get package name divide on the last '.', so the
         // names don't apply in this case, but the methods do what we want
         String methodName = Strings.getClassName(method);
         String clsName = Strings.getPackageName(method);
+
         Class cls = null;
         Class owner = _owner.getDescribedType();
+
         if (clsName.length() == 0)
             cls = getDeclaredType();
         else if (clsName.equals(owner.getName())
             || clsName.equals(Strings.getClassName(owner)))
             cls = owner;
-        else cls = JavaTypes.classForName(clsName, this);
+        else
+            cls = JavaTypes.classForName(clsName, this);
+
         // find the named method
         Method[] methods = cls.getMethods();
         Class[] params;
         for (int i = 0; i < methods.length; i++) {
             if (methods[i].getName().equals(methodName)) {
                 params = methods[i].getParameterTypes();
+
                 // static factory methods require one argument or one argument
                 // plus a ctx; non-static methods require zero arguments or
                 // just a ctx
@@ -1340,6 +1408,7 @@ public class FieldMetaData extends Extensions
                     return methods[i];
             }
         }
+
         return null;
     }
 
@@ -1367,12 +1436,14 @@ public class FieldMetaData extends Extensions
     public int compareTo(Object other) {
         if (other == null)
             return 1;
-        return getFullName().compareTo(((FieldMetaData) other). getFullName());
+        return getFullName().compareTo(((FieldMetaData) other).
+            getFullName());
     }
 
     public String toString() {
         return getFullName();
     }
+
     ////////////////////////
     // Resolve and validate
     ////////////////////////
@@ -1399,32 +1470,38 @@ public class FieldMetaData extends Extensions
             _resMode = mode;
         else if (on)
             _resMode |= mode;
-        else _resMode &= ~mode;
+        else
+            _resMode &= ~mode;
     }
 
     /**
-     * Resolve and validate metadata. Return true if already resolved.
+     * Resolve and validate metadata.  Return true if already resolved.
      */
     public boolean resolve(int mode) {
         if ((_resMode & mode) == mode)
             return true;
         int cur = _resMode;
         _resMode |= mode;
+
         Log log = getRepository().getLog();
         if (log.isTraceEnabled())
             log.trace(_loc.get("resolve-field", _owner + "@"
                 + System.identityHashCode(_owner) + "." + _name));
+
         // we only perform actions for metadata mode
         if ((mode & MODE_META) == 0 || (cur & MODE_META) != 0)
             return false;
+
         Method externalizer = getExternalizerMethod();
         if (externalizer != null)
             setType(externalizer.getReturnType());
+
         // only pass on metadata resolve mode so that metadata is always
         // resolved before any other resolve modes our subclasses pass along
         _val.resolve(MODE_META);
         _key.resolve(MODE_META);
         _elem.resolve(MODE_META);
+
         MetaDataRepository repos = getRepository();
         int validate = repos.getValidate();
         if ((validate & MetaDataRepository.VALIDATE_META) != 0
@@ -1446,12 +1523,15 @@ public class FieldMetaData extends Extensions
     private void validateLRS() {
         if (!isLRS())
             return;
+
         // can't use lrs for arrays
         if (getTypeCode() == JavaTypes.ARRAY)
             throw new MetaDataException(_loc.get("bad-lrs-array", this));
+
         // can't use lrs for extranalized vals
         if (getExternalizerMethod() != null)
             throw new MetaDataException(_loc.get("bad-lrs-extern", this));
+
         // can't use lrs for concrete types
         if (getType() != Collection.class && getType() != Map.class
             && getType() != Set.class)
@@ -1541,13 +1621,15 @@ public class FieldMetaData extends Extensions
     }
 
     /**
-     * Copy state from the given field to this one. Do not copy mapping
+     * Copy state from the given field to this one.  Do not copy mapping
      * information.
      */
     public void copy(FieldMetaData field) {
         super.copy(field);
+
         _intermediate = field.usesIntermediate();
         _implData = field.usesImplData();
+
         // copy field-level info; use get methods to force resolution of
         // lazy data
         _proxyClass = field.getProxyType();
@@ -1565,9 +1647,11 @@ public class FieldMetaData extends Extensions
         _fieldValues = Collections.EMPTY_MAP;
         _primKey = field.isPrimaryKey();
         _backingMember = field.getBackingMember();
+
         // embedded fields can't be versions
         if (_owner.getEmbeddingMetaData() == null && _version == null)
             _version = (field.isVersion()) ? Boolean.TRUE : Boolean.FALSE;
+
         // only copy this data if not already set explicitly in this instance
         if (_dfg == 0) {
             _dfg = (field.isInDefaultFetchGroup()) ? DFG_TRUE : DFG_FALSE;
@@ -1588,6 +1672,7 @@ public class FieldMetaData extends Extensions
         }
         if (_inverse == ClassMetaData.DEFAULT_STRING)
             _inverse = field.getInverse();
+
         // copy value metadata
         _val.copy(field);
         _key.copy(field.getKey());
@@ -1601,6 +1686,7 @@ public class FieldMetaData extends Extensions
     ///////////////
     // Commentable
     ///////////////
+
     public String[] getComments() {
         return (_comments == null) ? EMPTY_COMMENTS : _comments;
     }
@@ -1612,6 +1698,7 @@ public class FieldMetaData extends Extensions
     ////////////////////////////////
     // ValueMetaData implementation
     ////////////////////////////////
+
     public FieldMetaData getFieldMetaData() {
         return this;
     }
@@ -1744,19 +1831,26 @@ public class FieldMetaData extends Extensions
         _val.setValueMappedBy(mapped);
     }
 
-    public FieldMetaData getValueMappedByMetaData() {
-        return _val.getValueMappedByMetaData();
-    }
+    public FieldMetaData getValueMappedByMetaData ()
+	{
+		return _val.getValueMappedByMetaData ();
+	}
 
-    public Class getTypeOverride() {
-        return _val.getTypeOverride();
-    }
 
-    public void setTypeOverride(Class type) {
-        _val.setTypeOverride(type);
-    }
+	public Class getTypeOverride ()
+	{
+		return _val.getTypeOverride ();
+	}
 
-    public void copy(ValueMetaData vmd) {
-        _val.copy(vmd);
-    }
+
+	public void setTypeOverride (Class type)
+	{
+		_val.setTypeOverride (type);
+	}
+
+
+	public void copy (ValueMetaData vmd)
+	{
+		_val.copy (vmd);
+	}
 }

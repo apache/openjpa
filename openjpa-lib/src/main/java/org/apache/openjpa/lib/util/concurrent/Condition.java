@@ -170,7 +170,7 @@ public interface Condition {
      * there is one.
      *
      * @throws InterruptedException if the current thread is interrupted(and
-     *                              interruption of thread suspension is supported).
+     * interruption of thread suspension is supported).
      */
     void await() throws InterruptedException;
 
@@ -303,7 +303,7 @@ public interface Condition {
      * @return <tt>false</tt> if the waiting time detectably elapsed
      *         before return from the method, else <tt>true</tt>.
      * @throws InterruptedException if the current thread is interrupted(and
-     *                              interruption of thread suspension is supported).
+     * interruption of thread suspension is supported).
      */
     boolean await(long time, TimeUnit unit) throws InterruptedException;
 
@@ -364,7 +364,7 @@ public interface Condition {
      * @return <tt>false</tt> if the deadline has
      *         elapsed upon return, else <tt>true</tt>.
      * @throws InterruptedException if the current thread is interrupted(and
-     *                              interruption of thread suspension is supported).
+     * interruption of thread suspension is supported).
      */
     boolean awaitUntil(Date deadline) throws InterruptedException;
 

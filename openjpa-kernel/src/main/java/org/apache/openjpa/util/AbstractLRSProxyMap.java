@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -33,14 +36,14 @@ import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
- * A map proxy designed for maps backed by extremely large result sets in
+ * <p>A map proxy designed for maps backed by extremely large result sets in
  * which each call to {@link #get} or {@link #containsKey} may perform a
- * database query. Changes to the map are tracked through a
- * {@link ChangeTracker}. This map has the following limitations:
+ * database query.  Changes to the map are tracked through a
+ * {@link ChangeTracker}.  This map has the following limitations:
  * <ul>
  * <li>The <code>size</code> method may return {@link Integer#MAX_VALUE}.</li>
  * <li>Null keys and values are not supported.</li>
- * </ul>
+ * </ul></p>
  *
  * @author Abe White
  */
@@ -50,8 +53,10 @@ public abstract class AbstractLRSProxyMap
     private static final int MODE_KEY = 0;
     private static final int MODE_VALUE = 1;
     private static final int MODE_ENTRY = 2;
+
     private static final Localizer _loc = Localizer.forPackage
         (AbstractLRSProxyMap.class);
+
     private Class _keyType = null;
     private Class _valueType = null;
     private MapChangeTrackerImpl _ct = null;
@@ -78,8 +83,10 @@ public abstract class AbstractLRSProxyMap
             throw new InvalidStateException(_loc.get("transfer-lrs",
                 _origOwner.getMetaData().getField(_origField)));
         }
+
         _sm = sm;
         _field = field;
+
         // keep track of original owner so we can detect transfer attempts
         if (sm != null) {
             _origOwner = sm;
@@ -142,6 +149,7 @@ public abstract class AbstractLRSProxyMap
                 return false;
             return hasKey(key);
         }
+
         // value tracking:
         // if we've removed values, we need to see if this key represents
         // a removed instance. otherwise we can rely on the 1-1 between
@@ -161,6 +169,7 @@ public abstract class AbstractLRSProxyMap
                 return false;
             return hasValue(val);
         }
+
         // key tracking
         Collection keys = keys(val);
         if (keys == null || keys.isEmpty())
@@ -197,7 +206,8 @@ public abstract class AbstractLRSProxyMap
         if (old != null) {
             _ct.changed(key, old, value);
             Proxies.removed(this, old, false);
-        } else _ct.added(key, value);
+        } else
+            _ct.added(key, value);
         return old;
     }
 
@@ -280,7 +290,8 @@ public abstract class AbstractLRSProxyMap
         };
     }
 
-    protected Object writeReplace() throws ObjectStreamException {
+    protected Object writeReplace()
+        throws ObjectStreamException {
         Itr itr = iterator(MODE_ENTRY);
         try {
             Map map = new HashMap();
@@ -318,9 +329,9 @@ public abstract class AbstractLRSProxyMap
 
     /**
      * Implement this method to return an iterator over the entries
-     * in the map. Each returned object must implement the
-     * <code>Map.Entry</code> interface. This method may be invoked multiple
-     * times. The iterator does not have to support the
+     * in the map.  Each returned object must implement the
+     * <code>Map.Entry</code> interface.  This method may be invoked multiple
+     * times.  The iterator does not have to support the
      * {@link Iterator#remove} method, and may implement
      * {@link org.apache.openjpa.lib.util.Closeable}.
      */
@@ -333,6 +344,7 @@ public abstract class AbstractLRSProxyMap
 
     private Itr iterator(int mode) {
         _iterated = true;
+
         // have to copy the entry set of _map to prevent concurrent mod errors
         IteratorChain chain = new IteratorChain();
         if (_map != null)
@@ -344,6 +356,7 @@ public abstract class AbstractLRSProxyMap
     ////////////////////////////
     // Predicate Implementation
     ////////////////////////////
+
     public boolean evaluate(Object obj) {
         Map.Entry entry = (Map.Entry) obj;
         return (_ct.getTrackKeys()
@@ -356,6 +369,7 @@ public abstract class AbstractLRSProxyMap
     ///////////////////////////////////
     // MapChangeTracker Implementation
     ///////////////////////////////////
+
     public boolean isTracking() {
         return _ct.isTracking();
     }
@@ -418,13 +432,15 @@ public abstract class AbstractLRSProxyMap
     }
 
     /**
-     * Wrapper around our filtering iterator chain.
+     *	Wrapper around our filtering iterator chain.
      */
-    private class Itr implements Iterator, Closeable {
+    private class Itr
+        implements Iterator, Closeable {
 
         private static final int OPEN = 0;
         private static final int LAST_ELEM = 1;
         private static final int CLOSED = 2;
+
         private final int _mode;
         private final IteratorChain _itr;
         private Map.Entry _last = null;
@@ -438,6 +454,7 @@ public abstract class AbstractLRSProxyMap
         public boolean hasNext() {
             if (_state != OPEN)
                 return false;
+
             // close automatically if no more elements
             if (!_itr.hasNext()) {
                 free();
@@ -450,6 +467,7 @@ public abstract class AbstractLRSProxyMap
         public Object next() {
             if (_state != OPEN)
                 throw new NoSuchElementException();
+
             _last = (Map.Entry) _itr.next();
             switch (_mode) {
                 case MODE_KEY:
@@ -464,15 +482,18 @@ public abstract class AbstractLRSProxyMap
         public void remove() {
             if (_state == CLOSED || _last == null)
                 throw new NoSuchElementException();
+
             Proxies.dirty(AbstractLRSProxyMap.this);
             Proxies.removed(AbstractLRSProxyMap.this, _last.getKey(), true);
             Proxies.removed(AbstractLRSProxyMap.this, _last.getValue(), false);
+
             // need to get a reference to the key before we remove it
             // from the map, since in JDK 1.3-, the act of removing an entry
             // from the map will also null the entry's value, which would
             // result in incorrectly passing a null to the change tracker
             Object key = _last.getKey();
             Object value = _last.getValue();
+
             if (_map != null)
                 _map.remove(key);
             _ct.removed(key, value);
@@ -487,6 +508,7 @@ public abstract class AbstractLRSProxyMap
         private void free() {
             if (_state != OPEN)
                 return;
+
             List itrs = _itr.getIterators();
             Iterator itr;
             for (int i = 0; i < itrs.size(); i++) {
@@ -498,7 +520,7 @@ public abstract class AbstractLRSProxyMap
         }
 
         protected void finalize() {
-            close();
-        }
-    }
+            close ();
+		}
+	}
 }

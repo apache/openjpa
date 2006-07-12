@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -23,7 +26,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
- * Utility methods for managing proxies.
+ * <p>Utility methods for managing proxies.</p>
  *
  * @author Abe White
  */
@@ -32,6 +35,7 @@ public class Proxies {
     public static final int MODE_ENTRY = 0;
     public static final int MODE_KEY = 1;
     public static final int MODE_VALUE = 2;
+
     private static final Localizer _loc = Localizer.forPackage(Proxies.class);
 
     /**
@@ -44,13 +48,16 @@ public class Proxies {
     }
 
     /**
-     * Used by proxy types to check that an attempt to add a new value is legal.
+     * Used by proxy types to check that an attempt to add a new value
+     * is legal.
      */
     public static void assertAllowedType(Object value, Class allowed) {
         if (value != null && allowed != null && !allowed.isInstance(value)) {
             throw new UserException(_loc.get("bad-elem-type", new Object[]{
-                allowed.getClassLoader(), allowed,
-                value.getClass().getClassLoader(), value.getClass()
+                allowed.getClassLoader(),
+                allowed,
+                value.getClass().getClassLoader(),
+                value.getClass()
             }));
         }
     }
@@ -73,7 +80,7 @@ public class Proxies {
     }
 
     /**
-     * Return an iterator that dirties its owner on calls to remove. This
+     * Return an iterator that dirties its owner on calls to remove.  This
      * iterator assumes that the given proxy collection uses a
      * {@link CollectionChangeTracker}.
      */
@@ -104,7 +111,7 @@ public class Proxies {
 
     /**
      * Return a proxy iterator that dirties its owner on remove, set, and
-     * add. This iterator assumes that the given proxy collection uses a
+     * add.  This iterator assumes that the given proxy collection uses a
      * {@link CollectionChangeTracker}.
      */
     public static ListIterator listIterator(final ProxyCollection proxy,
@@ -155,8 +162,9 @@ public class Proxies {
                 if (proxy.getChangeTracker() != null) {
                     if (hasNext())
                         proxy.getChangeTracker().stopTracking();
-                    else ((CollectionChangeTracker) proxy.getChangeTracker()).
-                        added(o);
+                    else
+                        ((CollectionChangeTracker) proxy.getChangeTracker()).
+                            added(o);
                 }
                 _last = o;
             }
@@ -173,7 +181,7 @@ public class Proxies {
     }
 
     /**
-     * Return a proxy for the given map key or entry set.
+     *	Return a proxy for the given map key or entry set.
      */
     public static Set entrySet(final ProxyMap proxy, final Set set,
         final int mode) {
@@ -185,6 +193,7 @@ public class Proxies {
             public boolean remove(Object o) {
                 if (mode != MODE_KEY)
                     throw new UnsupportedOperationException();
+
                 Map map = (Map) proxy;
                 if (!map.containsKey(o))
                     return false;
@@ -225,7 +234,8 @@ public class Proxies {
                 };
             }
 
-            protected Object writeReplace() throws ObjectStreamException {
+            protected Object writeReplace()
+                throws ObjectStreamException {
                 switch (mode) {
                     case MODE_KEY:
                         return ((Map) proxy).keySet();
@@ -234,8 +244,8 @@ public class Proxies {
                     default:
                         return ((Map) proxy).entrySet();
                 }
-            }
-        };
-    }
+			}
+		};
+	}
 }
 

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -31,7 +34,7 @@ import org.apache.openjpa.meta.ValueStrategies;
 import serp.util.Numbers;
 
 /**
- * Utility class for manipulating application object ids.
+ * <p>Utility class for manipulating application object ids.</p>
  *
  * @author Abe White
  * @nojavadoc
@@ -39,12 +42,13 @@ import serp.util.Numbers;
 public class ApplicationIds {
 
     /**
-     * Return the primary key values for the given object id. The values
+     * Return the primary key values for the given object id.  The values
      * will be returned in the same order as the metadata primary key fields.
      */
     public static Object[] toPKValues(Object oid, ClassMetaData meta) {
         if (meta == null)
             return null;
+
         Object[] pks;
         if (meta.isOpenJPAIdentity()) {
             pks = new Object[1];
@@ -52,6 +56,7 @@ public class ApplicationIds {
                 pks[0] = ((OpenJPAId) oid).getIdObject();
             return pks;
         }
+
         // reset owning 'meta' to the owner of the primary key fields, because
         // the one passed in might be a proxy, like for embedded mappings;
         // since getPrimaryKeyFields is guaranteed to return the primary
@@ -62,6 +67,7 @@ public class ApplicationIds {
         pks = new Object[fmds.length];
         if (oid == null)
             return pks;
+
         if (!Modifier.isAbstract(meta.getDescribedType().getModifiers())) {
             // copy fields from the oid
             PrimaryKeyFieldManager consumer = new PrimaryKeyFieldManager();
@@ -70,6 +76,7 @@ public class ApplicationIds {
                 consumer, oid);
             return consumer.getStore();
         }
+
         // default to reflection
         if (meta.isObjectIdTypeShared())
             oid = ((ObjectId) oid).getId();
@@ -81,15 +88,18 @@ public class ApplicationIds {
                 if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD) {
                     field = oidType.getField(fmds[i].getName());
                     pks[i] = field.get(oid);
-                } else { // property
+                } else // property
+                {
                     meth = ImplHelper.getGetter(oidType, fmds[i].getName());
                     pks[i] = meth.invoke(oid, (Object[]) null);
                 }
             }
             return pks;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             throw new GeneralException(t);
         }
     }
@@ -100,6 +110,7 @@ public class ApplicationIds {
     public static Object fromPKValues(Object[] pks, ClassMetaData meta) {
         if (meta == null || pks == null)
             return null;
+
         boolean convert = !meta.getRepository().getConfiguration().
             getCompatibilityInstance().getStrictIdentityValues();
         if (meta.isOpenJPAIdentity()) {
@@ -144,6 +155,7 @@ public class ApplicationIds {
                     throw new InternalException();
             }
         }
+
         // copy pks to oid
         if (!Modifier.isAbstract(meta.getDescribedType().getModifiers())) {
             Object oid = PCRegistry.newObjectId(meta.getDescribedType());
@@ -155,11 +167,13 @@ public class ApplicationIds {
                 producer, oid);
             return oid;
         }
+
         // default to reflection
         Class oidType = meta.getObjectIdType();
         try {
             // create a new id
             Object copy = oidType.newInstance();
+
             // set each field
             FieldMetaData[] fmds = meta.getPrimaryKeyFields();
             Field field;
@@ -171,7 +185,8 @@ public class ApplicationIds {
                     field = oidType.getField(fmds[i].getName());
                     field.set(copy, (convert) ? JavaTypes.convert(pks[i],
                         fmds[i].getDeclaredTypeCode()) : pks[i]);
-                } else { // property
+                } else // property
+                {
                     if (paramTypes == null)
                         paramTypes = new Class[1];
                     paramTypes[0] = fmds[i].getDeclaredType();
@@ -184,10 +199,12 @@ public class ApplicationIds {
                     meth.invoke(copy, params);
                 }
             }
+
             if (meta.isObjectIdTypeShared())
                 copy = new ObjectId(meta.getDescribedType(), copy);
             return copy;
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             throw new GeneralException(t);
         }
     }
@@ -198,6 +215,7 @@ public class ApplicationIds {
     public static Object copy(Object oid, ClassMetaData meta) {
         if (meta == null || oid == null)
             return null;
+
         if (meta.isOpenJPAIdentity()) {
             // use meta type instead of oid type in case it's a subclass
             Class cls = meta.getDescribedType();
@@ -237,6 +255,7 @@ public class ApplicationIds {
                     throw new InternalException();
             }
         }
+
         // create a new pc instance of the right type, set its key fields
         // to the original oid values, then copy its key fields to a new
         // oid instance
@@ -247,8 +266,9 @@ public class ApplicationIds {
             pc.pcCopyKeyFieldsToObjectId(copy);
             return copy;
         }
-        Object copy =
-            (!meta.isObjectIdTypeShared()) ? oid : ((ObjectId) oid).getId();
+
+        Object copy = (!meta.isObjectIdTypeShared()) ? oid
+            : ((ObjectId) oid).getId();
         copy = copy(copy, meta, meta.getPrimaryKeyFields());
         if (meta.isObjectIdTypeShared())
             copy = new ObjectId(meta.getDescribedType(), copy,
@@ -263,6 +283,7 @@ public class ApplicationIds {
         FieldMetaData[] fmds) {
         if (oid == null)
             return null;
+
         // default to using reflection
         Class oidType = oid.getClass();
         try {
@@ -275,10 +296,12 @@ public class ApplicationIds {
             for (int i = 0; i < fmds.length; i++) {
                 if (fmds[i].getManagement() != FieldMetaData.MANAGE_PERSISTENT)
                     continue;
+
                 if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD) {
                     field = oidType.getField(fmds[i].getName());
                     field.set(copy, field.get(oid));
-                } else { // property
+                } else // property
+                {
                     if (paramTypes == null)
                         paramTypes = new Class[1];
                     paramTypes[0] = fmds[i].getDeclaredType();
@@ -292,9 +315,11 @@ public class ApplicationIds {
                 }
             }
             return copy;
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             throw new GeneralException(t);
         }
     }
@@ -306,16 +331,20 @@ public class ApplicationIds {
     public static Object create(PersistenceCapable pc, ClassMetaData meta) {
         if (pc == null)
             return null;
+
         Object oid = pc.pcNewObjectIdInstance();
         if (oid == null)
             return null;
+
         if (!meta.isOpenJPAIdentity()) {
             pc.pcCopyKeyFieldsToObjectId(oid);
             return oid;
         }
+
         FieldMetaData pk = meta.getPrimaryKeyFields()[0];
         if (pk.getDeclaredTypeCode() != JavaTypes.OID)
             return oid;
+
         // always copy oid object in case field value mutates or becomes
         // managed
         ObjectId objid = (ObjectId) oid;
@@ -333,6 +362,7 @@ public class ApplicationIds {
         ClassMetaData meta = sm.getMetaData();
         if (meta.getIdentityType() != ClassMetaData.ID_APPLICATION)
             throw new InternalException();
+
         boolean ret;
         FieldMetaData[] pks = meta.getPrimaryKeyFields();
         if (meta.isOpenJPAIdentity()
@@ -341,10 +371,13 @@ public class ApplicationIds {
                 (sm.fetchObjectField(pks[0].getIndex()), sm, pks[0]);
             ret = assign(oidsm, store, pks[0].getEmbeddedMetaData().
                 getFields(), preFlush);
-            sm.storeObjectField(pks[0].getIndex(), oidsm.getManagedInstance());
-        } else ret = assign(sm, store, meta.getPrimaryKeyFields(), preFlush);
+            sm.storeObjectField(pks[0].getIndex(),
+                oidsm.getManagedInstance());
+        } else
+            ret = assign(sm, store, meta.getPrimaryKeyFields(), preFlush);
         if (!ret)
             return false;
+
         // base oid on field values
         sm.setObjectId(create(sm.getPersistenceCapable(), meta));
         return true;
@@ -364,9 +397,10 @@ public class ApplicationIds {
     }
 
     /**
-     * Helper class used to transfer pk values to/from application oids.
+     *	Helper class used to transfer pk values to/from application oids.
      */
-    private static class PrimaryKeyFieldManager implements FieldManager {
+    private static class PrimaryKeyFieldManager
+        implements FieldManager {
 
         private Object[] _store = null;
         private int _index = 0;
@@ -474,6 +508,6 @@ public class ApplicationIds {
                 val = JavaTypes.convert(val, _meta.getField(field).
                     getDeclaredTypeCode());
             return val;
-        }
-    }
+		}
+	}
 }

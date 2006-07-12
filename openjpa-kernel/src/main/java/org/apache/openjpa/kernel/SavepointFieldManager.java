@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -25,37 +28,42 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.ProxyManager;
 
 /**
- * FieldManager type used to store information for savepoint rollback.
+ * <p>FieldManager type used to store information for savepoint rollback.</p>
  *
  * @author Steve Kim
  * @since 3.4
  */
-class SavepointFieldManager extends ClearFieldManager {
+class SavepointFieldManager
+    extends ClearFieldManager {
 
     private static final Localizer _loc = Localizer.forPackage
         (SavepointFieldManager.class);
+
     private final StateManagerImpl _sm;
     private final BitSet _loaded;
     private final BitSet _dirty;
     private final BitSet _flush;
     private final PCState _state;
     private PersistenceCapable _copy;
+
     // used to track field value during store/fetch cycle
     private Object _field = null;
     private int[] _copyField = null;
     private BitSet _mutable;
 
     /**
-     * Constructor. Provide instance to save and indicate whether
-     * to copy persistent fields. Transactional fields will be
+     * Constructor.  Provide instance to save and indicate whether
+     * to copy persistent fields.  Transactional fields will be
      * copied regardless of copy setting.
      */
     public SavepointFieldManager(StateManagerImpl sm, boolean copy) {
         _sm = sm;
         _state = _sm.getPCState();
+
         _dirty = (BitSet) _sm.getDirty().clone();
         _flush = (BitSet) _sm.getFlushed().clone();
         _loaded = (BitSet) _sm.getLoaded().clone();
+
         FieldMetaData[] fields = _sm.getMetaData().getFields();
         for (int i = 0; i < _loaded.length(); i++) {
             if (!_loaded.get(i))
@@ -66,8 +74,10 @@ class SavepointFieldManager extends ClearFieldManager {
                     _copy = _sm.getPersistenceCapable().pcNewInstance
                         (_sm, true);
                 storeField(fields[i]);
-            } else _loaded.clear(i);
+            } else
+                _loaded.clear(i);
         }
+
         // we need to proxy the fields so that we can track future changes
         // from this savepoint forward for PNew instances' mutable fields
         _sm.proxyFields(false, false);
@@ -81,7 +91,8 @@ class SavepointFieldManager extends ClearFieldManager {
     }
 
     /**
-     * Return the persistence capable copy holding the savepoint field values.
+     * Return the persistence capable copy holding the savepoint
+     * field values.
      */
     public PersistenceCapable getCopy() {
         return _copy;
@@ -143,7 +154,7 @@ class SavepointFieldManager extends ClearFieldManager {
     }
 
     /**
-     * Restore the given field. If this method returns true, then you need
+     * Restore the given field.  If this method returns true, then you need
      * to use this field manager to replace the given field in the state
      * manager's instance.
      */
@@ -152,6 +163,7 @@ class SavepointFieldManager extends ClearFieldManager {
             return false;
         if (_mutable != null && _mutable.get(field))
             return true;
+
         // copy the saved field over
         if (_copyField == null)
             _copyField = new int[1];
@@ -193,9 +205,10 @@ class SavepointFieldManager extends ClearFieldManager {
             default:
                 _field = curVal;
         }
+
         // if we couldn't get a copy of the sco, act like it wasn't saved
         // should throw an exception
         if (curVal != null && _field == null)
             throw new InternalException(_loc.get("no-savepoint-copy", fmd));
-    }
+	}
 }

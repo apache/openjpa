@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,15 +18,16 @@ package org.apache.openjpa.event;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 
 /**
- * Manager that can be used to track and notify transaction listeners
- * of transaction-related events.
+ * <p>Manager that can be used to track and notify transaction listeners
+ * of transaction-related events.</p>
  *
  * @author Patrick Linskey
  * @author Abe White
- * @nojavadoc
  * @since 3.0
+ * @nojavadoc
  */
-public class TransactionEventManager extends AbstractConcurrentEventManager {
+public class TransactionEventManager
+    extends AbstractConcurrentEventManager {
 
     private int _begin = 0;
     private int _flush = 0;
@@ -42,6 +46,7 @@ public class TransactionEventManager extends AbstractConcurrentEventManager {
     public boolean removeListener(Object listener) {
         if (!super.removeListener(listener))
             return false;
+
         if (listener instanceof BeginTransactionListener)
             _begin--;
         if (listener instanceof FlushTransactionListener)
@@ -73,7 +78,7 @@ public class TransactionEventManager extends AbstractConcurrentEventManager {
     }
 
     /**
-     * Fire the given event to all registered listeners.
+     *	Fire the given event to all registered listeners.
      */
     protected void fireEvent(Object event, Object listener) {
         TransactionEvent ev = (TransactionEvent) event;
@@ -117,5 +122,5 @@ public class TransactionEventManager extends AbstractConcurrentEventManager {
                         .afterRollbackComplete(ev);
                 break;
         }
-    }
+	}
 }

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -13,7 +16,7 @@
 package org.apache.openjpa.event;
 
 /**
- * Notified when transactions end.
+ * <p>Notified when transactions end.</p>
  *
  * @author Patrick Linskey
  * @author Abe White
@@ -24,28 +27,28 @@ public interface EndTransactionListener {
     /**
      * Notification that the next flush is for the transaction commit.
      *
-     * @see TransactionEvent#BEFORE_COMMIT
+     * @see    TransactionEvent#BEFORE_COMMIT
      */
     public void beforeCommit(TransactionEvent event);
 
     /**
      * Notification that a transaction has successfully committed.
      *
-     * @see TransactionEvent#AFTER_COMMIT
+     * @see    TransactionEvent#AFTER_COMMIT
      */
     public void afterCommit(TransactionEvent event);
 
     /**
      * Notification that a transaction has been rolled back.
      *
-     * @see TransactionEvent#AFTER_ROLLBACK
+     * @see    TransactionEvent#AFTER_ROLLBACK
      */
     public void afterRollback(TransactionEvent event);
 
     /**
      * Notification that state transitions are complete.
      *
-     * @see TransactionEvent#AFTER_STATE_TRANSITIONS
+     * @see    TransactionEvent#AFTER_STATE_TRANSITIONS
      */
     public void afterStateTransitions(TransactionEvent event);
 
@@ -53,15 +56,15 @@ public interface EndTransactionListener {
      * Notification that a transaction has successfully committed and
      * the transaction is no longer active.
      *
-     * @see TransactionEvent#AFTER_COMMIT_COMPLETE
+     * @see    TransactionEvent#AFTER_COMMIT_COMPLETE
      */
     public void afterCommitComplete(TransactionEvent event);
 
     /**
-     * Notification that a transaction has been rolled back and
-     * the transaction is no longer active.
+     *	Notification that a transaction has been rolled back and
+     *	the transaction is no longer active.
      *
-     * @see TransactionEvent#AFTER_ROLLBACK_COMPLETE
+     *	@see    TransactionEvent#AFTER_ROLLBACK_COMPLETE
      */
     public void afterRollbackComplete(TransactionEvent event);
 }

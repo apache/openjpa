@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -13,8 +16,8 @@
 package org.apache.openjpa.util;
 
 /**
- * Interface supplying additional exception information. All OpenJPA
- * exceptions implement this interface.
+ * <p>Interface supplying additional exception information.  All OpenJPA
+ * exceptions implement this interface.</p>
  *
  * @author Abe White
  * @since 4.0
@@ -30,7 +33,7 @@ public interface ExceptionInfo {
     /**
      * Exception message.
      *
-     * @see Throwable#getMessage
+     * @see    Throwable#getMessage
      */
     public String getMessage();
 
@@ -45,7 +48,7 @@ public interface ExceptionInfo {
     /**
      * Stack.
      *
-     * @see Throwable#printStackTrace
+     * @see    Throwable#printStackTrace
      */
     public void printStackTrace();
 
@@ -70,8 +73,8 @@ public interface ExceptionInfo {
     public Throwable[] getNestedThrowables();
 
     /**
-     * The failed object.
+     *	The failed object.
      */
-    public Object getFailedObject();
+    public Object getFailedObject ();
 }
 

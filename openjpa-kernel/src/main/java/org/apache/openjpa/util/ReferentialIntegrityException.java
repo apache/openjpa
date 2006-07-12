@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -19,19 +22,22 @@ import java.io.ObjectOutputStream;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
- * Exception type reserved for violations of integrity constraints.
+ * <p>Exception type reserved for violations of integrity constraints.</p>
  *
  * @author Patrick Linskey
  */
-public class ReferentialIntegrityException extends StoreException {
+public class ReferentialIntegrityException
+    extends StoreException {
 
     public static final int IV_UNKNOWN = 0;
     public static final int IV_DUPLICATE_OID = 1;
     public static final int IV_UNIQUE = 2;
     public static final int IV_REFERENCE = 3;
     public static final int IV_MIXED = 4;
+
     private static final transient Localizer _loc = Localizer.forPackage
         (ReferentialIntegrityException.class);
+
     private int _iv = IV_UNKNOWN;
 
     public ReferentialIntegrityException() {
@@ -76,12 +82,13 @@ public class ReferentialIntegrityException extends StoreException {
         return this;
     }
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
+    private void writeObject(ObjectOutputStream out)
+        throws IOException {
         out.writeInt(_iv);
     }
 
     private void readObject(ObjectInputStream in)
         throws IOException, ClassNotFoundException {
         _iv = in.readInt();
-    }
+	}
 }

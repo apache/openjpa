@@ -480,16 +480,16 @@ public abstract class AbstractTestCase extends TestCase {
     /**
      * Execute a test method in multiple threads.
      *
-     * @param thread     the number of Threads to run in
+     * @param thread the number of Threads to run in
      * @param iterations the number of times the method should
-     *                   be execute in a single Thread
-     * @param method     the name of the method to execute
-     * @param args       the arguments to pass to the method
+     * be execute in a single Thread
+     * @param method the name of the method to execute
+     * @param args the arguments to pass to the method
      * @throws ThreadingException if an errors occur in
-     *                            any of the Threads. The actual exceptions
-     *                            will be embedded in the exception. Note that
-     *                            this means that assert() failures will be
-     *                            treated as errors rather than warnings.
+     * any of the Threads. The actual exceptions
+     * will be embedded in the exception. Note that
+     * this means that assert() failures will be
+     * treated as errors rather than warnings.
      * @author Marc Prud'hommeaux
      */
     public void mttest(int threads, int iterations, final String method,
@@ -544,19 +544,19 @@ public abstract class AbstractTestCase extends TestCase {
     /**
      * Execute a test method in multiple threads.
      *
-     * @param title       a description of the test, for inclusion in the
-     *                    error message
+     * @param title a description of the test, for inclusion in the
+     * error message
      * @param serialCount the number of times to run the method
-     *                    serially before spawning threads.
-     * @param thread      the number of Threads to run in
-     * @param iterations  the number of times the method should
-     * @param runnner     the VolatileRunnable that will execute
-     *                    the actual test from within the Thread.
+     * serially before spawning threads.
+     * @param thread the number of Threads to run in
+     * @param iterations the number of times the method should
+     * @param runnner the VolatileRunnable that will execute
+     * the actual test from within the Thread.
      * @throws ThreadingException if an errors occur in
-     *                            any of the Threads. The actual exceptions
-     *                            will be embedded in the exception. Note that
-     *                            this means that assert() failures will be
-     *                            treated as errors rather than warnings.
+     * any of the Threads. The actual exceptions
+     * will be embedded in the exception. Note that
+     * this means that assert() failures will be
+     * treated as errors rather than warnings.
      * @author Marc Prud'hommeaux be execute in a single Thread
      * @author Marc Prud'hommeaux
      */
@@ -650,7 +650,7 @@ public abstract class AbstractTestCase extends TestCase {
      *
      * @param exclude a method name to skip
      * @throws IllegalStateException If the calling method could not be
-     *                               identified.
+     * identified.
      * @author Marc Prud'hommeaux
      */
     public String callingMethod(String exclude) {
@@ -1264,7 +1264,7 @@ public abstract class AbstractTestCase extends TestCase {
      * Run ant on the specified build file.
      *
      * @param buildFile the build file to use
-     * @param target    the name of the target to invoke
+     * @param target the name of the target to invoke
      */
     public void ant(File buildFile, String target) {
         assertTrue(buildFile.isFile());
@@ -1280,7 +1280,7 @@ public abstract class AbstractTestCase extends TestCase {
      * Serialize and deserialize the object.
      *
      * @param validateEquality make sure the hashCode and equals
-     *                         methods hold true
+     * methods hold true
      */
     public static Object roundtrip(Object orig, boolean validateEquality)
         throws IOException, ClassNotFoundException {

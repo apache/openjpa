@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -47,17 +50,18 @@ import org.apache.openjpa.util.InternalException;
 import serp.util.Strings;
 
 /**
- * Serializes persistence metadata back to XML.
+ * <p>Serializes persistence metadata back to XML.
  * This class processes all object level tags that are store-agnostic.
  * However, it provides hooks for the subclasses to include store-specific
  * tags to be serialized both at &lt;entity-mappings&gt; and
- * &lt;entity&gt; level.
+ * &lt;entity&gt; level.</p>
  *
+ * @since 4.0
  * @author Steve Kim
  * @nojavadoc
- * @since 4.0
  */
-public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
+public class XMLPersistenceMetaDataSerializer
+    extends CFMetaDataSerializer
     implements PersistenceMetaDataFactory.Serializer {
 
     // NOTE: order is important! these constants must be maintained in
@@ -68,8 +72,10 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     protected static final int TYPE_META = 30;
     protected static final int TYPE_CLASS_SEQS = 40;
     protected static final int TYPE_CLASS_QUERIES = 50;
+
     private static final Localizer _loc = Localizer.forPackage
         (XMLPersistenceMetaDataSerializer.class);
+
     private final OpenJPAConfiguration _conf;
     private Map<String, ClassMetaData> _metas = null;
     private Map<String, List> _queries = null;
@@ -79,7 +85,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     private SerializationComparator _comp = null;
 
     /**
-     * Constructor. Supply configuration.
+     * Constructor.  Supply configuration.
      */
     public XMLPersistenceMetaDataSerializer(OpenJPAConfiguration conf) {
         _conf = conf;
@@ -111,7 +117,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     }
 
     /**
-     * The serialization mode according to the expected document type. The
+     * The serialization mode according to the expected document type.  The
      * mode constants act as bit flags, and therefore can be combined.
      */
     public int getMode() {
@@ -119,7 +125,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     }
 
     /**
-     * The serialization mode according to the expected document type. The
+     * The serialization mode according to the expected document type.  The
      * mode constants act as bit flags, and therefore can be combined.
      */
     public void setMode(int mode) {
@@ -134,7 +140,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
             setMode(MODE_NONE);
         else if (on)
             setMode(_mode | mode);
-        else setMode(_mode & ~mode);
+        else
+            setMode(_mode & ~mode);
     }
 
     /**
@@ -171,18 +178,19 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     }
 
     /**
-     * Convenience method for interpreting {@link #getMode}. Takes into
+     * Convenience method for interpreting {@link #getMode}.  Takes into
      * account whether mapping information is loaded for the given instance.
      */
     protected boolean isMappingMode(ClassMetaData meta) {
         return isMappingMode() && (meta.getSourceMode() & MODE_MAPPING) != 0
-            && (meta.getEmbeddingMetaData() != null || !meta.isEmbeddedOnly())
+            && (meta.getEmbeddingMetaData() != null
+            || !meta.isEmbeddedOnly())
             && (meta.getEmbeddingMetaData() == null
             || isMappingMode(meta.getEmbeddingMetaData()));
     }
 
     /**
-     * Convenience method for interpreting {@link #getMode}. Takes into
+     * Convenience method for interpreting {@link #getMode}.  Takes into
      * account whether mapping information is loaded for the given instance.
      */
     protected boolean isMappingMode(ValueMetaData vmd) {
@@ -195,6 +203,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     public void addMetaData(ClassMetaData meta) {
         if (meta == null)
             return;
+
         if (_metas == null)
             _metas = new HashMap<String, ClassMetaData>();
         _metas.put(meta.getDescribedType().getName(), meta);
@@ -206,13 +215,16 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     public void addSequenceMetaData(SequenceMetaData meta) {
         if (meta == null)
             return;
+
         List seqs = null;
         String defName = null;
         if (meta.getSourceScope() instanceof Class)
             defName = ((Class) meta.getSourceScope()).getName();
         if (_seqs == null)
             _seqs = new HashMap<String, List>();
-        else seqs = _seqs.get(defName);
+        else
+            seqs = _seqs.get(defName);
+
         if (seqs == null) {
             seqs = new ArrayList(3); // don't expect many seqs / class
             seqs.add(meta);
@@ -227,13 +239,16 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     public void addQueryMetaData(QueryMetaData meta) {
         if (meta == null)
             return;
+
         List queries = null;
         String defName = null;
         if (meta.getSourceScope() instanceof Class)
             defName = ((Class) meta.getSourceScope()).getName();
         if (_queries == null)
             _queries = new HashMap<String, List>();
-        else queries = _queries.get(defName);
+        else
+            queries = _queries.get(defName);
+
         if (queries == null) {
             queries = new ArrayList(3); // don't expect many queries / class
             queries.add(meta);
@@ -248,6 +263,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     public void addAll(MetaDataRepository repos) {
         if (repos == null)
             return;
+
         for (ClassMetaData meta : repos.getMetaDatas())
             addMetaData(meta);
         for (SequenceMetaData seq : repos.getSequenceMetaDatas())
@@ -317,6 +333,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     public boolean removeAll(MetaDataRepository repos) {
         if (repos == null)
             return false;
+
         boolean removed = false;
         ClassMetaData[] metas = repos.getMetaDatas();
         for (int i = 0; i < metas.length; i++)
@@ -358,7 +375,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     }
 
     /**
-     * Add system-level mapping elements to be serialized. Does nothing
+     * Add system-level mapping elements to be serialized.  Does nothing
      * by default.
      */
     protected void addSystemMappingElements(Collection toSerialize) {
@@ -388,6 +405,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     private void addSequenceMetaDatas(Collection all) {
         if (_seqs == null)
             return;
+
         for (Map.Entry entry : _seqs.entrySet()) {
             if (entry.getKey() == null)
                 all.addAll((List) entry.getValue());
@@ -403,6 +421,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     private void addQueryMetaDatas(Collection all) {
         if (_queries == null)
             return;
+
         for (Map.Entry entry : _queries.entrySet()) {
             if (entry.getKey() == null)
                 all.addAll((List) entry.getValue());
@@ -414,7 +433,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     }
 
     @Override
-    protected void serialize(Collection objects) throws SAXException {
+    protected void serialize(Collection objects)
+        throws SAXException {
         // copy collection to avoid mutation
         Object meta;
         boolean unique = true;
@@ -427,7 +447,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
                     ClassMetaData cls = (ClassMetaData) meta;
                     if (cls.getAccessType() == ClassMetaData.ACCESS_FIELD)
                         fieldAccess = true;
-                    else propertyAccess = true;
+                    else
+                        propertyAccess = true;
                     // no break
                 default:
                     if (unique && getPackage() == null)
@@ -439,6 +460,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
                     }
             }
         }
+
         serializeNamespaceAttributes();
         startElement("entity-mappings");
         if (getPackage() != null) {
@@ -446,7 +468,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
             addText(getPackage());
             endElement("package");
         }
-        if (fieldAccess != propertyAccess) { // i.e. only one
+        if (fieldAccess != propertyAccess) // i.e. only one
+        {
             int def = getConfiguration().getMetaDataRepository().
                 getMetaDataFactory().getDefaults().getDefaultAccessType();
             String access = null;
@@ -536,7 +559,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     /**
      * Serialize namespace attributes
      */
-    private void serializeNamespaceAttributes() throws SAXException {
+    private void serializeNamespaceAttributes()
+        throws SAXException {
         addAttribute("xmlns", "http://java.sun.com/xml/ns/persistence/orm");
         addAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
         addAttribute("xsi:schemaLocation",
@@ -554,16 +578,20 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     /**
      * Serialize query metadata.
      */
-    private void serializeQuery(QueryMetaData meta) throws SAXException {
+    private void serializeQuery(QueryMetaData meta)
+        throws SAXException {
         if (!_annos && meta.getSourceType() == meta.SRC_ANNOTATIONS)
             return;
+
         Log log = getLog();
         if (log.isInfoEnabled()) {
             if (meta.getSourceScope() instanceof Class)
                 log.info(_loc.get("ser-cls-query",
                     meta.getSourceScope(), meta.getName()));
-            else log.info(_loc.get("ser-query", meta.getName()));
+            else
+                log.info(_loc.get("ser-query", meta.getName()));
         }
+
         addComments(meta);
         addAttribute("name", meta.getName());
         addAttribute("query", meta.getQueryString());
@@ -583,7 +611,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     /**
      * Serialize query hints.
      */
-    private void serializeQueryHints(QueryMetaData meta) throws SAXException {
+    private void serializeQueryHints(QueryMetaData meta)
+        throws SAXException {
         String[] hints = meta.getHintKeys();
         Object[] values = meta.getHintValues();
         for (int i = 0; i < hints.length; i++) {
@@ -601,11 +630,14 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
         throws SAXException {
         if (!_annos && meta.getSourceType() == meta.SRC_ANNOTATIONS)
             return;
+
         Log log = getLog();
         if (log.isInfoEnabled())
             log.info(_loc.get("ser-sequence", meta.getName()));
+
         addComments(meta);
         addAttribute("name", meta.getName());
+
         // parse out the datastore sequence name, if any
         String plugin = meta.getSequencePlugin();
         String clsName = Configurations.getClassName(plugin);
@@ -619,6 +651,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
                 plugin = Configurations.getPlugin(clsName, props);
             }
         }
+
         if (ds != null)
             addAttribute("sequence-name", ds);
         else if (plugin != null && !SequenceMetaData.IMPL_NATIVE.equals
@@ -630,6 +663,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
         if (meta.getAllocate() != 50 && meta.getAllocate() != -1)
             addAttribute("allocation-size",
                 String.valueOf(meta.getAllocate()));
+
         startElement("sequence-generator");
         endElement("sequence-generator");
     }
@@ -641,21 +675,26 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
         throws SAXException {
         if (!_annos && meta.getSourceType() == meta.SRC_ANNOTATIONS)
             return;
+
         Log log = getLog();
         if (log.isInfoEnabled())
             log.info(_loc.get("ser-class", meta));
+
         addComments(meta);
         addAttribute("class", getClassName(meta.getDescribedType().
             getName()));
+
         if (isMetaDataMode()
             && !meta.getTypeAlias().equals(Strings.getClassName(meta.
             getDescribedType())))
             addAttribute("name", meta.getTypeAlias());
+
         String name = getEntityElementName(meta);
         if (isMetaDataMode())
             addClassAttributes(meta, access);
         if (isMappingMode())
             addClassMappingAttributes(meta);
+
         startElement(name);
         if (isMappingMode())
             serializeClassMappingContent(meta);
@@ -663,6 +702,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
             serializeIdClass(meta);
         if (isMappingMode())
             serializeInheritanceContent(meta);
+
         if (isMappingMode()) {
             List seqs = (_seqs == null) ? null : _seqs.get
                 (meta.getDescribedType().getName());
@@ -672,6 +712,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
                     serializeSequence((SequenceMetaData) seqs.get(i));
             }
         }
+
         if (isQueryMode()) {
             List queries = (_queries == null) ? null : _queries.get
                 (meta.getDescribedType().getName());
@@ -683,9 +724,11 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
             if (isMappingMode())
                 serializeQueryMappings(meta);
         }
+
         List<FieldMetaData> fields = new ArrayList(Arrays.asList
             (meta.getDefinedFieldsInListingOrder()));
         Collections.sort(fields, new FieldComparator());
+
         // serialize attr-override
         if (isMappingMode()) {
             FieldMetaData fmd;
@@ -701,6 +744,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
                 it.remove();
             }
         }
+
         if (fields.size() > 0 && (isMetaDataMode() || isMappingMode())) {
             startElement("attributes");
             FieldMetaData orig;
@@ -709,7 +753,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
                     getDescribedType()) {
                     orig = fmd.getDeclaringMetaData().getDeclaredField
                         (fmd.getName());
-                } else orig = null;
+                } else
+                    orig = null;
                 serializeField(fmd, orig);
             }
             endElement("attributes");
@@ -764,7 +809,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     }
 
     /**
-     * Add mapping attributes for the given class. Does nothing by default
+     * Add mapping attributes for the given class.  Does nothing by default
      */
     protected void addClassMappingAttributes(ClassMetaData mapping)
         throws SAXException {
@@ -773,10 +818,12 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     /**
      * Serialize id-class.
      */
-    private void serializeIdClass(ClassMetaData meta) throws SAXException {
+    private void serializeIdClass(ClassMetaData meta)
+        throws SAXException {
         if (meta.getIdentityType() != ClassMetaData.ID_APPLICATION
             || meta.isOpenJPAIdentity())
             return;
+
         ClassMetaData sup = meta.getPCSuperclassMetaData();
         Class oid = meta.getObjectIdType();
         if (oid != null && (sup == null || oid != sup.getObjectIdType())) {
@@ -787,21 +834,21 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     }
 
     /**
-     * Serialize class mapping content. Does nothing by default.
+     * Serialize class mapping content.  Does nothing by default.
      */
     protected void serializeClassMappingContent(ClassMetaData mapping)
         throws SAXException {
     }
 
     /**
-     * Serialize inheritance content. Does nothing by default.
+     * Serialize inheritance content.  Does nothing by default.
      */
     protected void serializeInheritanceContent(ClassMetaData mapping)
         throws SAXException {
     }
 
     /**
-     * Serialize query mappings. Does nothing by default.
+     * Serialize query mappings.  Does nothing by default.
      */
     protected void serializeQueryMappings(ClassMetaData meta)
         throws SAXException {
@@ -815,8 +862,10 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
         if (fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT
             && !fmd.isExplicit())
             return;
+
         addComments(fmd);
         addAttribute("name", fmd.getName());
+
         String strategy = null;
         PersistenceStrategy strat = getStrategy(fmd);
         ValueMetaData cascades = null;
@@ -869,6 +918,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
         }
         if (isMappingMode(fmd))
             addFieldMappingAttributes(fmd, orig);
+
         startElement(strategy);
         if (fmd.getOrderDeclaration() != null) {
             startElement("order-by");
@@ -905,10 +955,11 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     }
 
     /**
-     * Add mapping attributes for the given field. Does nothing by default.
+     * Add mapping attributes for the given field.  Does nothing by default.
      */
     protected void addFieldMappingAttributes(FieldMetaData fmd,
-        FieldMetaData orig) throws SAXException {
+        FieldMetaData orig)
+        throws SAXException {
     }
 
     /**
@@ -923,7 +974,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
      * Serialize attribute override content.
      */
     private void serializeAttributeOverrideContent(FieldMetaData fmd,
-        FieldMetaData orig) throws SAXException {
+        FieldMetaData orig)
+        throws SAXException {
         addAttribute("name", fmd.getName());
         startElement("attribute-override");
         serializeAttributeOverrideMappingContent(fmd, orig);
@@ -931,16 +983,18 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     }
 
     /**
-     * Serialize attribute override mapping content. Does nothing by default,
+     * Serialize attribute override mapping content.  Does nothing by default,
      */
     protected void serializeAttributeOverrideMappingContent
-        (FieldMetaData fmd, FieldMetaData orig) throws SAXException {
+        (FieldMetaData fmd, FieldMetaData orig)
+        throws SAXException {
     }
 
     /**
      * Serialize cascades.
      */
-    private void serializeCascades(ValueMetaData vmd) throws SAXException {
+    private void serializeCascades(ValueMetaData vmd)
+        throws SAXException {
         Collection<String> cascades = null;
         if (vmd.getCascadePersist() == ValueMetaData.CASCADE_IMMEDIATE) {
             if (cascades == null)
@@ -962,7 +1016,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
                 cascades = new ArrayList<String>();
             cascades.add("cascade-refresh");
         }
-        if (cascades != null && cascades.size() == 4) { // ALL
+        if (cascades != null && cascades.size() == 4) // ALL
+        {
             cascades.clear();
             cascades.add("cascade-all");
         }
@@ -982,12 +1037,14 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     protected PersistenceStrategy getStrategy(FieldMetaData fmd) {
         if (fmd.getManagement() == fmd.MANAGE_NONE)
             return PersistenceStrategy.TRANSIENT;
+
         if (fmd.isSerialized()
             || fmd.getDeclaredType() == byte[].class
             || fmd.getDeclaredType() == Byte[].class
             || fmd.getDeclaredType() == char[].class
             || fmd.getDeclaredType() == Character[].class)
             return PersistenceStrategy.BASIC;
+
         FieldMetaData mappedBy;
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.PC:
@@ -1019,7 +1076,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     /**
      * Add basic attributes.
      */
-    private void addBasicAttributes(FieldMetaData fmd) throws SAXException {
+    private void addBasicAttributes(FieldMetaData fmd)
+        throws SAXException {
         if (!fmd.isInDefaultFetchGroup())
             addAttribute("fetch", "LAZY");
         if (fmd.getNullValue() == FieldMetaData.NULL_EXCEPTION)
@@ -1029,7 +1087,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     /**
      * Add many-to-one attributes.
      */
-    private void addManyToOneAttributes(FieldMetaData fmd) throws SAXException {
+    private void addManyToOneAttributes(FieldMetaData fmd)
+        throws SAXException {
         if (!fmd.isInDefaultFetchGroup())
             addAttribute("fetch", "LAZY");
         if (fmd.getNullValue() == FieldMetaData.NULL_EXCEPTION)
@@ -1039,7 +1098,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     /**
      * Add one-to-one attributes.
      */
-    private void addOneToOneAttributes(FieldMetaData fmd) throws SAXException {
+    private void addOneToOneAttributes(FieldMetaData fmd)
+        throws SAXException {
         if (!fmd.isInDefaultFetchGroup())
             addAttribute("fetch", "LAZY");
         if (fmd.getNullValue() == FieldMetaData.NULL_EXCEPTION)
@@ -1049,7 +1109,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     /**
      * Add one-to-many attributes.
      */
-    private void addOneToManyAttributes(FieldMetaData fmd) throws SAXException {
+    private void addOneToManyAttributes(FieldMetaData fmd)
+        throws SAXException {
         if (fmd.isInDefaultFetchGroup())
             addAttribute("fetch", "EAGER");
     }
@@ -1065,14 +1126,15 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
 
     /**
      * Serialize field mapping content; this will be called before
-     * {@link #serializeValueMappingContent}. Does nothing by default.
+     * {@link #serializeValueMappingContent}.  Does nothing by default.
      */
     protected void serializeFieldMappingContent(FieldMetaData fmd,
-        PersistenceStrategy strategy) throws SAXException {
+        PersistenceStrategy strategy)
+        throws SAXException {
     }
 
     /**
-     * Set mapping attributes for strategy. Sets mapped-by by default.
+     * Set mapping attributes for strategy.  Sets mapped-by by default.
      */
     protected void addStrategyMappingAttributes(FieldMetaData fmd)
         throws SAXException {
@@ -1081,7 +1143,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     }
 
     /**
-     * Serialize the content of the given value. Does nothing by default.
+     * Serialize the content of the given value.  Does nothing by default.
      */
     private void serializeStrategyMappingContent(FieldMetaData vmd)
         throws SAXException {
@@ -1103,8 +1165,9 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
         public ClassSeqs(List<SequenceMetaData> seqs) {
             if (seqs == null || seqs.isEmpty())
                 throw new InternalException();
-            _seqs = (SequenceMetaData[]) seqs
-                .toArray(new SequenceMetaData[seqs.size()]);
+
+            _seqs = (SequenceMetaData[]) seqs.toArray
+                (new SequenceMetaData[seqs.size()]);
             Arrays.sort(_seqs, this);
         }
 
@@ -1162,6 +1225,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
         public ClassQueries(List<QueryMetaData> queries) {
             if (queries == null || queries.isEmpty())
                 throw new InternalException();
+
             _queries = (QueryMetaData[]) queries.toArray
                 (new QueryMetaData[queries.size()]);
             Arrays.sort(_queries, this);
@@ -1172,7 +1236,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
         }
 
         /**
-         * Compare query metadata. Normal queries appear before native queries.
+         * Compare query metadata.
+         * Normal queries appear before native queries.
          * If the given queries use same language, then their names are
          * compared.
          */
@@ -1181,7 +1246,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
             if (!StringUtils.equals(o1.getLanguage(), o2.getLanguage())) {
                 if (QueryLanguages.LANG_SQL.equals(o1.getLanguage()))
                     return 1;
-                else return -1;
+                else
+                    return -1;
             }
             return o1.getName().compareTo(o2.getName());
         }
@@ -1215,8 +1281,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
 
     /**
      * Compares clases, sequences, and queries to order them for serialization.
-     * Places sequences first, then classes, then queries. Sequences and
-     * queries are ordered alphabetically by name. Classes are placed in
+     * Places sequences first, then classes, then queries.  Sequences and
+     * queries are ordered alphabetically by name.  Classes are placed in
      * listing order, in inheritance order within that, and in alphabetical
      * order within that.
      *
@@ -1232,10 +1298,12 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
                 return 1;
             if (o2 == null)
                 return -1;
+
             int t1 = type(o1);
             int t2 = type(o2);
             if (t1 != t2)
                 return t1 - t2;
+
             switch (t1) {
                 case TYPE_META:
                     return compare((ClassMetaData) o1, (ClassMetaData) o2);
@@ -1254,7 +1322,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
         }
 
         /**
-         * Compare two unrecognized elements of the same type. Throws
+         * Compare two unrecognized elements of the same type.  Throws
          * exception by default.
          */
         protected int compareUnknown(Object o1, Object o2) {
@@ -1278,6 +1346,7 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
                 return o1.getDescribedType().getName().compareTo
                     (o2.getDescribedType().getName());
             }
+
             if (li1 == -1)
                 return 1;
             if (li2 == -1)
@@ -1293,7 +1362,8 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
             if (!StringUtils.equals(o1.getLanguage(), o2.getLanguage())) {
                 if (QueryLanguages.LANG_SQL.equals(o1.getLanguage()))
                     return 1;
-                else return -1;
+                else
+                    return -1;
             }
             return o1.getName().compareTo(o2.getName());
         }
@@ -1307,10 +1377,11 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
     }
 
     /**
-     * Sorts fields according to listing order, then XSD strategy order,
-     * then name order.
+     *	Sorts fields according to listing order, then XSD strategy order,
+     *	then name order.
      */
-    private class FieldComparator implements Comparator {
+    private class FieldComparator
+        implements Comparator {
 
         public int compare(Object o1, Object o2) {
             FieldMetaData fmd1 = (FieldMetaData) o1;
@@ -1324,18 +1395,19 @@ public class XMLPersistenceMetaDataSerializer extends CFMetaDataSerializer
             }
             if (fmd2.isPrimaryKey())
                 return 1;
+
             PersistenceStrategy st1 = fmd1.isVersion() ? null :
                 getStrategy(fmd1);
             PersistenceStrategy st2 = fmd2.isVersion() ? null :
                 getStrategy(fmd2);
             if (fmd1.isVersion()) {
                 if (fmd2.isVersion())
-                    return fmd1.compareTo(fmd2);
-                return st2 == PersistenceStrategy.BASIC ? 1 : -1;
-            }
-            if (fmd2.isVersion())
-                return st1 == PersistenceStrategy.BASIC ? -1 : 1;
-            return st1.compareTo(st2);
-        }
-    }
+                    return fmd1.compareTo (fmd2);
+				return st2 == PersistenceStrategy.BASIC ? 1 : -1;
+			}
+			if (fmd2.isVersion ())
+				return st1 == PersistenceStrategy.BASIC ? -1 : 1;
+			return st1.compareTo (st2);
+		}
+	}
 }

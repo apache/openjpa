@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,31 +18,34 @@ package org.apache.openjpa.util;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 
 /**
- * Default class resolver implementation.
+ * <p>Default class resolver implementation.</p>
  *
- * @author Abe White
  * @since 3.0
+ * @author Abe White
  */
-public class ClassResolverImpl implements ClassResolver {
+public class ClassResolverImpl
+    implements ClassResolver {
 
     public ClassLoader getClassLoader(Class contextClass,
         ClassLoader envLoader) {
         // get the context class' loader; if the class was loaded by the
         // bootstrap loader, use the system classloader in the hopes that
         // class.forName calls on it will find the bootstrap loader's cached
-        // class(the bootstrap loader is the parent of the system loader)
+        // class (the bootstrap loader is the parent of the system loader)
         ClassLoader contextLoader = null;
         if (contextClass != null) {
             contextLoader = contextClass.getClassLoader();
             if (contextLoader == null)
                 contextLoader = ClassLoader.getSystemClassLoader();
         }
+
         // if there is only one unique loader, just return it
         ClassLoader threadLoader = Thread.currentThread().
             getContextClassLoader();
         if ((contextLoader == null || contextLoader == threadLoader)
             && (envLoader == null || envLoader == threadLoader))
             return threadLoader;
+
         // construct a multi class loader that will delegate in the order
         // described in section 12.5 of the spec
         MultiClassLoader loader = new MultiClassLoader();

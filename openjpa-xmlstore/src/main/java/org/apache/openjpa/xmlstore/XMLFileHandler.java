@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -54,8 +57,8 @@ import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 
 /**
- * Stores {@link ObjectData} objects by serializing a collection
- * of them into and out of an XML file.
+ * <p>Stores {@link ObjectData} objects by serializing a collection
+ * of them into and out of an XML file.</p>
  */
 public class XMLFileHandler {
 
@@ -79,9 +82,11 @@ public class XMLFileHandler {
             return Collections.EMPTY_SET;
         try {
             return read(f);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new StoreException(e);
         }
     }
@@ -90,7 +95,8 @@ public class XMLFileHandler {
      * Read a collection of {@link ObjectData}s from the contents of the
      * given file.
      */
-    private Collection read(File f) throws Exception {
+    private Collection read(File f)
+        throws Exception {
         // parse the file and return the objects it contains
         SAXParser parser = XMLFactory.getSAXParser(false, false);
         ObjectDataHandler handler = new ObjectDataHandler(_conf);
@@ -115,23 +121,27 @@ public class XMLFileHandler {
      * Stores all instances in <code>datas</code> into the appropriate file,
      * as dictated by <code>meta</code>.
      *
-     * @param meta  the least-derived type of the instances being stored
-     * @param datas a collection of {@link ObjectData} instances, each
-     *              of which represents an object of type <code>meta</code>
+     * @param    meta    the least-derived type of the instances being stored
+     * @param    datas    a collection of {@link ObjectData} instances, each
+     * of which represents an object of type <code>meta</code>
      */
     public void store(ClassMetaData meta, Collection datas) {
         if (meta.getPCSuperclass() != null)
             throw new InternalException();
+
         File f = getFile(meta);
         if (!f.getParentFile().exists())
             f.getParentFile().mkdirs();
+
         FileWriter fw = null;
         try {
             fw = new FileWriter(f);
             write(datas, fw);
-        } catch (OpenJPAException ke) {
+        }
+        catch (OpenJPAException ke) {
             throw ke;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new StoreException(e);
         }
         finally {
@@ -146,16 +156,20 @@ public class XMLFileHandler {
     /**
      * Write the given collection of {@link ObjectData}s to the given file.
      */
-    private void write(Collection datas, FileWriter fw) throws Exception {
+    private void write(Collection datas, FileWriter fw)
+        throws Exception {
         // create an XML pretty printer to write out the objects
         Writer out = new XMLWriter(fw);
+
         // start the file; the root node is an "extent"
         out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         out.write("<extent>");
+
         // run through each object in the collection
         for (Iterator itr = datas.iterator(); itr.hasNext();) {
             ObjectData obj = (ObjectData) itr.next();
             ClassMetaData meta = obj.getMetaData();
+
             // write out the "object" element start
             out.write("<object class=\"");
             out.write(meta.getDescribedType().getName());
@@ -164,14 +178,17 @@ public class XMLFileHandler {
             out.write("\" version=\"");
             out.write(obj.getVersion().toString());
             out.write("\">");
+
             // run through each field writing out the value
             FieldMetaData[] fmds = meta.getFields();
             for (int i = 0; i < fmds.length; i++) {
                 if (fmds[i].getManagement() != fmds[i].MANAGE_PERSISTENT)
                     continue;
+
                 out.write("<field name=\"");
                 out.write(fmds[i].getName());
                 out.write("\">");
+
                 // write out the field data depending upon type
                 switch (fmds[i].getTypeCode()) {
                     case JavaTypes.COLLECTION:
@@ -179,6 +196,7 @@ public class XMLFileHandler {
                         Collection c = (Collection) obj.getField(i);
                         if (c == null)
                             break;
+
                         // write out each of the elements
                         int elemType = fmds[i].getElement().getTypeCode();
                         for (Iterator ci = c.iterator(); ci.hasNext();) {
@@ -187,10 +205,12 @@ public class XMLFileHandler {
                             out.write("</element>");
                         }
                         break;
+
                     case JavaTypes.MAP:
                         Map m = (Map) obj.getField(i);
                         if (m == null)
                             break;
+
                         // write out each of the map entries
                         Collection entries = m.entrySet();
                         int keyType = fmds[i].getKey().getTypeCode();
@@ -205,6 +225,7 @@ public class XMLFileHandler {
                             out.write("</value>");
                         }
                         break;
+
                     default:
                         writeDataValue(out, fmds[i].getTypeCode(),
                             obj.getField(i));
@@ -217,8 +238,8 @@ public class XMLFileHandler {
     }
 
     /**
-     * Write out the data value. This method writes nulls as "null",
-     * serializes(using Java serialization and base16 encoding) out non-
+     * Write out the data value.  This method writes nulls as "null",
+     * serializes (using Java serialization and base16 encoding) out non-
      * primitives/boxed primitives and non-persistent types, and writes
      * primitives/boxed primitives and oids using their toString.
      */
@@ -229,6 +250,7 @@ public class XMLFileHandler {
             out.write("null");
             return;
         }
+
         switch (type) {
             case JavaTypes.OBJECT:
             case JavaTypes.OID:
@@ -236,6 +258,7 @@ public class XMLFileHandler {
                     throw new UnsupportedException(
                         "Cannot store non-serializable,"
                             + " non-persistence-capable value: " + val);
+
                 // serialize out the object and encode the result with base16
                 ByteArrayOutputStream baos = new ByteArrayOutputStream(8192);
                 ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -243,6 +266,7 @@ public class XMLFileHandler {
                 oos.close();
                 out.write(Base16Encoder.encode(baos.toByteArray()));
                 break;
+
             case JavaTypes.CHAR:
             case JavaTypes.CHAR_OBJ:
                 // quote chars so we can distinguish whitespace chars; special
@@ -251,9 +275,11 @@ public class XMLFileHandler {
                 out.write("'");
                 if (c == '\0')
                     out.write("0x0");
-                else out.write(XMLEncoder.encode(val.toString()));
+                else
+                    out.write(XMLEncoder.encode(val.toString()));
                 out.write("'");
                 break;
+
             case JavaTypes.STRING:
                 // quote strings so we can distinguish leading and trailing
                 // whitespace
@@ -261,6 +287,7 @@ public class XMLFileHandler {
                 out.write(XMLEncoder.encode(val.toString()));
                 out.write("\"");
                 break;
+
             case JavaTypes.PC:
             case JavaTypes.PC_UNTYPED:
                 // write the type of oid object + ':' + oid string
@@ -268,6 +295,7 @@ public class XMLFileHandler {
                 out.write(':');
                 out.write(XMLEncoder.encode(val.toString()));
                 break;
+
             default:
                 // must be a number of simple type; no need to encode
                 out.write(val.toString());
@@ -277,11 +305,14 @@ public class XMLFileHandler {
     /**
      * Used to reconstruct {@link ObjectData} instances from SAX events.
      */
-    private static class ObjectDataHandler extends DefaultHandler {
+    private static class ObjectDataHandler
+        extends DefaultHandler {
 
         private static final Class[] ARGS = new Class[]{ String.class };
+
         private final XMLConfiguration _conf;
         private final Collection _extent = new ArrayList();
+
         // parse state
         private ObjectData _object;
         private FieldMetaData _fmd;
@@ -304,14 +335,18 @@ public class XMLFileHandler {
         }
 
         public void startElement(String uri, String localName, String qName,
-            Attributes attrs) throws SAXException {
+            Attributes attrs)
+            throws SAXException {
             try {
                 startElement(qName, attrs);
-            } catch (RuntimeException re) {
+            }
+            catch (RuntimeException re) {
                 throw re;
-            } catch (SAXException se) {
+            }
+            catch (SAXException se) {
                 throw se;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 throw new SAXException(e);
             }
         }
@@ -319,23 +354,27 @@ public class XMLFileHandler {
         private void startElement(String qName, Attributes attrs)
             throws Exception {
             switch (qName.charAt(0)) {
-                case 'o': // object
+                case 'o':    // object
                     // get the metadata for the type we're reading
                     String type = attrs.getValue("class");
                     ClassMetaData meta = _conf.getMetaDataRepository().
                         getMetaData(classForName(type), null, true);
+
                     // construct the oid object
                     Object oid;
                     if (meta.getIdentityType() == meta.ID_DATASTORE)
                         oid = new Id(attrs.getValue("oid"), _conf, null);
-                    else oid = PCRegistry.newObjectId(meta.getDescribedType(),
-                        attrs.getValue("oid"));
+                    else
+                        oid = PCRegistry.newObjectId(meta.getDescribedType(),
+                            attrs.getValue("oid"));
+
                     // create an ObjectData that will contain the information
                     // for this instance, and set the version
                     _object = new ObjectData(oid, meta);
                     _object.setVersion(new Long(attrs.getValue("version")));
                     break;
-                case 'f': // field
+
+                case 'f':    // field
                     // start parsing a field element: for container types,
                     // initialize the container; for other types, initialize a
                     // buffer
@@ -353,9 +392,10 @@ public class XMLFileHandler {
                             _buf = new StringBuffer();
                     }
                     break;
-                case 'e': // element
-                case 'k': // key
-                case 'v': // value
+
+                case 'e':    // element
+                case 'k':    // key
+                case 'v':    // value
                     // initialize a buffer for the element value
                     _buf = new StringBuffer();
                     break;
@@ -366,22 +406,27 @@ public class XMLFileHandler {
             throws SAXException {
             try {
                 endElement(qName);
-            } catch (RuntimeException re) {
+            }
+            catch (RuntimeException re) {
                 throw re;
-            } catch (SAXException se) {
+            }
+            catch (SAXException se) {
                 throw se;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 throw new SAXException(e);
             }
         }
 
-        private void endElement(String qName) throws Exception {
+        private void endElement(String qName)
+            throws Exception {
             Object val;
             switch (qName.charAt(0)) {
-                case 'o': // object
+                case 'o':     // object
                     // add the object to our results
                     _extent.add(_object);
-                case 'f': // field
+
+                case 'f':    // field
                     switch (_fmd.getTypeCode()) {
                         case JavaTypes.COLLECTION:
                         case JavaTypes.ARRAY:
@@ -393,21 +438,25 @@ public class XMLFileHandler {
                             _fieldVal = fromXMLString(_fmd.getTypeCode(),
                                 _fmd.getTypeMetaData(), _buf.toString());
                     }
+
                     // set the field value into the object being parsed
                     _object.setField(_fmd.getIndex(), _fieldVal);
                     break;
-                case 'e': // element
+
+                case 'e':    // element
                     // cache element value
                     val = fromXMLString(_fmd.getElement().getTypeCode(),
                         _fmd.getElement().getTypeMetaData(), _buf.toString());
                     ((Collection) _fieldVal).add(val);
                     break;
-                case 'k': // key
+
+                case 'k':     // key
                     // cache key value
                     _keyVal = fromXMLString(_fmd.getKey().getTypeCode(),
                         _fmd.getKey().getTypeMetaData(), _buf.toString());
                     break;
-                case 'v': // value
+
+                case 'v':    // value
                     // create value and put cached key and value into map
                     val = fromXMLString(_fmd.getElement().getTypeCode(),
                         _fmd.getElement().getTypeMetaData(), _buf.toString());
@@ -415,6 +464,7 @@ public class XMLFileHandler {
                     map.put(_keyVal, val);
                     break;
             }
+
             // don't cache text between elements
             _buf = null;
         }
@@ -432,13 +482,16 @@ public class XMLFileHandler {
             str = str.trim();
             if (str.equals("null"))
                 return null;
+
             switch (type) {
                 case JavaTypes.BOOLEAN:
                 case JavaTypes.BOOLEAN_OBJ:
                     return Boolean.valueOf(str);
+
                 case JavaTypes.BYTE:
                 case JavaTypes.BYTE_OBJ:
                     return new Byte(str);
+
                 case JavaTypes.CHAR:
                 case JavaTypes.CHAR_OBJ:
                     // strip quotes; special case for 0x0
@@ -446,30 +499,39 @@ public class XMLFileHandler {
                     if (str.equals("0x0"))
                         return new Character('\0');
                     return new Character(XMLEncoder.decode(str).charAt(0));
+
                 case JavaTypes.DOUBLE:
                 case JavaTypes.DOUBLE_OBJ:
                     return new Double(str);
+
                 case JavaTypes.FLOAT:
                 case JavaTypes.FLOAT_OBJ:
                     return new Float(str);
+
                 case JavaTypes.INT:
                 case JavaTypes.INT_OBJ:
                     return new Integer(str);
+
                 case JavaTypes.LONG:
                 case JavaTypes.LONG_OBJ:
                     return new Long(str);
+
                 case JavaTypes.SHORT:
                 case JavaTypes.SHORT_OBJ:
                     return new Short(str);
+
                 case JavaTypes.NUMBER:
                 case JavaTypes.BIGDECIMAL:
                     return new BigDecimal(str);
+
                 case JavaTypes.BIGINTEGER:
                     return new BigInteger(str);
+
                 case JavaTypes.STRING:
                     // strip quotes
                     str = str.substring(1, str.length() - 1);
                     return XMLEncoder.decode(str);
+
                 case JavaTypes.OBJECT:
                 case JavaTypes.OID:
                     // convert the characters into bytes, and run them through an
@@ -480,8 +542,10 @@ public class XMLFileHandler {
                     Object data = ois.readObject();
                     ois.close();
                     return data;
+
                 case JavaTypes.DATE:
                     return new Date(str);
+
                 case JavaTypes.PC:
                 case JavaTypes.PC_UNTYPED:
                     // parse out oid class name and value
@@ -490,18 +554,22 @@ public class XMLFileHandler {
                     String idStr = XMLEncoder.decode(str.substring(idx + 1));
                     Constructor cons = idClass.getConstructor(ARGS);
                     return cons.newInstance(new Object[]{ idStr });
+
                 case JavaTypes.LOCALE:
                     int under1 = str.indexOf('_');
                     if (under1 == -1)
                         return (new Locale(str, ""));
+
                     int under2 = str.indexOf('_', under1 + 1);
                     if (under2 == -1)
                         return new Locale(str.substring(0, under1),
                             str.substring(under1 + 1));
+
                     String lang = str.substring(0, under1);
                     String country = str.substring(under1 + 1, under2);
                     String variant = str.substring(under2 + 1);
                     return new Locale(lang, country, variant);
+
                 default:
                     throw new InternalException();
             }
@@ -510,7 +578,8 @@ public class XMLFileHandler {
         /**
          * Return the class for the specified name.
          */
-        private Class classForName(String name) throws Exception {
+        private Class classForName(String name)
+            throws Exception {
             ClassLoader loader = _conf.getClassResolverInstance().
                 getClassLoader(getClass(), null);
             return Class.forName(name, true, loader);
@@ -518,7 +587,7 @@ public class XMLFileHandler {
     }
 
     /**
-     * Utility methods for encoding and decoding XML strings.
+     *	Utility methods for encoding and decoding XML strings.
      */
     private static class XMLEncoder {
 
@@ -583,17 +652,17 @@ public class XMLFileHandler {
         }
 
         /**
-         * Create and initialize a buffer for the encoded/decoded string if
-         * needed.
+         *	Create and initialize a buffer for the encoded/decoded string if
+         *	needed.
          */
         private static StringBuffer initializeBuffer(StringBuffer buf,
             String s, int i) {
             if (buf == null) {
                 buf = new StringBuffer();
                 if (i > 0)
-                    buf.append(s.substring(0, i));
-            }
-            return buf;
-        }
-    }
+                    buf.append (s.substring (0, i));
+			}
+			return buf;
+		}
+	}
 }

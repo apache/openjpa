@@ -63,8 +63,8 @@ public class ConstantPool implements VisitAcceptor {
      * Retrieve the entry at the specified 1-based index.
      *
      * @throws IndexOutOfBoundsException if index is invalid,
-     *                                   including the case that it points to the second slot of a
-     *                                   long or double entry
+     * including the case that it points to the second slot of a
+     * long or double entry
      */
     public Entry getEntry(int index) {
         Entry entry = (Entry) _entries.get(index - 1);
@@ -169,7 +169,7 @@ public class ConstantPool implements VisitAcceptor {
      * 0 if it does not exist.
      *
      * @param add if true, the entry will be added if it does not
-     *            already exist, and the new entry's index returned
+     * already exist, and the new entry's index returned
      */
     public int findUTF8Entry(String value, boolean add) {
         if (value == null) {
@@ -189,8 +189,8 @@ public class ConstantPool implements VisitAcceptor {
      * value, or 0 if it does not exist.
      *
      * @param value the value to find
-     * @param add   if true, the entry will be added if it does not
-     *              already exist, and the new entry's index returned
+     * @param add if true, the entry will be added if it does not
+     * already exist, and the new entry's index returned
      */
     public int findDoubleEntry(double value, boolean add) {
         Double key = new Double(value);
@@ -205,8 +205,8 @@ public class ConstantPool implements VisitAcceptor {
      * value, or 0 if it does not exist.
      *
      * @param value the value to find
-     * @param add   if true, the entry will be added if it does not
-     *              already exist, and the new entry's index returned
+     * @param add if true, the entry will be added if it does not
+     * already exist, and the new entry's index returned
      */
     public int findFloatEntry(float value, boolean add) {
         Float key = new Float(value);
@@ -221,8 +221,8 @@ public class ConstantPool implements VisitAcceptor {
      * value, or 0 if it does not exist.
      *
      * @param value the value to find
-     * @param add   if true, the entry will be added if it does not
-     *              already exist, and the new entry's index returned
+     * @param add if true, the entry will be added if it does not
+     * already exist, and the new entry's index returned
      */
     public int findIntEntry(int value, boolean add) {
         Integer key = Numbers.valueOf(value);
@@ -237,8 +237,8 @@ public class ConstantPool implements VisitAcceptor {
      * value, or 0 if it does not exist.
      *
      * @param value the value to find
-     * @param add   if true, the entry will be added if it does not
-     *              already exist, and the new entry's index returned
+     * @param add if true, the entry will be added if it does not
+     * already exist, and the new entry's index returned
      */
     public int findLongEntry(long value, boolean add) {
         Long key = Numbers.valueOf(value);
@@ -253,8 +253,8 @@ public class ConstantPool implements VisitAcceptor {
      * string value, or 0 if it does not exist.
      *
      * @param value the value to find
-     * @param add   if true, the entry will be added if it does not
-     *              already exist, and the new entry's index returned
+     * @param add if true, the entry will be added if it does not
+     * already exist, and the new entry's index returned
      */
     public int findStringEntry(String value, boolean add) {
         int valueIndex = findUTF8Entry(value, add);
@@ -273,8 +273,8 @@ public class ConstantPool implements VisitAcceptor {
      * class name, or 0 if it does not exist.
      *
      * @param name the class name in internal form
-     * @param add  if true, the entry will be added if it does not
-     *             already exist, and the new entry's index returned
+     * @param add if true, the entry will be added if it does not
+     * already exist, and the new entry's index returned
      */
     public int findClassEntry(String name, boolean add) {
         int nameIndex = findUTF8Entry(name, add);
@@ -294,8 +294,8 @@ public class ConstantPool implements VisitAcceptor {
      *
      * @param name the name of the entity
      * @param desc the descriptor of the entity in internal form
-     * @param add  if true, the entry will be added if it does not
-     *             already exist, and the new entry's index returned
+     * @param add if true, the entry will be added if it does not
+     * already exist, and the new entry's index returned
      */
     public int findNameAndTypeEntry(String name, String desc, boolean add) {
         int nameIndex = findUTF8Entry(name, add);
@@ -317,10 +317,10 @@ public class ConstantPool implements VisitAcceptor {
      * given name, descriptor, and owner class name.
      *
      * @param owner the name of the field's owning class in internal form
-     * @param name  the name of the field
-     * @param desc  the descriptor of the field in internal form
-     * @param add   if true, the entry will be added if it does not
-     *              already exist, and the new entry's index returned
+     * @param name the name of the field
+     * @param desc the descriptor of the field in internal form
+     * @param add if true, the entry will be added if it does not
+     * already exist, and the new entry's index returned
      */
     public int findFieldEntry(String owner, String name, String desc,
         boolean add) {
@@ -332,10 +332,10 @@ public class ConstantPool implements VisitAcceptor {
      * given name, descriptor, and owner class name.
      *
      * @param owner the name of the method's owning class in internal form
-     * @param name  the name of the method
-     * @param desc  the descriptor of the method in internal form
-     * @param add   if true, the entry will be added if it does not
-     *              already exist, and the new entry's index returned
+     * @param name the name of the method
+     * @param desc the descriptor of the method in internal form
+     * @param add if true, the entry will be added if it does not
+     * already exist, and the new entry's index returned
      */
     public int findMethodEntry(String owner, String name, String desc,
         boolean add) {
@@ -347,10 +347,10 @@ public class ConstantPool implements VisitAcceptor {
      * the given name, descriptor, and owner class name.
      *
      * @param owner the name of the method's owning class in internal form
-     * @param name  the name of the method
-     * @param desc  the descriptor of the method in internal form
-     * @param add   if true, the entry will be added if it does not
-     *              already exist, and the new entry's index returned
+     * @param name the name of the method
+     * @param desc the descriptor of the method in internal form
+     * @param add if true, the entry will be added if it does not
+     * already exist, and the new entry's index returned
      */
     public int findInterfaceMethodEntry(String owner, String name, String desc,
         boolean add) {
@@ -362,11 +362,11 @@ public class ConstantPool implements VisitAcceptor {
      * given name, descriptor, and owner class name.
      *
      * @param owner the name of the owning class in internal form
-     * @param name  the name of the entity
-     * @param desc  the descriptor of the entity in internal form
-     * @param type  the type of entry: field, method, interface method
-     * @param add   if true, the entry will be added if it does not
-     *              already exist, and the new entry's index returned
+     * @param name the name of the entity
+     * @param desc the descriptor of the entity in internal form
+     * @param type the type of entry: field, method, interface method
+     * @param add if true, the entry will be added if it does not
+     * already exist, and the new entry's index returned
      */
     private int findComplexEntry(String owner, String name, String desc,
         int type, boolean add) {

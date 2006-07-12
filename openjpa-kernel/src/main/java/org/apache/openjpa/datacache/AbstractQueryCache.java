@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -56,6 +59,7 @@ public abstract class AbstractQueryCache
      * The log to use.
      */
     protected Log log;
+
     private boolean _closed = false;
 
     public void initialize(DataCacheManager manager) {
@@ -72,6 +76,7 @@ public abstract class AbstractQueryCache
         finally {
             writeUnlock();
         }
+
         QueryKey qk;
         List removes = null;
         for (Iterator iter = keys.iterator(); iter.hasNext();) {
@@ -94,10 +99,12 @@ public abstract class AbstractQueryCache
             if (log.isTraceEnabled())
                 log.trace(s_loc.get("cache-timeout", key));
         }
+
         if (log.isTraceEnabled()) {
             if (o == null)
                 log.trace(s_loc.get("cache-miss", key));
-            else log.trace(s_loc.get("cache-hit", key));
+            else
+                log.trace(s_loc.get("cache-hit", key));
         }
         return o;
     }
@@ -116,7 +123,8 @@ public abstract class AbstractQueryCache
         if (log.isTraceEnabled()) {
             if (o == null)
                 log.trace(s_loc.get("cache-remove-miss", key));
-            else log.trace(s_loc.get("cache-remove-hit", key));
+            else
+                log.trace(s_loc.get("cache-remove-hit", key));
         }
         return o;
     }
@@ -126,7 +134,8 @@ public abstract class AbstractQueryCache
         if (log.isTraceEnabled()) {
             if (bool)
                 log.trace(s_loc.get("cache-pin-hit", key));
-            else log.trace(s_loc.get("cache-pin-miss", key));
+            else
+                log.trace(s_loc.get("cache-pin-miss", key));
         }
         return bool;
     }
@@ -136,7 +145,8 @@ public abstract class AbstractQueryCache
         if (log.isTraceEnabled()) {
             if (bool)
                 log.trace(s_loc.get("cache-unpin-hit", key));
-            else log.trace(s_loc.get("cache-unpin-miss", key));
+            else
+                log.trace(s_loc.get("cache-unpin-miss", key));
         }
         return bool;
     }
@@ -172,15 +182,16 @@ public abstract class AbstractQueryCache
     }
 
     /**
-     * This method is part of the {@link RemoteCommitListener} interface. If
+     * This method is part of the {@link RemoteCommitListener} interface.  If
      * your cache subclass relies on OpenJPA for clustering support, make it
-     * implement <code>RemoteCommitListener</code>. This method will take
+     * implement <code>RemoteCommitListener</code>.  This method will take
      * care of invalidating entries from remote commits, by delegating to
      * {@link #typesChanged}.
      */
     public void afterCommit(RemoteCommitEvent event) {
         if (_closed)
             return;
+
         // drop all committed classes
         Set classes = Caches.addTypesByName(conf,
             event.getPersistedTypeNames(), null);
@@ -205,6 +216,7 @@ public abstract class AbstractQueryCache
             return classes;
         if (classes == null)
             classes = new HashSet();
+
         MetaDataRepository repos = conf.getMetaDataRepository();
         ClassMetaData meta;
         Object oid;
@@ -225,7 +237,7 @@ public abstract class AbstractQueryCache
     }
 
     /**
-     * Return a threadsafe view of the keys in this cache. This collection
+     * Return a threadsafe view of the keys in this cache.  This collection
      * must be iterable without risk of concurrent modification exceptions.
      * It does not have to implement contains() efficiently or use set
      * semantics.
@@ -272,6 +284,7 @@ public abstract class AbstractQueryCache
     protected abstract boolean unpinInternal(QueryKey qk);
 
     // ---------- Configurable implementation ----------
+
     public void setConfiguration(Configuration conf) {
         this.conf = (OpenJPAConfiguration) conf;
         this.log = conf.getLog(OpenJPAConfiguration.LOG_DATACACHE);
@@ -284,24 +297,26 @@ public abstract class AbstractQueryCache
     }
 
     // ---------- AbstractEventManager implementation ----------
+
     protected void fireEvent(Object event, Object listener) {
         TypesChangedListener listen = (TypesChangedListener) listener;
         TypesChangedEvent ev = (TypesChangedEvent) event;
         try {
             listen.onTypesChanged(ev);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             if (log.isWarnEnabled())
                 log.warn(s_loc.get("exp-listener-ex"), e);
         }
     }
 
     /**
-     * Individual query results will be registered as types changed
-     * listeners. We want such query results to be gc'd once
-     * the only reference is held by the list of expiration listeners.
+     *	Individual query results will be registered as types changed
+     *	listeners. We want such query results to be gc'd once
+     *	the only reference is held by the list of expiration listeners.
      */
     protected Collection newListenerCollection() {
         //### use concurrent
-        return new ReferenceHashSet(ReferenceHashSet.WEAK);
-    }
+        return new ReferenceHashSet (ReferenceHashSet.WEAK);
+	}
 }

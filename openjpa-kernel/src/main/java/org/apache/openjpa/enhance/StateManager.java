@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -16,11 +19,11 @@ import java.io.IOException;
 import java.io.ObjectOutput;
 
 /**
- * Internal state manager for managed instances.
+ * <p>Internal state manager for managed instances.</p>
  */
 public interface StateManager {
-
     // DO NOT ADD ADDITIONAL DEPENDENCIES TO THIS CLASS
+
     public static final int SET_USER = 0;
     public static final int SET_REMOTE = 1;
     public static final int SET_ATTACH = 2;
@@ -71,7 +74,7 @@ public interface StateManager {
     public boolean isDeleted();
 
     /**
-     * Whether the instance is detached(i.e. this manager is a detached
+     * Whether the instance is detached (i.e. this manager is a detached
      * state manager)
      */
     public boolean isDetached();
@@ -99,7 +102,8 @@ public interface StateManager {
      *
      * @return true if managed fields also written to stream
      */
-    public boolean writeDetached(ObjectOutput out) throws IOException;
+    public boolean writeDetached(ObjectOutput out)
+        throws IOException;
 
     /**
      * Proxy the given detached field after deserialization.
@@ -266,12 +270,13 @@ public interface StateManager {
     public double replaceDoubleField(PersistenceCapable pc, int idx);
 
     /**
-     * Replace state callback.
+     *	Replace state callback.
      */
     public String replaceStringField(PersistenceCapable pc, int idx);
 
-    /**
-     * Replace state callback.
-     */
-    public Object replaceObjectField(PersistenceCapable pc, int idx);
+
+	/**
+	 *	Replace state callback.
+	 */
+    public Object replaceObjectField (PersistenceCapable pc, int idx);
 }

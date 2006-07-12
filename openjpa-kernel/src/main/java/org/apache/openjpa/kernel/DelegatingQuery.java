@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -22,19 +25,20 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
 /**
- * Delegating query that can also perform exception translation
- * for use in facades.
+ * <p>Delegating query that can also perform exception translation
+ * for use in facades.</p>
  *
+ * @since 4.0
  * @author Abe White
  * @nojavadoc
- * @since 4.0
  */
-public class DelegatingQuery implements Query {
-
+public class DelegatingQuery
+    implements Query {
     ///////////////////////////////////////////////////////////////
     // NOTE: when adding a public API method, be sure to add it to
     // JDO and JPA facades!
     ///////////////////////////////////////////////////////////////
+
     private final Query _query;
     private final DelegatingQuery _del;
     private final RuntimeExceptionTranslator _trans;
@@ -53,7 +57,8 @@ public class DelegatingQuery implements Query {
         _query = query;
         if (query instanceof DelegatingQuery)
             _del = (DelegatingQuery) query;
-        else _del = null;
+        else
+            _del = null;
         _trans = trans;
     }
 
@@ -93,7 +98,8 @@ public class DelegatingQuery implements Query {
     public Broker getBroker() {
         try {
             return _query.getBroker();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -105,7 +111,8 @@ public class DelegatingQuery implements Query {
     public StoreContext getStoreContext() {
         try {
             return _query.getStoreContext();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -113,7 +120,8 @@ public class DelegatingQuery implements Query {
     public int getOperation() {
         try {
             return _query.getOperation();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -121,7 +129,8 @@ public class DelegatingQuery implements Query {
     public String getLanguage() {
         try {
             return _query.getLanguage();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -129,7 +138,8 @@ public class DelegatingQuery implements Query {
     public FetchConfiguration getFetchConfiguration() {
         try {
             return _query.getFetchConfiguration();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -137,7 +147,8 @@ public class DelegatingQuery implements Query {
     public String getQueryString() {
         try {
             return _query.getQueryString();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -145,7 +156,8 @@ public class DelegatingQuery implements Query {
     public boolean getIgnoreChanges() {
         try {
             return _query.getIgnoreChanges();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -153,7 +165,8 @@ public class DelegatingQuery implements Query {
     public Object getCompilation() {
         try {
             return _query.getCompilation();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -161,7 +174,8 @@ public class DelegatingQuery implements Query {
     public String getAlias() {
         try {
             return _query.getAlias();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -169,7 +183,8 @@ public class DelegatingQuery implements Query {
     public String[] getProjectionAliases() {
         try {
             return _query.getProjectionAliases();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -177,7 +192,8 @@ public class DelegatingQuery implements Query {
     public Class[] getProjectionTypes() {
         try {
             return _query.getProjectionTypes();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -185,7 +201,8 @@ public class DelegatingQuery implements Query {
     public boolean isAggregate() {
         try {
             return _query.isAggregate();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -193,7 +210,8 @@ public class DelegatingQuery implements Query {
     public boolean hasGrouping() {
         try {
             return _query.hasGrouping();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -201,7 +219,8 @@ public class DelegatingQuery implements Query {
     public ClassMetaData[] getAccessPathMetaDatas() {
         try {
             return _query.getAccessPathMetaDatas();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -209,7 +228,8 @@ public class DelegatingQuery implements Query {
     public FilterListener getFilterListener(String tag) {
         try {
             return _query.getFilterListener(tag);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -217,7 +237,8 @@ public class DelegatingQuery implements Query {
     public AggregateListener getAggregateListener(String tag) {
         try {
             return _query.getAggregateListener(tag);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -225,7 +246,8 @@ public class DelegatingQuery implements Query {
     public Collection getFilterListeners() {
         try {
             return _query.getFilterListeners();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -233,7 +255,8 @@ public class DelegatingQuery implements Query {
     public Collection getAggregateListeners() {
         try {
             return _query.getAggregateListeners();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -241,7 +264,8 @@ public class DelegatingQuery implements Query {
     public Collection getCandidateCollection() {
         try {
             return _query.getCandidateCollection();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -249,7 +273,8 @@ public class DelegatingQuery implements Query {
     public Class getCandidateType() {
         try {
             return _query.getCandidateType();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -257,7 +282,8 @@ public class DelegatingQuery implements Query {
     public boolean hasSubclasses() {
         try {
             return _query.hasSubclasses();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -265,7 +291,8 @@ public class DelegatingQuery implements Query {
     public void setCandidateType(Class cls, boolean subs) {
         try {
             _query.setCandidateType(cls, subs);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -273,7 +300,8 @@ public class DelegatingQuery implements Query {
     public boolean isReadOnly() {
         try {
             return _query.isReadOnly();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -281,7 +309,8 @@ public class DelegatingQuery implements Query {
     public void setReadOnly(boolean readOnly) {
         try {
             _query.setReadOnly(readOnly);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -289,7 +318,8 @@ public class DelegatingQuery implements Query {
     public Class getResultMappingScope() {
         try {
             return _query.getResultMappingScope();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -297,7 +327,8 @@ public class DelegatingQuery implements Query {
     public String getResultMappingName() {
         try {
             return _query.getResultMappingName();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -305,7 +336,8 @@ public class DelegatingQuery implements Query {
     public void setResultMapping(Class scope, String name) {
         try {
             _query.setResultMapping(scope, name);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -313,7 +345,8 @@ public class DelegatingQuery implements Query {
     public boolean isUnique() {
         try {
             return _query.isUnique();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -321,7 +354,8 @@ public class DelegatingQuery implements Query {
     public void setUnique(boolean unique) {
         try {
             _query.setUnique(unique);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -329,7 +363,8 @@ public class DelegatingQuery implements Query {
     public Class getResultType() {
         try {
             return _query.getResultType();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -337,7 +372,8 @@ public class DelegatingQuery implements Query {
     public void setResultType(Class cls) {
         try {
             _query.setResultType(cls);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -345,7 +381,8 @@ public class DelegatingQuery implements Query {
     public long getStartRange() {
         try {
             return _query.getStartRange();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -353,7 +390,8 @@ public class DelegatingQuery implements Query {
     public long getEndRange() {
         try {
             return _query.getEndRange();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -361,7 +399,8 @@ public class DelegatingQuery implements Query {
     public void setRange(long start, long end) {
         try {
             _query.setRange(start, end);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -369,7 +408,8 @@ public class DelegatingQuery implements Query {
     public String getParameterDeclaration() {
         try {
             return _query.getParameterDeclaration();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -377,7 +417,8 @@ public class DelegatingQuery implements Query {
     public LinkedMap getParameterTypes() {
         try {
             return _query.getParameterTypes();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -385,7 +426,8 @@ public class DelegatingQuery implements Query {
     public Map getUpdates() {
         try {
             return _query.getUpdates();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -393,7 +435,8 @@ public class DelegatingQuery implements Query {
     public void declareParameters(String params) {
         try {
             _query.declareParameters(params);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -401,7 +444,8 @@ public class DelegatingQuery implements Query {
     public Object[] toParameterArray(LinkedMap paramTypes, Map params) {
         try {
             return _query.toParameterArray(paramTypes, params);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -409,7 +453,8 @@ public class DelegatingQuery implements Query {
     public Number deleteInMemory(StoreQuery.Executor ex, Object[] params) {
         try {
             return _query.deleteInMemory(ex, params);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -417,7 +462,8 @@ public class DelegatingQuery implements Query {
     public Number updateInMemory(StoreQuery.Executor ex, Object[] params) {
         try {
             return _query.updateInMemory(ex, params);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -425,7 +471,8 @@ public class DelegatingQuery implements Query {
     public Class classForName(String name, String[] imports) {
         try {
             return _query.classForName(name, imports);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -433,7 +480,8 @@ public class DelegatingQuery implements Query {
     public void lock() {
         try {
             _query.lock();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -441,7 +489,8 @@ public class DelegatingQuery implements Query {
     public void unlock() {
         try {
             _query.unlock();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -449,7 +498,8 @@ public class DelegatingQuery implements Query {
     public void addFilterListener(FilterListener listener) {
         try {
             _query.addFilterListener(listener);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -457,7 +507,8 @@ public class DelegatingQuery implements Query {
     public void removeFilterListener(FilterListener listener) {
         try {
             _query.removeFilterListener(listener);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -465,7 +516,8 @@ public class DelegatingQuery implements Query {
     public void addAggregateListener(AggregateListener listener) {
         try {
             _query.addAggregateListener(listener);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -473,7 +525,8 @@ public class DelegatingQuery implements Query {
     public void removeAggregateListener(AggregateListener listener) {
         try {
             _query.removeAggregateListener(listener);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -481,7 +534,8 @@ public class DelegatingQuery implements Query {
     public Extent getCandidateExtent() {
         try {
             return _query.getCandidateExtent();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -489,7 +543,8 @@ public class DelegatingQuery implements Query {
     public void setCandidateExtent(Extent extent) {
         try {
             _query.setCandidateExtent(extent);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -497,7 +552,8 @@ public class DelegatingQuery implements Query {
     public void setCandidateCollection(Collection coll) {
         try {
             _query.setCandidateCollection(coll);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -505,7 +561,8 @@ public class DelegatingQuery implements Query {
     public void compile() {
         try {
             _query.compile();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -513,7 +570,8 @@ public class DelegatingQuery implements Query {
     public Object execute() {
         try {
             return _query.execute();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -521,7 +579,8 @@ public class DelegatingQuery implements Query {
     public Object execute(Map params) {
         try {
             return _query.execute(params);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -529,7 +588,8 @@ public class DelegatingQuery implements Query {
     public Object execute(Object[] params) {
         try {
             return _query.execute(params);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -537,7 +597,8 @@ public class DelegatingQuery implements Query {
     public long deleteAll() {
         try {
             return _query.deleteAll();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -545,7 +606,8 @@ public class DelegatingQuery implements Query {
     public long deleteAll(Object[] parameters) {
         try {
             return _query.deleteAll(parameters);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -553,7 +615,8 @@ public class DelegatingQuery implements Query {
     public long deleteAll(Map parameterMap) {
         try {
             return _query.deleteAll(parameterMap);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -561,7 +624,8 @@ public class DelegatingQuery implements Query {
     public long updateAll() {
         try {
             return _query.updateAll();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -569,7 +633,8 @@ public class DelegatingQuery implements Query {
     public long updateAll(Object[] parameters) {
         try {
             return _query.updateAll(parameters);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -577,7 +642,8 @@ public class DelegatingQuery implements Query {
     public long updateAll(Map parameterMap) {
         try {
             return _query.updateAll(parameterMap);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -585,7 +651,8 @@ public class DelegatingQuery implements Query {
     public void closeAll() {
         try {
             _query.closeAll();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -593,7 +660,8 @@ public class DelegatingQuery implements Query {
     public void closeResources() {
         try {
             _query.closeResources();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -601,7 +669,8 @@ public class DelegatingQuery implements Query {
     public String[] getDataStoreActions(Map params) {
         try {
             return _query.getDataStoreActions(params);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -609,7 +678,8 @@ public class DelegatingQuery implements Query {
     public boolean setQuery(Object query) {
         try {
             return _query.setQuery(query);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -617,7 +687,8 @@ public class DelegatingQuery implements Query {
     public void setIgnoreChanges(boolean ignore) {
         try {
             _query.setIgnoreChanges(ignore);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -625,7 +696,8 @@ public class DelegatingQuery implements Query {
     public void assertOpen() {
         try {
             _query.assertOpen();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -633,7 +705,8 @@ public class DelegatingQuery implements Query {
     public void assertNotReadOnly() {
         try {
             _query.assertNotReadOnly();
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -641,9 +714,10 @@ public class DelegatingQuery implements Query {
     public void assertNotSerialized() {
         try {
             _query.assertNotSerialized();
-        } catch (RuntimeException re) {
-            throw translate(re);
         }
-    }
+        catch (RuntimeException re) {
+            throw translate(re);
+		}
+	}
 }
 

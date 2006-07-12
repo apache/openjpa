@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -22,15 +25,16 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 
 /**
- * Represents the L2 cache over the data store.
+ * <p>Represents the L2 cache over the data store.</p>
  *
  * @author Abe White
- * @published
  * @since 4.0
+ * @published
  */
 public class StoreCache {
 
     public static final String NAME_DEFAULT = DataCache.NAME_DEFAULT;
+
     private final MetaDataRepository _repos;
     private final DelegatingDataCache _cache;
 
@@ -72,6 +76,7 @@ public class StoreCache {
     public boolean containsAll(Class cls, Collection oids) {
         if (_cache.getDelegate() == null)
             return oids.isEmpty();
+
         BitSet set = _cache.containsAll(OpenJPAPersistence.toOpenJPAObjectIds
             (getMetaData(cls), oids));
         for (int i = 0; i < oids.size(); i++)
@@ -172,7 +177,8 @@ public class StoreCache {
     private ClassMetaData getMetaData(Class cls) {
         try {
             return _repos.getMetaData(cls, null, true);
-        } catch (RuntimeException re) {
+        }
+        catch (RuntimeException re) {
             throw PersistenceExceptions.toPersistenceException(re);
         }
     }
@@ -186,6 +192,6 @@ public class StoreCache {
             return true;
         if (!(other instanceof StoreCache))
             return false;
-        return _cache.equals(((StoreCache) other)._cache);
-    }
+        return _cache.equals (((StoreCache) other)._cache);
+	}
 }

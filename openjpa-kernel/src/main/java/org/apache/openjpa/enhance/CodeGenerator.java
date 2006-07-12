@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -31,12 +34,12 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import serp.util.Strings;
 
 /**
- * Generates Java class code from metadata.
+ * <p>Generates Java class code from metadata.</p>
  *
  * @author Abe White
  * @author Stephen Kim
- * @nojavadoc
  * @since 3.0
+ * @nojavadoc
  */
 public class CodeGenerator {
 
@@ -48,7 +51,7 @@ public class CodeGenerator {
     private ParameterTemplate _code = null;
 
     /**
-     * Constructor. Supply configuration and class to generate code for.
+     * Constructor.  Supply configuration and class to generate code for.
      */
     public CodeGenerator(OpenJPAConfiguration conf, Class type) {
         this(conf, new MetaDataRepository(conf).
@@ -56,7 +59,7 @@ public class CodeGenerator {
     }
 
     /**
-     * Constructor. Supply configuration and metadata to generate code for.
+     * Constructor.  Supply configuration and metadata to generate code for.
      */
     public CodeGenerator(OpenJPAConfiguration conf, ClassMetaData meta) {
         _conf = conf;
@@ -65,7 +68,7 @@ public class CodeGenerator {
     }
 
     /**
-     * The directory to write source to. Defaults to the current directory.
+     * The directory to write source to.  Defaults to the current directory.
      * If the given directory does not match the package of the metadata, the
      * package structure will be created below the directory.
      */
@@ -74,7 +77,7 @@ public class CodeGenerator {
     }
 
     /**
-     * The directory to write source to. Defaults to the current directory.
+     * The directory to write source to.  Defaults to the current directory.
      * If the given directory does not match the package of the metadata, the
      * package structure will be created below the directory.
      */
@@ -128,15 +131,18 @@ public class CodeGenerator {
         String packageDec = "";
         if (packageName.length() > 0)
             packageDec = "package " + packageName + ";";
+
         String extendsDec = "";
         String extendsName = "";
         if (!_type.getSuperclass().getName().equals(Object.class.getName())) {
             extendsName = Strings.getClassName(_type.getSuperclass());
             extendsDec = "extends " + extendsName;
         }
+
         String imports = getImports();
         String[] fieldCode = getFieldCode();
         String constructor = getConstructor();
+
         // get code template
         _code = new ParameterTemplate();
         String codeStr = getClassCode();
@@ -149,16 +155,19 @@ public class CodeGenerator {
             _code.setParameter("constructor", constructor);
             _code.setParameter("fieldDecs", fieldCode[0]);
             _code.setParameter("fieldCode", fieldCode[1]);
-        } else _code.append(getClassCode(packageDec, imports, className,
-            extendsName, constructor, fieldCode[0], fieldCode[1]));
+        } else
+            _code.append(getClassCode(packageDec, imports, className,
+                extendsName, constructor, fieldCode[0], fieldCode[1]));
     }
 
     /**
      * Write the generated code to the proper file.
      */
-    public void writeCode() throws IOException {
+    public void writeCode()
+        throws IOException {
         if (_code == null)
             return;
+
         File file = getFile();
         Files.backup(file, false);
         _code.write(file);
@@ -167,9 +176,11 @@ public class CodeGenerator {
     /**
      * Write the code to the specified {@link Writer}.
      */
-    public void writeCode(Writer out) throws IOException {
+    public void writeCode(Writer out)
+        throws IOException {
         if (_code == null)
             return;
+
         _code.write(out);
     }
 
@@ -178,6 +189,7 @@ public class CodeGenerator {
      */
     private String getImports() {
         Set pkgs = getImportPackages();
+
         CodeFormat imports = newCodeFormat();
         String base = Strings.getPackageName(_type);
         String pkg;
@@ -199,12 +211,15 @@ public class CodeGenerator {
     public Set getImportPackages() {
         Set pkgs = new TreeSet();
         pkgs.add(Strings.getPackageName(_type.getSuperclass()));
+
         FieldMetaData[] fields = _meta.getDeclaredFields();
         for (int i = 0; i < fields.length; i++)
             pkgs.add(Strings.getPackageName(fields[i].getDeclaredType()));
+
         fields = _meta.getPrimaryKeyFields();
         for (int i = 0; i < fields.length; i++)
             pkgs.add(Strings.getPackageName(fields[i].getDeclaredType()));
+
         return pkgs;
     }
 
@@ -215,11 +230,14 @@ public class CodeGenerator {
         FieldMetaData[] fields = _meta.getPrimaryKeyFields();
         if (fields.length == 0)
             return "";
+
         CodeFormat cons = newCodeFormat();
         CodeFormat body = newCodeFormat();
+
         // public <class> (
         cons.tab().append("public ").append(Strings.getClassName(_type));
         cons.openParen(true);
+
         // append args to constructor, and build up body at same time
         String propertyName;
         String fieldType;
@@ -228,9 +246,11 @@ public class CodeGenerator {
             if (propertyName.startsWith("_"))
                 propertyName = propertyName.substring(1);
             fieldType = Strings.getClassName(fields[i].getDeclaredType());
+
             if (i > 0)
                 cons.append(", ");
             cons.append(fieldType).append(" ").append(propertyName);
+
             if (_meta.getPCSuperclass() == null) {
                 if (i > 0)
                     body.endl();
@@ -240,16 +260,18 @@ public class CodeGenerator {
                 body.append(fields[i].getName());
                 body.append(" = ").append(propertyName).append(";");
             } else {
-                // super(...);
+                // super (...);
                 if (i == 0)
                     body.tab(2).append("super").openParen(true);
-                else body.append(", ");
+                else
+                    body.append(", ");
                 body.append(propertyName);
                 if (i == fields.length - 1)
                     body.closeParen().append(";");
             }
         }
         cons.closeParen();
+
         cons.openBrace(2).endl();
         cons.append(body.toString()).endl();
         cons.closeBrace(2);
@@ -263,6 +285,7 @@ public class CodeGenerator {
     private String[] getFieldCode() {
         CodeFormat decs = newCodeFormat();
         CodeFormat code = newCodeFormat();
+
         FieldMetaData[] fields = _meta.getDeclaredFields();
         for (int i = 0; i < fields.length; i++)
             appendFieldCode(fields[i], decs, code);
@@ -273,7 +296,8 @@ public class CodeGenerator {
     }
 
     /**
-     * Append the declaration and code for the given field to the given buffers.
+     * Append the declaration and code for the given field to the given
+     * buffers.
      */
     private void appendFieldCode(FieldMetaData fmd, CodeFormat decs,
         CodeFormat code) {
@@ -283,6 +307,7 @@ public class CodeGenerator {
         if (propertyName.startsWith("_"))
             propertyName = propertyName.substring(1);
         String fieldType = Strings.getClassName(fmd.getDeclaredType());
+
         String fieldValue = getInitialValue(fmd);
         if (fieldValue == null) {
             if ("Set".equals(fieldType))
@@ -298,10 +323,12 @@ public class CodeGenerator {
             else if (fmd.getDeclaredTypeCode() == JavaTypes.COLLECTION
                 || fmd.getDeclaredTypeCode() == JavaTypes.MAP)
                 fieldValue = "new " + fieldType + decs.getParens();
-            else fieldValue = "";
+            else
+                fieldValue = "";
         }
         if (fieldValue.length() > 0)
             fieldValue = " = " + fieldValue;
+
         String custom = getDeclaration(fmd);
         if (decs.length() > 0)
             decs.endl();
@@ -317,8 +344,10 @@ public class CodeGenerator {
             decs.append(templ.toString());
         } else {
             decs.tab().append("private ").append(fieldType).
-                append(" ").append(fieldName).append(fieldValue). append(";");
+                append(" ").append(fieldName).append(fieldValue).
+                append(";");
         }
+
         custom = getFieldCode(fmd);
         if (code.length() > 0)
             code.afterSection();
@@ -336,12 +365,14 @@ public class CodeGenerator {
             code.tab().append("public ").append(fieldType).append(" ");
             if ("boolean".equalsIgnoreCase(fieldType))
                 code.append("is");
-            else code.append("get");
+            else
+                code.append("get");
             code.append(capFieldName).parens();
             code.openBrace(2).endl();
             code.tab(2).append("return ").append(fieldName).
                 append(";").endl();
             code.closeBrace(2).afterSection();
+
             // setter
             code.tab().append("public void set").append(capFieldName);
             code.openParen(true).append(fieldType).append(" ").
@@ -367,24 +398,32 @@ public class CodeGenerator {
             code.append(packageDec).afterSection();
         if (imports.length() > 0)
             code.append(imports).afterSection();
-        code.append("/**").endl(). append(" * Auto-generated by:").endl().
+
+        code.append("/**").endl().
+            append(" * Auto-generated by:").endl().
             append(" * ").append(getClass().getName()).endl().
             append(" */").endl();
+
         code.append("public class ").append(className);
         if (extendsName.length() > 0)
             code.extendsDec(1).append(" ").append(extendsName);
         openClassBrace(code);
+
         if (fieldDecs.length() > 0)
             code.append(fieldDecs).afterSection();
+
         // default constructor
         code.tab().append("public ").append(className).parens();
         code.openBrace(2).endl().closeBrace(2);
+
         if (constructor.length() > 0)
             code.afterSection().append(constructor);
         if (fieldCode.length() > 0)
             code.afterSection().append(fieldCode);
         code.endl();
+
         closeClassBrace(code);
+
         return code.toString();
     }
 
@@ -410,6 +449,7 @@ public class CodeGenerator {
     public File getFile() {
         String packageName = Strings.getPackageName(_type);
         String fileName = Strings.getClassName(_type) + ".java";
+
         File dir = Files.getPackageFile(_dir, packageName, true);
         return new File(dir, fileName);
     }
@@ -425,22 +465,25 @@ public class CodeGenerator {
 
     /**
      * Return a code template for the given class, or null to use the standard
-     * system-generated Java code. To facilitate template reuse, the
+     * system-generated Java code.  To facilitate template reuse, the
      * following parameters can appear in the template; the proper values
      * will be subtituted by the system:
      * <ul>
      * <li>${packageDec}: The package declaration, in the form
-     * "package &lt;package name &gt;;", or empty string if no package.</li>
+     * "package &lt;package name &gt;;", or empty string if no
+     * package.</li>
      * <li>${imports}: Imports for the packages used by the declared
      * field types.</li>
      * <li>${className}: The name of the class, without package.</li>
      * <li>${extendsDec}: Extends declaration, in the form
      * "extends &lt;superclass&gt;", or empty string if no superclass.</li>
      * <li>${constructor}: A constructor that takes in all primary key fields
-     * of the class, or empty string if the class uses datastore identity.</li>
+     * of the class, or empty string if the class uses datastore
+     * identity.</li>
      * <li>${fieldDecs}: Declarations of all the declared fields.</li>
      * <li>${fieldCode}: Get/set methods for all the declared fields.</li>
-     * </ul> Returns null by default.
+     * </ul>
+     * Returns null by default.
      */
     protected String getClassCode() {
         return null;
@@ -448,7 +491,7 @@ public class CodeGenerator {
 
     /**
      * Return code for the initial value for the given field, or null to use
-     * the default generated by the system. Returns null by default.
+     * the default generated by the system.  Returns null by default.
      */
     protected String getInitialValue(FieldMetaData field) {
         return null;
@@ -466,27 +509,29 @@ public class CodeGenerator {
      * <li>${fieldType}: The field's type name.</li>
      * <li>${fieldValue}: The field's initial value, in the form
      * " = &lt;value&gt;", or empty string if none.</li>
-     * </ul> Returns null by default.
+     * </ul>
+     * Returns null by default.
      */
     protected String getDeclaration(FieldMetaData field) {
         return null;
     }
 
     /**
-     * Return a code template for the get/set methods of the given field, or
-     * null to use the system-generated default Java code.
-     * To facilitate template reuse, the following parameters can appear in
-     * your template; the proper values will be subtituted by the system:
-     * <ul>
-     * <li>${fieldName}: The name of the field.</li>
-     * <li>${capFieldName}: The capitalized field name.</li>
-     * <li>${propertyName}: The field name without leading '_', if any.</li>
-     * <li>${fieldType}: The field's type name.</li>
-     * <li>${fieldValue}: The field's initial value, in the form
-     * "= &lt;value&gt;", or empty string if none.</li>
-     * </ul>
+     *	Return a code template for the get/set methods of the given field, or
+     *	null to use the system-generated default Java code.
+     *	To facilitate template reuse, the following parameters can appear in
+     *	your template; the proper values will be subtituted by the system:
+     *	<ul>
+     *	<li>${fieldName}: The name of the field.</li>
+     *	<li>${capFieldName}: The capitalized field name.</li>
+     *	<li>${propertyName}: The field name without leading '_', if any.</li>
+     *	<li>${fieldType}: The field's type name.</li>
+     *	<li>${fieldValue}: The field's initial value, in the form
+     *		"= &lt;value&gt;", or empty string if none.</li>
+     *	</ul>
      */
-    protected String getFieldCode(FieldMetaData field) {
-        return null;
-    }
+    protected String getFieldCode (FieldMetaData field)
+	{
+		return null;
+	}
 }
