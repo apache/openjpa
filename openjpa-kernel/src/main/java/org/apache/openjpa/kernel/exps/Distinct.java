@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.HashSet;
 
 import org.apache.openjpa.kernel.StoreContext;
-import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * <p>A distinct set of the specified values.</p>
@@ -29,9 +28,6 @@ import org.apache.openjpa.lib.util.Localizer;
  */
 class Distinct
     extends Val {
-
-    private static final Localizer _loc = Localizer.forPackage
-        (AggregateVal.class);
 
     private final Val _val;
 
@@ -61,7 +57,8 @@ class Distinct
         StoreContext ctx, Object[] params) {
         if (candidate == null)
             candidate = Collections.EMPTY_LIST;
-
+        
+        // ### should arg be used in eval below?
         Collection arg = candidate instanceof Collection
             ? (Collection) candidate : Collections.singleton(candidate);
 

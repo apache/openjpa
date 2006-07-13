@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.apache.commons.collections.map.LinkedMap;
 import org.xml.sax.SAXException;
-import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Helps serialize metadata objects to package and class elements.
@@ -29,9 +28,6 @@ import org.apache.openjpa.lib.util.Localizer;
  * @see CFMetaDataParser
  */
 public abstract class CFMetaDataSerializer extends XMLMetaDataSerializer {
-
-    private static final Localizer _loc = Localizer.forPackage
-        (CFMetaDataSerializer.class);
 
     private String _package = null;
 

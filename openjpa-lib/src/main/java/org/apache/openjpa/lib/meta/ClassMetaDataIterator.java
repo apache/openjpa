@@ -41,7 +41,6 @@ public class ClassMetaDataIterator implements MetaDataIterator {
     private int _loc = -1;
     private final List _urls = new ArrayList(3);
     private int _url = -1;
-    private URL _last = null;
 
     /**
      * Constructor; supply the class whose metadata to find, the suffix

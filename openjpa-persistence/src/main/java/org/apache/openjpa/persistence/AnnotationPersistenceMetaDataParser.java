@@ -870,7 +870,6 @@ public class AnnotationPersistenceMetaDataParser
      * Create fetch groups.
      */
     private void parseFetchGroups(ClassMetaData meta, FetchGroup... groups) {
-        MetaDataRepository repos = getRepository();
         for (FetchGroup group : groups) {
             if (StringUtils.isEmpty(group.name()))
                 throw new MetaDataException(_loc.get("unnamed-fg", meta));
@@ -1483,7 +1482,6 @@ public class AnnotationPersistenceMetaDataParser
      */
     private void parseNamedQueries(AnnotatedElement el, NamedQuery... queries) {
         QueryMetaData meta;
-        QueryHint[] hints;
         for (NamedQuery query : queries) {
             if (StringUtils.isEmpty(query.name()))
                 throw new MetaDataException(_loc.get("no-query-name", el));

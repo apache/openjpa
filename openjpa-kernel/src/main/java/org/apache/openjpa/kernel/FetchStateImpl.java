@@ -177,7 +177,6 @@ public class FetchStateImpl
 
     void traverse(FieldMetaData fm) {
         int sourceDepth = getDepth(fm.getDeclaringMetaData());
-        int targetDepth = getDepth(fm.getDeclaredTypeMetaData());
         int traversalCount = getTraversalCount(fm);
         boolean isRecursive = fm.getDeclaringMetaData() ==
             fm.getDeclaredTypeMetaData();
@@ -204,42 +203,4 @@ public class FetchStateImpl
             return ((Integer) _depths.get(cm)).intValue();
         return 0;
     }
-
-    /**
-     * Combination of an instance and its field used as key.
-     */
-    private static class InstanceFieldKey {
-
-        final OpenJPAStateManager _sm;
-        final FieldMetaData _fm;
-
-        /**
-         * Supply configuration.
-         *
-         * @param sm can be null
-         * @param fm must not be null
-         */
-        public InstanceFieldKey(OpenJPAStateManager sm, FieldMetaData fm) {
-            _sm = sm;
-            _fm = fm;
-        }
-
-        public boolean equals(Object other) {
-            if (other instanceof InstanceFieldKey) {
-                InstanceFieldKey that = (InstanceFieldKey) other;
-                return (_sm == that._sm) && (_fm == that._fm);
-            }
-            return false;
-        }
-
-        public int hashCode() {
-            int smHash = (_sm != null) ? _sm.hashCode() : 0;
-            int fmHash = (_fm != null) ? _fm.hashCode() : 0;
-            return smHash + fmHash;
-        }
-
-        public String toString() {
-            return _sm + "." + _fm;
-        }
-	}
 }

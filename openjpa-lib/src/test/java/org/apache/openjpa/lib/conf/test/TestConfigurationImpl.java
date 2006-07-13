@@ -26,8 +26,7 @@ import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.test.AbstractTestCase;
 
 /**
- * Tests the {@link ConfigurationImpl} type, and in so doing tests
- * the {@link AbstractConfiguration} as well. This needs to be placed
+ * Tests the {@link ConfigurationImpl} type. This needs to be placed
  * in a sub-package so that it can have its own localizer.properties
  * properties, which are required for the bean descriptors used by the
  * configuration framework {@link Value}.

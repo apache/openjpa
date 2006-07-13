@@ -24,7 +24,6 @@ import java.util.Iterator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FetchState;
 import org.apache.openjpa.kernel.LockManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -100,7 +99,6 @@ public class ImplHelper {
         PCState state, int load, FetchState fetchState, Object context) {
         Collection failed = null;
         OpenJPAStateManager sm;
-        FetchConfiguration fc;
         LockManager lm;
         for (Iterator itr = sms.iterator(); itr.hasNext();) {
             sm = (OpenJPAStateManager) itr.next();
@@ -109,8 +107,6 @@ public class ImplHelper {
                     failed = addFailedId(sm, failed);
             } else if (load != StoreManager.FORCE_LOAD_NONE
                 || sm.getPCState() == PCState.HOLLOW) {
-                fc = (load == StoreManager.FORCE_LOAD_ALL) ? null
-                    : fetchState.getFetchConfiguration();
 
                 lm = sm.getContext().getLockManager();
                 if (!store.load(sm, sm.getUnloaded(fetchState),

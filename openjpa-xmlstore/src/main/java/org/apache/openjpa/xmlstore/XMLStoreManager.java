@@ -31,7 +31,6 @@ import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FetchState;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
-import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.rop.ListResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -52,7 +51,6 @@ public class XMLStoreManager
 
     private XMLConfiguration _conf;
     private XMLStore _store;
-    private Log _log;
 
     // changed data within the current transaction
     private Collection _updates;
@@ -81,7 +79,6 @@ public class XMLStoreManager
         // cache operational state
         _conf = (XMLConfiguration) ctx.getConfiguration();
         _store = _conf.getStore();
-        _log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
     }
 
     public boolean exists(OpenJPAStateManager sm, Object context) {

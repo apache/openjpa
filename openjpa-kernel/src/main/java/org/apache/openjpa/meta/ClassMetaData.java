@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
@@ -147,7 +146,6 @@ public class ClassMetaData
     private String _seqName = DEFAULT_STRING;
     private SequenceMetaData _seqMeta = null;
     private Map _fgs = new HashMap();
-    private SortedSet _lgSet = null;
     private String _cacheName = DEFAULT_STRING;
     private int _cacheTimeout = Integer.MIN_VALUE;
     private Boolean _detachable = null;

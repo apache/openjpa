@@ -73,7 +73,6 @@ class FIFOWaitQueue extends WaitQueue implements java.io.Serializable {
 
     public Collection getWaitingThreads() {
         List list = new ArrayList();
-        int count = 0;
         WaitNode node = head_;
         while (node != null) {
             if (node.waiting) list.add(node.owner);

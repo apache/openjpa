@@ -1732,7 +1732,6 @@ public class QueryImpl
         LinkedMap paramTypes = ex.getParameterTypes(_storeQuery);
         if (paramTypes != null && !paramTypes.isEmpty()) {
             Map.Entry entry;
-            Object param;
             for (Iterator itr = paramTypes.entrySet().iterator();
                 itr.hasNext();) {
                 entry = (Map.Entry) itr.next();

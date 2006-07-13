@@ -36,7 +36,6 @@ public class MapChangeTrackerImpl
      * Constructor; supply delegate map.
      */
     public MapChangeTrackerImpl(Map map, OpenJPAConfiguration conf) {
-        super(conf);
         _map = map;
     }
 

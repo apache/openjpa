@@ -43,7 +43,6 @@ import serp.util.Strings;
  */
 public class CodeGenerator {
 
-    private OpenJPAConfiguration _conf = null;
     private File _dir = null;
     private CodeFormat _format = null;
     private ClassMetaData _meta = null;
@@ -54,15 +53,13 @@ public class CodeGenerator {
      * Constructor.  Supply configuration and class to generate code for.
      */
     public CodeGenerator(OpenJPAConfiguration conf, Class type) {
-        this(conf, new MetaDataRepository(conf).
-            getMetaData(type, null, true));
+        this(new MetaDataRepository(conf).getMetaData(type, null, true));
     }
 
     /**
      * Constructor.  Supply configuration and metadata to generate code for.
      */
-    public CodeGenerator(OpenJPAConfiguration conf, ClassMetaData meta) {
-        _conf = conf;
+    public CodeGenerator(ClassMetaData meta) {
         _meta = meta;
         _type = meta.getDescribedType();
     }
@@ -302,7 +299,7 @@ public class CodeGenerator {
     private void appendFieldCode(FieldMetaData fmd, CodeFormat decs,
         CodeFormat code) {
         String fieldName = fmd.getName();
-        String capFieldName = StringUtils.capitalise(fieldName);
+        String capFieldName = StringUtils.capitalize(fieldName);
         String propertyName = fieldName;
         if (propertyName.startsWith("_"))
             propertyName = propertyName.substring(1);

@@ -112,18 +112,4 @@ public class TestReferenceSet extends TestCase {
         _coll.add("foo");
         assertTrue(_coll.contains(held));
     }
-
-    /**
-     * Used to test inherited functionality.
-     */
-    private static final class Node {
-
-        public int hashCode() {
-            return 1;
-        }
-
-        public boolean equals(Object other) {
-            return true;
-        }
-    }
 }

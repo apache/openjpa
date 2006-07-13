@@ -26,7 +26,7 @@ public interface QueryOperations {
      * Symbolic constant that indicates that this query will be
      * performing a select operation.
      *
-     * @see Query#getOperation
+     * @see QueryContext#getOperation
      */
     public static final int OP_SELECT = 1;
 
@@ -34,7 +34,7 @@ public interface QueryOperations {
      * Symbolic constant that indicates that this query will be
      * performing a delete operation.
      *
-     * @see Query#getOperation
+     * @see QueryContext#getOperation
      */
     public static final int OP_DELETE = 2;
 
@@ -42,7 +42,7 @@ public interface QueryOperations {
      *  Symbolic constant that indicates that this query will be
      *  performing a update operation.
      *
-     *  @see Query#getOperation
+     *  @see QueryContext#getOperation
      */
     public static final int OP_UPDATE = 3;
 }

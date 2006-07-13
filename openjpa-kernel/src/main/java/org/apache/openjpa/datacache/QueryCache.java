@@ -65,8 +65,9 @@ public interface QueryCache
      * <p/>
      * <p>This method is typically not invoked directly from outside
      * the <code>QueryCache</code> class. Instead, the cache should
-     * be updated by invoking {@link #typesChanged}, which will
-     * result in all queries that may be invalid being dropped.</p>
+     * be updated by implementing {@link 
+     * org.apache.openjpa.event.RemoteCommitListener},
+     * which will result in all queries that may be invalid being dropped.</p>
      *
      * @return The previously cached value, or <code>null</code> if
      * the key was not previously cached. See {@link Map#remove}
@@ -86,7 +87,7 @@ public interface QueryCache
      * causes this data to be ignored when determining whether or not
      * the cache is full, effectively increasing the total amount of
      * data stored in the cache. This method does not affect the
-     * behavior of {@link #remove} or {@link #typesChanged}.
+     * behavior of {@link #remove} or {@link #onTypesChanged}.
      *
      * @return <code>true</code> if <code>key</code>'s value was
      *         pinned into the cache; <code>false</code> if the

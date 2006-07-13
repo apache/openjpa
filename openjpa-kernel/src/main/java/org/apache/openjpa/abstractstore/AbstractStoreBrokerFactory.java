@@ -31,7 +31,7 @@ import org.apache.openjpa.util.UserException;
 /**
  * <p>{@link BrokerFactory} implementation for use with the
  * {@link AbstractStoreManager}. This provides integration into the
- * {@link Bootstrap#getBrokerFactory} bootstrapping mechanism, to facilitate
+ * {@link Bootstrap#getBrokerFactory()} bootstrapping mechanism, to facilitate
  * the process of creating a subclass of {@link AbstractStoreManager}. New
  * store manager implementations need not extend this class. Instead, set the
  * <code>org.apache.openjpa.BrokerFactory</code> configuration property to
@@ -64,7 +64,7 @@ public class AbstractStoreBrokerFactory
 
     /**
      * Factory method for obtaining a possibly-pooled {@link BrokerFactory}
-     * from properties. Invoked from {@link Bootstrap#getBrokerFactory}.
+     * from properties. Invoked from {@link Bootstrap#getBrokerFactory()}.
      */
     public static AbstractStoreBrokerFactory getInstance
         (ConfigurationProvider cp) {
@@ -80,7 +80,7 @@ public class AbstractStoreBrokerFactory
 
     /**
      * Factory method for constructing a {@link BrokerFactory}
-     * from properties. Invoked from {@link Bootstrap#newBrokerFactory}.
+     * from properties. Invoked from {@link Bootstrap#newBrokerFactory()}.
      */
     public static AbstractStoreBrokerFactory newInstance
         (ConfigurationProvider cp) {

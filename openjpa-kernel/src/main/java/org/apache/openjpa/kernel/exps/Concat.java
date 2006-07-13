@@ -58,7 +58,6 @@ class Concat
         StringBuffer cat = new StringBuffer(str.toString());
 
         Object arg = _args.eval(candidate, orig, ctx, params);
-        int idx;
         if (arg instanceof Object[]) {
             for (int i = 0; i < ((Object[]) arg).length; i++)
                 cat.append((((Object[]) arg)[i]).toString());

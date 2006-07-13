@@ -16,7 +16,6 @@
 package org.apache.openjpa.kernel.exps;
 
 import org.apache.openjpa.kernel.StoreContext;
-import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * <p>Represents an unbound variable.  When the query is evaluated,
@@ -27,9 +26,6 @@ import org.apache.openjpa.lib.util.Localizer;
  */
 class UnboundVariable
     extends Val {
-
-    private static final Localizer _loc = Localizer.forPackage
-        (UnboundVariable.class);
 
     private Class _type = null;
     private Object _val = null;

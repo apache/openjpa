@@ -833,7 +833,7 @@ public class Filters {
             if (e instanceof InvocationTargetException)
                 t = ((InvocationTargetException) e).getTargetException();
             throw new UserException(_loc.get("bad-getter-hint",
-                target.getClass(), hintKey)).setCause(e);
+                target.getClass(), hintKey)).setCause(t);
         }
     }
 

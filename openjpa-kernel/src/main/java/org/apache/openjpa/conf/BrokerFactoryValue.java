@@ -21,7 +21,8 @@ import org.apache.openjpa.lib.conf.PluginValue;
 /**
  * <p>Value type used to represent the {@link BrokerFactory}.  This type is
  * defined separately so that it can be used both in the global configuration
- * and in {@link OpenJPAHelper} with the same encapsulated configuration.</p>
+ * and in {@link org.apache.openjpa.kernel.Bootstrap} with the same 
+ * encapsulated configuration.</p>
  *
  * @author Abe White
  * @nojavadoc

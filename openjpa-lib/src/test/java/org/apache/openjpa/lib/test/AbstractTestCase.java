@@ -480,7 +480,7 @@ public abstract class AbstractTestCase extends TestCase {
     /**
      * Execute a test method in multiple threads.
      *
-     * @param thread the number of Threads to run in
+     * @param threads the number of Threads to run in
      * @param iterations the number of times the method should
      * be execute in a single Thread
      * @param method the name of the method to execute
@@ -782,7 +782,7 @@ public abstract class AbstractTestCase extends TestCase {
     }
 
     /**
-     * @see timeout(long)
+     * @see #timeout(long)
      */
     public boolean timeout(long millis, String methodName) throws Throwable {
         // we are in the timing out-thread: do nothing so the
@@ -1380,13 +1380,6 @@ public abstract class AbstractTestCase extends TestCase {
         } catch (RESyntaxException e) {
             throw new IllegalArgumentException(e.toString());
         }
-    }
-
-    private static String trim(String str, int max) {
-        if (str.length() < max)
-            return str;
-
-        return str.substring(0, max) + "...";
     }
 
     /**

@@ -139,8 +139,7 @@ public interface QueryContext {
     public Class getResultType();
 
     /**
-     * Specify the type of object in which the
-     * result of invoking {@link #execute} or one of its siblings.
+     * Specify the type of object in which the result of evaluating this query.
      *
      * @since 3.0
      */
@@ -278,12 +277,12 @@ public interface QueryContext {
 
     /**
      *	Synchronize on the query's internal lock.
-	 */
-	public void lock (); 
+     */
+    public void lock (); 
 
 
-	/**
-	 *	Unlock the query's internal lock.
-	 */
-	public void unlock (); 
+    /**
+     *	Unlock the query's internal lock.
+     */
+    public void unlock();
 }

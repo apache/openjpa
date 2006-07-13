@@ -186,7 +186,7 @@ public abstract class AbstractQueryCache
      * your cache subclass relies on OpenJPA for clustering support, make it
      * implement <code>RemoteCommitListener</code>.  This method will take
      * care of invalidating entries from remote commits, by delegating to
-     * {@link #typesChanged}.
+     * {@link #onTypesChanged}.
      */
     public void afterCommit(RemoteCommitEvent event) {
         if (_closed)

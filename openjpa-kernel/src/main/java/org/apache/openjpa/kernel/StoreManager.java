@@ -116,7 +116,8 @@ public interface StoreManager
      * Initialization involves first calling the
      * {@link OpenJPAStateManager#initialize} method with
      * a new instance of the correct type constructed with the
-     * {@link PCRegistry#newInstance(Class,StateManager,Object)} method
+     * {@link org.apache.openjpa.enhance.PCRegistry#newInstance(Class, 
+     * org.apache.openjpa.enhance.StateManager, boolean)} method
      * (this will reset the state manager's metadata if the actual type was a
      * subclass).  After instance initialization, load any the fields for the
      * given fetch configuration that can be efficiently retrieved. If any of
@@ -169,7 +170,7 @@ public interface StoreManager
     /**
      * Initialize, load, or validate the existance of all of the given
      * objects.  This method is called from various broker methods that act
-     * on multiple objects, such as {@link Broker#findAll}.  It gives
+     * on multiple objects, such as {@link StoreContext#retrieveAll}.  It gives
      * the store manager an opportunity to efficiently batch-load data for
      * several objects.  Each of the given state managers will be in one of
      * three states, each requiring a different action:
@@ -240,7 +241,7 @@ public interface StoreManager
      * The current version will roll over to this next version upon successful
      * commit.
      *
-     * @see    org.apache.openjpa.util.ApplicationIds#assign
+     * @see    org.apache.openjpa.util.ApplicationIds#assign()
      */
     public Collection flush(Collection sms);
 
@@ -260,7 +261,7 @@ public interface StoreManager
      * {@link #flush}
      * @see    org.apache.openjpa.util.ImplHelper#generateFieldValue
      * @see    org.apache.openjpa.util.ImplHelper#generateIdentityValue
-     * @see    org.apache.openjpa.util.ApplicationIds#assign
+     * @see    org.apache.openjpa.util.ApplicationIds#assign()
      * @since 3.3
      */
     public boolean assignObjectId(OpenJPAStateManager sm, boolean preFlush);

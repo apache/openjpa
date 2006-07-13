@@ -430,7 +430,6 @@ public class DetachManager
 
         // detach fields and set detached variables
         DetachedStateManager detSM = null;
-        ClassMetaData meta = sm.getMetaData();
         if (_opts.getDetachedStateManager()
             && useDetachedStateManager(sm, _opts))
             detSM = new DetachedStateManager(detachedPC, sm, fields,

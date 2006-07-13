@@ -426,7 +426,6 @@ public class DataCacheStoreManager
         DataCache cache;
         DataCachePCData data;
         BitSet fields;
-        FetchConfiguration fc;
 
         for (Iterator itr = sms.iterator(); itr.hasNext();) {
             sm = (OpenJPAStateManager) itr.next();
@@ -449,12 +448,6 @@ public class DataCacheStoreManager
                 || sm.getPCState() == PCState.HOLLOW) {
                 data = cache.get(sm.getObjectId());
                 if (data != null) {
-                    // ### fc isn't ever accessed; we should check that
-                    // ### getFetchConfiguration() doesn't have any side-effects
-                    // ### and remove this code.
-                    fc = (load == FORCE_LOAD_ALL) ? null
-                        : fetchState.getFetchConfiguration();
-
                     // load unloaded fields
                     fields = sm.getUnloaded(fetchState);
                     data.load(sm, fields, fetchState, edata);

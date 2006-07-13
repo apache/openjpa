@@ -227,7 +227,6 @@ public class CopyOnWriteArrayList implements List, Cloneable, Serializable {
             Object[] newarr = new Object[length + ca.length];
             int moved = length - index;
             System.arraycopy(oldarr, 0, newarr, 0, index);
-            int pos = length;
             System.arraycopy(ca, 0, newarr, index, ca.length);
             if (moved > 0) {
                 System

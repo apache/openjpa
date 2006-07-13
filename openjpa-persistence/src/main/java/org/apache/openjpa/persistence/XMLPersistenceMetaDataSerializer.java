@@ -1143,13 +1143,6 @@ public class XMLPersistenceMetaDataSerializer
     }
 
     /**
-     * Serialize the content of the given value.  Does nothing by default.
-     */
-    private void serializeStrategyMappingContent(FieldMetaData vmd)
-        throws SAXException {
-    }
-
-    /**
      * Represents ordered set of {@link SequenceMetaData}s with a
      * common class scope.
      *

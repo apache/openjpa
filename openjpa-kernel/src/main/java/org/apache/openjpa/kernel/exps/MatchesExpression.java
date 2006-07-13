@@ -28,7 +28,7 @@ class MatchesExpression
 
     private final String _single;
     private final String _multi;
-    private final String _escape;
+    private final String _escape; // ### in-memory queries are not using escapes
     private final boolean _affirmation;
 
     /**
