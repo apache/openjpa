@@ -95,7 +95,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
     }
 
     /**
-     * @see {@link #setPrettyPrint}
+     * @see #setPrettyPrint
      */
     public boolean getPrettyPrint() {
         return _prettyPrint;
@@ -114,7 +114,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
     }
 
     /**
-     * @see {@link #setPrettyPrintLineLength}
+     * @see #setPrettyPrintLineLength
      */
     public int getPrettyPrintLineLength() {
         return _prettyPrintLineLength;
@@ -188,17 +188,6 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             return (ReportingSQLException) sqle;
 
         return new ReportingSQLException(sqle, sql);
-    }
-
-    private static String getExceptionMessage(SQLException sqle,
-        Statement stmnt) {
-        try {
-            return sqle.getMessage() + " {" + stmnt + "} "
-                + "[code=" + sqle.getErrorCode() + ", state="
-                + sqle.getSQLState() + "]";
-        } catch (Throwable t) {
-            return sqle.getMessage();
-        }
     }
 
     /**

@@ -920,7 +920,9 @@ public class ConcurrentHashMap extends AbstractMap
 
         // Read in size(number of Mappings)
         int size = s.readInt();
-        int maxSize = s.readInt();
+        
+        // read the max size
+        maxSize = s.readInt();
 
         // Read the keys and values, and put the mappings in the
         // ConcurrentHashMap

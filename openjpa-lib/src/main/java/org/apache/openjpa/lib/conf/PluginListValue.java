@@ -16,8 +16,6 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.openjpa.lib.util.Localizer;
-
 /**
  * A list of plugins. Defaults and aliases on plugin lists apply only
  * to individual class names.
@@ -28,9 +26,6 @@ import org.apache.openjpa.lib.util.Localizer;
 public class PluginListValue extends ObjectValue {
 
     private static final String[] EMPTY = new String[0];
-
-    private static final Localizer _loc = Localizer.forPackage
-        (PluginListValue.class);
 
     private String[] _names = EMPTY;
     private String[] _props = EMPTY;

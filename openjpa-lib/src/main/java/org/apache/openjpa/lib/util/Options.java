@@ -294,7 +294,7 @@ public class Options extends TypedProperties {
         // setter with more than 1 arg is ignored; calc setter and getter
         // name to look for
         String[] find = Strings.split(key, ".", 2);
-        String base = StringUtils.capitalise(find[0]);
+        String base = StringUtils.capitalize(find[0]);
         String set = "set" + base;
         String get = "get" + base;
 
@@ -331,7 +331,7 @@ public class Options extends TypedProperties {
         Member getter = getMeth;
         if (setter == null) {
             Field[] fields = type.getFields();
-            String uncapBase = StringUtils.uncapitalise(find[0]);
+            String uncapBase = StringUtils.uncapitalize(find[0]);
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i].getName().equals(base)
                     || fields[i].getName().equals(uncapBase)) {

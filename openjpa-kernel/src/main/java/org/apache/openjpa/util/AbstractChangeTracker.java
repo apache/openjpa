@@ -22,7 +22,6 @@ import java.util.Set;
 
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.collections.set.MapBackedSet;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 
 /**
  * <p>Base class that provides utilities to change trackers.</p>
@@ -48,10 +47,6 @@ public abstract class AbstractChangeTracker
      */
     protected Collection change = null;
 
-    // we need the configuration for context when figuring out if a type
-    // is managed
-    private final OpenJPAConfiguration _conf;
-
     private boolean _autoOff = true;
     private boolean _track = false;
     private Boolean _identity = null;
@@ -60,8 +55,7 @@ public abstract class AbstractChangeTracker
     /**
      * Constructor; supply configuration.
      */
-    public AbstractChangeTracker(OpenJPAConfiguration conf) {
-        _conf = conf;
+    public AbstractChangeTracker() {
     }
 
     /**

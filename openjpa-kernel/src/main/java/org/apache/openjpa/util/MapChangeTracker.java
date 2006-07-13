@@ -18,9 +18,9 @@ package org.apache.openjpa.util;
 /**
  * <p>Change tracker that can be used for maps.  If the user calls
  * any mutating methods on the map that do not have an equivalent in
- * this change tracker, then you must call {@link #stopTracking} after
- * applying the operation to the map.  The collections returned from
- * {@link ChangeTracker#getAdd} and {@link ChangeTracker#getRemove} will
+ * this change tracker, then you must call {@link ChangeTracker#stopTracking} 
+ * after applying the operation to the map.  The collections returned from
+ * {@link ChangeTracker#getAdded} and {@link ChangeTracker#getRemoved} will
  * be collections of keys to add/remove.</p>
  *
  * @author Abe White

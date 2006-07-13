@@ -185,8 +185,7 @@ public interface OpenJPAStateManager
      * Return the identifier for this state manager.  This may return a
      * temporary identifier for new unflushed instances that have not been
      * assigned an object id, or for non-persistent or embedded instances.
-     * For all other instances this method is the same as
-     * {@link StateManager#getObjectId}.
+     * For all other instances this method is the same as {@link #getObjectId}.
      */
     public Object getId();
 

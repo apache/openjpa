@@ -40,7 +40,6 @@ class ZipResourceBundleProvider implements ResourceBundleProvider {
             return null;
 
         ZipInputStream zip = new ZipInputStream(in);
-        ResourceBundle bundle = null;
         try {
             ZipEntry ze;
             while (true) {

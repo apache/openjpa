@@ -29,7 +29,7 @@ public interface MetaDataDefaults
 
     /**
      * Return the default access type for base persistent class with
-     * {@link ClassMetaData.ACCESS_UNKNOWN} access type.
+     * {@link ClassMetaData#ACCESS_UNKNOWN} access type.
      */
     public int getDefaultAccessType();
 

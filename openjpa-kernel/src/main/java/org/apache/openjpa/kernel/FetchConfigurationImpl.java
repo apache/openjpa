@@ -67,8 +67,6 @@ public class FetchConfigurationImpl
     private Set _rootInstances;
     private Map _hints = null;
 
-    private static final String[] EMPTY_STRINGS = new String[0];
-
     public StoreContext getContext() {
         return _ctx;
     }

@@ -15,8 +15,6 @@
  */
 package org.apache.openjpa.util;
 
-import org.apache.openjpa.lib.util.Localizer;
-
 /**
  * <p>Identity type appropriate for object primary key fields and shared
  * id classes.</p>
@@ -25,8 +23,6 @@ import org.apache.openjpa.lib.util.Localizer;
  */
 public final class ObjectId
     extends OpenJPAId {
-
-    private static final Localizer _loc = Localizer.forPackage(ObjectId.class);
 
     private Object _key;
 

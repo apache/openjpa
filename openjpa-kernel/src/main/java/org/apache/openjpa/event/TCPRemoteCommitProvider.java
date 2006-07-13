@@ -170,7 +170,6 @@ public class TCPRemoteCommitProvider
             if (cur > numBroadcastThreads) {
                 // Notify the extra worker threads so they stop themselves
                 // Threads will not end until they send another pk.
-                Iterator iter = _broadcastThreads.iterator();
                 for (int i = numBroadcastThreads; i < cur; i++) {
                     BroadcastWorkerThread worker = (BroadcastWorkerThread)
                         _broadcastThreads.removeFirst();
@@ -434,7 +433,7 @@ public class TCPRemoteCommitProvider
     }
 
     /**
-     * Threads to broadcast packets placed in the {@link BroadcastQueueu}.
+     * Threads to broadcast packets placed in the {@link BroadcastQueue}.
      */
     private class BroadcastWorkerThread
         extends Thread {

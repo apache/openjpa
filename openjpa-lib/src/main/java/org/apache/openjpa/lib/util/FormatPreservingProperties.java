@@ -425,7 +425,6 @@ public class FormatPreservingProperties extends Properties {
 
     public void store(OutputStream out, String header) throws IOException {
         boolean endWithNewline = source != null && source.endsInNewline;
-        boolean firstLine = true;
 
         // Must be ISO-8859-1 ecoding according to Properties.load javadoc
         PrintWriter writer = new PrintWriter

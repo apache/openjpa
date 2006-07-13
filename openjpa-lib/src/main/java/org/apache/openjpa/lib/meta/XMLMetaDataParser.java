@@ -399,18 +399,6 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         return !added;
     }
 
-    /**
-     * Whether we previously parsed the given file.
-     */
-    private boolean parsed(File file, String cur) throws IOException {
-        if (file == null)
-            return false;
-        String src = file.getCanonicalFile().toURL().toString();
-        if (src.equals(cur))
-            return false;
-        return parsed(src);
-    }
-
     public void clear() {
         if (_log != null && _log.isTraceEnabled())
             _log.trace(_loc.get("clear-parser", this));

@@ -44,7 +44,6 @@ public class CollectionChangeTrackerImpl
      */
     public CollectionChangeTrackerImpl(Collection coll, boolean dups,
         boolean order, OpenJPAConfiguration conf) {
-        super(conf);
         _coll = coll;
         _dups = dups;
         _order = order;

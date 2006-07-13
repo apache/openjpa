@@ -437,7 +437,7 @@ public interface OpenJPAEntityManager
      * Validate the changes made in this transaction, reporting any optimistic
      * violations, constraint violations, etc.  In a datastore transaction or
      * a flushed optimistic transaction, this method will act just like
-     * {@link #flush}.  In an optimistic transaction that has not yet begun a
+     * {@link #flush()}.  In an optimistic transaction that has not yet begun a
      * datastore-level transaction, however, it will only report exceptions
      * that would occur on flush, without retaining any datastore resources.
      */

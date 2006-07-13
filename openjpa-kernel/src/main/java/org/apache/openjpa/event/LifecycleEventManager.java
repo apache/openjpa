@@ -251,8 +251,6 @@ public class LifecycleEventManager
         MetaDataDefaults def = meta.getRepository().getMetaDataFactory().
             getDefaults();
 
-        int mode = meta.getRepository().getMetaDataFactory().
-            getDefaults().getCallbackMode();
         boolean callbacks = def.getCallbacksBeforeListeners(type);
         boolean failFast = (def.getCallbackMode() & CALLBACK_FAIL_FAST) != 0;
 

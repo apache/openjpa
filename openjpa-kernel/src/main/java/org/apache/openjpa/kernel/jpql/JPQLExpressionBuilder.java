@@ -34,10 +34,8 @@ import org.apache.openjpa.kernel.ExpressionStoreQuery;
 import org.apache.openjpa.kernel.QueryContext;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
-import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.Expression;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
-import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.Parameter;
 import org.apache.openjpa.kernel.exps.Path;
@@ -66,14 +64,12 @@ class JPQLExpressionBuilder
     extends AbstractExpressionBuilder
     implements JPQLTreeConstants {
 
-    private static final int VAR_OK = 0;
     private static final int VAR_PATH = 1;
     private static final int VAR_ERROR = 2;
 
     private static Localizer _loc = Localizer.forPackage
         (JPQLExpressionBuilder.class);
 
-    private final ExpressionStoreQuery query;
     private final Stack contexts = new Stack();
     private LinkedMap parameterTypes;
     private int aliasCount = 0;
@@ -90,7 +86,6 @@ class JPQLExpressionBuilder
         ExpressionStoreQuery query, Object parsedQuery) {
         super(factory, query.getResolver());
 
-        this.query = query;
         contexts.push(new Context(parsedQuery instanceof ParsedJPQL
             ? (ParsedJPQL) parsedQuery
             : parsedQuery instanceof String
@@ -259,10 +254,6 @@ class JPQLExpressionBuilder
 
     private Expression and(Expression e1, Expression e2) {
         return e1 == null ? e2 : e2 == null ? e1 : factory.and(e1, e2);
-    }
-
-    private Expression or(Expression e1, Expression e2) {
-        return e1 == null ? e2 : e2 == null ? e1 : factory.or(e1, e2);
     }
 
     private static String assemble(JPQLNode node) {
@@ -453,7 +444,6 @@ class JPQLExpressionBuilder
 
     protected void evalSetClause(QueryExpressions exps) {
         // handle SET field = value
-        Set joins = null;
         JPQLNode[] nodes = root().findChildrenByID(JJTUPDATEITEM);
 
         Map updates = null;
@@ -687,10 +677,6 @@ class JPQLExpressionBuilder
      * Recursive helper method to evaluate the given node.
      */
     private Object eval(JPQLNode node) {
-        Expression exp1, exp2;
-        FilterListener listener;
-        AggregateListener agg;
-        Path path;
         Value val1 = null;
         Value val2 = null;
         Value val3 = null;
