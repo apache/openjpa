@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,9 +28,9 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 
 /**
- * <p>Component that executes queries against the datastore.  For
+ * Component that executes queries against the datastore. For
  * expression-based queries, consider subclassing
- * {@link ExpressionStoreManagerQuery}.</p>
+ * {@link ExpressionStoreManagerQuery}.
  *
  * @author Abe White
  * @since 4.0
@@ -52,13 +52,13 @@ public interface StoreQuery
     public QueryContext getContext();
 
     /**
-     * Set the current query context.  This will be called before use.
+     * Set the current query context. This will be called before use.
      */
     public void setContext(QueryContext ctx);
 
     /**
      * This is invoked when the user or a facade creates a new query with
-     * an object that the system does not recognize.  Return true if
+     * an object that the system does not recognize. Return true if
      * the object is recognized by the store, false otherwise.
      */
     public boolean setQuery(Object query);
@@ -74,13 +74,12 @@ public interface StoreQuery
     public AggregateListener getAggregateListener(String tag);
 
     /**
-     * Create a new key for caching compiled query information.  May be
-     * null.
+     * Create a new key for caching compiled query information. May be null.
      */
     public Object newCompilationKey();
 
     /**
-     * Create a new compilation for this query.  May be null.
+     * Create a new compilation for this query. May be null.
      */
     public Object newCompilation();
 
@@ -108,36 +107,36 @@ public interface StoreQuery
 
     /**
      * Return an executor for in-memory execution of this query.
-     * Executors must be cachable and thread safe.  If this class returns
+     * Executors must be cachable and thread safe. If this class returns
      * true from {@link #supportsAbstractExecutors}, the given metadata
      * will always be for the candidate class of this query, or possibly
      * null if the candidate class is not itself persistence capable (like
-     * an interface or abstract base class).  Otherwise, the given type will
+     * an interface or abstract base class). Otherwise, the given type will
      * be a mapped class.
      *
-     * @param    subs    whether to include dependent mapped subclasses in the
+     * @param subs whether to include dependent mapped subclasses in the
      * results; independent subclasses should never be included
      */
     public Executor newInMemoryExecutor(ClassMetaData meta, boolean subs);
 
     /**
      * Return an executor for datastore execution of this query.
-     * Executors must be cachable and thread safe.  If this class returns
+     * Executors must be cachable and thread safe. If this class returns
      * true from {@link #supportsAbstractExecutors}, the given metadata
      * will always be for the candidate class of this query, or possibly
      * null if the candidate class is not itself persistence capable (like
-     * an interface or abstract base class).  Otherwise, the given type will
+     * an interface or abstract base class). Otherwise, the given type will
      * be a mapped class.
      *
-     * @param    subs    whether to include dependent mapped subclasses in the
+     * @param subs whether to include dependent mapped subclasses in the
      * results; independent subclasses should never be included
      */
     public Executor newDataStoreExecutor(ClassMetaData meta, boolean subs);
 
     /**
      * Return true if this query supports execution against abstract or
-     * interface types.  Returns false by default, meaning we will only
-     * request executors for persistent classes.  In this case, we will
+     * interface types. Returns false by default, meaning we will only
+     * request executors for persistent classes. In this case, we will
      * automatically combine the results of the executors for all
      * implementing classes if we execute a query for an interface for
      * abstract type.
@@ -160,32 +159,32 @@ public interface StoreQuery
     public boolean supportsParameterDeclarations();
 
     /**
-     *  An executor provides a uniform interface to the mechanism for executing
-     *	either an in-memory or datastore query.  In the common case, the
-     *	{@link #executeQuery} method will be called before other methods,
-     *	though this is not guaranteed.
+     * An executor provides a uniform interface to the mechanism for executing
+     * either an in-memory or datastore query. In the common case, the
+     * {@link #executeQuery} method will be called before other methods,
+     * though this is not guaranteed.
      *
-     *  @author Marc Prud'hommeaux
+     * @author Marc Prud'hommeaux
      */
     public static interface Executor {
 
         /**
          * Return the result of executing this query with the given parameter
-         * values.  If this query is a projection and this executor does not
+         * values. If this query is a projection and this executor does not
          * pack results itself, each element of the returned result object
          * provider should be an object array containing the projection values.
          *
-         * @param    lrs        true if the query result should be treated as a
+         * @param lrs true if the query result should be treated as a
          * large result set, assuming the query is not an
          * aggregate and does not have grouping
-         * @see    #isPacking
+         * @see #isPacking
          */
         public ResultObjectProvider executeQuery(StoreQuery q,
             Object[] params, boolean lrs, long startIdx, long endIdx);
 
         /**
          * Return the result of executing this query with the given parameter
-         * values.  Most implementation will use
+         * values. Most implementation will use
          * {@link QueryContext#toParameterArray} to transform the parameters
          * into an array and invoke the array version of this method.
          */
@@ -226,13 +225,13 @@ public interface StoreQuery
         /**
          * Extract the value of the <code>orderIndex</code>th ordering
          * expression in {@link Query#getOrderingClauses} from the
-         * given result object.  The result object will be an object from
+         * given result object. The result object will be an object from
          * the result object provider returned from {@link #executeQuery}.
          * This method is used when several result lists have to be merged
-         * in memory.  If this exeuctor's parent query supports executors on
+         * in memory. If this exeuctor's parent query supports executors on
          * abstract or interface classes, this method will not be used.
          *
-         * @see    StoreQuery#supportsAbstractExecutor
+         * @see StoreQuery#supportsAbstractExecutor
          */
         public Object getOrderingValue(StoreQuery q, Object[] params,
             Object resultObject, int orderIndex);
@@ -245,7 +244,7 @@ public interface StoreQuery
 
         /**
          * Return true if this executor packs projections into the result
-         * class itself.  Executors for query languages that allow projections
+         * class itself. Executors for query languages that allow projections
          * without result clauses must return true and perform the result
          * packing themselves.
          */
@@ -305,9 +304,8 @@ public interface StoreQuery
         public Class getResultClass(StoreQuery q);
 
         /**
-         *	Return a map of {@link FieldMetaData} to update
-		 *	{@link Constant}s, in cases where this query is
-		 *	for a bulk update.
+         * Return a map of {@link FieldMetaData} to update
+		 * {@link Constant}s, in cases where this query is for a bulk update.
 	 	 */
 		public Map getUpdates (StoreQuery q);
 	}

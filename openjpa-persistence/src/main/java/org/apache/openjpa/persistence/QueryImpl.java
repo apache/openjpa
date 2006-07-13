@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
- * <p>Implementation of {@link Query} interface.</p>
+ * Implementation of {@link Query} interface.
  *
  * @author Marc Prud'hommeaux
  * @author Abe White
@@ -56,7 +56,7 @@ public class QueryImpl
         (QueryImpl.class);
 
     private final DelegatingQuery _query;
-    private transient Broker _broker;    // for profiling
+    private transient Broker _broker; // for profiling
     private transient EntityManagerImpl _em;
     private transient FetchPlan _fetch;
 
@@ -313,8 +313,7 @@ public class QueryImpl
     }
 
     /**
-     * Cast the specified long down to an int, first checking
-     * for overflow.
+     * Cast the specified long down to an int, first checking for overflow.
      */
     private static int asInt(long l) {
         if (l > Integer.MAX_VALUE)

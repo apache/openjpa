@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 package org.apache.openjpa.event;
 
 /**
- * <p>Notified on transaction flush.</p>
+ * Notified on transaction flush.
  *
  * @author Patrick Linskey
  * @author Abe White
@@ -27,14 +27,14 @@ public interface FlushTransactionListener {
     /**
      * Notification that a transaction is about to flush all object changes.
      *
-     * @see    TransactionEvent#BEFORE_FLUSH
+     * @see TransactionEvent#BEFORE_FLUSH
      */
     public void beforeFlush(TransactionEvent event);
 
     /**
      * Notification that a transaction has flushed all object changes.
      *
-     * @see    TransactionEvent#AFTER_FLUSH
+     * @see TransactionEvent#AFTER_FLUSH
      */
     public void afterFlush(TransactionEvent event);
 }

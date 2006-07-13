@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringDistance;
 
 /**
- * <p>Strategies for persistent value updates.</p>
+ * Strategies for persistent value updates.
  *
  * @author Abe White
  * @since 4.0
@@ -64,7 +64,7 @@ public class UpdateStrategies {
     }
 
     /**
-     *	Convert the given strategy name to its constant.
+     * Convert the given strategy name to its constant.
      */
     public static int getCode(String val, Object context) {
         if ("none".equals(val))

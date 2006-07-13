@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -14,7 +17,7 @@
  * Written by Dawid Kurzyniec, based on code written by Doug Lea with assistance
  * from members of JCP JSR-166 Expert Group. Released to the public domain,
  * as explained at http://creativecommons.org/licenses/publicdomain.
- *  Thanks to Craig Mattocks for suggesting to use <code>sun.misc.Perf</code>.
+ * Thanks to Craig Mattocks for suggesting to use <code>sun.misc.Perf</code>.
  */
 
 package org.apache.openjpa.lib.util.concurrent;
@@ -92,7 +95,7 @@ public final class Utils {
      * in successive calls that span greater than approximately 292 years
      * (2^63 nanoseconds) will not accurately compute elapsed time due to
      * numerical overflow.
-     * <p/>
+     * 
      * <em>Implementation note:</em>By default, this method uses
      * <code>sun.misc.Perf</code> on Java 1.4.2, and falls back to
      * System.currentTimeMillis() emulation on earlier JDKs. Custom
@@ -135,8 +138,7 @@ public final class Utils {
      * thread, and interruption of thread suspension is supported; or
      * <li>The specified waiting time elapses; or
      * <li>A &quot;<em>spurious wakeup</em>&quot; occurs.
-     * </ul>
-     * In all cases, before this method can return the current thread must
+     * </ul> In all cases, before this method can return the current thread must
      * re-acquire the lock associated with this condition. When the
      * thread returns it is <em>guaranteed</em> to hold this lock.
      * If the current thread:
@@ -148,8 +150,7 @@ public final class Utils {
      * then {@link InterruptedException} is thrown and the current thread's
      * interrupted status is cleared. It is not specified, in the first
      * case, whether or not the test for interruption occurs before the lock
-     * is released.
-     * The method returns an estimate of the number of nanoseconds
+     * is released. The method returns an estimate of the number of nanoseconds
      * remaining to wait given the supplied <tt>nanosTimeout</tt>
      * value upon return, or a value less than or equal to zero if it
      * timed out. Accuracy of this estimate is directly dependent on the
@@ -157,14 +158,14 @@ public final class Utils {
      * whether and how long to re-wait in cases where the wait returns but an
      * awaited condition still does not hold. Typical uses of this method take
      * the following form:
-     * <p/>
+     * 
      * <pre> synchronized boolean aMethod(long timeout, TimeUnit unit) {
      * long nanosTimeout = unit.toNanos(timeout);
      * while (!conditionBeingWaitedFor) { if (nanosTimeout &gt; 0)
      * nanosTimeout = theCondition.awaitNanos(nanosTimeout); else return false;
      * } // ... }
      * </pre>
-     * <p/>
+     * 
      * <b>Implementation Considerations</b>
      * The current thread is assumed to hold the lock associated with this
      * <tt>Condition</tt> when this method is called.
@@ -181,9 +182,9 @@ public final class Utils {
      * @param cond the condition to wait for
      * @param nanosTimeout the maximum time to wait, in nanoseconds
      * @return A value less than or equal to zero if the wait has
-     *         timed out; otherwise an estimate, that
-     *         is strictly less than the <tt>nanosTimeout</tt> argument,
-     *         of the time still remaining when this method returned.
+     * timed out; otherwise an estimate, that
+     * is strictly less than the <tt>nanosTimeout</tt> argument,
+     * of the time still remaining when this method returned.
      * @throws InterruptedException if the current thread is interrupted(and
      * interruption of thread suspension is supported).
      */

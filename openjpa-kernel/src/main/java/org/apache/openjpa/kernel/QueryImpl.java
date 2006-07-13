@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,7 +53,7 @@ import serp.util.Numbers;
 import serp.util.Strings;
 
 /**
- * <p>Implementation of the {@link Query} interface.</p>
+ * Implementation of the {@link Query} interface.
  *
  * @author Abe White
  * @nojavadoc
@@ -915,7 +915,7 @@ public class QueryImpl
         for (Iterator itr = params.iterator(); itr.hasNext();) {
             obj = itr.next();
             if (!(obj instanceof Number))
-                return 0;    // use 0 base when params are mixed types
+                return 0; // use 0 base when params are mixed types
 
             val = ((Number) obj).intValue();
             if (val == 0)
@@ -965,7 +965,7 @@ public class QueryImpl
 
     /**
      * Execute the query using the given compilation, executor, and parameter
-     * values.  All other execute methods delegate to this one or to
+     * values. All other execute methods delegate to this one or to
      * {@link #execute(StoreQuery.Executor,Map)} after validation and locking.
      */
     private Object execute(StoreQuery.Executor ex, Object[] params)
@@ -994,7 +994,7 @@ public class QueryImpl
 
     /**
      * Execute the query using the given compilation, executor, and parameter
-     * values.  All other execute methods delegate to this one or to
+     * values. All other execute methods delegate to this one or to
      * {@link #execute(StoreQuery.Executor,Object[])} after validation and
      * locking.
      */
@@ -1024,7 +1024,7 @@ public class QueryImpl
 
     /**
      * Delete the query using the given executor, and parameter
-     * values.  All other execute methods delegate to this one or to
+     * values. All other execute methods delegate to this one or to
      * {@link #delete(StoreQuery.Executor,Object[])} after validation and
      * locking. The return value will be a Number indicating the number of
      * instances deleted.
@@ -1037,7 +1037,7 @@ public class QueryImpl
 
     /**
      * Delete the query using the given executor, and parameter
-     * values.  All other execute methods delegate to this one or to
+     * values. All other execute methods delegate to this one or to
      * {@link #delete(StoreQuery.Executor,Map)} after validation and locking.
      * The return value will be a Number indicating the number of
      * instances deleted.
@@ -1070,7 +1070,7 @@ public class QueryImpl
 
     /**
      * Update the query using the given executor and parameter
-     * values.  All other execute methods delegate to this one or to
+     * values. All other execute methods delegate to this one or to
      * {@link #update(StoreQuery.Executor,Object[])} after validation and
      * locking. The return value will be a Number indicating the number of
      * instances updated.
@@ -1083,7 +1083,7 @@ public class QueryImpl
 
     /**
      * Update the query using the given compilation, executor, and parameter
-     * values.  All other execute methods delegate to this one or to
+     * values. All other execute methods delegate to this one or to
      * {@link #update(StoreQuery.Executor,Map)} after validation and locking.
      * The return value will be a Number indicating the number of
      * instances updated.
@@ -1318,7 +1318,7 @@ public class QueryImpl
     }
 
     /**
-     * Extract an expected single result from the given provider.  Used when
+     * Extract an expected single result from the given provider. Used when
      * the result is an ungrouped aggregate or the unique flag is set to true.
      */
     private Object singleResult(ResultObjectProvider rop)
@@ -1710,8 +1710,7 @@ public class QueryImpl
 
     /**
      * Check that we are in a state to be able to perform a bulk operation;
-     * also flush the current modfications if any elements are currently
-     * dirty.
+     * also flush the current modfications if any elements are currently dirty.
      */
     private void assertBulkModify() {
         _broker.assertActiveTransaction();
@@ -1800,15 +1799,15 @@ public class QueryImpl
     /**
      * A merged executor executes multiple Queries and returns
      * a merged result list with the appropriate ordering (if more than
-     * one query needs to be executed).  This executor has the following
+     * one query needs to be executed). This executor has the following
      * limitations:
      * <ul>
-     * <li>It cannot combine aggregates.</p>
+     * <li>It cannot combine aggregates.
      * <li>It cannot collate the result lists if ordering is specified and
      * a result string is given, but does not include the ordering
      * criteria.</li>
      * <li>It cannot filter duplicate results from different result lists if
-     * the result is marked distinct.  This would require tracking all
+     * the result is marked distinct. This would require tracking all
      * previous results, which would interfere with large result set
      * handling.</li>
      * </ul>
@@ -2081,8 +2080,8 @@ public class QueryImpl
     }
 
     /**
-     *	Result list that removes itself from the query's open result list
-     *	when it is closed.  Public for testing.
+     * Result list that removes itself from the query's open result list
+     * when it is closed. Public for testing.
      */
     public class RemoveOnCloseResultList
         implements ResultList {
@@ -2239,7 +2238,6 @@ public class QueryImpl
 			return _res.toString ();
 		}
 
-	
 		public Object writeReplace ()
 		{
 			return _res;

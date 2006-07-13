@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,8 +18,8 @@ package org.apache.openjpa.kernel.exps;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
- * <p>Interface for any non-operator in a query filter, including
- * constants, variables, and object fields.</p>
+ * Interface for any non-operator in a query filter, including
+ * constants, variables, and object fields.
  *
  * @author Abe White
  */
@@ -33,7 +33,7 @@ public interface Value {
 
     /**
      * Set the implicit type of the value, based on how it is used in the
-     * filter.  This method is only called on values who return
+     * filter. This method is only called on values who return
      * <code>Object</code> from {@link #getType}.
      */
     public void setImplicitType(Class type);
@@ -49,7 +49,7 @@ public interface Value {
     public ClassMetaData getMetaData();
 
     /**
-     *	Associate a persistent type with this value.
+     * Associate a persistent type with this value.
      */
     public void setMetaData(ClassMetaData meta);
 }

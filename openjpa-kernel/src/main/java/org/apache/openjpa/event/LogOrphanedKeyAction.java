@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ValueMetaData;
 
 /**
- * <p>Log a message when an orphaned key is discovered.</p>
+ * Log a message when an orphaned key is discovered.
  *
  * @author Abe White
  * @since 3.2.2
@@ -38,35 +38,35 @@ public class LogOrphanedKeyAction
     private short _level = Log.WARN;
 
     /**
-     * The channel to log to.  Defaults to <code>org.apache.openjpa.Runtime</code>.
+     * The channel to log to. Defaults to <code>org.apache.openjpa.Runtime</code>.
      */
     public String getChannel() {
         return _channel;
     }
 
     /**
-     * The channel to log to.  Defaults to <code>org.apache.openjpa.Runtime</code>.
+     * The channel to log to. Defaults to <code>org.apache.openjpa.Runtime</code>.
      */
     public void setChannel(String channel) {
         _channel = channel;
     }
 
     /**
-     * The level to log at.  Defaults to <code>WARN</code>.
+     * The level to log at. Defaults to <code>WARN</code>.
      */
     public short getLevel() {
         return _level;
     }
 
     /**
-     * The level to log at.  Defaults to <code>WARN</code>.
+     * The level to log at. Defaults to <code>WARN</code>.
      */
     public void setLevel(short level) {
         _level = level;
     }
 
     /**
-     * The level to log at.  Defaults to <code>WARN</code>.
+     * The level to log at. Defaults to <code>WARN</code>.
      */
     public void setLevel(String level) {
         _level = LogFactoryImpl.getLevel(level);

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*********************************************************************
-
- **********************************************************************/
 package org.apache.openjpa.xmlstore;
 
 import java.util.Collection;
@@ -28,9 +25,9 @@ import java.util.Set;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
- * <p>Represents a store of object data encoded in XML.  This store only allows
- * one datastore transaction to proceed at a time.  File I/O errors can put
- * this store into an invalid state.</p>
+ * Represents a store of object data encoded in XML. This store only allows
+ * one datastore transaction to proceed at a time. File I/O errors can put
+ * this store into an invalid state.
  */
 public class XMLStore {
 
@@ -69,8 +66,7 @@ public class XMLStore {
     }
 
     /**
-     * Returns the map of oids to object datas for the given
-     * least-derived type.
+     * Returns the map of oids to object datas for the given least-derived type.
      */
     private Map getMap(ClassMetaData meta) {
         Map m = (Map) _metaOidMaps.get(meta);
@@ -100,7 +96,7 @@ public class XMLStore {
     }
 
     /**
-     * Begin a datastore transaction.  Obtains an exclusive write lock on the
+     * Begin a datastore transaction. Obtains an exclusive write lock on the
      * store.
      */
     public synchronized void beginTransaction() {
@@ -114,10 +110,10 @@ public class XMLStore {
     }
 
     /**
-     *	End the datastore transaction.
+     * End the datastore transaction.
      *
-     *	@param    updates        {@link ObjectData} instances to insert or update
-     *	@param    deletes        {@link ObjectData} instances to delete
+     * @param updates {@link ObjectData} instances to insert or update
+     * @param deletes {@link ObjectData} instances to delete
      */
     public synchronized void endTransaction(Collection updates,
         Collection deletes) {

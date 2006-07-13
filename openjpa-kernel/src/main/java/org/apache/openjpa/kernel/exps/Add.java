@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.apache.openjpa.kernel.exps;
 import org.apache.openjpa.kernel.Filters;
 
 /**
- * <p>Value produced by two values being added together.</p>
+ * Value produced by two values being added together.
  *
  * @author Abe White
  */
@@ -26,7 +26,7 @@ class Add
     extends MathVal {
 
     /**
-     * Constructor.  Provide the values to add.
+     * Constructor. Provide the values to add.
      */
     public Add(Val val1, Val val2) {
         super(val1, val2);

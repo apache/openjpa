@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -89,9 +89,9 @@ import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * <p>Concrete {@link Broker}.  The broker handles object-level behavior,
+ * Concrete {@link Broker}. The broker handles object-level behavior,
  * but leaves all interaction with the data store to a {@link StoreManager}
- * that must be supplied at initialization.</p>
+ * that must be supplied at initialization.
  *
  * @author Abe White
  */
@@ -223,13 +223,12 @@ public class BrokerImpl
     private LifecycleEventManager _lifeEventManager = null;
 
     /**
-     * Set the persistence manager's authentication.  This is the first
+     * Set the persistence manager's authentication. This is the first
      * method called after construction.
      *
      * @param user the username this broker represents; used when pooling
      * brokers to make sure that a request to the factory for
-     * a connection with an explicit user is delegated to a
-     * suitable broker
+     * a connection with an explicit user is delegated to a suitable broker
      * @param pass the password for the above user
      */
     public void setAuthentication(String user, String pass) {
@@ -238,11 +237,10 @@ public class BrokerImpl
     }
 
     /**
-     * Initialize the persistence manager.  This method is called
+     * Initialize the persistence manager. This method is called
      * automatically by the factory before use.
      *
-     * @param factory the factory used to create
-     * this broker
+     * @param factory the factory used to create this broker
      * @param sm a concrete StoreManager implementation to
      * handle interaction with the data store
      * @param managed the transaction mode
@@ -303,7 +301,7 @@ public class BrokerImpl
 
     /**
      * Create a {@link Map} to be used for the primary managed object cache.
-     * Maps oids to state managers.  By default, this creates a
+     * Maps oids to state managers. By default, this creates a
      * {@link ReferenceMap} with soft values.
      */
     protected Map newManagedObjectCache() {
@@ -989,7 +987,7 @@ public class BrokerImpl
         Object edata, int flags) {
         if ((flags & OID_NOVALIDATE) == 0)
             return true;
-        if (edata != null)    // take advantage of existing result
+        if (edata != null) // take advantage of existing result
             return true;
         if (initialized && sm.getPCState() != PCState.HOLLOW)
             return false;
@@ -1248,7 +1246,7 @@ public class BrokerImpl
     }
 
     /**
-     * End the current store manager transaction.  Throws an
+     * End the current store manager transaction. Throws an
      * exception to signal a forced rollback after failed commit, otherwise
      * returns any exception encountered during the end process.
      */
@@ -1733,7 +1731,7 @@ public class BrokerImpl
     }
 
     /**
-     * Mark the operation over.  If outermost caller of stack, returns true
+     * Mark the operation over. If outermost caller of stack, returns true
      * and will detach manageed instances if necessary.
      */
     public boolean endOperation() {
@@ -1860,8 +1858,8 @@ public class BrokerImpl
     }
 
     /**
-     * Flush the transactional state to the data store.  Subclasses that
-     * customize commit behavior should override this method.  The method
+     * Flush the transactional state to the data store. Subclasses that
+     * customize commit behavior should override this method. The method
      * assumes that the persistence manager is locked, is not closed,
      * and has an active transaction.
      *
@@ -3568,7 +3566,7 @@ public class BrokerImpl
         if (obj == null)
             return;
 
-        beginOperation(true);    // have to sync or lock level always NONE
+        beginOperation(true); // have to sync or lock level always NONE
         try {
             lock(obj, _fc.getWriteLockLevel(), _fc.getLockTimeout(), call);
         }
@@ -3593,7 +3591,7 @@ public class BrokerImpl
                 return;
 
             _lm.lock(sm, level, timeout, null);
-            sm.readLocked(level, level);    // use same level for future write
+            sm.readLocked(level, level); // use same level for future write
         }
         catch (OpenJPAException ke) {
             throw ke;
@@ -3610,7 +3608,7 @@ public class BrokerImpl
         if (objs.isEmpty())
             return;
 
-        beginOperation(true);    // have to sync or lock level always NONE
+        beginOperation(true); // have to sync or lock level always NONE
         try {
             lockAll(objs, _fc.getWriteLockLevel(), _fc.getLockTimeout(),
                 call);
@@ -3820,8 +3818,7 @@ public class BrokerImpl
      * @param id the id previously used by the instance
      * @param sm the state manager for the instance; if the state
      * manager is transient, we'll stop managing the instance;
-     * if it has updated its oid, we'll re-cache under the
-     * new oid
+     * if it has updated its oid, we'll re-cache under the new oid
      * @param status one of our STATUS constants describing why we're
      * setting the state manager
      */
@@ -3873,8 +3870,7 @@ public class BrokerImpl
 
     /**
      * Notify the persistence manager that the given state manager should
-     * be removed from the set of instances involved in the current
-     * transaction.
+     * be removed from the set of instances involved in the current transaction.
      */
     void removeFromTransaction(StateManagerImpl sm) {
         lock();
@@ -3890,7 +3886,7 @@ public class BrokerImpl
     }
 
     /**
-     * Notification that the given instance has been dirtied.  This
+     * Notification that the given instance has been dirtied. This
      * notification is given when an object first transitions to a dirty state,
      * and every time the object is modified by the user thereafter.
      */
@@ -3961,8 +3957,7 @@ public class BrokerImpl
 
     /**
      * Notify the persistence manager that the given state manager should
-     * be removed from the set of instances involved in the next
-     * transaction.
+     * be removed from the set of instances involved in the next transaction.
      */
     void removeFromPendingTransaction(StateManagerImpl sm) {
         lock();
@@ -4003,7 +3998,7 @@ public class BrokerImpl
 
     /**
      * Remove the given previously dereferenced dependent object from the
-     * cache.  It is now referenced.
+     * cache. It is now referenced.
      */
     void removeDereferencedDependent(StateManagerImpl sm) {
         lock();
@@ -4387,10 +4382,10 @@ public class BrokerImpl
      */
     private static class ManagedCache {
 
-        private final Map _main;                // oid -> sm
-        private Map _conflicts = null;    // conflict oid -> new sm
-        private Map _news = null;    // tmp id -> new sm
-        private Collection _embeds = null;    // embedded/non-persistent sms
+        private final Map _main; // oid -> sm
+        private Map _conflicts = null; // conflict oid -> new sm
+        private Map _news = null; // tmp id -> new sm
+        private Collection _embeds = null; // embedded/non-persistent sms
 
         /**
          * Constructor; supply primary cache map.
@@ -4876,7 +4871,7 @@ public class BrokerImpl
     }
 
     /**
-     * Helper class to implement JCA interfaces.  This is placed in a
+     * Helper class to implement JCA interfaces. This is placed in a
      * separate class so that its methods do not interfere with the
      * persistence manager APIs.
      */

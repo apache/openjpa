@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -35,8 +38,7 @@ public interface MetaDataSerializer {
      * parsed. Any objects for which a source file cannot be determined will
      * not be included in the output.
      *
-     * @param flags bit flags specifying the output flags; e.g.
-     * {@link #PRETTY}
+     * @param flags bit flags specifying the output flags; e.g. {@link #PRETTY}
      */
     public void serialize(int flags) throws IOException;
 
@@ -48,8 +50,7 @@ public interface MetaDataSerializer {
      * othwerwise, populate the specified {@link Map} with
      * keys that are the {@link File} instances, and
      * values that are the {@link String} contents of the metadata
-     * @param flags bit flags specifying the output flags; e.g.
-     * {@link #PRETTY}
+     * @param flags bit flags specifying the output flags; e.g. {@link #PRETTY}
      */
     public void serialize(Map output, int flags) throws IOException;
 
@@ -64,8 +65,7 @@ public interface MetaDataSerializer {
     /**
      * Serialize the current set of objects to the given stream.
      *
-     * @param flags bit flags specifying the output flags; e.g.
-     * {@link #PRETTY}
+     * @param flags bit flags specifying the output flags; e.g. {@link #PRETTY}
      */
     public void serialize(Writer out, int flags) throws IOException;
 }

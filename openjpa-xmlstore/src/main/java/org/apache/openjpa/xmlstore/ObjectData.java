@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*********************************************************************
-
- **********************************************************************/
 package org.apache.openjpa.xmlstore;
 
 import java.lang.reflect.Array;
@@ -40,8 +37,7 @@ import org.apache.openjpa.util.UnsupportedException;
 import serp.util.Numbers;
 
 /**
- * <p>In-memory form of data in datastore backing a single persistent
- * object.</p>
+ * In-memory form of data in datastore backing a single persistent object.
  */
 public final class ObjectData
     implements Cloneable {
@@ -52,7 +48,7 @@ public final class ObjectData
     private ClassMetaData _meta;
 
     /**
-     * Create the object without underlying data.  Just pass in type specific
+     * Create the object without underlying data. Just pass in type specific
      * metadata and the oid.
      */
     public ObjectData(Object oid, ClassMetaData meta) {
@@ -106,7 +102,7 @@ public final class ObjectData
 
     /**
      * Load the data and version information for this object into the
-     * given state manager.  Only fields in the given fetch configuration are
+     * given state manager. Only fields in the given fetch configuration are
      * loaded.
      */
     public void load(OpenJPAStateManager sm, FetchState fetchState) {
@@ -124,8 +120,7 @@ public final class ObjectData
 
     /**
      * Load the data and version information for this object into the
-     * given state manager.  Only fields in the given bit set will be
-     * loaded.
+     * given state manager. Only fields in the given bit set will be loaded.
      */
     public void load(OpenJPAStateManager sm, BitSet fields,
         FetchState fetchState) {
@@ -211,7 +206,7 @@ public final class ObjectData
 
     /**
      * Convert the given stored value <code>val</code> to a value for loading
-     * into a state manager.  The value <code>val</code> must be a singular
+     * into a state manager. The value <code>val</code> must be a singular
      * value; it cannot be a container.
      */
     private static Object toNestedLoadable(OpenJPAStateManager sm,
@@ -242,7 +237,7 @@ public final class ObjectData
 
     /**
      * Store the data and version information for this object from the
-     * given state manager.  Only dirty fields will be stored.
+     * given state manager. Only dirty fields will be stored.
      */
     public void store(OpenJPAStateManager sm) {
         _version = (Long) sm.getVersion();

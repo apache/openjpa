@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,15 +23,14 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.InvalidStateException;
 
 /**
- * <p>Base class for all lifecycle states.  Each instance is managed by
+ * Base class for all lifecycle states. Each instance is managed by
  * a {@link OpenJPAStateManager}, which in turn keeps a reference to its current
- * state.</p>
- * <p/>
- * <p>The state governs the behavior of the instance during all lifecycle
- * events.  The class itself is stateless, and is provided its context
- * on each method call.  This base class provides no-op implementations
+ * state.
+ *  The state governs the behavior of the instance during all lifecycle
+ * events. The class itself is stateless, and is provided its context
+ * on each method call. This base class provides no-op implementations
  * of all methods and maintains static singelton shared references to each
- * possible state.</p>
+ * possible state.
  *
  * @author Abe White
  */
@@ -154,8 +153,7 @@ public class PCState
     private static Localizer _loc = Localizer.forPackage(PCState.class);
 
     /**
-     * Called when this state is first assigned to the given
-     * state manager.
+     * Called when this state is first assigned to the given state manager.
      */
     void initialize(StateManagerImpl context) {
     }
@@ -169,8 +167,7 @@ public class PCState
 
     /**
      * Perform any actions necessary and return the proper lifecycle
-     * state on fush.
-     * Returns the <code>this</code> pointer by default.
+     * state on fush. Returns the <code>this</code> pointer by default.
      */
     PCState flush(StateManagerImpl context) {
         return this;
@@ -178,8 +175,7 @@ public class PCState
 
     /**
      * Perform any actions necesssary and return the proper lifecycle state
-     * on transaction commit.
-     * Returns the <code>this</code> pointer by default.
+     * on transaction commit. Returns the <code>this</code> pointer by default.
      */
     PCState commit(StateManagerImpl context) {
         return this;
@@ -215,7 +211,7 @@ public class PCState
     /**
      * Perform any actions necesssary and return the proper lifecycle state
      * on a call to {@link Broker#persist} with the given instance.
-     * Returns the <code>this</code> pointer by default.  Note: this method
+     * Returns the <code>this</code> pointer by default. Note: this method
      * is <b>not</b> called for embedded states, and is only called when an
      * existing managed instance is the target of a persist call.
      */
@@ -269,7 +265,7 @@ public class PCState
     }
 
     /**
-     * Return the state to transition to after refresh.  The context is
+     * Return the state to transition to after refresh. The context is
      * not given because no actions should be taken.
      */
     PCState afterRefresh() {
@@ -277,7 +273,7 @@ public class PCState
     }
 
     /**
-     * Return the state to transition to after refresh.  The context is
+     * Return the state to transition to after refresh. The context is
      * not given because no actions should be taken.
      */
     PCState afterOptimisticRefresh() {
@@ -285,7 +281,7 @@ public class PCState
     }
 
     /**
-     * Return the state to transition to after refresh.  The context is
+     * Return the state to transition to after refresh. The context is
      * not given because no actions should be taken.
      */
     PCState afterNontransactionalRefresh() {
@@ -295,9 +291,8 @@ public class PCState
     /**
      * Perform any actions necesssary and return the proper lifecycle state
      * prior to the state of the given instance being read within
-     * an active transaction.  The given field number can be -1 if it is
-     * a general object read.
-     * Returns the <code>this</code> pointer by default.
+     * an active transaction. The given field number can be -1 if it is
+     * a general object read. Returns the <code>this</code> pointer by default.
      */
     PCState beforeRead(StateManagerImpl context, int field) {
         return this;
@@ -306,9 +301,8 @@ public class PCState
     /**
      * Perform any actions necesssary and return the proper lifecycle state
      * prior to the state of the given instance being read outside of
-     * an active transaction.  The given field number can be -1 if it is
-     * a general object read.
-     * Returns the <code>this</code> pointer by default.
+     * an active transaction. The given field number can be -1 if it is
+     * a general object read. Returns the <code>this</code> pointer by default.
      */
     PCState beforeNontransactionalRead(StateManagerImpl context, int field) {
         return this;
@@ -317,9 +311,8 @@ public class PCState
     /**
      * Perform any actions necesssary and return the proper lifecycle state
      * prior to the state of the given instance being read in an optimistic
-     * transaction.  The given field number can be -1 if it is
-     * a general object read.
-     * Returns the <code>this</code> pointer by default.
+     * transaction. The given field number can be -1 if it is
+     * a general object read. Returns the <code>this</code> pointer by default.
      */
     PCState beforeOptimisticRead(StateManagerImpl context, int field) {
         return this;
@@ -328,7 +321,7 @@ public class PCState
     /**
      * Perform any actions necesssary and return the proper lifecycle state
      * prior to the state of the given instance being written within
-     * an active transaction.  The mutate parameter tells if it is a
+     * an active transaction. The mutate parameter tells if it is a
      * direct mutation on an SCO field.
      * Returns the <code>this</code> pointer by default.
      */
@@ -339,7 +332,7 @@ public class PCState
     /**
      * Perform any actions necesssary and return the proper lifecycle state
      * prior to the state of the given instance being written within
-     * an optimistic transaction.  The mutate parameter tells if it is a
+     * an optimistic transaction. The mutate parameter tells if it is a
      * direct mutation on an SCO field.
      * Returns the <code>this</code> pointer by default.
      */
@@ -351,7 +344,7 @@ public class PCState
     /**
      * Perform any actions necesssary and return the proper lifecycle state
      * prior to the state of the given instance being written outside of
-     * an active transaction.  The mutate parameter tells if it is a
+     * an active transaction. The mutate parameter tells if it is a
      * direct mutation on an SCO field.
      * Returns the <code>this</code> pointer by default.
      */

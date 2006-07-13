@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,8 +19,8 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.conf.ObjectValue;
 
 /**
- * <p>Manages the system's data and query caches.  You can
- * retrieve the data cache manager from the {@link OpenJPAConfiguration}.</p>
+ * Manages the system's data and query caches. You can
+ * retrieve the data cache manager from the {@link OpenJPAConfiguration}.
  *
  * @author Abe White
  * @author Patrick Linskey
@@ -44,10 +44,10 @@ public interface DataCacheManager {
     public DataCache getDataCache(String name);
 
     /**
-     * Return the named data cache.  If the given name is null, the default
+     * Return the named data cache. If the given name is null, the default
      * data cache is returned.
      *
-     * @param    create    if true, the cache will be created if it does
+     * @param create if true, the cache will be created if it does
      * not already exist
      */
     public DataCache getDataCache(String name, boolean create);
@@ -68,7 +68,7 @@ public interface DataCacheManager {
     public DataCacheScheduler getDataCacheScheduler();
 
     /**
-     *	Close all caches.
+     * Close all caches.
      */
     public void close ();
 }

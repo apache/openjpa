@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,8 +22,8 @@ import org.apache.openjpa.util.CacheMap;
 
 /**
  * A {@link QueryCache} implementation that is optimized for concurrent
- * access.  When the cache fill up, values to remove from the cache are chosen
- * randomly.  Due to race conditions, it is possible that a get call might not
+ * access. When the cache fill up, values to remove from the cache are chosen
+ * randomly. Due to race conditions, it is possible that a get call might not
  * retur a cached instance if that instance is being transferred between
  * internal datastructures.
  *

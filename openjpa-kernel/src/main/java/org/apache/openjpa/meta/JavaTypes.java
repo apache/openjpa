@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ import serp.util.Numbers;
 import serp.util.Strings;
 
 /**
- * <p>Type constants for managed fields.</p>
+ * Type constants for managed fields.
  *
  * @author Abe White
  */
@@ -106,7 +106,7 @@ public class JavaTypes {
     }
 
     /**
-     * Return the field metadata type code for the given class.  First class
+     * Return the field metadata type code for the given class. First class
      * objects are not recognized in this method.
      */
     public static int getTypeCode(Class type) {
@@ -227,9 +227,9 @@ public class JavaTypes {
     }
 
     /**
-     * Convert the given object to the given type if possible.  If the type is
+     * Convert the given object to the given type if possible. If the type is
      * a numeric primitive, this method only guarantees that the return value
-     * is a {@link Number}.  If no known conversion or the value is null,
+     * is a {@link Number}. If no known conversion or the value is null,
      * returns the original value.
      */
     public static Object convert(Object val, int typeCode) {
@@ -410,7 +410,7 @@ public class JavaTypes {
     }
 
     /**
-     *	Helper method to return the given collection as an array.
+     * Helper method to return the given collection as an array.
      */
     public static Object toArray(Collection coll, Class elem) {
         if (coll == null)

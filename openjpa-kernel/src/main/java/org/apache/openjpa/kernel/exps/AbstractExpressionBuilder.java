@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -73,9 +73,9 @@ public abstract class AbstractExpressionBuilder {
     /**
      * Constructor.
      *
-     * @param    factory        the expression factory to use
-     * @param    meta        candidate class metadata
-     * @param    resolver    used to resolve variables, parameters, and class
+     * @param factory the expression factory to use
+     * @param meta candidate class metadata
+     * @param resolver used to resolve variables, parameters, and class
      * names used in the query
      */
     public AbstractExpressionBuilder(ExpressionFactory factory,
@@ -180,7 +180,7 @@ public abstract class AbstractExpressionBuilder {
     }
 
     /**
-     * Validate that all unbound variables are of a PC type.  If not, assume
+     * Validate that all unbound variables are of a PC type. If not, assume
      * that the user actually made a typo that we took for an implicit
      * unbound variable.
      */
@@ -477,7 +477,7 @@ public abstract class AbstractExpressionBuilder {
     protected abstract Localizer getLocalizer();
 
     /**
-     *  Returns the current string being parsed; used for error messages.
+     * Returns the current string being parsed; used for error messages.
 	 */
 	protected abstract String currentQuery ();
 }

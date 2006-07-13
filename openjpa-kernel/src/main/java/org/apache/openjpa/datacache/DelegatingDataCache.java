@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,9 +22,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
 /**
- * <p>Delegating data cache that can also perform exception translation for
- * use in facades.  This cache allows its delegate to be null, in which
- * case it returns default values for all operations.</p>
+ * Delegating data cache that can also perform exception translation for
+ * use in facades. This cache allows its delegate to be null, in which
+ * case it returns default values for all operations.
  *
  * @author Abe White
  * @nojavadoc
@@ -39,7 +39,7 @@ public class DelegatingDataCache
     private final RuntimeExceptionTranslator _trans;
 
     /**
-     * Constructor.  Supply delegate.
+     * Constructor. Supply delegate.
      */
     public DelegatingDataCache(DataCache cache) {
         this(cache, null);

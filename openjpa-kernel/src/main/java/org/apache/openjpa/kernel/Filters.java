@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ import serp.util.Numbers;
 import serp.util.Strings;
 
 /**
- * <p>Helper methods for dealing with query filters.</p>
+ * Helper methods for dealing with query filters.
  *
  * @author Abe White
  * @nojavadoc
@@ -505,11 +505,11 @@ public class Filters {
 
     /**
      * Parses the given declarations into a list of type, name, type, name...
-     * Returns null if no declarations.  Assumes declaration is not an empty
+     * Returns null if no declarations. Assumes declaration is not an empty
      * string and is already trimmed (valid assumptions given the checks made
      * in our setters).
      *
-     * @param    decType        the type of declaration being parsed, for use in
+     * @param decType the type of declaration being parsed, for use in
      * error messages
      */
     public static List parseDeclaration(String dec, char split,
@@ -561,7 +561,7 @@ public class Filters {
     }
 
     /**
-     * Split the given expression list into distinct expressions.  Assumes the
+     * Split the given expression list into distinct expressions. Assumes the
      * given string is not null or of zero length and is already trimmed
      * (valid assumptions given the checks in our setters and before
      * this method call).
@@ -649,8 +649,7 @@ public class Filters {
 
     /**
      * Add the given access path metadatas to the full path list, making sure
-     * to maintain only base metadatas in the list.  The given list may
-     * be null.
+     * to maintain only base metadatas in the list. The given list may be null.
      */
     public static List addAccessPathMetaDatas(List metas,
         ClassMetaData[] path) {
@@ -838,7 +837,7 @@ public class Filters {
     }
 
     /**
-     *	Set the value of the property named by the hint key.
+     * Set the value of the property named by the hint key.
      */
     public static void hintToSetter(Object target, String hintKey,
         Object value) {

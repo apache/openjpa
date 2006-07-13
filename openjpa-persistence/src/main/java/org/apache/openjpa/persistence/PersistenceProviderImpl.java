@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,15 +46,14 @@ public class PersistenceProviderImpl
         "org.apache.openjpa.ClassTransformerOptions";
 
     /**
-     * <p>Loads the entity manager specified by <code>name</code>, applying
+     * Loads the entity manager specified by <code>name</code>, applying
      * the properties in <code>m</code> as overrides to the properties defined
      * in the XML configuration file for <code>name</code>. If <code>name</code>
      * is <code>null</code>, this method loads the XML in the resource
      * identified by <code>resource</code>, and uses the first resource found
      * when doing this lookup, regardless of the name specified in the XML
-     * resource or the name of the jar that the resource is contained in.</p>
-     * <p/>
-     * <p>This does no pooling of EntityManagersFactories.</p>
+     * resource or the name of the jar that the resource is contained in.
+     *  This does no pooling of EntityManagersFactories.
      */
     public EntityManagerFactory createEntityManagerFactory(String name,
         String resource, Map m) {

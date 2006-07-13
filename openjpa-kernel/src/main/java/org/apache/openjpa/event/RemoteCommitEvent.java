@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,9 +26,8 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
 
 /**
- * <p>Event type to hold the IDs of additions, updates, and
- * deletes.  This event type is also fully serializable for remote
- * communication.</p>
+ * Event type to hold the IDs of additions, updates, and
+ * deletes. This event type is also fully serializable for remote communication.
  *
  * @since 3.0
  * @author Patrick Linskey
@@ -68,15 +67,13 @@ public class RemoteCommitEvent
     }
 
     /**
-     * Constructor.  All collections will be proxied with unmodifiable views.
+     * Constructor. All collections will be proxied with unmodifiable views.
      *
-     * @param    payloadType        PAYLOAD constant for type of data in this event
-     * @param    addIds            set of object IDs for added instances, or null
-     * @param    addClasses        set of class names for added instances
-     * @param    updates            set of class names or object IDs for updated
-     * instances
-     * @param    deletes            set of class names or object IDs for deleted
-     * instances
+     * @param payloadType PAYLOAD constant for type of data in this event
+     * @param addIds set of object IDs for added instances, or null
+     * @param addClasses set of class names for added instances
+     * @param updates set of class names or object IDs for updated instances
+     * @param deletes set of class names or object IDs for deleted instances
      */
     public RemoteCommitEvent(int payloadType, Collection addIds,
         Collection addClasses, Collection updates, Collection deletes) {

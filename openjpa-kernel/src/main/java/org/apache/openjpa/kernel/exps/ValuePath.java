@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.apache.openjpa.kernel.exps;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * <p>Represents a path that begins with a variable or parameter.</p>
+ * Represents a path that begins with a variable or parameter.
  *
  * @author Abe White
  */
@@ -28,7 +28,7 @@ class ValuePath
     private final Val _val;
 
     /**
-     * Constructor.  Supply context value.
+     * Constructor. Supply context value.
      */
     public ValuePath(Val val) {
         _val = val;

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,7 +59,7 @@ public class EntityManagerFactoryImpl
     private transient QueryResultCache _queryCache = null;
 
     /**
-     * Constructor.  Delegate must be provided on construction.
+     * Constructor. Delegate must be provided on construction.
      */
     protected EntityManagerFactoryImpl(BrokerFactory factory) {
         _factory = new DelegatingBrokerFactory(factory,
@@ -261,14 +261,14 @@ public class EntityManagerFactoryImpl
     }
 
     /**
-     *	Create a store-specific facade for the given fetch configuration.
-     *	The name of the facade class is formed by taking the top-most org.apache.openjpa.xxx
-     *	package and class name prefix from the fetch configuration class and
-     *	combining it as
-     *	<code>org.apache.openjpa.persistence.xxx.PrefixFetchConfiguration</code>.
-     *	The class must have a constructor that takes a
-     *	<code>FetchConfiguration</code> argument.  If no facade class
-     *	exists, we use the default {@link FetchConfiguration}.
+     * Create a store-specific facade for the given fetch configuration.
+     * The name of the facade class is formed by taking the top-most org.apache.openjpa.xxx
+     * package and class name prefix from the fetch configuration class and
+     * combining it as
+     * <code>org.apache.openjpa.persistence.xxx.PrefixFetchConfiguration</code>.
+     * The class must have a constructor that takes a
+     * <code>FetchConfiguration</code> argument. If no facade class
+     * exists, we use the default {@link FetchConfiguration}.
      */
     FetchPlan toFetchPlan(FetchConfiguration fetch) {
         if (fetch == null)

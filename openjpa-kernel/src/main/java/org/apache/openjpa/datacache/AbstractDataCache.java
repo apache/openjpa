@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -282,9 +282,9 @@ public abstract class AbstractDataCache
     }
 
     /**
-     * This method is part of the {@link RemoteCommitListener} interface.  If
+     * This method is part of the {@link RemoteCommitListener} interface. If
      * your cache subclass relies on OpenJPA for clustering support, make it
-     * implement <code>RemoteCommitListener</code>.  This method will take
+     * implement <code>RemoteCommitListener</code>. This method will take
      * care of invalidating entries from remote commits.
      */
     public void afterCommit(RemoteCommitEvent event) {
@@ -320,7 +320,7 @@ public abstract class AbstractDataCache
     /**
      * Return <code>true</code> if updates to data already in the
      * cache (either in {@link #commit} or the {@link #update})
-     * should be put back into the cache.  Returns false by default.
+     * should be put back into the cache. Returns false by default.
      */
     protected boolean recacheUpdates() {
         return false;

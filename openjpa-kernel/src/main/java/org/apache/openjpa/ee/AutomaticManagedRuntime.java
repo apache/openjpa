@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,11 +25,10 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InvalidStateException;
 
 /**
- * <p>Implementation of the {@link ManagedRuntime} interface that searches
+ * Implementation of the {@link ManagedRuntime} interface that searches
  * through a set of known JNDI locations and method invocations to locate the
- * appropriate mechanism for obtaining a TransactionManager.</p>
- * <p/>
- * <p>Built in support is provided for the following Application Servers:
+ * appropriate mechanism for obtaining a TransactionManager.
+ *  Built in support is provided for the following Application Servers:
  * <ul>
  * <li>Bluestone</li>
  * <li>HP Application Server</li>
@@ -41,7 +40,7 @@ import org.apache.openjpa.util.InvalidStateException;
  * <li>SunONE</li>
  * <li>Weblogic</li>
  * <li>Websphere</li>
- * </ul></p>
+ * </ul>
  *
  * @author Marc Prud'hommeaux
  */
@@ -49,12 +48,12 @@ public class AutomaticManagedRuntime
     implements ManagedRuntime, Configurable {
 
     private static final String [] JNDI_LOCS = new String []{
-        "javax.transaction.TransactionManager",        // weblogic
-        "java:/TransactionManager",                    // jboss & jrun
-        "java:/DefaultDomain/TransactionManager",    // jrun too
-        "java:comp/pm/TransactionManager",            // orion & oracle
-        "java:comp/TransactionManager",                // generic
-        "java:pm/TransactionManager",                // borland
+        "javax.transaction.TransactionManager", // weblogic
+        "java:/TransactionManager", // jboss & jrun
+        "java:/DefaultDomain/TransactionManager", // jrun too
+        "java:comp/pm/TransactionManager", // orion & oracle
+        "java:comp/TransactionManager", // generic
+        "java:pm/TransactionManager", // borland
     };
     private static final String [] METHODS = new String[]{
         "com.arjuna.jta.JTA_TransactionManager.transactionManager", // hp
@@ -66,7 +65,7 @@ public class AutomaticManagedRuntime
         "org.openejb.OpenEJB.getTransactionManager",
         "com.sun.jts.jta.TransactionManagerImpl.getTransactionManagerImpl",
         "com.inprise.visitransact.jta.TransactionManagerImpl."
-            + "getTransactionManagerImpl",                            // borland
+            + "getTransactionManagerImpl", // borland
     };
     private static final ManagedRuntime WLS;
     private static final ManagedRuntime SUNONE;

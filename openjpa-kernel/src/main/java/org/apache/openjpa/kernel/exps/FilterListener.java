@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,8 +20,7 @@ import java.io.Serializable;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * <p>A filter listener extends expression filters
- * with custom functionality.</p>
+ * A filter listener extends expression filters with custom functionality.
  *
  * @author Steve Kim
  * @author Abe White
@@ -35,7 +34,7 @@ public interface FilterListener
     public String getTag();
 
     /**
-     * Return true if this extension expects arguments to act on.  Some
+     * Return true if this extension expects arguments to act on. Some
      * extensions may not need arguments; for example, an extension to
      * switch a string to upper case might be of the form:
      * <code>field.ext:toUpperCase ()</code>.
@@ -43,7 +42,7 @@ public interface FilterListener
     public boolean expectsArguments();
 
     /**
-     * Return true if this extension expects a target to act on.  Some
+     * Return true if this extension expects a target to act on. Some
      * extensions act on a field or object value; others stand alone.
      * <code>field.ext:toUpperCase ()</code> acts on the target
      * <code>field</code> but has no arguments, while another possible form,
@@ -53,21 +52,20 @@ public interface FilterListener
     public boolean expectsTarget();
 
     /**
-     * Evaluate the given expression.  This method is used when
-     * evaluating in-memory expressions.  The method used when evaluating
+     * Evaluate the given expression. This method is used when
+     * evaluating in-memory expressions. The method used when evaluating
      * data store expressions will change depending on the data store in use.
      *
-     * @param    target        the target object / field value to act on; will be
+     * @param target the target object / field value to act on; will be
      * null if this extension does not expect a target
-     * @param    targetClass    the expected class of the target; given in case
+     * @param targetClass the expected class of the target; given in case
      * the target evaluates to null and typing is needed
-     * @param    args        the values of the arguments given in the filter;
-     * will be null if this extension does not expect an
-     * argument
-     * @param    argClasses    the expected classes of the arguments; given in case
+     * @param args the values of the arguments given in the filter;
+     * will be null if this extension does not expect an argument
+     * @param argClasses the expected classes of the arguments; given in case
      * an argument evaluates to null and typing is needed
-     * @param    candidate    the candidate object being evaluated
-     * @param    ctx            the persistence context
+     * @param candidate the candidate object being evaluated
+     * @param ctx the persistence context
      * @return the value of the extension for this candidate; if
      * this extension is an expression, this method should
      * return {@link Boolean#TRUE} or {@link Boolean#FALSE}
@@ -78,12 +76,11 @@ public interface FilterListener
         Class[] argClasses, Object candidate, StoreContext ctx);
 
     /**
-     *	Return the expected type of the result of this listener.
+     * Return the expected type of the result of this listener.
      *
-     *	@param    targetClass    the expected class of the target, or null if
-     *						no target
-     *	@param    argClasses    the expected classes of the arguments, or null if
-     *						no arguments
+     * @param targetClass the expected class of the target, or null if no target
+     * @param argClasses the expected classes of the arguments, or null if
+     * no arguments
      */
     public Class getType(Class targetClass, Class[] argClasses);
 }

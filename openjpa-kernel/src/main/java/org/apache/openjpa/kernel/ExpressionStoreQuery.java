@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,27 +48,25 @@ import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * <p>Implementation of an expression-based query, which can handle
+ * Implementation of an expression-based query, which can handle
  * String-based query expressions such as JPQL and JDOQL.
  * This implementation is suitable for in-memory operation.
- * Override the following methods to also support
- * datastore operation:
+ * Override the following methods to also support datastore operation:
  * <ul>
  * <li>Override {@link #supportsDataStoreExecution} to return
  * <code>true</code>.</li>
  * <li>Override {@link #executeQuery}, {@link #executeDelete}, and
  * {@link #executeUpdate} to execute the query against the data store.
  * Keep in mind that the parameters passed to this method might be in use
- * by several threads in different query instances.  Thus components like
+ * by several threads in different query instances. Thus components like
  * the expression factory must either be thread safe, or this method must
  * synchronize on them.</li>
  * <li>Override {@link #getDataStoreActions} to return a representation of
- * the actions that will be taken on the data store.  For use in visual
+ * the actions that will be taken on the data store. For use in visual
  * tools.</li>
  * <li>Override {@link #getExpressionFactory} to return a factory for creating
- * expressions in the datastore's language.  The factory must be
- * cachable.</li>
- * </ul></p>
+ * expressions in the datastore's language. The factory must be cachable.</li>
+ * </ul>
  *
  * @author Abe White
  */
@@ -168,22 +166,20 @@ public class ExpressionStoreQuery
     /**
      * Execute the given expression against the given candidate extent.
      *
-     * @param    ex            current executor
-     * @param    base        the base type the query should match
-     * @param    types        the independent candidate types
-     * @param    subclasses    true if subclasses should be included in the
-     * results
-     * @param    facts        the expression factory used to build the query for
+     * @param ex current executor
+     * @param base the base type the query should match
+     * @param types the independent candidate types
+     * @param subclasses true if subclasses should be included in the results
+     * @param facts the expression factory used to build the query for
      * each base type
-     * @param    parsed        the parsed query values
-     * @param    params        parameter values, or empty array
-     * @param    lrs            whether the result will be handled as a potentially
+     * @param parsed the parsed query values
+     * @param params parameter values, or empty array
+     * @param lrs whether the result will be handled as a potentially
      * large result set, or will be consumed greedily
-     * @param    startIdx    0-based inclusive index for first result to return
+     * @param startIdx 0-based inclusive index for first result to return
      * from result object provider
-     * @param    endIdx        0-based exclusive index for last result to return
-     * from result object provider, or
-     * {@link Long#MAX_VALUE} for no max
+     * @param endIdx 0-based exclusive index for last result to return
+     * from result object provider, or {@link Long#MAX_VALUE} for no max
      * @return a provider for matching objects
      */
     protected ResultObjectProvider executeQuery(Executor ex,
@@ -197,15 +193,14 @@ public class ExpressionStoreQuery
      * Execute the given expression against the given candidate extent
      * and delete the instances.
      *
-     * @param    ex            current executor
-     * @param    base        the base type the query should match
-     * @param    types        the independent candidate types
-     * @param    subclasses    true if subclasses should be included in the
-     * results
-     * @param    facts        the expression factory used to build the query for
+     * @param ex current executor
+     * @param base the base type the query should match
+     * @param types the independent candidate types
+     * @param subclasses true if subclasses should be included in the results
+     * @param facts the expression factory used to build the query for
      * each base type
-     * @param    parsed        the parsed query values
-     * @param    params        parameter values, or empty array
+     * @param parsed the parsed query values
+     * @param params parameter values, or empty array
      * @return a number indicating the number of instances deleted,
      * or null to execute the delete in memory
      */
@@ -219,15 +214,14 @@ public class ExpressionStoreQuery
      * Execute the given expression against the given candidate extent
      * and updates the instances.
      *
-     * @param    ex            current executor
-     * @param    base        the base type the query should match
-     * @param    types        the independent candidate types
-     * @param    subclasses    true if subclasses should be included in the
-     * results
-     * @param    facts        the expression factory used to build the query for
+     * @param ex current executor
+     * @param base the base type the query should match
+     * @param types the independent candidate types
+     * @param subclasses true if subclasses should be included in the results
+     * @param facts the expression factory used to build the query for
      * each base type
-     * @param    parsed        the parsed query values
-     * @param    params        parameter values, or empty array
+     * @param parsed the parsed query values
+     * @param params parameter values, or empty array
      * @return a number indicating the number of instances updated,
      * or null to execute the update in memory.
      */
@@ -241,20 +235,18 @@ public class ExpressionStoreQuery
      * Return the commands that will be sent to the datastore in order
      * to execute the query, typically in the database's native language.
      *
-     * @param    ex            current executor
-     * @param    base        the base type the query should match
-     * @param    types        the independent candidate types
-     * @param    subclasses    true if subclasses should be included in the
-     * results
-     * @param    facts        the expression factory used to build the query for
+     * @param ex current executor
+     * @param base the base type the query should match
+     * @param types the independent candidate types
+     * @param subclasses true if subclasses should be included in the results
+     * @param facts the expression factory used to build the query for
      * each base type
-     * @param    parsed        the parsed query values
-     * @param    params        parameter values, or empty array
-     * @param    startIdx    0-based inclusive index for first result to return
+     * @param parsed the parsed query values
+     * @param params parameter values, or empty array
+     * @param startIdx 0-based inclusive index for first result to return
      * from result object provider
-     * @param    endIdx        0-based exclusive index for last result to return
-     * from result object provider, or
-     * {@link Long#MAX_VALUE} for no max
+     * @param endIdx 0-based exclusive index for last result to return
+     * from result object provider, or {@link Long#MAX_VALUE} for no max
      * @return a textual description of the query to execute
      */
     protected String[] getDataStoreActions(Executor ex, ClassMetaData base,
@@ -275,8 +267,8 @@ public class ExpressionStoreQuery
 
     /**
      * Return an {@link ExpressionFactory} to use to create an expression to
-     * be executed against an extent.  Each factory will be used to compile
-     * one filter only.  The factory must be cachable.
+     * be executed against an extent. Each factory will be used to compile
+     * one filter only. The factory must be cachable.
      */
     protected ExpressionFactory getExpressionFactory(ClassMetaData type) {
         throw new UnsupportedException();
@@ -528,10 +520,10 @@ public class ExpressionStoreQuery
     }
 
     /**
-     *  The DataStoreExecutor executes the query against the
-     *  implementation's overridden {@link #executeQuery} method.
+     * The DataStoreExecutor executes the query against the
+     * implementation's overridden {@link #executeQuery} method.
      *
-     *  @author Marc Prud'hommeaux
+     * @author Marc Prud'hommeaux
      */
     private static class DataStoreExecutor
         extends AbstractExpressionExecutor

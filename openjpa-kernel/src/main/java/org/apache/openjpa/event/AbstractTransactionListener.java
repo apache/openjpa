@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,8 +16,8 @@
 package org.apache.openjpa.event;
 
 /**
- * <p>Abstract implementation of the {@link TransactionListener} interface
- * that provides no-op implementations of all methods.</p>
+ * Abstract implementation of the {@link TransactionListener} interface
+ * that provides no-op implementations of all methods.
  *
  * @author Abe White
  * @since 3.0
@@ -26,8 +26,8 @@ public abstract class AbstractTransactionListener
     implements TransactionListener {
 
     /**
-     * Catch-all for unhandled events.  This method is called by all other
-     * event methods if you do not override them.  Does nothing by default.
+     * Catch-all for unhandled events. This method is called by all other
+     * event methods if you do not override them. Does nothing by default.
      */
     protected void eventOccurred(TransactionEvent event) {
     }

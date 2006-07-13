@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,9 +22,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
 
 /**
- * <p>Maps field values to their datastore equivalents.  Each element of
+ * Maps field values to their datastore equivalents. Each element of
  * the value array should be a string in the form:
- * <code>&lt;field value&gt;=&lt;datastore value&gt;</code></p>
+ * <code>&lt;field value&gt;=&lt;datastore value&gt;</code>
  *
  * @author Abe White
  * @since 4.0

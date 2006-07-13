@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.Proxy;
 
 /**
- * <p>Abstract base class which implements core PCData behavior.</p>
+ * Abstract base class which implements core PCData behavior.
  *
  * @author Patrick Linskey
  * @author Abe White
@@ -111,7 +111,7 @@ public abstract class AbstractPCData
     }
 
     /**
-     * Transform the given data value to its field value.  The data value
+     * Transform the given data value to its field value. The data value
      * may be a key, value, or element of a map or collection.
      */
     protected Object toNestedField(OpenJPAStateManager sm, ValueMetaData vmd,
@@ -142,7 +142,7 @@ public abstract class AbstractPCData
     }
 
     /**
-     * Transform the given data into a relation field value.  Default
+     * Transform the given data into a relation field value. Default
      * implementation assumes the data is an oid.
      */
     protected Object toRelationField(OpenJPAStateManager sm, ValueMetaData vmd,
@@ -151,7 +151,7 @@ public abstract class AbstractPCData
     }
 
     /**
-     * Transform the given data into an embedded PC field value.  Default
+     * Transform the given data into an embedded PC field value. Default
      * implementation assumes the data is an {@link AbstractPCData}.
      */
     protected Object toEmbeddedField(OpenJPAStateManager sm, ValueMetaData vmd,
@@ -165,7 +165,7 @@ public abstract class AbstractPCData
     }
 
     /**
-     * Transform the given field value to a data value for caching.  Return
+     * Transform the given field value to a data value for caching. Return
      * {@link #NULL} if unable to cache.
      */
     protected Object toData(FieldMetaData fmd, Object val, StoreContext ctx) {
@@ -237,7 +237,7 @@ public abstract class AbstractPCData
     }
 
     /**
-     * Transform the given nested value to a cachable value.  Return
+     * Transform the given nested value to a cachable value. Return
      * {@link #NULL} if the value cannot be cached.
      */
     protected Object toNestedData(ValueMetaData vmd, Object val,
@@ -270,7 +270,7 @@ public abstract class AbstractPCData
     }
 
     /**
-     * Return the value to cache for the given object.  Caches its oid by
+     * Return the value to cache for the given object. Caches its oid by
      * default.
      */
     protected Object toRelationData(Object val, StoreContext ctx) {
@@ -278,7 +278,7 @@ public abstract class AbstractPCData
     }
 
     /**
-     * Return the value to cache for the given embedded PC.  Caches a
+     * Return the value to cache for the given embedded PC. Caches a
      * {@link PCData} from {@link #newEmbeddedPCData} by default.
      */
     protected Object toEmbeddedData(Object val, StoreContext ctx) {
@@ -299,7 +299,7 @@ public abstract class AbstractPCData
     }
 
     /**
-     *	Tracks proxy data along with list elements.
+     * Tracks proxy data along with list elements.
      */
     private static class ProxyDataList
         extends ArrayList {

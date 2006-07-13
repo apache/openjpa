@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ import java.util.List;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * <p>A list of arguments to a multi-argument function.</p>
+ * A list of arguments to a multi-argument function.
  *
  * @author Abe White
  */
@@ -32,7 +32,7 @@ class Args
     private final List _args = new ArrayList(3);
 
     /**
-     * Constructor.  Supply values being combined.
+     * Constructor. Supply values being combined.
      */
     public Args(Value val1, Value val2) {
         if (val1 instanceof Args)

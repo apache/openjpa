@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,9 +40,9 @@ import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.UserException;
 
 /**
- * <p>FieldManager type used to hold onto a single field value and then
- * dispense it via the fetch methods.  The manager can also perform actions
- * on the held field.</p>
+ * FieldManager type used to hold onto a single field value and then
+ * dispense it via the fetch methods. The manager can also perform actions
+ * on the held field.
  *
  * @author Abe White
  */
@@ -61,7 +61,7 @@ class SingleFieldManager
     }
 
     /**
-     * Proxy the held field if needed.  Return true if the field needs to
+     * Proxy the held field if needed. Return true if the field needs to
      * be replaced with the now-proxied instance.
      */
     public boolean proxy(boolean reset, boolean replaceNull) {
@@ -239,7 +239,7 @@ class SingleFieldManager
 
     /**
      * Persist the stored field safely, preventing infinite recursion using
-     * the given set of already-persisted objects.  This method is only called
+     * the given set of already-persisted objects. This method is only called
      * for fields that we know have cascade-immediate settings.
      */
     public void persist(OpCallbacks call) {
@@ -410,7 +410,7 @@ class SingleFieldManager
 
     /**
      * Recursively invoke the broker to gather cascade-refresh objects in
-     * the current field into the given set.  This method is only called
+     * the current field into the given set. This method is only called
      * for fields that we know have cascade-refresh settings.
      */
     public void gatherCascadeRefresh(OpCallbacks call) {
@@ -457,9 +457,9 @@ class SingleFieldManager
     }
 
     /**
-     * Perform pre-flush tasks on the current field.  This includes checking
+     * Perform pre-flush tasks on the current field. This includes checking
      * for nulls, persisting pcs, embedding embedded fields, and ref'ing
-     * pc fields.  Return true if the field needs to be replaced with the
+     * pc fields. Return true if the field needs to be replaced with the
      * new value.
      */
     public boolean preFlush(OpCallbacks call) {
@@ -829,7 +829,7 @@ class SingleFieldManager
     }
 
     /**
-     *	Return the proxy manager.
+     * Return the proxy manager.
      */
     private ProxyManager getProxyManager ()
 	{

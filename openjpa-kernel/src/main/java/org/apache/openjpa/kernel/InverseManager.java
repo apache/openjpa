@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,10 +31,9 @@ import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.InvalidStateException;
 
 /**
- * <p>Class which manages inverse relations before flushing
- * to the datastore.  Ensures that inverse fields are set.</p>
- * <p/>
- * <p>Currently limited to managing PC and Collection-type relations.</p>
+ * Class which manages inverse relations before flushing
+ * to the datastore. Ensures that inverse fields are set.
+ *  Currently limited to managing PC and Collection-type relations.
  *
  * @author Steve Kim
  */
@@ -72,7 +71,7 @@ public class InverseManager implements Configurable {
     }
 
     /**
-     * Set whether to false LRS relations.  Defaults to false.
+     * Set whether to false LRS relations. Defaults to false.
      */
     public void setManageLRS(boolean manage) {
         _manageLRS = manage;
@@ -123,7 +122,7 @@ public class InverseManager implements Configurable {
     /**
      * Correct relations from the given dirty field to inverse instances.
      * Field <code>fmd</code> of the instance managed by <code>sm</code> has
-     * value <code>value</code>.  Ensure that all inverses relations from
+     * value <code>value</code>. Ensure that all inverses relations from
      * <code>value</code> are consistent with this.
      */
     public void correctRelations(OpenJPAStateManager sm, FieldMetaData fmd,
@@ -227,7 +226,7 @@ public class InverseManager implements Configurable {
 
     /**
      * Remove all relations between the initial value of <code>fmd</code> for
-     * the instance managed by <code>sm</code> and its inverses.  Relations
+     * the instance managed by <code>sm</code> and its inverses. Relations
      * shared with <code>newValue</code> can be left intact.
      */
     protected void clearInverseRelations(OpenJPAStateManager sm,
@@ -296,8 +295,8 @@ public class InverseManager implements Configurable {
     }
 
     /**
-     * Store null value at the given field.  Verify that the given compare
-     * value is the value being nulled.  Pass NONE for no comparison.
+     * Store null value at the given field. Verify that the given compare
+     * value is the value being nulled. Pass NONE for no comparison.
      */
     protected void storeNull(OpenJPAStateManager sm, FieldMetaData fmd,
         Object compare) {
@@ -305,7 +304,7 @@ public class InverseManager implements Configurable {
     }
 
     /**
-     * Store a given value at the given field.  Compare the given
+     * Store a given value at the given field. Compare the given
      * argument if not NONE.
      */
     protected void storeField(OpenJPAStateManager sm, FieldMetaData fmd,

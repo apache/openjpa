@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +18,9 @@ package org.apache.openjpa.datacache;
 import java.util.EventObject;
 
 /**
- * <p>An event indicating the expiration of an object from the data cache,
+ * An event indicating the expiration of an object from the data cache,
  * or an expiration of a result list from the query cache.
- * The source of the event will be the cache.</p>
+ * The source of the event will be the cache.
  *
  * @since 3.0
  * @author Abe White
@@ -34,9 +34,9 @@ public class ExpirationEvent
     /**
      * Constructor.
      *
-     * @param    source    the data or query cache
-     * @param    key        the expired object oid or query key
-     * @param    expired    <code>true</code> if the object was expired
+     * @param source the data or query cache
+     * @param key the expired object oid or query key
+     * @param expired <code>true</code> if the object was expired
      * naturally; else <code>false</code>.
      */
     public ExpirationEvent(Object source, Object key, boolean expired) {
@@ -53,8 +53,8 @@ public class ExpirationEvent
     }
 
     /**
-     *	Return whether the expired object was expired naturally, or if
-     *	the object was explicitly removed.
+     * Return whether the expired object was expired naturally, or if
+     * the object was explicitly removed.
      */
     public boolean getExpired() {
         return _expired;

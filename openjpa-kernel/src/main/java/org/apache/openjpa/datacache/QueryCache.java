@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,11 +20,11 @@ import java.util.Map;
 import org.apache.openjpa.lib.util.Closeable;
 
 /**
- * <p>Interface that must be implemented by any level 2 query cache
+ * Interface that must be implemented by any level 2 query cache
  * used by OpenJPA. These methods should be threadsafe.
  * Most query cache implementations will probably implement
  * {@link org.apache.openjpa.lib.conf.Configurable} to receive a handle to the
- * system configuration on construction.</p>
+ * system configuration on construction.
  *
  * @since 2.5
  * @author Patrick Linskey
@@ -41,18 +41,17 @@ public interface QueryCache
     public void initialize(DataCacheManager manager);
 
     /**
-     * <p>Return a list of oids for the given query key. This is an
-     * unmodifiable list.</p>
+     * Return a list of oids for the given query key. This is an
+     * unmodifiable list.
      *
-     * @return The query results matching the given key, or null
-     * if none
+     * @return The query results matching the given key, or null if none
      */
     public QueryResult get(QueryKey qk);
 
     /**
-     * <p>Set the list of OIDs for the given query key. A reference
+     * Set the list of OIDs for the given query key. A reference
      * to the given list will be stored in the query cache, so the
-     * list should not be modified after invoking this method.</p>
+     * list should not be modified after invoking this method.
      *
      * @return The previously cached value, or <code>null</code> if
      * the key was not previously cached. See {@link Map#put}
@@ -61,13 +60,12 @@ public interface QueryCache
     public QueryResult put(QueryKey qk, QueryResult oids);
 
     /**
-     * <p>Remove the value stored under the given query key.</p>
-     * <p/>
-     * <p>This method is typically not invoked directly from outside
+     * Remove the value stored under the given query key.
+     *  This method is typically not invoked directly from outside
      * the <code>QueryCache</code> class. Instead, the cache should
-     * be updated by implementing {@link 
+     * be updated by implementing {@link
      * org.apache.openjpa.event.RemoteCommitListener},
-     * which will result in all queries that may be invalid being dropped.</p>
+     * which will result in all queries that may be invalid being dropped.
      *
      * @return The previously cached value, or <code>null</code> if
      * the key was not previously cached. See {@link Map#remove}
@@ -76,7 +74,7 @@ public interface QueryCache
     public QueryResult remove(QueryKey qk);
 
     /**
-     * <p>Remove all data from this cache.</p>
+     * Remove all data from this cache.
      */
     public void clear();
 
@@ -90,8 +88,7 @@ public interface QueryCache
      * behavior of {@link #remove} or {@link #onTypesChanged}.
      *
      * @return <code>true</code> if <code>key</code>'s value was
-     *         pinned into the cache; <code>false</code> if the
-     *         key is not in the cache.
+     * pinned into the cache; <code>false</code> if the key is not in the cache.
      */
     public boolean pin(QueryKey qk);
 
@@ -99,12 +96,11 @@ public interface QueryCache
      * Unpin the value stored under <code>key</code> into the cache.
      * This method reverses a previous invocation of {@link #pin}.
      * This method does not remove anything from the cache; it merely
-     * makes <code>key</code>'s value a candidate for flushing from
-     * the cache.
+     * makes <code>key</code>'s value a candidate for flushing from the cache.
      *
      * @return <code>true</code> if <code>key</code>'s value was
-     *         unpinned from the cache; <code>false</code> if the
-     *         key is not in the cache.
+     * unpinned from the cache; <code>false</code> if the
+     * key is not in the cache.
      */
     public boolean unpin(QueryKey qk);
 
@@ -133,7 +129,7 @@ public interface QueryCache
     public boolean removeTypesChangedListener(TypesChangedListener listen);
 
     /**
-     *	Free the resources used by this cache.
+     * Free the resources used by this cache.
 	 */
 	public void close ();
 }

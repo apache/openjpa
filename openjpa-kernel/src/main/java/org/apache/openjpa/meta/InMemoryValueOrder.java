@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,10 +22,10 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.util.ApplicationIds;
 
 /**
- * <p>Order by the field value in memory.  If the field contains
+ * Order by the field value in memory. If the field contains
  * {@link PersistenceCapable} objects, order on their primary key values.
  * Relies on primary key values, including datastore oid objects, being
- * {@link Comparable}.</p>
+ * {@link Comparable}.
  *
  * @author Abe White
  */

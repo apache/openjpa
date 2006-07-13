@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -80,7 +80,7 @@ public class JMSRemoteCommitProvider
 
     /**
      * The number of times to attempt to reconnect after a JMS send exception
-     * is detected.  Defaults to 0, meaning no attempt to reconnect is made;
+     * is detected. Defaults to 0, meaning no attempt to reconnect is made;
      * the exception is logged and ignored.
      */
     public void setExceptionReconnectAttempts(int attempts) {
@@ -89,7 +89,7 @@ public class JMSRemoteCommitProvider
 
     /**
      * Set a map of properties to pass to the {@link InitialContext}
-     * constructor for JNDI lookups.  Implementation of
+     * constructor for JNDI lookups. Implementation of
      * {@link GenericConfigurable}.
      */
     public void setInto(Map m) {
@@ -102,8 +102,7 @@ public class JMSRemoteCommitProvider
     }
 
     /**
-     * Returns a new {@link Context} object for use by this
-     * provider.
+     * Returns a new {@link Context} object for use by this provider.
      */
     protected Context newContext()
         throws NamingException {
@@ -174,29 +173,27 @@ public class JMSRemoteCommitProvider
             // create a subscriber.
             TopicSubscriber s = _session.createSubscriber(topic, null,
                 /* noLocal: */ true);
-            MessageListener l = getMessageListener();
-            s.setMessageListener(l);
-            _connection.start();
-            _connection.setExceptionListener(this);
-            if (log.isInfoEnabled())
-                log.info(s_loc.get("jms-start-listener", _topicName));
-        }
-        catch (OpenJPAException ke) {
-            throw ke;
-        }
-        catch (Exception e) {
-            throw new UserException(s_loc.get("jms-provider-config",
-                _topicName, _tcfName), e).setFatal(true);
-        }
-    }
+ MessageListener l = getMessageListener();
+ s.setMessageListener(l);
+ _connection.start();
+ _connection.setExceptionListener(this);
+ if (log.isInfoEnabled())
+ log.info(s_loc.get("jms-start-listener", _topicName));
+ }
+ catch (OpenJPAException ke) {
+ throw ke;
+ }
+ catch (Exception e) {
+ throw new UserException(s_loc.get("jms-provider-config",
+ _topicName, _tcfName), e).setFatal(true);
+ }
+ }
 
-    /**
-     * <p>Returns a {@link javax.jms.MessageListener} capable of
-     * understanding and processing messages created by
-     * {@link #createMessage}.</p>
-     * <p/>
-     * <p>The listener returned by this method is responsible for
-     * notifying the provider that a remote event has been received.</p>
+    /* *
+     * Returns a {@link javax.jms.MessageListener} capable of
+     * understanding and processing messages created by {@link #createMessage}.
+     *  The listener returned by this method is responsible for
+     * notifying the provider that a remote event has been received.
      */
     protected MessageListener getMessageListener() {
         return new MessageListener() {

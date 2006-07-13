@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ProxyManager;
 
 /**
- * <p>FieldManager type used to store information for rollback.</p>
+ * FieldManager type used to store information for rollback.
  *
  * @author Abe White
  */
@@ -72,15 +72,14 @@ class SaveFieldManager
     }
 
     /**
-     * Return the currently-loaded fields that will be unloaded after
-     * rollback.
+     * Return the currently-loaded fields that will be unloaded after rollback.
      */
     public BitSet getUnloaded() {
         return _unloaded;
     }
 
     /**
-     * Save the given field.  If this method returns true, then you need
+     * Save the given field. If this method returns true, then you need
      * to use this field manager to replace the given field in the instance
      * returned by {@link #getState}.
      */
@@ -142,7 +141,7 @@ class SaveFieldManager
     }
 
     /**
-     * Restore the given field.  If this method returns true, then you need
+     * Restore the given field. If this method returns true, then you need
      * to use this field manager to replace the given field in the state
      * manager's instance.
      */

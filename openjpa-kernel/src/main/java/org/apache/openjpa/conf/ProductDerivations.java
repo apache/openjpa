@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@ import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.util.Services;
 
 /**
- * <p>Utilities for running product derivations.</p>
+ * Utilities for running product derivations.
  *
  * @author Abe White
  * @nojavadoc
@@ -51,7 +51,7 @@ public class ProductDerivations {
 
     /**
      * Apply {@link ProductDerivation#beforeConfigurationConstruct} callbacks
-     * to the the given instance.  Exceptions are swallowed.
+     * to the the given instance. Exceptions are swallowed.
      */
     public static void beforeConfigurationConstruct(ConfigurationProvider cp) {
         for (int i = 0; i < _derivations.length; i++) {
@@ -67,7 +67,7 @@ public class ProductDerivations {
 
     /**
      * Apply {@link ProductDerivation#beforeConfigurationLoad} callbacks
-     * to the the given instance.  Exceptions are swallowed.
+     * to the the given instance. Exceptions are swallowed.
      */
     public static void beforeConfigurationLoad(OpenJPAConfiguration conf) {
         for (int i = 0; i < _derivations.length; i++) {
@@ -83,7 +83,7 @@ public class ProductDerivations {
 
     /**
      * Apply {@link ProductDerivation#afterSpecificationSet} callbacks
-     * to the the given instance.  Exceptions are swallowed.
+     * to the the given instance. Exceptions are swallowed.
      */
     public static void afterSpecificationSet(OpenJPAConfiguration conf) {
         for (int i = 0; i < _derivations.length; i++) {
@@ -99,7 +99,7 @@ public class ProductDerivations {
 
     /**
      * Apply {@link ProductDerivation#afterClose} callbacks
-     * to the the given instance.  Exceptions are swallowed.
+     * to the the given instance. Exceptions are swallowed.
      */
     public static void afterClose(OpenJPAConfigurationImpl impl) {
         for (int i = 0; i < _derivations.length; i++) {
@@ -114,7 +114,7 @@ public class ProductDerivations {
     }
 
     /**
-     *	Compare {@link ProductDerivation}s.
+     * Compare {@link ProductDerivation}s.
      */
     private static class ProductDerivationComparator
         implements Comparator {

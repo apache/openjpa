@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,7 +45,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 
 /**
- * <p>Default implementation of the {@link ProxyManager} interface.</p>
+ * Default implementation of the {@link ProxyManager} interface.
  *
  * @author Abe White
  */
@@ -125,7 +125,7 @@ public class ProxyManagerImpl
     /**
      * Whether proxies produced by this factory will use {@link ChangeTracker}s
      * to try to cut down on data store operations at the cost of some extra
-     * bookkeeping overhead.  Defaults to true.
+     * bookkeeping overhead. Defaults to true.
      */
     public boolean getTrackChanges() {
         return _trackChanges;
@@ -134,7 +134,7 @@ public class ProxyManagerImpl
     /**
      * Whether proxies produced by this factory will use {@link ChangeTracker}s
      * to try to cut down on data store operations at the cost of some extra
-     * bookkeeping overhead.  Defaults to true.
+     * bookkeeping overhead. Defaults to true.
      */
     public void setTrackChanges(boolean track) {
         _trackChanges = track;
@@ -143,7 +143,7 @@ public class ProxyManagerImpl
     /**
      * Whether to perform runtime checks to ensure that all elements
      * added to collection and map proxies are the proper element/key/value
-     * type as defined by the metadata.  Defaults to false.
+     * type as defined by the metadata. Defaults to false.
      */
     public boolean getAssertAllowedType() {
         return _assertType;
@@ -152,7 +152,7 @@ public class ProxyManagerImpl
     /**
      * Whether to perform runtime checks to ensure that all elements
      * added to collection and map proxies are the proper element/key/value
-     * type as defined by the metadata.  Defaults to false.
+     * type as defined by the metadata. Defaults to false.
      */
     public void setAssertAllowedType(boolean assertType) {
         _assertType = assertType;

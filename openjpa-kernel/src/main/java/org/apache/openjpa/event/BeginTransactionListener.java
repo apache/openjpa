@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 package org.apache.openjpa.event;
 
 /**
- * <p>Notified when transactions begin.</p>
+ * Notified when transactions begin.
  *
  * @author Patrick Linskey
  * @author Abe White
@@ -27,7 +27,7 @@ public interface BeginTransactionListener {
     /**
      * Notification that a transaction has begun.
      *
-     * @see    TransactionEvent#AFTER_BEGIN
+     * @see TransactionEvent#AFTER_BEGIN
      */
     public void afterBegin(TransactionEvent event);
 }

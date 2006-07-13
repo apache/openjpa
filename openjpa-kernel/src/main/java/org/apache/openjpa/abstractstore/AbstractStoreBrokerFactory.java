@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
 
 /**
- * <p>{@link BrokerFactory} implementation for use with the
+ * {@link BrokerFactory} implementation for use with the
  * {@link AbstractStoreManager}. This provides integration into the
  * {@link Bootstrap#getBrokerFactory()} bootstrapping mechanism, to facilitate
  * the process of creating a subclass of {@link AbstractStoreManager}. New
@@ -37,13 +37,12 @@ import org.apache.openjpa.util.UserException;
  * <code>org.apache.openjpa.BrokerFactory</code> configuration property to
  * <code>abstractstore</code>,
  * and set the <code>org.apache.openjpa.abstractstore.AbstractStoreManager</code>
- * configuration property to the full class name of your implementation.</p>
- * <p/>
- * <p>Additionally, you can optionally create your own
+ * configuration property to the full class name of your implementation.
+ *  Additionally, you can optionally create your own
  * <code>BrokerFactory</code> implementation. However, we recommend that you
  * use the <code>AbstractStoreBrokerFactory</code>, as it deals with pooling
  * and bootstrapping from a {@link Map} object (the strategy used by
- * {@link Bootstrap} to create a factory in a vendor-neutral manner).</p>
+ * {@link Bootstrap} to create a factory in a vendor-neutral manner).
  */
 public class AbstractStoreBrokerFactory
     extends AbstractBrokerFactory {

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@ import java.util.Collection;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * <p>An expression that OR's two others together.</p>
+ * An expression that OR's two others together.
  *
  * @author Abe White
  */
@@ -31,7 +31,7 @@ class OrExpression
     private final Exp _exp2;
 
     /**
-     * Constructor.  Supply expressions to combine.
+     * Constructor. Supply expressions to combine.
      */
     public OrExpression(Exp exp1, Exp exp2) {
         _exp1 = exp1;

@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,8 +18,7 @@ package org.apache.openjpa.lib.util;
 /**
  * Allows for simple regex style testing of strings. The wildcard '.'
  * is used to represent any single character, while '.*' is used to represent
- * any series of 0 or more characters.
- * Examples:<br />
+ * any series of 0 or more characters. Examples:<br />
  * <code> SimpleRegex re = new SimpleRegex("the qu.ck .* dog", true);
  * boolean matches = re.matches("The quick fox jumped over the lazy dog");
  * </code>

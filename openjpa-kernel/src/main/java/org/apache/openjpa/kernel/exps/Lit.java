@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * <p>Represents a literal.</p>
+ * Represents a literal.
  *
  * @author Abe White
  */
@@ -31,7 +31,7 @@ class Lit
     private final int _ptype;
 
     /**
-     * Constructor.  Provide constant value.
+     * Constructor. Provide constant value.
      */
     public Lit(Object val, int ptype) {
         _val = val;

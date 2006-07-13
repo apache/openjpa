@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.apache.openjpa.util;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 
 /**
- * <p>Interface to customize the loading of classes under OpenJPA.</p>
+ * Interface to customize the loading of classes under OpenJPA.
  *
  * @since 3.0
  * @author Marc Prud'hommeaux
@@ -31,9 +31,8 @@ public interface ClassResolver {
      * This can be a standard class loader, or a customized loader such
      * as a {@link MultiClassLoader}.
      *
-     * @param    contextClass    the context class; may be null if no context
-     * class
-     * @param    envLoader        the thread's context class loader when the
+     * @param contextClass the context class; may be null if no context class
+     * @param envLoader the thread's context class loader when the
      * persistence environment (i.e. broker)
      * was obtained; may be null if operating outside
      * the context of persistence environment

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -152,7 +152,7 @@ public class CacheMap
     }
 
     /**
-     * Put the given entry into the given map.  Allows subclasses to
+     * Put the given entry into the given map. Allows subclasses to
      * take additional actions.
      */
     protected Object put(Map map, Object key, Object value) {
@@ -160,7 +160,7 @@ public class CacheMap
     }
 
     /**
-     * Remove the given key from the given map.  Allows subclasses to
+     * Remove the given key from the given map. Allows subclasses to
      * take additional actions.
      */
     protected Object remove(Map map, Object key) {
@@ -260,9 +260,9 @@ public class CacheMap
     }
 
     /**
-     * Locks the given key and its value into the map.  Objects pinned into
+     * Locks the given key and its value into the map. Objects pinned into
      * the map are not counted towards the maximum cache size, and are never
-     * evicted implicitly.  You may pin keys for which no value is in the map.
+     * evicted implicitly. You may pin keys for which no value is in the map.
      *
      * @return true if the givne key's value was pinned; false if no value
      * for the given key is cached
@@ -320,10 +320,10 @@ public class CacheMap
      * requirements or through garbage collection of soft references.
      * It is invoked with <code>expired</code> set to <code>false</code>
      * when an object is explicitly removed via the {@link #remove} or
-     * {@link #clear} methods.  This may be invoked more than once for a
+     * {@link #clear} methods. This may be invoked more than once for a
      * given entry.
      *
-     * @param    value    may be null if the value was a soft reference that has
+     * @param value may be null if the value was a soft reference that has
      * been GCd
      * @since 2.5.0
      */
@@ -331,7 +331,7 @@ public class CacheMap
     }
 
     /**
-     * Invoked when an entry is added to the cache.  This may be invoked
+     * Invoked when an entry is added to the cache. This may be invoked
      * more than once for an entry.
      */
     protected void entryAdded(Object key, Object value) {
@@ -586,7 +586,7 @@ public class CacheMap
     }
 
     /**
-     *	Iterator over all entries.
+     * Iterator over all entries.
      */
     private class EntryIterator
         implements Iterator, Predicate {
@@ -646,5 +646,4 @@ public class CacheMap
 		}
 	}
 }
-
 

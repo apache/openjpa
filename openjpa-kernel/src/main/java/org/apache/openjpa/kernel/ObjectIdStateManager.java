@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,8 +32,7 @@ import org.apache.openjpa.util.GeneralException;
 import serp.util.Numbers;
 
 /**
- * <p>State manager used to access state of embedded object id primary key
- * fields.</p>
+ * State manager used to access state of embedded object id primary key fields.
  *
  * @author Abe White
  * @nojavadoc
@@ -54,7 +53,7 @@ public class ObjectIdStateManager
     /**
      * Constructor; supply embedded object id and its owner.
      *
-     * @param    owner    may be null
+     * @param owner may be null
      */
     public ObjectIdStateManager(Object oid, OpenJPAStateManager owner,
         ValueMetaData ownerVal) {
@@ -711,9 +710,9 @@ public class ObjectIdStateManager
     }
 
     /**
-     *	Set the value of the given field using reflection.
-     *	Relies on the fact that all oid fields/properties are made public
-     *	during enhancement.
+     * Set the value of the given field using reflection.
+     * Relies on the fact that all oid fields/properties are made public
+     * during enhancement.
      */
     private void setValue(int field, Object val, boolean forceInst) {
         if (_oid == null && forceInst) {

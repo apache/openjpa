@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,13 +57,12 @@ import org.apache.openjpa.util.UnsupportedException;
 import serp.util.Strings;
 
 /**
- * <p>Contains metadata about a persistent type.
- * This metadata is available both at enhancement time and runtime.</p>
- * <p/>
- * <p>Note that this class employs aggressive caching, and therefore it is
+ * Contains metadata about a persistent type.
+ * This metadata is available both at enhancement time and runtime.
+ *  Note that this class employs aggressive caching, and therefore it is
  * important to finalize the configuration of field metadatas before invoking
  * methods that depend on that configuration, such as
- * {@link #getPrimaryKeyFields}.</p>
+ * {@link #getPrimaryKeyFields}.
  *
  * @author Abe White
  */
@@ -93,12 +92,12 @@ public class ClassMetaData
     public static final int ACCESS_UNKNOWN = 0;
 
     /**
-     * Persistent attributes are accessed via direct field access.  Bit flag.
+     * Persistent attributes are accessed via direct field access. Bit flag.
      */
     public static final int ACCESS_FIELD = 2 << 0;
 
     /**
-     * Persistent attributes are accessed via setters and getters.  Bit flag.
+     * Persistent attributes are accessed via setters and getters. Bit flag.
      */
     public static final int ACCESS_PROPERTY = 2 << 1;
 
@@ -171,7 +170,7 @@ public class ClassMetaData
     private final LifecycleMetaData _lifeMeta = new LifecycleMetaData(this);
 
     /**
-     * Constructor.  Supply described type and repository.
+     * Constructor. Supply described type and repository.
      */
     protected ClassMetaData(Class type, MetaDataRepository repos) {
         _repos = repos;
@@ -180,7 +179,7 @@ public class ClassMetaData
     }
 
     /**
-     * Embedded constructor.  Supply embedding value.
+     * Embedded constructor. Supply embedding value.
      */
     protected ClassMetaData(ValueMetaData owner) {
         _owner = owner;
@@ -211,7 +210,7 @@ public class ClassMetaData
     }
 
     /**
-     * Set the class descibed by this metadata.  The type may be reset when
+     * Set the class descibed by this metadata. The type may be reset when
      * an embedded value changes its declared type.
      */
     protected void setDescribedType(Class type) {
@@ -280,7 +279,7 @@ public class ClassMetaData
     }
 
     /**
-     * Whether this class is mapped to the datastore.  By default, only
+     * Whether this class is mapped to the datastore. By default, only
      * returns false if class is embedded-only, but subclasses might override
      * to allow unmapped other types.
      */
@@ -323,7 +322,7 @@ public class ClassMetaData
         if (_owner != null)
             return _repos.EMPTY_METAS;
 
-        Class[] subs = getPCSubclasses();    // checks for new
+        Class[] subs = getPCSubclasses(); // checks for new
         if (_subMetas == null) {
             if (subs.length == 0)
                 _subMetas = _repos.EMPTY_METAS;
@@ -345,7 +344,7 @@ public class ClassMetaData
         if (_owner != null)
             return _repos.EMPTY_METAS;
 
-        ClassMetaData[] subs = getPCSubclassMetaDatas();    // checks for new
+        ClassMetaData[] subs = getPCSubclassMetaDatas(); // checks for new
         if (_mapSubMetas == null) {
             if (subs.length == 0)
                 _mapSubMetas = subs;
@@ -362,15 +361,14 @@ public class ClassMetaData
     }
 
     /**
-     * The type of identity being used.  This will be one of:
+     * The type of identity being used. This will be one of:
      * <ul>
      * <li>{@link #ID_UNKNOWN}: unknown identity type</li>
      * <li>{@link #ID_DATASTORE}: identity managed by the data store and
      * independent	of the fields of the instance</li>
      * <li>{@link #ID_APPLICATION}: identity managed by the application and
      * defined by one or more fields of the instance</li>
-     * </ul>
-     * If unspecified, defaults to {@link #ID_DATASTORE} if there are no
+     * </ul> If unspecified, defaults to {@link #ID_DATASTORE} if there are no
      * primary key fields, and {@link #ID_APPLICATION} otherwise.
      */
     public int getIdentityType() {
@@ -396,15 +394,14 @@ public class ClassMetaData
     }
 
     /**
-     * The type of identity being used.  This will be one of:
+     * The type of identity being used. This will be one of:
      * <ul>
      * <li>{@link #ID_UNKNOWN}: unknown identity type</li>
      * <li>{@link #ID_DATASTORE}: identity managed by the data store and
      * independent	of the fields of the instance</li>
      * <li>{@link #ID_APPLICATION}: identity managed by the application and
      * defined by one or more fields of the instance</li>
-     * </ul>
-     * If unspecified, defaults to {@link #ID_DATASTORE} if there are no
+     * </ul> If unspecified, defaults to {@link #ID_DATASTORE} if there are no
      * primary key fields, and {@link #ID_APPLICATION} otherwise.
      */
     public void setIdentityType(int type) {
@@ -580,8 +577,7 @@ public class ClassMetaData
     /**
      * Returns the alias for the described type, or <code>null</code> if none
      * has been set.
-     * <p/>
-     * #see	setTypeAlias
+     *  #see	setTypeAlias
      */
     public String getTypeAlias() {
         if (_alias == null)
@@ -688,7 +684,7 @@ public class ClassMetaData
      * Return the impl / intermediate field data index of the given field
      * in the compacted array, or -1 if the field does not use extra data.
      *
-     * @see    #getExtraFieldDataLength
+     * @see #getExtraFieldDataLength
      */
     public int getExtraFieldDataIndex(int field) {
         return getExtraFieldDataTable()[field];
@@ -818,7 +814,7 @@ public class ClassMetaData
     }
 
     /**
-     * Return primary key fields, or empty array if none.  The order
+     * Return primary key fields, or empty array if none. The order
      * in which the keys are returned will be the order in which
      * the fields are declared, starting at the least-derived superclass
      * and ending with the primary key fields of the most-derived subclass.
@@ -997,8 +993,7 @@ public class ClassMetaData
     }
 
     /**
-     * Return the defined superclass field with the given name, or null if
-     * none.
+     * Return the defined superclass field with the given name, or null if none.
      */
     public FieldMetaData getDefinedSuperclassField(String name) {
         if (_supFieldMap == null)
@@ -1038,11 +1033,10 @@ public class ClassMetaData
 
     /**
      * Incorporate superclass fields redefined in this subclass into this
-     * metadata.  This method is generally called after metadata is resolved
+     * metadata. This method is generally called after metadata is resolved
      * and mapping information is loaded, but before mapping resolve.
      *
-     * @param    force    whether to force re-mapping of even mapped superclass
-     * fields
+     * @param force whether to force re-mapping of even mapped superclass fields
      */
     public void defineSuperclassFields(boolean force) {
         if (_defSupFields)
@@ -1120,7 +1114,7 @@ public class ClassMetaData
 
     /**
      * Returns all fields in the order they are listed in the metadata
-     * file.  Unlisted fields are placed after listed ones.
+     * file. Unlisted fields are placed after listed ones.
      */
     public FieldMetaData[] getFieldsInListingOrder() {
         if (_allListingFields == null) {
@@ -1154,7 +1148,7 @@ public class ClassMetaData
 
     /**
      * Returns all fields defined by this class in the order they are listed
-     * in the metadata file.  Unlisted fields are placed after listed ones.
+     * in the metadata file. Unlisted fields are placed after listed ones.
      * This array includes declared transactional and unmanaged fields.
      */
     public FieldMetaData[] getDefinedFieldsInListingOrder() {
@@ -1190,14 +1184,14 @@ public class ClassMetaData
     }
 
     /**
-     * Set the cache name for this class.  Set to null to disable caching.
+     * Set the cache name for this class. Set to null to disable caching.
      */
     public void setDataCacheName(String name) {
         _cacheName = name;
     }
 
     /**
-     * The cache timeout for this class.  -1 indicates no timeout.
+     * The cache timeout for this class. -1 indicates no timeout.
      */
     public int getDataCacheTimeout() {
         if (_cacheTimeout == Integer.MIN_VALUE) {
@@ -1212,7 +1206,7 @@ public class ClassMetaData
     }
 
     /**
-     * The cache timeout for this class.  -1 indicates no timeout.
+     * The cache timeout for this class. -1 indicates no timeout.
      */
     public void setDataCacheTimeout(int timeout) {
         _cacheTimeout = timeout;
@@ -1448,7 +1442,7 @@ public class ClassMetaData
     }
 
     /**
-     * Resolve and validate metadata.  Return true if already resolved.
+     * Resolve and validate metadata. Return true if already resolved.
      */
     public boolean resolve(int mode) {
         if ((_resMode & mode) == mode)
@@ -1501,7 +1495,7 @@ public class ClassMetaData
             meta.resolve(MODE_META);
             copy(this, meta);
             _embedded =
-                Boolean.FALSE;    // embedded instance isn't embedded-only
+                Boolean.FALSE; // embedded instance isn't embedded-only
         }
 
         // make sure superclass is resolved
@@ -1576,8 +1570,7 @@ public class ClassMetaData
     }
 
     /**
-     * Resolve mapping data.  Logs resolve message and resolves super
-     * by default.
+     * Resolve mapping data. Logs resolve message and resolves super by default.
      */
     protected void resolveMapping(boolean runtime) {
         Log log = _repos.getLog();
@@ -1600,7 +1593,7 @@ public class ClassMetaData
     }
 
     /**
-     * Initialize mapping.  Logs init message by default.
+     * Initialize mapping. Logs init message by default.
      */
     protected void initializeMapping() {
         Log log = _repos.getLog();
@@ -2030,7 +2023,7 @@ public class ClassMetaData
     }
 
     /**
-     * The index in which this class was listed in the metadata.  Defaults to
+     * The index in which this class was listed in the metadata. Defaults to
      * <code>-1</code> if this class was not listed in the metadata.
      */
     public int getListingIndex() {
@@ -2038,7 +2031,7 @@ public class ClassMetaData
     }
 
     /**
-     * The index in which this field was listed in the metadata.  Defaults to
+     * The index in which this field was listed in the metadata. Defaults to
      * <code>-1</code> if this class was not listed in the metadata.
      */
     public void setListingIndex(int index) {
@@ -2062,7 +2055,7 @@ public class ClassMetaData
     //////////////
 
     /**
-     * Copy the metadata from the given instance to this one.  Do not
+     * Copy the metadata from the given instance to this one. Do not
      * copy mapping information.
      */
     public void copy(ClassMetaData meta) {
@@ -2129,7 +2122,7 @@ public class ClassMetaData
     }
 
     /**
-     *	Comparator used to put field metadatas into listing order.
+     * Comparator used to put field metadatas into listing order.
      */
     private static class ListingOrderComparator
         implements Comparator {

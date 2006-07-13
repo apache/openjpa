@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,10 +30,10 @@ import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 import org.apache.openjpa.util.UserException;
 
 /**
- * <p>Manager that can be used to track and notify
+ * Manager that can be used to track and notify
  * {@link RemoteCommitListener}s on remote commit events. If remote events
  * are enabled, this manager should be installed as a transaction listener on
- * all brokers so that it knows when commits are made.</p>
+ * all brokers so that it knows when commits are made.
  *
  * @author Patrick Linskey
  * @author Abe White
@@ -50,7 +50,7 @@ public class RemoteCommitEventManager
     private boolean _transmitPersIds = false;
 
     /**
-     * Constructor.  Supply configuration.
+     * Constructor. Supply configuration.
      */
     public RemoteCommitEventManager(OpenJPAConfiguration conf) {
         _provider = conf.newRemoteCommitProviderInstance();

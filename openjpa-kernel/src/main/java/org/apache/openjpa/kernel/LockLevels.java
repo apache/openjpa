@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 package org.apache.openjpa.kernel;
 
 /**
- * <p>Standard object lock levels.</p>
+ * Standard object lock levels.
  *
  * @author Abe White
  * @since 4.0
@@ -24,17 +24,17 @@ package org.apache.openjpa.kernel;
 public interface LockLevels {
 
     /**
-     * No lock.  Value of 0.
+     * No lock. Value of 0.
      */
     public static final int LOCK_NONE = 0;
 
     /**
-     * Generic read lock level.  Value of 10.
+     * Generic read lock level. Value of 10.
      */
     public static final int LOCK_READ = 10;
 
     /**
-     *	Generic write lock level.  Value of 20.
+     * Generic write lock level. Value of 20.
      */
     public static final int LOCK_WRITE = 20;
 }

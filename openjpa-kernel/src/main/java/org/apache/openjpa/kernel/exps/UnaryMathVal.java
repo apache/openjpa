@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.apache.openjpa.kernel.exps;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * <p>Value produced by a mathematical operation on one value.</p>
+ * Value produced by a mathematical operation on one value.
  *
  * @author Abe White
  */
@@ -28,7 +28,7 @@ abstract class UnaryMathVal
     private final Val _val;
 
     /**
-     * Constructor.  Provide the value to operate on.
+     * Constructor. Provide the value to operate on.
      */
     public UnaryMathVal(Val val) {
         _val = val;
@@ -62,7 +62,7 @@ abstract class UnaryMathVal
     protected abstract Class getType(Class c);
 
     /**
-     *	Return the result of this mathematical operation on the given value.
+     * Return the result of this mathematical operation on the given value.
      */
     protected abstract Object operate(Object o, Class c);
 }

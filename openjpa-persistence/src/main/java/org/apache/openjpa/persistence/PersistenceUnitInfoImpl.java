@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -243,14 +243,14 @@ public class PersistenceUnitInfoImpl
     }
 
     /**
-     * The location of the persistence.xml resource.  May be null.
+     * The location of the persistence.xml resource. May be null.
      */
     public URL getPersistenceXmlFileUrl() {
         return _persistenceXmlFile;
     }
 
     /**
-     * The location of the persistence.xml resource.  May be null.
+     * The location of the persistence.xml resource. May be null.
      */
     public void setPersistenceXmlFileUrl(URL url) {
         _persistenceXmlFile = url;
@@ -438,7 +438,7 @@ public class PersistenceUnitInfoImpl
     }
 
     /**
-     *	Simple class resolver built around the persistence unit loader.
+     * Simple class resolver built around the persistence unit loader.
      */
     private static class ClassResolverImpl
         implements ClassResolver {

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
- * <p>Tool for generating default metadata.</p>
+ * Tool for generating default metadata.
  *
  * @since 3.0
  * @author Abe White
@@ -64,7 +64,7 @@ public class MetaDataTool
     private boolean _flush = false;
 
     /**
-     * Constructor.  Supply configuration and action.
+     * Constructor. Supply configuration and action.
      */
     public MetaDataTool(OpenJPAConfiguration conf, String action) {
         _conf = conf;
@@ -140,7 +140,7 @@ public class MetaDataTool
     }
 
     /**
-     * Reset state.  This is called automatically after every {@link #record}.
+     * Reset state. This is called automatically after every {@link #record}.
      */
     public void clear() {
         _repos = null;
@@ -221,15 +221,14 @@ public class MetaDataTool
     }
 
     /**
-     * <p>Usage: java org.apache.openjpa.meta.MetaDataTool [option]*
+     * Usage: java org.apache.openjpa.meta.MetaDataTool [option]*
      * [-action/-a &lt;add | drop&gt;]
-     * &lt;class name | .java file | .class file&gt;+</p>
-     * <p/>
-     * <p>Where the following options are recognized.
+     * &lt;class name | .java file | .class file&gt;+
+     *  Where the following options are recognized.
      * <ul>
      * <li><i>-properties/-p &lt;properties file or resource&gt;</i>: The path
      * or resource name of a OpenJPA properties file containing information
-     * as outlined in {@link OpenJPAConfiguration}.  Optional.</li>
+     * as outlined in {@link OpenJPAConfiguration}. Optional.</li>
      * <li><i>-&lt;property name&gt; &lt;property value&gt;</i>: All bean
      * properties of the OpenJPA {@link OpenJPAConfiguration} can be set by
      * using their names and supplying a value.</li>
@@ -237,14 +236,13 @@ public class MetaDataTool
      * or resource name of a file the metadata should be generated to.
      * If the given file already contains metadata, the generated
      * metadata will be merged into the existing document.</li>
-     * </ul></p>
-     * <p/>
-     * <p>The available actions are:
+     * </ul>
+     *  The available actions are:
      * <ul>
-     * <li><i>add</i>: Generate default metadata for the given classes.  This
+     * <li><i>add</i>: Generate default metadata for the given classes. This
      * is the default action.</li>
      * <li><i>drop</i>: Remove existing metadata for the given classes.</li>
-     * </ul></p>
+     * </ul>
      */
     public static void main(String[] args)
         throws IOException {
@@ -261,7 +259,7 @@ public class MetaDataTool
     }
 
     /**
-     * Run the tool.  Returns false if any invalid options were given.
+     * Run the tool. Returns false if any invalid options were given.
      */
     public static boolean run(OpenJPAConfiguration conf, String[] args,
         Options opts)
@@ -291,7 +289,7 @@ public class MetaDataTool
     }
 
     /**
-     * Run the tool.  Return false if invalid options were given.  The given
+     * Run the tool. Return false if invalid options were given. The given
      * repository may be null.
      */
     public static boolean run(OpenJPAConfiguration conf, String[] args,
@@ -338,7 +336,7 @@ public class MetaDataTool
     }
 
     /**
-     *	Run flags.
+     * Run flags.
      */
     public static class Flags {
 

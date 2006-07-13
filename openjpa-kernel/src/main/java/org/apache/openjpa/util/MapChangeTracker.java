@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,12 +16,12 @@
 package org.apache.openjpa.util;
 
 /**
- * <p>Change tracker that can be used for maps.  If the user calls
+ * Change tracker that can be used for maps. If the user calls
  * any mutating methods on the map that do not have an equivalent in
- * this change tracker, then you must call {@link ChangeTracker#stopTracking} 
- * after applying the operation to the map.  The collections returned from
+ * this change tracker, then you must call {@link ChangeTracker#stopTracking}
+ * after applying the operation to the map. The collections returned from
  * {@link ChangeTracker#getAdded} and {@link ChangeTracker#getRemoved} will
- * be collections of keys to add/remove.</p>
+ * be collections of keys to add/remove.
  *
  * @author Abe White
  */
@@ -29,14 +29,14 @@ public interface MapChangeTracker
     extends ChangeTracker {
 
     /**
-     * Whether to track keys or values.  Defaults to keys.
+     * Whether to track keys or values. Defaults to keys.
      * If you set to values, it is assumed there is a 1-1 correlation
      * between keys and values in this map.
      */
     public boolean getTrackKeys();
 
     /**
-     * Whether to track keys or values.  Defaults to keys.
+     * Whether to track keys or values. Defaults to keys.
      * If you set to values, it is assumed there is a 1-1 correlation
      * between keys and values in this map.
      */
@@ -53,7 +53,7 @@ public interface MapChangeTracker
     public void removed(Object key, Object val);
 
     /**
-     *	Record that the given entry was altered.
+     * Record that the given entry was altered.
      */
     public void changed(Object key, Object oldVal, Object newVal);
 }

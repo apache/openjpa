@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -41,17 +44,16 @@ import java.util.Set;
  * <b>Sample Usage.</b> The following code sketch uses a
  * copy-on-write set to maintain a set of Handler objects that
  * perform some action upon state updates.
- * <p/>
+ * 
  * <pre> class Handler { void handle(); ... }
- *  class X { private final CopyOnWriteArraySet&lt;Handler&gt; handlers
+ * class X { private final CopyOnWriteArraySet&lt;Handler&gt; handlers
  * = new CopyOnWriteArraySet&lt;Handler&gt;();
  * public void addHandler(Handler h) { handlers.add(h); }
- *  private long internalState;
+ * private long internalState;
  * private synchronized void changeState() { internalState = ...; }
- *  public void update() { changeState(); for (Handler handler : handlers)
+ * public void update() { changeState(); for (Handler handler : handlers)
  * handler.handle(); } }
- * </pre>
- * This class is a member of the
+ * </pre> This class is a member of the
  * <a href="{@docRoot}/../guide/collections/index.html">
  * Java Collections Framework</a>.
  *
@@ -124,8 +126,7 @@ public class CopyOnWriteArraySet extends AbstractSet
      * are maintained by this set. (In other words, this method must
      * allocate a new array even if this set is backed by an array).
      * The caller is thus free to modify the returned array.
-     * This method acts as bridge between array-based and collection-based
-     * APIs.
+     * This method acts as bridge between array-based and collection-based APIs.
      *
      * @return an array containing all the elements in this set
      */
@@ -155,7 +156,7 @@ public class CopyOnWriteArraySet extends AbstractSet
      * Suppose <tt>x</tt> is a set known to contain only strings.
      * The following code can be used to dump the set into a newly allocated
      * array of <tt>String</tt>:
-     * <p/>
+     * 
      * <pre> String[] y = x.toArray(new String[0]);</pre>
      * Note that <tt>toArray(new Object[0])</tt> is identical in function to
      * <tt>toArray()</tt>.
@@ -206,7 +207,7 @@ public class CopyOnWriteArraySet extends AbstractSet
      *
      * @param e element to be added to this set
      * @return <tt>true</tt> if this set did not already contain the specified
-     *         element
+     * element
      */
     public boolean add(Object e) {
         return al.addIfAbsent(e);
@@ -219,7 +220,7 @@ public class CopyOnWriteArraySet extends AbstractSet
      *
      * @param c collection to be checked for containment in this set
      * @return <tt>true</tt> if this set contains all of the elements of the
-     *         specified collection
+     * specified collection
      * @throws NullPointerException if the specified collection is null
      * @see #contains(Object)
      */

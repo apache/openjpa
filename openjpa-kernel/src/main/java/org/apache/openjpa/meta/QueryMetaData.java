@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,10 +24,9 @@ import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.xml.Commentable;
 
 /**
- * <p>Holds metadata about named queries.</p>
- * <p/>
- * <p>Information stored in this instance gets transfered to
- * new {@link Query} instances.</p>
+ * Holds metadata about named queries.
+ *  Information stored in this instance gets transfered to
+ * new {@link Query} instances.
  *
  * @author Steve Kim
  */
@@ -179,7 +178,7 @@ public class QueryMetaData
 
     /**
      * Set query template information into the given concrete
-     * query instance.  However, the language, query string, and
+     * query instance. However, the language, query string, and
      * candidate class are assumed to be declared in the query
      * instantiation, and hints are not transferred.
      */

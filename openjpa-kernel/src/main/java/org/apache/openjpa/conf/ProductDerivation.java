@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,7 +44,7 @@ public interface ProductDerivation {
 
     /**
      * Provides the instance with a callback to mutate the initial properties
-     * of the {@link ConfigurationProvider}.  This is primarily to alter or
+     * of the {@link ConfigurationProvider}. This is primarily to alter or
      * add properties that determine what type of configuration is constructed,
      * and therefore is typically used at runtime only.
      */

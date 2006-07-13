@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,10 +18,10 @@ package org.apache.openjpa.kernel.exps;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * <p>Represents a bound variable.   Variables are aliased to the
+ * Represents a bound variable. Variables are aliased to the
  * collection that is stated to contain them in the query.
  * When the query is evaluated, expressions containing variables will be
- * executed once for every element in the collection.</p>
+ * executed once for every element in the collection.
  *
  * @author Abe White
  */
@@ -32,7 +32,7 @@ class BoundVariable
     private Object _val = null;
 
     /**
-     * Constructor.  Provide variable name and type.
+     * Constructor. Provide variable name and type.
      */
     public BoundVariable(Class type) {
         _type = type;

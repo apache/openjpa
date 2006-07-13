@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@ import java.util.Collection;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * <p>Boolean value used as an expression.</p>
+ * Boolean value used as an expression.
  *
  * @author Abe White
  */
@@ -30,7 +30,7 @@ class ValExpression
     private final Val _val;
 
     /**
-     * Constructor.  Supply value.
+     * Constructor. Supply value.
      */
     public ValExpression(Val val) {
         _val = val;

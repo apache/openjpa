@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,10 +24,10 @@ import java.util.TimeZone;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 
 /**
- * <p>Extension of the {@link Calendar} type that calls the <code>dirty</code>
- * method on its owning persistence capable instance on modification.  This
+ * Extension of the {@link Calendar} type that calls the <code>dirty</code>
+ * method on its owning persistence capable instance on modification. This
  * class does not support modification via any deprecated method of the
- * date class.</p>
+ * date class.
  *
  * @author Marc Prud'hommeaux
  * @nojavadoc
@@ -124,14 +124,14 @@ public class ProxyGregorianCalendar
     }
 
     /* This is "final" in JDK 1.3 (not in 1.4 or 1.5)
-     public void set (int field, int value)
-     {
-         if (get (field) != value)
-         {
-             Proxies.dirty (this);
-             super.set (field, value);
-         }
-     }
+ public void set (int field, int value)
+ {
+ if (get (field) != value)
+ {
+ Proxies.dirty (this);
+ super.set (field, value);
+ }
+ }
      */
 
     public void add(int field, int amount) {

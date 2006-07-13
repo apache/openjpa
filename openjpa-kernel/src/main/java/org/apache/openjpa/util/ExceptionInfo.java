@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,8 +16,8 @@
 package org.apache.openjpa.util;
 
 /**
- * <p>Interface supplying additional exception information.  All OpenJPA
- * exceptions implement this interface.</p>
+ * Interface supplying additional exception information. All OpenJPA
+ * exceptions implement this interface.
  *
  * @author Abe White
  * @since 4.0
@@ -33,7 +33,7 @@ public interface ExceptionInfo {
     /**
      * Exception message.
      *
-     * @see    Throwable#getMessage
+     * @see Throwable#getMessage
      */
     public String getMessage();
 
@@ -48,7 +48,7 @@ public interface ExceptionInfo {
     /**
      * Stack.
      *
-     * @see    Throwable#printStackTrace
+     * @see Throwable#printStackTrace
      */
     public void printStackTrace();
 
@@ -73,7 +73,7 @@ public interface ExceptionInfo {
     public Throwable[] getNestedThrowables();
 
     /**
-     *	The failed object.
+     * The failed object.
      */
     public Object getFailedObject ();
 }

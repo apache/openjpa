@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * <p>Helper class to pack results into the result class set on the query.</p>
+ * Helper class to pack results into the result class set on the query.
  *
  * @author Abe White
  * @author Patrick Linskey
@@ -87,9 +87,9 @@ public class ResultPacker {
     /**
      * Constructor for standard projection.
      *
-     * @param    types        the projection value types
-     * @param    aliases        the alias for each projection value
-     * @param    resultClass    the class to pack into
+     * @param types the projection value types
+     * @param aliases the alias for each projection value
+     * @param resultClass the class to pack into
      */
     public ResultPacker(Class[] types, String[] aliases, Class resultClass) {
         this(null, types, aliases, resultClass);
@@ -334,7 +334,7 @@ public class ResultPacker {
     }
 
     /**
-     *	Return the put method if one exists.
+     * Return the put method if one exists.
      */
     private static Method findPut(Method[] methods) {
         Class[] params;

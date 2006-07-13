@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ public class MethodLifecycleCallbacks
     private boolean _arg;
 
     /**
-     * Constructor.  Supply callback class and its callback method name.
+     * Constructor. Supply callback class and its callback method name.
      *
      * @arg Whether we expect a further argument such as in AfterDetach
      */
@@ -46,7 +46,7 @@ public class MethodLifecycleCallbacks
     }
 
     /**
-     * Constructor.  Supply callback method.
+     * Constructor. Supply callback method.
      */
     public MethodLifecycleCallbacks(Method method, boolean arg) {
         _callback = method;
@@ -87,8 +87,8 @@ public class MethodLifecycleCallbacks
     }
 
     /**
-     *	Helper method to return the named method of the given class, throwing
-     *	the proper exception on error.
+     * Helper method to return the named method of the given class, throwing
+     * the proper exception on error.
      */
     protected static Method getMethod(Class cls, String method, Class[] args) {
         try {

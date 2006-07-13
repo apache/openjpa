@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 package org.apache.openjpa.event;
 
 /**
- * <p>Callback handling constants.</p>
+ * Callback handling constants.
  *
  * @author Steve Kim
  * @since 4.0
@@ -44,7 +44,7 @@ public interface CallbackModes {
     public static final int CALLBACK_RETHROW = 2 << 3;
 
     /**
-     *	Flag to always rollback on a callback exception.
+     * Flag to always rollback on a callback exception.
      */
     public static final int CALLBACK_ROLLBACK = 2 << 4;
 }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * <p>Converts from OpenJPA to persistence exception types.</p>
+ * Converts from OpenJPA to persistence exception types.
  *
  * @author Abe White
  * @author Marc Prud'hommeaux
@@ -84,7 +84,7 @@ public class PersistenceExceptions
     /**
      * Translate the given exception.
      *
-     * @param    checked        whether to translate checked exceptions
+     * @param checked whether to translate checked exceptions
      */
     private static Throwable translateException(Throwable t, boolean checked) {
         if (isPersistenceException(t))
@@ -236,8 +236,8 @@ public class PersistenceExceptions
     }
 
     /**
-     *	Helper method to extract a nested exception from an internal nested
-     *	array in a safe way.
+     * Helper method to extract a nested exception from an internal nested
+     * array in a safe way.
      */
     static Throwable getCause(Throwable[] nested) {
         if (nested == null || nested.length == 0)

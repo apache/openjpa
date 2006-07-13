@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -182,9 +182,9 @@ public abstract class AbstractQueryCache
     }
 
     /**
-     * This method is part of the {@link RemoteCommitListener} interface.  If
+     * This method is part of the {@link RemoteCommitListener} interface. If
      * your cache subclass relies on OpenJPA for clustering support, make it
-     * implement <code>RemoteCommitListener</code>.  This method will take
+     * implement <code>RemoteCommitListener</code>. This method will take
      * care of invalidating entries from remote commits, by delegating to
      * {@link #onTypesChanged}.
      */
@@ -237,7 +237,7 @@ public abstract class AbstractQueryCache
     }
 
     /**
-     * Return a threadsafe view of the keys in this cache.  This collection
+     * Return a threadsafe view of the keys in this cache. This collection
      * must be iterable without risk of concurrent modification exceptions.
      * It does not have to implement contains() efficiently or use set
      * semantics.
@@ -311,9 +311,9 @@ public abstract class AbstractQueryCache
     }
 
     /**
-     *	Individual query results will be registered as types changed
-     *	listeners. We want such query results to be gc'd once
-     *	the only reference is held by the list of expiration listeners.
+     * Individual query results will be registered as types changed
+     * listeners. We want such query results to be gc'd once
+     * the only reference is held by the list of expiration listeners.
      */
     protected Collection newListenerCollection() {
         //### use concurrent

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,10 +22,9 @@ import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.StoreException;
 
 /**
- * <p>Abstract implementation of {@link PCResultObjectProvider}
+ * Abstract implementation of {@link PCResultObjectProvider}
  * that implements {@link ResultObjectProvider#getResultObject}
- * by assembling the necessary information about the object to be
- * loaded.</p>
+ * by assembling the necessary information about the object to be loaded.
  *
  * @author Patrick Linskey
  */
@@ -91,23 +90,23 @@ public abstract class AbstractPCResultObjectProvider
 
     /**
      * Load data from the current input record into the given state
-     * manager.  Remember to call {@link OpenJPAStateManager#setVersion} to set
+     * manager. Remember to call {@link OpenJPAStateManager#setVersion} to set
      * the optimistic versioning information, if it has any.
      */
     protected abstract void load(OpenJPAStateManager sm, FetchState fetch)
         throws Exception;
 
     /**
-     * Override if desired.  Does nothing by default.
+     * Override if desired. Does nothing by default.
      */
     public void open()
         throws Exception {
     }
 
     /**
-     * Override if desired.  Returns false by default.
+     * Override if desired. Returns false by default.
      *
-     * @see    ResultObjectProvider#supportsRandomAccess
+     * @see ResultObjectProvider#supportsRandomAccess
      */
     public boolean supportsRandomAccess() {
         return false;
@@ -116,15 +115,15 @@ public abstract class AbstractPCResultObjectProvider
     /**
      * Implement this method to advance the input.
      *
-     * @see    ResultObjectProvider#next
+     * @see ResultObjectProvider#next
      */
     public abstract boolean next()
         throws Exception;
 
     /**
-     * Override if desired.  Throws an exception by default.
+     * Override if desired. Throws an exception by default.
      *
-     * @see    ResultObjectProvider#absolute
+     * @see ResultObjectProvider#absolute
      */
     public boolean absolute(int pos)
         throws Exception {
@@ -132,9 +131,9 @@ public abstract class AbstractPCResultObjectProvider
     }
 
     /**
-     * Override if desired.  Returns {@link Integer#MAX_VALUE} by default.
+     * Override if desired. Returns {@link Integer#MAX_VALUE} by default.
      *
-     * @see    ResultObjectProvider#size
+     * @see ResultObjectProvider#size
      */
     public int size()
         throws Exception {
@@ -142,9 +141,9 @@ public abstract class AbstractPCResultObjectProvider
     }
 
     /**
-     * Override if desired.  Throws an exception by default.
+     * Override if desired. Throws an exception by default.
      *
-     * @see    ResultObjectProvider#reset
+     * @see ResultObjectProvider#reset
      */
     public void reset()
         throws Exception {
@@ -152,16 +151,16 @@ public abstract class AbstractPCResultObjectProvider
     }
 
     /**
-     * Override if desired.  Does nothing by default.
+     * Override if desired. Does nothing by default.
      *
-     * @see    ResultObjectProvider#close
+     * @see ResultObjectProvider#close
      */
     public void close()
         throws Exception {
     }
 
     /**
-     *	Throws a {@link StoreException} by default.
+     * Throws a {@link StoreException} by default.
      */
     public void handleCheckedException(Exception e) {
         throw new StoreException (e);

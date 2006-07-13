@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,8 +58,7 @@ import serp.bytecode.Project;
 import serp.util.Strings;
 
 /**
- * <p>Generates a class appropriate for use as an application identity
- * class.</p>
+ * Generates a class appropriate for use as an application identity class.
  *
  * @author Patrick Linskey
  * @author Abe White
@@ -174,8 +173,8 @@ public class ApplicationIdTool {
     }
 
     /**
-     * The directory to write source to.  Defaults to the directory
-     * of the Java file for the set type.  If the given directory does not
+     * The directory to write source to. Defaults to the directory
+     * of the Java file for the set type. If the given directory does not
      * match the package of the object id, the package structure will be
      * created below the directory.
      */
@@ -184,8 +183,8 @@ public class ApplicationIdTool {
     }
 
     /**
-     * The directory to write source to.  Defaults to the directory
-     * of the Java file for the set type.  If the given directory does not
+     * The directory to write source to. Defaults to the directory
+     * of the Java file for the set type. If the given directory does not
      * match the package of the object id, the package structure will be
      * created below the directory.
      */
@@ -244,8 +243,7 @@ public class ApplicationIdTool {
     }
 
     /**
-     * Returns true if the application identity class should
-     * be an inner class.
+     * Returns true if the application identity class should be an inner class.
      */
     public boolean isInnerClass() {
         Class oidClass = _meta.getObjectIdType();
@@ -605,7 +603,7 @@ public class ApplicationIdTool {
 
     /**
      * Create the fromString method that parses the result of our toString
-     * method.  If we have superclasses with id fields, this will call
+     * method. If we have superclasses with id fields, this will call
      * super.fromString() so that the parent class can parse its own fields.
      */
     private String getFromStringCode(boolean hasSuperclass) {
@@ -702,7 +700,7 @@ public class ApplicationIdTool {
         else if (!type.isPrimitive()) {
             parse.append("new ").append(Strings.getClassName(type)).
                 openParen(true).append(var).closeParen();
-        } else    // primitive
+        } else // primitive
         {
             switch (type.getName().charAt(0)) {
                 case 'b':
@@ -852,8 +850,7 @@ public class ApplicationIdTool {
 
     /**
      * Return a hashCode method that takes into account all
-     * primary key values.  Must deal correctly with both
-     * primitives and objects.
+     * primary key values. Must deal correctly with both primitives and objects.
      */
     private String getHashCodeCode(boolean hasSuperclass) {
         // if we are below a concrete class then we cannot declare any
@@ -1025,7 +1022,7 @@ public class ApplicationIdTool {
     /**
      * Code to convert a string to a byte array.
      *
-     * @see    org.apache.openjpa.lib.util.Base16Encoder#decode
+     * @see org.apache.openjpa.lib.util.Base16Encoder#decode
      */
     private String getToBytesByteArrayCode() {
         CodeFormat code = newCodeFormat();
@@ -1071,7 +1068,7 @@ public class ApplicationIdTool {
     /**
      * Code to convert a byte array to a string.
      *
-     * @see    org.apache.openjpa.lib.util.Base16Encoder#encode
+     * @see org.apache.openjpa.lib.util.Base16Encoder#encode
      */
     private String getToStringByteArrayCode() {
         CodeFormat code = newCodeFormat();
@@ -1222,20 +1219,19 @@ public class ApplicationIdTool {
     }
 
     /**
-     * <p>Usage: java org.apache.openjpa.enhance.ApplicationIdTool [option]*
-     * &lt;class name | .java file | .class file | .jdo file&gt;+</p>
-     * <p/>
-     * <p>Where the following options are recognized.
+     * Usage: java org.apache.openjpa.enhance.ApplicationIdTool [option]*
+     * &lt;class name | .java file | .class file | .jdo file&gt;+
+     *  Where the following options are recognized.
      * <ul>
      * <li><i>-properties/-p &lt;properties file&gt;</i>: The path to a OpenJPA
-     * properties file containing information as outlined in 
+     * properties file containing information as outlined in
      * {@link Configuration}; optional.</li>
      * <li><i>-&lt;property name&gt; &lt;property value&gt;</i>: All bean
      * properties of the standard OpenJPA {@link OpenJPAConfiguration} can be
      * set by using their names and supplying a value.</li>
      * <li><i>-directory/-d &lt;output directory&gt;</i>: Path to the base
-     * source directory.  The package structure will be created beneath
-     * this directory if necessary.  If not specified, the tool will try
+     * source directory. The package structure will be created beneath
+     * this directory if necessary. If not specified, the tool will try
      * to locate the .java file in the CLASSPATH and output to the same
      * directory; failing that, it will use the current directory as
      * the base directory.
@@ -1246,24 +1242,23 @@ public class ApplicationIdTool {
      * <li><i>-token/-t &lt;token&gt;</i>: The token to use to separate
      * stingified primary key field values in the stringified oid.</li>
      * <li><i>-name/-n &lt;id class name&gt;</i>: The name of the identity
-     * class to generate.  If this option is specified, you must only
-     * give a single class argument.  If the class metadata names an object
+     * class to generate. If this option is specified, you must only
+     * give a single class argument. If the class metadata names an object
      * id class, this argument is ignored.</li>
      * <li><i>-suffix/-s &lt;id class suffix&gt;</i>: A string to suffix each
-     * persistent class with to create the identity class name.  This is
+     * persistent class with to create the identity class name. This is
      * overridden by <code>-name</code> or by any identity class name
      * specified in metadata.</li>
      * <li><i>-codeFormat/-cf.&lt;property name&gt; &lt; property value&gt;</i>
      * : Arguments like this will be used to configure the bean
      * properties of the internal {@link CodeFormat}.</li>
-     * </ul></p>
-     * <p/>
-     * <p>Each additional argument can be either the full class name of the
+     * </ul>
+     *  Each additional argument can be either the full class name of the
      * type to create an id class for, the path to the .java file for the type,
      * the path to the .class file for the type, or the path to a .jdo file
-     * listing one or more types.  If a .java file already exists for an
+     * listing one or more types. If a .java file already exists for an
      * application id, it will be backed up to a file named
-     * &lt;orig file name&gt;~.</p>
+     * &lt;orig file name&gt;~.
      */
     public static void main(String[] args)
         throws IOException, ClassNotFoundException {
@@ -1281,8 +1276,7 @@ public class ApplicationIdTool {
 
     /**
      * Run the application id tool with the given command-line and
-     * given configuration. Returns false if invalid options were
-     * given.
+     * given configuration. Returns false if invalid options were given.
      */
     public static boolean run(OpenJPAConfiguration conf, String[] args,
         Options opts)
@@ -1326,7 +1320,7 @@ public class ApplicationIdTool {
     }
 
     /**
-     * Run the tool.  Returns false if invalid options were given.
+     * Run the tool. Returns false if invalid options were given.
      */
     public static boolean run(OpenJPAConfiguration conf, String[] args,
         Flags flags, ClassLoader loader)
@@ -1450,14 +1444,13 @@ public class ApplicationIdTool {
     }
 
     /**
-     *	Interface implemented by metadata factories that can load non-existant
-     *	object id classes.
+     * Interface implemented by metadata factories that can load non-existant
+     * object id classes.
      */
     public static interface ObjectIdLoader
 	{
 		/**
-		 *	Turn on the loading of all identity classes, even if they don't
-		 *	exist.
+		 * Turn on the loading of all identity classes, even if they don't exist.
 	 	 */
 		public void setLoadObjectIds ();
 	}

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,7 +55,7 @@ import org.apache.openjpa.util.UnsupportedException;
 import serp.util.Strings;
 
 /**
- * <p>Metadata for a managed class field.</p>
+ * Metadata for a managed class field.
  *
  * @author Abe White
  */
@@ -186,9 +186,9 @@ public class FieldMetaData
     /**
      * Constructor.
      *
-     * @param    name    the field name
-     * @param    type    the field type
-     * @param    owner    the owning class metadata
+     * @param name the field name
+     * @param type the field type
+     * @param owner the owning class metadata
      */
     protected FieldMetaData(String name, Class type, ClassMetaData owner) {
         _name = name;
@@ -327,7 +327,7 @@ public class FieldMetaData
     }
 
     /**
-     * Return whether this field is mapped to the datastore.  By default,
+     * Return whether this field is mapped to the datastore. By default,
      * returns true for all persistent fields whose defining class is mapped.
      */
     public boolean isMapped() {
@@ -413,7 +413,7 @@ public class FieldMetaData
     }
 
     /**
-     * The index in which this field was listed in the metadata.  Defaults to
+     * The index in which this field was listed in the metadata. Defaults to
      * <code>-1</code> if this field was not listed in the metadata.
      */
     public int getListingIndex() {
@@ -421,7 +421,7 @@ public class FieldMetaData
     }
 
     /**
-     * The index in which this field was listed in the metadata.  Defaults to
+     * The index in which this field was listed in the metadata. Defaults to
      * <code>-1</code> if this field was not listed in the metadata.
      */
     public void setListingIndex(int index) {
@@ -430,7 +430,7 @@ public class FieldMetaData
 
     /**
      * The absolute primary key index for this field, or -1 if not a primary
-     * key.  The first primary key field has index 0, the second index 1, etc.
+     * key. The first primary key field has index 0, the second index 1, etc.
      */
     public int getPrimaryKeyIndex() {
         return _pkIndex;
@@ -438,35 +438,33 @@ public class FieldMetaData
 
     /**
      * The absolute primary key index for this field, or -1 if not a primary
-     * key.  The first primary key field has index 0, the second index 1, etc.
+     * key. The first primary key field has index 0, the second index 1, etc.
      */
     public void setPrimaryKeyIndex(int index) {
         _pkIndex = index;
     }
 
     /**
-     * Return the management level for the field.  Will be one of:
+     * Return the management level for the field. Will be one of:
      * <ul>
      * <li>{@link #MANAGE_PERSISTENT}: the field is persistent</li>
      * <li>{@link #MANAGE_TRANSACTIONAL}: the field is transactional but not
      * persistent</li>
      * <li>{@link #MANAGE_NONE}: the field is not managed</li>
-     * </ul>
-     * Defaults to {@link #MANAGE_PERSISTENT}.
+     * </ul> Defaults to {@link #MANAGE_PERSISTENT}.
      */
     public int getManagement() {
         return _manage;
     }
 
     /**
-     * Return the management level for the field.  Will be one of:
+     * Return the management level for the field. Will be one of:
      * <ul>
      * <li>{@link #MANAGE_PERSISTENT}: the field is persistent</li>
      * <li>{@link #MANAGE_TRANSACTIONAL}: the field is transactional but not
      * persistent</li>
      * <li>{@link #MANAGE_NONE}: the field is not managed</li>
-     * </ul>
-     * Defaults to {@link #MANAGE_PERSISTENT}.
+     * </ul> Defaults to {@link #MANAGE_PERSISTENT}.
      */
     public void setManagement(int manage) {
         _manage = manage;
@@ -545,7 +543,7 @@ public class FieldMetaData
     }
 
     /**
-     * Whether the default fetch group setting is explicit.  Allow setting
+     * Whether the default fetch group setting is explicit. Allow setting
      * for testing.
      */
     public void setDefaultFetchGroupExplicit(boolean explicit) {
@@ -564,8 +562,7 @@ public class FieldMetaData
      * at commit</li>
      * <li>{@link #NULL_DEFAULT}: use the database default if this field is
      * null at commit</li>
-     * </ul>
-     * Defaults to {@link #NULL_UNSET}.
+     * </ul> Defaults to {@link #NULL_UNSET}.
      */
     public int getNullValue() {
         return _nullValue;
@@ -580,8 +577,7 @@ public class FieldMetaData
      * at commit</li>
      * <li>{@link #NULL_DEFAULT}: use the database default if this field is
      * null at commit</li>
-     * </ul>
-     * Defaults to {@link #NULL_UNSET}.
+     * </ul> Defaults to {@link #NULL_UNSET}.
      */
     public void setNullValue(int nullValue) {
         _nullValue = nullValue;
@@ -835,8 +831,8 @@ public class FieldMetaData
      * Gets the name of the fetch groups those are associated to this receiver.
      *
      * @return the set of fetch group names.
-     *         null if this field is a primary key or a version field.
-     *         zero-length array if no fetch group has been associated.
+     * null if this field is a primary key or a version field.
+     * zero-length array if no fetch group has been associated.
      */
     public Set getFetchGroups() {
         if (isPrimaryKey() || isVersion())
@@ -889,9 +885,9 @@ public class FieldMetaData
 
     /**
      * Whether this field uses intermediate data when loading/storing
-     * information through a {@link OpenJPAStateManager}.  Defaults to true.
+     * information through a {@link OpenJPAStateManager}. Defaults to true.
      *
-     * @see    OpenJPAStateManager#setIntermediate(int,Object)
+     * @see OpenJPAStateManager#setIntermediate(int,Object)
      */
     public boolean usesIntermediate() {
         return _intermediate;
@@ -899,9 +895,9 @@ public class FieldMetaData
 
     /**
      * Whether this field uses intermediate data when loading/storing
-     * information through a {@link OpenJPAStateManager}.  Defaults to true.
+     * information through a {@link OpenJPAStateManager}. Defaults to true.
      *
-     * @see    OpenJPAStateManager#setIntermediate(int,Object)
+     * @see OpenJPAStateManager#setIntermediate(int,Object)
      */
     public void setUsesIntermediate(boolean intermediate) {
         _intermediate = intermediate;
@@ -913,11 +909,11 @@ public class FieldMetaData
      * field data when acting on a {@link OpenJPAStateManager}.
      * Defaults to {@link Boolean#TRUE} (non-cachable impl data).
      *
-     * @return        {@link Boolean#FALSE} if this field does not use impl data,
+     * @return {@link Boolean#FALSE} if this field does not use impl data,
      * {@link Boolean#TRUE} if this field uses non-cachable impl
      * data, or <code>null</code> if this field uses impl data that
      * should be cached across instances
-     * @see    OpenJPAStateManager#setImplData(int,Object)
+     * @see OpenJPAStateManager#setImplData(int,Object)
      */
     public Boolean usesImplData() {
         return _implData;
@@ -927,8 +923,8 @@ public class FieldMetaData
      * Whether this field uses impl data in conjunction with standard
      * field data when acting on a {@link OpenJPAStateManager}.
      *
-     * @see    OpenJPAStateManager#setImplData(int,Object)
-     * @see    #usesImplData
+     * @see OpenJPAStateManager#setImplData(int,Object)
+     * @see #usesImplData
      */
     public void setUsesImplData(Boolean implData) {
         _implData = implData;
@@ -975,7 +971,7 @@ public class FieldMetaData
 
     /**
      * String declaring the orderings for this field to be applied on load,
-     * or null.  The string is of the form:<br />
+     * or null. The string is of the form:<br />
      * <code>orderable[ asc|desc][, ...]</code><br />
      * The orderable <code>#element</code> is used to denote the value of
      * the field's elements.
@@ -996,7 +992,7 @@ public class FieldMetaData
 
     /**
      * String declaring the orderings for this field to be applied on load,
-     * or null.  The string is of the form:<br />
+     * or null. The string is of the form:<br />
      * <code>orderable[ asc|desc][, ...]</code><br />
      * The orderable <code>#element</code> is used to denote the value of
      * the field's elements.
@@ -1117,7 +1113,7 @@ public class FieldMetaData
 
     /**
      * Return the result of passing the given external value through the
-     * factory to get the field value.  If no factory is present,
+     * factory to get the field value. If no factory is present,
      * the given value is returned as-is.
      */
     public Object getFieldValue(Object val, StoreContext ctx) {
@@ -1270,7 +1266,7 @@ public class FieldMetaData
     }
 
     /**
-     * Return the string value converted to the given type code.  The string
+     * Return the string value converted to the given type code. The string
      * must be non-null and trimmed.
      */
     private Object transform(String val, int typeCode) {
@@ -1475,7 +1471,7 @@ public class FieldMetaData
     }
 
     /**
-     * Resolve and validate metadata.  Return true if already resolved.
+     * Resolve and validate metadata. Return true if already resolved.
      */
     public boolean resolve(int mode) {
         if ((_resMode & mode) == mode)
@@ -1621,7 +1617,7 @@ public class FieldMetaData
     }
 
     /**
-     * Copy state from the given field to this one.  Do not copy mapping
+     * Copy state from the given field to this one. Do not copy mapping
      * information.
      */
     public void copy(FieldMetaData field) {
@@ -1836,18 +1832,15 @@ public class FieldMetaData
 		return _val.getValueMappedByMetaData ();
 	}
 
-
 	public Class getTypeOverride ()
 	{
 		return _val.getTypeOverride ();
 	}
 
-
 	public void setTypeOverride (Class type)
 	{
 		_val.setTypeOverride (type);
 	}
-
 
 	public void copy (ValueMetaData vmd)
 	{

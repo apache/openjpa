@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.apache.openjpa.conf;
 import org.apache.openjpa.kernel.DetachState;
 
 /**
- * <p>Detach options.</p>
+ * Detach options.
  *
  * @author Abe White
  * @nojavadoc
@@ -53,7 +53,7 @@ public abstract class DetachOptions
     }
 
     /**
-     * For auto-configuration of the detached state field.  Accepts values
+     * For auto-configuration of the detached state field. Accepts values
      * "true", "false", or "transient".
      */
     public void setDetachedStateField(String val) {
@@ -90,7 +90,7 @@ public abstract class DetachOptions
      * Whether to use a detached state manager on types that allow it.
      * Types that do not use detached state or that declare a custom detached
      * state field to maintain serialization compatibility will never use
-     * a detached state manager.  Defaults to true.
+     * a detached state manager. Defaults to true.
      */
     public boolean getDetachedStateManager() {
         return _manager;
@@ -100,14 +100,14 @@ public abstract class DetachOptions
      * Whether to use a detached state manager on types that allow it.
      * Types that do not use detached state or that declare a custom detached
      * state field to maintain serialization compatibility will never use
-     * a detached state manager.  Defaults to true.
+     * a detached state manager. Defaults to true.
      */
     public void setDetachedStateManager(boolean val) {
         _manager = val;
     }
 
     /**
-     * Whether to allow access to unloaded detached fields.  This setting only
+     * Whether to allow access to unloaded detached fields. This setting only
      * applies to instances with detached state managers.
      */
     public boolean getAccessUnloaded() {
@@ -115,7 +115,7 @@ public abstract class DetachOptions
     }
 
     /**
-     * Whether to allow access to unloaded detached fields.  This setting only
+     * Whether to allow access to unloaded detached fields. This setting only
      * applies to instances with detached state managers.
      */
     public void setAccessUnloaded(boolean val) {
@@ -145,7 +145,7 @@ public abstract class DetachOptions
     }
 
     /**
-     *	Public to allow reflection.
+     * Public to allow reflection.
      */
     public static class All
         extends DetachOptions {

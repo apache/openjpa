@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,11 +45,11 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ImplHelper;
 
 /**
- * <p>This class stores information about a particular invocation of
+ * This class stores information about a particular invocation of
  * a query. It contains a reference to the external properties of the
  * query that was executed, as well as any parameters used to execute
  * that query, with one exception: first-class objects used as
- * parameter values are converted to OIDs.</p>
+ * parameter values are converted to OIDs.
  *
  * @author Patrick Linskey
  */

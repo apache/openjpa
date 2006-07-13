@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -199,7 +202,7 @@ public class ConcurrentHashMap extends AbstractMap
      */
     private static int hash(Object x) {
         int h = x.hashCode();
-        return h - (h << 7);    // i.e., -127 * h
+        return h - (h << 7); // i.e., -127 * h
     }
 
     /**
@@ -272,7 +275,7 @@ public class ConcurrentHashMap extends AbstractMap
      *
      * @param key the key whose associated value is to be returned.
      * @return the value to which this map maps the specified key, or
-     *         <tt>null</tt> if the map contains no mapping for this key.
+     * <tt>null</tt> if the map contains no mapping for this key.
      * @see #put(Object, Object)
      */
     public Object get(Object key) {
@@ -286,7 +289,7 @@ public class ConcurrentHashMap extends AbstractMap
      *
      * @param keyThe key whose presence in this map is to be tested
      * @return <tt>true</tt> if this map contains a mapping for the specified
-     *         key.
+     * key.
      */
     public final boolean containsKey(Object key) {
         return getEntry(key) != null;
@@ -315,9 +318,9 @@ public class ConcurrentHashMap extends AbstractMap
      * @param key key with which the specified value is to be associated.
      * @param value value to be associated with the specified key.
      * @return previous value associated with specified key, or <tt>null</tt>
-     *         if there was no mapping for key. A <tt>null</tt> return can
-     *         also indicate that the ConcurrentHashMap previously associated
-     *         <tt>null</tt> with the specified key.
+     * if there was no mapping for key. A <tt>null</tt> return can
+     * also indicate that the ConcurrentHashMap previously associated
+     * <tt>null</tt> with the specified key.
      */
     public Object put(Object key, Object value) {
         Object k = maskNull(key);
@@ -433,9 +436,9 @@ public class ConcurrentHashMap extends AbstractMap
      *
      * @param key key whose mapping is to be removed from the map.
      * @return previous value associated with specified key, or <tt>null</tt>
-     *         if there was no mapping for key. A <tt>null</tt> return can
-     *         also indicate that the map previously associated <tt>null</tt>
-     *         with the specified key.
+     * if there was no mapping for key. A <tt>null</tt> return can
+     * also indicate that the map previously associated <tt>null</tt>
+     * with the specified key.
      */
     public Object remove(Object key) {
         Entry e = removeEntryForKey(key);
@@ -570,7 +573,7 @@ public class ConcurrentHashMap extends AbstractMap
      *
      * @param value value whose presence in this map is to be tested.
      * @return <tt>true</tt> if this map maps one or more keys to the
-     *         specified value.
+     * specified value.
      */
     public final boolean containsValue(Object value) {
         if (value == null) return containsNullValue();

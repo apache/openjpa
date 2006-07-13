@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,11 +20,10 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
- * <p>Lifecycle state.</p>
- * <p/>
- * <p>Represents a persistent instance that is not transactional, but that
- * allows access to persistent data.  This state is reachable only if the
- * RetainState property is set.</p>
+ * Lifecycle state.
+ *  Represents a persistent instance that is not transactional, but that
+ * allows access to persistent data. This state is reachable only if the
+ * RetainState property is set.
  *
  * @author Abe White
  */

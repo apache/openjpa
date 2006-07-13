@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ import java.util.Collection;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * <p>An aggregate listener aggregates data produced by an ExpressionQuery.</p>
+ * An aggregate listener aggregates data produced by an ExpressionQuery.
  *
  * @author Abe White
  * @author Patrick Linskey
@@ -45,13 +45,13 @@ public interface AggregateListener
     /**
      * Return the value of this aggregate.
      *
-     * @param    args        for each candidate, the value of the arguments to
+     * @param args for each candidate, the value of the arguments to
      * the function; will be null if this aggregate does
      * not expect an argument; if this function has
      * multiple arguments, each element will be an array
-     * @param    argClasses    the expected class of each argument element
-     * @param    candidates    the candidate objects being evaluated
-     * @param    ctx            the persistence context
+     * @param argClasses the expected class of each argument element
+     * @param candidates the candidate objects being evaluated
+     * @param ctx the persistence context
      * @return the value of the aggregate
      * @throws UserException if this aggregate does not support
      * in-memory operation
@@ -60,10 +60,10 @@ public interface AggregateListener
         Collection candidates, StoreContext ctx);
 
     /**
-     *	Return the expected type of the result of this listener.
+     * Return the expected type of the result of this listener.
      *
-     *	@param    argClasses    the expected classes of the argument, or null if
-     *						no arguments
+     * @param argClasses the expected classes of the argument, or null if
+     * no arguments
      */
     public Class getType(Class[] argClasses);
 }

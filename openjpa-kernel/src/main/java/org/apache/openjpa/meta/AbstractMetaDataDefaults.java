@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * </p>Abstract metadata defaults.</p>
+ * Abstract metadata defaults.
  *
  * @author Abe White
  */
@@ -46,7 +46,7 @@ public abstract class AbstractMetaDataDefaults
 
     /**
      * Whether to attempt to use the information from registered classes
-     * to populate metadata defaults.  Defaults to true.
+     * to populate metadata defaults. Defaults to true.
      */
     public boolean getUsePCRegistry() {
         return _pcRegistry;
@@ -54,7 +54,7 @@ public abstract class AbstractMetaDataDefaults
 
     /**
      * Whether to attempt to use the information from registered classes
-     * to populate metadata defaults.  Defaults to true.
+     * to populate metadata defaults. Defaults to true.
      */
     public void setUsePCRegistry(boolean pcRegistry) {
         _pcRegistry = pcRegistry;
@@ -129,7 +129,7 @@ public abstract class AbstractMetaDataDefaults
     }
 
     /**
-     * Populate initial field data.  Does nothing by default.
+     * Populate initial field data. Does nothing by default.
      */
     protected void populate(FieldMetaData fmd) {
     }
@@ -209,7 +209,7 @@ public abstract class AbstractMetaDataDefaults
     }
 
     /**
-     * Return the access type of the given metadata.  May be a bitwise
+     * Return the access type of the given metadata. May be a bitwise
      * combination of field and property access constants, or ACCESS_UNKNOWN.
      * Returns ACCESS_FIELD by default.
      */
@@ -218,11 +218,11 @@ public abstract class AbstractMetaDataDefaults
     }
 
     /**
-     * Return the field name for the given member.  This will only be invoked
-     * on members of the right type (field vs. method).  Return null if the
-     * member cannot be managed.  Default behavior: For fields, returns the
-     * field name.  For getter methods, returns the minus "get" or "is" with
-     * the next letter lower-cased.  For other methods, returns null.
+     * Return the field name for the given member. This will only be invoked
+     * on members of the right type (field vs. method). Return null if the
+     * member cannot be managed. Default behavior: For fields, returns the
+     * field name. For getter methods, returns the minus "get" or "is" with
+     * the next letter lower-cased. For other methods, returns null.
      */
     protected String getFieldName(Member member) {
         if (member instanceof Field)
@@ -261,7 +261,7 @@ public abstract class AbstractMetaDataDefaults
      * only be invoked on members of the right type (field vs. method).
      * Returns false if member is static or final by default.
      *
-     * @param    name    the field name from {@link #getFieldName}
+     * @param name the field name from {@link #getFieldName}
      */
     protected abstract boolean isDefaultPersistent(ClassMetaData meta,
         Member member, String name);
@@ -289,7 +289,7 @@ public abstract class AbstractMetaDataDefaults
     }
 
     /**
-     * Return the method backing the given field metadata.  Looks for
+     * Return the method backing the given field metadata. Looks for
      * "get" and "is" methods with no parameters by default. This looks
      * for elements defined in <code>cls</code> and its superclasses.
      */
@@ -329,8 +329,8 @@ public abstract class AbstractMetaDataDefaults
     }
 
     /**
-     *	Helper method; returns true if the given class appears to be
-     *	user-defined.
+     * Helper method; returns true if the given class appears to be
+     * user-defined.
      */
     protected static boolean isUserDefined(Class cls) {
         return cls != null && !cls.getName().startsWith("java.")

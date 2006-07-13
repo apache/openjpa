@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 
 /**
- * <p>Interface implemented by OpenJPA queries.</p>
+ * Interface implemented by OpenJPA queries.
  *
  * @since 4.0
  * @author Abe White
@@ -175,8 +175,7 @@ public interface OpenJPAQuery
     /**
      * Returns a description of the commands that will be sent to
      * the datastore in order to execute this query. This will
-     * typically be in the native query language of the database
-     * (e.g., SQL).
+     * typically be in the native query language of the database (e.g., SQL).
      *
      * @param params the named parameter map for the query invocation
      */
@@ -207,7 +206,7 @@ public interface OpenJPAQuery
     public OpenJPAQuery setFlushMode(FlushModeType flushMode);
 
     /**
-     *	Return the current flush mode.
+     * Return the current flush mode.
 	 */
 	public FlushModeType getFlushMode ();
 }

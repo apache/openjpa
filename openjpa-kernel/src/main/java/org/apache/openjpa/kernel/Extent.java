@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * <p>Representation of all members of a persistent class.</p>
+ * Representation of all members of a persistent class.
  *
  * @author Abe White
  * @author Patrick Linskey
@@ -33,14 +33,12 @@ public interface Extent {
     public FetchConfiguration getFetchConfiguration();
 
     /**
-     * Whether this extent will ignore changes made in the current
-     * transaction.
+     * Whether this extent will ignore changes made in the current transaction.
      */
     public boolean getIgnoreChanges();
 
     /**
-     * Whether this extent will ignore changes made in the current
-     * transaction.
+     * Whether this extent will ignore changes made in the current transaction.
      */
     public void setIgnoreChanges(boolean ignoreChanges);
 
@@ -84,7 +82,7 @@ public interface Extent {
     public void lock();
 
     /**
-     *	Release the internal lock.
+     * Release the internal lock.
      */
 	public void unlock ();
 }

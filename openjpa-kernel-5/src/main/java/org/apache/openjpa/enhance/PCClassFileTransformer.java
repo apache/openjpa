@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,8 +31,8 @@ import org.apache.openjpa.util.GeneralException;
 import serp.bytecode.Project;
 
 /**
- * <p>Transformer that makes persistent classes implement the
- * {@link PersistenceCapable} interface at runtime.</p>
+ * Transformer that makes persistent classes implement the
+ * {@link PersistenceCapable} interface at runtime.
  *
  * @author Abe White
  * @nojavadoc
@@ -52,9 +52,9 @@ public class PCClassFileTransformer
     /**
      * Constructor.
      *
-     * @param    repos    metadata repository to use internally
-     * @param    opts    enhancer configuration options
-     * @param    loader    temporary class loader for loading intermediate classes
+     * @param repos metadata repository to use internally
+     * @param opts enhancer configuration options
+     * @param loader temporary class loader for loading intermediate classes
      */
     public PCClassFileTransformer(MetaDataRepository repos, Options opts,
         ClassLoader loader) {
@@ -79,10 +79,10 @@ public class PCClassFileTransformer
     /**
      * Constructor.
      *
-     * @param    repos    metadata repository to use internally
-     * @param    flags    enhancer configuration
-     * @param    loader    temporary class loader for loading intermediate classes
-     * @param    devscan    whether to scan the dev classpath for persistent types
+     * @param repos metadata repository to use internally
+     * @param flags enhancer configuration
+     * @param loader temporary class loader for loading intermediate classes
+     * @param devscan whether to scan the dev classpath for persistent types
      * if none are configured
      */
     public PCClassFileTransformer(MetaDataRepository repos,
@@ -183,21 +183,21 @@ public class PCClassFileTransformer
         for (int i = 1; i < entries.length; i++) {
             entries[i] = idx + 1; // skip entry type
             switch (b[idx]) {
-                case 1:        // utf8
+                case 1: // utf8
                     idx += 3 + readUnsignedShort(b, idx + 1);
                     break;
-                case 3:        // integer
-                case 4:        // float
-                case 9:        // field
-                case 10:    // method
-                case 11:    // interface method
-                case 12:    // name
+                case 3: // integer
+                case 4: // float
+                case 9: // field
+                case 10: // method
+                case 11: // interface method
+                case 12: // name
                     idx += 5;
                     break;
-                case 5:        // long
-                case 6:        // double
+                case 5: // long
+                case 6: // double
                     idx += 9;
-                    i++;    // wide entry
+                    i++; // wide entry
                     break;
                 default:
                     idx += 3;
@@ -226,7 +226,7 @@ public class PCClassFileTransformer
     }
 
     /**
-     *	Read an unsigned short from the given array at the given offset.
+     * Read an unsigned short from the given array at the given offset.
      */
     private static int readUnsignedShort(byte[] b, int idx) {
         return ((b[idx] & 0xFF) << 8) | (b[idx + 1] & 0xFF);

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,14 +32,14 @@ import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
- * <p>A collection proxy designed for collections backed by extremely large
+ * A collection proxy designed for collections backed by extremely large
  * result sets in which each call to {@link #iterator} may perform a database
- * query.  Changes to the collection are tracked through a
- * {@link ChangeTracker}.  This collection has the following limitations:
+ * query. Changes to the collection are tracked through a
+ * {@link ChangeTracker}. This collection has the following limitations:
  * <ul>
  * <li>The <code>size</code> method may return {@link Integer#MAX_VALUE}.</li>
  * <li>The collection cannot contain duplicate elements.</li>
- * </ul></p>
+ * </ul>
  *
  * @author Abe White
  */
@@ -61,9 +61,9 @@ public abstract class AbstractLRSProxyCollection
     /**
      * Constructor.
      *
-     * @param    elementType        the allowed type of elements, or null for no
+     * @param elementType the allowed type of elements, or null for no
      * restrictions
-     * @param    ordered            true if this collection is ordered
+     * @param ordered true if this collection is ordered
      */
     public AbstractLRSProxyCollection(Class elementType, boolean ordered,
         OpenJPAConfiguration conf) {
@@ -279,7 +279,7 @@ public abstract class AbstractLRSProxyCollection
 
     /**
      * Implement this method to return an iterator over the contents of the
-     * collection.  This method may be invoked multiple times.  The returned
+     * collection. This method may be invoked multiple times. The returned
      * iterator does not have to support the {@link Iterator#remove} method,
      * and may implement {@link org.apache.openjpa.lib.util.Closeable}.
      */
@@ -356,7 +356,7 @@ public abstract class AbstractLRSProxyCollection
     }
 
     /**
-     *	Wrapper around our filtering iterator chain.
+     * Wrapper around our filtering iterator chain.
      */
     private class Itr
         implements Iterator, Closeable {

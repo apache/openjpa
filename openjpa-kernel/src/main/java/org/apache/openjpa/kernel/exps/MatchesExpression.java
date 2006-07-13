@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ import org.apache.openjpa.lib.util.SimpleRegex;
 import serp.util.Strings;
 
 /**
- * <p>Expression that compares two others.</p>
+ * Expression that compares two others.
  *
  * @author Abe White
  */
@@ -32,7 +32,7 @@ class MatchesExpression
     private final boolean _affirmation;
 
     /**
-     * Constructor.  Supply values to compare.
+     * Constructor. Supply values to compare.
      */
     public MatchesExpression(Val val1, Val val2,
         String single, String multi, String escape, boolean affirmation) {
@@ -69,5 +69,4 @@ class MatchesExpression
         return _affirmation ? matches : !matches;
     }
 }
-
 
