@@ -69,7 +69,7 @@ import serp.util.Numbers;
  *
  * @author Abe White
  */
-class StateManagerImpl
+public class StateManagerImpl
     implements OpenJPAStateManager {
 
     public static final int LOAD_FGS = 0;
@@ -140,7 +140,7 @@ class StateManagerImpl
     /**
      * Constructor; supply id, type metadata, and owning persistence manager.
      */
-    StateManagerImpl(Object id, ClassMetaData meta, BrokerImpl broker) {
+    protected StateManagerImpl(Object id, ClassMetaData meta, BrokerImpl broker) {
         _id = id;
         _meta = meta;
         _broker = broker;

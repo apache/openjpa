@@ -52,10 +52,8 @@ import serp.util.Numbers;
  * @author Patrick Linskey
  * @since 2.5.0
  */
-class QueryCacheStoreQuery
+public class QueryCacheStoreQuery
     implements StoreQuery {
-
-    private static Object NULL = new Object();
 
     private final StoreQuery _query;
     private final QueryCache _cache;
@@ -456,7 +454,7 @@ class QueryCacheStoreQuery
      * Result list implementation for a cached query result.  Package-protected
      * for testing.
      */
-    static class CachedList
+    public static class CachedList
         extends AbstractList
         implements Serializable {
 

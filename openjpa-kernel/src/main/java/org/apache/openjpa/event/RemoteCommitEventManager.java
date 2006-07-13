@@ -24,7 +24,6 @@ import java.util.List;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
@@ -48,7 +47,6 @@ public class RemoteCommitEventManager
         (RemoteCommitEventManager.class);
 
     private final RemoteCommitProvider _provider;
-    private final Log _log;
     private boolean _transmitPersIds = false;
 
     /**
@@ -58,9 +56,7 @@ public class RemoteCommitEventManager
         _provider = conf.newRemoteCommitProviderInstance();
         if (_provider != null) {
             _provider.setRemoteCommitEventManager(this);
-            _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
-        } else
-            _log = null;
+        }
     }
 
     /**
