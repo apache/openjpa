@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 /**
  * Parser for query languages that will be used by a {@link ExpressionQuery}.
  * A QueryParser is responsible for translating from some string-based query
- * language into {@link Expression}s.  Parsers should be stateless.
+ * language into {@link Expression}s. Parsers should be stateless.
  *
  * @author Marc Prud'hommeaux
  * @nojavadoc
@@ -54,7 +54,7 @@ public interface ExpressionParser
         ExpressionFactory factory, ClassMetaData candidate);
 
     /**
-     *	Parse the given value clauses.
+     * Parse the given value clauses.
      */
     public Value[] eval(String[] vals, ExpressionStoreQuery query,
         ExpressionFactory factory, ClassMetaData candidate);

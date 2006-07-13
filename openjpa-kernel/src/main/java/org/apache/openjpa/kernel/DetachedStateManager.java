@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,8 +34,8 @@ import org.apache.openjpa.util.Proxy;
 import org.apache.openjpa.util.UnsupportedException;
 
 /**
- * <p>Internal state manager for detached instances.  Does not fully
- * implement {@link OpenJPAStateManager} contract to allow for serialization.</p>
+ * Internal state manager for detached instances. Does not fully
+ * implement {@link OpenJPAStateManager} contract to allow for serialization.
  *
  * @author Steve Kim
  * @nojavadoc
@@ -59,11 +59,11 @@ public class DetachedStateManager
     /**
      * Constructor.
      *
-     * @param    pc                the managed instance
-     * @param    sm                the instance's state manager
-     * @param    load            the set of detached field indexes
-     * @param    access            whether to allow access to unloaded fields
-     * @param    multithreaded    whether the instance will be used concurrently
+     * @param pc the managed instance
+     * @param sm the instance's state manager
+     * @param load the set of detached field indexes
+     * @param access whether to allow access to unloaded fields
+     * @param multithreaded whether the instance will be used concurrently
      * by multiple threads
      */
     public DetachedStateManager(PersistenceCapable pc, OpenJPAStateManager sm,

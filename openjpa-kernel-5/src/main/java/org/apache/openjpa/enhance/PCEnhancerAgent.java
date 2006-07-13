@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,16 +26,15 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ClassResolver;
 
 /**
- * <p>Java agent that makes persistent classes implement the
- * {@link PersistenceCapable} interface at runtime.  The agent is launched
- * at JVM startup from the command line:</p>
- * <p/>
+ * Java agent that makes persistent classes implement the
+ * {@link PersistenceCapable} interface at runtime. The agent is launched
+ * at JVM startup from the command line:
+ * 
  * <code>java -javaagent:openjpa.jar[=&lt;options&gt;]</code>
- * <p/>
- * <p>The options string should be formatted as a OpenJPA plugin, and may 
- * contain any properties understood by the OpenJPA enhancer or any 
- * configuration properties.  For example:</p>
- * <p/>
+ *  The options string should be formatted as a OpenJPA plugin, and may
+ * contain any properties understood by the OpenJPA enhancer or any
+ * configuration properties. For example:
+ * 
  * <code>java -javaagent:openjpa.jar</code>
  *
  * @author Abe White

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -62,8 +62,8 @@ import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.UnsupportedException;
 
 /**
- * <p>Custom SAX parser used by the system to quickly parse persistence i
- * metadata files.</p>
+ * Custom SAX parser used by the system to quickly parse persistence i
+ * metadata files.
  *
  * @author Steve Kim
  * @nojavadoc
@@ -185,7 +185,7 @@ public class XMLPersistenceMetaDataParser
     }
 
     /**
-     * The annotation parser.  When class is discovered in an XML file,
+     * The annotation parser. When class is discovered in an XML file,
      * we first parse any annotations present, then override with the XML.
      */
     public AnnotationPersistenceMetaDataParser getAnnotationParser() {
@@ -193,7 +193,7 @@ public class XMLPersistenceMetaDataParser
     }
 
     /**
-     * The annotation parser.  When class is discovered in an XML file,
+     * The annotation parser. When class is discovered in an XML file,
      * we first parse any annotations present, then override with the XML.
      */
     public void setAnnotationParser(
@@ -202,7 +202,7 @@ public class XMLPersistenceMetaDataParser
     }
 
     /**
-     * Returns the repository for this parser.  If none has been set, creates
+     * Returns the repository for this parser. If none has been set, creates
      * a new repository and sets it.
      */
     public MetaDataRepository getRepository() {
@@ -253,7 +253,7 @@ public class XMLPersistenceMetaDataParser
 
     /**
      * Whether to allow later parses of mapping information to override
-     * earlier information for the same class.  Defaults to false.  Useful
+     * earlier information for the same class. Defaults to false. Useful
      * when a tool is mapping a class, so that .jdo file partial mapping
      * information can be used even when mappings are stored in .orm files
      * or other locations.
@@ -264,7 +264,7 @@ public class XMLPersistenceMetaDataParser
 
     /**
      * Whether to allow later parses of mapping information to override
-     * earlier information for the same class.  Defaults to false.  Useful
+     * earlier information for the same class. Defaults to false. Useful
      * when a tool is mapping a class, so that .jdo file partial mapping
      * information can be used even when mappings are stored in .orm files
      * or other locations.
@@ -274,7 +274,7 @@ public class XMLPersistenceMetaDataParser
     }
 
     /**
-     * The parse mode according to the expected document type.  The
+     * The parse mode according to the expected document type. The
      * mode constants act as bit flags, and therefore can be combined.
      */
     public int getMode() {
@@ -350,7 +350,7 @@ public class XMLPersistenceMetaDataParser
     }
 
     /**
-     * Return the current element being parsed.  May be a class metadata,
+     * Return the current element being parsed. May be a class metadata,
      * field metadata, query metadata, etc.
      */
     protected Object currentElement() {
@@ -1122,14 +1122,14 @@ public class XMLPersistenceMetaDataParser
     }
 
     /**
-     * Implement to add field mapping data.  Does nothing by default.
+     * Implement to add field mapping data. Does nothing by default.
      */
     protected void startFieldMapping(FieldMetaData field, Attributes attrs)
         throws SAXException {
     }
 
     /**
-     * Implement to finalize field mapping.  Does nothing by default.
+     * Implement to finalize field mapping. Does nothing by default.
      */
     protected void endFieldMapping(FieldMetaData field)
         throws SAXException {
@@ -1226,7 +1226,7 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
         assertPC(fmd, "Embedded");
         fmd.setEmbedded(true);
-        fmd.setSerialized(false);    // override any Lob annotation
+        fmd.setSerialized(false); // override any Lob annotation
         if (fmd.getEmbeddedMetaData() == null)
             fmd.addEmbeddedMetaData();
     }
@@ -1250,7 +1250,7 @@ public class XMLPersistenceMetaDataParser
         if (val != null)
             fmd.setDeclaredType(classForName(val));
         assertPC(fmd, "OneToOne");
-        fmd.setSerialized(false);    // override any Lob annotation
+        fmd.setSerialized(false); // override any Lob annotation
         if (!fmd.isDefaultFetchGroupExplicit())
             fmd.setInDefaultFetchGroup(true);
     }
@@ -1264,7 +1264,7 @@ public class XMLPersistenceMetaDataParser
         if (val != null)
             fmd.setDeclaredType(classForName(val));
         assertPC(fmd, "ManyToOne");
-        fmd.setSerialized(false);    // override any Lob annotation
+        fmd.setSerialized(false); // override any Lob annotation
         if (!fmd.isDefaultFetchGroupExplicit())
             fmd.setInDefaultFetchGroup(true);
     }
@@ -1278,7 +1278,7 @@ public class XMLPersistenceMetaDataParser
         if (val != null)
             fmd.getElement().setDeclaredType(classForName(val));
         assertPCCollection(fmd, "ManyToMany");
-        fmd.setSerialized(false);    // override Lob in annotation
+        fmd.setSerialized(false); // override Lob in annotation
     }
 
     /**
@@ -1308,7 +1308,7 @@ public class XMLPersistenceMetaDataParser
         if (val != null)
             fmd.getElement().setDeclaredType(classForName(val));
         assertPCCollection(fmd, "OneToMany");
-        fmd.setSerialized(false);    // override any Lob annotation
+        fmd.setSerialized(false); // override any Lob annotation
     }
 
     /**
@@ -1626,7 +1626,7 @@ public class XMLPersistenceMetaDataParser
     }
 
     /**
-     *	Instantiate the given class, taking into account the default package.
+     * Instantiate the given class, taking into account the default package.
 	 */
 	protected Class classForName (String name)
 		throws SAXException

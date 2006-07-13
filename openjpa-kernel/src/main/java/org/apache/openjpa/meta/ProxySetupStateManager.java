@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,9 +25,9 @@ import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.util.InternalException;
 
 /**
- * <p>Mostly-unimplemented state manager type whose sole purpose is to
+ * Mostly-unimplemented state manager type whose sole purpose is to
  * check the initial value of all SCO container fields for their initialized
- * types and comparators.</p>
+ * types and comparators.
  *
  * @author Abe White
  */

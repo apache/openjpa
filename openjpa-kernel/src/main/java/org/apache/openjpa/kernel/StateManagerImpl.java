@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,17 +55,16 @@ import org.apache.openjpa.util.UserException;
 import serp.util.Numbers;
 
 /**
- * <p>Implementation of the {@link OpenJPAStateManager} interface for use
- * with this runtime.  Each state manager manages the state of a single
- * persistence capable instance.  The state manager is also responsible for
- * all communications about the instance to the {@link StoreManager}.</p>
- * <p/>
- * <p>The state manager uses the State pattern in both its interaction with
+ * Implementation of the {@link OpenJPAStateManager} interface for use
+ * with this runtime. Each state manager manages the state of a single
+ * persistence capable instance. The state manager is also responsible for
+ * all communications about the instance to the {@link StoreManager}.
+ *  The state manager uses the State pattern in both its interaction with
  * the governed instance and its interaction with the broker.
  * In its interactions with the persistence capable instance, it uses the
- * {@link FieldManager} interface.  Similarly, when interacting with the
+ * {@link FieldManager} interface. Similarly, when interacting with the
  * broker, it uses the {@link PCState} singleton that represents
- * the current lifecycle state of the instance.</p>
+ * the current lifecycle state of the instance.
  *
  * @author Abe White
  */
@@ -178,10 +177,10 @@ public class StateManagerImpl
     }
 
     /**
-     * Set or reset the lifecycle state of the managed instance.  If the
+     * Set or reset the lifecycle state of the managed instance. If the
      * transactional state of the instance changes, it will be enlisted/
-     * delisted from the current transaction as necessary.  The given
-     * state will be initialized after being set.  If the given state
+     * delisted from the current transaction as necessary. The given
+     * state will be initialized after being set. If the given state
      * is the same as the current state, this method will have no effect.
      */
     private void setPCState(PCState state) {
@@ -320,7 +319,7 @@ public class StateManagerImpl
 
     /**
      * Load the state of this instance based on the given fetch configuration
-     * and load mode.  Return true if any data was loaded, false otherwise.
+     * and load mode. Return true if any data was loaded, false otherwise.
      */
     protected boolean load(FetchState fetchState, int loadMode,
         BitSet exclude, Object sdata, boolean forWrite) {
@@ -419,7 +418,7 @@ public class StateManagerImpl
                     load = fetchState == null ||
                         fetchState.requiresLoad(this, fmds[i]);
                     break;
-                default:     // LOAD_ALL
+                default: // LOAD_ALL
                     load = true;
             }
 
@@ -492,7 +491,7 @@ public class StateManagerImpl
      * Make sure we were assigned an oid, and perform actions to make it
      * permanent.
      *
-     * @param    recache        whether to recache ourself on the new oid
+     * @param recache whether to recache ourself on the new oid
      */
     private void assertObjectIdAssigned(boolean recache) {
         if (!isNew() || isDeleted() || (_flags & FLAG_OID_ASSIGNED) > 0)
@@ -828,7 +827,7 @@ public class StateManagerImpl
     /**
      * Notification that the object is about to be accessed.
      *
-     * @param    field    the field number being read, or -1 if not a single
+     * @param field the field number being read, or -1 if not a single
      * field read
      */
     void beforeRead(int field) {
@@ -852,7 +851,7 @@ public class StateManagerImpl
     /**
      * Delegates to the current state.
      *
-     * @see    PCState#beforeFlush
+     * @see PCState#beforeFlush
      */
     void beforeFlush(int reason, OpCallbacks call) {
         _state.beforeFlush(this, reason == BrokerImpl.FLUSH_LOGICAL, call);
@@ -861,7 +860,7 @@ public class StateManagerImpl
     /**
      * Delegates to the current state.
      *
-     * @see    PCState#flush
+     * @see PCState#flush
      */
     void afterFlush(int reason) {
         // nothing happens when we flush non-persistent states
@@ -903,8 +902,8 @@ public class StateManagerImpl
      * Delegates to the current state after checking the value
      * of the RetainState flag.
      *
-     * @see    PCState#commit
-     * @see    PCState#commitRetain
+     * @see PCState#commit
+     * @see PCState#commitRetain
      */
     void commit() {
         // release locks before oid updated
@@ -933,8 +932,8 @@ public class StateManagerImpl
      * Delegates to the current state after checking the value
      * of the RetainState flag.
      *
-     * @see    PCState#rollback
-     * @see    PCState#rollbackRestore
+     * @see PCState#rollback
+     * @see PCState#rollbackRestore
      */
     void rollback() {
         // release locks
@@ -969,8 +968,8 @@ public class StateManagerImpl
     /**
      * Delegates to the current state.
      *
-     * @see    PCState#persist
-     * @see    Broker#persist
+     * @see PCState#persist
+     * @see Broker#persist
      */
     void persist() {
         setPCState(_state.persist(this));
@@ -979,8 +978,8 @@ public class StateManagerImpl
     /**
      * Delegates to the current state.
      *
-     * @see    PCState#delete
-     * @see    Broker#delete
+     * @see PCState#delete
+     * @see Broker#delete
      */
     void delete() {
         setPCState(_state.delete(this));
@@ -989,8 +988,8 @@ public class StateManagerImpl
     /**
      * Delegates to the current state.
      *
-     * @see    PCState#nontransactional
-     * @see    Broker#nontransactional
+     * @see PCState#nontransactional
+     * @see Broker#nontransactional
      */
     void nontransactional() {
         setPCState(_state.nontransactional(this));
@@ -999,8 +998,8 @@ public class StateManagerImpl
     /**
      * Delegates to the current state.
      *
-     * @see    PCState#transactional
-     * @see    Broker#transactional
+     * @see PCState#transactional
+     * @see Broker#transactional
      */
     void transactional() {
         setPCState(_state.transactional(this));
@@ -1009,8 +1008,8 @@ public class StateManagerImpl
     /**
      * Delegates to the current state.
      *
-     * @see    PCState#release
-     * @see    Broker#release
+     * @see PCState#release
+     * @see Broker#release
      */
     void release(boolean unproxy) {
         release(unproxy, false);
@@ -1035,8 +1034,8 @@ public class StateManagerImpl
     /**
      * Delegates to the current state.
      *
-     * @see    PCState#evict
-     * @see    Broker#evict
+     * @see PCState#evict
+     * @see Broker#evict
      */
     void evict() {
         setPCState(_state.evict(this));
@@ -1101,7 +1100,7 @@ public class StateManagerImpl
     }
 
     /**
-     * Perform state transitions after refresh.  This method is only
+     * Perform state transitions after refresh. This method is only
      * called if {@link #beforeRefresh} returns true.
      */
     void afterRefresh() {
@@ -1140,7 +1139,7 @@ public class StateManagerImpl
     ///////////
 
     /**
-     * Notification that we've been read-locked.  Pass in the level at which
+     * Notification that we've been read-locked. Pass in the level at which
      * we were locked and the level at which we should write lock ourselves
      * on dirty.
      */
@@ -1370,9 +1369,9 @@ public class StateManagerImpl
     /**
      * Make the given field dirty.
      *
-     * @param    mutate    if null, may be an SCO mutation; if true, is certainly
+     * @param mutate if null, may be an SCO mutation; if true, is certainly
      * a mutation (or at least treat as one)
-     * @return        {@link Boolean#FALSE} if this instance was already dirty,
+     * @return {@link Boolean#FALSE} if this instance was already dirty,
      * <code>null</code> if it was dirty but not since flush, and
      * {@link Boolean#TRUE} if it was not dirty
      */
@@ -1412,13 +1411,13 @@ public class StateManagerImpl
                             (fmd.isEmbedded()) ? Boolean.TRUE : Boolean.FALSE;
                         break;
                     default:
-                        mutate = Boolean.FALSE;        // not sco
+                        mutate = Boolean.FALSE; // not sco
                 }
             }
 
             // possibly change state
             boolean active = _broker.isActive();
-            clean = !_state.isDirty();     // intentional direct access
+            clean = !_state.isDirty(); // intentional direct access
 
             // fire event fast before state change.
             if (clean)
@@ -1490,7 +1489,7 @@ public class StateManagerImpl
     /**
      * Fire post-dirty events after field value changes.
      *
-     * @param    status    return value from {@link #dirty(int,boolean,boolean)}
+     * @param status return value from {@link #dirty(int,boolean,boolean)}
      */
     private void postDirty(Boolean status) {
         if (Boolean.TRUE.equals(status))
@@ -2499,7 +2498,7 @@ public class StateManagerImpl
 
     /**
      * Executes pre-clear callbacks, clears all managed fields, and calls the
-     * {@link #setLoaded} method with a value of false.  Primary key fields
+     * {@link #setLoaded} method with a value of false. Primary key fields
      * are not cleared.
      */
     void clearFields() {
@@ -2551,7 +2550,7 @@ public class StateManagerImpl
 
     /**
      * If the field isn't already saved, saves the currently loaded field
-     * state of the instance.  The saved values can all be restored via
+     * state of the instance. The saved values can all be restored via
      * {@link #restoreFields}.
      */
     private void saveField(int field) {
@@ -2673,8 +2672,8 @@ public class StateManagerImpl
     }
 
     /**
-     * Get ready for a flush.  Persists all persistence-capable object fields,
-     * and checks for illegal null values.  Also assigns oids and field values
+     * Get ready for a flush. Persists all persistence-capable object fields,
+     * and checks for illegal null values. Also assigns oids and field values
      * for all strategies that don't require flushing.
      */
     void preFlush(boolean logical, OpCallbacks call) {
@@ -2905,7 +2904,7 @@ public class StateManagerImpl
      * might exclude some fields which are then immediately loaded in a
      * separate step before being returned to the user.
      *
-     * @param    field    the field index that was loaded, or -1 to indicate
+     * @param field the field index that was loaded, or -1 to indicate
      * that a group of possibly unknown fields was loaded
      */
     private void postLoad(int field, FetchState fetchState) {
@@ -2965,8 +2964,7 @@ public class StateManagerImpl
     }
 
     /**
-     * Set whether this instance requires a version check on the
-     * next flush.
+     * Set whether this instance requires a version check on the next flush.
      */
     void setCheckVersion(boolean versionCheck) {
         if (versionCheck)
@@ -2983,8 +2981,7 @@ public class StateManagerImpl
     }
 
     /**
-     * Set whether this instance requires a version update on the
-     * next flush.
+     * Set whether this instance requires a version update on the next flush.
      */
     void setUpdateVersion(boolean versionUpdate) {
         if (versionUpdate)
@@ -3015,7 +3012,7 @@ public class StateManagerImpl
     }
 
     /**
-     *	Unlock the state manager.
+     * Unlock the state manager.
      */
 	protected void unlock ()
 	{

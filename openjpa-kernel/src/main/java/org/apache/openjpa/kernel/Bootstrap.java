@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * <p>Helper methods for acquiring {@link BrokerFactory} objects</p>
+ * Helper methods for acquiring {@link BrokerFactory} objects
  *
  * @since 4.0.0
  */
@@ -48,8 +48,8 @@ public class Bootstrap {
     }
 
     /**
-     * Return a new factory for the given configuration.  The classloader
-     * will be used to load the factory class.  If no classloader is given,
+     * Return a new factory for the given configuration. The classloader
+     * will be used to load the factory class. If no classloader is given,
      * the thread's context classloader is used.
      */
     public static BrokerFactory newBrokerFactory(ConfigurationProvider conf,
@@ -84,8 +84,8 @@ public class Bootstrap {
     }
 
     /**
-     * Return a pooled factory for the given configuration.  The classloader
-     * will be used to load the factory class.  If no classloader is given,
+     * Return a pooled factory for the given configuration. The classloader
+     * will be used to load the factory class. If no classloader is given,
      * the thread's context classloader is used.
      */
     public static BrokerFactory getBrokerFactory(ConfigurationProvider conf,
@@ -113,7 +113,7 @@ public class Bootstrap {
     }
 
     /**
-     *	Instantiate the factory class designated in properties.
+     * Instantiate the factory class designated in properties.
      */
     private static Class getFactoryClass(ConfigurationProvider conf,
         ClassLoader loader) {

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,7 +59,7 @@ class AttachManager {
     private AttachStrategy _detach = null;
 
     /**
-     * Constructor.  Supply broker attaching to.
+     * Constructor. Supply broker attaching to.
      */
     public AttachManager(BrokerImpl broker, boolean copyNew, OpCallbacks call) {
         _broker = broker;
@@ -98,7 +98,7 @@ class AttachManager {
         }
         catch (CallbackException ce) {
             excep = ce;
-            return null;    // won't be reached as the exceps will be rethrown
+            return null; // won't be reached as the exceps will be rethrown
         }
         finally {
             List exceps = null;
@@ -213,10 +213,10 @@ class AttachManager {
     /**
      * Attach.
      *
-     * @param    toAttach    the detached object
-     * @param    into        the instance we're attaching into
-     * @param    owner        state manager for <code>into</code>
-     * @param    ownerMeta    the field we traversed to find <code>toAttach</code>
+     * @param toAttach the detached object
+     * @param into the instance we're attaching into
+     * @param owner state manager for <code>into</code>
+     * @param ownerMeta the field we traversed to find <code>toAttach</code>
      */
     Object attach(Object toAttach, PersistenceCapable into,
         OpenJPAStateManager owner, ValueMetaData ownerMeta) {
@@ -322,8 +322,8 @@ class AttachManager {
     }
 
     /**
-     *	Throw an exception if the given object is not managed; otherwise
-     *	return its state manager.
+     * Throw an exception if the given object is not managed; otherwise
+     * return its state manager.
      */
     StateManagerImpl assertManaged(Object obj) {
         StateManagerImpl sm = _broker.getStateManagerImpl(obj, true);

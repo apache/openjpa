@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,14 +36,14 @@ import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
- * <p>A map proxy designed for maps backed by extremely large result sets in
+ * A map proxy designed for maps backed by extremely large result sets in
  * which each call to {@link #get} or {@link #containsKey} may perform a
- * database query.  Changes to the map are tracked through a
- * {@link ChangeTracker}.  This map has the following limitations:
+ * database query. Changes to the map are tracked through a
+ * {@link ChangeTracker}. This map has the following limitations:
  * <ul>
  * <li>The <code>size</code> method may return {@link Integer#MAX_VALUE}.</li>
  * <li>Null keys and values are not supported.</li>
- * </ul></p>
+ * </ul>
  *
  * @author Abe White
  */
@@ -329,9 +329,9 @@ public abstract class AbstractLRSProxyMap
 
     /**
      * Implement this method to return an iterator over the entries
-     * in the map.  Each returned object must implement the
-     * <code>Map.Entry</code> interface.  This method may be invoked multiple
-     * times.  The iterator does not have to support the
+     * in the map. Each returned object must implement the
+     * <code>Map.Entry</code> interface. This method may be invoked multiple
+     * times. The iterator does not have to support the
      * {@link Iterator#remove} method, and may implement
      * {@link org.apache.openjpa.lib.util.Closeable}.
      */
@@ -432,7 +432,7 @@ public abstract class AbstractLRSProxyMap
     }
 
     /**
-     *	Wrapper around our filtering iterator chain.
+     * Wrapper around our filtering iterator chain.
      */
     private class Itr
         implements Iterator, Closeable {

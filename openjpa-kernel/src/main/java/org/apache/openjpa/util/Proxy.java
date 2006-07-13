@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,12 +18,11 @@ package org.apache.openjpa.util;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 
 /**
- * <p>Interface implemented by all proxy types to allow setting and nulling
- * of their owning instance.</p>
- * <p/>
- * <p>All concrete proxy classes should be public and have publc no-args
+ * Interface implemented by all proxy types to allow setting and nulling
+ * of their owning instance.
+ *  All concrete proxy classes should be public and have publc no-args
  * constructors so that tools that work via reflection on persistent instances
- * can manipulate them.</p>
+ * can manipulate them.
  *
  * @author Abe White
  */
@@ -31,7 +30,7 @@ public interface Proxy {
 
     /**
      * Reset the state of the proxy, and set the owning instance of the
-     * proxy and the name of the field it is assigned to.  Set to null to
+     * proxy and the name of the field it is assigned to. Set to null to
      * indicate that the proxy is no longer managed.
      */
     public void setOwner(OpenJPAStateManager sm, int field);
@@ -52,8 +51,8 @@ public interface Proxy {
     public ChangeTracker getChangeTracker();
 
     /**
-     *	Return an unproxied copy of the given instance.  This method is used
-     *	by proxy managers to create backup values for use in rollback.
+     * Return an unproxied copy of the given instance. This method is used
+     * by proxy managers to create backup values for use in rollback.
      */
     public Object copy(Object orig);
 }

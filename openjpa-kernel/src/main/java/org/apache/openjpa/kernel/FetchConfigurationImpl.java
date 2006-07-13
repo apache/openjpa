@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,8 +38,8 @@ import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.NoTransactionException;
 
 /**
- * <p>Allows configuration and optimization of how objects are loaded from
- * the data store.</p>
+ * Allows configuration and optimization of how objects are loaded from
+ * the data store.
  *
  * @since 3.0
  * @author Abe White
@@ -99,7 +99,7 @@ public class FetchConfigurationImpl
     }
 
     /**
-     * Return a new hollow instance.  Subclasses should override to return
+     * Return a new hollow instance. Subclasses should override to return
      * a new instance of their type, with cached permissions set appropriately.
      */
     protected FetchConfigurationImpl newInstance() {

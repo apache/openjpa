@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -83,7 +86,7 @@ public class Options extends TypedProperties {
      *
      * @param args the command-line arguments
      * @return all arguments in the original array beyond the
-     *         flag/value pair list
+     * flag/value pair list
      * @author Patrick Linskey
      */
     public String[] setFromCmdLine(String[] args) {
@@ -149,13 +152,12 @@ public class Options extends TypedProperties {
      * <li>Map Entry: <code>"brother.name"-&gt;"Bob"</code><br />
      * Resultant method call: <code>obj.getBrother().setName("Bob")
      * <code></li>
-     * </ul>
-     * Any keys present in the map for which there is no
+     * </ul> Any keys present in the map for which there is no
      * corresponding property in the given object will be ignored,
      * and will be returned in the {@link Map} returned by this method.
      *
      * @return a {@link Map} of key-value pairs in this object
-     *         for which no setters could be found.
+     * for which no setters could be found.
      * @throws RuntimeException on parse error
      */
     public Map setInto(Object obj) {
@@ -191,7 +193,7 @@ public class Options extends TypedProperties {
      * given object.
      *
      * @return <code>true</code> if the set succeeded, or
-     *         <code>false</code> if no method could be found for this property.
+     * <code>false</code> if no method could be found for this property.
      */
     private boolean setInto(Object obj, Map.Entry entry) {
         if (entry.getKey() == null)
@@ -244,7 +246,7 @@ public class Options extends TypedProperties {
      *
      * @param type The class for which available options should be listed.
      * @return The available option names in <code>type</code>. The
-     *         names will have initial caps. They will be ordered alphabetically.
+     * names will have initial caps. They will be ordered alphabetically.
      */
     public static Collection findOptionsFor(Class type) {
         Collection names = new TreeSet();
@@ -280,10 +282,10 @@ public class Options extends TypedProperties {
      * @param match an array of length 2, where the first index is set
      * to the object to retrieve the setter for
      * @return true if a match was made, false otherwise; additionally,
-     *         the first index of the match array will be set to
-     *         the matching object and the second index will be
-     *         set to the setter method or public field for the
-     *         property named by the key
+     * the first index of the match array will be set to
+     * the matching object and the second index will be
+     * set to the setter method or public field for the
+     * property named by the key
      */
     private static boolean matchOptionToMember(String key, Object[] match)
         throws Exception {

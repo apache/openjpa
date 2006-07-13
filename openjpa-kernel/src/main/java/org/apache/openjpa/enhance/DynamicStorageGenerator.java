@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,8 +33,8 @@ import serp.bytecode.Project;
 import serp.bytecode.TableSwitchInstruction;
 
 /**
- * <p>Factory for creating new {@link DynamicStorage} classes.  Can be
- * extended to decorate/modify the generated instances behavior.</p>
+ * Factory for creating new {@link DynamicStorage} classes. Can be
+ * extended to decorate/modify the generated instances behavior.
  *
  * @author Steve Kim
  * @nojavadoc
@@ -58,7 +58,7 @@ public class DynamicStorageGenerator {
 
     /**
      * Constant to be as silent as possible during invalid index passed
-     * to set/get type methods.  On getting an Object, for example,
+     * to set/get type methods. On getting an Object, for example,
      * null will be returned.
      * However, on primitive gets, an exception will be thrown.
      */
@@ -119,7 +119,7 @@ public class DynamicStorageGenerator {
     }
 
     /**
-     * Return a class name to use for the given user key.  By default,
+     * Return a class name to use for the given user key. By default,
      * returns the stringified key prefixed by PREFIX.
      */
     protected String getClassName(Object obj) {
@@ -135,7 +135,7 @@ public class DynamicStorageGenerator {
     }
 
     /**
-     * Return the name for the generated field at the given index.  Returns
+     * Return the name for the generated field at the given index. Returns
      * <code>"field" + i</code> by default.
      */
     protected String getFieldName(int index) {
@@ -413,7 +413,7 @@ public class DynamicStorageGenerator {
 
     /**
      * Clear code associated with the given method signature, and return
-     * the empty code.  Will return null if the method should be empty.
+     * the empty code. Will return null if the method should be empty.
      */
     protected Code replaceMethod(BCClass bc, String name, Class retType,
         Class[] args, boolean remove) {
@@ -518,7 +518,7 @@ public class DynamicStorageGenerator {
     }
 
     /**
-     *  Get the wrapper for the given type.
+     * Get the wrapper for the given type.
      */
     protected Class getWrapper(Class c) {
         for (int i = 0; i < WRAPPERS.length; i++) {

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,11 +50,11 @@ import org.apache.openjpa.util.InternalException;
 import serp.util.Strings;
 
 /**
- * <p>Serializes persistence metadata back to XML.
+ * Serializes persistence metadata back to XML.
  * This class processes all object level tags that are store-agnostic.
  * However, it provides hooks for the subclasses to include store-specific
  * tags to be serialized both at &lt;entity-mappings&gt; and
- * &lt;entity&gt; level.</p>
+ * &lt;entity&gt; level.
  *
  * @since 4.0
  * @author Steve Kim
@@ -85,7 +85,7 @@ public class XMLPersistenceMetaDataSerializer
     private SerializationComparator _comp = null;
 
     /**
-     * Constructor.  Supply configuration.
+     * Constructor. Supply configuration.
      */
     public XMLPersistenceMetaDataSerializer(OpenJPAConfiguration conf) {
         _conf = conf;
@@ -117,7 +117,7 @@ public class XMLPersistenceMetaDataSerializer
     }
 
     /**
-     * The serialization mode according to the expected document type.  The
+     * The serialization mode according to the expected document type. The
      * mode constants act as bit flags, and therefore can be combined.
      */
     public int getMode() {
@@ -125,7 +125,7 @@ public class XMLPersistenceMetaDataSerializer
     }
 
     /**
-     * The serialization mode according to the expected document type.  The
+     * The serialization mode according to the expected document type. The
      * mode constants act as bit flags, and therefore can be combined.
      */
     public void setMode(int mode) {
@@ -178,7 +178,7 @@ public class XMLPersistenceMetaDataSerializer
     }
 
     /**
-     * Convenience method for interpreting {@link #getMode}.  Takes into
+     * Convenience method for interpreting {@link #getMode}. Takes into
      * account whether mapping information is loaded for the given instance.
      */
     protected boolean isMappingMode(ClassMetaData meta) {
@@ -190,7 +190,7 @@ public class XMLPersistenceMetaDataSerializer
     }
 
     /**
-     * Convenience method for interpreting {@link #getMode}.  Takes into
+     * Convenience method for interpreting {@link #getMode}. Takes into
      * account whether mapping information is loaded for the given instance.
      */
     protected boolean isMappingMode(ValueMetaData vmd) {
@@ -375,7 +375,7 @@ public class XMLPersistenceMetaDataSerializer
     }
 
     /**
-     * Add system-level mapping elements to be serialized.  Does nothing
+     * Add system-level mapping elements to be serialized. Does nothing
      * by default.
      */
     protected void addSystemMappingElements(Collection toSerialize) {
@@ -809,7 +809,7 @@ public class XMLPersistenceMetaDataSerializer
     }
 
     /**
-     * Add mapping attributes for the given class.  Does nothing by default
+     * Add mapping attributes for the given class. Does nothing by default
      */
     protected void addClassMappingAttributes(ClassMetaData mapping)
         throws SAXException {
@@ -834,21 +834,21 @@ public class XMLPersistenceMetaDataSerializer
     }
 
     /**
-     * Serialize class mapping content.  Does nothing by default.
+     * Serialize class mapping content. Does nothing by default.
      */
     protected void serializeClassMappingContent(ClassMetaData mapping)
         throws SAXException {
     }
 
     /**
-     * Serialize inheritance content.  Does nothing by default.
+     * Serialize inheritance content. Does nothing by default.
      */
     protected void serializeInheritanceContent(ClassMetaData mapping)
         throws SAXException {
     }
 
     /**
-     * Serialize query mappings.  Does nothing by default.
+     * Serialize query mappings. Does nothing by default.
      */
     protected void serializeQueryMappings(ClassMetaData meta)
         throws SAXException {
@@ -955,7 +955,7 @@ public class XMLPersistenceMetaDataSerializer
     }
 
     /**
-     * Add mapping attributes for the given field.  Does nothing by default.
+     * Add mapping attributes for the given field. Does nothing by default.
      */
     protected void addFieldMappingAttributes(FieldMetaData fmd,
         FieldMetaData orig)
@@ -983,7 +983,7 @@ public class XMLPersistenceMetaDataSerializer
     }
 
     /**
-     * Serialize attribute override mapping content.  Does nothing by default,
+     * Serialize attribute override mapping content. Does nothing by default,
      */
     protected void serializeAttributeOverrideMappingContent
         (FieldMetaData fmd, FieldMetaData orig)
@@ -1126,7 +1126,7 @@ public class XMLPersistenceMetaDataSerializer
 
     /**
      * Serialize field mapping content; this will be called before
-     * {@link #serializeValueMappingContent}.  Does nothing by default.
+     * {@link #serializeValueMappingContent}. Does nothing by default.
      */
     protected void serializeFieldMappingContent(FieldMetaData fmd,
         PersistenceStrategy strategy)
@@ -1134,7 +1134,7 @@ public class XMLPersistenceMetaDataSerializer
     }
 
     /**
-     * Set mapping attributes for strategy.  Sets mapped-by by default.
+     * Set mapping attributes for strategy. Sets mapped-by by default.
      */
     protected void addStrategyMappingAttributes(FieldMetaData fmd)
         throws SAXException {
@@ -1229,8 +1229,7 @@ public class XMLPersistenceMetaDataSerializer
         }
 
         /**
-         * Compare query metadata.
-         * Normal queries appear before native queries.
+         * Compare query metadata. Normal queries appear before native queries.
          * If the given queries use same language, then their names are
          * compared.
          */
@@ -1274,8 +1273,8 @@ public class XMLPersistenceMetaDataSerializer
 
     /**
      * Compares clases, sequences, and queries to order them for serialization.
-     * Places sequences first, then classes, then queries.  Sequences and
-     * queries are ordered alphabetically by name.  Classes are placed in
+     * Places sequences first, then classes, then queries. Sequences and
+     * queries are ordered alphabetically by name. Classes are placed in
      * listing order, in inheritance order within that, and in alphabetical
      * order within that.
      *
@@ -1315,7 +1314,7 @@ public class XMLPersistenceMetaDataSerializer
         }
 
         /**
-         * Compare two unrecognized elements of the same type.  Throws
+         * Compare two unrecognized elements of the same type. Throws
          * exception by default.
          */
         protected int compareUnknown(Object o1, Object o2) {
@@ -1370,8 +1369,8 @@ public class XMLPersistenceMetaDataSerializer
     }
 
     /**
-     *	Sorts fields according to listing order, then XSD strategy order,
-     *	then name order.
+     * Sorts fields according to listing order, then XSD strategy order,
+     * then name order.
      */
     private class FieldComparator
         implements Comparator {

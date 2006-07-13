@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +16,10 @@
 package org.apache.openjpa.util;
 
 /**
- * <p>Change tracker that can be used for collections.  If the user calls
+ * Change tracker that can be used for collections. If the user calls
  * any mutating methods on the collection that do not have an equivalent in
  * this change tracker, then you must call {@link #stopTracking} after
- * applying the operation to the collection.</p>
+ * applying the operation to the collection.
  *
  * @author Abe White
  */

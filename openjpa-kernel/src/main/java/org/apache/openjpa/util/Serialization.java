@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,9 +30,9 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
- * <p>Helper class to serialize and deserialize persistent objects,
+ * Helper class to serialize and deserialize persistent objects,
  * subtituting oids into the serialized stream and subtituting the persistent
- * objects back during deserialization.</p>
+ * objects back during deserialization.
  *
  * @author Abe White
  * @since 3.3
@@ -44,7 +44,7 @@ public class Serialization {
         (Serialization.class);
 
     /**
-     * Serialize a value that might contain persistent objects.  Replaces
+     * Serialize a value that might contain persistent objects. Replaces
      * persistent objects with their oids.
      */
     public static byte[] serialize(Object val, StoreContext ctx) {
@@ -150,7 +150,7 @@ public class Serialization {
     }
 
     /**
-     *	Marker for oids.
+     * Marker for oids.
      */
     private static class ObjectIdMarker
         implements Serializable {

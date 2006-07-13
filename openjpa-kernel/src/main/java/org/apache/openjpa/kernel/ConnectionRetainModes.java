@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 package org.apache.openjpa.kernel;
 
 /**
- * <p>Connection retain mode constants.</p>
+ * Connection retain mode constants.
  *
  * @author Abe White
  * @since 4.0
@@ -35,8 +35,8 @@ public interface ConnectionRetainModes {
     public static final int CONN_RETAIN_TRANS = 1;
 
     /**
-     *	Constant indicating that each broker will retain a single connection
-     *	that it will use for its lifespan.
+     * Constant indicating that each broker will retain a single connection
+     * that it will use for its lifespan.
      */
     public static final int CONN_RETAIN_ALWAYS = 2;
 }

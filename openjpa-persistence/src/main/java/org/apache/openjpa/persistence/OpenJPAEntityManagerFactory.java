@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ import org.apache.openjpa.kernel.ConnectionRetainModes;
 import org.apache.openjpa.lib.util.Closeable;
 
 /**
- * <p>Interface implemented by OpenJPA entity manager factories.</p>
+ * Interface implemented by OpenJPA entity manager factories.
  *
  * @author Abe White
  * @since 4.0
@@ -56,7 +56,7 @@ public interface OpenJPAEntityManagerFactory
     public Object getUserObject(Object key);
 
     /**
-     * Access the level 2 store cache.  This cache acts as a proxy to all
+     * Access the level 2 store cache. This cache acts as a proxy to all
      * named caches.
      */
     public StoreCache getStoreCache();
@@ -74,7 +74,7 @@ public interface OpenJPAEntityManagerFactory
     public OpenJPAEntityManager createEntityManager();
 
     /**
-     * <p>Return an entity manager with the provided additional configuration
+     * Return an entity manager with the provided additional configuration
      * settings. OpenJPA recognizes the following configuration settings in this
      * method:
      * <ul>
@@ -88,18 +88,18 @@ public interface OpenJPAEntityManagerFactory
 
     /**
      * Register a listener for lifecycle-related events on the specified
-     * classes.  If the classes are null, all events will be propagated to
-     * the listener.  The listener will be passed on to all new entity
-     * managers.  See the <code>org.apache.openjpa.event</code> package for listener types.
+     * classes. If the classes are null, all events will be propagated to
+     * the listener. The listener will be passed on to all new entity
+     * managers. See the <code>org.apache.openjpa.event</code> package for listener types.
      *
      * @since 3.3
      */
     public void addLifecycleListener(Object listener, Class... classes);
 
     /**
-     *	Remove a listener for lifecycle-related events.
+     * Remove a listener for lifecycle-related events.
      *
-     *	@since 3.3
+     * @since 3.3
      */
     public void removeLifecycleListener (Object listener);
 }

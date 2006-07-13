@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,7 +43,7 @@ import org.apache.openjpa.util.OpenJPAId;
 import serp.util.Strings;
 
 /**
- * <p>Repository of and factory for persistent metadata.</p>
+ * Repository of and factory for persistent metadata.
  *
  * @since 3.0
  * @author Abe White
@@ -73,7 +73,7 @@ public class MetaDataRepository
     public static final int VALIDATE_UNENHANCED = 4;
 
     /**
-     * Bit flag for runtime validation.  Requires that all classes are
+     * Bit flag for runtime validation. Requires that all classes are
      * enhanced, and performs extra field resolution steps.
      */
     public static final int VALIDATE_RUNTIME = 8;
@@ -130,14 +130,14 @@ public class MetaDataRepository
         new LifecycleEventManager.ListenerList(3);
 
     /**
-     * Constructor.  Supply configuration.
+     * Constructor. Supply configuration.
      */
     public MetaDataRepository(OpenJPAConfiguration conf) {
         this(conf, conf.newMetaDataFactoryInstance());
     }
 
     /**
-     * Constructor.  Supply configuration and metadata generator.
+     * Constructor. Supply configuration and metadata generator.
      */
     public MetaDataRepository(OpenJPAConfiguration conf,
         MetaDataFactory factory) {
@@ -180,7 +180,7 @@ public class MetaDataRepository
     }
 
     /**
-     * The metadata validation level.  Defaults to
+     * The metadata validation level. Defaults to
      * <code>VALIDATE_META | VALIDATE_UNENHANCED</code>.
      */
     public int getValidate() {
@@ -188,7 +188,7 @@ public class MetaDataRepository
     }
 
     /**
-     * The metadata validation level.  Defaults to
+     * The metadata validation level. Defaults to
      * <code>VALIDATE_META | VALIDATE_UNENHANCED</code>.
      */
     public void setValidate(int validate) {
@@ -196,7 +196,7 @@ public class MetaDataRepository
     }
 
     /**
-     * The metadata validation level.  Defaults to
+     * The metadata validation level. Defaults to
      * <code>VALIDATE_META | VALIDATE_MAPPING | VALIDATE_UNENHANCED</code>.
      */
     public void setValidate(int validate, boolean on) {
@@ -209,7 +209,7 @@ public class MetaDataRepository
     }
 
     /**
-     * The metadata resolution mode.  Defaults to
+     * The metadata resolution mode. Defaults to
      * <code>MODE_META | MODE_MAPPING</code>.
      */
     public int getResolve() {
@@ -217,7 +217,7 @@ public class MetaDataRepository
     }
 
     /**
-     * The metadata resolution mode.  Defaults to
+     * The metadata resolution mode. Defaults to
      * <code>MODE_META | MODE_MAPPING</code>.
      */
     public void setResolve(int mode) {
@@ -225,7 +225,7 @@ public class MetaDataRepository
     }
 
     /**
-     * The metadata resolution mode.  Defaults to
+     * The metadata resolution mode. Defaults to
      * <code>MODE_META | MODE_MAPPING</code>.
      */
     public void setResolve(int mode, boolean on) {
@@ -238,7 +238,7 @@ public class MetaDataRepository
     }
 
     /**
-     * The source mode determining what metadata to load.  Defaults to
+     * The source mode determining what metadata to load. Defaults to
      * <code>MODE_META | MODE_MAPPING | MODE_QUERY</code>.
      */
     public int getSourceMode() {
@@ -246,7 +246,7 @@ public class MetaDataRepository
     }
 
     /**
-     * The source mode determining what metadata to load.  Defaults to
+     * The source mode determining what metadata to load. Defaults to
      * <code>MODE_META | MODE_MAPPING | MODE_QUERY</code>.
      */
     public void setSourceMode(int mode) {
@@ -254,7 +254,7 @@ public class MetaDataRepository
     }
 
     /**
-     * The source mode determining what metadata to load.  Defaults to
+     * The source mode determining what metadata to load. Defaults to
      * <code>MODE_META | MODE_MAPPING | MODE_QUERY</code>.
      */
     public void setSourceMode(int mode, boolean on) {
@@ -269,9 +269,9 @@ public class MetaDataRepository
     /**
      * Return the metadata for the given class.
      *
-     * @param    cls            the class to retrieve metadata for
-     * @param    envLoader    the environmental class loader, if any
-     * @param    mustExist    if true, throws a {@link MetaDataException}
+     * @param cls the class to retrieve metadata for
+     * @param envLoader the environmental class loader, if any
+     * @param mustExist if true, throws a {@link MetaDataException}
      * if no metadata is found
      */
     public synchronized ClassMetaData getMetaData(Class cls,
@@ -296,9 +296,9 @@ public class MetaDataRepository
     /**
      * Return the metadata for the given alias name.
      *
-     * @param    alias        the alias to class to retrieve metadata for
-     * @param    envLoader    the environmental class loader, if any
-     * @param    mustExist    if true, throws a {@link MetaDataException}
+     * @param alias the alias to class to retrieve metadata for
+     * @param envLoader the environmental class loader, if any
+     * @param mustExist if true, throws a {@link MetaDataException}
      * if no metadata is found
      * @see ClassMetaData#getTypeAlias
      */
@@ -460,10 +460,10 @@ public class MetaDataRepository
     }
 
     /**
-     * Prepare metadata for mapping resolution.  This method might map parts
+     * Prepare metadata for mapping resolution. This method might map parts
      * of the metadata that don't rely on other classes being mapped, but that
      * other classes might rely on during their own mapping (for example,
-     * primary key fields).  By default, this method only calls
+     * primary key fields). By default, this method only calls
      * {@link ClassMetaData#defineSuperclassFields}.
      */
     protected void prepareMapping(ClassMetaData meta) {
@@ -471,7 +471,7 @@ public class MetaDataRepository
     }
 
     /**
-     * Resolve the given metadata if needed.  There are three goals:
+     * Resolve the given metadata if needed. There are three goals:
      * <ol>
      * <li>Make sure no unresolved metadata gets back to the client.</li>
      * <li>Avoid infinite reentrant calls for mutually-dependent metadatas by
@@ -479,8 +479,7 @@ public class MetaDataRepository
      * <li>Always make sure the superclass metadata is resolved before the
      * subclass metadata so that the subclass can access the super's list
      * of fields.</li>
-     * </ol>
-     * Note that the code calling this method is synchronized, so this
+     * </ol> Note that the code calling this method is synchronized, so this
      * method doesn't have to be.
      */
     private void resolve(ClassMetaData meta) {
@@ -704,7 +703,7 @@ public class MetaDataRepository
 
     /**
      * Create a new metadata, populate it with default information, add it to
-     * the repository, and return it.  Use the default access type.
+     * the repository, and return it. Use the default access type.
      */
     public ClassMetaData addMetaData(Class cls) {
         return addMetaData(cls, ClassMetaData.ACCESS_UNKNOWN);
@@ -776,7 +775,7 @@ public class MetaDataRepository
     }
 
     /**
-     * Create an {@link Order} for the given field and declaration.  This
+     * Create an {@link Order} for the given field and declaration. This
      * method delegates to {@link #newRelatedFieldOrder} and
      * {@link #newValueFieldOrder} by default.
      */
@@ -855,9 +854,9 @@ public class MetaDataRepository
      * Return the least-derived class metadata for the given application
      * identity object.
      *
-     * @param    oid            the oid to get the metadata for
-     * @param    envLoader    the environmental class loader, if any
-     * @param    mustExist    if true, throws a {@link MetaDataException}
+     * @param oid the oid to get the metadata for
+     * @param envLoader the environmental class loader, if any
+     * @param mustExist if true, throws a {@link MetaDataException}
      * if no metadata is found
      */
     public ClassMetaData getMetaData(Object oid, ClassLoader envLoader,
@@ -952,9 +951,9 @@ public class MetaDataRepository
      * Return all least-derived metadatas with some mapped assignable type that
      * implement the given class.
      *
-     * @param    cls            the class or interface to retrieve implementors for
-     * @param    envLoader    the environmental class loader, if any
-     * @param    mustExist    if true, throws a {@link MetaDataException}
+     * @param cls the class or interface to retrieve implementors for
+     * @param envLoader the environmental class loader, if any
+     * @param mustExist if true, throws a {@link MetaDataException}
      * if no metadata is found
      */
     public ClassMetaData[] getImplementorMetaDatas(Class cls,
@@ -992,7 +991,7 @@ public class MetaDataRepository
     }
 
     /**
-     * Clear the cache of parsed metadata.  This method also clears the
+     * Clear the cache of parsed metadata. This method also clears the
      * internal {@link MetaDataFactory MetaDataFactory}'s cache.
      */
     public synchronized void clear() {
@@ -1014,10 +1013,9 @@ public class MetaDataRepository
      * Return the set of configured persistent classes, or null if the user
      * did not configure any.
      *
-     * @param    devpath        if true, search for metadata files in directories
-     * in the classpath if no classes are configured
-     * explicitly
-     * @param    envLoader    the class loader to use, or null for default
+     * @param devpath if true, search for metadata files in directories
+     * in the classpath if no classes are configured explicitly
+     * @param envLoader the class loader to use, or null for default
      */
     public synchronized Set getPersistentTypeNames(boolean devpath,
         ClassLoader envLoader) {
@@ -1031,10 +1029,9 @@ public class MetaDataRepository
      * application loading the classes before performing operations that
      * might involve them.
      *
-     * @param    devpath        if true, search for metadata files in directories
-     * in the classpath if the no classes are configured
-     * explicitly
-     * @param    envLoader    the class loader to use, or null for default
+     * @param devpath if true, search for metadata files in directories
+     * in the classpath if the no classes are configured explicitly
+     * @param envLoader the class loader to use, or null for default
      * @return the loaded classes, or empty collection if none
      */
     public synchronized Collection loadPersistentTypes(boolean devpath,
@@ -1076,7 +1073,7 @@ public class MetaDataRepository
     }
 
     /**
-     * Return all known subclasses for the given class mapping.  Note
+     * Return all known subclasses for the given class mapping. Note
      * that this method only works during runtime when the repository is
      * registered as a {@link RegisterClassListener}.
      */
@@ -1394,7 +1391,7 @@ public class MetaDataRepository
     }
 
     /**
-     * Return a unique key for a given class / name.  The class
+     * Return a unique key for a given class / name. The class
      * argument can be null.
      */
     protected static Object getQueryKey(Class cls, String name) {
@@ -1571,8 +1568,7 @@ public class MetaDataRepository
     }
 
     /**
-     * Free the resources used by this repository.  Closes all user
-     * sequences.
+     * Free the resources used by this repository. Closes all user sequences.
      */
     public synchronized void close() {
         SequenceMetaData[] smds = getSequenceMetaDatas();
@@ -1582,7 +1578,7 @@ public class MetaDataRepository
     }
 
     /**
-     *	Query key struct.
+     * Query key struct.
      */
     private static class QueryKey {
 

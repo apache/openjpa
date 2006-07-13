@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -27,8 +30,7 @@ import java.util.Date;
  * combining them with the use of arbitrary {@link Lock} implementations.
  * Where a <tt>Lock</tt> replaces the use of <tt>synchronized</tt> methods
  * and statements, a <tt>Condition</tt> replaces the use of the Object
- * monitor methods.
- * Conditions(also known as <em>condition queues</em> or
+ * monitor methods. Conditions(also known as <em>condition queues</em> or
  * <em>condition variables</em>) provide a means for one thread to
  * suspend execution(to &quot;wait&quot;) until notified by another
  * thread that some state condition may now be true. Because access
@@ -54,21 +56,21 @@ import java.util.Date;
  * <b>final Lock lock = new ReentrantLock();</b>
  * final Condition notFull = <b>lock.newCondition(); </b>
  * final Condition notEmpty = <b>lock.newCondition(); </b>
- *  final Object[] items = new Object[100]; int putptr, takeptr, count;
- *  public void put(Object x) throws InterruptedException {
+ * final Object[] items = new Object[100]; int putptr, takeptr, count;
+ * public void put(Object x) throws InterruptedException {
  * <b>lock.lock(); try {</b> while (count == items.length)
  * <b>notFull.await();</b> items[putptr] = x;
  * if (++putptr == items.length) putptr = 0; ++count;
  * <b>notEmpty.signal();</b>
  * <b>} finally { lock.unlock(); }</b> }
- *  public Object take() throws InterruptedException {
+ * public Object take() throws InterruptedException {
  * <b>lock.lock(); try {</b> while (count == 0)
  * <b>notEmpty.await();</b> Object x = items[takeptr];
  * if (++takeptr == items.length) takeptr = 0; --count;
  * <b>notFull.signal();</b> return x;
  * <b>} finally { lock.unlock(); }</b> } }
  * </pre>
- * <p/>
+ * 
  * (The {@link edu.emory.mathcs.backport.java.util.concurrent.ArrayBlockingQueue} class provides
  * this functionality, so there is no reason to implement this
  * sample usage class.)
@@ -90,7 +92,7 @@ import java.util.Date;
  * instances in this way, except perhaps within their own implementation.
  * Except where noted, passing a <tt>null</tt> value for any parameter
  * will result in a {@link NullPointerException} being thrown.
- * <p/>
+ * 
  * <h3>Implementation Considerations</h3>
  * When waiting upon a <tt>Condition</tt>, a &quot;<em>spurious
  * wakeup</em>&quot; is permitted to occur, in
@@ -100,8 +102,7 @@ import java.util.Date;
  * the state predicate that is being waited for. An implementation is
  * free to remove the possibility of spurious wakeups but it is
  * recommended that applications programmers always assume that they can
- * occur and so always wait in a loop.
- * The three forms of condition waiting
+ * occur and so always wait in a loop. The three forms of condition waiting
  * (interruptible, non-interruptible, and timed) may differ in their ease of
  * implementation on some platforms and in their performance characteristics.
  * In particular, it may be difficult to provide these features and maintain
@@ -142,8 +143,7 @@ public interface Condition {
      * <li>Some other thread {@link Thread#interrupt interrupts} the current
      * thread, and interruption of thread suspension is supported; or
      * <li>A &quot;<em>spurious wakeup</em>&quot; occurs
-     * </ul>
-     * In all cases, before this method can return the current thread must
+     * </ul> In all cases, before this method can return the current thread must
      * re-acquire the lock associated with this condition. When the
      * thread returns it is <em>guaranteed</em> to hold this lock.
      * If the current thread:
@@ -156,7 +156,7 @@ public interface Condition {
      * interrupted status is cleared. It is not specified, in the first
      * case, whether or not the test for interruption occurs before the lock
      * is released.
-     * <p/>
+     * 
      * <b>Implementation Considerations</b>
      * The current thread is assumed to hold the lock associated with this
      * <tt>Condition</tt> when this method is called.
@@ -186,15 +186,14 @@ public interface Condition {
      * <li>Some other thread invokes the {@link #signalAll} method for this
      * <tt>Condition</tt>; or
      * <li>A &quot;<em>spurious wakeup</em>&quot; occurs
-     * </ul>
-     * In all cases, before this method can return the current thread must
+     * </ul> In all cases, before this method can return the current thread must
      * re-acquire the lock associated with this condition. When the
      * thread returns it is <em>guaranteed</em> to hold this lock.
      * If the current thread's interrupted status is set when it enters
      * this method, or it is {@link Thread#interrupt interrupted}
      * while waiting, it will continue to wait until signalled. When it finally
      * returns from this method its interrupted status will still be set.
-     * <p/>
+     * 
      * <b>Implementation Considerations</b>
      * The current thread is assumed to hold the lock associated with this
      * <tt>Condition</tt> when this method is called.
@@ -256,7 +255,7 @@ public interface Condition {
 //     *      else
 //     *        return false;
 //     *   }
-//     *   // ...
+//     * // ...
 //     * }
 //     * </pre>
 //     *
@@ -301,7 +300,7 @@ public interface Condition {
      * @param time the maximum time to wait
      * @param unit the time unit of the <tt>time</tt> argument.
      * @return <tt>false</tt> if the waiting time detectably elapsed
-     *         before return from the method, else <tt>true</tt>.
+     * before return from the method, else <tt>true</tt>.
      * @throws InterruptedException if the current thread is interrupted(and
      * interruption of thread suspension is supported).
      */
@@ -323,12 +322,10 @@ public interface Condition {
      * thread, and interruption of thread suspension is supported; or
      * <li>The specified deadline elapses; or
      * <li>A &quot;<em>spurious wakeup</em>&quot; occurs.
-     * </ul>
-     * In all cases, before this method can return the current thread must
+     * </ul> In all cases, before this method can return the current thread must
      * re-acquire the lock associated with this condition. When the
      * thread returns it is <em>guaranteed</em> to hold this lock.
-     * <p/>
-     * If the current thread:
+     *  If the current thread:
      * <ul>
      * <li>has its interrupted status set on entry to this method; or
      * <li>is {@link Thread#interrupt interrupted} while waiting
@@ -338,15 +335,14 @@ public interface Condition {
      * interrupted status is cleared. It is not specified, in the first
      * case, whether or not the test for interruption occurs before the lock
      * is released.
-     * <p/>
-     * The return value indicates whether the deadline has elapsed,
+     *  The return value indicates whether the deadline has elapsed,
      * which can be used as follows:
      * <pre> synchronized boolean aMethod(Date deadline) {
      * boolean stillWaiting = true; while (!conditionBeingWaitedFor) {
      * if (stillWaiting) stillWaiting = theCondition.awaitUntil(deadline); else
      * return false; } // ... }
      * </pre>
-     * <p/>
+     * 
      * <b>Implementation Considerations</b>
      * The current thread is assumed to hold the lock associated with this
      * <tt>Condition</tt> when this method is called.
@@ -362,7 +358,7 @@ public interface Condition {
      *
      * @param deadline the absolute time to wait until
      * @return <tt>false</tt> if the deadline has
-     *         elapsed upon return, else <tt>true</tt>.
+     * elapsed upon return, else <tt>true</tt>.
      * @throws InterruptedException if the current thread is interrupted(and
      * interruption of thread suspension is supported).
      */

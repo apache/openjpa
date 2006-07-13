@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,9 +48,9 @@ import serp.bytecode.JumpInstruction;
 import serp.bytecode.LookupSwitchInstruction;
 
 /**
- * <p>Generates {@link PCData} instances which avoid primitve wrappers
+ * Generates {@link PCData} instances which avoid primitve wrappers
  * to optimize memory use and performance at the cost of slightly higher
- * startup time.</p>
+ * startup time.
  *
  * @author Steve Kim
  * @nojavadoc
@@ -116,8 +116,7 @@ public class PCDataGenerator
     }
 
     /**
-     * Perform any final actions before the pcdata is returned to client
-     * code.
+     * Perform any final actions before the pcdata is returned to client code.
      */
     protected void finish(DynamicPCData data, ClassMetaData meta) {
     }
@@ -196,7 +195,7 @@ public class PCDataGenerator
 
     /**
      * Have to load the type since it may not be available to the
-     * same classloader (i.e. rar vs. ear).  The context classloader
+     * same classloader (i.e. rar vs. ear). The context classloader
      * (i.e. the user app classloader) should be fine.
      */
     private void addGetType(BCClass bc, ClassMetaData meta) {
@@ -371,7 +370,7 @@ public class PCDataGenerator
             lswitch.setDefaultTarget(target);
 
             // if (obj != null)
-            code.next();    // jump back over target
+            code.next(); // jump back over target
             ifins = code.ifnonnull();
             code.vreturn();
 
@@ -417,7 +416,7 @@ public class PCDataGenerator
                 code.go2().setTarget(switchTarget);
             }
             lswitch.setDefaultTarget(switchTarget);
-            code.next();    // step over switch target
+            code.next(); // step over switch target
 
             // if (arrIdx != -1)
             code.constant().setValue(-1);
@@ -465,7 +464,7 @@ public class PCDataGenerator
 
             // if (fieldImpl != null)
             // 		fieldImpl[index] = null;
-            code.next();    // step over nullTarget
+            code.next(); // step over nullTarget
             code.getfield().setField(impl);
             ifins = code.ifnonnull();
             code.vreturn();
@@ -753,7 +752,7 @@ public class PCDataGenerator
             boolean.class, new Class[]{ int.class });
         jumps2.add(code.ifne());
         //			sm.setIntermediate (index, inter);
-        //	}  // end else
+        //	} // end else
         code.aload().setParam(0);
         code.constant().setValue(index);
         code.aload().setLocal(inter);
@@ -1067,8 +1066,8 @@ public class PCDataGenerator
     }
 
     /**
-     *  Dynamic {@link PCData}s generated will implement this interface
-     *  to simplify initialization.
+     * Dynamic {@link PCData}s generated will implement this interface
+     * to simplify initialization.
      */
     public static interface DynamicPCData extends PCData {
 

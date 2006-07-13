@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.OpenJPAException;
 
 /**
- * <p>Representation of all members of a persistent class.</p>
+ * Representation of all members of a persistent class.
  *
  * @author Abe White
  * @author Patrick Linskey
@@ -59,9 +59,9 @@ public class ExtentImpl
     /**
      * Constructor.
      *
-     * @param    broker        the owning broker
-     * @param    type        the candidate class
-     * @param    subs        whether subclasses are included in the extent
+     * @param broker the owning broker
+     * @param type the candidate class
+     * @param subs whether subclasses are included in the extent
      */
     ExtentImpl(Broker broker, Class type, boolean subs,
         FetchConfiguration fetch) {
@@ -327,8 +327,8 @@ public class ExtentImpl
     }
 
     /**
-     *	Iterator over all new objects in this extent.  This iterator is always
-     *	wrapped, so it doesn't need to keep track of whether it's closed.
+     * Iterator over all new objects in this extent. This iterator is always
+     * wrapped, so it doesn't need to keep track of whether it's closed.
      */
     private class FilterNewIterator
         extends FilterIterator

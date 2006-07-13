@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 package org.apache.openjpa.kernel;
 
 /**
- * <p>State restore constants.</p>
+ * State restore constants.
  *
  * @author Abe White
  * @since 4.0
@@ -34,7 +34,7 @@ public interface RestoreState {
     public static final int RESTORE_IMMUTABLE = 1;
 
     /**
-     *	Restore all state on rollback.
+     * Restore all state on rollback.
      */
     public static final int RESTORE_ALL = 2;
 }

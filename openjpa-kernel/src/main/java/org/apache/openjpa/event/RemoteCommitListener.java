@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,33 +18,25 @@ package org.apache.openjpa.event;
 import org.apache.openjpa.lib.util.Closeable;
 
 /**
- * <p>An entity that wishes to be notified when Brokers
- * associated with remote BrokerFactories commit.</p>
- * <p/>
- * <p>A RemoteCommitListener <b>is not</b> notified of commits that originated
+ * An entity that wishes to be notified when Brokers
+ * associated with remote BrokerFactories commit.
+ *  A RemoteCommitListener <b>is not</b> notified of commits that originated
  * with a Broker created from the BrokerFactory that it is
  * registered with. (Of course, if a listener is registered with multiple
- * factories, this situation might be complicated a bit.)</p>
- * <p/>
- * <p>Usage:
- * <code><pre>
- * 	import org.apache.openjpa.event.*;
- * 	import org.apache.openjpa.conf.*;
- * <p/>
- * 	{@link org.apache.openjpa.conf.OpenJPAConfiguration} conf = factory.getConfiguraiton ();
- * <p/>
- * 	RemoteCommitListener l = new RemoteCommitListener () {
- * 		public void afterCommit ({@link RemoteCommitEvent} e) {
- * 			// update a Swing widget when remote brokers make
- * 			// changes to reference data
- * 		}
- * <p/>
- * 		public void close () { }
- * 	};
- * <p/>
- * 	conf.getRemoteCommitEventManager ().addListener (l);
- * 	</pre></code>
- * </p>
+ * factories, this situation might be complicated a bit.)
+ *  Usage:
+ * <code><pre> import org.apache.openjpa.event.*;
+ * import org.apache.openjpa.conf.*;
+ * 
+ * {@link org.apache.openjpa.conf.OpenJPAConfiguration} conf = factory.getConfiguraiton ();
+ *  RemoteCommitListener l = new RemoteCommitListener () {
+ * public void afterCommit ({@link RemoteCommitEvent} e) {
+ * // update a Swing widget when remote brokers make
+ * // changes to reference data }
+ *  public void close () { } };
+ *  conf.getRemoteCommitEventManager ().addListener (l);
+ * </pre></code>
+ * 
  *
  * @author Patrick Linskey
  * @since 2.5.0

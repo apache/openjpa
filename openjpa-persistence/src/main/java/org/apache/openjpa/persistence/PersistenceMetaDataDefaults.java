@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,7 +53,7 @@ import static org.apache.openjpa.persistence.PersistenceStrategy.*;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
- * </p>Javax persistence-based metadata defaults.</p>
+ * Javax persistence-based metadata defaults.
  *
  * @author Patrick Linskey
  * @author Abe White
@@ -96,7 +96,7 @@ class PersistenceMetaDataDefaults
     }
 
     /**
-     * Return the code for the strategy of the given member.  Return null if
+     * Return the code for the strategy of the given member. Return null if
      * no strategy.
      */
     public static PersistenceStrategy getPersistenceStrategy

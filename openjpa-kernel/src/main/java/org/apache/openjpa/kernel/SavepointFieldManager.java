@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.ProxyManager;
 
 /**
- * <p>FieldManager type used to store information for savepoint rollback.</p>
+ * FieldManager type used to store information for savepoint rollback.
  *
  * @author Steve Kim
  * @since 3.4
@@ -52,8 +52,8 @@ class SavepointFieldManager
     private BitSet _mutable;
 
     /**
-     * Constructor.  Provide instance to save and indicate whether
-     * to copy persistent fields.  Transactional fields will be
+     * Constructor. Provide instance to save and indicate whether
+     * to copy persistent fields. Transactional fields will be
      * copied regardless of copy setting.
      */
     public SavepointFieldManager(StateManagerImpl sm, boolean copy) {
@@ -91,8 +91,7 @@ class SavepointFieldManager
     }
 
     /**
-     * Return the persistence capable copy holding the savepoint
-     * field values.
+     * Return the persistence capable copy holding the savepoint field values.
      */
     public PersistenceCapable getCopy() {
         return _copy;
@@ -154,7 +153,7 @@ class SavepointFieldManager
     }
 
     /**
-     * Restore the given field.  If this method returns true, then you need
+     * Restore the given field. If this method returns true, then you need
      * to use this field manager to replace the given field in the state
      * manager's instance.
      */

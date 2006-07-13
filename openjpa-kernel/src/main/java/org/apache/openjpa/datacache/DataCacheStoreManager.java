@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 
 /**
- * <p>StoreManager proxy that delegates to a data cache when possible.</p>
+ * StoreManager proxy that delegates to a data cache when possible.
  *
  * @author Patrick Linskey
  * @nojavadoc
@@ -50,9 +50,9 @@ public class DataCacheStoreManager
     extends DelegatingStoreManager {
 
     // all the state managers changed in this transaction
-    private Collection _inserts = null;    // statemanagers
-    private Map _updates = null;    // statemanager -> fmd set
-    private Collection _deletes = null;    // statemanagers
+    private Collection _inserts = null; // statemanagers
+    private Map _updates = null; // statemanager -> fmd set
+    private Collection _deletes = null; // statemanagers
 
     // the owning context
     private StoreContext _ctx = null;
@@ -63,7 +63,7 @@ public class DataCacheStoreManager
     /**
      * Constructor.
      *
-     * @param    sm            the store manager to delegate to
+     * @param sm the store manager to delegate to
      */
     public DataCacheStoreManager(StoreManager sm) {
         super(sm);
@@ -255,8 +255,7 @@ public class DataCacheStoreManager
 
     /**
      * Transforms a collection of {@link PCDataHolder}s that might contain
-     * stale instances into a collection of up-to-date
-     * {@link DataCachePCData}s.
+     * stale instances into a collection of up-to-date {@link DataCachePCData}s.
      */
     private void transformToVersionSafePCDatas(DataCache cache,
         List holders) {

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ import org.apache.openjpa.util.MetaDataException;
 import serp.util.Numbers;
 
 /**
- * <p>Strategies for persistent value generation.</p>
+ * Strategies for persistent value generation.
  *
  * @author Abe White
  * @since 4.0
@@ -115,7 +115,7 @@ public class ValueStrategies {
     }
 
     /**
-     *	Assert that the given strategy is supported by the current runtime.
+     * Assert that the given strategy is supported by the current runtime.
      */
     public static void assertSupported(int strategy, MetaDataContext context,
         String attributeName) {

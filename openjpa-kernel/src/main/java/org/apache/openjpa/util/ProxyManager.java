@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,18 +23,18 @@ import java.util.Map;
 import java.util.TimeZone;
 
 /**
- * <p>Manager for copying and proxying second class objects.  Second class
+ * Manager for copying and proxying second class objects. Second class
  * objects are those that are often used as fields of persistent or
  * transactional instances, and which can themselves be modified without
- * resetting the owning class' field.  Because these types can change without
+ * resetting the owning class' field. Because these types can change without
  * an explicit call to the owning persistence capable instance, special care
  * must be taken to ensure that their state is managed correctly.
  * Specifically, they must be copied when saving state for rollback, and they
  * must be proxied for any instance whose state is managed by a state manager,
  * where proxying involves creating a second class object that automaticlly
- * notifies its owning instance whenever it is modified.  Generally, this
+ * notifies its owning instance whenever it is modified. Generally, this
  * factory is only used by the implementation; second class object handling
- * is transparent to client code.</p>
+ * is transparent to client code.
  *
  * @author Abe White
  */
@@ -68,7 +68,7 @@ public interface ProxyManager {
 
     /**
      * Return a new array of the same component type as the given array
-     * and containing the same elements.  Works for both primitive and
+     * and containing the same elements. Works for both primitive and
      * object array types.
      */
     public Object copyArray(Object orig);
@@ -94,7 +94,7 @@ public interface ProxyManager {
     public Proxy newCalendarProxy(Class type, TimeZone timeZone);
 
     /**
-     * Return a proxy for the given collection type.  The returned collection
+     * Return a proxy for the given collection type. The returned collection
      * will allow only addition of elements assignable from the given
      * element type and will use the given comparator, if it is not null.
      */
@@ -102,7 +102,7 @@ public interface ProxyManager {
         Comparator compare);
 
     /**
-     * Return a proxy for the given map type.  The returned map will
+     * Return a proxy for the given map type. The returned map will
      * allow only addition of keys/values assignable from the given
      * keyType/valueType, and will use the given comparator, if it is not null.
      */
@@ -110,10 +110,10 @@ public interface ProxyManager {
         Comparator compare);
 
     /**
-     *	Return a proxy for the given object, or null if this manager cannot
-     *	proxy the object.
+     * Return a proxy for the given object, or null if this manager cannot
+     * proxy the object.
      *
-     *	@since 2.5
+     * @since 2.5
      */
     public Proxy newCustomProxy (Object obj);
 }

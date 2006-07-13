@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@ import java.util.Collection;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * <p>Binds a variable to a collection.</p>
+ * Binds a variable to a collection.
  *
  * @author Abe White
  */
@@ -33,8 +33,8 @@ class BindVariableExpression
     /**
      * Constructor.
      *
-     * @param    var        the bound variable
-     * @param    val        the value the variable is bound to
+     * @param var the bound variable
+     * @param val the value the variable is bound to
      */
     public BindVariableExpression(BoundVariable var, Val val) {
         _var = var;
@@ -56,7 +56,7 @@ class BindVariableExpression
 
     /**
      * Return a collection for the given object, produced by
-     * <code>eval</code>'ing the value of this expression.  Simply casts
+     * <code>eval</code>'ing the value of this expression. Simply casts
      * the object to a collection by default.
      */
     protected Collection getCollection(Object values) {

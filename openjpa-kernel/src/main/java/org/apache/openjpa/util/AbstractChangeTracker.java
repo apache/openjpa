@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@ import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.collections.set.MapBackedSet;
 
 /**
- * <p>Base class that provides utilities to change trackers.</p>
+ * Base class that provides utilities to change trackers.
  *
  * @author Abe White
  * @nojavadoc
@@ -33,17 +33,17 @@ public abstract class AbstractChangeTracker
     implements ChangeTracker {
 
     /**
-     * Collection of added items.  May be null.
+     * Collection of added items. May be null.
      */
     protected Collection add = null;
 
     /**
-     * Collection of removed items.  May be null.
+     * Collection of removed items. May be null.
      */
     protected Collection rem = null;
 
     /**
-     * Collection of changed items.  May be null.
+     * Collection of changed items. May be null.
      */
     protected Collection change = null;
 
@@ -60,7 +60,7 @@ public abstract class AbstractChangeTracker
 
     /**
      * Whether to automatically stop tracking when the number of changes
-     * exceeds the container size.  Defaults to true.
+     * exceeds the container size. Defaults to true.
      */
     public boolean getAutoOff() {
         return _autoOff;
@@ -68,7 +68,7 @@ public abstract class AbstractChangeTracker
 
     /**
      * Whether to automatically stop tracking when the number of changes
-     * exceeds the container size.  Defaults to true.
+     * exceeds the container size. Defaults to true.
      */
     public void setAutoOff(boolean autoOff) {
         _autoOff = autoOff;
@@ -86,8 +86,8 @@ public abstract class AbstractChangeTracker
     }
 
     /**
-     * Return the initial sequence value for this proxy.  Typically this is
-     * the container size.  Assumes an unordered collection by default,
+     * Return the initial sequence value for this proxy. Typically this is
+     * the container size. Assumes an unordered collection by default,
      * returning 0.
      */
     protected int initialSequence() {
@@ -179,7 +179,7 @@ public abstract class AbstractChangeTracker
     }
 
     /**
-     * Create a new set for storing adds/removes/changes.  Takes into account
+     * Create a new set for storing adds/removes/changes. Takes into account
      * whether we need to use an identity set or standard set.
      */
     protected Set newSet() {
@@ -190,7 +190,7 @@ public abstract class AbstractChangeTracker
 
     /**
      * Set whether to use identity-based datastructures, and switch our current
-     * datastructures appropriately if needed.  We use identity structures for
+     * datastructures appropriately if needed. We use identity structures for
      * PC types in case the user has coded them such that two objects with
      * different identities can compare equals().
      */
@@ -209,7 +209,7 @@ public abstract class AbstractChangeTracker
     }
 
     /**
-     *	Switch from an identity structure to a standard one, or vice versa.
+     * Switch from an identity structure to a standard one, or vice versa.
      */
     private static Collection switchStructure(Collection cur,
         boolean identity) {

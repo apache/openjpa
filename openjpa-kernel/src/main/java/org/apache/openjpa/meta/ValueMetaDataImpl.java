@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@ import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * <p>Default {@link ValueMetaData} implementation.</p>
+ * Default {@link ValueMetaData} implementation.
  *
  * @author Abe White
  * @nojavadoc
@@ -235,7 +235,7 @@ public class ValueMetaDataImpl
 
     public int getCascadeAttach() {
         if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT
-            || !isDeclaredTypePC())    // attach acts on declared type
+            || !isDeclaredTypePC()) // attach acts on declared type
             return CASCADE_NONE;
         return _attach;
     }
@@ -248,7 +248,7 @@ public class ValueMetaDataImpl
 
     public int getCascadeRefresh() {
         if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT
-            || !isDeclaredTypePC())    // refresh acts on declared type
+            || !isDeclaredTypePC()) // refresh acts on declared type
             return CASCADE_NONE;
         return _refresh;
     }

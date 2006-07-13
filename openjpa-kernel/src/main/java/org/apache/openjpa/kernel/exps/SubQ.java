@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,8 +20,8 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UnsupportedException;
 
 /**
- * <p>An in-memory representation of a {@link Subquery}.  Currently
- * subqueries aren't supported for in-memory use.</p>
+ * An in-memory representation of a {@link Subquery}. Currently
+ * subqueries aren't supported for in-memory use.
  *
  * @author Abe White
  */

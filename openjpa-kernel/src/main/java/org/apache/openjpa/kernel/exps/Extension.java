@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.apache.openjpa.kernel.exps;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * <p>A value produced from evaluating a custom extension.</p>
+ * A value produced from evaluating a custom extension.
  *
  * @author Abe White
  */
@@ -30,7 +30,7 @@ class Extension
     private final Val _arg;
 
     /**
-     * Constructor.  Supply filter listener, its target value, and
+     * Constructor. Supply filter listener, its target value, and
      * its argument value, if any.
      */
     public Extension(FilterListener listener, Val target, Val arg) {

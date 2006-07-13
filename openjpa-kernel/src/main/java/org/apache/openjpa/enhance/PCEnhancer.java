@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -79,9 +79,9 @@ import serp.bytecode.TableSwitchInstruction;
 import serp.util.Numbers;
 
 /**
- * <p>Bytecode enhancer used to enhance persistent classes from metadata.  The
+ * Bytecode enhancer used to enhance persistent classes from metadata. The
  * enhancer must be invoked on all persistence-capable and persistence aware
- * classes.</p>
+ * classes.
  *
  * @author Abe White
  */
@@ -123,14 +123,14 @@ public class PCEnhancer {
     private Set _violations = null;
 
     /**
-     * Constructor.  Supply configuration and type to enhance.
+     * Constructor. Supply configuration and type to enhance.
      */
     public PCEnhancer(OpenJPAConfiguration conf, Class type) {
         this(conf, new Project().loadClass(type), null);
     }
 
     /**
-     * Constructor.  Supply configuration and type to enhance.
+     * Constructor. Supply configuration and type to enhance.
      */
     public PCEnhancer(OpenJPAConfiguration conf, ClassMetaData type) {
         this(conf, new Project().loadClass(type.getDescribedType()),
@@ -138,11 +138,11 @@ public class PCEnhancer {
     }
 
     /**
-     * Constructor.  Supply configuration.
+     * Constructor. Supply configuration.
      *
-     * @param    type    the bytecode representation fo the type to
+     * @param type the bytecode representation fo the type to
      * enhance; this can be created from any stream or file
-     * @param    repos    a metadata repository to use for metadata access,
+     * @param repos a metadata repository to use for metadata access,
      * or null to create a new reporitory; the repository
      * from the given configuration isn't used by default
      * because the configuration might be an
@@ -187,7 +187,7 @@ public class PCEnhancer {
 
     /**
      * A boolean indicating whether the enhancer should add a no-args
-     * constructor if one is not already present in the class.  OpenJPA
+     * constructor if one is not already present in the class. OpenJPA
      * requires that a no-arg constructor (whether created by the compiler
      * or by the user) be present in a PC.
      */
@@ -197,7 +197,7 @@ public class PCEnhancer {
 
     /**
      * A boolean indicating whether the enhancer should add a no-args
-     * constructor if one is not already present in the class.  OpenJPA
+     * constructor if one is not already present in the class. OpenJPA
      * requires that a no-arg constructor (whether created by the compiler
      * or by the user) be present in a PC.
      */
@@ -224,8 +224,8 @@ public class PCEnhancer {
     }
 
     /**
-     * The base build directory to generate code to.  The proper package
-     * structure will be created beneath this directory.  Defaults to
+     * The base build directory to generate code to. The proper package
+     * structure will be created beneath this directory. Defaults to
      * overwriting the existing class file if null.
      */
     public File getDirectory() {
@@ -233,8 +233,8 @@ public class PCEnhancer {
     }
 
     /**
-     * The base build directory to generate code to.  The proper package
-     * structure will be creaed beneath this directory.  Defaults to
+     * The base build directory to generate code to. The proper package
+     * structure will be creaed beneath this directory. Defaults to
      * overwriting the existing class file if null.
      */
     public void setDirectory(File dir) {
@@ -242,16 +242,14 @@ public class PCEnhancer {
     }
 
     /**
-     * Return the current {@link BytecodeWriter} to write to
-     * or null if none.
+     * Return the current {@link BytecodeWriter} to write to or null if none.
      */
     public BytecodeWriter getBytecodeWriter() {
         return _writer;
     }
 
     /**
-     * Set the {@link BytecodeWriter} to write the bytecode
-     * to or null if none.
+     * Set the {@link BytecodeWriter} to write the bytecode to or null if none.
      */
     public void setBytecodeWriter(BytecodeWriter writer) {
         _writer = writer;
@@ -260,7 +258,7 @@ public class PCEnhancer {
     /**
      * Perform bytecode enhancements.
      *
-     * @return    <code>ENHANCE_*</code> constant
+     * @return <code>ENHANCE_*</code> constant
      */
     public int run() {
         if (_log.isTraceEnabled())
@@ -343,7 +341,7 @@ public class PCEnhancer {
 
     /**
      * Validate that the methods in this property-access instance are
-     * written correctly.  This method also gathers information on each
+     * written correctly. This method also gathers information on each
      * property's backing field.
      */
     private void validateProperties() {
@@ -435,7 +433,7 @@ public class PCEnhancer {
     }
 
     /**
-     * Return the field returned / assigned by <code>meth</code>.  Returns
+     * Return the field returned / assigned by <code>meth</code>. Returns
      * null if non-fields (methods, literals, parameters, variables) are
      * returned, or if non-parameters are assigned to fields.
      */
@@ -527,7 +525,7 @@ public class PCEnhancer {
 
     /**
      * Replaced all direct access to managed fields with the appropriate
-     * pcGet/pcSet method.  Note that this includes access to fields
+     * pcGet/pcSet method. Note that this includes access to fields
      * owned by PersistenceCapable classes other than this one.
      */
     private void replaceAndValidateFieldAccess() {
@@ -558,14 +556,13 @@ public class PCEnhancer {
      * Replaces all instructions matching the given template in the given
      * code block with calls to the appropriate generated getter/setter.
      *
-     * @param    code    the code block to modify; the code iterator will
+     * @param code the code block to modify; the code iterator will
      * be placed before the first instruction on method start,
-     * and will be after the last instruction on method
-     * completion
-     * @param    ins        the template instruction to search for; either a
+     * and will be after the last instruction on method completion
+     * @param ins the template instruction to search for; either a
      * getfield or putfield instruction
-     * @param    get        boolean indicating if this is a get instruction
-     * @param    stat    template invokestatic instruction to replace with
+     * @param get boolean indicating if this is a get instruction
+     * @param stat template invokestatic instruction to replace with
      */
     private void replaceAndValidateFieldAccess(Code code, Instruction ins,
         boolean get, Instruction stat) {
@@ -645,11 +642,10 @@ public class PCEnhancer {
      * Helper method to return the declaring PersistenceCapable class of
      * the given field.
      *
-     * @param    fieldName    the name of the field
-     * @param    owner        the nominal owner of the field
+     * @param fieldName the name of the field
+     * @param owner the nominal owner of the field
      * @return the metadata for the PersistenceCapable type that
-     * declares the field (and therefore has the static
-     * method), or null if none
+     * declares the field (and therefore has the static method), or null if none
      */
     private ClassMetaData getPersistenceCapableOwner(String fieldName,
         Class owner) {
@@ -672,7 +668,7 @@ public class PCEnhancer {
 
     /**
      * Adds all synthetic methods to the bytecode by delegating to
-     * the various addXXXMethods () functions in this class.  Includes
+     * the various addXXXMethods () functions in this class. Includes
      * all static field access methods.
      * Note that the 'stock' methods like <code>pcIsTransactional</code>,
      * <code>pcFetchObjectId</code>, etc are defined only in the
@@ -775,7 +771,7 @@ public class PCEnhancer {
      * These methods are used by the impl helper to create new
      * managed instances efficiently without reflection.
      *
-     * @param    oid        set to true to mimic the method version that takes
+     * @param oid set to true to mimic the method version that takes
      * an oid value as well as a state manager
      */
     private void addNewInstanceMethod(boolean oid) {
@@ -867,8 +863,7 @@ public class PCEnhancer {
 
     /**
      * Adds the {@link PersistenceCapable#pcProvideField} and
-     * {@link PersistenceCapable#pcProvideFields} methods to
-     * the bytecode.
+     * {@link PersistenceCapable#pcProvideFields} methods to the bytecode.
      */
     private void addProvideFieldsMethods()
         throws NoSuchMethodException {
@@ -918,8 +913,7 @@ public class PCEnhancer {
 
     /**
      * Adds the {@link PersistenceCapable#pcReplaceField} and
-     * {@link PersistenceCapable#pcReplaceFields} methods to
-     * the bytecode.
+     * {@link PersistenceCapable#pcReplaceFields} methods to the bytecode.
      */
     private void addReplaceFieldsMethods()
         throws NoSuchMethodException {
@@ -973,8 +967,7 @@ public class PCEnhancer {
     }
 
     /**
-     * Adds the {@link PersistenceCapable#pcCopyFields} method to the
-     * bytecode.
+     * Adds the {@link PersistenceCapable#pcCopyFields} method to the bytecode.
      */
     private void addCopyFieldsMethod()
         throws NoSuchMethodException {
@@ -1024,7 +1017,7 @@ public class PCEnhancer {
 
     /**
      * Helper method to add the code common to the beginning of both the
-     * pcReplaceField method and the pcProvideField method.  This includes
+     * pcReplaceField method and the pcProvideField method. This includes
      * calculating the relative field number of the desired field and calling
      * the superclass if necessary.
      *
@@ -1070,7 +1063,7 @@ public class PCEnhancer {
      * This helper method, given the pcReplaceField or pcProvideField
      * method, adds the bytecode for the corresponding 'plural' version
      * of the method -- the version that takes an int[] of fields to
-     * to access rather than a single field.  The multiple fields version
+     * to access rather than a single field. The multiple fields version
      * simply loops through the provided indexes and delegates to the
      * singular version for each one.
      */
@@ -1198,7 +1191,7 @@ public class PCEnhancer {
     }
 
     /**
-     * Helper method to add a stock method to the bytecode.  Each
+     * Helper method to add a stock method to the bytecode. Each
      * stock method simply delegates to a corresponding StateManager method.
      * Given the StateManager method, then, this function translates it into
      * the wrapper method that should be added to the bytecode.
@@ -1236,8 +1229,7 @@ public class PCEnhancer {
     }
 
     /**
-     * Adds the {@link PersistenceCapable#pcGetVersion}
-     * method to the bytecode.
+     * Adds the {@link PersistenceCapable#pcGetVersion} method to the bytecode.
      */
     private void addGetVersionMethod()
         throws NoSuchMethodException {
@@ -1668,7 +1660,7 @@ public class PCEnhancer {
 
     /**
      * If the given field is a wrapper-type single field identity primary key,
-     * return its corresponding primitive class.  Else return the field type.
+     * return its corresponding primitive class. Else return the field type.
      */
     private Class unwrapSingleFieldIdentity(FieldMetaData fmd) {
         if (!fmd.getDefiningMetaData().isOpenJPAIdentity())
@@ -1781,18 +1773,17 @@ public class PCEnhancer {
 
     /**
      * When communicating with the StateManager, many methods are used
-     * depending on the class of state being passed.  This method,
+     * depending on the class of state being passed. This method,
      * given the type of information being passed and the prefix
      * ('provided', 'replace', etc) of the method to
      * call, returns the StateManager method that should be used.
      *
-     * @param    type        the type of state being passed
-     * @param    prefix        the prefix of the method to call; all methods
-     * end in '[state type]Field'; only the prefix
-     * varies
-     * @param    get            true if receiving information from the
+     * @param type the type of state being passed
+     * @param prefix the prefix of the method to call; all methods
+     * end in '[state type]Field'; only the prefix varies
+     * @param get true if receiving information from the
      * StateManager, false if passing it to the SM
-     * @param    curValue    true if the current state value is passed to
+     * @param curValue true if the current state value is passed to
      * the StateManager as an extra argument
      */
     private Method getStateManagerMethod(Class type, String prefix,
@@ -1802,17 +1793,15 @@ public class PCEnhancer {
     }
 
     /**
-     * Return the method of the given owner type matching the given
-     * criteria.
+     * Return the method of the given owner type matching the given criteria.
      *
-     * @param    type        the type of state being passed
-     * @param    prefix        the prefix of the method to call; all methods
-     * end in '[state type]Field'; only the prefix
-     * varies
-     * @param    get            true if receiving information from the
+     * @param type the type of state being passed
+     * @param prefix the prefix of the method to call; all methods
+     * end in '[state type]Field'; only the prefix varies
+     * @param get true if receiving information from the
      * owner, false if passing it to the owner
-     * @param    haspc        true if the pc is passed as an extra argument
-     * @param    curValue    true if the current state value is passed to
+     * @param haspc true if the pc is passed as an extra argument
+     * @param curValue true if the current state value is passed to
      * the owner as an extra argument
      */
     private Method getMethod(Class owner, Class type, String prefix,
@@ -2036,7 +2025,7 @@ public class PCEnhancer {
 
     /**
      * Adds the code to properly handle PersistenceCapable serialization
-     * to the bytecode.  This includes creating and initializing the
+     * to the bytecode. This includes creating and initializing the
      * static <code>serialVersionUID</code> constant if not already defined,
      * as well as creating a custom <code>writeObject</code> method if the
      * class is Serializable and does not define them.
@@ -2375,7 +2364,7 @@ public class PCEnhancer {
 
     /**
      * Compare the given field to its Java default, returning the
-     * comparison instruction.  The field value will already be on the stack.
+     * comparison instruction. The field value will already be on the stack.
      */
     private static JumpInstruction ifDefaultValue(Code code,
         FieldMetaData fmd) {
@@ -2440,7 +2429,7 @@ public class PCEnhancer {
      * Adds bytecode modifying the cloning behavior of the class being
      * enhanced to correctly replace the <code>pcFlags</code> and
      * <code>pcStateManager</code> instance fields of any clone created with
-     * their default values.  Also, if this class is the base PC type
+     * their default values. Also, if this class is the base PC type
      * and does not declared a clone method, one will be added.
      */
     private void addCloningCode() {
@@ -2664,8 +2653,8 @@ public class PCEnhancer {
      * The generated method interacts with the instance state and the
      * StateManager to get the value of the field.
      *
-     * @param    index    the relative number of the field
-     * @param    fmd        metadata about the field to get
+     * @param index the relative number of the field
+     * @param fmd metadata about the field to get
      */
     private void addGetMethod(int index, FieldMetaData fmd)
         throws NoSuchMethodException {
@@ -2733,8 +2722,8 @@ public class PCEnhancer {
      * The generated method interacts with the instance state and the
      * StateManager to set the value of the field.
      *
-     * @param    index    the relative number of the field
-     * @param    fmd        metadata about the field to set
+     * @param index the relative number of the field
+     * @param fmd metadata about the field to set
      */
     private void addSetMethod(int index, FieldMetaData fmd)
         throws NoSuchMethodException {
@@ -3209,7 +3198,7 @@ public class PCEnhancer {
         throws NoSuchMethodException {
         if (_meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
             code.getfield().setField(fmd.getName(), fmd.getDeclaredType());
-        else    // property
+        else // property
         {
             Method meth = (Method) fmd.getBackingMember();
             code.invokevirtual().setMethod(PRE + meth.getName(),
@@ -3227,7 +3216,7 @@ public class PCEnhancer {
         throws NoSuchMethodException {
         if (_meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
             code.putfield().setField(fmd.getName(), fmd.getDeclaredType());
-        else    // property
+        else // property
             code.invokevirtual().setMethod(PRE + getSetterName(fmd),
                 void.class, new Class[]{ fmd.getDeclaredType() });
     }
@@ -3338,47 +3327,44 @@ public class PCEnhancer {
     }
 
     /**
-     * <p>Usage: java org.apache.openjpa.enhance.PCEnhancer [option]*
-     * &lt;class name | .java file | .class file | .jdo file&gt;+</p>
-     * <p/>
-     * <p>Where the following options are recognized.
+     * Usage: java org.apache.openjpa.enhance.PCEnhancer [option]*
+     * &lt;class name | .java file | .class file | .jdo file&gt;+
+     *  Where the following options are recognized.
      * <ul>
      * <li><i>-properties/-p &lt;properties file&gt;</i>: The path to a OpenJPA
-     * properties file containing information as outlined in 
+     * properties file containing information as outlined in
      * {@link Configuration}; optional.</li>
      * <li><i>-&lt;property name&gt; &lt;property value&gt;</i>: All bean
      * properties of the standard OpenJPA {@link OpenJPAConfiguration} can be
      * set by using their names and supplying a value; for example:
      * <li><i>-directory/-d &lt;build directory&gt;</i>: The path to the base
-     * directory where enhanced classes are stored.  By default, the
+     * directory where enhanced classes are stored. By default, the
      * enhancer overwrites the original .class file with the enhanced
-     * version.  Use this option to store the generated .class file in
-     * another directory.  The package structure will be created beneath
+     * version. Use this option to store the generated .class file in
+     * another directory. The package structure will be created beneath
      * the given directory.</li>
      * <li><i>-addDefaultConstructor/-adc [true/t | false/f]</i>: Whether to
      * add a default constructor to persistent classes missing one, as
-     * opposed to throwing an exception.  Defaults to true.</li>
+     * opposed to throwing an exception. Defaults to true.</li>
      * <li><i>-tmpClassLoader/-tcl [true/t | false/f]</i>: Whether to
      * load the pre-enhanced classes using a temporary class loader.
-     * Defaults to true.  Set this to false when attempting to debug
+     * Defaults to true. Set this to false when attempting to debug
      * class loading errors.</li>
      * <li><i>-enforcePropertyRestrictions/-epr [true/t | false/f]</i>:
      * Whether to throw an exception if a PROPERTY access entity appears
-     * to be violating standard property restrictions.  Defaults to
-     * false.</li>
-     * </ul></p>
-     * <p/>
-     * <p>Each additional argument can be either the full class name of the
+     * to be violating standard property restrictions. Defaults to false.</li>
+     * </ul>
+     *  Each additional argument can be either the full class name of the
      * type to enhance, the path to the .java file for the type, the path to
      * the .class file for the type, or the path to a .jdo file listing one
      * or more types to enhance.
      * If the type being enhanced has metadata, it will be enhanced as a
-     * persistence capable class.  If not, it will be considered a persistence
+     * persistence capable class. If not, it will be considered a persistence
      * aware class, and all access to fields of persistence capable classes
-     * will be replaced by the appropriate	get/set method.  If the type
+     * will be replaced by the appropriate	get/set method. If the type
      * explicitly declares the persistence-capable interface, it will
-     * not be enhanced.  Thus, it is safe to invoke the enhancer on classes
-     * that are already enhanced.</p>
+     * not be enhanced. Thus, it is safe to invoke the enhancer on classes
+     * that are already enhanced.
      */
     public static void main(String[] args)
         throws IOException {
@@ -3395,7 +3381,7 @@ public class PCEnhancer {
     }
 
     /**
-     * Run the tool.  Returns false if invalid options given.
+     * Run the tool. Returns false if invalid options given.
      */
     public static boolean run(OpenJPAConfiguration conf, String[] args,
         Options opts)
@@ -3493,7 +3479,7 @@ public class PCEnhancer {
     }
 
     /**
-     *	Run flags.
+     * Run flags.
      */
     public static class Flags {
 
@@ -3503,9 +3489,8 @@ public class PCEnhancer {
 		public boolean enforcePropertyRestrictions = false;
 	}
 
-
 	/**
- 	 *	Plugin interface for additional enhancement.
+ 	 * Plugin interface for additional enhancement.
 	 */
 	public static interface AuxiliaryEnhancer
 	{

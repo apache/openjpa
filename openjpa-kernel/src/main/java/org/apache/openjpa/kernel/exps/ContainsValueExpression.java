@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * <p>Tests that a Map value collection contains a value.</p>
+ * Tests that a Map value collection contains a value.
  *
  * @author Abe White
  */
@@ -29,8 +29,8 @@ class ContainsValueExpression
     /**
      * Constructor.
      *
-     * @param    val1    the container value
-     * @param    val2    the containee to test
+     * @param val1 the container value
+     * @param val2 the containee to test
      */
     public ContainsValueExpression(Val val1, Val val2) {
         super(val1, val2);

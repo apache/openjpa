@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +18,9 @@ package org.apache.openjpa.util;
 import java.util.Collection;
 
 /**
- * <p>Interface for components that track changes to containers at a
- * fine-grained level.  Proxies that use change trackers might have better
- * update performance than non-tracking proxies.</p>
+ * Interface for components that track changes to containers at a
+ * fine-grained level. Proxies that use change trackers might have better
+ * update performance than non-tracking proxies.
  *
  * @author Abe White
  */
@@ -56,8 +56,8 @@ public interface ChangeTracker {
     public Collection getRemoved();
 
     /**
-     * Return the set of elements that have changed.  In maps, this marks a
-     * possible change in value for a key.  In collections, this marks an
+     * Return the set of elements that have changed. In maps, this marks a
+     * possible change in value for a key. In collections, this marks an
      * element that has been removed and re-added.
      */
     public Collection getChanged();
@@ -67,20 +67,20 @@ public interface ChangeTracker {
      * If the data store keeps this proxy's data in sequence order but allows
      * holes for removed objects, the implementation can set the next
      * sequence at load time, then retrieve it and start from there for
-     * added objects at flush time.  This value is set back to 0 if the
-     * proxy stops tracking changes.  For ordered proxies, it is set to the
+     * added objects at flush time. This value is set back to 0 if the
+     * proxy stops tracking changes. For ordered proxies, it is set to the
      * proxy's size when the proxy starts tracking changes again.
      */
     public int getNextSequence();
 
     /**
-     *	The maximum element sequence value for this proxy at load time.
-     *	If the data store keeps this proxy's data in sequence order but allows
-     *	holes for removed objects, the implementation can set the next
-     *	sequence at load time, then retrieve it and start from there for
-     *	added objects at flush time.  This value is set back to 0 if the
-     *	proxy stops tracking changes.  For ordered proxies, it is set to the
-     *	proxy's size when the proxy starts tracking changes again.
+     * The maximum element sequence value for this proxy at load time.
+     * If the data store keeps this proxy's data in sequence order but allows
+     * holes for removed objects, the implementation can set the next
+     * sequence at load time, then retrieve it and start from there for
+     * added objects at flush time. This value is set back to 0 if the
+     * proxy stops tracking changes. For ordered proxies, it is set to the
+     * proxy's size when the proxy starts tracking changes again.
      */
     public void setNextSequence (int seq);
 }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,15 +32,12 @@ import org.apache.openjpa.util.UserException;
 import serp.util.Strings;
 
 /**
- * <p>Cron-style cache eviction.  Understands schedules based on cron
- * format:<p>
+ * Cron-style cache eviction. Understands schedules based on cron format:
  * <code>minute hour mday month wday</code>
- * <p/>
- * <p>For example:</p>
+ *  For example:
  * <code>15,30 6,19 2,10 1 2 </code>
- * <p/>
- * <p>Would run at 15 and 30 past the 6AM and 7PM, on the 2nd and 10th
- * of January when its a Monday</p>.
+ *  Would run at 15 and 30 past the 6AM and 7PM, on the 2nd and 10th
+ * of January when its a Monday.
  *
  * @author Steve Kim
  */
@@ -63,14 +60,14 @@ public class DataCacheScheduler
     }
 
     /**
-     * The interval time in minutes between cache checks.  Defaults to 2.
+     * The interval time in minutes between cache checks. Defaults to 2.
      */
     public int getInterval() {
         return _interval;
     }
 
     /**
-     * The interval time in minutes between cache checks.  Defaults to 2.
+     * The interval time in minutes between cache checks. Defaults to 2.
      */
     public void setInterval(int interval) {
         _interval = interval;
@@ -88,7 +85,7 @@ public class DataCacheScheduler
     }
 
     /**
-     * Schedule the given cache for eviction.  Starts the scheduling thread
+     * Schedule the given cache for eviction. Starts the scheduling thread
      * if not started.
      */
     public synchronized void scheduleEviction(DataCache cache, String times) {
@@ -159,7 +156,7 @@ public class DataCacheScheduler
     }
 
     /**
-     *	Simple class which represents the given time schedule.
+     * Simple class which represents the given time schedule.
      */
     private static class Schedule {
 

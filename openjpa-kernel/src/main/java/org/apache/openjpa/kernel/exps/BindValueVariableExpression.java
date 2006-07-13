@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * <p>{@link BindVariableExpression} for map value collections.</p>
+ * {@link BindVariableExpression} for map value collections.
  *
  * @author Abe White
  */
@@ -29,8 +29,8 @@ class BindValueVariableExpression
     /**
      * Constructor.
      *
-     * @param    var        the bound variable
-     * @param    val        the value the variable is bound to
+     * @param var the bound variable
+     * @param val the value the variable is bound to
      */
     public BindValueVariableExpression(BoundVariable var, Val val) {
         super(var, val);

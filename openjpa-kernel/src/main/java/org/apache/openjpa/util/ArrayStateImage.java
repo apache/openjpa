@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,10 +20,10 @@ import java.util.BitSet;
 import org.apache.commons.lang.ObjectUtils;
 
 /**
- * <p>Utilities for dealing with a simple state image consisting of an
+ * Utilities for dealing with a simple state image consisting of an
  * <code>Object[]</code> of field values with one extra index containing a
- * {@link BitSet} of loaded fields.  This simplistic state image might be used
- * for optimistic versioning.</p>
+ * {@link BitSet} of loaded fields. This simplistic state image might be used
+ * for optimistic versioning.
  *
  * @author Abe White
  * @nojavadoc
@@ -76,8 +76,8 @@ public class ArrayStateImage {
     }
 
     /**
-     *	Return whether the given images are equivalent from an optimistic
-     *	locking perspective.
+     * Return whether the given images are equivalent from an optimistic
+     * locking perspective.
      */
     public static boolean sameVersion(Object[] state1, Object[] state2) {
         if (state1 == state2)

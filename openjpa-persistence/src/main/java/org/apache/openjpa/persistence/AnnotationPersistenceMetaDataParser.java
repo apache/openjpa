@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -108,8 +108,8 @@ import serp.util.Numbers;
 import serp.util.Strings;
 
 /**
- * <p>Persistence annotation metadata parser.  Currently does not parse
- * deployment descriptors.</p>
+ * Persistence annotation metadata parser. Currently does not parse
+ * deployment descriptors.
  *
  * @author Abe White
  * @author Steve Kim
@@ -205,7 +205,7 @@ public class AnnotationPersistenceMetaDataParser
     }
 
     /**
-     * Returns the repository for this parser.  If none has been set,
+     * Returns the repository for this parser. If none has been set,
      * create a new repository and sets it.
      */
     public MetaDataRepository getRepository() {
@@ -253,7 +253,7 @@ public class AnnotationPersistenceMetaDataParser
 
     /**
      * Whether to allow later parses of mapping information to override
-     * earlier information for the same class.  Defaults to false.  Useful
+     * earlier information for the same class. Defaults to false. Useful
      * when a tool is mapping a class, so that annotation partial mapping
      * information can be used even when mappings are stored in another
      * location.
@@ -264,7 +264,7 @@ public class AnnotationPersistenceMetaDataParser
 
     /**
      * Whether to allow later parses of mapping information to override
-     * earlier information for the same class.  Defaults to false.  Useful
+     * earlier information for the same class. Defaults to false. Useful
      * when a tool is mapping a class, so that annotation partial mapping
      * information can be used even when mappings are stored in another
      * location.
@@ -630,7 +630,7 @@ public class AnnotationPersistenceMetaDataParser
     }
 
     /**
-     * Find or create metadata for the given type.  May return null if
+     * Find or create metadata for the given type. May return null if
      * this class has already been parsed fully.
      */
     private ClassMetaData getMetaData() {
@@ -741,7 +741,7 @@ public class AnnotationPersistenceMetaDataParser
     }
 
     /**
-     * Parse @DetachedState.  The annotation may be null.
+     * Parse @DetachedState. The annotation may be null.
      */
     private void parseDetachedState(ClassMetaData meta,
         DetachedState detached) {
@@ -774,11 +774,11 @@ public class AnnotationPersistenceMetaDataParser
 
     /**
      * Parse callback methods into the given array, and return that array,
-     * creating one if null.  Each index into the array is a collection of
+     * creating one if null. Each index into the array is a collection of
      * callback adapters for that numeric event type.
      *
-     * @param    sups whether to scan superclasses
-     * @param    listener whether this is a listener or not
+     * @param sups whether to scan superclasses
+     * @param listener whether this is a listener or not
      */
     public static Collection<LifecycleCallbacks>[] parseCallbackMethods
         (Class cls, Collection<LifecycleCallbacks>[] callbacks, boolean sups,
@@ -1139,7 +1139,7 @@ public class AnnotationPersistenceMetaDataParser
     }
 
     /**
-     * Parse @Basic.  Given annotation may be null.
+     * Parse @Basic. Given annotation may be null.
      */
     private void parseBasic(FieldMetaData fmd, Basic anno, boolean lob) {
         Class type = fmd.getDeclaredType();
@@ -1228,7 +1228,7 @@ public class AnnotationPersistenceMetaDataParser
     }
 
     /**
-     * Parse @Embedded.  Given annotation may be null.
+     * Parse @Embedded. Given annotation may be null.
      */
     private void parseEmbedded(FieldMetaData fmd, Embedded anno) {
         if (!JavaTypes.maybePC(fmd.getValue()))
@@ -1459,7 +1459,7 @@ public class AnnotationPersistenceMetaDataParser
         if (StringUtils.isEmpty(seq)) {
             clsName = SequenceMetaData.IMPL_NATIVE;
             props = null;
-        } else if (seq.indexOf('(') != -1)    // plugin
+        } else if (seq.indexOf('(') != -1) // plugin
         {
             seq = null;
             clsName = Configurations.getClassName(seq);

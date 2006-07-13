@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,8 +16,7 @@
 package org.apache.openjpa.kernel;
 
 /**
- * <p>A {@link SavepointManager} implementation which stores all data
- * in memory.</p>
+ * A {@link SavepointManager} implementation which stores all data in memory.
  *
  * @author Steve Kim
  * @since 3.4
@@ -29,7 +28,7 @@ public class InMemorySavepointManager
 
     /**
      * Return whether to call {@link Broker#preFlush}
-     * when a savepoint is set.  While this will allow for tracking of
+     * when a savepoint is set. While this will allow for tracking of
      * newly embedded fields, it has the side effect of going through
      * pre-flush operations.
      */
@@ -39,7 +38,7 @@ public class InMemorySavepointManager
 
     /**
      * Set whether to call {@link Broker#preFlush}
-     * when a savepoint is set.  While this will allow for tracking of
+     * when a savepoint is set. While this will allow for tracking of
      * newly embedded fields, it has the side effect of going through
      * pre-flush operations.
      */

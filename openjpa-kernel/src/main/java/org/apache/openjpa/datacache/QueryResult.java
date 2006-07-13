@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * <p>A query result.</p>
+ * A query result.
  *
  * @author Abe White
  */
@@ -56,7 +56,7 @@ public class QueryResult
     }
 
     /**
-     *	Whether this data is timed out.
+     * Whether this data is timed out.
      */
     public boolean isTimedOut() {
         return _ex != -1 && _ex < System.currentTimeMillis();

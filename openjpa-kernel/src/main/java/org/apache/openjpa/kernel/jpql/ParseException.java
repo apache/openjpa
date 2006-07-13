@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
 
 /**
- * Signifies that a lexical error occurred when parsing the JPQL
- * statement.
+ * Signifies that a lexical error occurred when parsing the JPQL statement.
  *
  * @author <a href="mailto:mprudhom@bea.com">Marc Prud'hommeaux</a>
  */
@@ -33,7 +32,7 @@ public class ParseException
 
     /**
      * This constructor is used by the method "generateParseException"
-     * in the generated parser.  Calling this constructor generates
+     * in the generated parser. Calling this constructor generates
      * a new object of this type with the fields "currentToken",
      * "expectedTokenSequences", and "tokenImage" set.
      * This constructor calls its super class with the empty string
@@ -49,11 +48,11 @@ public class ParseException
 
     /**
      * The following constructors are for use by you for whatever
-     * purpose you can think of.  Constructing the exception in this
+     * purpose you can think of. Constructing the exception in this
      * manner makes the exception behave in the normal way - i.e., as
-     * documented in the class "Throwable".  The fields "errorToken",
+     * documented in the class "Throwable". The fields "errorToken",
      * "expectedTokenSequences", and "tokenImage" do not contain
-     * relevant information.  The JavaCC generated code does not use
+     * relevant information. The JavaCC generated code does not use
      * these constructors.
      */
     public ParseException() {
@@ -66,9 +65,9 @@ public class ParseException
 
     /**
      * This method has the standard behavior when this object has been
-     * created using the standard constructors.  Otherwise, it uses
+     * created using the standard constructors. Otherwise, it uses
      * "currentToken" and "expectedTokenSequences" to generate a parse
-     * error message and returns it.  If this object has been created
+     * error message and returns it. If this object has been created
      * due to a parse error, and you do not catch it (it gets thrown
      * from the parser), then this method is called during the printing
      * of the final stack trace, and hence the correct error message
@@ -108,9 +107,8 @@ public class ParseException
     }
 
     /**
-     *  Used to convert raw characters to their escaped version
-     *  when these raw version cannot be used as part of an ASCII
-     *  string literal.
+     * Used to convert raw characters to their escaped version
+     * when these raw version cannot be used as part of an ASCII string literal.
      */
     private static String escape(String str) {
         StringBuffer retval = new StringBuffer();

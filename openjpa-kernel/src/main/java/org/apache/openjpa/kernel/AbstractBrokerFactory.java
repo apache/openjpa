@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,8 +45,8 @@ import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * <p>Abstract implementation of the {@link BrokerFactory}
- * that must be subclassed for a specific runtime.</p>
+ * Abstract implementation of the {@link BrokerFactory}
+ * that must be subclassed for a specific runtime.
  *
  * @author Abe White
  */
@@ -106,7 +106,7 @@ public abstract class AbstractBrokerFactory
     }
 
     /**
-     * Constructor.  Configuration must be provided on construction.
+     * Constructor. Configuration must be provided on construction.
      */
     protected AbstractBrokerFactory(OpenJPAConfiguration config) {
         _conf = config;
@@ -206,7 +206,7 @@ public abstract class AbstractBrokerFactory
     }
 
     /**
-     * Load the configured persistent classes list.  Performed automatically
+     * Load the configured persistent classes list. Performed automatically
      * whenever a broker is created.
      */
     private void loadPersistentTypes(ClassLoader envLoader) {
@@ -360,7 +360,7 @@ public abstract class AbstractBrokerFactory
     }
 
     /**
-     * Replaces the factory with this JVMs pooled version if it exists.  Also
+     * Replaces the factory with this JVMs pooled version if it exists. Also
      * freezes the factory.
      */
     protected Object readResolve()
@@ -382,16 +382,16 @@ public abstract class AbstractBrokerFactory
     ////////////////////////
 
     /**
-     * Return a new StoreManager for this runtime.  Note that the instance
+     * Return a new StoreManager for this runtime. Note that the instance
      * returned here may be wrapped before being passed to the
      * {@link #newBroker} method.
      */
     protected abstract StoreManager newStoreManager();
 
     /**
-     * Find a pooled broker, or return null if none.  If using
+     * Find a pooled broker, or return null if none. If using
      * managed transactions, looks for a transactional broker;
-     * otherwise returns null by default.  This method will be called before
+     * otherwise returns null by default. This method will be called before
      * {@link #newStoreManager} so that factory subclasses implementing
      * pooling can return a matching manager before a new {@link StoreManager}
      * is created.
@@ -418,7 +418,7 @@ public abstract class AbstractBrokerFactory
 
     /**
      * Setup transient state used by this factory based on the
-     * current configuration, which will subsequently be locked down.  This
+     * current configuration, which will subsequently be locked down. This
      * method will be called before the first broker is requested,
      * and will be re-called each time the factory is deserialized into a JVM
      * that has no configuration for this data store.
@@ -563,7 +563,7 @@ public abstract class AbstractBrokerFactory
     ////////////////////
 
     /**
-     * Throws a {@link UserException} if a transaction is active.  The thrown
+     * Throws a {@link UserException} if a transaction is active. The thrown
      * exception will contain all the Brokers with active transactions as
      * failed objects in the nested exceptions.
      */
@@ -641,8 +641,8 @@ public abstract class AbstractBrokerFactory
     }
 
     /**
-     *	Simple synchronization listener to remove completed transactions
-     *	from our cache.
+     * Simple synchronization listener to remove completed transactions
+     * from our cache.
      */
     private class RemoveTransactionSync
         implements Synchronization {

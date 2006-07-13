@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.apache.openjpa.meta;
 import java.util.Comparator;
 
 /**
- * <p>Comparator that keeps classes in inheritance order.</p>
+ * Comparator that keeps classes in inheritance order.
  *
  * @author Abe White
  */
@@ -68,7 +68,7 @@ class InheritanceComparator
     }
 
     /**
-     *	Count the levels of inheritance between this class and our base class.
+     * Count the levels of inheritance between this class and our base class.
      */
     private int levels(Class to) {
         for (int i = 0; to != null; i++, to = to.getSuperclass())

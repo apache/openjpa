@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,8 +18,8 @@ package org.apache.openjpa.event;
 import java.util.EventObject;
 
 /**
- * <p>Lifecycle event on a persistent instance.  The event source
- * is the persistent instance whose state has changed.</p>
+ * Lifecycle event on a persistent instance. The event source
+ * is the persistent instance whose state has changed.
  *
  * @author Steve Kim
  * @author Abe White
@@ -148,8 +148,8 @@ public class LifecycleEvent
     /**
      * Constructor.
      *
-     * @param    pc        the persistent instance that triggered the event
-     * @param    type    the event type
+     * @param pc the persistent instance that triggered the event
+     * @param type the event type
      */
     public LifecycleEvent(Object pc, int type) {
         this(pc, null, type);
@@ -158,9 +158,9 @@ public class LifecycleEvent
     /**
      * Constructor.
      *
-     * @param    pc        the persistent instance that triggered the event
-     * @param    type    the event type
-     * @param    related    the related instance such as the detached copy.
+     * @param pc the persistent instance that triggered the event
+     * @param type the event type
+     * @param related the related instance such as the detached copy.
      */
     public LifecycleEvent(Object pc, Object related, int type) {
         super(pc);
@@ -176,7 +176,7 @@ public class LifecycleEvent
     }
 
     /**
-     *	Return the related object.
+     * Return the related object.
 	 */
 	public Object getRelated ()
 	{

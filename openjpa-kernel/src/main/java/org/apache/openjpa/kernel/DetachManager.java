@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -133,7 +133,7 @@ public class DetachManager
      * Ready the object for detachment, including loading the fields to be
      * detached and updating version information.
      *
-     * @param    idxs    the indexes of fields to detach will be set as a side
+     * @param idxs the indexes of fields to detach will be set as a side
      * effect of this method
      */
     private static void preDetach(Broker broker, StateManagerImpl sm,
@@ -193,7 +193,7 @@ public class DetachManager
 
     /**
      * Flush or invoke pre-store callbacks on the given broker if
-     * needed.  Return true if flushed/stored, false otherwise.
+     * needed. Return true if flushed/stored, false otherwise.
      */
     private static boolean flushDirty(StateManagerImpl sm) {
         if (!sm.isDirty())
@@ -232,8 +232,8 @@ public class DetachManager
     /**
      * Constructor.
      *
-     * @param    broker    owning broker
-     * @param    full    whether the entire broker cache is being detached; if
+     * @param broker owning broker
+     * @param full whether the entire broker cache is being detached; if
      * this is the case, we assume the broker has already
      * flushed if needed, and that we're detaching in-place
      */
@@ -287,7 +287,7 @@ public class DetachManager
     }
 
     /**
-     * Return detached versions of all the given instances.  If not copying,
+     * Return detached versions of all the given instances. If not copying,
      * null will be returned.
      */
     public Object[] detachAll(Collection instances) {
@@ -545,12 +545,12 @@ public class DetachManager
     }
 
     /**
-     *	FieldManager that can copy all the fields from one
-     *	PersistenceCapable instance to another. One of the
-     *	instances must be managed by a StateManager, and the
-     *	other must be unmanaged.
+     * FieldManager that can copy all the fields from one
+     * PersistenceCapable instance to another. One of the
+     * instances must be managed by a StateManager, and the
+     * other must be unmanaged.
      *
-     *	@author Marc Prud'hommeaux
+     * @author Marc Prud'hommeaux
      */
     private class InstanceDetachFieldManager
         extends DetachFieldManager {
@@ -559,7 +559,7 @@ public class DetachManager
         private final DetachedStateManager _detSM;
 
         /**
-         * Constructor.  Supply instance to to copy to.
+         * Constructor. Supply instance to to copy to.
          */
         public InstanceDetachFieldManager(PersistenceCapable to,
             DetachedStateManager detSM) {
@@ -780,7 +780,7 @@ public class DetachManager
         }
 
         /**
-         *	Make sure all the values in the given map are detached.
+         * Make sure all the values in the given map are detached.
          */
         private void detachMap(Map map, Map orig, FieldMetaData fmd) {
             // map can be null if not copyable (lrs, for instance)

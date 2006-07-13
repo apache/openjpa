@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,8 +43,8 @@ import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.ImplHelper;
 
 /**
- * <p>Abstract store manager implementation to ease development of custom
- * OpenJPA back-ends.  A concrete subclass must define implementations for the
+ * Abstract store manager implementation to ease development of custom
+ * OpenJPA back-ends. A concrete subclass must define implementations for the
  * following methods:
  * <ul>
  * <li>{@link StoreManager#exists}</li>
@@ -53,14 +53,12 @@ import org.apache.openjpa.util.ImplHelper;
  * <li>{@link
  * #flush(Collection,Collection,Collection,Collection,Collection)}</li>
  * <li>{@link #executeExtent}</li>
- * </ul>
- * Additionally, subclasses should not attempt to acquire resources
- * until {@link #open} has been called.  Store manager instances might be
+ * </ul> Additionally, subclasses should not attempt to acquire resources
+ * until {@link #open} has been called. Store manager instances might be
  * created to call metadata methods such as {@link #newConfiguration} or
- * {@link #getUnsupportedOptions} and never opened.  These instances should
- * not consume any data store resources.</p>
- * <p/>
- * <p>Notes:
+ * {@link #getUnsupportedOptions} and never opened. These instances should
+ * not consume any data store resources.
+ *  Notes:
  * <ul>
  * <li>The {@link StoreManager#initialize} method is responsible
  * for creating new instances of objects freshly loaded from the
@@ -91,7 +89,7 @@ import org.apache.openjpa.util.ImplHelper;
  * provide that facility on top of your data store), implement
  * the {@link #getDataStoreIdSequence} method if you want to use a
  * <code>long</code> as your datastore identity type and are
- * happy with OpenJPA's {@link Id} class.  To use another datastore identity
+ * happy with OpenJPA's {@link Id} class. To use another datastore identity
  * type, override {@link #getManagedType},
  * {@link #getDataStoreIdType}, {@link #copyDataStoreId}, and
  * {@link #newDataStoreId} instead. In either case, override
@@ -113,7 +111,7 @@ import org.apache.openjpa.util.ImplHelper;
  * {@link org.apache.openjpa.lib.rop.ResultList}. For more details on
  * MethodQL, see the OpenJPA Reference Guide.</li>
  * </ul></li>
- * </ul></p>
+ * </ul>
  *
  * @since 3.1
  */
@@ -136,8 +134,7 @@ public abstract class AbstractStoreManager
     }
 
     /**
-     * No-op implementation. Ready this store manager for persistent
-     * operations.
+     * No-op implementation. Ready this store manager for persistent operations.
      */
     protected void open() {
     }
@@ -153,20 +150,18 @@ public abstract class AbstractStoreManager
     /**
      * No-op implementation. Override this method to provide optimistic
      * locking semantics for your data store if you need notification of
-     * a rollback of an optimistic transaction before {@link #begin} is
-     * invoked.
+     * a rollback of an optimistic transaction before {@link #begin} is invoked.
      */
     public void rollbackOptimistic() {
     }
 
     /**
-     * <p>OpenJPA assumes that after this method is invoked, all data
+     * OpenJPA assumes that after this method is invoked, all data
      * accesses through this store manager will be part of a single
-     * unit of work that can be rolled back.</p>
-     * <p/>
-     * <p>This is a no-op implementation. If your data store does not
+     * unit of work that can be rolled back.
+     *  This is a no-op implementation. If your data store does not
      * support any concept of locking or transactions, you need not
-     * override this method.</p>
+     * override this method.
      */
     public void begin() {
     }
@@ -175,8 +170,7 @@ public abstract class AbstractStoreManager
      * This is a no-op implementation. If your data store does not
      * have a concept of transactions or a unit of work, you need not
      * override this method. If it does, then override this method to
-     * notify the data store that the current transaction should be
-     * committed.
+     * notify the data store that the current transaction should be committed.
      */
     public void commit() {
     }
@@ -185,8 +179,7 @@ public abstract class AbstractStoreManager
      * This is a no-op implementation. If your data store does not
      * have a concept of transactions or a unit of work, you need not
      * override this method. If it does, then override this method to
-     * notify the data store that the current transaction should be
-     * rolled back.
+     * notify the data store that the current transaction should be rolled back.
      */
     public void rollback() {
     }
@@ -200,15 +193,14 @@ public abstract class AbstractStoreManager
     }
 
     /**
-     * <p>This method is invoked when OpenJPA needs to load an object whose
+     * This method is invoked when OpenJPA needs to load an object whose
      * identity is known but which has not yet been loaded from the data
      * store. <code>sm</code> is a partially-set-up state manager for this
      * object. The ID and least-derived type information for the instance
      * to load can be obtained by invoking
      * <code>sm.getObjectId()</code> and <code>sm.getMetaData()</code>.
-     * </p>
-     * <p/>
-     * <p>When implementing this method, load the data for this object from
+     * 
+     *  When implementing this method, load the data for this object from
      * the data store, determine the most-derived subclass of the newly-loaded
      * data, and then use the {@link OpenJPAStateManager#initialize} method to
      * populate <code>sm</code> with a new instance of the appropriate type.
@@ -216,20 +208,19 @@ public abstract class AbstractStoreManager
      * load field data into <code>sm</code> as in the {@link #load} method, by
      * using {@link OpenJPAStateManager#store} (or the appropriate
      * <code>OpenJPAStateManager.store<em>type</em></code> method) to put the
-     * data into the object.</p>
+     * data into the object.
      */
     public abstract boolean initialize(OpenJPAStateManager sm, PCState state,
         FetchState fetchState, Object context);
 
     /**
-     * <p>This method is invoked when OpenJPA needs to load additional data
+     * This method is invoked when OpenJPA needs to load additional data
      * into an object that has already been at least partially loaded by
-     * a previous {@link #initialize} invocation.</p>
-     * <p/>
-     * <p>Load data into <code>sm</code> by using {@link
+     * a previous {@link #initialize} invocation.
+     *  Load data into <code>sm</code> by using {@link
      * OpenJPAStateManager#store} (or the appropriate
      * <code>OpenJPAStateManager.store<em>type</em></code> method) to put the
-     * data into the object.</p>
+     * data into the object.
      */
     public abstract boolean load(OpenJPAStateManager sm, BitSet fields,
         FetchState fetchState, int lockLevel, Object context);
@@ -300,7 +291,7 @@ public abstract class AbstractStoreManager
     }
 
     /**
-     * Assign a new datastore identity to the given instance.  This given
+     * Assign a new datastore identity to the given instance. This given
      * value may be null.
      */
     protected boolean assignDataStoreId(OpenJPAStateManager sm, Object val) {
@@ -367,15 +358,13 @@ public abstract class AbstractStoreManager
     }
 
     /**
-     * <p>Create a {@link ResultObjectProvider} that can return all instances
+     * Create a {@link ResultObjectProvider} that can return all instances
      * of <code>type</code>, optionally including subclasses as defined
-     * by <code>subclasses</code>.</p>
-     * <p/>
-     * <p>The implementation of the result provider will typically execute
+     * by <code>subclasses</code>.
+     *  The implementation of the result provider will typically execute
      * some sort of data store query to find all the applicable objects, loop
      * through the returned data, extracting object IDs from the data, and
-     * invoking {@link
-     * StoreContext#find(Object,FetchState,BitSet,Object,int)}
+     * invoking {@link StoreContext#find(Object,FetchState,BitSet,Object,int)}
      * on each OID. When invoking this method, the first argument is the OID.
      * The second is the given fetch configuration. The
      * third argument is a mask of fields to exclude from loading; it will
@@ -385,7 +374,7 @@ public abstract class AbstractStoreManager
      * manager, this might be the result set that is being iterated over. If
      * this argument is <code>null</code>, then the {@link #initialize} or
      * {@link #load} method will have to issue another command to the data
-     * store in order to fetch the data to be loaded.</p>
+     * store in order to fetch the data to be loaded.
      */
     public abstract ResultObjectProvider executeExtent(ClassMetaData meta,
         boolean subs, FetchConfiguration fetch);
@@ -399,12 +388,12 @@ public abstract class AbstractStoreManager
     }
 
     /**
-     * <p>Casts <code>v1</code> and <code>v2</code> to {@link Comparable}, and
+     * Casts <code>v1</code> and <code>v2</code> to {@link Comparable}, and
      * invokes <code>v1.compareTo (v2)</code>. If <code>v1</code> is less
      * than <code>v2</code>, returns {@link #VERSION_EARLIER}. If the same,
      * returns {@link #VERSION_SAME}. Otherwise, returns {@link
      * #VERSION_LATER}. If either <code>v1</code> or <code>v2</code> are
-     * <code>null</code>, returns {@link #VERSION_DIFFERENT}.</p>
+     * <code>null</code>, returns {@link #VERSION_DIFFERENT}.
      */
     public int compareVersion(OpenJPAStateManager state, Object v1, Object v2) {
         if (v1 == null || v2 == null)
@@ -450,40 +439,35 @@ public abstract class AbstractStoreManager
     }
 
     /**
-     * <p>Responsible for writing modifications happened back to the data
+     * Responsible for writing modifications happened back to the data
      * store. If you do not remove the
      * {@link OpenJPAConfiguration#OPTION_INC_FLUSH} option in
      * {@link #getUnsupportedOptions}, this will be called only once at the
      * end	of a transaction. Otherwise, it may be called periodically
-     * throughout the course of a transaction.</p>
-     * <p/>
-     * <p>If this store manager supports optimistic transactions, datastore
+     * throughout the course of a transaction.
+     *  If this store manager supports optimistic transactions, datastore
      * version information should be updated during flush, and the state
      * manager's version indicator should be updated through the
-     * {@link OpenJPAStateManager#setNextVersion} method.</p>
-     * <p/>
-     * <p>This method will only be invoked if there are meaningful changes
+     * {@link OpenJPAStateManager#setNextVersion} method.
+     *  This method will only be invoked if there are meaningful changes
      * to store. This differs from the behavior of {@link StoreManager#flush},
      * which may be invoked with a collection of objects in states that
      * do not require any datastore action (for example, objects in the
-     * transient-transactional state).</p>
+     * transient-transactional state).
      *
      * @param pNew Objects that should be added to the store,
      * and that have not previously been flushed.
      * @param pNewUpdated New objects that have been modified since
      * they were initially flushed. These were
-     * in <code>persistentNew</code> in an earlier
-     * flush invocation.
+     * in <code>persistentNew</code> in an earlier flush invocation.
      * @param pNewFlushedDeleted New objects that have been deleted since
      * they were initially flushed. These were
-     * in <code>persistentNew</code> in an earlier
-     * flush invocation.
+     * in <code>persistentNew</code> in an earlier flush invocation.
      * @param pDirty Objects that were loaded from the data
      * store and have since been modified.
      * @param pDeleted Objects that were loaded from the data
      * store and have since been deleted. These
-     * may have been in a previous flush
-     * invocation's persistentDirty list.
+     * may have been in a previous flush invocation's persistentDirty list.
      * @return a collection of exceptions encountered during flushing.
      */
     protected abstract Collection flush(Collection pNew,
@@ -491,18 +475,18 @@ public abstract class AbstractStoreManager
         Collection pDirty, Collection pDeleted);
 
     /**
-     * Return a new configuration instance for this runtime.  Configuration
+     * Return a new configuration instance for this runtime. Configuration
      * data is maintained at the factory level and is available to all OpenJPA
      * components; therefore it is a good place to maintain shared resources
-     * such as connection pools, etc.</p>
+     * such as connection pools, etc.
      */
     protected OpenJPAConfiguration newConfiguration() {
         return new OpenJPAConfigurationImpl();
     }
 
     /**
-     * <p>Returns a set of option names that this store manager does
-     * not support.  By default, returns the following:
+     * Returns a set of option names that this store manager does
+     * not support. By default, returns the following:
      * <ul>
      * <li>{@link OpenJPAConfiguration#OPTION_OPTIMISTIC}</li>
      * <li>{@link OpenJPAConfiguration#OPTION_ID_DATASTORE}</li>
@@ -510,7 +494,7 @@ public abstract class AbstractStoreManager
      * <li>{@link OpenJPAConfiguration#OPTION_VALUE_AUTOASSIGN}</li>
      * <li>{@link OpenJPAConfiguration#OPTION_VALUE_INCREMENT}</li>
      * <li>{@link OpenJPAConfiguration#OPTION_DATASTORE_CONNECTION}</li>
-     * </ul></p>
+     * </ul>
      */
     protected Collection getUnsupportedOptions() {
         Collection c = new HashSet();
@@ -524,9 +508,8 @@ public abstract class AbstractStoreManager
     }
 
     /**
-     *	<p>Returns a string name to identify the platform of this
-     *	store manager.  Returns the class name of this store manager by
-     *	default.</p>
+     * Returns a string name to identify the platform of this
+     * store manager. Returns the class name of this store manager by default.
      */
     protected String getPlatform ()
 	{

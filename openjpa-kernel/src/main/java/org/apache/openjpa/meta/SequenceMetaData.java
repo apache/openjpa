@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@ import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAException;
 
 /**
- * <p>Metadata about a named sequence.</p>
+ * Metadata about a named sequence.
  *
  * @author Abe White
  * @since 4.0
@@ -277,7 +277,7 @@ public class SequenceMetaData
     }
 
     /**
-     * Create a new plugin value for sequences.  Returns a standard
+     * Create a new plugin value for sequences. Returns a standard
      * {@link SeqValue} by default.
      */
     protected PluginValue newPluginValue(String property) {
@@ -295,7 +295,7 @@ public class SequenceMetaData
     }
 
     /**
-     * Add a string property to the buffer.  Nothing will be added if value
+     * Add a string property to the buffer. Nothing will be added if value
      * is null or empty string.
      */
     protected void appendProperty(StringBuffer props, String name, String val) {
@@ -307,8 +307,7 @@ public class SequenceMetaData
     }
 
     /**
-     * Add an int property to the buffer.  Nothing will be added if value
-     * is -1.
+     * Add an int property to the buffer. Nothing will be added if value is -1.
      */
     protected void appendProperty(StringBuffer props, String name, int val) {
         if (val == -1)
@@ -346,13 +345,13 @@ public class SequenceMetaData
     }
 
     /**
-     *	Allow facades to supply adapters from a spec sequence type to the
-     *	OpenJPA sequence type.
+     * Allow facades to supply adapters from a spec sequence type to the
+     * OpenJPA sequence type.
      */
     public static interface SequenceFactory {
 
         /**
-         *	Transform the given class named in metadata into a sequence.
+         * Transform the given class named in metadata into a sequence.
          */
 		public Seq toSequence (Class cls, String props)
 			throws Exception;

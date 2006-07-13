@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,10 +37,10 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.GeneralException;
 
 /**
- * <p>Configuration provider capable of loading a {@link Configuration} from
- * the current environment's JPA-style XML configuration data.</p>
- * <p/>
- * <p>For defaults, looks in <code>org.apache.openjpa.properties</code> system property for
+ * Configuration provider capable of loading a {@link Configuration} from
+ * the current environment's JPA-style XML configuration data.
+ * 
+ * For defaults, looks in <code>org.apache.openjpa.properties</code> system property for
  * the location of a file to parse. If no system property is defined, the
  * default resource location of <code>org.apache.openjpa.xml</code> is used.
  * If it exists, the resource is parsed as an XML file.
@@ -106,7 +106,7 @@ public class ConfigurationProviderImpl
 
     /**
      * Load configuration from the given resource, with the given map of
-     * overrides.  If the resource is null, tries to load from persistence.xml,
+     * overrides. If the resource is null, tries to load from persistence.xml,
      * but still returns true if persistence.xml does not exist.
      */
     public boolean load(String name, String rsrc, Map m)
@@ -155,7 +155,7 @@ public class ConfigurationProviderImpl
      * resource into a new {@link PersistenceUnitInfo}. Then, applies the
      * overrides in <code>m</code>.
      *
-     * @return    {@link Boolean#TRUE} if the resource was loaded, null if it
+     * @return {@link Boolean#TRUE} if the resource was loaded, null if it
      * does not exist, or {@link Boolean#FALSE} if it is not for OpenJPA
      */
     private Boolean load(String name, String rsrc, Map m, ClassLoader loader,
@@ -252,8 +252,8 @@ public class ConfigurationProviderImpl
     }
 
     /**
-     *	SAX handler capable of parsing an JPA persistence.xml file.
-     *	Package-protected for testing.
+     * SAX handler capable of parsing an JPA persistence.xml file.
+     * Package-protected for testing.
      */
     static class ConfigurationParser
         extends XMLMetaDataParser {
@@ -349,7 +349,7 @@ public class ConfigurationProviderImpl
         }
 
         /**
-         *	Parse persistence-unit element.
+         * Parse persistence-unit element.
          */
         private void startPersistenceUnit(Attributes attrs)
             throws SAXException {

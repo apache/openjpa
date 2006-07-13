@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,9 +30,9 @@ import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.StoreException;
 
 /**
- * <p>Uses a local implementation of the {@link TransactionManager} interface.
+ * Uses a local implementation of the {@link TransactionManager} interface.
  * This manager is valid only for a single {@link Broker}.
- * It duplicates non-managed transaction control.</p>
+ * It duplicates non-managed transaction control.
  *
  * @author Abe White
  */
@@ -48,7 +48,7 @@ class LocalManagedRuntime
     private boolean _rollbackOnly = false;
 
     /**
-     * Constructor.  Provide broker that will be requesting managed
+     * Constructor. Provide broker that will be requesting managed
      * transaction info.
      */
     public LocalManagedRuntime(Broker broker) {
@@ -140,7 +140,7 @@ class LocalManagedRuntime
 
     /**
      * Notifies the factory sync that the transaction has ended with
-     * the given status.  Clears all transaction state regardless
+     * the given status. Clears all transaction state regardless
      * of any exceptions during the callback.
      */
     private void notifyAfterCompletion(int status) {

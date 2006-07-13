@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -51,7 +54,7 @@ package org.apache.openjpa.lib.util.concurrent;
  * responsibility. The absence of block-structured locking removes the
  * automatic release of locks that occurs with <tt>synchronized</tt>
  * methods and statements. In most cases, the following idiom should be used:
- * <p/>
+ * 
  * <pre><tt> Lock l = ...; l.lock(); try {
  * // access the resource protected by this lock } finally { l.unlock(); }
  * </tt></pre>
@@ -59,7 +62,7 @@ package org.apache.openjpa.lib.util.concurrent;
  * taken to ensure that all code that is executed while the lock is
  * held is protected by try-finally or try-catch to ensure that the
  * lock is released when necessary.
- * <p/>
+ * 
  * <tt>Lock</tt> implementations provide additional functionality
  * over the use of <tt>synchronized</tt> methods and statements by
  * providing a non-blocking attempt to acquire a lock({@link
@@ -80,7 +83,7 @@ package org.apache.openjpa.lib.util.concurrent;
  * instances in this way, except within their own implementation.
  * Except where noted, passing a <tt>null</tt> value for any
  * parameter will result in a {@link NullPointerException} being thrown.
- * <p/>
+ * 
  * <h3>Memory Synchronization</h3>
  * All <tt>Lock</tt> implementations <em>must</em> enforce the same
  * memory synchronization semantics as provided by the built-in monitor
@@ -91,11 +94,10 @@ package org.apache.openjpa.lib.util.concurrent;
  * synchronization effects as a successful <em>Lock</em> action.
  * <li>A successful <tt>unlock</tt> operation has the same
  * memory synchronization effects as a successful <em>Unlock</em> action.
- * </ul>
- * Unsuccessful locking and unlocking operations, and reentrant
+ * </ul> Unsuccessful locking and unlocking operations, and reentrant
  * locking/unlocking operations, do not require any memory
  * synchronization effects.
- * <p/>
+ * 
  * <h3>Implementation Considerations</h3>
  * The three forms of lock acquisition(interruptible,
  * non-interruptible, and timed) may differ in their performance
@@ -156,7 +158,7 @@ public interface Lock {
      * </ul>
      * then {@link InterruptedException} is thrown and the current thread's
      * interrupted status is cleared.
-     * <p/>
+     * 
      * <b>Implementation Considerations</b>
      * The ability to interrupt a lock acquisition in some
      * implementations may not be possible, and if possible may be an
@@ -192,7 +194,7 @@ public interface Lock {
      * doesn't try to unlock if the lock was not acquired.
      *
      * @return <tt>true</tt> if the lock was acquired and <tt>false</tt>
-     *         otherwise.
+     * otherwise.
      */
     boolean tryLock();
 
@@ -220,7 +222,7 @@ public interface Lock {
      * If the specified waiting time elapses then the value <tt>false</tt>
      * is returned. If the time is
      * less than or equal to zero, the method will not wait at all.
-     * <p/>
+     * 
      * <b>Implementation Considerations</b>
      * The ability to interrupt a lock acquisition in some implementations
      * may not be possible, and if possible may be an expensive operation.
@@ -237,7 +239,7 @@ public interface Lock {
      * @param time the maximum time to wait for the lock
      * @param unit the time unit of the <tt>time</tt> argument.
      * @return <tt>true</tt> if the lock was acquired and <tt>false</tt>
-     *         if the waiting time elapsed before the lock was acquired.
+     * if the waiting time elapsed before the lock was acquired.
      * @throws InterruptedException if the current thread is interrupted
      * while acquiring the lock(and interruption of lock acquisition is
      * supported).

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * <p>Represents a cast.</p>
+ * Represents a cast.
  *
  * @author Abe White
  */
@@ -34,7 +34,7 @@ class Cast
     private final Class _cast;
 
     /**
-     * Constructor.  Provide value to cast and type to cast to.
+     * Constructor. Provide value to cast and type to cast to.
      */
     public Cast(Val val, Class cast) {
         _val = val;

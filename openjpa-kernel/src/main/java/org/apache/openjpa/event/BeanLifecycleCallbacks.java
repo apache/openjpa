@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ public class BeanLifecycleCallbacks
     private Object _listener;
 
     /**
-     * Constructor.  Make the callback on an instance of the given type.
+     * Constructor. Make the callback on an instance of the given type.
      *
      * @arg whether another argunent is expected such as AfterDetach
      */
@@ -44,7 +44,7 @@ public class BeanLifecycleCallbacks
     }
 
     /**
-     * Constructor.  Make the callback on an instance of the given type.
+     * Constructor. Make the callback on an instance of the given type.
      */
     public BeanLifecycleCallbacks(Class cls, Method method, boolean arg) {
         super(method, arg);

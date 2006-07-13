@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,8 +46,7 @@ import serp.util.Numbers;
 
 /**
  * A {@link StoreQuery} implementation that caches the OIDs involved in
- * the query, and can determine whether or not the query has been
- * dirtied.
+ * the query, and can determine whether or not the query has been dirtied.
  *
  * @author Patrick Linskey
  * @since 2.5.0
@@ -70,8 +69,7 @@ public class QueryCacheStoreQuery
     }
 
     /**
-     * Return the {@link QueryCache} that this object is associated
-     * with.
+     * Return the {@link QueryCache} that this object is associated with.
      */
     public QueryCache getCache() {
         return _cache;
@@ -85,30 +83,25 @@ public class QueryCacheStoreQuery
     }
 
     /**
-     * <p>Look in the query cache for a result for the given query
+     * Look in the query cache for a result for the given query
      * key. Only look if this query is being executed outside a
      * transaction or in a transaction with IgnoreChanges set to true
      * or in a transaction with IgnoreChanges set to false but in which
-     * none of the classes involved in this query have been
-     * touched.</p>
-     * <p/>
-     * <p>Caching is not used when using object locking.
+     * none of the classes involved in this query have been touched.
+     *  Caching is not used when using object locking.
      * This is because we must obtain locks on the
      * data, and it is likely that making n trips to the database to
      * make the locks will be slower than running the query against
-     * the database.</p>
-     * <p/>
-     * <p>If the fetch configuration has query caching disabled,
-     * then this method returns <code>null</code>.</p>
-     * <p/>
-     * <p>Return the list if we meet the above criteria and if a list
+     * the database.
+     *  If the fetch configuration has query caching disabled,
+     * then this method returns <code>null</code>.
+     *  Return the list if we meet the above criteria and if a list
      * is found for <code>qk</code>. Else, return
-     * <code>null</code>.</p>
-     * <p/>
-     * <p>This implementation means that queries against the cache
+     * <code>null</code>.
+     *  This implementation means that queries against the cache
      * are of READ_COMMITTED isolation level. It'd be nice to support
      * READ_SERIALIZABLE -- to do so, we'd just return false when in
-     * a transaction.</p>
+     * a transaction.
      */
     private List checkCache(QueryKey qk) {
         if (qk == null)
@@ -451,7 +444,7 @@ public class QueryCacheStoreQuery
     }
 
     /**
-     * Result list implementation for a cached query result.  Package-protected
+     * Result list implementation for a cached query result. Package-protected
      * for testing.
      */
     public static class CachedList
@@ -495,8 +488,7 @@ public class QueryCacheStoreQuery
      * A wrapper around a {@link ResultObjectProvider} that builds up a list of
      * all the OIDs in this list and registers that list with the
      * query cache. Abandons monitoring and registering if one of the classes
-     * in the access path is modified while the query results are being
-     * loaded.
+     * in the access path is modified while the query results are being loaded.
      */
     private class CachingResultObjectProvider
         implements ResultObjectProvider, TypesChangedListener {
@@ -514,7 +506,7 @@ public class QueryCacheStoreQuery
         private int _size = Integer.MAX_VALUE;
 
         /**
-         * Constructor.  Supply delegate result provider and our query key.
+         * Constructor. Supply delegate result provider and our query key.
          */
         public CachingResultObjectProvider(ResultObjectProvider rop,
             boolean proj, QueryKey key) {
@@ -666,7 +658,7 @@ public class QueryCacheStoreQuery
     }
 
     /**
-     *	Struct to recognize cached oids.
+     * Struct to recognize cached oids.
      */
     private static class CachedObjectId {
 

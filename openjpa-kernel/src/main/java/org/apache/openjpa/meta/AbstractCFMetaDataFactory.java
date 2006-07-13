@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,8 +49,8 @@ import org.apache.openjpa.util.UserException;
 import serp.util.Strings;
 
 /**
- * <p>Base class for factory implementations built around XML metadata files
- * in the common fomat.</p>
+ * Base class for factory implementations built around XML metadata files
+ * in the common fomat.
  *
  * @author Abe White
  * @since 4.0
@@ -338,7 +338,7 @@ public abstract class AbstractCFMetaDataFactory
     /**
      * Assign default source files to the given metadatas.
      *
-     * @param    clsNames    map of class names to metadatas
+     * @param clsNames map of class names to metadatas
      * @return set of existing files used by these metadatas, or
      * null if no existing files
      */
@@ -387,7 +387,7 @@ public abstract class AbstractCFMetaDataFactory
     /**
      * Assign default source files to the given queries.
      *
-     * @param    clsNames    map of class names to metadatas
+     * @param clsNames map of class names to metadatas
      * @return set of existing files used by these metadatas, or
      * null if no existing files
      */
@@ -444,7 +444,7 @@ public abstract class AbstractCFMetaDataFactory
     }
 
     /**
-     * Whether to parse classes top down.  Defaults to false.
+     * Whether to parse classes top down. Defaults to false.
      */
     protected boolean isParseTopDown() {
         return false;
@@ -533,7 +533,7 @@ public abstract class AbstractCFMetaDataFactory
     /**
      * Create a new metadata parser.
      *
-     * @param    loading        if true, this will be the cached parser used for
+     * @param loading if true, this will be the cached parser used for
      * loading metadata
      */
     protected abstract Parser newParser(boolean loading);
@@ -546,7 +546,7 @@ public abstract class AbstractCFMetaDataFactory
     /**
      * Return the metadata that defines the given query, if any.
      *
-     * @param    clsNames    map of class names to metadatas
+     * @param clsNames map of class names to metadatas
      */
     protected ClassMetaData getDefiningMetaData(QueryMetaData query,
         Map clsNames) {
@@ -699,7 +699,7 @@ public abstract class AbstractCFMetaDataFactory
 
     /**
      * Implement this method to map metadata resources to the persistent
-     * types contained within them.  The method will be called when
+     * types contained within them. The method will be called when
      * {@link #getPersistentTypeNames} is invoked.
      */
     protected void mapPersistentTypeNames(Object rsrc, String[] names) {
@@ -723,7 +723,7 @@ public abstract class AbstractCFMetaDataFactory
         extends MetaDataParser {
 
         /**
-         * Returns the repository for this parser.  If none has been set,
+         * Returns the repository for this parser. If none has been set,
          * creates a new repository and sets it.
          */
         public MetaDataRepository getRepository();
@@ -735,13 +735,13 @@ public abstract class AbstractCFMetaDataFactory
     }
 
     /**
-     *	Internal serializer interface.
+     * Internal serializer interface.
      */
     public static interface Serializer
         extends MetaDataSerializer {
 
         /**
-         * The serialization mode according to the expected document type.  The
+         * The serialization mode according to the expected document type. The
          * mode constants act as bit flags, and therefore can be combined.
          */
         public void setMode(int mode);
@@ -767,8 +767,8 @@ public abstract class AbstractCFMetaDataFactory
         public void addQueryMetaData(QueryMetaData meta);
 
         /**
-         *	Add all components in the given repository to the set to be
-		 *	serialized.
+         * Add all components in the given repository to the set to be
+		 * serialized.
 		 */
 		public void addAll (MetaDataRepository repos);
 	}

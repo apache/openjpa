@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -32,12 +35,11 @@ package org.apache.openjpa.lib.util.concurrent;
  * the following code will timeout in 50 milliseconds if the {@link
  * edu.emory.mathcs.backport.java.util.concurrent.locks.Lock lock} is not
  * available:
- * <p/>
+ * 
  * <pre> Lock lock = ...; if ( lock.tryLock(50L, TimeUnit.MILLISECONDS) ) ...
  * </pre> while this code will timeout in 50 seconds:
  * <pre> Lock lock = ...; if ( lock.tryLock(50L, TimeUnit.SECONDS) ) ...
- * </pre>
- * Note however, that there is no guarantee that a particular timeout
+ * </pre> Note however, that there is no guarantee that a particular timeout
  * implementation will be able to notice the passage of time at the
  * same granularity as the given <tt>TimeUnit</tt>.
  *
@@ -385,15 +387,14 @@ public abstract class TimeUnit implements java.io.Serializable {
      * <tt>0</tt>. Conversions from coarser to finer granularities
      * with arguments that would numerically overflow saturate to
      * <tt>Long.MIN_VALUE</tt> if negative or <tt>Long.MAX_VALUE</tt>
-     * if positive.
-     * For example, to convert 10 minutes to milliseconds, use:
+     * if positive. For example, to convert 10 minutes to milliseconds, use:
      * <tt>TimeUnit.MILLISECONDS.convert(10L, TimeUnit.MINUTES)</tt>
      *
      * @param sourceDuration the time duration in the given <tt>sourceUnit</tt>
      * @param sourceUnit the unit of the <tt>sourceDuration</tt> argument
      * @return the converted duration in this unit,
-     *         or <tt>Long.MIN_VALUE</tt> if conversion would negatively
-     *         overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
+     * or <tt>Long.MIN_VALUE</tt> if conversion would negatively
+     * overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
      */
     public abstract long convert(long sourceDuration, TimeUnit sourceUnit);
 
@@ -402,8 +403,8 @@ public abstract class TimeUnit implements java.io.Serializable {
      *
      * @param duration the duration
      * @return the converted duration,
-     *         or <tt>Long.MIN_VALUE</tt> if conversion would negatively
-     *         overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
+     * or <tt>Long.MIN_VALUE</tt> if conversion would negatively
+     * overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
      * @see #convert
      */
     public abstract long toNanos(long duration);
@@ -413,8 +414,8 @@ public abstract class TimeUnit implements java.io.Serializable {
      *
      * @param duration the duration
      * @return the converted duration,
-     *         or <tt>Long.MIN_VALUE</tt> if conversion would negatively
-     *         overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
+     * or <tt>Long.MIN_VALUE</tt> if conversion would negatively
+     * overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
      * @see #convert
      */
     public abstract long toMicros(long duration);
@@ -424,8 +425,8 @@ public abstract class TimeUnit implements java.io.Serializable {
      *
      * @param duration the duration
      * @return the converted duration,
-     *         or <tt>Long.MIN_VALUE</tt> if conversion would negatively
-     *         overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
+     * or <tt>Long.MIN_VALUE</tt> if conversion would negatively
+     * overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
      * @see #convert
      */
     public abstract long toMillis(long duration);
@@ -435,8 +436,8 @@ public abstract class TimeUnit implements java.io.Serializable {
      *
      * @param duration the duration
      * @return the converted duration,
-     *         or <tt>Long.MIN_VALUE</tt> if conversion would negatively
-     *         overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
+     * or <tt>Long.MIN_VALUE</tt> if conversion would negatively
+     * overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
      * @see #convert
      */
     public abstract long toSeconds(long duration);
@@ -446,8 +447,8 @@ public abstract class TimeUnit implements java.io.Serializable {
      *
      * @param duration the duration
      * @return the converted duration,
-     *         or <tt>Long.MIN_VALUE</tt> if conversion would negatively
-     *         overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
+     * or <tt>Long.MIN_VALUE</tt> if conversion would negatively
+     * overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
      * @see #convert
      * @since 1.6
      */
@@ -458,8 +459,8 @@ public abstract class TimeUnit implements java.io.Serializable {
      *
      * @param duration the duration
      * @return the converted duration,
-     *         or <tt>Long.MIN_VALUE</tt> if conversion would negatively
-     *         overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
+     * or <tt>Long.MIN_VALUE</tt> if conversion would negatively
+     * overflow, or <tt>Long.MAX_VALUE</tt> if it would positively overflow.
      * @see #convert
      * @since 1.6
      */
@@ -490,7 +491,7 @@ public abstract class TimeUnit implements java.io.Serializable {
      * into the form required by the <tt>Object.wait</tt> method.
      * For example, you could implement a blocking <tt>poll</tt>
      * method(see {@link BlockingQueue#poll BlockingQueue.poll}) using:
-     * <p/>
+     * 
      * <pre> public synchronized Object poll(long timeout, TimeUnit unit)
      * throws InterruptedException { while (empty) {
      * unit.timedWait(this, timeout); ... } }</pre>

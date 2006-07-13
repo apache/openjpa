@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,8 +35,8 @@ import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.UserException;
 
 /**
- * <p>Expression factory implementation that can be used to execute queries
- * in memory.</p>
+ * Expression factory implementation that can be used to execute queries
+ * in memory.
  *
  * @author Abe White
  * @nojavadoc
@@ -74,7 +74,7 @@ public class InMemoryExpressionFactory
 
     /**
      * Recursive method to evaluate the expression for all possible
-     * combinations of unbound variables.  This method simulates a sequence
+     * combinations of unbound variables. This method simulates a sequence
      * of embedded procedural loops over the extents of all variables in the
      * unbounds list.
      */
@@ -176,7 +176,7 @@ public class InMemoryExpressionFactory
 
     /**
      * Recursive method to evaluate the expression for all possible
-     * combinations of unbound variables.  This method simulates a sequence
+     * combinations of unbound variables. This method simulates a sequence
      * of embedded procedural loops over the extents of all variables in the
      * unbounds list.
      */
@@ -294,8 +294,7 @@ public class InMemoryExpressionFactory
     /**
      * Order the given list of matches on the given value.
      *
-     * @param    projected    whether projections have been applied to the
-     * matches yet
+     * @param projected whether projections have been applied to the matches yet
      */
     private List order(QueryExpressions exps, Value[] orderValues,
         boolean projected, List matches, StoreContext ctx, Object[] params) {
@@ -666,9 +665,9 @@ public class InMemoryExpressionFactory
     }
 
     /**
-     *	Comparator that uses the result of eval'ing a Value to sort on.  Null
-     *	values are placed last if sorting in ascending order, first if
-     *	descending.
+     * Comparator that uses the result of eval'ing a Value to sort on. Null
+     * values are placed last if sorting in ascending order, first if
+     * descending.
      */
     private static class OrderValueComparator
         implements Comparator {

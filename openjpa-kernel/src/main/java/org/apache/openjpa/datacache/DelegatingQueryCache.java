@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,9 +19,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
 /**
- * <p>Delegating query cache that can also perform exception translation for
- * use in facades.  This cache allows its delegate to be null, in which case
- * it returns default values or all methods.</p>
+ * Delegating query cache that can also perform exception translation for
+ * use in facades. This cache allows its delegate to be null, in which case
+ * it returns default values or all methods.
  *
  * @author Abe White
  * @since 4.0
@@ -35,7 +35,7 @@ public class DelegatingQueryCache
     private final RuntimeExceptionTranslator _trans;
 
     /**
-     * Constructor.  Supply delegate.
+     * Constructor. Supply delegate.
      */
     public DelegatingQueryCache(QueryCache cache) {
         this(cache, null);

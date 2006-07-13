@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +18,9 @@ package org.apache.openjpa.kernel.exps;
 import org.apache.openjpa.kernel.StoreContext;
 
 /**
- * <p>Represents an unbound variable.  When the query is evaluated,
+ * Represents an unbound variable. When the query is evaluated,
  * expressions containing unbound variables will be
- * executed once for every element in the type's extent.</p>
+ * executed once for every element in the type's extent.
  *
  * @author Abe White
  */
@@ -31,7 +31,7 @@ class UnboundVariable
     private Object _val = null;
 
     /**
-     * Constructor.  Provide variable name and type.
+     * Constructor. Provide variable name and type.
      */
     public UnboundVariable(Class type) {
         _type = type;
@@ -50,7 +50,7 @@ class UnboundVariable
     }
 
     /**
-     * Set the variable's current value.  Expressions can be evaluated
+     * Set the variable's current value. Expressions can be evaluated
      * for every possible object in the extent of each unbound variable
      * when looking for a match.
      */

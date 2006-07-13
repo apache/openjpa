@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.apache.openjpa.kernel;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 
 /**
- * <p>Constants for determining when to flush before queries.</p>
+ * Constants for determining when to flush before queries.
  *
  * @author Abe White
  * @since 4.0
@@ -43,11 +43,11 @@ public interface QueryFlushModes {
     public static final int FLUSH_FALSE = 1;
 
     /**
-     *	Constant denoting that queries should flush data to the
-     *	database automatically when OpenJPA determines that relevant
-     *	modifications have been made and the current
-     *	context already has a dedicated connection. See
-     *	{@link OpenJPAConfiguration#getFlushBeforeQueries} for more info.
+     * Constant denoting that queries should flush data to the
+     * database automatically when OpenJPA determines that relevant
+     * modifications have been made and the current
+     * context already has a dedicated connection. See
+     * {@link OpenJPAConfiguration#getFlushBeforeQueries} for more info.
      */
     public static final int FLUSH_WITH_CONNECTION = 2;
 }

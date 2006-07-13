@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,8 +16,8 @@
 package org.apache.openjpa.meta;
 
 /**
- * <p>Mode constants used to track the initialization status of metadata.
- * These constants can be used as bit flags.</p>
+ * Mode constants used to track the initialization status of metadata.
+ * These constants can be used as bit flags.
  *
  * @author Abe White
  * @since 4.0

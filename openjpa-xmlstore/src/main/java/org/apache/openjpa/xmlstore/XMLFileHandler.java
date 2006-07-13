@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*********************************************************************
-
- **********************************************************************/
 package org.apache.openjpa.xmlstore;
 
 import java.io.ByteArrayInputStream;
@@ -57,8 +54,8 @@ import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 
 /**
- * <p>Stores {@link ObjectData} objects by serializing a collection
- * of them into and out of an XML file.</p>
+ * Stores {@link ObjectData} objects by serializing a collection
+ * of them into and out of an XML file.
  */
 public class XMLFileHandler {
 
@@ -121,8 +118,8 @@ public class XMLFileHandler {
      * Stores all instances in <code>datas</code> into the appropriate file,
      * as dictated by <code>meta</code>.
      *
-     * @param    meta    the least-derived type of the instances being stored
-     * @param    datas    a collection of {@link ObjectData} instances, each
+     * @param meta the least-derived type of the instances being stored
+     * @param datas a collection of {@link ObjectData} instances, each
      * of which represents an object of type <code>meta</code>
      */
     public void store(ClassMetaData meta, Collection datas) {
@@ -238,7 +235,7 @@ public class XMLFileHandler {
     }
 
     /**
-     * Write out the data value.  This method writes nulls as "null",
+     * Write out the data value. This method writes nulls as "null",
      * serializes (using Java serialization and base16 encoding) out non-
      * primitives/boxed primitives and non-persistent types, and writes
      * primitives/boxed primitives and oids using their toString.
@@ -354,7 +351,7 @@ public class XMLFileHandler {
         private void startElement(String qName, Attributes attrs)
             throws Exception {
             switch (qName.charAt(0)) {
-                case 'o':    // object
+                case 'o': // object
                     // get the metadata for the type we're reading
                     String type = attrs.getValue("class");
                     ClassMetaData meta = _conf.getMetaDataRepository().
@@ -374,7 +371,7 @@ public class XMLFileHandler {
                     _object.setVersion(new Long(attrs.getValue("version")));
                     break;
 
-                case 'f':    // field
+                case 'f': // field
                     // start parsing a field element: for container types,
                     // initialize the container; for other types, initialize a
                     // buffer
@@ -393,9 +390,9 @@ public class XMLFileHandler {
                     }
                     break;
 
-                case 'e':    // element
-                case 'k':    // key
-                case 'v':    // value
+                case 'e': // element
+                case 'k': // key
+                case 'v': // value
                     // initialize a buffer for the element value
                     _buf = new StringBuffer();
                     break;
@@ -422,11 +419,11 @@ public class XMLFileHandler {
             throws Exception {
             Object val;
             switch (qName.charAt(0)) {
-                case 'o':     // object
+                case 'o': // object
                     // add the object to our results
                     _extent.add(_object);
 
-                case 'f':    // field
+                case 'f': // field
                     switch (_fmd.getTypeCode()) {
                         case JavaTypes.COLLECTION:
                         case JavaTypes.ARRAY:
@@ -443,20 +440,20 @@ public class XMLFileHandler {
                     _object.setField(_fmd.getIndex(), _fieldVal);
                     break;
 
-                case 'e':    // element
+                case 'e': // element
                     // cache element value
                     val = fromXMLString(_fmd.getElement().getTypeCode(),
                         _fmd.getElement().getTypeMetaData(), _buf.toString());
                     ((Collection) _fieldVal).add(val);
                     break;
 
-                case 'k':     // key
+                case 'k': // key
                     // cache key value
                     _keyVal = fromXMLString(_fmd.getKey().getTypeCode(),
                         _fmd.getKey().getTypeMetaData(), _buf.toString());
                     break;
 
-                case 'v':    // value
+                case 'v': // value
                     // create value and put cached key and value into map
                     val = fromXMLString(_fmd.getElement().getTypeCode(),
                         _fmd.getElement().getTypeMetaData(), _buf.toString());
@@ -587,7 +584,7 @@ public class XMLFileHandler {
     }
 
     /**
-     *	Utility methods for encoding and decoding XML strings.
+     * Utility methods for encoding and decoding XML strings.
      */
     private static class XMLEncoder {
 
@@ -652,8 +649,8 @@ public class XMLFileHandler {
         }
 
         /**
-         *	Create and initialize a buffer for the encoded/decoded string if
-         *	needed.
+         * Create and initialize a buffer for the encoded/decoded string if
+         * needed.
          */
         private static StringBuffer initializeBuffer(StringBuffer buf,
             String s, int i) {

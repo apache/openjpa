@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -460,8 +460,7 @@ public class TCPRemoteCommitProvider
     }
 
     /**
-     * Responsible for listening for incoming packets and processing
-     * them.
+     * Responsible for listening for incoming packets and processing them.
      */
     private static class TCPPortListener
         implements Runnable {
@@ -487,14 +486,12 @@ public class TCPRemoteCommitProvider
         private int _port;
 
         /**
-         * Should be set to <code>true</code> once the listener is
-         * listening.
+         * Should be set to <code>true</code> once the listener is listening.
          */
         private boolean _isRunning = false;
 
         /**
-         * Construct a new TCPPortListener configured to use the
-         * specified port.
+         * Construct a new TCPPortListener configured to use the specified port.
          */
         private TCPPortListener(int port, Log log)
             throws UnknownHostException, IOException {
@@ -745,20 +742,19 @@ public class TCPRemoteCommitProvider
     }
 
     /**
-     *	Utility class to store an InetAddress and an int. Not using
-     *	InetSocketAddress because it's a JDK1.4 API. This also
-     *	provides a wrapper around the socket(s) associated with this
-     *	address.
+     * Utility class to store an InetAddress and an int. Not using
+     * InetSocketAddress because it's a JDK1.4 API. This also
+     * provides a wrapper around the socket(s) associated with this address.
      */
     private class HostAddress {
 
         private InetAddress _address;
         private int _port;
-        private long _timeLastError;        // millis
-        private boolean _isAvailable;        // is peer thought to be up
-        private int _infosIssued = 0;    // limit log entries
+        private long _timeLastError; // millis
+        private boolean _isAvailable; // is peer thought to be up
+        private int _infosIssued = 0; // limit log entries
 
-        private GenericObjectPool _socketPool;    // reusable open sockets
+        private GenericObjectPool _socketPool; // reusable open sockets
 
         /**
          * Construct a new host address from a string of the form
@@ -892,7 +888,7 @@ public class TCPRemoteCommitProvider
         }
 
         /**
-         *	Factory for pooled sockets.
+         * Factory for pooled sockets.
          */
         private class SocketPoolableObjectFactory
             implements PoolableObjectFactory {
@@ -929,7 +925,6 @@ public class TCPRemoteCommitProvider
             public void activateObject (Object value)
 			{
 			}
-
 
 			public void passivateObject (Object value)
 			{

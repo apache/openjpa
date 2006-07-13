@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ import org.apache.openjpa.meta.ValueStrategies;
 import serp.util.Numbers;
 
 /**
- * <p>Utility class for manipulating application object ids.</p>
+ * Utility class for manipulating application object ids.
  *
  * @author Abe White
  * @nojavadoc
@@ -42,7 +42,7 @@ import serp.util.Numbers;
 public class ApplicationIds {
 
     /**
-     * Return the primary key values for the given object id.  The values
+     * Return the primary key values for the given object id. The values
      * will be returned in the same order as the metadata primary key fields.
      */
     public static Object[] toPKValues(Object oid, ClassMetaData meta) {
@@ -397,7 +397,7 @@ public class ApplicationIds {
     }
 
     /**
-     *	Helper class used to transfer pk values to/from application oids.
+     * Helper class used to transfer pk values to/from application oids.
      */
     private static class PrimaryKeyFieldManager
         implements FieldManager {

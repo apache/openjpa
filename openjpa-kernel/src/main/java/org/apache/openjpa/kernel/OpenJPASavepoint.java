@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * <p>Represents a savepoint where operations afterwards can be rolled
- * back and restored to this point<p>
+ * Represents a savepoint where operations afterwards can be rolled
+ * back and restored to this point
  *
  * @author Steve Kim
  * @since 3.4
@@ -37,7 +37,7 @@ public class OpenJPASavepoint {
     private Map _saved;
 
     /**
-     * Constructor.  Indicate whether to copy field data into memory.
+     * Constructor. Indicate whether to copy field data into memory.
      */
     public OpenJPASavepoint(Broker broker, String name, boolean copy) {
         _broker = broker;
@@ -90,10 +90,10 @@ public class OpenJPASavepoint {
     }
 
     /**
-     * Release this savepoint and any associated resources.  Releases
+     * Release this savepoint and any associated resources. Releases
      * will happen in reverse order of creation.
      *
-     * @param    user    if true, user initiated, otherwise a side effect of
+     * @param user if true, user initiated, otherwise a side effect of
      * another savepoint's release/rollback
      */
     public void release(boolean user) {
@@ -101,10 +101,10 @@ public class OpenJPASavepoint {
     }
 
     /**
-     *	Handle the rolled back state, returning saved data.
-     *	Subclasses should return the collection returned from this method.
+     * Handle the rolled back state, returning saved data.
+     * Subclasses should return the collection returned from this method.
      *
-     *	@param    previous    previous savepoints set in the transaction
+     * @param previous previous savepoints set in the transaction
      */
     public Collection rollback(Collection previous) {
         Map saved;

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,9 +29,9 @@ import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
 /**
- * <p>The broker is the primary interface into the OpenJPA runtime.  Each broker
+ * The broker is the primary interface into the OpenJPA runtime. Each broker
  * maintains an independent object cache and an independent transactional
- * context.</p>
+ * context.
  *
  * @since 4.0
  * @author Abe White
@@ -45,7 +45,7 @@ public interface Broker
     /**
      * Set the broker's behavior for implicit actions such as flushing,
      * automatic detachment, and exceptions thrown by managed instances outside
-     * a broker operation.  A broker's implicit behavior can only be set once;
+     * a broker operation. A broker's implicit behavior can only be set once;
      * after the first invocation with non-null arguments,
      * subsequent invocations of this method are ignored.
      */
@@ -160,13 +160,13 @@ public interface Broker
 
     /**
      * Whether to check for a global transaction upon every managed,
-     * non-transactional operation.  Defaults to false.
+     * non-transactional operation. Defaults to false.
      */
     public boolean getSyncWithManagedTransactions();
 
     /**
      * Whether to check for a global transaction upon every managed,
-     * non-transactional operation.  Defaults to false.
+     * non-transactional operation. Defaults to false.
      */
     public void setSyncWithManagedTransactions(boolean resync);
 
@@ -212,7 +212,7 @@ public interface Broker
     public void setEvictFromDataCache(boolean evict);
 
     /**
-     * Put the specified key-value pair into the map of user objects.  Use
+     * Put the specified key-value pair into the map of user objects. Use
      * a value of null to remove the key.
      *
      * @since 3.2
@@ -242,7 +242,7 @@ public interface Broker
 
     /**
      * Register a listener for lifecycle-related events on the specified
-     * classes.  If the classes are null, all events will be propagated to
+     * classes. If the classes are null, all events will be propagated to
      * the listener.
      *
      * @since 3.3
@@ -284,30 +284,24 @@ public interface Broker
 
     /**
      * Issue a commit and then start a new transaction. This is identical to:
-     * <pre>
-     * 	broker.commit ();
-     * 	broker.begin ();
-     * 	</pre>
-     * except that the broker's internal atomic lock is utilized,
+     * <pre> broker.commit (); broker.begin ();
+     * </pre> except that the broker's internal atomic lock is utilized,
      * so this method can be safely executed from multiple threads.
      *
-     * @see    #commit()
-     * @see    #begin()
+     * @see #commit()
+     * @see #begin()
      * @since 2.4
      */
     public void commitAndResume();
 
     /**
      * Issue a rollback and then start a new transaction. This is identical to:
-     * <pre>
-     * 	broker.rollback ();
-     * 	broker.begin ();
-     * 	</pre>
-     * except that the broker's internal atomic lock is utilized,
+     * <pre> broker.rollback (); broker.begin ();
+     * </pre> except that the broker's internal atomic lock is utilized,
      * so this method can be safely executed from multiple threads.
      *
-     * @see    #rollback()
-     * @see    #begin()
+     * @see #rollback()
+     * @see #begin()
      * @since 2.4
      */
     public void rollbackAndResume();
@@ -353,7 +347,7 @@ public interface Broker
     public void releaseSavepoint(String name);
 
     /**
-     * Flush all transactional instances to the data store.  This method may
+     * Flush all transactional instances to the data store. This method may
      * set the rollback only flag on the current transaction if it encounters
      * an error.
      *
@@ -373,9 +367,9 @@ public interface Broker
 
     /**
      * Validate the changes made in this transaction, reporting any optimistic
-     * violations, constraint violations, etc.  In a datastore transaction or
+     * violations, constraint violations, etc. In a datastore transaction or
      * a flushed optimistic transaction, this method will act just like
-     * {@link #flush}.  In an optimistic transaction that has not yet begun a
+     * {@link #flush}. In an optimistic transaction that has not yet begun a
      * datastore-level transaction, however, it will only report exceptions
      * that would occur on flush, without retaining any datastore resources.
      */
@@ -392,12 +386,12 @@ public interface Broker
     public void persistAll(Collection objs, OpCallbacks call);
 
     /**
-     * Make the given instance persistent.  Unlike other persist operations,
+     * Make the given instance persistent. Unlike other persist operations,
      * this method does <b>not</b> immediately cascade to fields marked
      * {@link ValueMetaData#CASCADE_IMMEDIATE}.
      *
-     * @param    pc    the instance to persist
-     * @param    id    the id to give the state manager; may be null for default
+     * @param pc the instance to persist
+     * @param id the id to give the state manager; may be null for default
      * @return the state manager for the newly persistent instance
      */
     public OpenJPAStateManager persist(Object pc, Object id, OpCallbacks call);
@@ -413,13 +407,13 @@ public interface Broker
     public void deleteAll(Collection objs, OpCallbacks call);
 
     /**
-     * Release the given object from management.  This operation is not
+     * Release the given object from management. This operation is not
      * recursive.
      */
     public void release(Object pc, OpCallbacks call);
 
     /**
-     * Release the given objects from management.  This operation is not
+     * Release the given objects from management. This operation is not
      * recursive.
      */
     public void releaseAll(Collection objs, OpCallbacks call);
@@ -489,7 +483,7 @@ public interface Broker
      *
      * @param pc instance to import
      * @return the re-attached instance
-     * @param    copyNew    whether to copy new instances
+     * @param copyNew whether to copy new instances
      */
     public Object attach(Object pc, boolean copyNew, OpCallbacks call);
 
@@ -501,7 +495,7 @@ public interface Broker
      *
      * @param objs array of instances to import
      * @return the re-attached instances
-     * @param    copyNew    whether to copy new instances
+     * @param copyNew whether to copy new instances
      */
     public Object[] attachAll(Collection objs, boolean copyNew,
         OpCallbacks call);
@@ -554,9 +548,9 @@ public interface Broker
     /**
      * Ensure that the given instance is locked at the given lock level.
      *
-     * @param    pc        the object to lock
-     * @param    level    the lock level to use
-     * @param    timeout    the number of milliseconds to wait for the lock before
+     * @param pc the object to lock
+     * @param level the lock level to use
+     * @param timeout the number of milliseconds to wait for the lock before
      * giving up, or -1 for no limit
      * @since 3.1
      */
@@ -573,9 +567,9 @@ public interface Broker
     /**
      * Ensure that the given instances are locked at the given lock level.
      *
-     * @param    objs    the objects to lock
-     * @param    level    the lock level to use
-     * @param    timeout    the number of milliseconds to wait for the lock before
+     * @param objs the objects to lock
+     * @param level the lock level to use
+     * @param timeout the number of milliseconds to wait for the lock before
      * giving up, or -1 for no limit
      * @since 3.1
      */
@@ -591,7 +585,7 @@ public interface Broker
     public void lockAll(Collection objs, OpCallbacks call);
 
     /**
-     * Cancel all pending data store statements.  If statements are cancelled
+     * Cancel all pending data store statements. If statements are cancelled
      * while a flush is in progress, the transaction rollback only flag will
      * be set.
      *
@@ -608,23 +602,21 @@ public interface Broker
     public void dirtyType(Class cls);
 
     /**
-     * Begin a logical operation.  This indicates to the broker the
+     * Begin a logical operation. This indicates to the broker the
      * granularity of an operation which may require pre/post operation
      * side-effects, such as non-tx detach.
      * Will lock the broker until the {@link #endOperation} is called.
      *
      * @param syncTrans whether instances may be loaded/modified during
      * this operation requiring a re-check of global tx
-     * @return whether this is the outermost operation on the
-     * stack
+     * @return whether this is the outermost operation on the stack
      */
     public boolean beginOperation(boolean syncTrans);
 
     /**
-     * End a logical operation.  This indicates to the broker the
+     * End a logical operation. This indicates to the broker the
      * granularity of an operation which may require pre/post operation
-     * side-effects, such as non-tx detach.
-     * Unlocks the given broker.
+     * side-effects, such as non-tx detach. Unlocks the given broker.
      *
      * @return whether this is the outermost operation on the stack
      */
@@ -651,15 +643,14 @@ public interface Broker
     public void assertActiveTransaction();
 
     /**
-     *	Throw an exception if there is no transaction active and
-     *	nontransactional reading is not enabled.
+     * Throw an exception if there is no transaction active and
+     * nontransactional reading is not enabled.
 	 */
 	public void assertNontransactionalRead ();
 
-
 	/**
-	 *	Throw an exception if a write operation is not permitted (there is
-	 *	no active transaction and nontransactional writing is not enabled).
+	 * Throw an exception if a write operation is not permitted (there is
+	 * no active transaction and nontransactional writing is not enabled).
 	 */
 	public void assertWriteOperation ();
 }

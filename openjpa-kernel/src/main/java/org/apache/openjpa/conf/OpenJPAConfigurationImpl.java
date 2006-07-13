@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,14 +56,13 @@ import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.ProxyManager;
 
 /**
- * <p>Implementation of the {@link OpenJPAConfiguration} interface.</p>
- * <p/>
- * <p>On construction, the class will attempt to locate a default properties
+ * Implementation of the {@link OpenJPAConfiguration} interface.
+ *  On construction, the class will attempt to locate a default properties
  * file called <code>org.apache.openjpa.properties</code> located at any top level token
- * of the CLASSPATH.  See the {@link ConfigurationImpl} class description
- * for details.</p>
+ * of the CLASSPATH. See the {@link ConfigurationImpl} class description
+ * for details.
  *
- * @see    ConfigurationImpl
+ * @see ConfigurationImpl
  * @author Marc Prud'hommeaux
  * @author Abe White
  */
@@ -144,7 +143,7 @@ public class OpenJPAConfigurationImpl
     private String spec = null;
 
     /**
-     * Default constructor.  Attempts to load default properties.
+     * Default constructor. Attempts to load default properties.
      */
     public OpenJPAConfigurationImpl() {
         this(true);
@@ -153,7 +152,7 @@ public class OpenJPAConfigurationImpl
     /**
      * Constructor.
      *
-     * @param    loadDefaults    whether to attempt to load the default
+     * @param loadDefaults whether to attempt to load the default
      * <code>org.apache.openjpa.properties</code> resource
      */
     public OpenJPAConfigurationImpl(boolean loadDefaults) {
@@ -163,8 +162,8 @@ public class OpenJPAConfigurationImpl
     /**
      * Constructor.
      *
-     * @param    derivations        whether to apply product derivations
-     * @param    loadDefaults    whether to attempt to load the default
+     * @param derivations whether to apply product derivations
+     * @param loadDefaults whether to attempt to load the default
      * <code>org.apache.openjpa.properties</code> resource
      */
     public OpenJPAConfigurationImpl(boolean derivations, boolean loadDefaults) {

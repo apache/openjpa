@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -31,8 +34,8 @@ import java.util.NoSuchElementException;
  * operation). The latter form of the insert operation is designed
  * specifically for use with capacity-restricted <tt>Queue</tt>
  * implementations; in most implementations, insert operations cannot fail.
- * <p/>
- * <p/>
+ * 
+ * 
  * <table BORDER CELLPADDING=3 CELLSPACING=1>
  * <tr>
  * <td></td>
@@ -54,8 +57,7 @@ import java.util.NoSuchElementException;
  * <td>{@link #element element()}</td>
  * <td>{@link #peek peek()}</td>
  * </tr>
- * </table>
- * Queues typically, but do not necessarily, order elements in a
+ * </table> Queues typically, but do not necessarily, order elements in a
  * FIFO(first-in-first-out) manner. Among the exceptions are
  * priority queues, which order elements according to a supplied
  * comparator, or the elements' natural ordering, and LIFO queues(or
@@ -88,7 +90,7 @@ import java.util.NoSuchElementException;
  * which wait for elements to appear or for space to become available, are
  * defined in the {@link edu.emory.mathcs.backport.java.util.concurrent.BlockingQueue} interface, which
  * extends this interface.
- * <p/>
+ * 
  * <tt>Queue</tt> implementations generally do not allow insertion
  * of <tt>null</tt> elements, although some implementations, such as
  * {@link LinkedList}, do not prohibit insertion of <tt>null</tt>.
@@ -96,15 +98,14 @@ import java.util.NoSuchElementException;
  * not be inserted into a <tt>Queue</tt>, as <tt>null</tt> is also
  * used as a special return value by the <tt>poll</tt> method to
  * indicate that the queue contains no elements.
- * <p/>
+ * 
  * <tt>Queue</tt> implementations generally do not define
  * element-based versions of methods <tt>equals</tt> and
  * <tt>hashCode</tt> but instead inherit the identity based versions
  * from class <tt>Object</tt>, because element-based equality is not
  * always well-defined for queues with the same elements but different
  * ordering properties.
- * <p/>
- * This interface is a member of the
+ *  This interface is a member of the
  * <a href="{@docRoot}/../guide/collections/index.html">
  * Java Collections Framework</a>.
  *
@@ -149,7 +150,7 @@ public interface Queue extends Collection {
      *
      * @param e the element to add
      * @return <tt>true</tt> if the element was added to this queue, else
-     *         <tt>false</tt>
+     * <tt>false</tt>
      * @throws ClassCastException if the class of the specified element
      * prevents it from being added to this queue
      * @throws NullPointerException if the specified element is null and

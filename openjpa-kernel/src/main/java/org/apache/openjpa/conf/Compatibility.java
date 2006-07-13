@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 package org.apache.openjpa.conf;
 
 /**
- * <p>Struct encompassing backwards-compatibility options.</p>
+ * Struct encompassing backwards-compatibility options.
  */
 public class Compatibility {
 
@@ -29,7 +29,7 @@ public class Compatibility {
 
     /**
      * Whether to require exact identity value types when creating object
-     * ids from a class and value.  Defaults to false.
+     * ids from a class and value. Defaults to false.
      */
     public boolean getStrictIdentityValues() {
         return _strictIdValues;
@@ -37,7 +37,7 @@ public class Compatibility {
 
     /**
      * Whether to require exact identity value types when creating object
-     * ids from a class and value.  Defaults to false.
+     * ids from a class and value. Defaults to false.
      */
     public void setStrictIdentityValues(boolean strictVals) {
         _strictIdValues = strictVals;
@@ -63,9 +63,9 @@ public class Compatibility {
 
     /**
      * Whether to return hollow instances to broker lookups with a
-     * <code>validate</code> parameter of false.  OpenJPA versions prior to
+     * <code>validate</code> parameter of false. OpenJPA versions prior to
      * 4.0 did not return hollow instances without special configuration
-     * (the <code>ObjectLookupMode</code>).  Beginning with 4.0, hollow
+     * (the <code>ObjectLookupMode</code>). Beginning with 4.0, hollow
      * objects are the default.
      */
     public boolean getValidateFalseReturnsHollow() {
@@ -74,9 +74,9 @@ public class Compatibility {
 
     /**
      * Whether to return hollow instances to broker lookups with a
-     * <code>validate</code> parameter of false.  OpenJPA versions prior to
+     * <code>validate</code> parameter of false. OpenJPA versions prior to
      * 4.0 did not return hollow instances without special configuration
-     * (the <code>ObjectLookupMode</code>).  Beginning with 4.0, hollow
+     * (the <code>ObjectLookupMode</code>). Beginning with 4.0, hollow
      * objects are the default.
      */
     public void setValidateFalseReturnsHollow(boolean hollow) {
@@ -86,7 +86,7 @@ public class Compatibility {
     /**
      * Whether to check the datastore for the existence of a nontransactional
      * cached object in broker lookups with a <code>validate</code> parameter
-     * of true.  OpenJPA versions prior to 4.0 checked the datastore.
+     * of true. OpenJPA versions prior to 4.0 checked the datastore.
      */
     public boolean getValidateTrueChecksStore() {
         return _checkStore;
@@ -95,7 +95,7 @@ public class Compatibility {
     /**
      * Whether to check the datastore for the existence of a nontransactional
      * cached object in broker lookups with a <code>validate</code> parameter
-     * of true.  OpenJPA versions prior to 4.0 checked the datastore.
+     * of true. OpenJPA versions prior to 4.0 checked the datastore.
      */
     public void setValidateTrueChecksStore(boolean check) {
         _checkStore = check;
@@ -103,7 +103,7 @@ public class Compatibility {
 
     /**
      * Whether to copy identity objects before returning them to client code.
-     * Versions of OpenJPA prior to 3.0 always copied identity objects.  Also,
+     * Versions of OpenJPA prior to 3.0 always copied identity objects. Also,
      * you should configure OpenJPA to copy identity objects if you mutate them
      * after use.
      */
@@ -113,7 +113,7 @@ public class Compatibility {
 
     /**
      * Whether to copy identity objects before returning them to client code.
-     * Versions of OpenJPA prior to 3.0 always copied identity objects.  Also,
+     * Versions of OpenJPA prior to 3.0 always copied identity objects. Also,
      * you should configure OpenJPA to copy identity objects if you mutate them
      * after use.
      */
@@ -130,8 +130,8 @@ public class Compatibility {
     }
 
     /**
-     *	Whether to close the broker when the managed transaction commits.
-     *	Versions of OpenJPA prior to 3.0 did not close the broker.
+     * Whether to close the broker when the managed transaction commits.
+     * Versions of OpenJPA prior to 3.0 did not close the broker.
      */
     public void setCloseOnManagedCommit(boolean close) {
         _closeOnCommit = close;

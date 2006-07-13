@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,8 +20,8 @@ import org.apache.openjpa.lib.util.Localizer;
 import serp.util.Numbers;
 
 /**
- * <p>Datastore identity type.  Implementations may choose to use this type,
- * or choose to use their own datastore identity values.</p>
+ * Datastore identity type. Implementations may choose to use this type,
+ * or choose to use their own datastore identity values.
  *
  * @author Abe White
  */
@@ -100,7 +100,7 @@ public final class Id
         else {
             // allow either stringified long or result of Id.toString
             int dash = key.indexOf('-');
-            if (dash > 0)    // don't check for -1; might be negative number
+            if (dash > 0) // don't check for -1; might be negative number
                 key = key.substring(dash + 1);
             _id = Long.parseLong(key);
         }

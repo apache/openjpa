@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,13 +16,12 @@
 package org.apache.openjpa.kernel;
 
 /**
- * <p>Lifecycle state.</p>
- * <p/>
- * <p>Represents a hollow instance that exists in the data store, but whose
+ * Lifecycle state.
+ *  Represents a hollow instance that exists in the data store, but whose
  * state has not been loaded and who is not active in the current transaction
- * (if any).  This may be the state of instances returned on ID lookups or by
+ * (if any). This may be the state of instances returned on ID lookups or by
  * traversing relations, and the state of persistent instances outside of
- * transactions (unless the retainValues flag is set in the Broker).</p>
+ * transactions (unless the retainValues flag is set in the Broker).
  *
  * @author Abe White
  */

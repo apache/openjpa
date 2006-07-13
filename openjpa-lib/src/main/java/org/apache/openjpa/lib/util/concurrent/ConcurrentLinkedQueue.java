@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -45,8 +48,7 @@ import java.util.NoSuchElementException;
  * of elements requires a traversal of the elements.
  * This class and its iterator implement all of the
  * <em>optional</em> methods of the {@link Collection} and {@link
- * Iterator} interfaces.
- * Memory consistency effects: As with other concurrent
+ * Iterator} interfaces. Memory consistency effects: As with other concurrent
  * collections, actions in a thread prior to placing an object into a
  * {@code ConcurrentLinkedQueue}
  * <a href="package-summary.html#MemoryVisibility"><i>happen-before</i></a>
@@ -75,7 +77,7 @@ public class ConcurrentLinkedQueue extends AbstractQueue
      * fields to null. The normal queue operations unlink but then
      * pass over nodes with null item fields. Similarly, iteration
      * methods ignore those with nulls.
-     *  Also note that like most non-blocking algorithms in this
+     * Also note that like most non-blocking algorithms in this
      * package, this implementation relies on the fact that in garbage
      * collected systems, there is no possibility of ABA problems due
      * to recycled nodes, so there is no need to use "counted

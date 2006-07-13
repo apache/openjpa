@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,12 +23,11 @@ import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 
 /**
- * <p>Implementation of the {@link ManagedRuntime} interface that uses
- * a static method call to find the TransactionManager.</p>
- * <p/>
- * <p>For example, to configure it to use IBM Websphere's TransactionManager,
+ * Implementation of the {@link ManagedRuntime} interface that uses
+ * a static method call to find the TransactionManager.
+ *  For example, to configure it to use IBM Websphere's TransactionManager,
  * use the method:<br />
- * <code>com.ibm.ejs.jts.jta.JTSXA.getTransactionManager</code></p>
+ * <code>com.ibm.ejs.jts.jta.JTSXA.getTransactionManager</code>
  *
  * @author Marc Prud'hommeaux
  */
@@ -49,8 +48,7 @@ public class InvocationManagedRuntime
 
     /**
      * Set the method to invoke to get the {@link TransactionManager}.
-     * <p/>
-     * E.g.: com.ibm.ejs.jts.jta.JTSXA.getTransactionManager
+     *  E.g.: com.ibm.ejs.jts.jta.JTSXA.getTransactionManager
      */
     public void setTransactionManagerMethod(String methodName) {
         _clazz = methodName.substring(0, methodName.lastIndexOf('.'));

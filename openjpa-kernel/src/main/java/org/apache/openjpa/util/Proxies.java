@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
- * <p>Utility methods for managing proxies.</p>
+ * Utility methods for managing proxies.
  *
  * @author Abe White
  */
@@ -48,8 +48,7 @@ public class Proxies {
     }
 
     /**
-     * Used by proxy types to check that an attempt to add a new value
-     * is legal.
+     * Used by proxy types to check that an attempt to add a new value is legal.
      */
     public static void assertAllowedType(Object value, Class allowed) {
         if (value != null && allowed != null && !allowed.isInstance(value)) {
@@ -80,7 +79,7 @@ public class Proxies {
     }
 
     /**
-     * Return an iterator that dirties its owner on calls to remove.  This
+     * Return an iterator that dirties its owner on calls to remove. This
      * iterator assumes that the given proxy collection uses a
      * {@link CollectionChangeTracker}.
      */
@@ -111,7 +110,7 @@ public class Proxies {
 
     /**
      * Return a proxy iterator that dirties its owner on remove, set, and
-     * add.  This iterator assumes that the given proxy collection uses a
+     * add. This iterator assumes that the given proxy collection uses a
      * {@link CollectionChangeTracker}.
      */
     public static ListIterator listIterator(final ProxyCollection proxy,
@@ -181,7 +180,7 @@ public class Proxies {
     }
 
     /**
-     *	Return a proxy for the given map key or entry set.
+     * Return a proxy for the given map key or entry set.
      */
     public static Set entrySet(final ProxyMap proxy, final Set set,
         final int mode) {

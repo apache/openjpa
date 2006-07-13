@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * <p>Tracks registered persistence-capable classes.</p>
+ * Tracks registered persistence-capable classes.
  *
  * @since 4.0
  * @author Abe White
@@ -171,10 +171,10 @@ public class PCRegistry {
      * @param fieldTypes managed field types
      * @param fieldFlags managed field flags
      * @param sup the most immediate persistent superclass
-     * @param    pcClass        the <code>PersistenceCapable</code> class
-     * @param    fieldNames managed field names
-     * @param    alias        the class alias
-     * @param    pc an instance of the class, if not abstract
+     * @param pcClass the <code>PersistenceCapable</code> class
+     * @param fieldNames managed field names
+     * @param alias the class alias
+     * @param pc an instance of the class, if not abstract
      */
     public static void register(Class pcClass, String[] fieldNames,
         Class[] fieldTypes, byte[] fieldFlags, Class sup, String alias,
@@ -234,8 +234,7 @@ public class PCRegistry {
     }
 
     /**
-     *	This is a helper class to manage metadata per persistence-capable
-     *	class.
+     * This is a helper class to manage metadata per persistence-capable class.
      */
     private static class Meta {
 

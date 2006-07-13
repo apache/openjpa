@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -105,7 +105,7 @@ public class LifecycleMetaData {
     /**
      * Set the callbacks for the given event type.
      *
-     * @param    highPriority    the first N given callbacks are high priority;
+     * @param highPriority the first N given callbacks are high priority;
      * high priority callbacks will be returned before
      * non-high-priority superclass callbacks
      */
@@ -135,11 +135,10 @@ public class LifecycleMetaData {
 
     /**
      * Set the callbacks for the given event type for non-persistent
-     * superclass.  Note these callbacks will only be used where the
-     * non-persistent superclass is the direct ancestor of the described
-     * class.
+     * superclass. Note these callbacks will only be used where the
+     * non-persistent superclass is the direct ancestor of the described class.
      *
-     * @param    highPriority    the first N given callbacks are high priority;
+     * @param highPriority the first N given callbacks are high priority;
      * high priority callbacks will be returned before
      * non-high-priority superclass callbacks
      */
@@ -169,9 +168,9 @@ public class LifecycleMetaData {
     }
 
     /**
-     *	Combine our callbacks with superclass callbacks as necessary.
-     *	This method has the side effect of manipulating the _high array to
-     *	reflect the combined callbacks rather than the declared ones.
+     * Combine our callbacks with superclass callbacks as necessary.
+     * This method has the side effect of manipulating the _high array to
+     * reflect the combined callbacks rather than the declared ones.
      */
     private LifecycleCallbacks[][] combineCallbacks() {
         if (_ignoreSups == (IGNORE_HIGH | IGNORE_LOW))

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,8 +25,8 @@ import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
 
 /**
- * <p>The fetch plan allows you to dynamically alter eager fetching
- * configuration and other aspects of data loading.</p>
+ * The fetch plan allows you to dynamically alter eager fetching
+ * configuration and other aspects of data loading.
  *
  * @author Abe White
  * @since 4.0
@@ -72,7 +72,7 @@ public class FetchPlan {
 
     /**
      * Return the fetch batch size for large result set support.
-     * Defaults to the	<code>org.apache.openjpa.FetchBatchSize</code> setting.  Note
+     * Defaults to the	<code>org.apache.openjpa.FetchBatchSize</code> setting. Note
      * that this property will be ignored under some data stores.
      */
     public int getFetchBatchSize() {
@@ -81,7 +81,7 @@ public class FetchPlan {
 
     /**
      * Set the fetch batch size for large result set support.
-     * Defaults to the	<code>org.apache.openjpa.FetchBatchSize</code> setting.  Note
+     * Defaults to the	<code>org.apache.openjpa.FetchBatchSize</code> setting. Note
      * that this property will be ignored under some data stores.
      */
     public FetchPlan setFetchBatchSize(int fetchBatchSize) {
@@ -90,7 +90,7 @@ public class FetchPlan {
     }
 
     /**
-     * Return whether or not query caching is enabled.  If this returns
+     * Return whether or not query caching is enabled. If this returns
      * <code>true</code> but the datacache plugin is not installed, caching
      * will not be enabled. If this
      * returns <code>false</code>, query caching will not be used
@@ -101,7 +101,7 @@ public class FetchPlan {
     }
 
     /**
-     * Control whether or not query caching is enabled.  This has no effect
+     * Control whether or not query caching is enabled. This has no effect
      * if the datacache plugin is not installed, or if the query cache size
      * is set to zero.
      */
@@ -112,7 +112,7 @@ public class FetchPlan {
 
     /**
      * Returns the names of the fetch groups that this component will use
-     * when loading objects.  Defaults to the
+     * when loading objects. Defaults to the
      * <code>org.apache.openjpa.FetchGroups</code> setting.
      */
     public Collection<String> getFetchGroups() {
@@ -192,7 +192,7 @@ public class FetchPlan {
 
     /**
      * Returns the fully qualified names of the fields that this component
-     * will use when loading objects.  Defaults to the empty set.
+     * will use when loading objects. Defaults to the empty set.
      */
     public Collection<String> getFields() {
 //		return new FetchFieldSet ();
@@ -400,7 +400,7 @@ public class FetchPlan {
     }
 
     /**
-     *	View of fetch groups as collection.
+     * View of fetch groups as collection.
      */
 //	private class FetchGroupSet
 //		extends AbstractCollection<String>
@@ -431,7 +431,7 @@ public class FetchPlan {
 //	}
 
     /**
-     *	View of fetch fields as collection.
+     * View of fetch fields as collection.
      */
 //	private class FetchFieldSet
 //		extends AbstractCollection<String>

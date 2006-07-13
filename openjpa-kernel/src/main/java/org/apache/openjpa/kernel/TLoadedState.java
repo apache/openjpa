@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,12 +16,11 @@
 package org.apache.openjpa.kernel;
 
 /**
- * <p>Lifecycle state.</p>
- * <p/>
- * <p>Represents a temporarily managed transient instance whose fields
+ * Lifecycle state.
+ *  Represents a temporarily managed transient instance whose fields
  * are loaded for the purpose of field inspection such
- * as for cascades.  This state should be released as soon as inspection
- * is complete.</p>
+ * as for cascades. This state should be released as soon as inspection
+ * is complete.
  *
  * @author Steve Kim
  */

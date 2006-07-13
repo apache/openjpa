@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 package org.apache.openjpa.enhance;
 
 /**
- * <p>Supplies persistent field values.</p>
+ * Supplies persistent field values.
  */
 public interface FieldSupplier {
 
@@ -66,7 +66,7 @@ public interface FieldSupplier {
     String fetchStringField(int fieldIndex);
 
     /**
-     *	Return the value of the given field.
+     * Return the value of the given field.
      */
     Object fetchObjectField (int fieldIndex);
 }

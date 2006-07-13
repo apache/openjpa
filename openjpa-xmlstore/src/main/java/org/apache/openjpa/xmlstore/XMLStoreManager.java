@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*********************************************************************
-
- **********************************************************************/
 package org.apache.openjpa.xmlstore;
 
 import java.util.ArrayList;
@@ -39,12 +36,12 @@ import org.apache.openjpa.util.StoreException;
 import serp.util.Numbers;
 
 /**
- * <p>Store manager to a back-end consisting of XML files.  This
+ * Store manager to a back-end consisting of XML files. This
  * implementation accesses data through the {@link XMLStore} associated with
- * its {@link XMLConfiguration}.  Configuration instances are shared by all
- * store managers owned by all brokers created with the same factory.</p>
+ * its {@link XMLConfiguration}. Configuration instances are shared by all
+ * store managers owned by all brokers created with the same factory.
  *
- * @see    AbstractStoreManager
+ * @see AbstractStoreManager
  */
 public class XMLStoreManager
     extends AbstractStoreManager {

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,8 +23,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 
 /**
- * <p>Base class for store manager decorators that delegate to another
- * store manager for some operations.</p>
+ * Base class for store manager decorators that delegate to another
+ * store manager for some operations.
  *
  * @author Abe White
  */
@@ -35,7 +35,7 @@ public abstract class DelegatingStoreManager
     private final DelegatingStoreManager _del;
 
     /**
-     * Constructor.  Supply delegate.
+     * Constructor. Supply delegate.
      */
     public DelegatingStoreManager(StoreManager store) {
         _store = store;

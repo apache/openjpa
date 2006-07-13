@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,12 +26,12 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 
 /**
- * <p>Extension of the {@link LinkedList} type that dirties the
+ * Extension of the {@link LinkedList} type that dirties the
  * persistent/transactional field it is assigned to on modification.
  * The need to dirty the field on <b>any</b> modification mandates that
  * this class must override all mutator methods of the base type.
  * This may lead to multiple calls to <code>dirty</code> for one state
- * change if one mutator method of the base type calls another.</p>
+ * change if one mutator method of the base type calls another.
  *
  * @author Abe White
  * @nojavadoc

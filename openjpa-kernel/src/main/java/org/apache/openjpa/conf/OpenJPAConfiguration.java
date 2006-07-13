@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,17 +44,16 @@ import org.apache.openjpa.util.ClassResolver;
 import org.apache.openjpa.util.ProxyManager;
 
 /**
- * <p>Defines the properties necessary to configure runtime properties and
- * connect to a data source.  There is a 1-1 relation between a configuration
- * and a {@link BrokerFactory}.</p>
- * <p/>
- * <p>All setter methods that take primitive parameters also have wrapper
- * setter with the appropriate primitive wrapper.  This is so the interface
- * can be in accordance with the J2EE Connector Architecture.</p>
+ * Defines the properties necessary to configure runtime properties and
+ * connect to a data source. There is a 1-1 relation between a configuration
+ * and a {@link BrokerFactory}.
+ *  All setter methods that take primitive parameters also have wrapper
+ * setter with the appropriate primitive wrapper. This is so the interface
+ * can be in accordance with the J2EE Connector Architecture.
  *
  * @author Marc Prud'hommeaux
  * @author Abe White
- * @see    Configuration
+ * @see Configuration
  */
 public interface OpenJPAConfiguration
     extends Configuration {
@@ -203,7 +202,7 @@ public interface OpenJPAConfiguration
         "org.apache.openjpa.option.JDBCConnection";
 
     /**
-     * Return the set of option strings supported by this runtime.  This set
+     * Return the set of option strings supported by this runtime. This set
      * is mutable.
      */
     public Collection supportedOptions();
@@ -219,7 +218,7 @@ public interface OpenJPAConfiguration
      * spec environments. This should be invoked before any configuration
      * options are set, as it will mutate various values.
      * You can only assign the specification once, though it is not fatal
-     * to attempt to do so multiple times.  Attempts to set to null will
+     * to attempt to do so multiple times. Attempts to set to null will
      * be ignored.
      */
     public boolean setSpecification(String spec);
@@ -293,7 +292,7 @@ public interface OpenJPAConfiguration
 
     /**
      * The data cache manager manages this configuration's cache instances.
-     * The cache manager is created if it has not been set.  Once the cache
+     * The cache manager is created if it has not been set. Once the cache
      * manager has been set/created, all changes to caching configuration
      * must proceed through the cache manager.
      *
@@ -593,7 +592,7 @@ public interface OpenJPAConfiguration
     public MetaDataFactory newMetaDataFactoryInstance();
 
     /**
-     * The metadata repository of managed class information.  If no
+     * The metadata repository of managed class information. If no
      * repository has been set, creates one.
      *
      * @since 3.0
@@ -690,24 +689,22 @@ public interface OpenJPAConfiguration
     public void setConnectionFactoryProperties(String props);
 
     /**
-     * The mode of the connection factory in use.  Available options are:
+     * The mode of the connection factory in use. Available options are:
      * <ul>
      * <li>local: OpenJPA controls the connections.</li>
      * <li>managed: Connections are automatically enlisted in
      * the current global transaction by an application server.</li>
-     * </ul>
-     * Defaults to local.
+     * </ul> Defaults to local.
      */
     public String getConnectionFactoryMode();
 
     /**
-     * The mode of the connection factory in use.  Available options are:
+     * The mode of the connection factory in use. Available options are:
      * <ul>
      * <li>local: OpenJPA controls the connections.</li>
      * <li>managed: Connections are automatically enlisted in
      * the current global transaction by an application server.</li>
-     * </ul>
-     * Defaults to local.
+     * </ul> Defaults to local.
      */
     public void setConnectionFactoryMode(String mode);
 
@@ -900,7 +897,7 @@ public interface OpenJPAConfiguration
 
     /**
      * A comma-separated list of events which trigger auto-detachment
-     * in place of managed states.  Possible values are:
+     * in place of managed states. Possible values are:
      * <ul>
      * <li><code>commit</code>: When the current transaction commits.</li>
      * <li><code>close</code>: When the broker closes.</li>
@@ -912,7 +909,7 @@ public interface OpenJPAConfiguration
 
     /**
      * A comma-separated list of events which trigger auto-detachment
-     * in place of managed states.  Possible values are:
+     * in place of managed states. Possible values are:
      * <ul>
      * <li><code>commit</code>: When the current transaction commits.</li>
      * <li><code>close</code>: When the broker closes.</li>
@@ -998,13 +995,13 @@ public interface OpenJPAConfiguration
 
     /**
      * Get the size of the batch that will be pre-selected when accessing
-     * elements in a query or relationship.  Use -1 to prefetch all results.
+     * elements in a query or relationship. Use -1 to prefetch all results.
      */
     public int getFetchBatchSize();
 
     /**
      * Set the size of the batch that will be pre-selected when accessing
-     * elements in a query or relationship.  Use -1 to prefetch all results.
+     * elements in a query or relationship. Use -1 to prefetch all results.
      */
     public void setFetchBatchSize(int size);
 
@@ -1181,7 +1178,7 @@ public interface OpenJPAConfiguration
 
     /**
      * Specifies the behavior of the broker with respect to data store
-     * connections.  Possible values are:
+     * connections. Possible values are:
      * <ul>
      * <li><code>always</code>: Each broker obtains a single connection and
      * uses it until the broker is closed.</li>
@@ -1189,8 +1186,8 @@ public interface OpenJPAConfiguration
      * transaction begins (optimistic or datastore), and is released
      * when the transaction completes.</li>
      * <li><code>on-demand</code>: Connections are obtained only when needed.
-     * This is the default mode.  It is equivalent to the previous option
-     * when datastore transactions are used.  For optimistic transactions,
+     * This is the default mode. It is equivalent to the previous option
+     * when datastore transactions are used. For optimistic transactions,
      * though, it means that a connection will be retained only for
      * the duration of the data store commit process.</li>
      * </ul>
@@ -1201,7 +1198,7 @@ public interface OpenJPAConfiguration
 
     /**
      * Specifies the behavior of the broker with respect to data store
-     * connections.  Possible values are:
+     * connections. Possible values are:
      * <ul>
      * <li><code>always</code>: Each broker obtains a single connection and
      * uses it until the broker is closed.</li>
@@ -1209,8 +1206,8 @@ public interface OpenJPAConfiguration
      * transaction begins (optimistic or datastore), and is released
      * when the transaction completes.</li>
      * <li><code>on-demand</code>: Connections are obtained only when needed.
-     * This is the default mode.  It is equivalent to the previous option
-     * when datastore transactions are used.  For optimistic transactions,
+     * This is the default mode. It is equivalent to the previous option
+     * when datastore transactions are used. For optimistic transactions,
      * though, it means that a connection will be retained only for
      * the duration of the data store commit process.</li>
      * </ul>
@@ -1254,13 +1251,13 @@ public interface OpenJPAConfiguration
     public void setFilterListeners(String listeners);
 
     /**
-     * Return the query filter listeners.  If none have been set explicitly,
+     * Return the query filter listeners. If none have been set explicitly,
      * this method instantiates the listeners from the set plugin list.
      */
     public FilterListener[] getFilterListenerInstances();
 
     /**
-     * Set the query filter listeners.  Overrides the list of listener classes.
+     * Set the query filter listeners. Overrides the list of listener classes.
      */
     public void setFilterListeners(FilterListener[] listeners);
 
@@ -1277,14 +1274,13 @@ public interface OpenJPAConfiguration
     public void setAggregateListeners(String listeners);
 
     /**
-     * Return the query function listeners.  If none have been set explicitly,
+     * Return the query function listeners. If none have been set explicitly,
      * this method instantiates the listeners from the set plugin list.
      */
     public AggregateListener[] getAggregateListenerInstances();
 
     /**
-     * Set the query function listeners.  Overrides the list of listener
-     * classes.
+     * Set the query function listeners. Overrides the list of listener classes.
      */
     public void setAggregateListeners(AggregateListener[] listeners);
 
@@ -1299,38 +1295,34 @@ public interface OpenJPAConfiguration
     public boolean getRetryClassRegistration();
 
     /**
-     *	Whether to warn and defer registration instead of throwing an
-     *	exception when a registered persistent class cannot be processed.
-     *	Should only be set to true in complex classloader topologies.
-	 * 	Defaults to <code>false</code>.
+     * Whether to warn and defer registration instead of throwing an
+     * exception when a registered persistent class cannot be processed.
+     * Should only be set to true in complex classloader topologies.
+	 * Defaults to <code>false</code>.
 	 *
-	 *	@since 3.2.3
+	 * @since 3.2.3
 	 */
 	public void setRetryClassRegistration (boolean warn);
 
-
 	/**
-	 *	Wrapper for JCA usage of {@link #setRetryClassRegistration(boolean)}.
+	 * Wrapper for JCA usage of {@link #setRetryClassRegistration(boolean)}.
 	 *
-	 *	@since 3.2.3
+	 * @since 3.2.3
 	 */
 	public void setRetryClassRegistration (Boolean warn);
 
-
 	/**
-	 *	Backwards compatibility options.
+	 * Backwards compatibility options.
 	 */
 	public String getCompatibility ();
 
-
 	/**
-	 *	Backwards compatibility options.
+	 * Backwards compatibility options.
 	 */
 	public void setCompatibility (String compatibility);
 
-
 	/**
-	 *	Backwards compatibility options.
+	 * Backwards compatibility options.
 	 */
 	public Compatibility getCompatibilityInstance ();
 }

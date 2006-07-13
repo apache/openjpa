@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
 
 /**
- * <p>An aggregate of some value.</p>
+ * An aggregate of some value.
  *
  * @author Abe White
  */
@@ -36,7 +36,7 @@ abstract class AggregateVal
     private final Val _val;
 
     /**
-     * Constructor.  Supply value to aggregate.
+     * Constructor. Supply value to aggregate.
      */
     public AggregateVal(Val val) {
         _val = val;
@@ -82,7 +82,7 @@ abstract class AggregateVal
     protected abstract Class getType(Class c);
 
     /**
-     *	Aggregate the given values.
+     * Aggregate the given values.
      */
     protected abstract Object operate(Collection os, Class c);
 }

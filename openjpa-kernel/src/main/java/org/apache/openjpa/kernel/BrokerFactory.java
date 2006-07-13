@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.util.Closeable;
 
 /**
- * <p>Factory for {@link Broker} instances.</p>
+ * Factory for {@link Broker} instances.
  *
  * @author Abe White
  * @since 4.0
@@ -65,8 +65,8 @@ public interface BrokerFactory
 
     /**
      * Register a listener for lifecycle-related events on the specified
-     * classes.  If the classes are null, all events will be propagated to
-     * the listener.  The listener will be passed on to all new brokers.
+     * classes. If the classes are null, all events will be propagated to
+     * the listener. The listener will be passed on to all new brokers.
      *
      * @since 3.3
      */
@@ -95,7 +95,7 @@ public interface BrokerFactory
     public void lock();
 
     /**
-     *	Release the internal lock.
+     * Release the internal lock.
 	 */
 	public void unlock ();
 }

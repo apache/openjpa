@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,7 +42,7 @@ import org.apache.openjpa.meta.ValueStrategies;
 import serp.util.Strings;
 
 /**
- * <p>Helper for OpenJPA back-ends.</p>
+ * Helper for OpenJPA back-ends.
  *
  * @since 3.0
  * @author Abe White
@@ -89,10 +89,10 @@ public class ImplHelper {
     }
 
     /**
-     * Helper for store manager implementations.  This method simply delegates
+     * Helper for store manager implementations. This method simply delegates
      * to the proper singular method for each state manager.
      *
-     * @see    StoreManager#loadAll
+     * @see StoreManager#loadAll
      * @since 4.0
      */
     public static Collection loadAll(Collection sms, StoreManager store,
@@ -130,7 +130,7 @@ public class ImplHelper {
     }
 
     /**
-     * Generate a value for the given metadata, or return null.  Generates
+     * Generate a value for the given metadata, or return null. Generates
      * values for hte following strategies: {@link ValueStrategies#SEQUENCE},
      * {@link ValueStrategies#UUID_STRING}, {@link ValueStrategies#UUID_HEX}
      */
@@ -140,7 +140,7 @@ public class ImplHelper {
     }
 
     /**
-     * Generate a value for the given metadata, or return null.  Generates
+     * Generate a value for the given metadata, or return null. Generates
      * values for hte following strategies: {@link ValueStrategies#SEQUENCE},
      * {@link ValueStrategies#UUID_STRING}, {@link ValueStrategies#UUID_HEX}
      */
@@ -174,18 +174,18 @@ public class ImplHelper {
 
     /**
      * Return the store-specific facade class for the given broker
-     * component class.  This method is used by facade implementations to
+     * component class. This method is used by facade implementations to
      * wrap store-specific components without knowing about all possible
      * back-ends.
      *
-     * @param    conf        configuration for runtime
-     * @param    openjpaCls        class of OpenJPA component (e.g.
+     * @param conf configuration for runtime
+     * @param openjpaCls class of OpenJPA component (e.g.
      * JDBCFetchConfiguration.class)
-     * @param    openjpaSuff    suffix of OpenJPA component (e.g. "FetchConfiguration")
-     * @param    facadePkg    the unqualified facade package name (e.g. "jdo")
-     * @param    facadeCls    the generic facade interface's class (e.g.
+     * @param openjpaSuff suffix of OpenJPA component (e.g. "FetchConfiguration")
+     * @param facadePkg the unqualified facade package name (e.g. "jdo")
+     * @param facadeCls the generic facade interface's class (e.g.
      * FetchPlan.class)
-     * @param    facadeSuff    the suffix to append to the store prefix to get
+     * @param facadeSuff the suffix to append to the store prefix to get
      * the implementation class name (e.g. "FetchPlanImpl")
      * or null to use the unqualified name of
      * <code>facadeCls</code>
@@ -228,7 +228,7 @@ public class ImplHelper {
     }
 
     /**
-     * Close the given resource.  The resource can be an extent iterator,
+     * Close the given resource. The resource can be an extent iterator,
      * query result, large result set relation, or any closeable OpenJPA
      * component.
      */
@@ -251,17 +251,17 @@ public class ImplHelper {
      *
      * @param type the class to test
      * @return true if the class is manageable.
-     * @param    conf the configuration that defines the current context
+     * @param conf the configuration that defines the current context
      */
     public static boolean isManagedType(Class type) {
         return PersistenceCapable.class.isAssignableFrom(type);
     }
 
     /**
-     *  Returns true if the specified instance is manageable.
+     * Returns true if the specified instance is manageable.
      *
-     *  @param  instance  the object to check
-     *  @return true if the instance is a persistent type, false otherwise
+     * @param instance the object to check
+     * @return true if the instance is a persistent type, false otherwise
      */
     public static boolean isManageable(Object instance) {
         return instance instanceof PersistenceCapable;

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,10 +19,10 @@ import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.PluginValue;
 
 /**
- * <p>Value type used to represent the {@link BrokerFactory}.  This type is
+ * Value type used to represent the {@link BrokerFactory}. This type is
  * defined separately so that it can be used both in the global configuration
- * and in {@link org.apache.openjpa.kernel.Bootstrap} with the same 
- * encapsulated configuration.</p>
+ * and in {@link org.apache.openjpa.kernel.Bootstrap} with the same
+ * encapsulated configuration.
  *
  * @author Abe White
  * @nojavadoc

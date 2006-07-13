@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -29,12 +32,10 @@ import org.apache.openjpa.lib.util.Localizer;
 /**
  * Ant tasks all have a nested <code>&lt;config&rt;</code> tag, which uses
  * the configuration as a bean-like task. E.g., you can do:
- * <p/>
+ * 
  * <code> &lt;mytask&rt;<br />
- * &nbsp;&nbsp;&lt;config connectionUserName="foo"/&rt;<br />
- * &lt;/mytask&rt;
- * </code>
- * The defailt configuration for the system will be used if the
+ * &nbsp;&nbsp;&lt;config connectionUserName="foo"/&rt;<br /> &lt;/mytask&rt;
+ * </code> The defailt configuration for the system will be used if the
  * <code>&lt;config&rt;</code> subtask is excluded.
  *
  * @nojavadoc

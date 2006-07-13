@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,8 +48,8 @@ import org.apache.openjpa.util.ShortId;
 import org.apache.openjpa.util.StringId;
 
 /**
- * <p>Static helper method for JPA users, including switching
- * between OpenJPA native and Java Persistence APIs.</p>
+ * Static helper method for JPA users, including switching
+ * between OpenJPA native and Java Persistence APIs.
  *
  * @author Abe White
  * @published
@@ -160,7 +160,7 @@ public class OpenJPAPersistence
 
     /**
      * Returns the {@link OpenJPAEntityManagerFactory} specified by
-     * your OpenJPA defaults.  This method will return the same logical factory
+     * your OpenJPA defaults. This method will return the same logical factory
      * for each invocation.
      */
     public static OpenJPAEntityManagerFactory getEntityManagerFactory() {
@@ -169,7 +169,7 @@ public class OpenJPAPersistence
 
     /**
      * Returns the {@link OpenJPAEntityManagerFactory} specified by
-     * your OpenJPA defaults, using <code>map</code> as overrides.  This method
+     * your OpenJPA defaults, using <code>map</code> as overrides. This method
      * will return the same logical factory for invocations with the same
      * overrides.
      */
@@ -185,17 +185,14 @@ public class OpenJPAPersistence
     }
 
     /**
-     * <p>Returns a new {@link OpenJPAEntityManagerFactory} specified by
+     * Returns a new {@link OpenJPAEntityManagerFactory} specified by
      * <code>name</code> in an XML configuration file at the resource location
      * <code>resource</code>. If <code>name</code> is <code>null</code>, uses
      * the first resource found in the specified location, regardless of the
      * name specified in the XML resource or the name of the jar that the
      * resource is contained in. If <code>resource</code> is <code>null</code>,
-     * uses the spec-defined <code>META-INF/persistence.xml</code>
-     * resource.</p>
-     * <p/>
-     * <p>This method only resolves {@link OpenJPAEntityManagerFactory}
-     * instances.</p>
+     * uses the spec-defined <code>META-INF/persistence.xml</code> resource.
+     *  This method only resolves {@link OpenJPAEntityManagerFactory} instances.
      */
     public static OpenJPAEntityManagerFactory createEntityManagerFactory
         (String name, String resource) {
@@ -203,7 +200,7 @@ public class OpenJPAPersistence
     }
 
     /**
-     * <p>Returns a new {@link OpenJPAEntityManagerFactory} specified by
+     * Returns a new {@link OpenJPAEntityManagerFactory} specified by
      * <code>name</code> in an XML configuration file at the resource location
      * <code>resource</code>, applying the properties specified in
      * <code>map</code> as overrides. If <code>name</code> is
@@ -211,10 +208,8 @@ public class OpenJPAPersistence
      * location, regardless of the name specified in the XML resource or the
      * name of the jar that the resource is contained in.
      * If <code>resource</code> is <code>null</code>, uses the spec-defined
-     * <code>META-INF/persistence.xml</code> resource.</p>
-     * <p/>
-     * <p>This method only resolves {@link OpenJPAEntityManagerFactory}
-     * instances.</p>
+     * <code>META-INF/persistence.xml</code> resource.
+     *  This method only resolves {@link OpenJPAEntityManagerFactory} instances.
      */
     public static OpenJPAEntityManagerFactory createEntityManagerFactory
         (String name, String resource, Map map) {
@@ -316,7 +311,7 @@ public class OpenJPAPersistence
     }
 
     /**
-     * Close the given resource.  The resource can be an extent iterator,
+     * Close the given resource. The resource can be an extent iterator,
      * query result, large result set relation, or any closeable OpenJPA
      * component.
      */
@@ -433,7 +428,7 @@ public class OpenJPAPersistence
     }
 
     /**
-     *	Translate from a OpenJPA identity class to a native one.
+     * Translate from a OpenJPA identity class to a native one.
      */
     public static Class fromOpenJPAObjectIdClass(Class oidClass) {
         if (oidClass == null)

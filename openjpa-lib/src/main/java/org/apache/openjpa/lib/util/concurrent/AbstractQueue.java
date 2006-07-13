@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -37,8 +40,7 @@ import java.util.NoSuchElementException;
  * {@link Collection#iterator} supporting {@link
  * Iterator#remove}. Typically, additional methods will be overridden
  * as well. If these requirements cannot be met, consider instead
- * subclassing {@link AbstractCollection}.
- * This class is a member of the
+ * subclassing {@link AbstractCollection}. This class is a member of the
  * <a href="{@docRoot}/../guide/collections/index.html">
  * Java Collections Framework</a>.
  *
@@ -82,8 +84,7 @@ abstract class AbstractQueue extends AbstractCollection implements Queue {
     /**
      * Retrieves and removes the head of this queue. This method differs
      * from {@link #poll poll} only in that it throws an exception if this
-     * queue is empty.
-     * This implementation returns the result of <tt>poll</tt>
+     * queue is empty. This implementation returns the result of <tt>poll</tt>
      * unless the queue is empty.
      *
      * @return the head of this queue

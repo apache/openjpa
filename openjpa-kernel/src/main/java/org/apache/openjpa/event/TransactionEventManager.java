@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,8 +18,8 @@ package org.apache.openjpa.event;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 
 /**
- * <p>Manager that can be used to track and notify transaction listeners
- * of transaction-related events.</p>
+ * Manager that can be used to track and notify transaction listeners
+ * of transaction-related events.
  *
  * @author Patrick Linskey
  * @author Abe White
@@ -78,7 +78,7 @@ public class TransactionEventManager
     }
 
     /**
-     *	Fire the given event to all registered listeners.
+     * Fire the given event to all registered listeners.
      */
     protected void fireEvent(Object event, Object listener) {
         TransactionEvent ev = (TransactionEvent) event;

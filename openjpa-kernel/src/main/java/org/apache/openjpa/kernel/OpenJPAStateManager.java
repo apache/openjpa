@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,18 +26,16 @@ import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.Proxy;
 
 /**
- * <p>Interface implemented by OpenJPA state managers.  Each state manager
- * manages the state of a single persistence capable instance.  The
+ * Interface implemented by OpenJPA state managers. Each state manager
+ * manages the state of a single persistence capable instance. The
  * state manager is also responsible for all communications about the
- * instance to the {@link StoreManager}.</p>
- * <p/>
- * <p>The <code>fetchXXXField</code> and <code>storeXXXField</code>
+ * instance to the {@link StoreManager}.
+ *  The <code>fetchXXXField</code> and <code>storeXXXField</code>
  * methods can be used to get and set fields of the managed persistent object.
  * Most back-end code, however, should use the similar
  * <code>fetchXXX</code> and <code>storeXXX</code> methods in place of
- * the field methods.  These methods function just like the field methods, but
- * also pass the value through the externalizer and factory the field may
- * have.</p>
+ * the field methods. These methods function just like the field methods, but
+ * also pass the value through the externalizer and factory the field may have.
  *
  * @author Abe White
  */
@@ -85,7 +83,7 @@ public interface OpenJPAStateManager
 
     /**
      * Return the {@link PersistenceCapable} instance that provides access to
-     * the instance managed by this state manager.  May be a proxy around
+     * the instance managed by this state manager. May be a proxy around
      * the actual managed instance.
      */
     public PersistenceCapable getPersistenceCapable();
@@ -140,29 +138,29 @@ public interface OpenJPAStateManager
 
     /**
      * Return a mutable mask of the unloaded fields that need loading based
-     * on the given fetch configuration.  Pass in null to retrieve all
+     * on the given fetch configuration. Pass in null to retrieve all
      * unloaded fields.
      */
     public BitSet getUnloaded(FetchState fetchState);
 
     /**
-     * Create a new hollow proxy instance for the given field.  In cases where
+     * Create a new hollow proxy instance for the given field. In cases where
      * the field externalizes to an SCO but is declared something else, the
-     * returned object may not implement {@link Proxy}.  In all other cases,
+     * returned object may not implement {@link Proxy}. In all other cases,
      * this method delegates to the system {@link org.apache.openjpa.util.ProxyManager}
-     * with the correct field information.  The returned proxy's owner is
+     * with the correct field information. The returned proxy's owner is
      * unset so that modifications to the proxy will not be tracked while its
-     * state is initialized.  Calling {@link #storeField} or {@link #store}
+     * state is initialized. Calling {@link #storeField} or {@link #store}
      * will set the proxy's owner automatically.
      */
     public Object newProxy(int field);
 
     /**
-     * Create a new hollow proxy instance for the given field.  This method
+     * Create a new hollow proxy instance for the given field. This method
      * differs from {@link #newProxy} in that it returns a proxy for the
      * field's declared type, not its externalized type.
      *
-     * @see    #newProxy
+     * @see #newProxy
      */
     public Object newFieldProxy(int field);
 
@@ -182,7 +180,7 @@ public interface OpenJPAStateManager
     public PCState getPCState();
 
     /**
-     * Return the identifier for this state manager.  This may return a
+     * Return the identifier for this state manager. This may return a
      * temporary identifier for new unflushed instances that have not been
      * assigned an object id, or for non-persistent or embedded instances.
      * For all other instances this method is the same as {@link #getObjectId}.
@@ -190,15 +188,15 @@ public interface OpenJPAStateManager
     public Object getId();
 
     /**
-     * Return the instance's object id.  This method will return null if no
-     * oid has been assigned.  Oids are assigned to newly-persisted instances
+     * Return the instance's object id. This method will return null if no
+     * oid has been assigned. Oids are assigned to newly-persisted instances
      * when the user first asks for it, or on flush.
      */
     public Object getObjectId();
 
     /**
-     * Set the object id for the managed instance.  Some back ends may not be
-     * able to assign a permanent oid until flush.  Do not call this method on
+     * Set the object id for the managed instance. Some back ends may not be
+     * able to assign a permanent oid until flush. Do not call this method on
      * application identity instances; changing the primary key fields of
      * application identity objects through the <code>storeXXXField</code>
      * methods will automatically change the oid.
@@ -208,20 +206,20 @@ public interface OpenJPAStateManager
     /**
      * Ask the store manager to assign a permanent oid to this new instance.
      *
-     * @param    flush    if true, flush if necessary to get a permanent oid; if
+     * @param flush if true, flush if necessary to get a permanent oid; if
      * false, the oid may be left unassigned
      * @return true if an oid assigned, false otherwise
      */
     public boolean assignObjectId(boolean flush);
 
     /**
-     * The lock object set for this instance.  This object is generally
+     * The lock object set for this instance. This object is generally
      * managed by the system lock manager.
      */
     public Object getLock();
 
     /**
-     * The lock object set for this instance.  This object is generally
+     * The lock object set for this instance. This object is generally
      * managed by the system lock manager.
      */
     public void setLock(Object lock);
@@ -233,9 +231,9 @@ public interface OpenJPAStateManager
 
     /**
      * Set the version indicator for this instance, as loaded from the
-     * data store.  This method is used by the {@link StoreManager} when
-     * loading instance data.  On rollback, the version will be rolled back
-     * to this value.  Version objects should be serializable and should not
+     * data store. This method is used by the {@link StoreManager} when
+     * loading instance data. On rollback, the version will be rolled back
+     * to this value. Version objects should be serializable and should not
      * require vendor-specific classes, because they are transferred to
      * detached objects.
      */
@@ -243,7 +241,7 @@ public interface OpenJPAStateManager
 
     /**
      * Set the next version indicator in the datastore pending a successful
-     * flush.  The {@link StoreManager} uses this method during flush.
+     * flush. The {@link StoreManager} uses this method during flush.
      */
     public void setNextVersion(Object version);
 
@@ -254,8 +252,7 @@ public interface OpenJPAStateManager
     public boolean isVersionUpdateRequired();
 
     /**
-     * Returns true if this state needs to issue a version check at
-     * flush time.
+     * Returns true if this state needs to issue a version check at flush time.
      */
     public boolean isVersionCheckRequired();
 
@@ -271,7 +268,7 @@ public interface OpenJPAStateManager
      * This object is not used or modified in any way by the generic
      * persistence layer.
      *
-     * @param    cacheable    whether the impl data can be shared among instances
+     * @param cacheable whether the impl data can be shared among instances
      * in different contexts if L2 caching is enabled
      * @return the previous impl data value, if any
      */
@@ -284,14 +281,14 @@ public interface OpenJPAStateManager
     public boolean isImplDataCacheable();
 
     /**
-     * Field-level impl data.  Field-level data only applies to loaded fields,
+     * Field-level impl data. Field-level data only applies to loaded fields,
      * and is cleared when the field is cleared.
      */
     public Object getImplData(int field);
 
     /**
-     * Field-level impl data.  Field-level data only applies to loaded fields,
-     * and is cleared when the field is cleared.  Whether the data is cached
+     * Field-level impl data. Field-level data only applies to loaded fields,
+     * and is cleared when the field is cleared. Whether the data is cached
      * across instances depends on the corresponding field metadata's response
      * to {@link FieldMetaData#usesImplData}.
      *
@@ -307,7 +304,7 @@ public interface OpenJPAStateManager
 
     /**
      * Use intermediate field data to store intermediate information that
-     * might be available before the field is fully loaded.  The system
+     * might be available before the field is fully loaded. The system
      * will automatically clear this data when the field gets loaded.
      * This data should be cacheable; the datastore cache will attempt to
      * cache it if the field value is not available.
@@ -316,7 +313,7 @@ public interface OpenJPAStateManager
 
     /**
      * Use intermediate field data to store intermediate information that
-     * might be available before the field is fully loaded.  The system
+     * might be available before the field is fully loaded. The system
      * will automatically clear this data when the field gets loaded.
      * This data should be cacheable; the datastore cache will attempt to
      * cache it if the field value is not available.
@@ -375,7 +372,7 @@ public interface OpenJPAStateManager
 
     /**
      * Return the externalized value of the field with the given index as an
-     * object.  If there is no externalizer, this is equivalent to
+     * object. If there is no externalizer, this is equivalent to
      * {@link #fetchField}.
      */
     public Object fetch(int field);
@@ -448,7 +445,7 @@ public interface OpenJPAStateManager
 
     /**
      * Set the value of the field with the given index as from the external
-     * object value.  If there is no externalizer, this is equivalent to
+     * object value. If there is no externalizer, this is equivalent to
      * {@link #storeField}.
      */
     public void store(int field, Object value);
@@ -471,23 +468,23 @@ public interface OpenJPAStateManager
     /**
      * Prepare the instance for refresh
      *
-     * @param    refreshAll    true if this instance is one of a collection of
+     * @param refreshAll true if this instance is one of a collection of
      * objects being refreshed
      * @return true if the object needs a refresh, false otherwise
-     * @see    Broker#refresh
+     * @see Broker#refresh
      */
     public boolean beforeRefresh(boolean refreshAll);
 
     /**
-     *	Set the given field to the given value.  Make the field dirty as
-     *	if user code set it.  Do not delete dependent objects in the field's
-     *	current value.  This method is invoked by the remote package to
-     *	synch a server-side state manager with remote changes.  We do not
-     *	need to delete dependent instances because they will have been
-	 *	deleted when the field changed on the client side, and those 
-	 *	client-side deletes will be transmitted independently.
+     * Set the given field to the given value. Make the field dirty as
+     * if user code set it. Do not delete dependent objects in the field's
+     * current value. This method is invoked by the remote package to
+     * synch a server-side state manager with remote changes. We do not
+     * need to delete dependent instances because they will have been
+	 * deleted when the field changed on the client side, and those
+	 * client-side deletes will be transmitted independently.
 	 *
-	 *	@since	3.1
+	 * @since	3.1
 	 */
 	public void setRemote (int field, Object value);
 }

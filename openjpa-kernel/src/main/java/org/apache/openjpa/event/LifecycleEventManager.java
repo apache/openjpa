@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,15 +27,13 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataDefaults;
 
 /**
- * <p>Manager that can be used to track and notify listeners on lifecycle
- * events.</p>
- * <p/>
- * <p>This class is optimized for event firing rather than for adding and
- * removing listeners, which are O(n) operations.  This class also does not
+ * Manager that can be used to track and notify listeners on lifecycle events.
+ *  This class is optimized for event firing rather than for adding and
+ * removing listeners, which are O(n) operations. This class also does not
  * maintain perfect set semantics for listeners; it is possible to wind up
  * having the same listener invoked multiple times for a single event if it
  * is added to this manager multiple times with different classes, or with
- * a base class and its subclass.</p>
+ * a base class and its subclass.
  *
  * @author Steve Kim
  * @author Abe White
@@ -47,7 +45,7 @@ public class LifecycleEventManager
 
     private static final Exception[] EMPTY_EXCEPTIONS = new Exception[0];
 
-    private Map _classListeners = null;    // class -> listener list
+    private Map _classListeners = null; // class -> listener list
     private ListenerList _listeners = null;
     private List _addListeners = new LinkedList();
     private List _remListeners = new LinkedList();
@@ -56,7 +54,7 @@ public class LifecycleEventManager
     private boolean _fail = false;
 
     /**
-     * Register a lifecycle listener for the given classes.  If the classes
+     * Register a lifecycle listener for the given classes. If the classes
      * array is null, register for all classes.
      */
     public synchronized void addListener(Object listener, Class[] classes) {
@@ -329,7 +327,7 @@ public class LifecycleEventManager
 
     /**
      * Fire an event with the given source and type to the given list of
-     * listeners.  The event may have already been constructed.
+     * listeners. The event may have already been constructed.
      */
     private Object fireEvent(LifecycleEvent ev, Object source, Object rel,
         int type, ListenerList listeners, boolean mock, boolean failFast,
@@ -497,8 +495,8 @@ public class LifecycleEventManager
     }
 
     /**
-     *	Extended list that tracks what event types its elements care about.
-     *	Maintains set semantics as well.
+     * Extended list that tracks what event types its elements care about.
+     * Maintains set semantics as well.
      */
     public static class ListenerList
         extends ArrayList {
@@ -538,7 +536,7 @@ public class LifecycleEventManager
         }
 
         /**
-         *	Return a mask of the event types the given listener processes.
+         * Return a mask of the event types the given listener processes.
          */
         private static int getEventTypes(Object listener) {
             int types = 0;

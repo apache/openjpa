@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,12 +49,12 @@ abstract class AttachStrategy
     /**
      * Attach.
      *
-     * @param    manager        manager holding cache of attached instances
-     * @param    toAttach    detached instance
-     * @param    meta        metadata for the instance being attached
-     * @param    into        instance we're attaching into
-     * @param    owner        state manager for <code>into</code>
-     * @param    ownerMeta    field we traversed to find <code>toAttach</code>
+     * @param manager manager holding cache of attached instances
+     * @param toAttach detached instance
+     * @param meta metadata for the instance being attached
+     * @param into instance we're attaching into
+     * @param owner state manager for <code>into</code>
+     * @param ownerMeta field we traversed to find <code>toAttach</code>
      */
     public abstract Object attach(AttachManager manager,
         Object toAttach, ClassMetaData meta, PersistenceCapable into,
@@ -92,12 +92,11 @@ abstract class AttachStrategy
     /**
      * Attach the given field into the given instance.
      *
-     * @param    toAttach the detached persistent instance
-     * @param    sm            state manager for the managed instance we're copying
-     * into; <code>toAttach</code> also uses this state
-     * manager
-     * @param    fmd            metadata on the field we're copying
-     * @param    nullLoaded    if false, nulls will be considered unloaded and will
+     * @param toAttach the detached persistent instance
+     * @param sm state manager for the managed instance we're copying
+     * into; <code>toAttach</code> also uses this state manager
+     * @param fmd metadata on the field we're copying
+     * @param nullLoaded if false, nulls will be considered unloaded and will
      * not be attached
      */
     protected boolean attachField(AttachManager manager, Object toAttach,
@@ -275,7 +274,7 @@ abstract class AttachStrategy
 
     /**
      * Replace the contents of <code>toc</code> with the contents of
-     * <code>frmc</code>.  Neither collection is null.
+     * <code>frmc</code>. Neither collection is null.
      */
     private void replaceCollection(AttachManager manager, Collection frmc,
         Collection toc, OpenJPAStateManager sm, FieldMetaData fmd) {
@@ -341,7 +340,7 @@ abstract class AttachStrategy
     /**
      * Returns an attached version of the <code>frml</code>
      * list if it is different than <code>tol</code>. If the lists
-     * will be identical, returns <code>tol</code>.  Neither list is null.
+     * will be identical, returns <code>tol</code>. Neither list is null.
      */
     private Collection replaceList(AttachManager manager, Collection frml,
         Collection tol, OpenJPAStateManager sm, FieldMetaData fmd) {
@@ -372,7 +371,7 @@ abstract class AttachStrategy
 
     /**
      * Replace the contents of <code>tom</code> with the contents of
-     * <code>frmm</code>.  Neither map is null.
+     * <code>frmm</code>. Neither map is null.
      */
     private void replaceMap(AttachManager manager, Map frmm, Map tom,
         OpenJPAStateManager sm, FieldMetaData fmd) {
@@ -489,8 +488,8 @@ abstract class AttachStrategy
     }
 
     /**
-     *	Return true if the given objects are equal.  PCs are compared for
-     *	on JVM identity.
+     * Return true if the given objects are equal. PCs are compared for
+     * on JVM identity.
      */
     private static boolean equals(Object a, Object b, boolean pc) {
         if (a == b)
