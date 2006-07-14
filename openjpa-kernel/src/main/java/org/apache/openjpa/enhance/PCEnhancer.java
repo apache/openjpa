@@ -2633,6 +2633,8 @@ public class PCEnhancer {
 		throw new GeneralException(t);
 	    }
 	}
+	for (int i = 0; i < _auxEnhancers.length; i++)
+	    _auxEnhancers[i].run(_pc, _meta);
     }
 
     /**
