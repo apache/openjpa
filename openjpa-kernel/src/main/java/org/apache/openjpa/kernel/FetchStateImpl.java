@@ -114,7 +114,6 @@ public class FetchStateImpl
      * Get the recusion depth for the given field.
      *
      * @param fm is the field to look for
-     * @param depths is the map of field to integer depth.
      * @return 0 if the field does not appear in the given map.
      */
     protected int getRecursionDepth(FieldMetaData fm) {

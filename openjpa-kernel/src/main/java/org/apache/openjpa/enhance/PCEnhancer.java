@@ -2112,7 +2112,7 @@ public class PCEnhancer {
 
     /**
      * Adds a custom writeObject method that delegates to the
-     * {@link ObjectInputStream#writeObject} method,
+     * {@link ObjectOutputStream#defaultWriteObject} method,
      * but only after calling the internal <code>pcSerializing</code> method.
      */
     private void modifyWriteObjectMethod(BCMethod method, boolean full) {

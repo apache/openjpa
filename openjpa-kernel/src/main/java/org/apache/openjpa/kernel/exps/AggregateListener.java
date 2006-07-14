@@ -53,8 +53,8 @@ public interface AggregateListener
      * @param candidates the candidate objects being evaluated
      * @param ctx the persistence context
      * @return the value of the aggregate
-     * @throws UserException if this aggregate does not support
-     * in-memory operation
+     * @throws org.apache.openjpa.util.UserException if this aggregate does not 
+     * support in-memory operation
      */
     public Object evaluate(Collection args, Class[] argClasses,
         Collection candidates, StoreContext ctx);

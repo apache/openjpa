@@ -1577,7 +1577,7 @@ class JPQLExpressionBuilder
         /**
          * Debugging method.
          *
-         * @see dump(java.io.PrintStream,String)
+         * @see #dump(java.io.PrintStream,String)
          */
         public void dump(String prefix) {
             dump(System.out, prefix);
