@@ -19,18 +19,20 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.kernel.BrokerFactory;
+import org.apache.openjpa.kernel.DelegatingBrokerFactory;
 import org.apache.openjpa.kernel.FetchState;
 import org.apache.openjpa.kernel.LockManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.StoreManager;
-import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.UUIDGenerator;
@@ -39,7 +41,6 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueStrategies;
-import serp.util.Strings;
 
 /**
  * Helper for OpenJPA back-ends.
@@ -52,6 +53,7 @@ public class ImplHelper {
 
     private static final Localizer _loc = Localizer.forPackage
         (ImplHelper.class);
+	private static Map _facadeTypes = new HashMap ();
 
     /**
      * Return the getter method matching the given property name.
@@ -178,53 +180,35 @@ public class ImplHelper {
      * wrap store-specific components without knowing about all possible
      * back-ends.
      *
-     * @param conf configuration for runtime
-     * @param openjpaCls class of OpenJPA component (e.g.
-     * JDBCFetchConfiguration.class)
-     * @param openjpaSuff suffix of OpenJPA component (e.g. "FetchConfiguration")
-     * @param facadePkg the unqualified facade package name (e.g. "jdo")
-     * @param facadeCls the generic facade interface's class (e.g.
-     * FetchPlan.class)
-     * @param facadeSuff the suffix to append to the store prefix to get
-     * the implementation class name (e.g. "FetchPlanImpl")
-     * or null to use the unqualified name of
-     * <code>facadeCls</code>
-     * @return the class formed by taking the top-most org.apache.openjpa.aaa package and
-     * BBBStoreManager name prefix from <code>storeCls</code> and
-     * combining them with the facade package ccc and suffix DDD to
-     * get: org.apache.openjpa.ccc.aaa.BBBDDD
+     * @param bf broker factory for which an implementation class
+     * @param compType type of desired component (e.g. FetchPlan.class)
+     * @return the class corresponding to the type in the store facade registry,
+     * or <code>null</code> if no registry entry exists.
      */
-    public static Class getStoreFacadeType(OpenJPAConfiguration conf,
-        Class openjpaCls, String openjpaSuff, String facadePkg, Class facadeCls,
-        String facadeSuff) {
-        String clsName = openjpaCls.getName();
-        int dotIdx = clsName.lastIndexOf('.');
-        int suffixIdx = clsName.indexOf(openjpaSuff, dotIdx + 1);
-        if (!clsName.startsWith("org.apache.openjpa.") || suffixIdx == -1)
-            return null;
-
-        // extract 'xxx.' from org.apache.openjpa.xxx.yyy..., and XXX from XXXStoreManager
-        String pkg = clsName.substring(5, clsName.indexOf('.', 5) + 1);
-        String prefix = clsName.substring(dotIdx + 1, suffixIdx);
-
-        // suffix of impl class name
-        if (facadeSuff == null)
-            facadeSuff = Strings.getClassName(facadeCls);
-
-        clsName =
-            "org.apache.openjpa." + facadePkg + "." + pkg + prefix + facadeSuff;
-        try {
-            return Class.forName(clsName, true, facadeCls.getClassLoader());
-        }
-        catch (ClassNotFoundException ncfe) {
-            Log log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
-            if (log.isTraceEnabled())
-                log.trace(_loc.get("no-store-exts", clsName));
-            return null;
-        }
-        catch (Exception e) {
-            throw new InternalException(e);
-        }
+    public static Class getStoreFacadeType(BrokerFactory bf, Class compType) {
+    	
+    	Class bfClass;
+    	if (bf instanceof DelegatingBrokerFactory)
+    		bfClass = ((DelegatingBrokerFactory) bf).getInnermostDelegate()
+    			.getClass();
+    	else
+    		bfClass = bf.getClass();
+    	
+    	return (Class) _facadeTypes.get(storeFacadeKey(bfClass, compType));
+    }
+    
+    /**
+     * Add a facade type for the specified broker factory type and 
+     * component type.
+     * @see #getStoreFacadeType
+     */
+    public static void addStoreFacadeType(Class bfClass, Class compType,
+    	Class facadeType) {
+    	_facadeTypes.put(storeFacadeKey(bfClass, compType), facadeType);
+    }
+    
+    private static String storeFacadeKey(Class bfClass, Class compType) {
+    	return bfClass.getName() + ":" + compType.getName();
     }
 
     /**
