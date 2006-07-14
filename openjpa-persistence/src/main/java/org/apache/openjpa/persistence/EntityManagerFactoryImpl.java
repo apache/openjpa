@@ -262,13 +262,7 @@ public class EntityManagerFactoryImpl
 
     /**
      * Create a store-specific facade for the given fetch configuration.
-     * The name of the facade class is formed by taking the top-most org.apache.openjpa.xxx
-     * package and class name prefix from the fetch configuration class and
-     * combining it as
-     * <code>org.apache.openjpa.persistence.xxx.PrefixFetchConfiguration</code>.
-     * The class must have a constructor that takes a
-     * <code>FetchConfiguration</code> argument. If no facade class
-     * exists, we use the default {@link FetchConfiguration}.
+	 * If no facade class exists, we use the default {@link FetchPlan}.
      */
     FetchPlan toFetchPlan(FetchConfiguration fetch) {
         if (fetch == null)
@@ -282,12 +276,11 @@ public class EntityManagerFactoryImpl
         _factory.lock();
         try {
             if (_plan == null) {
-                Class cls = ImplHelper.getStoreFacadeType(_factory.
-                    getConfiguration(), inner.getClass(), "FetchConfiguration",
-                    "persistence", FetchPlan.class, null);
+                Class cls = ImplHelper.getStoreFacadeType(_factory, 
+                	FetchPlan.class);
                 if (cls == null)
                     cls = FetchPlan.class;
-                _plan = cls.getConstructor(FetchConfiguration.class);
+                _plan = cls.getConstructor(FetchPlan.class);
             }
             return _plan.newInstance(fetch);
         }

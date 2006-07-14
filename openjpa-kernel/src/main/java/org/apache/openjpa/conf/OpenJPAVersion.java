@@ -36,8 +36,7 @@ public class OpenJPAVersion {
     public static final Date RELEASE_DATE = new Date(RELEASE_SECONDS * 1000);
 
     public static final String VERSION_ID = VERSION_NUMBER;
-    public static final String VENDOR_NAME =
-        OpenJPAVersion.class.getPackage().getImplementationVendor();
+    public static final String VENDOR_NAME = "OpenJPA";
     public static final int MAJOR_RELEASE;
     public static final int MINOR_RELEASE;
     public static final int PATCH_RELEASE;
