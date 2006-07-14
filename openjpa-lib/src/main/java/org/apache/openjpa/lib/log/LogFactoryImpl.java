@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.openjpa.lib.conf.GenericConfigurable;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -222,15 +223,15 @@ public class LogFactoryImpl implements LogFactory, GenericConfigurable {
 
     // ---------- GenericConfigurable implementation ----------
 
-    public void setInto(Map m) {
-        if (!m.isEmpty()) {
+    public void setInto(Options opts) {
+        if (!opts.isEmpty()) {
             Map.Entry e;
-            for (Iterator iter = m.entrySet().iterator(); iter.hasNext();) {
+            for (Iterator iter = opts.entrySet().iterator(); iter.hasNext();) {
                 e = (Map.Entry) iter.next();
                 _configuredLevels.put(shorten((String) e.getKey()),
                     new Short(getLevel((String) e.getValue())));
             }
-            m.clear();
+            opts.clear();
         }
     }
 

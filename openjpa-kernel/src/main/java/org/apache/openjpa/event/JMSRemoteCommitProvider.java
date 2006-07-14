@@ -15,7 +15,6 @@
  */
 package org.apache.openjpa.event;
 
-import java.util.Map;
 import java.util.Properties;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
@@ -36,6 +35,7 @@ import javax.naming.NamingException;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.GenericConfigurable;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 
@@ -92,11 +92,11 @@ public class JMSRemoteCommitProvider
      * constructor for JNDI lookups. Implementation of
      * {@link GenericConfigurable}.
      */
-    public void setInto(Map m) {
-        if (m != null && !m.isEmpty()) {
+    public void setInto(Options opts) {
+        if (opts != null && !opts.isEmpty()) {
             _ctxProps = new Properties();
-            _ctxProps.putAll(m);
-            m.clear();
+            _ctxProps.putAll(opts);
+            opts.clear();
         } else
             _ctxProps = null;
     }

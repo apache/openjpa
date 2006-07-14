@@ -15,13 +15,13 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import java.util.Map;
+import org.apache.openjpa.lib.util.Options;
 
 /**
  * Implementations of this interface may perform additional
  * generic configuration with any key-value pairs that cannot be set
- * into the object via the normal {@link org.apache.openjpa.lib.util.Options#setInto}
- * means.
+ * into the object via the normal 
+ * {@link org.apache.openjpa.lib.util.Options#setInto} means.
  *
  * @author Patrick Linskey
  */
@@ -29,10 +29,10 @@ public interface GenericConfigurable {
 
     /**
      * Perform any generic configuration based on the data in
-     * <code>m</code>. This method should remove any values in
-     * <code>m</code> that have been successfully processed; if any
-     * values remain in <code>m</code> after this method is executed,
+     * <code>opts</code>. This method should remove any values in
+     * <code>opts</code> that have been successfully processed; if any
+     * values remain in <code>opts</code> after this method is executed,
      * an exception will be thrown identifying those key-value pairs as invalid.
      */
-    public void setInto(Map m);
+    public void setInto(Options opts);
 }

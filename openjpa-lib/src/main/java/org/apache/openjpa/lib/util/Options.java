@@ -49,6 +49,11 @@ import serp.util.Strings;
  */
 public class Options extends TypedProperties {
 
+    /**
+     * Immutable empty instance.
+     */
+    public static Options EMPTY = new EmptyOptions();
+
     // maps primitive types to the appropriate wrapper class and default value
     private static Object[][] _primWrappers = new Object[][]{
         { boolean.class, Boolean.class, Boolean.FALSE },
@@ -152,15 +157,16 @@ public class Options extends TypedProperties {
      * <li>Map Entry: <code>"brother.name"-&gt;"Bob"</code><br />
      * Resultant method call: <code>obj.getBrother().setName("Bob")
      * <code></li>
-     * </ul> Any keys present in the map for which there is no
+     * </ul> 
+     * Any keys present in the map for which there is no
      * corresponding property in the given object will be ignored,
      * and will be returned in the {@link Map} returned by this method.
      *
-     * @return a {@link Map} of key-value pairs in this object
+     * @return an {@link Options} of key-value pairs in this object
      * for which no setters could be found.
      * @throws RuntimeException on parse error
      */
-    public Map setInto(Object obj) {
+    public Options setInto(Object obj) {
         // set all defaults that have no explicit value
         Map.Entry entry = null;
         if (defaults != null) {
@@ -173,19 +179,17 @@ public class Options extends TypedProperties {
         }
 
         // set from main map
-        Map invalidEntries = null;
+        Options invalidEntries = null;
         Map.Entry e;
         for (Iterator itr = entrySet().iterator(); itr.hasNext();) {
             e = (Map.Entry) itr.next();
             if (!setInto(obj, e)) {
                 if (invalidEntries == null)
-                    invalidEntries = new HashMap();
+                    invalidEntries = new Options();
                 invalidEntries.put(e.getKey(), e.getValue());
             }
         }
-
-        return (invalidEntries == null) ? Collections.EMPTY_MAP :
-            invalidEntries;
+        return (invalidEntries == null) ? EMPTY : invalidEntries;
     }
 
     /**
@@ -605,5 +609,19 @@ public class Options extends TypedProperties {
     public String removeProperty(String key, String key2, String def) {
         String val = removeProperty(key);
         return (val == null) ? removeProperty(key2, def) : val;
+    }
+
+    /**
+     * Immutable empty options.
+     */
+    private static class EmptyOptions extends Options {
+
+        public Object setProperty(String key, String value) {
+            throw new UnsupportedOperationException();
+        }
+
+        public Object put(Object key, Object value) {
+            throw new UnsupportedOperationException();
+        }
     }
 }
