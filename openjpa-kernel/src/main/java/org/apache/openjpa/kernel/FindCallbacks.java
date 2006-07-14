@@ -24,8 +24,8 @@ package org.apache.openjpa.kernel;
 public interface FindCallbacks {
 
     /**
-     * Process find argument. Throw proper {@link OpenJPAException}
-     * for illegal value.
+     * Process find argument. Throw proper 
+     * {@link org.apache.openjpa.util.OpenJPAException} for illegal value.
      *
      * @return the id to look up, or null to ignore this argument
      */

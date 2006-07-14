@@ -251,7 +251,6 @@ public class ImplHelper {
      *
      * @param type the class to test
      * @return true if the class is manageable.
-     * @param conf the configuration that defines the current context
      */
     public static boolean isManagedType(Class type) {
         return PersistenceCapable.class.isAssignableFrom(type);
@@ -265,5 +264,5 @@ public class ImplHelper {
      */
     public static boolean isManageable(Object instance) {
         return instance instanceof PersistenceCapable;
-	}
+    }
 }

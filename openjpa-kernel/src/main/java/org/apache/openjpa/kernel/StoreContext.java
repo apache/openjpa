@@ -148,8 +148,9 @@ public interface StoreContext {
 
     /**
      * Return an iterator over all instances of the given type. The iterator
-     * should be closed with {@link ImplHelper#close} when no longer needed.
-     * This method delegates to {@link StoreManager#executeExtent}.
+     * should be closed with {@link org.apache.openjpa.util.ImplHelper#close} 
+     * when no longer needed. This method delegates to 
+     * {@link StoreManager#executeExtent}.
      */
     public Iterator extentIterator(Class cls, boolean subs,
         FetchConfiguration fetch, boolean ignoreChanges);
@@ -383,7 +384,7 @@ public interface StoreContext {
      * will have to flush instances of objects for each class of object
      * modified during the transaction. A side benefit of large transaction
      * mode is that smaller update messages can be used for
-     * {@link RemoteCommitEvent}s. Defaults to false.
+     * {@link org.apache.openjpa.event.RemoteCommitEvent}s. Defaults to false.
      *
      * @since 3.4
      */

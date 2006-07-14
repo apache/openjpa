@@ -50,7 +50,7 @@ public abstract class AbstractLockManager
     }
 
     /**
-     * Delegates to {@link #lock} with each element of the collection.
+     * Delegates to {@link LockManager#lock} with each element of the collection
      */
     public void lockAll(Collection sms, int level, int timeout,
         Object context) {

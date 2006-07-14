@@ -548,9 +548,9 @@ public abstract class AbstractTestCase extends TestCase {
      * error message
      * @param serialCount the number of times to run the method
      * serially before spawning threads.
-     * @param thread the number of Threads to run in
+     * @param threads the number of Threads to run in
      * @param iterations the number of times the method should
-     * @param runnner the VolatileRunnable that will execute
+     * @param runner the VolatileRunnable that will execute
      * the actual test from within the Thread.
      * @throws ThreadingException if an errors occur in
      * any of the Threads. The actual exceptions
@@ -766,8 +766,8 @@ public abstract class AbstractTestCase extends TestCase {
      * <p/>
      * <strong>Warning</strong> this method should be used sparingly,
      * and only when you expect that a timeout will <strong>not</strong>
-     * occur. It utilized the deprecated {@link Thread.stop} and
-     * {@link Thread.interrupt} methods, which can leave monitors in an
+     * occur. It utilized the deprecated {@link Thread#stop()} and
+     * {@link Thread#interrupt} methods, which can leave monitors in an
      * invalid state. It is only used because it provides more
      * meaningful information than just seeing that the entire autobuild
      * timed out.

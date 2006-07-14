@@ -69,8 +69,8 @@ public interface FilterListener
      * @return the value of the extension for this candidate; if
      * this extension is an expression, this method should
      * return {@link Boolean#TRUE} or {@link Boolean#FALSE}
-     * @throws UserException if this extension does not support
-     * in-memory operation
+     * @throws org.apache.openjpa.util.UserException if this extension does not 
+     * support in-memory operation
      */
     public Object evaluate(Object target, Class targetClass, Object[] args,
         Class[] argClasses, Object candidate, StoreContext ctx);

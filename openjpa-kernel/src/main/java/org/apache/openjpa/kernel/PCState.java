@@ -230,7 +230,7 @@ public class PCState
 
     /**
      * Perform any actions necesssary and return the proper lifecycle state
-     * on a call to {@link Broker#makeNontransactional} with the given
+     * on a call to {@link StoreContext#nontransactional} with the given
      * instance. Returns the <code>this</code> pointer by default.
      */
     PCState nontransactional(StateManagerImpl context) {
@@ -239,7 +239,7 @@ public class PCState
 
     /**
      * Perform any actions necesssary and return the proper lifecycle state
-     * on a call to {@link Broker#makeNontransactional} with the given
+     * on a call to {@link StoreContext#nontransactional} with the given
      * instance. Returns the <code>this</code> pointer by default.
      */
     PCState transactional(StateManagerImpl context) {

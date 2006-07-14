@@ -50,7 +50,7 @@ public class FetchGroup
     /**
      * Supply immutable name.
      *
-     * @param must not by null or empty.
+     * @param name must not by null or empty.
      */
     FetchGroup(ClassMetaData cm, String name) {
         super();
@@ -94,7 +94,6 @@ public class FetchGroup
      * @param fg
      * @param recurse if true then recursively checks within the included
      * fecth groups. Otherwise just checks within direct includes.
-     * @return
      */
     public boolean includes(FetchGroup fg, boolean recurse) {
         if (_includes == null)

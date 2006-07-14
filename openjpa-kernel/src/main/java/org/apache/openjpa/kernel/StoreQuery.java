@@ -231,7 +231,7 @@ public interface StoreQuery
          * in memory. If this exeuctor's parent query supports executors on
          * abstract or interface classes, this method will not be used.
          *
-         * @see StoreQuery#supportsAbstractExecutor
+         * @see StoreQuery#supportsAbstractExecutors
          */
         public Object getOrderingValue(StoreQuery q, Object[] params,
             Object resultObject, int orderIndex);

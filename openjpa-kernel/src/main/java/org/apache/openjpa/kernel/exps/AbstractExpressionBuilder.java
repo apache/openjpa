@@ -74,7 +74,6 @@ public abstract class AbstractExpressionBuilder {
      * Constructor.
      *
      * @param factory the expression factory to use
-     * @param meta candidate class metadata
      * @param resolver used to resolve variables, parameters, and class
      * names used in the query
      */

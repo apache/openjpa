@@ -111,7 +111,7 @@ public class StringDistance {
      * @see #getLevenshteinDistance
      */
     public static String getClosestLevenshteinDistance(String str,
-        Collection candidates, int threshhold) {
+        Collection candidates, int threshold) {
         if (candidates == null || candidates.isEmpty())
             return null;
 
@@ -128,7 +128,7 @@ public class StringDistance {
         }
 
         // return the lowest close string only if we surpass the threshhold
-        if (minValue <= threshhold)
+        if (minValue <= threshold)
             return minString;
         else
             return null;

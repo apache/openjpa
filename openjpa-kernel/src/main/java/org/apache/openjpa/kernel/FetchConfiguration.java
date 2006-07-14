@@ -225,8 +225,6 @@ public interface FetchConfiguration
 
     /**
      * Return the root instances.
-     *
-     * @return
      */
     public Set getRootClasses();
 

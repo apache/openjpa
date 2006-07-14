@@ -92,7 +92,7 @@ public class TransactionEvent
     /**
      * Constructor.
      *
-     * @param pm the event source
+     * @param broker the event source
      * @param type the event type
      * @param objs transactional objects
      * @param addClss classes of added instances

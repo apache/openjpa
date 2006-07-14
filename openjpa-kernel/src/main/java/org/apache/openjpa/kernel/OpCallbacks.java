@@ -40,8 +40,8 @@ public interface OpCallbacks {
     public static final int ACT_RUN = 2 << 1;
 
     /**
-     * Process operation argument. Throw proper {@link OpenJPAException}
-     * for illegal value.
+     * Process operation argument. Throw proper 
+     * {@link org.apache.openjpa.util.OpenJPAException} for illegal value.
      *
      * @param op the operation constant
      * @param arg the object passed to the operation

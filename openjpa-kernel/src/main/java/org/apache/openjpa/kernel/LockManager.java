@@ -60,8 +60,8 @@ public interface LockManager
      * to the persistence context, if any; lock managers
      * specific to a certain back end may be able to take
      * advantage of this; others should ignore it
-     * @throws LockException if a lock cannot be obtained in the
-     * given number of milliseconds
+     * @throws org.apache.openjpa.util.LockException if a lock cannot be 
+     * obtained in the given number of milliseconds
      * @see OpenJPAStateManager#setLock
      */
     public void lock(OpenJPAStateManager sm, int level, int timeout,
