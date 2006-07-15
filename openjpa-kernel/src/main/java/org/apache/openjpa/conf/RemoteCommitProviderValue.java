@@ -42,8 +42,8 @@ public class RemoteCommitProviderValue
     private Options _opts = null;
     private Boolean _transmitPersIds = null;
 
-    public RemoteCommitProviderValue(String prop) {
-        super(prop, true);
+    public RemoteCommitProviderValue() {
+        super("RemoteCommitProvider", true);
         setAliases(ALIASES);
     }
 

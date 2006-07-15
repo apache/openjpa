@@ -15,7 +15,13 @@
  */
 package org.apache.openjpa.conf;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.apache.openjpa.kernel.BrokerFactory;
+import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.PluginValue;
 
 /**
@@ -30,12 +36,18 @@ import org.apache.openjpa.lib.conf.PluginValue;
 public class BrokerFactoryValue
     extends PluginValue {
 
-    public static final String KEY = "org.apache.openjpa.BrokerFactory";
+    private static final String KEY = "BrokerFactory";
 
     private static final String[] ALIASES = new String[]{
         "abstractstore",
         "org.apache.openjpa.abstractstore.AbstractStoreBrokerFactory",
     };
+    
+    private static final Collection _prefixes = new HashSet();
+    
+    static {
+        _prefixes.add("openjpa");
+    }
 
     public BrokerFactoryValue() {
         this(KEY);
@@ -44,5 +56,36 @@ public class BrokerFactoryValue
     public BrokerFactoryValue(String prop) {
         super(prop, false);
         setAliases(ALIASES);
+    }
+
+    /**
+     * Extract the concrete {@link BrokerFactory} class name that the specified
+     * configuration will use.
+     */
+    public static Object getBrokerFactoryClassName(ConfigurationProvider cp) {
+        Map props = cp.getProperties();
+        for (Iterator iter = _prefixes.iterator(); iter.hasNext(); ) {
+            Object bf = props.get(iter.next() + "." + KEY);
+            if (bf != null)
+                return  bf;
+        }
+        return null;
+    }
+
+    /**
+     * Return the property to use for setting the broker factory for 
+     * <code>cp</code>.
+     */
+    public static String getBrokerFactoryProperty(ConfigurationProvider cp) {
+        return _prefixes.iterator().next() + "." 
+            + BrokerFactoryValue.KEY; 
+    }
+    
+    /**
+     * Add <code>prefix</code> to the list of prefixes under which configuration
+     * properties may be scoped.
+     */
+    public static void addPropertyPrefix(String prefix) {
+        _prefixes.add(prefix);
     }
 }

@@ -44,8 +44,8 @@ class AutoDetachValue
 
     private int _flags;
 
-    public AutoDetachValue(String prop) {
-        super(prop);
+    public AutoDetachValue() {
+        super("AutoDetach");
         setAliases(ALIASES);
     }
 

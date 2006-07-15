@@ -36,7 +36,7 @@ public class MapConfigurationProvider implements ConfigurationProvider {
         (MapConfigurationProvider.class);
 
     private Map _props = null;
-
+    
     /**
      * Construct with null properties.
      */
@@ -47,6 +47,7 @@ public class MapConfigurationProvider implements ConfigurationProvider {
      * Constructor; supply properties map.
      */
     public MapConfigurationProvider(Map props) {
+        this();
         addProperties(props);
     }
 
@@ -91,6 +92,7 @@ public class MapConfigurationProvider implements ConfigurationProvider {
     protected void setInto(Configuration conf, Log log) {
         if (log != null && log.isTraceEnabled())
             log.trace(_loc.get("conf-load", getProperties()));
+        
         if (_props != null)
             conf.fromProperties(_props);
     }

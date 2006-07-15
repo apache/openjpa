@@ -200,4 +200,10 @@ public interface Configuration
      * Return a copy of this configuration.
      */
     public Object clone();
+
+    /**
+     * Add <code>prefix</code> to the list of prefixes to use
+     * to identify valid configuration properties.
+     */
+    public void addPropertyPrefix(String prefix);
 }

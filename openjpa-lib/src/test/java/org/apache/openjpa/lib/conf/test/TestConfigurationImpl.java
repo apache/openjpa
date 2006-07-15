@@ -43,19 +43,21 @@ public class TestConfigurationImpl extends AbstractTestCase {
     }
 
     public void setUp() {
-        //### any way to avoid hard coding this?
-        _def = System.getProperty("org.apache.openjpa.properties");
-        System.setProperty("org.apache.openjpa.properties", "test.properties");
+        _def = System.getProperty("openjpa.properties");
+        System.setProperty("openjpa.properties", "test.properties");
     }
 
     public void tearDown() throws Exception {
-        System.setProperty("org.apache.openjpa.properties", _def);
+    	if (_def != null)
+    		System.setProperty("openjpa.properties", _def);
 
-        super.tearDown();
+    	super.tearDown();
     }
 
     /**
      * Test that default properties are found and loaded.
+     * ### This test method requires some sort of ConfigurationProvider
+     * ### to be available in the openjpa-lib module, which is not the case.
      */
     public void testDefaults() {
         System.setProperty("sysKey", "sysvalue");
@@ -72,8 +74,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
         // override the properties location to a non-existant value
         _conf.setTestKey(null);
         _conf.setSysKey(null);
-        //###
-        System.setProperty("org.apache.openjpa.properties", "foo.properties");
+        System.setProperty("openjpa.properties", "foo.properties");
         try {
             assertTrue(!_conf.loadDefaults());
             fail("Should have thrown exception for missing resource.");
@@ -81,8 +82,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
         }
 
         // set back for remainder of tests
-        //###
-        System.setProperty("org.apache.openjpa.properties", "test.properties");
+        System.setProperty("openjpa.properties", "test.properties");
         System.setProperty("pluginKey", "java.lang.Object");
         assertTrue(_conf.loadDefaults());
         assertEquals("testvalue", _conf.getTestKey());
