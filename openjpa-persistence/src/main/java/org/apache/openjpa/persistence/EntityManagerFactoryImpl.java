@@ -134,37 +134,37 @@ public class EntityManagerFactoryImpl
 
         OpenJPAConfiguration conf = getConfiguration();
         String user =
-            (String) props.remove("org.apache.openjpa.ConnectionUserName");
+            (String) props.remove("openjpa.ConnectionUserName");
         if (user == null)
             user = conf.getConnectionUserName();
         String pass =
-            (String) props.remove("org.apache.openjpa.ConnectionPassword");
+            (String) props.remove("openjpa.ConnectionPassword");
         if (pass == null)
             pass = conf.getConnectionPassword();
 
         String str =
-            (String) props.remove("org.apache.openjpa.TransactionMode");
+            (String) props.remove("openjpa.TransactionMode");
         boolean managed;
         if (str == null)
             managed = conf.isTransactionModeManaged();
         else {
-            Value val = conf.getValue("org.apache.openjpa.TransactionMode");
+            Value val = conf.getValue("openjpa.TransactionMode");
             managed = Boolean.parseBoolean(val.unalias(str));
         }
 
-        Object obj = props.remove("org.apache.openjpa.ConnectionRetainMode");
+        Object obj = props.remove("openjpa.ConnectionRetainMode");
         int retainMode;
         if (obj instanceof Number)
             retainMode = ((Number) obj).intValue();
         else if (obj != null) {
             Value val =
-                conf.getValue("org.apache.openjpa.ConnectionRetainMode");
+                conf.getValue("openjpa.ConnectionRetainMode");
             try {
                 retainMode = Integer.parseInt(val.unalias((String) obj));
             }
             catch (Exception e) {
                 throw new ArgumentException(_loc.get("bad-em-prop",
-                    "org.apache.openjpa.ConnectionRetainMode", obj),
+                    "openjpa.ConnectionRetainMode", obj),
                     new Throwable[]{ e },
                     obj, true);
             }
@@ -186,7 +186,7 @@ public class EntityManagerFactoryImpl
         Object val;
         for (Map.Entry entry : (Set<Map.Entry>) props.entrySet()) {
             prop = (String) entry.getKey();
-            if (!prop.startsWith("org.apache.openjpa."))
+            if (!prop.startsWith("openjpa."))
                 continue;
             prop = prop.substring(5);
             try {

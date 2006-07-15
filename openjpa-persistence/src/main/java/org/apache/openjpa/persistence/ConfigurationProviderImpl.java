@@ -40,9 +40,9 @@ import org.apache.openjpa.util.GeneralException;
  * Configuration provider capable of loading a {@link Configuration} from
  * the current environment's JPA-style XML configuration data.
  * 
- * For defaults, looks in <code>org.apache.openjpa.properties</code> system property for
+ * For defaults, looks in <code>openjpa.properties</code> system property for
  * the location of a file to parse. If no system property is defined, the
- * default resource location of <code>org.apache.openjpa.xml</code> is used.
+ * default resource location of <code>openjpa.xml</code> is used.
  * If it exists, the resource is parsed as an XML file.
  *
  * @nojavadoc
@@ -51,7 +51,7 @@ import org.apache.openjpa.util.GeneralException;
 public class ConfigurationProviderImpl
     extends MapConfigurationProvider {
 
-    private static final String RSRC_DEFAULT = "org.apache.openjpa.xml";
+    private static final String RSRC_DEFAULT = "openjpa.xml";
     private static final String RSRC_SPEC = "META-INF/persistence.xml";
 
     private static final Localizer _loc = Localizer.forPackage
@@ -129,7 +129,7 @@ public class ConfigurationProviderImpl
     @Override
     public boolean loadDefaults(ClassLoader loader)
         throws IOException {
-        String rsrc = System.getProperty("org.apache.openjpa.properties");
+        String rsrc = System.getProperty("openjpa.properties");
         String name = null;
         boolean explicit = false;
         if (rsrc == null)

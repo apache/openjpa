@@ -15,7 +15,7 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import java.awt.*;
+import java.awt.Image;
 import java.beans.BeanDescriptor;
 import java.beans.BeanInfo;
 import java.beans.EventSetDescriptor;
@@ -36,17 +36,18 @@ import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
@@ -112,6 +113,8 @@ public class ConfigurationImpl
     // cache descriptors
     private PropertyDescriptor[] _pds = null;
     private MethodDescriptor[] _mds = null;
+    
+    private Set _prefixes = new HashSet();
 
     /**
      * Default constructor. Attempts to load default properties through
@@ -127,7 +130,9 @@ public class ConfigurationImpl
      * @param loadDefaults whether to attempt to load the default properties
      */
     public ConfigurationImpl(boolean loadDefaults) {
-        logFactoryPlugin = addPlugin("org.apache.openjpa.lib.Log", true);
+        _prefixes.add("openjpa");
+        
+        logFactoryPlugin = addPlugin("Log", true);
         String[] aliases = new String[]{
             "true", "org.apache.openjpa.lib.log.LogFactoryImpl",
             "commons", "org.apache.openjpa.lib.log.CommonsLogFactory",
@@ -171,7 +176,7 @@ public class ConfigurationImpl
     }
 
     public String getProductName() {
-        return "solarmetric";
+        return "openjpa";
     }
 
     public LogFactory getLogFactory() {
@@ -579,7 +584,8 @@ public class ConfigurationImpl
         Object set;
         for (int i = 0; i < _vals.size(); i++) {
             val = (Value) _vals.get(i);
-            set = map.get(val.getProperty());
+            Object[] propertyInfo = lookUpProperty(val.getProperty(), map);
+            set = propertyInfo[1];
             if (set == null)
                 continue;
 
@@ -591,13 +597,14 @@ public class ConfigurationImpl
                 val.setObject(set);
             }
 
-            remaining.remove(val.getProperty());
+            removeFoundProperty(val, remaining);
         }
-
+        
         // convention is to point product at a resource with the
-        // <product>.properties System property; remove that property so we
+        // <prefix>.properties System property; remove that property so we
         // we don't warn about it
-        remaining.remove(getProductName() + ".properties");
+        for (Iterator iter = _prefixes.iterator(); iter.hasNext(); )
+            remaining.remove((String) iter.next() + ".properties");
 
         // now warn if there are any remaining properties that there
         // is an unhandled prop
@@ -615,6 +622,35 @@ public class ConfigurationImpl
     }
 
     /**
+     * Removes <code>val</code> from <code>remaining</code>. Use this method
+     * instead of attempting to remove the value directly because this will
+     * account for any duplicate-but-same-valued keys in the map.
+     */
+    private void removeFoundProperty(Value val, Map remaining) {
+        for (Iterator iter = _prefixes.iterator(); iter.hasNext(); )
+            remaining.remove((String) iter.next() + "." + val.getProperty());
+    }
+
+    private Object[] lookUpProperty(String property, Map map) {
+        String firstKey = null;
+        Object o = null;
+        for (Iterator iter = _prefixes.iterator(); iter.hasNext(); ) {
+            String key = (String) iter.next() + "." + property;
+            if (firstKey == null) {
+                o = map.get(key);
+                if (o != null)
+                    firstKey = key;
+            } else if (map.containsKey(key)) {
+                // if we've already found a property with a previous prefix,
+                // then this is a collision.
+                throw new IllegalStateException(
+                    _loc.get("dup-with-different-prefixes", firstKey, key));
+            }
+        }
+        return new Object[] { firstKey, o };
+    }
+
+    /**
      * Issue a warning that the specified property is not valid.
      */
     private void warnInvalidProperty(String propName) {
@@ -627,7 +663,7 @@ public class ConfigurationImpl
         // try to find the closest string to the invalid property
         // so that we can provide a hint in case of a misspelling
         String closest = StringDistance.getClosestLevenshteinDistance
-            (propName, new PropertyList(), 15);
+            (propName, newPropertyList(), 15);
 
         if (closest == null)
             log.warn(_loc.get("invalid-property", propName));
@@ -635,14 +671,33 @@ public class ConfigurationImpl
             log.warn(_loc.get("invalid-property-hint", propName, closest));
     }
 
+    private Collection newPropertyList() {
+        Set s = new HashSet();
+        for (Iterator iter = _vals.iterator(); iter.hasNext(); ) {
+            Value val = (Value) iter.next();
+            for (Iterator iter2 = _prefixes.iterator(); iter2.hasNext(); )
+                s.add(((String) iter2.next()) + "." + val.getProperty());  
+        }
+        return s;
+    }
+
     /**
      * Returns true if the specified property name should raise a warning
      * if it is not found in the list of known properties.
      */
     protected boolean isInvalidProperty(String propName) {
-        // by default, we don't warn on any properties, since we don't
-        // know what property pattern will be used for the base config
-        return false;
+        // handle warnings for openjpa.SomeString, but not for
+        // openjpa.some.subpackage.SomeString, since it might be valid for some
+        // specific implementation of OpenJPA
+        boolean invalid = false;
+        for (Iterator iter = _prefixes.iterator(); iter.hasNext(); ) {
+            String prefix = (String) iter.next();
+            if (propName.toLowerCase().startsWith(prefix)
+                && propName.indexOf('.', prefix.length()) != -1)
+                invalid = true;
+        }
+
+        return invalid;
     }
 
     /**
@@ -661,7 +716,7 @@ public class ConfigurationImpl
      * <code>propertiesFile</code> value with the name of a file.
      */
     public void setPropertiesFile(File file) throws IOException {
-        Configurations.load(file, getClass().getClassLoader()). setInto(this);
+        Configurations.load(file, getClass().getClassLoader()).setInto(this);
     }
 
     /////////////
@@ -714,6 +769,8 @@ public class ConfigurationImpl
     public void readExternal(ObjectInput in)
         throws IOException, ClassNotFoundException {
         fromProperties((Map) in.readObject());
+        _prefixes = (Set) in.readObject();
+        _defaults = in.readBoolean();
     }
 
     /**
@@ -725,6 +782,9 @@ public class ConfigurationImpl
             out.writeObject(_props);
         else
             out.writeObject(toProperties(false));
+        
+        out.writeObject(_prefixes);
+        out.writeBoolean(_defaults);
     }
 
     /**
@@ -735,8 +795,11 @@ public class ConfigurationImpl
         try {
             Constructor cons = getClass().getConstructor
                 (new Class[]{ boolean.class });
-            Configuration clone = (Configuration) cons.newInstance
+            ConfigurationImpl clone = (ConfigurationImpl) cons.newInstance
                 (new Object[]{ Boolean.FALSE });
+            clone._prefixes.clear();
+            clone._prefixes.addAll(_prefixes);
+            clone._defaults = _defaults;
             clone.fromProperties(toProperties(true));
             return clone;
         } catch (RuntimeException re) {
@@ -757,6 +820,10 @@ public class ConfigurationImpl
         _vals.add(val);
         val.setListener(this);
         return val;
+    }
+
+    public void addPropertyPrefix(String prefix) {
+        _prefixes.add(prefix);
     }
 
     /**
@@ -838,19 +905,5 @@ public class ConfigurationImpl
         PluginListValue val = new PluginListValue(property);
         addValue(val);
         return val;
-    }
-
-    /**
-     * Exposes our values list as a list of property names.
-     */
-    private class PropertyList extends AbstractList {
-
-        public Object get(int i) {
-            return ((Value) _vals.get(i)).getProperty();
-        }
-
-        public int size() {
-            return _vals.size();
-        }
     }
 }

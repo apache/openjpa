@@ -21,7 +21,7 @@ import org.apache.openjpa.lib.util.Closeable;
  * An entity that is responsible for communicating commit
  * notification to other {@link RemoteCommitEventManager}s. Each
  * event manager creates a remote commit provider, based on
- * the values of the <code>org.apache.openjpa.RemoteCommitProvider</code>
+ * the values of the <code>openjpa.RemoteCommitProvider</code>
  * configuration property.
  *  An adapter that implements {@link TransactionListener} is
  * registered with each {@link org.apache.openjpa.kernel.Broker}. This adapter

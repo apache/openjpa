@@ -282,8 +282,8 @@ public class Configurations {
                 String msg = null;
                 String first = (String) invalidEntries.keySet().iterator()
                     .next();
-                if (invalidEntries.keySet().size() == 1 
-                    && first.indexOf('.') == -1) {
+                if (invalidEntries.keySet().size() == 1 &&
+                    first.indexOf('.') == -1) {
                     // if there's just one misspelling and this is not a
                     // path traversal, check for near misses.
                     Collection options = Options.findOptionsFor(obj.getClass());

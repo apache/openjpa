@@ -120,8 +120,7 @@ public class Bootstrap {
         if (loader == null)
             loader = Thread.currentThread().getContextClassLoader();
 
-        Map props = conf.getProperties();
-        Object cls = props.get(BrokerFactoryValue.KEY);
+        Object cls = BrokerFactoryValue.getBrokerFactoryClassName(conf);
         if (cls instanceof Class)
             return (Class) cls;
 
@@ -129,8 +128,8 @@ public class Bootstrap {
         value.setString((String) cls);
         String clsName = value.getClassName();
         if (clsName == null)
-            throw new UserException(s_loc.get("no-brokerfactory", props)).
-                setFatal(true);
+            throw new UserException(s_loc.get("no-brokerfactory", 
+                conf.getProperties())).setFatal(true);
 
         try {
             return Class.forName(clsName, true, loader);
