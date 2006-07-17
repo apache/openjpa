@@ -257,12 +257,13 @@ public class Configurations {
         if (obj == null)
             return;
 
-        Options opts = null;
+        Options opts;
         if (properties instanceof Options)
             opts = (Options) properties;
-        else if (properties != null) {
+        else { 
             opts = new Options();
-            opts.putAll(properties);
+            if (properties != null)
+                opts.putAll(properties);
         }
 
         Configurable configurable = null;
@@ -273,37 +274,33 @@ public class Configurations {
             configurable.setConfiguration(conf);
             configurable.startConfiguration();
         }
-        if (opts != null) {
-            Options invalidEntries = opts.setInto(obj);
-            if (obj instanceof GenericConfigurable)
-                ((GenericConfigurable) obj).setInto(invalidEntries);
+        Options invalidEntries = opts.setInto(obj);
+        if (obj instanceof GenericConfigurable)
+            ((GenericConfigurable) obj).setInto(invalidEntries);
 
-            if (!invalidEntries.isEmpty() && configurationName != null) {
-                String msg = null;
-                String first = (String) invalidEntries.keySet().iterator()
-                    .next();
-                if (invalidEntries.keySet().size() == 1 &&
-                    first.indexOf('.') == -1) {
-                    // if there's just one misspelling and this is not a
-                    // path traversal, check for near misses.
-                    Collection options = Options.findOptionsFor(obj.getClass());
-                    String close = StringDistance.getClosestLevenshteinDistance
-                        (first, options, 0.75f);
-                    if (close != null)
-                        msg = _loc.get("invalid-config-param-hint",
-                            new Object[]{
-                                configurationName, obj.getClass(), first, close,
-                                options, });
-                }
+		if (!invalidEntries.isEmpty() && configurationName != null) {
+			String msg = null;
+			String first = (String) invalidEntries.keySet().iterator().next();
+			if (invalidEntries.keySet().size() == 1 &&
+				first.indexOf('.') == -1) {
+				// if there's just one misspelling and this is not a
+				// path traversal, check for near misses.
+				Collection options = Options.findOptionsFor(obj.getClass());
+				String close = StringDistance.getClosestLevenshteinDistance
+					(first, options, 0.75f);
+				if (close != null)
+					msg = _loc.get("invalid-config-param-hint", new Object[]{
+						configurationName, obj.getClass(), first, close,
+						options, });
+			}
 
-                if (msg == null) {
-                    msg = _loc.get("invalid-config-params", new String[]{
-                        configurationName, obj.getClass().getName(),
-                        invalidEntries.keySet().toString(),
-                        Options.findOptionsFor(obj.getClass()).toString(), });
-                }
-                throw new ParseException(msg);
+            if (msg == null) {
+                msg = _loc.get("invalid-config-params", new String[]{
+                    configurationName, obj.getClass().getName(),
+                    invalidEntries.keySet().toString(),
+                    Options.findOptionsFor(obj.getClass()).toString(), });
             }
+            throw new ParseException(msg);
         }
         if (configurable != null)
             configurable.endConfiguration();
