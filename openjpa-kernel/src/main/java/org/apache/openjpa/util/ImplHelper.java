@@ -19,14 +19,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.kernel.BrokerFactory;
-import org.apache.openjpa.kernel.DelegatingBrokerFactory;
 import org.apache.openjpa.kernel.FetchState;
 import org.apache.openjpa.kernel.LockManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -53,7 +49,6 @@ public class ImplHelper {
 
     private static final Localizer _loc = Localizer.forPackage
         (ImplHelper.class);
-	private static Map _facadeTypes = new HashMap ();
 
     /**
      * Return the getter method matching the given property name.
@@ -172,43 +167,6 @@ public class ImplHelper {
             default:
                 return null;
         }
-    }
-
-    /**
-     * Return the store-specific facade class for the given broker
-     * component class. This method is used by facade implementations to
-     * wrap store-specific components without knowing about all possible
-     * back-ends.
-     *
-     * @param bf broker factory for which an implementation class
-     * @param compType type of desired component (e.g. FetchPlan.class)
-     * @return the class corresponding to the type in the store facade registry,
-     * or <code>null</code> if no registry entry exists.
-     */
-    public static Class getStoreFacadeType(BrokerFactory bf, Class compType) {
-    	
-    	Class bfClass;
-    	if (bf instanceof DelegatingBrokerFactory)
-    		bfClass = ((DelegatingBrokerFactory) bf).getInnermostDelegate()
-    			.getClass();
-    	else
-    		bfClass = bf.getClass();
-    	
-    	return (Class) _facadeTypes.get(storeFacadeKey(bfClass, compType));
-    }
-    
-    /**
-     * Add a facade type for the specified broker factory type and 
-     * component type.
-     * @see #getStoreFacadeType
-     */
-    public static void addStoreFacadeType(Class bfClass, Class compType,
-    	Class facadeType) {
-    	_facadeTypes.put(storeFacadeKey(bfClass, compType), facadeType);
-    }
-    
-    private static String storeFacadeKey(Class bfClass, Class compType) {
-    	return bfClass.getName() + ":" + compType.getName();
     }
 
     /**
