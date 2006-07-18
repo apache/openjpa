@@ -500,7 +500,12 @@ public class Configurations {
                 errs.append(e.toString());
             }
         }
-        String msg = (errs == null) ? resource : errs.toString();
+        String msg;
+        if (errs != null)
+            msg = errs.toString();
+        else
+            msg = _loc.get("no-provider", resource);
+        
         throw new MissingResourceException(msg,
             Configurations.class.getName(), resource);
     }

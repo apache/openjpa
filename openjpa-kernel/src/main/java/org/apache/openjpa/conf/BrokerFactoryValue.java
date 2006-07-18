@@ -15,6 +15,8 @@
  */
 package org.apache.openjpa.conf;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,15 +40,13 @@ public class BrokerFactoryValue
 
     private static final String KEY = "BrokerFactory";
 
-    private static final String[] ALIASES = new String[]{
-        "abstractstore",
-        "org.apache.openjpa.abstractstore.AbstractStoreBrokerFactory",
-    };
-    
+    private static final List _aliases = new ArrayList();
     private static final Collection _prefixes = new HashSet();
     
     static {
         _prefixes.add("openjpa");
+        addDefaultAlias("abstractstore",
+            "org.apache.openjpa.abstractstore.AbstractStoreBrokerFactory");
     }
 
     public BrokerFactoryValue() {
@@ -55,7 +55,7 @@ public class BrokerFactoryValue
 
     public BrokerFactoryValue(String prop) {
         super(prop, false);
-        setAliases(ALIASES);
+        setAliases((String[]) _aliases.toArray(new String[_aliases.size()]));
     }
 
     /**
@@ -87,5 +87,15 @@ public class BrokerFactoryValue
      */
     public static void addPropertyPrefix(String prefix) {
         _prefixes.add(prefix);
+    }
+    
+    
+    /**
+     * Add a mapping from <code>alias</code> to <code>cls</code> to the list
+     * of default aliases for new values created after this invocation.
+     */
+    public static void addDefaultAlias(String alias, String cls) {
+        _aliases.add(alias);
+        _aliases.add(cls);
     }
 }

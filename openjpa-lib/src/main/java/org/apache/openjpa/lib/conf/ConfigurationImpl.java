@@ -169,7 +169,7 @@ public class ConfigurationImpl
         if (provider == null) {
             Log log = getConfigurationLog();
             if (log.isTraceEnabled())
-                log.trace(_loc.get("no-providers"));
+                log.trace(_loc.get("no-default-providers"));
             return false;
         }
         return true;
