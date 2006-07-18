@@ -67,6 +67,12 @@ public interface Configuration
     public static final String ATTRIBUTE_INTERFACE = "propertyInterface";
 
     /**
+     * Attribute of the returned {@link Value} property descriptors naming
+     * the property's name in XML format (i.e. two-words instead of TwoWords).
+     */
+    public static final String ATTRIBUTE_XML = "xmlName";
+    
+    /**
      * Return the product name. Defaults to <code>solarmetric</code>.
      */
     public String getProductName();
