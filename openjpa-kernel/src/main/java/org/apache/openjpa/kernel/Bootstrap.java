@@ -17,7 +17,6 @@ package org.apache.openjpa.kernel;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Map;
 
 import org.apache.openjpa.conf.BrokerFactoryValue;
 import org.apache.openjpa.conf.ProductDerivations;
