@@ -276,8 +276,9 @@ public class EntityManagerFactoryImpl
         _factory.lock();
         try {
             if (_plan == null) {
-                Class cls = ImplHelper.getStoreFacadeType(_factory, 
-                	FetchPlan.class);
+                Class cls = _factory.getConfiguration()
+                    .getStoreFacadeTypeRegistry().getImplementation(
+                        FetchPlan.class);
                 if (cls == null)
                     cls = FetchPlan.class;
                 _plan = cls.getConstructor(FetchPlan.class);

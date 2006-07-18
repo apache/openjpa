@@ -141,6 +141,9 @@ public class OpenJPAConfigurationImpl
 
     private Collection supportedOptions = new HashSet(33);
     private String spec = null;
+    
+    private final StoreFacadeTypeRegistry _storeFacadeRegistry =
+        new StoreFacadeTypeRegistry();
 
     /**
      * Default constructor. Attempts to load default properties.
@@ -1412,4 +1415,8 @@ public class OpenJPAConfigurationImpl
     public Log getConfigurationLog() {
         return getLog(LOG_RUNTIME);
 	}
+
+    public StoreFacadeTypeRegistry getStoreFacadeTypeRegistry() {
+        return _storeFacadeRegistry;
+    }
 }

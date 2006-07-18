@@ -1325,4 +1325,10 @@ public interface OpenJPAConfiguration
 	 * Backwards compatibility options.
 	 */
 	public Compatibility getCompatibilityInstance ();
+    
+    /**
+     * Return the {@link StoreFacadeTypeRegistry} instance associated with this
+     * configuration.
+     */
+    public StoreFacadeTypeRegistry getStoreFacadeTypeRegistry();
 }
