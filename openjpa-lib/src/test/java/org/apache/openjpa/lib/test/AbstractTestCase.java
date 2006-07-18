@@ -218,7 +218,7 @@ public abstract class AbstractTestCase extends TestCase {
     }
 
     public void tearDown() throws Exception {
-        if ("true".equals(System.getProperty("meminfo", "true")))
+        if ("true".equals(System.getProperty("meminfo")))
             printMemoryInfo();
 
         super.tearDown();

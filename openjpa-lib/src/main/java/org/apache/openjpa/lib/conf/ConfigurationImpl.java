@@ -131,7 +131,7 @@ public class ConfigurationImpl
      */
     public ConfigurationImpl(boolean loadDefaults) {
         _prefixes.add("openjpa");
-        
+
         logFactoryPlugin = addPlugin("Log", true);
         String[] aliases = new String[]{
             "true", "org.apache.openjpa.lib.log.LogFactoryImpl",
@@ -456,6 +456,8 @@ public class ConfigurationImpl
         String cat = findLocalized(prop + "-cat", false, val.getScope());
         if (cat != null)
             pd.setValue(ATTRIBUTE_CATEGORY, cat);
+        
+        pd.setValue(ATTRIBUTE_XML, toXMLName(prop));
 
         String order = findLocalized(prop + "-displayorder", false,
             val.getScope());
@@ -762,6 +764,44 @@ public class ConfigurationImpl
         return toProperties(false).hashCode();
     }
 
+    /**
+     * Convert <code>propName</code> to a lowercase-with-hyphens-style string.
+     * This algorithm is only designed for mixes of uppercase and lowercase 
+     * letters and lone digits. A more sophisticated conversion should probably 
+     * be handled by a proper parser generator or regular expressions.
+     */
+    static String toXMLName(String propName) {
+        if (propName == null)
+            return null;
+        StringBuffer buf = new StringBuffer();
+        char c;
+        for (int i = 0; i < propName.length(); i++) {
+            c = propName.charAt(i);
+
+            // convert sequences of all-caps to downcase with dashes around 
+            // them. put a trailing cap that is followed by downcase into the
+            // downcase word.
+            if (i != 0 && Character.isUpperCase(c) 
+                && (Character.isLowerCase(propName.charAt(i-1))
+                    || (i > 1 && i < propName.length() - 1
+                        && Character.isUpperCase(propName.charAt(i-1)) 
+                        && Character.isLowerCase(propName.charAt(i+1)))))
+                buf.append('-');
+            
+            // surround sequences of digits with dashes.
+            if (i != 0
+                && ((!Character.isLetter(c) && Character.isLetter(propName
+                    .charAt(i - 1))) 
+                    || 
+                    (Character.isLetter(c) && !Character.isLetter(propName
+                        .charAt(i - 1)))))
+                buf.append('-');
+            
+            buf.append(Character.toLowerCase(c));
+        }
+        return buf.toString();
+    }
+    
     /**
      * Implementation of the {@link Externalizable} interface to read from
      * the properties written by {@link #writeExternal}.
