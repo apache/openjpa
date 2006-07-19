@@ -50,8 +50,7 @@ public class BeanLifecycleCallbacks
         super(method, arg);
         try {
             _listener = cls.newInstance();
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             throw new UserException(_loc.get("bean-constructor",
                 cls.getName()), t);
         }

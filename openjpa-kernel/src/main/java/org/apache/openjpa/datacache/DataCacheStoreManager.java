@@ -84,8 +84,7 @@ public class DataCacheStoreManager
         try {
             super.commit();
             updateCaches();
-        }
-        finally {
+        } finally {
             _inserts = null;
             _updates = null;
             _deletes = null;
@@ -95,8 +94,7 @@ public class DataCacheStoreManager
     public void rollback() {
         try {
             super.rollback();
-        }
-        finally {
+        } finally {
             _inserts = null;
             _updates = null;
             _deletes = null;
@@ -220,8 +218,7 @@ public class DataCacheStoreManager
                     transformToVersionSafePCDatas(cache, mods.existingUpdates);
                     cache.commit(mods.additions, mods.newUpdates,
                         mods.existingUpdates, mods.deletes);
-                }
-                finally {
+                } finally {
                     cache.writeUnlock();
                 }
             }
@@ -357,8 +354,7 @@ public class DataCacheStoreManager
                 data = newPCData(sm);
             data.store(sm);
             cache.put(data);
-        }
-        finally {
+        } finally {
             cache.writeUnlock();
         }
         return true;
@@ -405,8 +401,7 @@ public class DataCacheStoreManager
                 cache.put(data);
             else
                 cache.update(data);
-        }
-        finally {
+        } finally {
             cache.writeUnlock();
         }
         return true;
@@ -499,8 +494,7 @@ public class DataCacheStoreManager
                     cache.put(data);
                 else
                     cache.update(data);
-            }
-            finally {
+            } finally {
                 cache.writeUnlock();
             }
         }

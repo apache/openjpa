@@ -187,8 +187,7 @@ public class ReentrantLock implements Lock, java.io.Serializable,
                                 return;
                             }
                         }
-                    }
-                    finally {
+                    } finally {
                         if (wasInterrupted) Thread.currentThread().interrupt();
                     }
                 }

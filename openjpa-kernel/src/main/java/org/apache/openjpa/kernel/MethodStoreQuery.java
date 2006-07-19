@@ -109,8 +109,7 @@ public class MethodStoreQuery
                 _params.put(decs.get(i + 1), cls);
             }
             return _params;
-        }
-        finally {
+        } finally {
             ctx.unlock();
         }
     }
@@ -229,8 +228,7 @@ public class MethodStoreQuery
                 Class[] types = (_inMem) ? ARGS_INMEM : ARGS_DATASTORE;
                 try {
                     meth = cls.getMethod(methName, types);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     String msg = (_inMem) ? "bad-inmem-method"
                         : "bad-datastore-method";
                     throw new UserException(_loc.get(msg, methName, cls));
@@ -243,11 +241,9 @@ public class MethodStoreQuery
 
             try {
                 return meth.invoke(null, args);
-            }
-            catch (OpenJPAException ke) {
+            } catch (OpenJPAException ke) {
                 throw ke;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new UserException(_loc.get("method-error", _meth,
                     Exceptions.toString(Arrays.asList(args))), e);
             }

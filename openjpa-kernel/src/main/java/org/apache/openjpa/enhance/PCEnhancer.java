@@ -304,11 +304,9 @@ public class PCEnhancer {
             if (_log.isWarnEnabled())
                 _log.warn(_loc.get("pers-aware", _pc.getType()));
             return ENHANCE_AWARE;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new GeneralException(e);
         }
     }
@@ -656,8 +654,7 @@ public class PCEnhancer {
             try {
                 owner.getDeclaredField(fieldName);
                 break;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
             }
         }
         if (owner.getName().equals(Object.class.getName()))
@@ -1646,14 +1643,12 @@ public class PCEnhancer {
         try {
             oidType.getConstructor(new Class[]{ Class.class, String.class });
             return Boolean.TRUE;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
         }
         try {
             oidType.getConstructor(new Class[]{ String.class });
             return Boolean.FALSE;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
         }
         return null;
     }
@@ -2045,8 +2040,7 @@ public class PCEnhancer {
             try {
                 uid = Numbers.valueOf(ObjectStreamClass.lookup
                     (_meta.getDescribedType()).getSerialVersionUID());
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 // last-chance catch for bug #283 (which can happen
                 // in a variety of ClassLoading environments)
                 _log.warn(_loc.get("enhance-uid-access", _meta), t);
@@ -2540,11 +2534,9 @@ public class PCEnhancer {
 
         try {
             return cls.getDeclaredField(name);
-        }
-        catch (NoSuchFieldException nsfe) {
+        } catch (NoSuchFieldException nsfe) {
             return findDeclaredField(cls.getSuperclass(), name);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new GeneralException(e);
         }
     }
@@ -2569,11 +2561,9 @@ public class PCEnhancer {
 
         try {
             return cls.getDeclaredMethod(name, params);
-        }
-        catch (NoSuchMethodException nsme) {
+        } catch (NoSuchMethodException nsme) {
             return findDeclaredMethod(cls.getSuperclass(), name, params);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new GeneralException(e);
         }
     }
@@ -2810,8 +2800,7 @@ public class PCEnhancer {
             try {
                 addDetachExternalize(parentDetachable,
                     _meta.usesDetachedState() != Boolean.FALSE);
-            }
-            catch (NoSuchMethodException nsme) {
+            } catch (NoSuchMethodException nsme) {
                 throw new GeneralException(nsme);
             }
         }
@@ -3376,8 +3365,7 @@ public class PCEnhancer {
         try {
             if (!run(conf, args, opts))
                 System.err.println(_loc.get("enhance-usage"));
-        }
-        finally {
+        } finally {
             conf.close();
         }
     }

@@ -56,8 +56,7 @@ class ZipResourceBundleProvider implements ResourceBundleProvider {
                 zip.closeEntry();
             }
         } catch (Exception e) {
-        }
-        finally {
+        } finally {
             try {
                 zip.close();
             } catch (IOException ioe) {

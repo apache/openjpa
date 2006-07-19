@@ -96,8 +96,7 @@ public class DelegatingBrokerFactory
     public OpenJPAConfiguration getConfiguration() {
         try {
             return _factory.getConfiguration();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -105,8 +104,7 @@ public class DelegatingBrokerFactory
     public Properties getProperties() {
         try {
             return _factory.getProperties();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -114,8 +112,7 @@ public class DelegatingBrokerFactory
     public Object putUserObject(Object key, Object val) {
         try {
             return _factory.putUserObject(key, val);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -123,8 +120,7 @@ public class DelegatingBrokerFactory
     public Object getUserObject(Object key) {
         try {
             return _factory.getUserObject(key);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -132,8 +128,7 @@ public class DelegatingBrokerFactory
     public Broker newBroker() {
         try {
             return _factory.newBroker();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -143,8 +138,7 @@ public class DelegatingBrokerFactory
         try {
             return _factory.newBroker(user, pass, managed, connRetainMode,
                 findExisting);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -152,8 +146,7 @@ public class DelegatingBrokerFactory
     public void addLifecycleListener(Object listener, Class[] classes) {
         try {
             _factory.addLifecycleListener(listener, classes);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -161,8 +154,7 @@ public class DelegatingBrokerFactory
     public void removeLifecycleListener(Object listener) {
         try {
             _factory.removeLifecycleListener(listener);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -170,8 +162,7 @@ public class DelegatingBrokerFactory
     public void close() {
         try {
             _factory.close();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -179,8 +170,7 @@ public class DelegatingBrokerFactory
     public boolean isClosed() {
         try {
             return _factory.isClosed();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -188,8 +178,7 @@ public class DelegatingBrokerFactory
     public void lock() {
         try {
             _factory.lock();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -197,8 +186,7 @@ public class DelegatingBrokerFactory
     public void unlock() {
         try {
             _factory.unlock();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
 		}
 	}

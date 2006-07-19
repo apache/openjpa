@@ -122,8 +122,7 @@ public class PCClassFileTransformer
             if (enhancer.run() == PCEnhancer.ENHANCE_NONE)
                 return null;
             return enhancer.getBytecode().toByteArray();
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             _log.warn(_loc.get("cft-exception-thrown", className), t);
             if (t instanceof RuntimeException)
                 throw (RuntimeException) t;
@@ -162,11 +161,9 @@ public class PCClassFileTransformer
             if (_repos.getMetaData(c, null, false) != null)
                 return Boolean.TRUE;
             return null;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw re;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             throw new GeneralException(t);
         }
     }
@@ -217,8 +214,7 @@ public class PCClassFileTransformer
                 name = new String(b, entries[utfEntry] + 2, len, "UTF-8");
                 if ("openjpa/enhance/PersistenceCapable".equals(name))
                     return true;
-            }
-            catch (UnsupportedEncodingException uee) {
+            } catch (UnsupportedEncodingException uee) {
                 throw new ClassFormatError(uee.toString());
             }
         }

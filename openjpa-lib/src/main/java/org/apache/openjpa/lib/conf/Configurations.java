@@ -558,8 +558,7 @@ public class Configurations {
         } catch (NamingException ne) {
             throw new NestableRuntimeException(_loc.get("naming-err", name),
                 ne);
-        }
-        finally {
+        } finally {
             if (ctx != null)
                 try {
                     ctx.close();

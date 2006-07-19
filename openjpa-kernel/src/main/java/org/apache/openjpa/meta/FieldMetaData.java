@@ -113,8 +113,7 @@ public class FieldMetaData
     static {
         try {
             DEFAULT_METHOD = Object.class.getMethod("wait", (Class[]) null);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // shouldn't ever happen
             throw new InternalException(e);
         }
@@ -1101,11 +1100,9 @@ public class FieldMetaData
             if (externalizer.getParameterTypes().length == 0)
                 return externalizer.invoke(val, (Object[]) null);
             return externalizer.invoke(val, new Object[]{ ctx });
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new MetaDataException(_loc.get("externalizer-err", this,
                 Exceptions.toString(val), e.toString())).setCause(e);
         }
@@ -1142,8 +1139,7 @@ public class FieldMetaData
             if (meth.getParameterTypes().length == 1)
                 return meth.invoke(null, new Object[]{ val });
             return meth.invoke(null, new Object[]{ val, ctx });
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // unwrap cause
             if (e instanceof InvocationTargetException) {
                 Throwable t = ((InvocationTargetException) e).
@@ -1338,11 +1334,9 @@ public class FieldMetaData
                             (new Class[]{ getType() });
                     else
                         _factMethod = findMethod(_factName);
-                }
-                catch (OpenJPAException ke) {
+                } catch (OpenJPAException ke) {
                     throw ke;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                 }
 
                 if (!(_factMethod instanceof Constructor)

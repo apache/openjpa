@@ -43,11 +43,9 @@ public class QueryLanguages {
             ExpressionParser ep;
             try {
                 ep = (ExpressionParser) classes[i].newInstance();
-            }
-            catch (InstantiationException e) {
+            } catch (InstantiationException e) {
                 throw new InternalException(e);
-            }
-            catch (IllegalAccessException e) {
+            } catch (IllegalAccessException e) {
                 throw new InternalException(e);
             }
             _expressionParsers.put(ep.getLanguage(), ep);

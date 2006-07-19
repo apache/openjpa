@@ -155,15 +155,12 @@ public abstract class AbstractMetaDataDefaults
                 populate(fmd);
             }
             return true;
-        }
-        catch (IllegalStateException iae) {
+        } catch (IllegalStateException iae) {
             // thrown by registry when no metadata available
             return false;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new UserException(e);
         }
     }
@@ -279,11 +276,9 @@ public abstract class AbstractMetaDataDefaults
                 return fmd.getDeclaringType().getDeclaredField(fmd.getName());
             return getBackingMethod(fmd.getDeclaringType(), fmd.getName(),
                 fmd.getDeclaredType());
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new InternalException(e);
         }
     }
@@ -303,16 +298,14 @@ public abstract class AbstractMetaDataDefaults
         do {
             try {
                 return cls.getDeclaredMethod("get" + capName, (Class[]) null);
-            }
-            catch (NoSuchMethodException e) {
+            } catch (NoSuchMethodException e) {
             }
 
             if (isBoolean) {
                 try {
                     return cls.getDeclaredMethod("is" + capName,
                         (Class[]) null);
-                }
-                catch (NoSuchMethodException e) {
+                } catch (NoSuchMethodException e) {
                 }
             }
             // ### EJB3: recursion should be limited to manageable types,

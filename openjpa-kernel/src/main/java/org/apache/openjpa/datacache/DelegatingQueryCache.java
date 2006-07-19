@@ -89,8 +89,7 @@ public class DelegatingQueryCache
             return;
         try {
             _cache.initialize(mgr);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -100,8 +99,7 @@ public class DelegatingQueryCache
             return;
         try {
             _cache.onTypesChanged(e);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -111,8 +109,7 @@ public class DelegatingQueryCache
             return null;
         try {
             return _cache.get(qk);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -122,8 +119,7 @@ public class DelegatingQueryCache
             return null;
         try {
             return _cache.put(qk, oids);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -133,8 +129,7 @@ public class DelegatingQueryCache
             return null;
         try {
             return _cache.remove(qk);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -144,8 +139,7 @@ public class DelegatingQueryCache
             return;
         try {
             _cache.clear();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -155,8 +149,7 @@ public class DelegatingQueryCache
             return false;
         try {
             return _cache.pin(qk);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -166,8 +159,7 @@ public class DelegatingQueryCache
             return false;
         try {
             return _cache.unpin(qk);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -177,8 +169,7 @@ public class DelegatingQueryCache
             return;
         try {
             _cache.writeLock();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -188,8 +179,7 @@ public class DelegatingQueryCache
             return;
         try {
             _cache.writeUnlock();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -199,8 +189,7 @@ public class DelegatingQueryCache
             return;
         try {
             _cache.addTypesChangedListener(listen);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -210,8 +199,7 @@ public class DelegatingQueryCache
             return false;
         try {
             return _cache.removeTypesChangedListener(listen);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -221,8 +209,7 @@ public class DelegatingQueryCache
             return;
         try {
             _cache.close();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
 		}
 	}

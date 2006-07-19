@@ -86,8 +86,7 @@ class CondVar implements Condition, java.io.Serializable {
                     throw ex;
                 }
             }
-        }
-        finally {
+        } finally {
             for (int i = holdCount; i > 0; i--) lock.lock();
         }
     }
@@ -118,8 +117,7 @@ class CondVar implements Condition, java.io.Serializable {
                     throw ex;
                 }
             }
-        }
-        finally {
+        } finally {
             for (int i = holdCount; i > 0; i--) lock.lock();
         }
         return success;
@@ -157,8 +155,7 @@ class CondVar implements Condition, java.io.Serializable {
                     throw ex;
                 }
             }
-        }
-        finally {
+        } finally {
             for (int i = holdCount; i > 0; i--) lock.lock();
         }
         return success;

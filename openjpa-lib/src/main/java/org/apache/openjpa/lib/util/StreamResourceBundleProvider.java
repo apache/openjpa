@@ -41,8 +41,7 @@ class StreamResourceBundleProvider implements ResourceBundleProvider {
             try {
                 return new PropertyResourceBundle(in);
             } catch (Exception e) {
-            }
-            finally {
+            } finally {
                 try {
                     in.close();
                 } catch (IOException ioe) {

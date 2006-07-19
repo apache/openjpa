@@ -80,8 +80,7 @@ public final class Id
             int dash = str.indexOf('-');
             try {
                 type = Class.forName(str.substring(0, dash), true, loader);
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 throw new UserException(_loc.get("string-id", str), t);
             }
             _id = Long.parseLong(str.substring(dash + 1));

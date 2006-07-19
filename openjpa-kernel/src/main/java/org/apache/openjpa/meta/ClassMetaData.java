@@ -1280,8 +1280,7 @@ public class ClassMetaData
             type = type.getSuperclass()) {
             try {
                 return type.getDeclaredField(fieldName);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
             }
         }
         throw new MetaDataException(_loc.get("no-detach-state", fieldName,
@@ -1731,8 +1730,7 @@ public class ClassMetaData
     private void validateAppIdClassMethods(Class oid) {
         try {
             oid.getConstructor((Class[]) null);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new MetaDataException(_loc.get("null-cons", _type)).
                 setCause(e);
         }
@@ -1743,8 +1741,7 @@ public class ClassMetaData
         Method method;
         try {
             method = oid.getMethod("equals", new Class[]{ Object.class });
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new GeneralException(e).setFatal(true);
         }
 
@@ -1754,8 +1751,7 @@ public class ClassMetaData
 
         try {
             method = oid.getMethod("hashCode", (Class[]) null);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new GeneralException(e).setFatal(true);
         }
         if (!abs && method.getDeclaringClass() == Object.class)
@@ -1822,11 +1818,9 @@ public class ClassMetaData
                             _type)).setFailedObject("set" + cap);
                 }
             }
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             throw new MetaDataException(_loc.get("invalid-id", _type)).
                 setCause(t);
         }
@@ -1842,8 +1836,7 @@ public class ClassMetaData
 
         try {
             return (pub) ? c.getField(name) : c.getDeclaredField(name);
-        }
-        catch (NoSuchFieldException nsfe) {
+        } catch (NoSuchFieldException nsfe) {
             return (pub) ? null : findField(c.getSuperclass(), name, false);
         }
     }
@@ -1860,8 +1853,7 @@ public class ClassMetaData
         try {
             return (pub) ? c.getMethod(name, params)
                 : c.getDeclaredMethod(name, params);
-        }
-        catch (NoSuchMethodException nsfe) {
+        } catch (NoSuchMethodException nsfe) {
             return (pub) ? null : findMethod(c.getSuperclass(), name, params,
                 false);
         }

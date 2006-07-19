@@ -263,8 +263,7 @@ public class TCPRemoteCommitProvider
         edu.emory.mathcs.backport.java.util.concurrent.locks.ReentrantReadWriteLock lock) {
         try {
             lock.writeLock().lockInterruptibly();
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
         }
     }
 
@@ -277,8 +276,7 @@ public class TCPRemoteCommitProvider
         edu.emory.mathcs.backport.java.util.concurrent.locks.ReentrantReadWriteLock lock) {
         try {
             lock.readLock().lockInterruptibly();
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
         }
     }
 
@@ -306,8 +304,7 @@ public class TCPRemoteCommitProvider
                     _listener = new TCPPortListener(_port, log);
                     _listener.listen();
                     s_portListenerMap.put(String.valueOf(_port), _listener);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     throw new GeneralException(s_loc.get("tcp-init-exception",
                         String.valueOf(_port)), e).setFatal(true);
                 }
@@ -364,8 +361,7 @@ public class TCPRemoteCommitProvider
                 sendUpdatePacket(bytes);
             else
                 _broadcastQueue.addPacket(bytes);
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             if (log.isWarnEnabled())
                 log.warn(s_loc.get("tcp-payload-create-error"), ioe);
         }
@@ -380,8 +376,7 @@ public class TCPRemoteCommitProvider
         try {
             for (Iterator iter = _addresses.iterator(); iter.hasNext();)
                 ((HostAddress) iter.next()).sendUpdatePacket(bytes);
-        }
-        finally {
+        } finally {
             releaseReadLock(_addressesLock);
         }
     }
@@ -394,8 +389,7 @@ public class TCPRemoteCommitProvider
         try {
             for (Iterator iter = _addresses.iterator(); iter.hasNext();)
                 ((HostAddress) iter.next()).close();
-        }
-        finally {
+        } finally {
             releaseWriteLock(_addressesLock);
         }
 
@@ -446,8 +440,7 @@ public class TCPRemoteCommitProvider
                     // This will block until there is a packet to send.
                     byte[] bytes = _broadcastQueue.removePacket();
                     sendUpdatePacket(bytes);
-                }
-                catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                     // End the thread.
                     break;
                 }
@@ -539,8 +532,7 @@ public class TCPRemoteCommitProvider
                     _isRunning = false;
                     try {
                         _receiveSocket.close();
-                    }
-                    catch (IOException ioe) {
+                    } catch (IOException ioe) {
                         if (_log.isWarnEnabled())
                             _log.warn(s_loc.get("tcp-close-error"), ioe);
                     }
@@ -576,8 +568,7 @@ public class TCPRemoteCommitProvider
                     receiverThread.setDaemon(true);
                     receiverThread.start();
                     _receiverThreads.add(receiverThread);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     if (!(e instanceof SocketException) || _isRunning)
                         if (_log.isWarnEnabled())
                             _log.warn(s_loc.get("tcp-accept-error"), e);
@@ -587,8 +578,7 @@ public class TCPRemoteCommitProvider
                     try {
                         if (s != null)
                             s.close();
-                    }
-                    catch (Exception ee) {
+                    } catch (Exception ee) {
                         if (_log.isWarnEnabled())
                             _log.warn(s_loc.get("tcp-close-error"), e);
                     }
@@ -611,8 +601,7 @@ public class TCPRemoteCommitProvider
                 try {
                     if (_isRunning)
                         _receiveSocket.close();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     if (_log.isWarnEnabled())
                         _log.warn(s_loc.get("tcp-close-error"), e);
                 }
@@ -641,13 +630,11 @@ public class TCPRemoteCommitProvider
                 try {
                     _s.setTcpNoDelay(true);
                     _in = new BufferedInputStream(s.getInputStream());
-                }
-                catch (IOException ioe) {
+                } catch (IOException ioe) {
                     if (_log.isInfoEnabled())
                         _log.info(s_loc.get("tcp-socket-option-error"), ioe);
                     _s = null;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     if (_log.isWarnEnabled())
                         _log.warn(s_loc.get("tcp-receive-error"), e);
                     _s = null;
@@ -662,8 +649,7 @@ public class TCPRemoteCommitProvider
                         // This will block our thread, waiting to read
                         // the next Event-object-message.
                         handle(_in);
-                    }
-                    catch (EOFException eof) {
+                    } catch (EOFException eof) {
                         // EOFException raised when peer is properly
                         // closing its end.
                         if (_log.isTraceEnabled()) {
@@ -672,13 +658,11 @@ public class TCPRemoteCommitProvider
                                     + ":" + _s.getPort()));
                         }
                         break;
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         if (_log.isWarnEnabled())
                             _log.warn(s_loc.get("tcp-receive-error"), e);
                         break;
-                    }
-                    catch (Throwable t) {
+                    } catch (Throwable t) {
                     }
                 }
                 // We are done receiving on this socket and this worker
@@ -686,8 +670,7 @@ public class TCPRemoteCommitProvider
                 try {
                     _in.close();
                     _s.close();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     _log.warn(s_loc.get("tcp-close-socket-error",
                         _s.getInetAddress().getHostAddress() + ":"
                             + _s.getPort()), e);
@@ -790,8 +773,7 @@ public class TCPRemoteCommitProvider
             // will close all sockets in the pool.
             try {
                 _socketPool.close();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 if (log.isWarnEnabled()) {
                     log.warn(s_loc.get("tcp-close-pool-error"), e);
                 }
@@ -822,8 +804,7 @@ public class TCPRemoteCommitProvider
                 // Return the socket to the pool; the socket is
                 // still good.
                 returnSocket(s);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 // There has been a problem sending to the peer.
                 // The OS socket that was being used is can no longer
                 // be used.
@@ -882,8 +863,7 @@ public class TCPRemoteCommitProvider
             // pool.
             try {
                 _socketPool.invalidateObject(s);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
             }
         }
 
@@ -911,8 +891,7 @@ public class TCPRemoteCommitProvider
                         log.trace(s_loc.get("tcp-close-sending-socket",
                             _address + ":" + _port, "" + s.getLocalPort()));
                     s.close();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     log.warn(s_loc.get("tcp-close-socket-error",
                         _address.getHostAddress() + ":" + _port), e);
                 }

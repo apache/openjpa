@@ -250,8 +250,7 @@ public class Files {
             for (int b; (b = inbuf.read()) != -1; outbuf.write(b)) ;
             outbuf.flush();
             return true;
-        }
-        finally {
+        } finally {
             if (in != null)
                 try {
                     in.close();

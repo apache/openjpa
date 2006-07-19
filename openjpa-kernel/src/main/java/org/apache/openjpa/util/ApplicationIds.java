@@ -95,11 +95,9 @@ public class ApplicationIds {
                 }
             }
             return pks;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             throw new GeneralException(t);
         }
     }
@@ -203,8 +201,7 @@ public class ApplicationIds {
             if (meta.isObjectIdTypeShared())
                 copy = new ObjectId(meta.getDescribedType(), copy);
             return copy;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             throw new GeneralException(t);
         }
     }
@@ -315,11 +312,9 @@ public class ApplicationIds {
                 }
             }
             return copy;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             throw new GeneralException(t);
         }
     }

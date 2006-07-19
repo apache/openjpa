@@ -235,8 +235,7 @@ public class PersistenceMetaDataFactory
         xmlParser.setMode(mode);
         try {
             xmlParser.parse(xml);
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             throw new GeneralException(ioe);
         }
     }

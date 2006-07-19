@@ -582,8 +582,7 @@ public class BrokerImpl
         beginOperation(false);
         try {
             return (_userObjects == null) ? null : _userObjects.get(key);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -597,8 +596,7 @@ public class BrokerImpl
             if (_userObjects == null)
                 _userObjects = new HashMap();
             return _userObjects.put(key, val);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -611,8 +609,7 @@ public class BrokerImpl
         beginOperation(false);
         try {
             _lifeEventManager.addListener(listener, classes);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -621,8 +618,7 @@ public class BrokerImpl
         beginOperation(false);
         try {
             _lifeEventManager.removeListener(listener);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -673,8 +669,7 @@ public class BrokerImpl
             _transEventManager.addListener(tl);
             if (tl instanceof RemoteCommitEventManager)
                 _flags |= FLAG_REMOTE_LISTENER;
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -686,8 +681,7 @@ public class BrokerImpl
                 && _transEventManager.removeListener(tl)
                 && (tl instanceof RemoteCommitEventManager))
                 _flags &= ~FLAG_REMOTE_LISTENER;
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -748,8 +742,7 @@ public class BrokerImpl
                             loaded = sm.load(fetchState,
                                 StateManagerImpl.LOAD_FGS, exclude, edata,
                                 false);
-                        }
-                        catch (ObjectNotFoundException onfe) {
+                        } catch (ObjectNotFoundException onfe) {
                             if ((flags & OID_NODELETED) != 0
                                 || (flags & OID_NOVALIDATE) != 0)
                                 throw onfe;
@@ -803,8 +796,7 @@ public class BrokerImpl
                 try {
                     sm.load(fetchState, StateManagerImpl.LOAD_FGS, exclude,
                         edata, false);
-                }
-                catch (ObjectNotFoundException onfe) {
+                } catch (ObjectNotFoundException onfe) {
                     if ((flags & OID_NODELETED) != 0
                         || (flags & OID_NOVALIDATE) != 0)
                         throw onfe;
@@ -812,14 +804,11 @@ public class BrokerImpl
                 }
             }
             return call.processReturn(oid, sm);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -841,8 +830,7 @@ public class BrokerImpl
             try {
                 if (!_store.initialize(sm, state, fetchState, edata))
                     return null;
-            }
-            finally {
+            } finally {
                 sm.setLoading(false);
             }
         }
@@ -966,14 +954,11 @@ public class BrokerImpl
                 results[idx] = call.processReturn(oid, sm);
             }
             return results;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             _loading = null;
             endOperation();
         }
@@ -1017,8 +1002,7 @@ public class BrokerImpl
         try {
             StateManagerImpl sm = getStateManagerImplById(oid, true);
             return call.processReturn(oid, sm);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1038,14 +1022,11 @@ public class BrokerImpl
                 return meta.getObjectIdType();
 
             return _store.getDataStoreIdType(meta);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1089,18 +1070,14 @@ public class BrokerImpl
             Object[] arr = (val instanceof Object[]) ? (Object[]) val
                 : new Object[]{ val };
             return ApplicationIds.fromPKValues(arr, meta);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (ClassCastException cce) {
+        } catch (ClassCastException cce) {
             throw new UserException(_loc.get("bad-id-value", val,
                 val.getClass().getName(), cls)).setCause(cce);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1160,8 +1137,7 @@ public class BrokerImpl
                 throw new InvalidStateException(_loc.get("active"));
             _factory.syncWithManagedTransaction(this, true);
             beginInternal();
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1186,14 +1162,12 @@ public class BrokerImpl
                 && _transEventManager.hasBeginListeners())
                 _transEventManager.fireEvent(new TransactionEvent(this,
                     TransactionEvent.AFTER_BEGIN, null, null, null, null));
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             // if we already started the transaction, don't let it commit
             if ((_flags & FLAG_ACTIVE) != 0)
                 setRollbackOnlyInternal();
             throw ke.setFatal(true);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             // if we already started the transaction, don't let it commit
             if ((_flags & FLAG_ACTIVE) != 0)
                 setRollbackOnlyInternal();
@@ -1218,14 +1192,11 @@ public class BrokerImpl
             assertTransactionOperation();
             if ((_flags & FLAG_STORE_ACTIVE) == 0)
                 beginStoreManagerTransaction(false);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new StoreException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1275,16 +1246,14 @@ public class BrokerImpl
                 }
             }
             err = re;
-        }
-        finally {
+        } finally {
             _flags &= ~FLAG_STORE_ACTIVE;
         }
 
         if (releaseConn) {
             try {
                 releaseConnection();
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 if (err == null)
                     err = re;
             }
@@ -1308,18 +1277,15 @@ public class BrokerImpl
             // this commit on the transaction will cause our
             // beforeCompletion method to be invoked
             trans.commit();
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), ke);
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), e);
             throw new StoreException(e);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1333,18 +1299,15 @@ public class BrokerImpl
                 _runtime.getTransactionManager().getTransaction();
             if (trans != null)
                 trans.rollback();
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), ke);
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), e);
             throw new StoreException(e);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1362,8 +1325,7 @@ public class BrokerImpl
                 return true;
             }
             return false;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1384,8 +1346,7 @@ public class BrokerImpl
             else
                 rollback();
             begin();
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1401,14 +1362,11 @@ public class BrokerImpl
             if (trans == null)
                 return false;
             return trans.getStatus() == Status.STATUS_MARKED_ROLLBACK;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new GeneralException(e);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1418,8 +1376,7 @@ public class BrokerImpl
         try {
             assertTransactionOperation();
             setRollbackOnlyInternal();
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1434,11 +1391,9 @@ public class BrokerImpl
             if (trans == null)
                 throw new InvalidStateException(_loc.get("null-trans"));
             trans.setRollbackOnly();
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new GeneralException(e);
         }
     }
@@ -1468,14 +1423,11 @@ public class BrokerImpl
                 }
             }
             _savepoints.put(name, save);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new GeneralException(e);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1487,8 +1439,7 @@ public class BrokerImpl
                 throw new UserException(_loc.get("no-lastsavepoint"));
             releaseSavepoint((String) _savepoints.get
                 (_savepoints.size() - 1));
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1515,14 +1466,11 @@ public class BrokerImpl
             save.release(true);
             if (_savepointCache != null)
                 _savepointCache.clear();
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new GeneralException(e);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1534,8 +1482,7 @@ public class BrokerImpl
                 throw new UserException(_loc.get("no-lastsavepoint"));
             rollbackToSavepoint((String) _savepoints.get
                 (_savepoints.size() - 1));
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1598,11 +1545,9 @@ public class BrokerImpl
         }
         catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new GeneralException(e);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1629,13 +1574,11 @@ public class BrokerImpl
             try {
                 flushSafe(FLUSH_INC);
                 _flags |= FLAG_FLUSHED;
-            }
-            catch (OpenJPAException ke) {
+            } catch (OpenJPAException ke) {
                 // rollback on flush error; objects may be in inconsistent state
                 setRollbackOnly();
                 throw ke.setFatal(true);
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 // rollback on flush error; objects may be in inconsistent state
                 setRollbackOnly();
                 throw new StoreException(re).setFatal(true);
@@ -1651,8 +1594,7 @@ public class BrokerImpl
         try {
             if ((_flags & FLAG_ACTIVE) != 0)
                 flushSafe(FLUSH_LOGICAL);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1675,11 +1617,9 @@ public class BrokerImpl
 
             try {
                 flushSafe(FLUSH_ROLLBACK);
-            }
-            catch (OpenJPAException ke) {
+            } catch (OpenJPAException ke) {
                 throw ke;
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw new StoreException(re);
             }
         }
@@ -1692,8 +1632,7 @@ public class BrokerImpl
         beginOperation(true);
         try {
             return (_flags & FLAG_ACTIVE) != 0;
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1704,8 +1643,7 @@ public class BrokerImpl
         beginOperation(true);
         try {
             return (_flags & FLAG_STORE_ACTIVE) != 0;
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1719,12 +1657,10 @@ public class BrokerImpl
                 && (_flags & FLAG_ACTIVE) == 0)
                 syncWithManagedTransaction();
             return _operationCount++ == 1;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             unlock();
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             unlock();
             throw new GeneralException(re);
         }
@@ -1743,14 +1679,11 @@ public class BrokerImpl
             if (_operationCount < 1)
                 throw new InternalException();
             return _operationCount == 1;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             _operationCount--;
             if (_operationCount == 0)
                 _operating.clear();
@@ -1779,18 +1712,15 @@ public class BrokerImpl
                 _sync.beforeCompletion();
 
             flushSafe(FLUSH_COMMIT);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), ke);
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), re);
             throw new StoreException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -1813,18 +1743,15 @@ public class BrokerImpl
             if ((_flags & FLAG_CLOSE_INVOKED) != 0
                 && _compat.getCloseOnManagedCommit())
                 free();
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), ke);
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), re);
             throw new StoreException(re);
-        }
-        finally {
+        } finally {
             _flags &= ~FLAG_ACTIVE;
             _flags &= ~FLAG_FLUSHED;
 
@@ -1851,8 +1778,7 @@ public class BrokerImpl
         _flags |= FLAG_FLUSHING;
         try {
             flush(reason);
-        }
-        finally {
+        } finally {
             _flags &= ~FLAG_FLUSHING;
         }
     }
@@ -2122,8 +2048,7 @@ public class BrokerImpl
 
         try {
             exceps = add(exceps, endStoreManagerTransaction(rollback));
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             rollback = true;
             exceps = add(exceps, re);
         }
@@ -2186,8 +2111,7 @@ public class BrokerImpl
                     sm.rollback();
                 } else
                     sm.commit();
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 exceps = add(exceps, re);
             }
         }
@@ -2237,13 +2161,11 @@ public class BrokerImpl
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
                 try {
                     persist(itr.next(), call);
-                }
-                catch (UserException ue) {
+                } catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
             }
-        }
-        finally {
+        } finally {
             endOperation();
         }
         throwNestedExceptions(exceps, false);
@@ -2381,14 +2303,11 @@ public class BrokerImpl
             if ((action & OpCallbacks.ACT_CASCADE) != 0)
                 sm.cascadePersist(call);
             return sm;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -2442,14 +2361,12 @@ public class BrokerImpl
                     obj = itr.next();
                     if (obj != null)
                         delete(obj, getStateManagerImpl(obj, true), call);
-                }
-                catch (UserException ue) {
+                } catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
             }
             throwNestedExceptions(exceps, false);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -2462,14 +2379,11 @@ public class BrokerImpl
         try {
             assertWriteOperation();
             delete(obj, getStateManagerImpl(obj, true), call);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -2522,14 +2436,12 @@ public class BrokerImpl
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
                 try {
                     release(itr.next(), call);
-                }
-                catch (UserException ue) {
+                } catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
             }
             throwNestedExceptions(exceps, false);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -2554,11 +2466,9 @@ public class BrokerImpl
         }
         catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -2619,8 +2529,7 @@ public class BrokerImpl
                     copy.pcCopyFields(pc, fields);
                     state = PCState.ECOPY;
                     copy.pcReplaceStateManager(null);
-                }
-                finally {
+                } finally {
                     // if the instance didn't have a state manager to start,
                     // revert it to being transient
                     if (orig == null)
@@ -2637,14 +2546,11 @@ public class BrokerImpl
 
             sm.initialize(copy, state);
             return sm;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -2674,8 +2580,7 @@ public class BrokerImpl
                 sm.initialize(sm.getMetaData().getDescribedType(), state);
             }
             return sm;
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -2696,8 +2601,7 @@ public class BrokerImpl
                 refreshInternal(_operating.iterator().next(), call);
             else
                 refreshInternal(_operating, call);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -2717,8 +2621,7 @@ public class BrokerImpl
                 refreshInternal(_operating.iterator().next(), call);
             else
                 refreshInternal(_operating, call);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -2777,8 +2680,7 @@ public class BrokerImpl
                     } else if (assertPersistenceCapable(obj).pcIsDetached()
                         == Boolean.TRUE)
                         throw newDetachedException(obj, "refresh");
-                }
-                catch (OpenJPAException ke) {
+                } catch (OpenJPAException ke) {
                     exceps = add(exceps, ke);
                 }
             }
@@ -2801,8 +2703,7 @@ public class BrokerImpl
                         sm.afterRefresh();
                         sm.load(_fc.newFetchState(),
                             StateManagerImpl.LOAD_FGS, null, null, false);
-                    }
-                    catch (OpenJPAException ke) {
+                    } catch (OpenJPAException ke) {
                         exceps = add(exceps, ke);
                     }
                 }
@@ -2815,16 +2716,13 @@ public class BrokerImpl
                     if (sm != null && !sm.isDetached())
                         fireLifecycleEvent(sm.getManagedInstance(), null,
                             sm.getMetaData(), LifecycleEvent.AFTER_REFRESH);
-                }
-                catch (OpenJPAException ke) {
+                } catch (OpenJPAException ke) {
                     exceps = add(exceps, ke);
                 }
             }
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
         }
         throwNestedExceptions(exceps, false);
@@ -2853,11 +2751,9 @@ public class BrokerImpl
             } else if (assertPersistenceCapable(obj).pcIsDetached()
                 == Boolean.TRUE)
                 throw newDetachedException(obj, "refresh");
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
         }
     }
@@ -2907,8 +2803,7 @@ public class BrokerImpl
                     } else if (assertPersistenceCapable(obj).pcIsDetached()
                         == Boolean.TRUE)
                         throw newDetachedException(obj, "retrieve");
-                }
-                catch (UserException ue) {
+                } catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
             }
@@ -2935,19 +2830,15 @@ public class BrokerImpl
                 try {
                     sm.beforeRead(-1);
                     sm.load(_fc.newFetchState(), mode, null, null, false);
-                }
-                catch (OpenJPAException ke) {
+                } catch (OpenJPAException ke) {
                     exceps = add(exceps, ke);
                 }
             }
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
         throwNestedExceptions(exceps, false);
@@ -2979,14 +2870,11 @@ public class BrokerImpl
             } else if (assertPersistenceCapable(obj).pcIsDetached()
                 == Boolean.TRUE)
                 throw newDetachedException(obj, "retrieve");
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3015,13 +2903,11 @@ public class BrokerImpl
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
                 try {
                     evict(itr.next(), call);
-                }
-                catch (UserException ue) {
+                } catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
             }
-        }
-        finally {
+        } finally {
             endOperation();
         }
         throwNestedExceptions(exceps, false);
@@ -3047,8 +2933,7 @@ public class BrokerImpl
                         evict(sm.getManagedInstance(), call);
                 }
             }
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3075,11 +2960,9 @@ public class BrokerImpl
         }
         catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3093,14 +2976,11 @@ public class BrokerImpl
         beginOperation(true);
         try {
             return new DetachManager(this, false, call).detach(obj);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3116,14 +2996,11 @@ public class BrokerImpl
         beginOperation(true);
         try {
             return new DetachManager(this, false, call).detachAll(objs);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3134,14 +3011,11 @@ public class BrokerImpl
             if ((_flags & FLAG_FLUSH_REQUIRED) != 0)
                 flush();
             detachAllInternal(call);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3178,15 +3052,12 @@ public class BrokerImpl
             assertWriteOperation();
             try {
                 return new AttachManager(this, copyNew, call).attach(obj);
-            }
-            catch (OptimisticException oe) {
+            } catch (OptimisticException oe) {
                 setRollbackOnly();
                 throw oe.setFatal(true);
-            }
-            catch (OpenJPAException ke) {
+            } catch (OpenJPAException ke) {
                 throw ke;
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw new GeneralException(re);
             }
         }
@@ -3208,15 +3079,12 @@ public class BrokerImpl
             assertWriteOperation();
             try {
                 return new AttachManager(this, copyNew, call).attachAll(objs);
-            }
-            catch (OptimisticException oe) {
+            } catch (OptimisticException oe) {
                 setRollbackOnly();
                 throw oe.setFatal(true);
-            }
-            catch (OpenJPAException ke) {
+            } catch (OpenJPAException ke) {
                 throw ke;
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw new GeneralException(re);
             }
         }
@@ -3232,14 +3100,12 @@ public class BrokerImpl
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
                 try {
                     nontransactional(itr.next(), call);
-                }
-                catch (UserException ue) {
+                } catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
             }
             throwNestedExceptions(exceps, false);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3256,14 +3122,11 @@ public class BrokerImpl
                 return;
             if (sm != null)
                 sm.nontransactional();
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3341,14 +3204,11 @@ public class BrokerImpl
             }
 
             transactionalStatesAll(sms, failed, exceps);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3389,11 +3249,9 @@ public class BrokerImpl
         }
         catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3414,8 +3272,7 @@ public class BrokerImpl
                 sm.transactional();
                 sm.load(_fc.newFetchState(), StateManagerImpl.LOAD_FGS, null,
                     null, false);
-            }
-            catch (OpenJPAException ke) {
+            } catch (OpenJPAException ke) {
                 exceps = add(exceps, ke);
             }
         }
@@ -3440,14 +3297,11 @@ public class BrokerImpl
             _extents.add(extent);
 
             return extent;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3494,14 +3348,11 @@ public class BrokerImpl
                 _queries = new ReferenceHashSet(ReferenceHashSet.WEAK);
             _queries.add(q);
             return q;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3569,8 +3420,7 @@ public class BrokerImpl
         beginOperation(true); // have to sync or lock level always NONE
         try {
             lock(obj, _fc.getWriteLockLevel(), _fc.getLockTimeout(), call);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3592,14 +3442,11 @@ public class BrokerImpl
 
             _lm.lock(sm, level, timeout, null);
             sm.readLocked(level, level); // use same level for future write
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3612,8 +3459,7 @@ public class BrokerImpl
         try {
             lockAll(objs, _fc.getWriteLockLevel(), _fc.getLockTimeout(),
                 call);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3650,14 +3496,11 @@ public class BrokerImpl
             _lm.lockAll(sms, level, timeout, null);
             for (Iterator itr = sms.iterator(); itr.hasNext();)
                 ((StateManagerImpl) itr.next()).readLocked(level, level);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3679,11 +3522,9 @@ public class BrokerImpl
             if ((_flags & FLAG_STORE_FLUSHING) != 0)
                 setRollbackOnlyInternal();
             return _store.cancelAll();
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new StoreException(re);
         }
     }
@@ -3730,8 +3571,7 @@ public class BrokerImpl
         beginOperation(false);
         try {
             return new ManagedObjectCollection(getManagedStates());
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3740,8 +3580,7 @@ public class BrokerImpl
         beginOperation(false);
         try {
             return new ManagedObjectCollection(getTransactionalStates());
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3751,8 +3590,7 @@ public class BrokerImpl
         try {
             return new ManagedObjectCollection
                 (getPendingTransactionalStates());
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3761,8 +3599,7 @@ public class BrokerImpl
         beginOperation(false);
         try {
             return new ManagedObjectCollection(getDirtyStates());
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -3862,8 +3699,7 @@ public class BrokerImpl
             if (_transCache == null)
                 _transCache = new TransactionalCache(_orderDirty);
             _transCache.addClean(sm);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -3879,8 +3715,7 @@ public class BrokerImpl
                 _transCache.remove(sm);
             if (_derefCache != null && !sm.isPersistent())
                 _derefCache.remove(sm);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -3949,8 +3784,7 @@ public class BrokerImpl
             if (_pending == null)
                 _pending = new HashSet();
             _pending.add(sm);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -3966,8 +3800,7 @@ public class BrokerImpl
                 _pending.remove(sm);
             if (_derefCache != null && !sm.isPersistent())
                 _derefCache.remove(sm);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -4011,8 +3844,7 @@ public class BrokerImpl
                     Exceptions.toString(sm.getManagedInstance()))).
                     setFailedObject(sm.getManagedInstance()).
                     setFatal(true);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -4026,8 +3858,7 @@ public class BrokerImpl
             if (_updatedClss == null)
                 _updatedClss = new HashSet();
             _updatedClss.add(cls);
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -4071,8 +3902,7 @@ public class BrokerImpl
 
             if ((_flags & FLAG_ACTIVE) == 0)
                 free();
-        }
-        finally {
+        } finally {
             endOperation();
         }
     }
@@ -4085,8 +3915,7 @@ public class BrokerImpl
         if ((_autoDetach & DETACH_CLOSE) != 0) {
             try {
                 detachAllInternal(_call);
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 err = re;
             }
         }
@@ -4117,8 +3946,7 @@ public class BrokerImpl
             for (Iterator itr = _queries.iterator(); itr.hasNext();) {
                 try {
                     ((Query) itr.next()).closeResources();
-                }
-                catch (RuntimeException re) {
+                } catch (RuntimeException re) {
                 }
             }
             _queries = null;
@@ -4180,8 +4008,7 @@ public class BrokerImpl
         if (!PCRegistry.isRegistered(cls)) {
             try {
                 Class.forName(cls.getName(), true, cls.getClassLoader());
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
             }
         }
         return PCRegistry.newInstance(cls, null, false);

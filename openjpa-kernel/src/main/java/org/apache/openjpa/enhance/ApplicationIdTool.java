@@ -1268,8 +1268,7 @@ public class ApplicationIdTool {
         try {
             if (!run(conf, args, opts))
                 System.err.println(_loc.get("appid-usage"));
-        }
-        finally {
+        } finally {
             conf.close();
         }
     }
@@ -1405,8 +1404,7 @@ public class ApplicationIdTool {
             loader = Thread.currentThread().getContextClassLoader();
         try {
             return Class.forName(name, false, loader);
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
         }
 
         // create class

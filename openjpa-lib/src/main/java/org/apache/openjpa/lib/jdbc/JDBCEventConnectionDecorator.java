@@ -114,8 +114,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
                 JDBCEvent.BEFORE_COMMIT, null, null, null);
             try {
                 super.commit();
-            }
-            finally {
+            } finally {
                 fireEvent(getDelegate(), JDBCEvent.AFTER_COMMIT, before,
                     null, null);
             }
@@ -126,8 +125,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
                 JDBCEvent.BEFORE_ROLLBACK, null, null, null);
             try {
                 super.rollback();
-            }
-            finally {
+            } finally {
                 fireEvent(getDelegate(), JDBCEvent.AFTER_ROLLBACK, before,
                     null, null);
             }
@@ -140,8 +138,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             try {
                 stmnt = new EventStatement(super.createStatement(false),
                     EventConnection.this);
-            }
-            finally {
+            } finally {
                 fireEvent(getDelegate(), JDBCEvent.AFTER_CREATE_STATEMENT,
                     before, stmnt, null);
             }
@@ -156,8 +153,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             try {
                 stmnt = new EventStatement(super.createStatement
                     (rsType, rsConcur, false), EventConnection.this);
-            }
-            finally {
+            } finally {
                 fireEvent(getDelegate(), JDBCEvent.AFTER_CREATE_STATEMENT,
                     before, stmnt, null);
             }
@@ -172,8 +168,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             try {
                 stmnt = new EventPreparedStatement(super.prepareStatement
                     (sql, false), EventConnection.this, sql);
-            }
-            finally {
+            } finally {
                 fireEvent(getDelegate(), JDBCEvent.AFTER_PREPARE_STATEMENT,
                     before, stmnt, sql);
             }
@@ -188,8 +183,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             try {
                 stmnt = new EventPreparedStatement(super.prepareStatement
                     (sql, rsType, rsConcur, false), EventConnection.this, sql);
-            }
-            finally {
+            } finally {
                 fireEvent(getDelegate(), JDBCEvent.AFTER_PREPARE_STATEMENT,
                     before, stmnt, sql);
             }
@@ -200,8 +194,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             try {
                 fireEvent(getDelegate(), JDBCEvent.BEFORE_CLOSE,
                     null, null, null);
-            }
-            finally {
+            } finally {
                 super.close();
             }
         }
@@ -227,8 +220,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), _sql);
             try {
                 return super.executeUpdate();
-            }
-            finally {
+            } finally {
                 fireEvent(_conn.getDelegate(),
                     JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
                     getDelegate(), _sql);
@@ -240,8 +232,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), _sql);
             try {
                 return super.executeQuery(wrap);
-            }
-            finally {
+            } finally {
                 fireEvent(_conn.getDelegate(),
                     JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
                     getDelegate(), _sql);
@@ -253,8 +244,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), _sql);
             try {
                 return super.executeBatch();
-            }
-            finally {
+            } finally {
                 fireEvent(_conn.getDelegate(),
                     JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
                     getDelegate(), _sql);
@@ -279,8 +269,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
             try {
                 return super.executeUpdate(sql);
-            }
-            finally {
+            } finally {
                 fireEvent(_conn.getDelegate(),
                     JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
                     getDelegate(), sql);
@@ -293,8 +282,7 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
             try {
                 return super.executeQuery(sql, wrap);
-            }
-            finally {
+            } finally {
                 fireEvent(_conn.getDelegate(),
                     JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
                     getDelegate(), sql);

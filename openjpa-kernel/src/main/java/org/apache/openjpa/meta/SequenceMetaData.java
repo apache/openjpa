@@ -266,11 +266,9 @@ public class SequenceMetaData
                 throw new MetaDataException(_loc.get("not-seq-cls", _name,
                     cls));
             return seq;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new MetaDataException(_loc.get("cant-init-seq", _name)).
                 setCause(e);
         }

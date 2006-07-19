@@ -64,8 +64,7 @@ public class PersistenceProviderImpl
                     Bootstrap.newBrokerFactory(cp, cp.getClassLoader()));
             else
                 return null;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -89,8 +88,7 @@ public class PersistenceProviderImpl
                 return emf;
             } else
                 return null;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }

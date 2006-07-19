@@ -86,7 +86,10 @@
         <module>openjpa-lib</module>
         <module>openjpa-kernel</module>
         <module>openjpa-kernel-5</module>
+        <module>openjpa-jdbc</module>
+        <module>openjpa-jdbc-5</module>
         <module>openjpa-persistence</module>
+        <module>openjpa-persistence-jdbc</module>
         <module>openjpa-xmlstore</module>
 
     </modules>

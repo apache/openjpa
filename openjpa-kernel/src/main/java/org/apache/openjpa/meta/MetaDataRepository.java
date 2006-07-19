@@ -408,8 +408,7 @@ public class MetaDataRepository
                 try {
                     Class.forName(cls.getName(), true,
                         cls.getClassLoader());
-                }
-                catch (Throwable t) {
+                } catch (Throwable t) {
                 }
             }
         }
@@ -571,8 +570,7 @@ public class MetaDataRepository
                 try {
                     _factory.load(meta.getDescribedType(), mode,
                         meta.getEnvClassLoader());
-                }
-                catch (RuntimeException re) {
+                } catch (RuntimeException re) {
                     removeMetaData(meta);
                     _errs.add(re);
                     return;
@@ -589,8 +587,7 @@ public class MetaDataRepository
                 prepareMapping(meta);
             } else
                 meta.defineSuperclassFields(false);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             removeMetaData(meta);
             _errs.add(re);
         }
@@ -612,8 +609,7 @@ public class MetaDataRepository
                 meta = (ClassMetaData) mapped.get(i);
                 try {
                     meta.resolve(MODE_MAPPING_INIT);
-                }
-                catch (RuntimeException re) {
+                } catch (RuntimeException re) {
                     removeMetaData(meta);
                     _errs.add(re);
                 }
@@ -645,8 +641,7 @@ public class MetaDataRepository
                 buffered.resolve(mode);
                 processed.add(buffered);
                 buffer.remove(buffered);
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 _errs.add(re);
 
                 // any exception during resolution of one type means we can't
@@ -937,8 +932,7 @@ public class MetaDataRepository
 
                 try {
                     Class.forName(className.substring(0, i), true, cl);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                 } // consume all exceptions
             }
 
@@ -1059,8 +1053,7 @@ public class MetaDataRepository
     private Class classForName(String name, ClassLoader loader) {
         try {
             return Class.forName(name, true, loader);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             if ((_validate & VALIDATE_RUNTIME) != 0) {
                 if (_log.isWarnEnabled())
                     _log.warn(_loc.get("bad-discover-class", name));
@@ -1104,8 +1097,7 @@ public class MetaDataRepository
         for (int i = 0; i < reg.length; i++) {
             try {
                 getMetaData(reg[i], envLoader, false);
-            }
-            catch (MetaDataException me) {
+            } catch (MetaDataException me) {
                 if (_log.isWarnEnabled())
                     _log.warn(me);
             }
@@ -1131,8 +1123,7 @@ public class MetaDataRepository
         for (int i = 0; i < reg.length; i++) {
             try {
                 processRegisteredClass(reg[i]);
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 if (!_conf.getRetryClassRegistration())
                     throw new MetaDataException(_loc.get("error-registered",
                         reg[i]), t);
@@ -1181,8 +1172,7 @@ public class MetaDataRepository
         Object oid = null;
         try {
             oid = PCRegistry.newObjectId(cls);
-        }
-        catch (InternalException ie) {
+        } catch (InternalException ie) {
             // thrown for single field identity with null pk field value
         }
         if (oid != null) {
@@ -1436,8 +1426,7 @@ public class MetaDataRepository
                 context.getEnvClassLoader(), mustExist);
             if (seq != null)
                 return seq;
-        }
-        catch (MetaDataException mde) {
+        } catch (MetaDataException mde) {
             e = mde;
         }
 
@@ -1454,8 +1443,7 @@ public class MetaDataRepository
         try {
             return getSequenceMetaData(name, context.getEnvClassLoader(),
                 mustExist);
-        }
-        catch (MetaDataException mde) {
+        } catch (MetaDataException mde) {
             // throw original exception
             if (e != null)
                 throw e;

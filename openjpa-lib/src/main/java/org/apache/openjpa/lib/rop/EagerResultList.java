@@ -35,8 +35,7 @@ public class EagerResultList extends ListResultList implements ResultList {
             throw re;
         } catch (Exception e) {
             rop.handleCheckedException(e);
-        }
-        finally {
+        } finally {
             try {
                 rop.close();
             } catch (Exception e) {

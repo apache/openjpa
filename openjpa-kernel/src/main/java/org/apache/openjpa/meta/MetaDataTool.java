@@ -252,8 +252,7 @@ public class MetaDataTool
         try {
             if (!run(conf, args, opts))
                 System.err.println(_loc.get("tool-usage"));
-        }
-        finally {
+        } finally {
             conf.close();
         }
     }
@@ -323,8 +322,7 @@ public class MetaDataTool
                 log.info(_loc.get("tool-running", classes[j], flags.action));
                 try {
                     tool.run(classes[j]);
-                }
-                catch (IllegalArgumentException iae) {
+                } catch (IllegalArgumentException iae) {
                     return false;
                 }
             }

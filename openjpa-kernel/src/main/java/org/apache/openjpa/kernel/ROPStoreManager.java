@@ -45,11 +45,9 @@ class ROPStoreManager
             try {
                 ((PCResultObjectProvider) context).initialize
                     (sm, state, fetchState);
-            }
-            catch (OpenJPAException ke) {
+            } catch (OpenJPAException ke) {
                 throw ke;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new StoreException(e);
             }
             return true;

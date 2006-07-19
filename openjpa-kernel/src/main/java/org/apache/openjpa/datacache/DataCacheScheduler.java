@@ -137,8 +137,7 @@ public class DataCacheScheduler
                     }
                 }
                 lastRun = now;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new InvalidStateException(_loc.get("scheduler-fail"), e).
                     setFatal(true);
             }
@@ -185,8 +184,7 @@ public class DataCacheScheduler
                 dayOfMonth = parse(token.nextToken(), 1, 31);
                 month = parse(token.nextToken(), 1, 13);
                 dayOfWeek = parse(token.nextToken(), 1, 8);
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 throw new UserException(_loc.get("bad-schedule", date), t).
                     setFatal(true);
             }
@@ -200,8 +198,7 @@ public class DataCacheScheduler
             for (int i = 0; i < tokens.length; i++) {
                 try {
                     times[i] = Integer.parseInt(tokens[i]);
-                }
-                catch (Throwable t) {
+                } catch (Throwable t) {
                     throw new UserException(_loc.get("not-number", token)).
                         setFatal(true);
                 }

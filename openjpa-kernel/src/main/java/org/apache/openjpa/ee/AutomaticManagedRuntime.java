@@ -103,8 +103,7 @@ public class AutomaticManagedRuntime
         if (WLS != null) {
             try {
                 tm = WLS.getTransactionManager();
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 errors.add(t);
             }
             if (tm != null) {
@@ -119,8 +118,7 @@ public class AutomaticManagedRuntime
             jmr.setTransactionManagerName(JNDI_LOCS[i]);
             try {
                 tm = jmr.getTransactionManager();
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 errors.add(t);
             }
             if (tm != null) {
@@ -136,8 +134,7 @@ public class AutomaticManagedRuntime
             imr.setTransactionManagerMethod(METHODS[i]);
             try {
                 tm = imr.getTransactionManager();
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 errors.add(t);
             }
             if (tm != null) {
@@ -149,8 +146,7 @@ public class AutomaticManagedRuntime
         if (SUNONE != null) {
             try {
                 tm = SUNONE.getTransactionManager();
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 errors.add(t);
             }
             if (tm != null) {

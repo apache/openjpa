@@ -72,8 +72,7 @@ public abstract class AbstractQueryCache
             if (hasListeners())
                 fireEvent(ev);
             keys = keySet();
-        }
-        finally {
+        } finally {
             writeUnlock();
         }
 
@@ -303,8 +302,7 @@ public abstract class AbstractQueryCache
         TypesChangedEvent ev = (TypesChangedEvent) event;
         try {
             listen.onTypesChanged(ev);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             if (log.isWarnEnabled())
                 log.warn(s_loc.get("exp-listener-ex"), e);
         }

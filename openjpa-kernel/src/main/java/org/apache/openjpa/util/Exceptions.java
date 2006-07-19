@@ -68,8 +68,7 @@ public class Exceptions {
         try {
             new ObjectOutputStream(DEV_NULL).writeObject(ob);
             return true;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             return false;
         }
     }
@@ -109,8 +108,7 @@ public class Exceptions {
             if (s.indexOf(ob.getClass().getName()) == -1)
                 s += " [" + ob.getClass().getName() + "]";
             return s;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             return ob.getClass().getName();
         }
     }

@@ -233,8 +233,7 @@ public class ConfigurationProviderImpl
                 if (load(pinfo))
                     return true;
             return false;
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             throw new GeneralException(ioe);
         }
     }
@@ -329,8 +328,7 @@ public class ConfigurationProviderImpl
                     {
                         try {
                             _info.addJarFileName(currentText());
-                        }
-                        catch (IllegalArgumentException iae) {
+                        } catch (IllegalArgumentException iae) {
                             throw getException(iae.getMessage());
                         }
                     }

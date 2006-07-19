@@ -121,8 +121,7 @@ public class EntityManagerImpl
             if (_fetch == null)
                 _fetch = _emf.toFetchPlan(_broker.getFetchConfiguration());
             return _fetch;
-        }
-        finally {
+        } finally {
             _broker.unlock();
         }
     }
@@ -358,14 +357,11 @@ public class EntityManagerImpl
     public void commit() {
         try {
             _broker.commit();
-        }
-        catch (RollbackException e) {
+        } catch (RollbackException e) {
             throw e;
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // RollbackExceptions are special and aren't handled by the
             // normal exception translator, since the spec says they
             // should be thrown whenever the commit fails for any reason at
@@ -617,8 +613,7 @@ public class EntityManagerImpl
                 _broker.getClassLoader(), true);
             Seq seq = meta.getInstance(_broker.getClassLoader());
             return new Generator(seq, name, _broker, null);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw PersistenceExceptions.toPersistenceException(re);
         }
     }
@@ -631,8 +626,7 @@ public class EntityManagerImpl
             Seq seq = _broker.getIdentitySequence(meta);
             return (seq == null) ? null : new Generator(seq, null, _broker,
                 meta);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -650,8 +644,7 @@ public class EntityManagerImpl
             Seq seq = _broker.getValueSequence(fmd);
             return (seq == null) ? null : new Generator(seq, null, _broker,
                 meta);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -692,8 +685,7 @@ public class EntityManagerImpl
             for (int i = 0; i < hints.length; i++)
                 q.setHint(hints[i], values[i]);
             return q;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw PersistenceExceptions.toPersistenceException(re);
         }
     }
@@ -893,8 +885,7 @@ public class EntityManagerImpl
         try {
             if (sm != null)
                 sm.dirty(field);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }

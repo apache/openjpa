@@ -113,8 +113,7 @@ public class ResultPacker {
             if (types != null && types.length > 0) {
                 try {
                     cons = _resultClass.getConstructor(types);
-                }
-                catch (NoSuchMethodException nsme) {
+                } catch (NoSuchMethodException nsme) {
                 }
             }
             _constructor = cons;
@@ -243,15 +242,12 @@ public class ResultPacker {
                 }
             }
             return user;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (InstantiationException ie) {
+        } catch (InstantiationException ie) {
             throw new UserException(_loc.get("pack-instantiation-err",
                 _resultClass), ie);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new UserException(_loc.get("pack-err", _resultClass), e);
         }
     }

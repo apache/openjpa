@@ -95,8 +95,7 @@ public class DelegatingExtent
     public Class getElementType() {
         try {
             return _extent.getElementType();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -104,8 +103,7 @@ public class DelegatingExtent
     public boolean hasSubclasses() {
         try {
             return _extent.hasSubclasses();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -113,8 +111,7 @@ public class DelegatingExtent
     public Broker getBroker() {
         try {
             return _extent.getBroker();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -122,8 +119,7 @@ public class DelegatingExtent
     public FetchConfiguration getFetchConfiguration() {
         try {
             return _extent.getFetchConfiguration();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -131,8 +127,7 @@ public class DelegatingExtent
     public boolean getIgnoreChanges() {
         try {
             return _extent.getIgnoreChanges();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -140,8 +135,7 @@ public class DelegatingExtent
     public void setIgnoreChanges(boolean ignoreCache) {
         try {
             _extent.setIgnoreChanges(ignoreCache);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -149,8 +143,7 @@ public class DelegatingExtent
     public List list() {
         try {
             return _extent.list();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -158,8 +151,7 @@ public class DelegatingExtent
     public Iterator iterator() {
         try {
             return _extent.iterator();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -167,8 +159,7 @@ public class DelegatingExtent
     public void closeAll() {
         try {
             _extent.closeAll();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -176,8 +167,7 @@ public class DelegatingExtent
     public void lock() {
         try {
             _extent.lock();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -185,8 +175,7 @@ public class DelegatingExtent
     public void unlock() {
         try {
             _extent.unlock();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
 		}
 	}

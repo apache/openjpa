@@ -46,8 +46,7 @@ class Caches {
                 if (classes == null)
                     classes = new HashSet();
                 classes.add(cls);
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 conf.getLog(OpenJPAConfiguration.LOG_RUNTIME).warn(t, t);
             }
         }

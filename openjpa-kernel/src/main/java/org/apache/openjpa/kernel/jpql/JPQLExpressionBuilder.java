@@ -1113,8 +1113,7 @@ class JPQLExpressionBuilder
             QueryExpressions subexp = getQueryExpressions();
             subq.setQueryExpressions(subexp, 0, Long.MAX_VALUE);
             return subq;
-        }
-        finally {
+        } finally {
             // remove the subquery parse context
             contexts.pop();
         }
@@ -1138,8 +1137,7 @@ class JPQLExpressionBuilder
                 // indexes in JPQL are 1-based, as opposed to 0-based in
                 // the core ExpressionFactory
                 index = Integer.parseInt(id) - 1;
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 throw parseException(EX_USER, "bad-positional-parameter",
                     new Object[]{ id }, e);
             }
@@ -1233,12 +1231,10 @@ class JPQLExpressionBuilder
                 Field field = c.getField(fieldName);
                 Object value = field.get(null);
                 return factory.newLiteral(value, Literal.TYPE_UNKNOWN);
-            }
-            catch (NoSuchFieldException nsfe) {
+            } catch (NoSuchFieldException nsfe) {
                 throw parseException(EX_USER, "no-field",
                     new Object[]{ className, fieldName }, nsfe);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw parseException(EX_USER, "unaccessible-field",
                     new Object[]{ className, fieldName }, e);
             }
@@ -1629,14 +1625,12 @@ class JPQLExpressionBuilder
         private static final JPQLNode parse(String jpql) {
             try {
                 return (JPQLNode) new JPQL(jpql).parseQuery();
-            }
-            catch (Error e) {
+            } catch (Error e) {
                 // special handling for Error subclasses, which the
                 // parser may sometimes (unfortunately) throw
                 throw new UserException(_loc.get("parse-error",
                     new Object[]{ e.toString(), jpql }));
-            }
-            catch (ParseException e) {
+            } catch (ParseException e) {
                 throw new UserException(_loc.get("parse-error",
                     new Object[]{ e.toString(), jpql }), e);
             }

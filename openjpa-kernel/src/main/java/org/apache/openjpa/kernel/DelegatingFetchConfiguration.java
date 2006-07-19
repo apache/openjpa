@@ -98,8 +98,7 @@ public class DelegatingFetchConfiguration
     public StoreContext getContext() {
         try {
             return _fetch.getContext();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -107,8 +106,7 @@ public class DelegatingFetchConfiguration
     public void setContext(StoreContext ctx) {
         try {
             _fetch.setContext(ctx);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -116,8 +114,7 @@ public class DelegatingFetchConfiguration
     public int getFetchBatchSize() {
         try {
             return _fetch.getFetchBatchSize();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -126,8 +123,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.setFetchBatchSize(fetchBatchSize);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -135,8 +131,7 @@ public class DelegatingFetchConfiguration
     public int getMaxFetchDepth() {
         try {
             return _fetch.getMaxFetchDepth();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -145,8 +140,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.setMaxFetchDepth(depth);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -154,8 +148,7 @@ public class DelegatingFetchConfiguration
     public Set getRootInstances() {
         try {
             return _fetch.getRootInstances();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -164,8 +157,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.setRootInstances(roots);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -173,8 +165,7 @@ public class DelegatingFetchConfiguration
     public Set getRootClasses() {
         try {
             return _fetch.getRootClasses();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -183,8 +174,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.setRootClasses(roots);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -192,8 +182,7 @@ public class DelegatingFetchConfiguration
     public boolean getQueryCache() {
         try {
             return _fetch.getQueryCache();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -202,8 +191,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.setQueryCache(cache);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -211,8 +199,7 @@ public class DelegatingFetchConfiguration
     public int getFlushBeforeQueries() {
         try {
             return _fetch.getFlushBeforeQueries();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -221,8 +208,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.setFlushBeforeQueries(flush);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -230,8 +216,7 @@ public class DelegatingFetchConfiguration
     public Set getFetchGroups() {
         try {
             return _fetch.getFetchGroups();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -239,8 +224,7 @@ public class DelegatingFetchConfiguration
     public boolean hasFetchGroup(String group) {
         try {
             return _fetch.hasFetchGroup(group);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -248,8 +232,7 @@ public class DelegatingFetchConfiguration
     public boolean hasFetchGroup(Set groups) {
         try {
             return _fetch.hasFetchGroup(groups);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -258,8 +241,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.addFetchGroup(group);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -268,8 +250,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.addFetchGroups(groups);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -278,8 +259,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.removeFetchGroup(group);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -288,8 +268,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.removeFetchGroups(groups);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -298,8 +277,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.clearFetchGroups();
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -308,8 +286,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.resetFetchGroups();
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -317,8 +294,7 @@ public class DelegatingFetchConfiguration
     public Set getFields() {
         try {
             return _fetch.getFields();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -326,8 +302,7 @@ public class DelegatingFetchConfiguration
     public boolean hasField(String field) {
         try {
             return _fetch.hasField(field);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -336,8 +311,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.addField(field);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -346,8 +320,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.addFields(fields);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -356,8 +329,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.removeField(field);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -366,8 +338,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.removeFields(fields);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -376,8 +347,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.clearFields();
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -385,8 +355,7 @@ public class DelegatingFetchConfiguration
     public int getLockTimeout() {
         try {
             return _fetch.getLockTimeout();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -395,8 +364,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.setLockTimeout(timeout);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -404,8 +372,7 @@ public class DelegatingFetchConfiguration
     public int getReadLockLevel() {
         try {
             return _fetch.getReadLockLevel();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -414,8 +381,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.setReadLockLevel(level);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -423,8 +389,7 @@ public class DelegatingFetchConfiguration
     public int getWriteLockLevel() {
         try {
             return _fetch.getWriteLockLevel();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -433,8 +398,7 @@ public class DelegatingFetchConfiguration
         try {
             _fetch.setWriteLockLevel(level);
             return this;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -442,8 +406,7 @@ public class DelegatingFetchConfiguration
     public ResultList newResultList(ResultObjectProvider rop) {
         try {
             return _fetch.newResultList(rop);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -451,8 +414,7 @@ public class DelegatingFetchConfiguration
     public FetchState newFetchState() {
         try {
             return _fetch.newFetchState();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -460,8 +422,7 @@ public class DelegatingFetchConfiguration
     public void copy(FetchConfiguration fetch) {
         try {
             _fetch.copy(fetch);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -469,8 +430,7 @@ public class DelegatingFetchConfiguration
     public Object clone() {
         try {
             return _fetch.clone();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -478,8 +438,7 @@ public class DelegatingFetchConfiguration
     public void setHint(String name, Object value) {
         try {
             _fetch.setHint(name, value);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -487,8 +446,7 @@ public class DelegatingFetchConfiguration
     public Object getHint(String name) {
         try {
             return _fetch.getHint(name);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
 		}
 	}

@@ -77,8 +77,7 @@ public class VersionLockManager
         setLockLevel(sm, level);
         try {
             lockInternal(sm, level, timeout, sdata);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             // revert lock
             setLockLevel(sm, oldlevel);
             throw re;

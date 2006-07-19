@@ -150,8 +150,7 @@ public abstract class AbstractTask extends MatchingTask {
             e.printStackTrace();
             if (haltOnError)
                 throw new BuildException(e);
-        }
-        finally {
+        } finally {
             if (_conf != null)
                 _conf.close();
             _conf = null;

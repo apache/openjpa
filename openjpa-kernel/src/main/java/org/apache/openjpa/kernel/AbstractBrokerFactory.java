@@ -177,14 +177,11 @@ public abstract class AbstractBrokerFactory
             _brokers.add(broker);
 
             return broker;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -237,8 +234,7 @@ public abstract class AbstractBrokerFactory
             for (Iterator itr = _pcClassNames.iterator(); itr.hasNext();) {
                 try {
                     Class.forName((String) itr.next(), true, loader);
-                }
-                catch (Throwable t) {
+                } catch (Throwable t) {
                     _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME).warn(t, t);
                 }
             }
@@ -252,8 +248,7 @@ public abstract class AbstractBrokerFactory
             if (_lifecycleListeners == null)
                 _lifecycleListeners = new HashMap(7);
             _lifecycleListeners.put(listener, classes);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -264,8 +259,7 @@ public abstract class AbstractBrokerFactory
             assertOpen();
             if (_lifecycleListeners != null)
                 _lifecycleListeners.remove(listener);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -304,8 +298,7 @@ public abstract class AbstractBrokerFactory
 
             _conf.close();
             _closed = new IllegalStateException();
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -329,8 +322,7 @@ public abstract class AbstractBrokerFactory
         try {
             assertOpen();
             return (_userObjects == null) ? null : _userObjects.get(key);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -345,8 +337,7 @@ public abstract class AbstractBrokerFactory
             if (_userObjects == null)
                 _userObjects = new HashMap();
             return _userObjects.put(key, val);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -444,11 +435,9 @@ public abstract class AbstractBrokerFactory
                 || trans.getStatus() == Status.STATUS_NO_TRANSACTION
                 || trans.getStatus() == Status.STATUS_UNKNOWN)
                 return null;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new GeneralException(e);
         }
 
@@ -543,8 +532,7 @@ public abstract class AbstractBrokerFactory
             // avoid synchronization
             _conf.setReadOnly(true);
             _conf.instantiateAll();
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -631,11 +619,9 @@ public abstract class AbstractBrokerFactory
             }
 
             return true;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new GeneralException(e);
         }
     }

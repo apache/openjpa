@@ -171,8 +171,7 @@ public abstract class AbstractLRSProxyCollection
                 }
             }
             return removed;
-        }
-        finally {
+        } finally {
             itr.close();
         }
     }
@@ -227,8 +226,7 @@ public abstract class AbstractLRSProxyCollection
             while (itr.hasNext())
                 list.add(itr.next());
             return list;
-        }
-        finally {
+        } finally {
             itr.close();
         }
     }

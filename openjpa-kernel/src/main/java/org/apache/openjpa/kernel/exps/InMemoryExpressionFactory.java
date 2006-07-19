@@ -105,8 +105,7 @@ public class InMemoryExpressionFactory
 
             // no match
             return false;
-        }
-        finally {
+        } finally {
             ImplHelper.close(itr);
         }
     }
@@ -208,8 +207,7 @@ public class InMemoryExpressionFactory
 
             // no match
             return false;
-        }
-        finally {
+        } finally {
             ImplHelper.close(itr);
         }
     }
@@ -713,8 +711,7 @@ public class InMemoryExpressionFactory
                 if (_asc)
                     return ((Comparable) o1).compareTo(o2);
                 return ((Comparable) o2).compareTo(o1);
-            }
-            catch (ClassCastException cce) {
+            } catch (ClassCastException cce) {
                 Localizer loc = Localizer.forPackage
                     (InMemoryExpressionFactory.class);
                 throw new UserException(loc.get("not-comp", o1, o2));

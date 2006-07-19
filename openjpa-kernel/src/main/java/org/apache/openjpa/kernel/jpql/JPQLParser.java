@@ -57,11 +57,9 @@ public class JPQLParser
         try {
             return new JPQLExpressionBuilder(factory, query, parsed).
                 getQueryExpressions();
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new UserException(_loc.get("bad-jpql", parsed), e);
         }
     }

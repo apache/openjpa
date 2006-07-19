@@ -176,8 +176,7 @@ public class RemoteCommitEvent
                 _addIds = (Collection) in.readObject();
             _updates = (Collection) in.readObject();
             _deletes = (Collection) in.readObject();
-        }
-        catch (ClassNotFoundException cnfe) {
+        } catch (ClassNotFoundException cnfe) {
             // ### do something
 		}
 	}
