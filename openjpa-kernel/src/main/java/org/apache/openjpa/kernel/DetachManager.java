@@ -267,12 +267,10 @@ public class DetachManager
         CallbackException excep = null;
         try {
             return detachInternal(toDetach);
-        }
-        catch (CallbackException ce) {
+        } catch (CallbackException ce) {
             excep = ce;
             return null; // won't be reached as exception will be rethrown
-        }
-        finally {
+        } finally {
             List exceps = null;
 
             if (excep == null || !_failFast) {
@@ -309,8 +307,7 @@ public class DetachManager
             if (re instanceof CallbackException && _failFast)
                 failFast = true;
             exceps = add(exceps, re);
-        }
-        finally {
+        } finally {
             // invoke post callbacks unless all failed
             if (!failFast && (exceps == null
                 || exceps.size() < instances.size())) {
@@ -353,8 +350,7 @@ public class DetachManager
                 if (sm != null)
                     _broker.fireLifecycleEvent(detached, orig,
                         sm.getMetaData(), LifecycleEvent.AFTER_DETACH);
-            }
-            catch (CallbackException ce) {
+            } catch (CallbackException ce) {
                 exceps = add(exceps, ce);
                 if (_failFast)
                     break; // don't continue processing
@@ -594,8 +590,7 @@ public class DetachManager
                 for (int i = 0; i < fmds.length; i++)
                     if (!fmds[i].isPrimaryKey() && !fmds[i].isVersion())
                         detachField(from, i, fgfields.get(i));
-            }
-            finally {
+            } finally {
                 // clear the StateManager from the target object
                 if (_copy)
                     _to.pcReplaceStateManager(null);

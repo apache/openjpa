@@ -102,8 +102,7 @@ public class QueryImpl
                     getEntityManagerFactory()).toFetchPlan(_query.
                     getFetchConfiguration());
             return _fetch;
-        }
-        finally {
+        } finally {
             _query.unlock();
         }
     }
@@ -285,8 +284,7 @@ public class QueryImpl
                 throw new NonUniqueResultException(_loc.get("mult-results",
                     _query.getQueryString()), null, null, false);
             return ret;
-        }
-        finally {
+        } finally {
             OpenJPAPersistence.close(res);
         }
     }
@@ -369,8 +367,7 @@ public class QueryImpl
                 throw new ArgumentException(_loc.get("bad-query-hint", key),
                     null, null, false);
             return this;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -409,8 +406,7 @@ public class QueryImpl
             // starts at 1, while List starts at 0
             _positional.set(position - 1, value);
             return this;
-        }
-        finally {
+        } finally {
             _query.unlock();
         }
     }
@@ -438,8 +434,7 @@ public class QueryImpl
                 _named = new HashMap();
             _named.put(name, value);
             return this;
-        }
-        finally {
+        } finally {
             _query.unlock();
         }
     }
@@ -452,8 +447,7 @@ public class QueryImpl
         _query.lock();
         try {
             return (_positional == null) ? EMPTY_ARRAY : _positional.toArray();
-        }
-        finally {
+        } finally {
             _query.unlock();
         }
     }
@@ -467,8 +461,7 @@ public class QueryImpl
                 for (int i = 0; i < params.length; i++)
                     setParameter(i + 1, params[i]);
             return this;
-        }
-        finally {
+        } finally {
             _query.unlock();
         }
     }
@@ -478,8 +471,7 @@ public class QueryImpl
         try {
             return (_named == null) ? Collections.EMPTY_MAP
                 : Collections.unmodifiableMap(_named);
-        }
-        finally {
+        } finally {
             _query.unlock();
         }
     }
@@ -493,8 +485,7 @@ public class QueryImpl
                 for (Map.Entry e : (Set<Map.Entry>) params.entrySet())
                     setParameter((String) e.getKey(), e.getValue());
             return this;
-        }
-        finally {
+        } finally {
             _query.unlock();
         }
     }

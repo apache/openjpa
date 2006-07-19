@@ -210,8 +210,7 @@ public class PersistenceUnitInfoImpl
                 try {
                     addJarFile(new File(cp[i]).toURL());
                     return;
-                }
-                catch (MalformedURLException mue) {
+                } catch (MalformedURLException mue) {
                     break;
                 }
             }
@@ -419,8 +418,7 @@ public class PersistenceUnitInfoImpl
 
         try {
             return new File(_persistenceXmlFile.toURI());
-        }
-        catch (URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }
     }

@@ -139,8 +139,7 @@ public abstract class WaitQueue {
                             // must be not waiting, and we'll act like signalled
                         }
                     }
-                }
-                finally {
+                } finally {
                     if (wasInterrupted) Thread.currentThread().interrupt();
                 }
             }

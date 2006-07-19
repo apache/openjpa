@@ -144,8 +144,7 @@ public class ParameterTemplate {
         FileReader reader = new FileReader(file);
         try {
             return append(reader);
-        }
-        finally {
+        } finally {
             try {
                 reader.close();
             } catch (IOException ioe) {
@@ -245,8 +244,7 @@ public class ParameterTemplate {
         FileWriter writer = new FileWriter(file);
         try {
             write(writer);
-        }
-        finally {
+        } finally {
             try {
                 writer.close();
             } catch (IOException ioe) {

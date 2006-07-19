@@ -177,8 +177,7 @@ public class StoreCache {
     private ClassMetaData getMetaData(Class cls) {
         try {
             return _repos.getMetaData(cls, null, true);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw PersistenceExceptions.toPersistenceException(re);
         }
     }

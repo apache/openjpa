@@ -400,8 +400,7 @@ public class DetachedStateManager
             if (objval instanceof Proxy)
                 ((Proxy) objval).setOwner(this, idx);
             objval = null;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -416,8 +415,7 @@ public class DetachedStateManager
             _dirty.set(idx);
             longval = next ? 1 : 0;
             pc.pcReplaceField(idx);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -432,8 +430,7 @@ public class DetachedStateManager
             _dirty.set(idx);
             longval = next;
             pc.pcReplaceField(idx);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -448,8 +445,7 @@ public class DetachedStateManager
             _dirty.set(idx);
             longval = next;
             pc.pcReplaceField(idx);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -464,8 +460,7 @@ public class DetachedStateManager
             _dirty.set(idx);
             longval = next;
             pc.pcReplaceField(idx);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -480,8 +475,7 @@ public class DetachedStateManager
             _dirty.set(idx);
             longval = next;
             pc.pcReplaceField(idx);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -496,8 +490,7 @@ public class DetachedStateManager
             _dirty.set(idx);
             longval = next;
             pc.pcReplaceField(idx);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -512,8 +505,7 @@ public class DetachedStateManager
             _dirty.set(idx);
             dblval = next;
             pc.pcReplaceField(idx);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -528,8 +520,7 @@ public class DetachedStateManager
             _dirty.set(idx);
             dblval = next;
             pc.pcReplaceField(idx);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -544,8 +535,7 @@ public class DetachedStateManager
             _dirty.set(idx);
             objval = next;
             pc.pcReplaceField(idx);
-        }
-        finally {
+        } finally {
             unlock();
             objval = null;
         }
@@ -561,8 +551,7 @@ public class DetachedStateManager
             _dirty.set(idx);
             objval = next;
             pc.pcReplaceField(idx);
-        }
-        finally {
+        } finally {
             unlock();
             objval = null;
         }
@@ -808,8 +797,7 @@ public class DetachedStateManager
         lock();
         try {
             _dirty.set(field);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }

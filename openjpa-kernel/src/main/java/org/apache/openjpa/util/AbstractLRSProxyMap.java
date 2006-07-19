@@ -301,8 +301,7 @@ public abstract class AbstractLRSProxyMap
                 map.put(entry.getKey(), entry.getValue());
             }
             return map;
-        }
-        finally {
+        } finally {
             itr.close();
         }
     }

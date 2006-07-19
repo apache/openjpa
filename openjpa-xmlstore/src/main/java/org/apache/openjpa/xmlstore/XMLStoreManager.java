@@ -177,8 +177,7 @@ public class XMLStoreManager
     public void commit() {
         try {
             _store.endTransaction(_updates, _deletes);
-        }
-        finally {
+        } finally {
             _updates = null;
             _deletes = null;
         }

@@ -98,8 +98,7 @@ public class EntityManagerFactoryImpl
                     conf.getDataCacheManagerInstance().getSystemDataCache());
             }
             return _cache;
-        }
-        finally {
+        } finally {
             _factory.unlock();
         }
     }
@@ -116,8 +115,7 @@ public class EntityManagerFactoryImpl
                 _queryCache = new QueryResultCache(_factory.getConfiguration().
                     getDataCacheManagerInstance().getSystemQueryCache());
             return _queryCache;
-        }
-        finally {
+        } finally {
             _factory.unlock();
         }
     }
@@ -161,8 +159,7 @@ public class EntityManagerFactoryImpl
                 conf.getValue("openjpa.ConnectionRetainMode");
             try {
                 retainMode = Integer.parseInt(val.unalias((String) obj));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new ArgumentException(_loc.get("bad-em-prop",
                     "openjpa.ConnectionRetainMode", obj),
                     new Throwable[]{ e },
@@ -191,8 +188,7 @@ public class EntityManagerFactoryImpl
             prop = prop.substring(5);
             try {
                 setter = ImplHelper.getSetter(em.getClass(), prop);
-            }
-            catch (OpenJPAException ke) {
+            } catch (OpenJPAException ke) {
                 if (errs == null)
                     errs = new LinkedList<RuntimeException>();
                 errs.add(PersistenceExceptions.toPersistenceException(ke));
@@ -209,8 +205,7 @@ public class EntityManagerFactoryImpl
                             setter.getParameterTypes()[0]);
                 }
                 setter.invoke(em, new Object[]{ val });
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 ArgumentException err = new ArgumentException(_loc.get
                     ("bad-em-prop", prop, entry.getValue()),
                     new Throwable[]{ e }, null, true);
@@ -284,15 +279,12 @@ public class EntityManagerFactoryImpl
                 _plan = cls.getConstructor(FetchPlan.class);
             }
             return _plan.newInstance(fetch);
-        }
-        catch (InvocationTargetException ite) {
+        } catch (InvocationTargetException ite) {
             throw PersistenceExceptions.toPersistenceException
                 (ite.getTargetException());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
-        }
-        finally {
+        } finally {
             _factory.unlock();
         }
 	}

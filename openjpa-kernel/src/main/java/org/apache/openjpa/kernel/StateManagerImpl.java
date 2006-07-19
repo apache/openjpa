@@ -216,8 +216,7 @@ public class StateManagerImpl
             _state.initialize(this);
             if (_state.isDeleted() && !wasDeleted)
                 fireLifecycleEvent(LifecycleEvent.AFTER_DELETE);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -463,8 +462,7 @@ public class StateManagerImpl
         lock();
         try {
             return assignObjectId(flush, false);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -509,8 +507,7 @@ public class StateManagerImpl
             try {
                 _broker.setStateManager(orig, this,
                     BrokerImpl.STATUS_OID_ASSIGN);
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 _id = orig;
                 _oid = null;
                 throw re;
@@ -769,8 +766,7 @@ public class StateManagerImpl
 
             provideField(_saved.getState(), _single, field);
             return fetchField(_single, fmd);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -814,8 +810,7 @@ public class StateManagerImpl
             storeField(field, value, _single);
             replaceField(_pc, _single, field);
             postDirty(stat);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1025,8 +1020,7 @@ public class StateManagerImpl
                 setPCState(PCState.TRANSIENT);
             else
                 setPCState(_state.release(this));
-        }
-        finally {
+        } finally {
             _flags &= ~FLAG_NO_UNPROXY;
         }
     }
@@ -1093,8 +1087,7 @@ public class StateManagerImpl
                 return true;
             }
             return false;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1113,8 +1106,7 @@ public class StateManagerImpl
                 setPCState(_state.afterOptimisticRefresh());
             else
                 setPCState(_state.afterRefresh());
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1221,8 +1213,7 @@ public class StateManagerImpl
             load(_broker.getFetchConfiguration().newFetchState(),
                 LOAD_SERIALIZE, null, null, false);
             return false;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1245,11 +1236,9 @@ public class StateManagerImpl
                 _single.clear();
             }
             return true;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
-        }
-        finally {
+        } finally {
             _flags &= ~FLAG_DETACHING;
             unlock();
         }
@@ -1304,8 +1293,7 @@ public class StateManagerImpl
             if (_meta.getIdentityType() == ClassMetaData.ID_DATASTORE)
                 return _broker.getStoreManager().copyDataStoreId(_oid, _meta);
             return ApplicationIds.copy(_oid, _meta);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1325,8 +1313,7 @@ public class StateManagerImpl
         try {
             beforeRead(field);
             beforeAccessField(field);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1344,11 +1331,9 @@ public class StateManagerImpl
             else
                 assignField(field, false);
             obtainLocks(active, false, lockLevel, null, null);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1467,11 +1452,9 @@ public class StateManagerImpl
                     loadField(field, lockLevel, true, true);
             }
             obtainLocks(active, true, lockLevel, null, null);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
-        }
-        finally {
+        } finally {
             if (locked)
                 unlock();
         }
@@ -1510,8 +1493,7 @@ public class StateManagerImpl
                 _single.delete(vmd, removed, null);
             else if (vmd.getCascadeDelete() == ValueMetaData.CASCADE_AUTO)
                 _single.dereferenceDependent(removed);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1573,8 +1555,7 @@ public class StateManagerImpl
             boolean ret = _single.isDefaultValue();
             _single.clear();
             return ret;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1597,8 +1578,7 @@ public class StateManagerImpl
             _single.storeBooleanField(field, newVal);
             replaceField(pc, _single, field);
             postDirty(stat);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1617,8 +1597,7 @@ public class StateManagerImpl
             _single.storeByteField(field, newVal);
             replaceField(pc, _single, field);
             postDirty(stat);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1637,8 +1616,7 @@ public class StateManagerImpl
             _single.storeCharField(field, newVal);
             replaceField(pc, _single, field);
             postDirty(stat);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1657,8 +1635,7 @@ public class StateManagerImpl
             _single.storeDoubleField(field, newVal);
             replaceField(pc, _single, field);
             postDirty(stat);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1677,8 +1654,7 @@ public class StateManagerImpl
             _single.storeFloatField(field, newVal);
             replaceField(pc, _single, field);
             postDirty(stat);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1697,8 +1673,7 @@ public class StateManagerImpl
             _single.storeIntField(field, newVal);
             replaceField(pc, _single, field);
             postDirty(stat);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1717,8 +1692,7 @@ public class StateManagerImpl
             _single.storeLongField(field, newVal);
             replaceField(pc, _single, field);
             postDirty(stat);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1772,8 +1746,7 @@ public class StateManagerImpl
             _single.storeObjectField(field, newVal);
             replaceField(pc, _single, field);
             postDirty(stat);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1792,8 +1765,7 @@ public class StateManagerImpl
             _single.storeShortField(field, newVal);
             replaceField(pc, _single, field);
             postDirty(stat);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1812,8 +1784,7 @@ public class StateManagerImpl
             _single.storeStringField(field, newVal);
             replaceField(pc, _single, field);
             postDirty(stat);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1954,8 +1925,7 @@ public class StateManagerImpl
 
             provideField(_pc, _single, field);
             return _single.fetchBooleanField(field);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1977,8 +1947,7 @@ public class StateManagerImpl
 
             provideField(_pc, _single, field);
             return _single.fetchByteField(field);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2000,8 +1969,7 @@ public class StateManagerImpl
 
             provideField(_pc, _single, field);
             return _single.fetchCharField(field);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2023,8 +1991,7 @@ public class StateManagerImpl
 
             provideField(_pc, _single, field);
             return _single.fetchDoubleField(field);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2046,8 +2013,7 @@ public class StateManagerImpl
 
             provideField(_pc, _single, field);
             return _single.fetchFloatField(field);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2069,8 +2035,7 @@ public class StateManagerImpl
 
             provideField(_pc, _single, field);
             return _single.fetchIntField(field);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2092,8 +2057,7 @@ public class StateManagerImpl
 
             provideField(_pc, _single, field);
             return _single.fetchLongField(field);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2115,8 +2079,7 @@ public class StateManagerImpl
 
             provideField(_pc, _single, field);
             return _single.fetchObjectField(field);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2138,8 +2101,7 @@ public class StateManagerImpl
 
             provideField(_pc, _single, field);
             return _single.fetchShortField(field);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2161,8 +2123,7 @@ public class StateManagerImpl
 
             provideField(_pc, _single, field);
             return _single.fetchStringField(field);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2184,8 +2145,7 @@ public class StateManagerImpl
             replaceField(_pc, _single, field);
             setLoaded(field, true);
             postLoad(field, null);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2206,8 +2166,7 @@ public class StateManagerImpl
             replaceField(_pc, _single, field);
             setLoaded(field, true);
             postLoad(field, null);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2228,8 +2187,7 @@ public class StateManagerImpl
             replaceField(_pc, _single, field);
             setLoaded(field, true);
             postLoad(field, null);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2250,8 +2208,7 @@ public class StateManagerImpl
             replaceField(_pc, _single, field);
             setLoaded(field, true);
             postLoad(field, null);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2272,8 +2229,7 @@ public class StateManagerImpl
             replaceField(_pc, _single, field);
             setLoaded(field, true);
             postLoad(field, null);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2294,8 +2250,7 @@ public class StateManagerImpl
             replaceField(_pc, _single, field);
             setLoaded(field, true);
             postLoad(field, null);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2316,8 +2271,7 @@ public class StateManagerImpl
             replaceField(_pc, _single, field);
             setLoaded(field, true);
             postLoad(field, null);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2339,8 +2293,7 @@ public class StateManagerImpl
             replaceField(_pc, _single, field);
             setLoaded(field, true);
             postLoad(field, null);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2361,8 +2314,7 @@ public class StateManagerImpl
             replaceField(_pc, _single, field);
             setLoaded(field, true);
             postLoad(field, null);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2382,8 +2334,7 @@ public class StateManagerImpl
             replaceField(_pc, _single, field);
             setLoaded(field, true);
             postLoad(field, null);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2523,8 +2474,7 @@ public class StateManagerImpl
             _loadVersion = null;
             if (_fieldImpl != null)
                 Arrays.fill(_fieldImpl, null);
-        }
-        finally {
+        } finally {
             unlock();
         }
 
@@ -2644,8 +2594,7 @@ public class StateManagerImpl
                         _single.clear();
                 }
             }
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2696,8 +2645,7 @@ public class StateManagerImpl
                         _single.clear();
                 }
             }
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -2713,8 +2661,7 @@ public class StateManagerImpl
             _flags |= FLAG_PRE_DELETING;
             try {
                 fireLifecycleEvent(LifecycleEvent.BEFORE_DELETE);
-            }
-            finally {
+            } finally {
                 _flags &= ~FLAG_PRE_DELETING;
             }
         }

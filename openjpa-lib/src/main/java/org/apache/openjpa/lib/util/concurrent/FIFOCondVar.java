@@ -58,8 +58,7 @@ class FIFOCondVar extends CondVar implements Condition, java.io.Serializable {
         for (int i = holdCount; i > 0; i--) lock.unlock();
         try {
             n.doWaitUninterruptibly(sync);
-        }
-        finally {
+        } finally {
             for (int i = holdCount; i > 0; i--) lock.lock();
         }
     }
@@ -75,8 +74,7 @@ class FIFOCondVar extends CondVar implements Condition, java.io.Serializable {
         for (int i = holdCount; i > 0; i--) lock.unlock();
         try {
             n.doWait(sync);
-        }
-        finally {
+        } finally {
             for (int i = holdCount; i > 0; i--) lock.lock();
         }
     }
@@ -95,8 +93,7 @@ class FIFOCondVar extends CondVar implements Condition, java.io.Serializable {
         for (int i = holdCount; i > 0; i--) lock.unlock();
         try {
             success = n.doTimedWait(sync, nanos);
-        }
-        finally {
+        } finally {
             for (int i = holdCount; i > 0; i--) lock.lock();
         }
         return success;

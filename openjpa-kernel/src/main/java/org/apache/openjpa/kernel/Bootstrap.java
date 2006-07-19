@@ -61,15 +61,13 @@ public class Bootstrap {
         try {
             Method meth = cls.getMethod("newInstance", FACTORY_ARGS);
             return (BrokerFactory) meth.invoke(null, new Object[]{ conf });
-        }
-        catch (InvocationTargetException ite) {
+        } catch (InvocationTargetException ite) {
             Throwable cause = ite.getTargetException();
             if (cause instanceof OpenJPAException)
                 throw (OpenJPAException) cause;
             throw new InternalException(s_loc.get("new-brokerfactory-excep",
                 cls), cause);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new UserException(s_loc.get("bad-new-brokerfactory", cls),
                 e).setFatal(true);
         }
@@ -97,15 +95,13 @@ public class Bootstrap {
         try {
             Method meth = cls.getMethod("getInstance", FACTORY_ARGS);
             return (BrokerFactory) meth.invoke(null, new Object[]{ conf });
-        }
-        catch (InvocationTargetException ite) {
+        } catch (InvocationTargetException ite) {
             Throwable cause = ite.getTargetException();
             if (cause instanceof OpenJPAException)
                 throw (OpenJPAException) cause;
             throw new InternalException(s_loc.get("brokerfactory-excep", cls),
                 cause);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new UserException(s_loc.get("bad-brokerfactory", cls), e).
                 setFatal(true);
         }
@@ -132,8 +128,7 @@ public class Bootstrap {
 
         try {
             return Class.forName(clsName, true, loader);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new UserException(s_loc.get("bad-brokerfactory-class",
                 clsName), e).setFatal(true);
 		}

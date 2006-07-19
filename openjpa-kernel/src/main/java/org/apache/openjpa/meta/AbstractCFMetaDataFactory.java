@@ -115,8 +115,7 @@ public abstract class AbstractCFMetaDataFactory
             try {
                 for (int i = 0; i < strs.length; i++)
                     this.urls.add(new URL(strs[i]));
-            }
-            catch (MalformedURLException mue) {
+            } catch (MalformedURLException mue) {
                 throw new UserException(mue);
             }
         }
@@ -424,8 +423,7 @@ public abstract class AbstractCFMetaDataFactory
         try {
             for (Iterator itr = files.iterator(); itr.hasNext();)
                 parser.parse((File) itr.next());
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             throw new GeneralException(ioe);
         }
     }
@@ -437,8 +435,7 @@ public abstract class AbstractCFMetaDataFactory
         try {
             for (int i = 0; i < cls.length; i++)
                 parser.parse(cls[i], isParseTopDown());
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             throw new GeneralException(ioe);
         }
     }
@@ -459,8 +456,7 @@ public abstract class AbstractCFMetaDataFactory
                 ser.serialize(flags);
             else
                 ser.serialize(output, flags);
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             throw new GeneralException(ioe);
         }
     }
@@ -589,8 +585,7 @@ public abstract class AbstractCFMetaDataFactory
                 log.info(_loc.get("found-pcs", String.valueOf(names.size()),
                     String.valueOf(System.currentTimeMillis() - start)));
             return (names.isEmpty()) ? null : names;
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             throw new GeneralException(ioe);
         }
     }
@@ -682,8 +677,7 @@ public abstract class AbstractCFMetaDataFactory
         Map map;
         try {
             map = cparser.mapTypeNames(mitr);
-        }
-        finally {
+        } finally {
             mitr.close();
         }
 

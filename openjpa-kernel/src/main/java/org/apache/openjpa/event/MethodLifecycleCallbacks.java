@@ -93,8 +93,7 @@ public class MethodLifecycleCallbacks
     protected static Method getMethod(Class cls, String method, Class[] args) {
         try {
             return cls.getMethod(method, args);
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             try {
                 // try again with the declared methods, which will
                 // check private and protected methods
@@ -102,8 +101,7 @@ public class MethodLifecycleCallbacks
                 if (!m.isAccessible())
                     m.setAccessible(true);
                 return m;
-            }
-            catch (Throwable t2) {
+            } catch (Throwable t2) {
                 throw new UserException(_loc.get("method-notfound",
                     cls.getName(), method), t);
             }

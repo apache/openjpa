@@ -57,12 +57,10 @@ public class ImplHelper {
         prop = StringUtils.capitalize(prop);
         try {
             return cls.getMethod("get" + prop, (Class[]) null);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             try {
                 return cls.getMethod("is" + prop, (Class[]) null);
-            }
-            catch (Exception e2) {
+            } catch (Exception e2) {
                 throw new UserException(_loc.get("bad-getter", cls,
                     prop)).setCause(e);
             }
@@ -78,8 +76,7 @@ public class ImplHelper {
         try {
             return cls.getMethod("set" + prop,
                 new Class[]{ getter.getReturnType() });
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new UserException(_loc.get("bad-setter", cls, prop)).
                 setCause(e);
         }
@@ -178,11 +175,9 @@ public class ImplHelper {
         try {
             if (o instanceof Closeable)
                 ((Closeable) o).close();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw re;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new GeneralException(e);
         }
     }

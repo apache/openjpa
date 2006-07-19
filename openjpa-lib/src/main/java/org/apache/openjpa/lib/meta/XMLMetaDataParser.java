@@ -374,8 +374,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
             IOException ioe = new IOException(se.toString());
             JavaVersions.initCause(ioe, se);
             throw ioe;
-        }
-        finally {
+        } finally {
             reset();
         }
     }

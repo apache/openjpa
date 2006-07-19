@@ -139,8 +139,7 @@ class VersionAttachStrategy
                         break;
                 }
             }
-        }
-        finally {
+        } finally {
             pc.pcReplaceStateManager(null);
         }
         if (!embedded && !isNew)

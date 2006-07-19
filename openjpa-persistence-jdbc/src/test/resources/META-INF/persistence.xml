@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             version="1.0">
+
+    <persistence-unit name="simple-emf-test" transaction-type="RESOURCE_LOCAL">
+
+        <!--
+          <provider>kodo.persistence.PersistenceProviderImpl</provider>
+          <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+          -->
+
+        <class>org.apache.openjpa.persistence.simple.AllFieldTypes</class>
+
+        <properties>
+            <property name="openjpa.ConnectionDriverName"
+                      value="org.apache.commons.dbcp.BasicDataSource"/>
+            <property name="openjpa.ConnectionProperties"
+                      value="DriverClassName=org.apache.derby.jdbc.EmbeddedDriver,Url=jdbc:derby:tmp/openjpa-test-database;create=true,MaxActive=100,MaxWait=10000,TestOnBorrow=true"/>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                      value="buildSchema(ForeignKeys=true)"/>
+        </properties>
+    </persistence-unit>
+</persistence>

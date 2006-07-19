@@ -63,8 +63,7 @@ class PersistenceListenerAdapter
         for (LifecycleCallbacks callback : _callbacks[eventType]) {
             try {
                 callback.makeCallback(src, ev.getRelated(), eventType);
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 if (t instanceof InvocationTargetException)
                     t = t.getCause();
                 if (t instanceof RuntimeException)

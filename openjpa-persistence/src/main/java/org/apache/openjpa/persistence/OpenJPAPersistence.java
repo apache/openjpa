@@ -83,11 +83,9 @@ public class OpenJPAPersistence
                 factory.putUserObject(EMF_KEY, emf);
             }
             return emf;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
-        }
-        finally {
+        } finally {
             factory.unlock();
         }
     }
@@ -121,11 +119,9 @@ public class OpenJPAPersistence
             }
 
             return em;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
-        }
-        finally {
+        } finally {
             broker.unlock();
         }
     }
@@ -178,8 +174,7 @@ public class OpenJPAPersistence
         try {
             return toEntityManagerFactory(Bootstrap.getBrokerFactory
                 (cp, null));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -235,8 +230,7 @@ public class OpenJPAPersistence
             Object o = context.lookup(jndiLocation);
             return (OpenJPAEntityManagerFactory) PortableRemoteObject.narrow(o,
                 OpenJPAEntityManagerFactory.class);
-        }
-        catch (NamingException ne) {
+        } catch (NamingException ne) {
             throw new ArgumentException(_loc.get("naming-exception",
                 jndiLocation), new Throwable[]{ ne }, null, true);
         }
@@ -256,8 +250,7 @@ public class OpenJPAPersistence
                     pcGetGenericContext());
             else
                 return null;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -285,8 +278,7 @@ public class OpenJPAPersistence
         try {
             return kem.getConfiguration().getMetaDataRepository().
                 getMetaData(cls, kem.getClassLoader(), false);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -304,8 +296,7 @@ public class OpenJPAPersistence
         try {
             return kemf.getConfiguration().getMetaDataRepository().
                 getMetaData(cls, null, false);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -318,8 +309,7 @@ public class OpenJPAPersistence
     public static void close(Object o) {
         try {
             ImplHelper.close(o);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -330,8 +320,7 @@ public class OpenJPAPersistence
     public static boolean isManagedType(EntityManager em, Class cls) {
         try {
             return ImplHelper.isManagedType(cls);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
@@ -342,8 +331,7 @@ public class OpenJPAPersistence
     public static boolean isManagedType(EntityManagerFactory emf, Class cls) {
         try {
             return ImplHelper.isManagedType(cls);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }

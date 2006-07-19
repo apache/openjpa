@@ -39,8 +39,7 @@ public class ProductDerivations {
         for (int i = 0; i < pdcls.length; i++) {
             try {
                 derivations.add(pdcls[i].newInstance());
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 // invalid service
             }
         }
@@ -57,8 +56,7 @@ public class ProductDerivations {
         for (int i = 0; i < _derivations.length; i++) {
             try {
                 _derivations[i].beforeConfigurationConstruct(cp);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 // can't log; no configuration yet
                 e.printStackTrace();
             }
@@ -73,8 +71,7 @@ public class ProductDerivations {
         for (int i = 0; i < _derivations.length; i++) {
             try {
                 _derivations[i].beforeConfigurationLoad(conf);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 // logging not configured yet
                 e.printStackTrace();
             }
@@ -89,8 +86,7 @@ public class ProductDerivations {
         for (int i = 0; i < _derivations.length; i++) {
             try {
                 _derivations[i].afterSpecificationSet(conf);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 // logging not configured yet
                 e.printStackTrace();
             }
@@ -105,8 +101,7 @@ public class ProductDerivations {
         for (int i = 0; i < _derivations.length; i++) {
             try {
                 _derivations[i].afterClose(impl);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 // logging not available
                 e.printStackTrace();
             }

@@ -82,8 +82,7 @@ public class Extent<T>
                     getEntityManagerFactory()).toFetchPlan(_extent.
                     getFetchConfiguration());
             return _fetch;
-        }
-        finally {
+        } finally {
             _extent.unlock();
         }
     }

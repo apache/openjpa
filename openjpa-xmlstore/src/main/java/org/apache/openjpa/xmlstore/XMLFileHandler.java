@@ -79,11 +79,9 @@ public class XMLFileHandler {
             return Collections.EMPTY_SET;
         try {
             return read(f);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new StoreException(e);
         }
     }
@@ -134,14 +132,11 @@ public class XMLFileHandler {
         try {
             fw = new FileWriter(f);
             write(datas, fw);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new StoreException(e);
-        }
-        finally {
+        } finally {
             if (fw != null)
                 try {
                     fw.close();
@@ -336,14 +331,11 @@ public class XMLFileHandler {
             throws SAXException {
             try {
                 startElement(qName, attrs);
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw re;
-            }
-            catch (SAXException se) {
+            } catch (SAXException se) {
                 throw se;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new SAXException(e);
             }
         }
@@ -403,14 +395,11 @@ public class XMLFileHandler {
             throws SAXException {
             try {
                 endElement(qName);
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw re;
-            }
-            catch (SAXException se) {
+            } catch (SAXException se) {
                 throw se;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new SAXException(e);
             }
         }

@@ -98,8 +98,7 @@ public class ExtentImpl
             while (itr.hasNext())
                 list.add(itr.next());
             return list;
-        }
-        finally {
+        } finally {
             ImplHelper.close(itr);
         }
     }
@@ -144,11 +143,9 @@ public class ExtentImpl
             else
                 citr = chain;
             citr.setRemoveOnClose(this);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
         }
 
@@ -157,8 +154,7 @@ public class ExtentImpl
             if (_openItrs == null)
                 _openItrs = new ReferenceHashSet(ReferenceHashSet.WEAK);
             _openItrs.add(citr);
-        }
-        finally {
+        } finally {
             unlock();
         }
         return citr;
@@ -192,14 +188,11 @@ public class ExtentImpl
                 }
             }
             _openItrs.clear();
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -260,8 +253,7 @@ public class ExtentImpl
                 _extent.lock();
                 try {
                     _extent._openItrs.remove(this);
-                }
-                finally {
+                } finally {
                     _extent.unlock();
                 }
             }
@@ -311,8 +303,7 @@ public class ExtentImpl
                 _extent.lock();
                 try {
                     _extent._openItrs.remove(this);
-                }
-                finally {
+                } finally {
                     _extent.unlock();
                 }
             }

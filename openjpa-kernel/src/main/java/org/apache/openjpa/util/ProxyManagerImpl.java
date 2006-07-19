@@ -74,8 +74,7 @@ public class ProxyManagerImpl
             cal = (ProxyGregorianCalendar) JavaVersions.
                 getVersionSpecificClass(ProxyGregorianCalendar.class).
                 newInstance();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
 
         _calendars.put(Calendar.class, cal);
@@ -201,8 +200,7 @@ public class ProxyManagerImpl
 
             System.arraycopy(orig, 0, array, 0, length);
             return array;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new UnsupportedException(_loc.get("bad-array",
                 e.getMessage()), e);
         }
@@ -256,8 +254,7 @@ public class ProxyManagerImpl
                 try {
                     p = (Proxy) type.newInstance();
                     proxies.put(type, p);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     throw new UnsupportedException(_loc.get("no-proxy-cons",
                         type), e);
                 }

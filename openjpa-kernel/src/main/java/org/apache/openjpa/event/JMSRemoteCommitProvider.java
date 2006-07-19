@@ -118,8 +118,7 @@ public class JMSRemoteCommitProvider
             _publisher.publish(createMessage(event));
             if (log.isTraceEnabled())
                 log.trace(s_loc.get("jms-sent-update", _topicName));
-        }
-        catch (JMSException jmse) {
+        } catch (JMSException jmse) {
             if (log.isWarnEnabled())
                 log.warn(s_loc.get("jms-send-error", _topicName), jmse);
         }
@@ -136,8 +135,7 @@ public class JMSRemoteCommitProvider
         catch (JMSException jmse) {
             if (log.isWarnEnabled())
                 log.warn(s_loc.get("jms-close-error", _topicName), jmse);
-        }
-        finally {
+        } finally {
             _connection = null;
         }
     }
@@ -179,11 +177,9 @@ public class JMSRemoteCommitProvider
  _connection.setExceptionListener(this);
  if (log.isInfoEnabled())
  log.info(s_loc.get("jms-start-listener", _topicName));
- }
- catch (OpenJPAException ke) {
+ } catch (OpenJPAException ke) {
  throw ke;
- }
- catch (Exception e) {
+ } catch (Exception e) {
  throw new UserException(s_loc.get("jms-provider-config",
  _topicName, _tcfName), e).setFatal(true);
  }
@@ -209,8 +205,7 @@ public class JMSRemoteCommitProvider
                 Object o;
                 try {
                     o = om.getObject();
-                }
-                catch (JMSException jmse) {
+                } catch (JMSException jmse) {
                     if (log.isWarnEnabled())
                         log.warn(s_loc.get("jms-receive-error-1"), jmse);
                     return;
@@ -256,14 +251,12 @@ public class JMSRemoteCommitProvider
                         String.valueOf(i + 1)));
                 connect();
                 connected = true;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 if (log.isInfoEnabled())
                     log.info(s_loc.get("jms-reconnect-fail", _topicName), e);
                 try {
                     Thread.sleep(1000);
-                }
-                catch (InterruptedException ie) {
+                } catch (InterruptedException ie) {
                     break;
                 }
             }

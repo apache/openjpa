@@ -34,11 +34,9 @@ class Exp
         StoreContext ctx, Object[] params) {
         try {
             return eval(candidate, candidate, ctx, params);
-        }
-        catch (ClassCastException cce) {
+        } catch (ClassCastException cce) {
             return false;
-        }
-        catch (NullPointerException npe) {
+        } catch (NullPointerException npe) {
             return false;
         }
     }
@@ -50,11 +48,9 @@ class Exp
         StoreContext ctx, Object[] params) {
         try {
             return eval(candidates, ctx, params);
-        }
-        catch (ClassCastException cce) {
+        } catch (ClassCastException cce) {
             return false;
-        }
-        catch (NullPointerException npe) {
+        } catch (NullPointerException npe) {
             return false;
         }
     }

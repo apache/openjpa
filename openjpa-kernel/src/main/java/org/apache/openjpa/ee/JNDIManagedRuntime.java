@@ -49,8 +49,7 @@ public class JNDIManagedRuntime
         Context ctx = new InitialContext();
         try {
             return (TransactionManager) ctx.lookup(_tmLoc);
-        }
-        finally {
+        } finally {
             ctx.close();
         }
 	}

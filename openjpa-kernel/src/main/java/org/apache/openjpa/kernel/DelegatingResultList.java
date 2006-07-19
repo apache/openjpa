@@ -80,8 +80,7 @@ public class DelegatingResultList
     public int hashCode() {
         try {
             return getInnermostDelegate().hashCode();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -93,8 +92,7 @@ public class DelegatingResultList
             other = ((DelegatingResultList) other).getInnermostDelegate();
         try {
             return getInnermostDelegate().equals(other);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -109,8 +107,7 @@ public class DelegatingResultList
     public boolean isProviderOpen() {
         try {
             return _del.isProviderOpen();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -118,8 +115,7 @@ public class DelegatingResultList
     public void close() {
         try {
             _del.close();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -127,8 +123,7 @@ public class DelegatingResultList
     public boolean isClosed() {
         try {
             return _del.isClosed();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -136,8 +131,7 @@ public class DelegatingResultList
     public int size() {
         try {
             return _del.size();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -145,8 +139,7 @@ public class DelegatingResultList
     public boolean isEmpty() {
         try {
             return _del.isEmpty();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -154,8 +147,7 @@ public class DelegatingResultList
     public boolean contains(Object o) {
         try {
             return _del.contains(o);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -167,8 +159,7 @@ public class DelegatingResultList
     public Object[] toArray() {
         try {
             return _del.toArray();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -176,8 +167,7 @@ public class DelegatingResultList
     public Object[] toArray(Object[] a) {
         try {
             return _del.toArray(a);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -185,8 +175,7 @@ public class DelegatingResultList
     public boolean add(Object o) {
         try {
             return _del.add(o);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -194,8 +183,7 @@ public class DelegatingResultList
     public boolean remove(Object o) {
         try {
             return _del.remove(o);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -203,8 +191,7 @@ public class DelegatingResultList
     public boolean containsAll(Collection c) {
         try {
             return _del.containsAll(c);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -212,8 +199,7 @@ public class DelegatingResultList
     public boolean addAll(Collection c) {
         try {
             return _del.addAll(c);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -221,8 +207,7 @@ public class DelegatingResultList
     public boolean addAll(int index, Collection c) {
         try {
             return _del.addAll(index, c);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -230,8 +215,7 @@ public class DelegatingResultList
     public boolean removeAll(Collection c) {
         try {
             return _del.removeAll(c);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -239,8 +223,7 @@ public class DelegatingResultList
     public boolean retainAll(Collection c) {
         try {
             return _del.retainAll(c);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -248,8 +231,7 @@ public class DelegatingResultList
     public void clear() {
         try {
             _del.clear();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -257,8 +239,7 @@ public class DelegatingResultList
     public Object get(int index) {
         try {
             return _del.get(index);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -266,8 +247,7 @@ public class DelegatingResultList
     public Object set(int index, Object element) {
         try {
             return _del.set(index, element);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -275,8 +255,7 @@ public class DelegatingResultList
     public void add(int index, Object element) {
         try {
             _del.add(index, element);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -284,8 +263,7 @@ public class DelegatingResultList
     public Object remove(int index) {
         try {
             return _del.remove(index);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -293,8 +271,7 @@ public class DelegatingResultList
     public int indexOf(Object o) {
         try {
             return _del.indexOf(o);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -302,8 +279,7 @@ public class DelegatingResultList
     public int lastIndexOf(Object o) {
         try {
             return _del.lastIndexOf(o);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -311,8 +287,7 @@ public class DelegatingResultList
     public ListIterator listIterator() {
         try {
             return new DelegatingListIterator(_del.listIterator());
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -320,8 +295,7 @@ public class DelegatingResultList
     public ListIterator listIterator(int index) {
         try {
             return new DelegatingListIterator(_del.listIterator(index));
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -329,8 +303,7 @@ public class DelegatingResultList
     public List subList(int fromIndex, int toIndex) {
         try {
             return _del.subList(fromIndex, toIndex);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -368,8 +341,7 @@ public class DelegatingResultList
         public int hashCode() {
             try {
                 return getInnermostDelegate().hashCode();
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw translate(re);
             }
         }
@@ -382,8 +354,7 @@ public class DelegatingResultList
                     getInnermostDelegate();
             try {
                 return getInnermostDelegate().equals(other);
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw translate(re);
             }
         }
@@ -391,8 +362,7 @@ public class DelegatingResultList
         public boolean hasNext() {
             try {
                 return _del.hasNext();
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw translate(re);
             }
         }
@@ -400,8 +370,7 @@ public class DelegatingResultList
         public Object next() {
             try {
                 return _del.next();
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw translate(re);
             }
         }
@@ -409,8 +378,7 @@ public class DelegatingResultList
         public boolean hasPrevious() {
             try {
                 return _del.hasPrevious();
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw translate(re);
             }
         }
@@ -418,8 +386,7 @@ public class DelegatingResultList
         public Object previous() {
             try {
                 return _del.previous();
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw translate(re);
             }
         }
@@ -427,8 +394,7 @@ public class DelegatingResultList
         public int nextIndex() {
             try {
                 return _del.nextIndex();
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw translate(re);
             }
         }
@@ -436,8 +402,7 @@ public class DelegatingResultList
         public int previousIndex() {
             try {
                 return _del.previousIndex();
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw translate(re);
             }
         }
@@ -445,8 +410,7 @@ public class DelegatingResultList
         public void remove() {
             try {
                 _del.remove();
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw translate(re);
             }
         }
@@ -454,8 +418,7 @@ public class DelegatingResultList
         public void set(Object o) {
             try {
                 _del.set(o);
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw translate(re);
             }
         }
@@ -463,8 +426,7 @@ public class DelegatingResultList
         public void add(Object o) {
             try {
                 _del.add(o);
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 throw translate (re);
 			}
 		}

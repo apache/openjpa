@@ -912,8 +912,7 @@ public class XMLPersistenceMetaDataParser
         Class idCls = null;
         try {
             idCls = classForName(cls);
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             throw getException(_loc.get("invalid-id-class", meta, cls), t);
         }
         meta.setObjectIdType(idCls, true);
@@ -1062,13 +1061,11 @@ public class XMLPersistenceMetaDataParser
                     try {
                         member = type.getDeclaredMethod("get" + cap,
                             (Class[]) null); // varargs disambiguate
-                    }
-                    catch (Exception excep) {
+                    } catch (Exception excep) {
                         try {
                             member = type.getDeclaredMethod("is" + cap,
                                 (Class[]) null);
-                        }
-                        catch (Exception excep2) {
+                        } catch (Exception excep2) {
                             throw excep;
                         }
                     }

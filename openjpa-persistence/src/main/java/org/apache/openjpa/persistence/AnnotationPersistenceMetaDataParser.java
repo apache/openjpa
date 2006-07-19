@@ -349,8 +349,7 @@ public class AnnotationPersistenceMetaDataParser
             parsePackageAnnotations();
             ClassMetaData meta = parseClassAnnotations();
             updateSourceMode(meta);
-        }
-        finally {
+        } finally {
             _cls = null;
             _file = null;
         }
@@ -673,10 +672,8 @@ public class AnnotationPersistenceMetaDataParser
         }
         try {
             _file = new File(url.toURI());
-        }
-        catch (URISyntaxException e) {
-        }
-        catch (IllegalArgumentException iae) {
+        } catch (URISyntaxException e) {
+        } catch (IllegalArgumentException iae) {
             // this is thrown when the URI is non-hierarchical (aka JBoss)
         }
         return _file;

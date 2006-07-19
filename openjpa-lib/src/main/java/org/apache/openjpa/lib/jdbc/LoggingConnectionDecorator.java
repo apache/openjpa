@@ -245,8 +245,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
             try {
                 super.commit();
-            }
-            finally {
+            } finally {
                 if (_logs.isJDBCEnabled())
                     _logs.logJDBC("commit", start, this);
                 handleSQLWarning();
@@ -258,8 +257,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
             try {
                 super.rollback();
-            }
-            finally {
+            } finally {
                 if (_logs.isJDBCEnabled())
                     _logs.logJDBC("rollback", start, this);
                 handleSQLWarning();
@@ -271,8 +269,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
             try {
                 super.close();
-            }
-            finally {
+            } finally {
                 if (_logs.isJDBCEnabled())
                     _logs.logJDBC("close", start, this);
             }
@@ -282,8 +279,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             long start = System.currentTimeMillis();
             try {
                 return super.setSavepoint();
-            }
-            finally {
+            } finally {
                 if (_logs.isJDBCEnabled())
                     _logs.logJDBC("savepoint", start, this);
                 handleSQLWarning();
@@ -294,8 +290,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             long start = System.currentTimeMillis();
             try {
                 return super.setSavepoint(name);
-            }
-            finally {
+            } finally {
                 if (_logs.isJDBCEnabled())
                     _logs.logJDBC("savepoint: " + name, start, this);
                 handleSQLWarning();
@@ -306,8 +301,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             long start = System.currentTimeMillis();
             try {
                 super.rollback(savepoint);
-            }
-            finally {
+            } finally {
                 if (_logs.isJDBCEnabled()) {
                     String name = null;
                     try {
@@ -325,8 +319,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             long start = System.currentTimeMillis();
             try {
                 super.releaseSavepoint(savepoint);
-            }
-            finally {
+            } finally {
                 if (_logs.isJDBCEnabled()) {
                     String name = null;
                     try {
@@ -415,8 +408,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
             try {
                 handleSQLWarning(getWarnings());
-            }
-            finally {
+            } finally {
                 clearWarnings();
             }
         }
@@ -432,8 +424,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
             try {
                 handleSQLWarning(stmnt.getWarnings());
-            }
-            finally {
+            } finally {
                 stmnt.clearWarnings();
             }
         }
@@ -449,8 +440,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
             try {
                 handleSQLWarning(rs.getWarnings());
-            }
-            finally {
+            } finally {
                 rs.clearWarnings();
             }
         }
@@ -723,8 +713,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     return super.executeQuery(sql, wrap);
                 } catch (SQLException se) {
                     throw wrap(se, LoggingStatement.this);
-                }
-                finally {
+                } finally {
                     if (_logs.isSQLEnabled())
                         _logs.logSQL("executing " + this, start,
                             LoggingConnection.this);
@@ -740,8 +729,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     return super.executeUpdate(sql);
                 } catch (SQLException se) {
                     throw wrap(se, LoggingStatement.this);
-                }
-                finally {
+                } finally {
                     if (_logs.isSQLEnabled())
                         _logs.logSQL("executing " + this, start,
                             LoggingConnection.this);
@@ -757,8 +745,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     return super.execute(sql);
                 } catch (SQLException se) {
                     throw wrap(se, LoggingStatement.this);
-                }
-                finally {
+                } finally {
                     if (_logs.isSQLEnabled())
                         _logs.logSQL("executing " + this, start,
                             LoggingConnection.this);
@@ -794,8 +781,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     return super.executeQuery(sql, wrap);
                 } catch (SQLException se) {
                     throw wrap(se, LoggingPreparedStatement.this);
-                }
-                finally {
+                } finally {
                     log("executing", start);
                     clearLogParameters(true);
                     handleSQLWarning(LoggingPreparedStatement.this);
@@ -809,8 +795,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     return super.executeUpdate(sql);
                 } catch (SQLException se) {
                     throw wrap(se, LoggingPreparedStatement.this);
-                }
-                finally {
+                } finally {
                     log("executing", start);
                     clearLogParameters(true);
                     handleSQLWarning(LoggingPreparedStatement.this);
@@ -824,8 +809,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     return super.execute(sql);
                 } catch (SQLException se) {
                     throw wrap(se, LoggingPreparedStatement.this);
-                }
-                finally {
+                } finally {
                     log("executing", start);
                     clearLogParameters(true);
                     handleSQLWarning(LoggingPreparedStatement.this);
@@ -839,8 +823,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     return super.executeQuery(wrap);
                 } catch (SQLException se) {
                     throw wrap(se, LoggingPreparedStatement.this);
-                }
-                finally {
+                } finally {
                     log("executing", start);
                     clearLogParameters(true);
                     handleSQLWarning(LoggingPreparedStatement.this);
@@ -854,8 +837,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     return super.executeUpdate();
                 } catch (SQLException se) {
                     throw wrap(se, LoggingPreparedStatement.this);
-                }
-                finally {
+                } finally {
                     log("executing", start);
                     clearLogParameters(true);
                     handleSQLWarning(LoggingPreparedStatement.this);
@@ -901,8 +883,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                         }
                     }
                     throw wrap(se, LoggingPreparedStatement.this);
-                }
-                finally {
+                } finally {
                     log("executing batch", start);
                     clearLogParameters(true);
                     handleSQLWarning(LoggingPreparedStatement.this);
@@ -916,8 +897,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     return super.execute();
                 } catch (SQLException se) {
                     throw wrap(se, LoggingPreparedStatement.this);
-                }
-                finally {
+                } finally {
                     log("executing", start);
                     clearLogParameters(true);
                     handleSQLWarning(LoggingPreparedStatement.this);
@@ -1221,8 +1201,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public boolean next() throws SQLException {
                 try {
                     return super.next();
-                }
-                finally {
+                } finally {
                     handleSQLWarning(LoggingResultSet.this);
                 }
             }
@@ -1230,8 +1209,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public void close() throws SQLException {
                 try {
                     super.close();
-                }
-                finally {
+                } finally {
                     handleSQLWarning(LoggingResultSet.this);
                 }
             }
@@ -1239,8 +1217,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public void beforeFirst() throws SQLException {
                 try {
                     super.beforeFirst();
-                }
-                finally {
+                } finally {
                     handleSQLWarning(LoggingResultSet.this);
                 }
             }
@@ -1248,8 +1225,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public void afterLast() throws SQLException {
                 try {
                     super.afterLast();
-                }
-                finally {
+                } finally {
                     handleSQLWarning(LoggingResultSet.this);
                 }
             }
@@ -1257,8 +1233,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public boolean first() throws SQLException {
                 try {
                     return super.first();
-                }
-                finally {
+                } finally {
                     handleSQLWarning(LoggingResultSet.this);
                 }
             }
@@ -1266,8 +1241,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public boolean last() throws SQLException {
                 try {
                     return super.last();
-                }
-                finally {
+                } finally {
                     handleSQLWarning(LoggingResultSet.this);
                 }
             }
@@ -1275,8 +1249,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public boolean absolute(int a) throws SQLException {
                 try {
                     return super.absolute(a);
-                }
-                finally {
+                } finally {
                     handleSQLWarning(LoggingResultSet.this);
                 }
             }
@@ -1284,8 +1257,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public boolean relative(int a) throws SQLException {
                 try {
                     return super.relative(a);
-                }
-                finally {
+                } finally {
                     handleSQLWarning(LoggingResultSet.this);
                 }
             }
@@ -1293,8 +1265,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             public boolean previous() throws SQLException {
                 try {
                     return super.previous();
-                }
-                finally {
+                } finally {
                     handleSQLWarning(LoggingResultSet.this);
                 }
             }

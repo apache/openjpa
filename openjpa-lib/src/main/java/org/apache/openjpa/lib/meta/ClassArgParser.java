@@ -250,8 +250,7 @@ public class ClassArgParser {
             if (source.toString().endsWith(".class"))
                 names.add(getFromClass(in));
             names.addAll(getFromMetaData(new InputStreamReader(in)));
-        }
-        finally {
+        } finally {
             try {
                 in.close();
             } catch (IOException ioe) {
@@ -294,8 +293,7 @@ public class ClassArgParser {
         try {
             fin = new FileInputStream(file);
             return getFromClass(fin);
-        }
-        finally {
+        } finally {
             if (fin != null)
                 try {
                     fin.close();
@@ -353,8 +351,7 @@ public class ClassArgParser {
                 clsName = pack + "." + clsName;
 
             return clsName;
-        }
-        finally {
+        } finally {
             if (in != null)
                 try {
                     in.close();
@@ -371,8 +368,7 @@ public class ClassArgParser {
         try {
             in = new FileReader(file);
             return getFromMetaData(in);
-        }
-        finally {
+        } finally {
             if (in != null)
                 try {
                     in.close();

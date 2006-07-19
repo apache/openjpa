@@ -55,8 +55,7 @@ public class Serialization {
             objs.writeObject(val);
             objs.flush();
             return bytes.toByteArray();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new StoreException(e);
         }
     }
@@ -77,8 +76,7 @@ public class Serialization {
             if (ctx == null)
                 return new ObjectInputStream(in).readObject();
             return new PersistentObjectInputStream(in, ctx).readObject();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new StoreException(e);
         }
     }

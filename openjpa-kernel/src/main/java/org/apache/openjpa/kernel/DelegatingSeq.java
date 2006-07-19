@@ -92,8 +92,7 @@ public class DelegatingSeq
     public void setType(int type) {
         try {
             _seq.setType(type);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -101,8 +100,7 @@ public class DelegatingSeq
     public Object next(StoreContext ctx, ClassMetaData meta) {
         try {
             return _seq.next(ctx, meta);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -110,8 +108,7 @@ public class DelegatingSeq
     public Object current(StoreContext ctx, ClassMetaData meta) {
         try {
             return _seq.current(ctx, meta);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -119,8 +116,7 @@ public class DelegatingSeq
     public void allocate(int additional, StoreContext ctx, ClassMetaData meta) {
         try {
             _seq.allocate(additional, ctx, meta);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -128,8 +124,7 @@ public class DelegatingSeq
     public void close() {
         try {
             _seq.close();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
 		}
 	}

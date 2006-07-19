@@ -211,8 +211,7 @@ public class CacheMap
         writeLock();
         try {
             cacheMap.setMaxSize((size < 0) ? Integer.MAX_VALUE : size);
-        }
-        finally {
+        } finally {
             writeUnlock();
         }
     }
@@ -232,8 +231,7 @@ public class CacheMap
         writeLock();
         try {
             softMap.setMaxSize((size < 0) ? Integer.MAX_VALUE : size);
-        }
-        finally {
+        } finally {
             writeUnlock();
         }
     }
@@ -253,8 +251,7 @@ public class CacheMap
         readLock();
         try {
             return Collections.unmodifiableSet(pinnedMap.keySet());
-        }
-        finally {
+        } finally {
             readUnlock();
         }
     }
@@ -287,8 +284,7 @@ public class CacheMap
                 return true;
             }
             return false;
-        }
-        finally {
+        } finally {
             writeUnlock();
         }
     }
@@ -307,8 +303,7 @@ public class CacheMap
                 return true;
             }
             return false;
-        }
-        finally {
+        } finally {
             writeUnlock();
         }
     }
@@ -353,8 +348,7 @@ public class CacheMap
                     put(key, val);
             }
             return val;
-        }
-        finally {
+        } finally {
             readUnlock();
         }
     }
@@ -396,8 +390,7 @@ public class CacheMap
                 entryAdded(key, value);
             }
             return val;
-        }
-        finally {
+        } finally {
             writeUnlock();
         }
     }
@@ -437,8 +430,7 @@ public class CacheMap
                 entryRemoved(key, val, false);
 
             return val;
-        }
-        finally {
+        } finally {
             writeUnlock();
         }
     }
@@ -458,8 +450,7 @@ public class CacheMap
 
             notifyEntryRemovals(softMap.entrySet());
             softMap.clear();
-        }
-        finally {
+        } finally {
             writeUnlock();
         }
     }
@@ -477,8 +468,7 @@ public class CacheMap
         readLock();
         try {
             return _pinnedSize + cacheMap.size() + softMap.size();
-        }
-        finally {
+        } finally {
             readUnlock();
         }
     }
@@ -493,8 +483,7 @@ public class CacheMap
             return pinnedMap.get(key) != null
                 || cacheMap.containsKey(key)
                 || softMap.containsKey(key);
-        }
-        finally {
+        } finally {
             readUnlock();
         }
     }
@@ -505,8 +494,7 @@ public class CacheMap
             return pinnedMap.containsValue(val)
                 || cacheMap.containsValue(val)
                 || softMap.containsValue(val);
-        }
-        finally {
+        } finally {
             readUnlock();
         }
     }
@@ -528,8 +516,7 @@ public class CacheMap
         try {
             return "CacheMap:" + cacheMap.toString() + "::"
                 + softMap.toString();
-        }
-        finally {
+        } finally {
             readUnlock();
         }
     }

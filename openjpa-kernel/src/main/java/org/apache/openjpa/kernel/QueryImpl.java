@@ -164,8 +164,7 @@ public class QueryImpl
             assertOpen();
             // allowed modification: no read-only check
             _ignoreChanges = flag;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -180,8 +179,7 @@ public class QueryImpl
         try {
             assertOpen();
             _readOnly = flag;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -194,8 +192,7 @@ public class QueryImpl
             if (_filtListeners == null)
                 _filtListeners = new HashMap(5);
             _filtListeners.put(listener.getTag(), listener);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -207,8 +204,7 @@ public class QueryImpl
             assertNotReadOnly();
             if (_filtListeners != null)
                 _filtListeners.remove(listener.getTag());
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -245,8 +241,7 @@ public class QueryImpl
             if (_aggListeners == null)
                 _aggListeners = new HashMap(5);
             _aggListeners.put(listener.getTag(), listener);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -258,8 +253,7 @@ public class QueryImpl
             assertNotReadOnly();
             if (_aggListeners != null)
                 _aggListeners.remove(listener.getTag());
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -308,8 +302,7 @@ public class QueryImpl
                 _extent.setIgnoreChanges(_ignoreChanges);
             }
             return _extent;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -343,8 +336,7 @@ public class QueryImpl
             }
             if (invalidate)
                 invalidateCompilation();
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -367,8 +359,7 @@ public class QueryImpl
             _collection = candidateCollection;
             if (_collection != null)
                 _extent = null;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -384,8 +375,7 @@ public class QueryImpl
             // check again after compilation; maybe encoded in string
             compileForCompilation();
             return _class;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -399,8 +389,7 @@ public class QueryImpl
             _subclasses = subs;
             _loader = null;
             invalidateCompilation();
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -426,8 +415,7 @@ public class QueryImpl
             _resultMappingScope = scope;
             _resultMappingName = name;
             _packer = null;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -453,8 +441,7 @@ public class QueryImpl
             if (!ex.isAggregate(_storeQuery))
                 return false;
             return !ex.hasGrouping(_storeQuery);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -465,8 +452,7 @@ public class QueryImpl
             assertOpen();
             assertNotReadOnly();
             _unique = (unique) ? Boolean.TRUE : Boolean.FALSE;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -482,8 +468,7 @@ public class QueryImpl
             // check again after compilation; maybe encoded in string
             compileForCompilation();
             return _resultClass;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -495,8 +480,7 @@ public class QueryImpl
             // allowed modification: no read-only check
             _resultClass = cls;
             _packer = null;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -512,8 +496,7 @@ public class QueryImpl
             // check again after compilation; maybe encoded in string
             compileForCompilation();
             return _startIdx;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -529,8 +512,7 @@ public class QueryImpl
             // check again after compilation; maybe encoded in string
             compileForCompilation();
             return _endIdx;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -550,8 +532,7 @@ public class QueryImpl
             // allowed modification: no read-only check
             _startIdx = start;
             _endIdx = end;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -566,8 +547,7 @@ public class QueryImpl
 
             compileForCompilation();
             return _params;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -587,8 +567,7 @@ public class QueryImpl
                 params = null;
             _params = params;
             invalidateCompilation();
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -598,8 +577,7 @@ public class QueryImpl
         try {
             assertOpen();
             getResultPacker(compileForExecutor());
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -620,14 +598,11 @@ public class QueryImpl
         try {
             _compiled = newCompilation();
             return _compiled;
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
-        }
-        finally {
+        } finally {
             _compiling = false;
             _readOnly = readOnly;
         }
@@ -727,11 +702,9 @@ public class QueryImpl
                     es[i] = _storeQuery.newDataStoreExecutor(metas[i], true);
             }
             return new MergedExecutor(es, this);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw new GeneralException(re);
         }
     }
@@ -794,14 +767,11 @@ public class QueryImpl
                 if (operation == OP_UPDATE)
                     return update(ex, params);
                 throw new UnsupportedException();
-            }
-            catch (OpenJPAException ke) {
+            } catch (OpenJPAException ke) {
                 throw ke;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new UserException(e);
-            }
-            finally {
+            } finally {
                 _broker.endOperation();
             }
         }
@@ -838,14 +808,11 @@ public class QueryImpl
                 if (operation == OP_UPDATE)
                     return update(ex, params);
                 throw new UnsupportedException();
-            }
-            catch (OpenJPAException ke) {
+            } catch (OpenJPAException ke) {
                 throw ke;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new UserException(e);
-            }
-            finally {
+            } finally {
                 _broker.endOperation();
             }
         }
@@ -981,8 +948,7 @@ public class QueryImpl
             _startIdx, _endIdx);
         try {
             return toResult(ex, rop, lrs);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             if (rop != null)
                 try {
                     rop.close();
@@ -1011,8 +977,7 @@ public class QueryImpl
             _startIdx, _endIdx);
         try {
             return toResult(ex, rop, lrs);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             if (rop != null)
                 try {
                     rop.close();
@@ -1059,11 +1024,9 @@ public class QueryImpl
             for (Iterator i = ((Collection) o).iterator(); i.hasNext(); size++)
                 _broker.delete(i.next(), null);
             return Numbers.valueOf(size);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new UserException(e);
         }
     }
@@ -1105,11 +1068,9 @@ public class QueryImpl
             for (Iterator i = ((Collection) o).iterator(); i.hasNext(); size++)
                 updateInMemory(i.next(), params);
             return Numbers.valueOf(size);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new UserException(e);
         }
     }
@@ -1348,8 +1309,7 @@ public class QueryImpl
 
             // return single result
             return single;
-        }
-        finally {
+        } finally {
             rop.close();
         }
     }
@@ -1423,8 +1383,7 @@ public class QueryImpl
                     res.close(false);
             }
             _resultLists.clear();
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1443,14 +1402,11 @@ public class QueryImpl
             Object[] arr = toParameterArray(ex.getParameterTypes(_storeQuery),
                 params);
             return ex.getDataStoreActions(_storeQuery, arr, _startIdx, _endIdx);
-        }
-        catch (OpenJPAException ke) {
+        } catch (OpenJPAException ke) {
             throw ke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new UserException(e);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1492,8 +1448,7 @@ public class QueryImpl
             if (q._aggListeners != null)
                 _aggListeners = new HashMap(q._aggListeners);
             return true;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1505,8 +1460,7 @@ public class QueryImpl
             if (alias == null)
                 alias = Strings.getClassName(_class);
             return alias;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1515,8 +1469,7 @@ public class QueryImpl
         lock();
         try {
             return compileForExecutor().getProjectionAliases(_storeQuery);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1525,8 +1478,7 @@ public class QueryImpl
         lock();
         try {
             return compileForExecutor().getProjectionTypes(_storeQuery);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1535,8 +1487,7 @@ public class QueryImpl
         lock();
         try {
             return compileForExecutor().getOperation(_storeQuery);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1545,8 +1496,7 @@ public class QueryImpl
         lock();
         try {
             return compileForExecutor().isAggregate(_storeQuery);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1555,8 +1505,7 @@ public class QueryImpl
         lock();
         try {
             return compileForExecutor().hasGrouping(_storeQuery);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1567,8 +1516,7 @@ public class QueryImpl
             ClassMetaData[] metas = compileForExecutor().
                 getAccessPathMetaDatas(_storeQuery);
             return (metas == null) ? StoreQuery.EMPTY_METAS : metas;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1577,8 +1525,7 @@ public class QueryImpl
         lock();
         try {
             return compileForExecutor().getParameterTypes(_storeQuery);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1587,8 +1534,7 @@ public class QueryImpl
         lock();
         try {
             return compileForExecutor().getUpdates(_storeQuery);
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1607,8 +1553,7 @@ public class QueryImpl
         lock();
         try {
             return compileForCompilation().storeData;
-        }
-        finally {
+        } finally {
             unlock();
         }
     }
@@ -1677,10 +1622,8 @@ public class QueryImpl
                 getClassLoader(_class, _broker.getClassLoader());
         try {
             return Strings.toClass(name, _loader);
-        }
-        catch (RuntimeException re) {
-        }
-        catch (NoClassDefFoundError ncdfe) {
+        } catch (RuntimeException re) {
+        } catch (NoClassDefFoundError ncdfe) {
         }
         return null;
     }
@@ -2127,8 +2070,7 @@ public class QueryImpl
                         break;
                     }
                 }
-            }
-            finally {
+            } finally {
                 unlock();
             }
         }

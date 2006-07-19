@@ -283,8 +283,7 @@ public class FormatPreservingProperties extends Properties {
         isLoading = true;
         try {
             loadProperties(in);
-        }
-        finally {
+        } finally {
             isLoading = false;
         }
     }

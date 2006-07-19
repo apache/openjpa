@@ -142,8 +142,7 @@ class CandidatePath
                 // get the specified field value and switch candidate
                 Traversal traversal = (Traversal) action;
                 candidate = sm.fetchField(traversal.field.getIndex(), true);
-            }
-            finally {
+            } finally {
                 // transactional does not clear the state, which is
                 // important since tmpCandidate might be also managed by
                 // another broker if it's a proxied non-pc instance

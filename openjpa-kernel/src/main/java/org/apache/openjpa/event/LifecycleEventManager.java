@@ -316,8 +316,7 @@ public class LifecycleEventManager
         for (int i = 0; !_fail && i < callbacks.length; i++) {
             try {
                 callbacks[i].makeCallback(source, related, type);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 exceptions.add(e);
                 if (failFast)
                     _fail = true;

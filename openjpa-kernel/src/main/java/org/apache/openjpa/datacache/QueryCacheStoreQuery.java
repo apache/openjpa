@@ -346,8 +346,7 @@ public class QueryCacheStoreQuery
         public Number executeDelete(StoreQuery q, Object[] params) {
             try {
                 return _ex.executeDelete(unwrap(q), params);
-            }
-            finally {
+            } finally {
                 clearAccesssPath(q);
             }
         }
@@ -355,8 +354,7 @@ public class QueryCacheStoreQuery
         public Number executeDelete(StoreQuery q, Map params) {
             try {
                 return _ex.executeDelete(unwrap(q), params);
-            }
-            finally {
+            } finally {
                 clearAccesssPath(q);
             }
         }
@@ -364,8 +362,7 @@ public class QueryCacheStoreQuery
         public Number executeUpdate(StoreQuery q, Object[] params) {
             try {
                 return _ex.executeUpdate(unwrap(q), params);
-            }
-            finally {
+            } finally {
                 clearAccesssPath(q);
             }
         }
@@ -373,8 +370,7 @@ public class QueryCacheStoreQuery
         public Number executeUpdate(StoreQuery q, Map params) {
             try {
                 return _ex.executeUpdate(unwrap(q), params);
-            }
-            finally {
+            } finally {
                 clearAccesssPath(q);
             }
         }

@@ -281,8 +281,7 @@ public abstract class AbstractExpressionBuilder {
     protected Object traverseStaticField(Class cls, String field) {
         try {
             return cls.getField(field).get(null);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // count not locate the field: return null
             return null;
         }

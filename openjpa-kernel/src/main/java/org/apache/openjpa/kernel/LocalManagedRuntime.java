@@ -76,8 +76,7 @@ class LocalManagedRuntime
                 _broker.beforeCompletion();
                 if (_factorySync != null)
                     _factorySync.beforeCompletion();
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 _rollbackOnly = true;
                 err = re;
             }
@@ -89,8 +88,7 @@ class LocalManagedRuntime
             try {
                 _broker.afterCompletion(Status.STATUS_COMMITTED);
                 notifyAfterCompletion(Status.STATUS_COMMITTED);
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 if (err == null)
                     err = re;
             }
@@ -100,8 +98,7 @@ class LocalManagedRuntime
         if (_active) {
             try {
                 rollback();
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 if (err == null)
                     err = re;
             }
@@ -120,16 +117,14 @@ class LocalManagedRuntime
         RuntimeException err = null;
         try {
             _broker.afterCompletion(Status.STATUS_ROLLEDBACK);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             err = re;
         }
 
         // rollback synch, even if broker throws exception
         try {
             notifyAfterCompletion(Status.STATUS_ROLLEDBACK);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             if (err == null)
                 err = re;
         }
@@ -149,8 +144,7 @@ class LocalManagedRuntime
         try {
             if (_factorySync != null)
                 _factorySync.afterCompletion(status);
-        }
-        finally {
+        } finally {
             _rollbackOnly = false;
             _factorySync = null;
         }

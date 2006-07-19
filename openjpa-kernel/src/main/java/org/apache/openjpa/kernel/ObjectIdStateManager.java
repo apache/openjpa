@@ -697,14 +697,12 @@ public class ObjectIdStateManager
             try {
                 meth = _oid.getClass().getMethod("get"
                     + StringUtils.capitalize(fmd.getName()), (Class[]) null);
-            }
-            catch (NoSuchMethodException nsme) {
+            } catch (NoSuchMethodException nsme) {
                 meth = _oid.getClass().getMethod("is"
                     + StringUtils.capitalize(fmd.getName()), (Class[]) null);
             }
             return meth.invoke(_oid, (Object[]) null);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new GeneralException(e);
         }
     }
@@ -718,8 +716,7 @@ public class ObjectIdStateManager
         if (_oid == null && forceInst) {
             try {
                 _oid = getMetaData().getDescribedType().newInstance();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new GeneralException(e);
             }
         } else if (_oid == null)
@@ -736,8 +733,7 @@ public class ObjectIdStateManager
                 _oid.getClass().getMethod("set" + StringUtils.capitalize
                     (fmd.getName()), new Class[]{ fmd.getDeclaredType() }).
                     invoke(_oid, new Object[]{ val });
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new GeneralException(e);
         }
 	}

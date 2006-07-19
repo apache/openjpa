@@ -101,16 +101,14 @@ public class TestMultiClassLoader extends TestCase {
  assertEquals(TestMultiClassLoader.class, Class.forName
  (TestMultiClassLoader.class.getName(), true, _loader));
  fail("System class laoder still working.");
- }
- catch (ClassNotFoundException cnfe)
+ } catch (ClassNotFoundException cnfe)
  {
  }
  try
  {
  Class.forName("foo", true, _loader);
  fail("Somehow found 'foo'???");
- }
- catch (ClassNotFoundException cnfe)
+ } catch (ClassNotFoundException cnfe)
  {
  }
  _loader.addClassLoader(new FooLoader());

@@ -1,0 +1,164 @@
+/*
+ * Copyright 2006 The Apache Software Foundation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.openjpa.jdbc.kernel;
+
+import java.sql.ResultSet;
+import java.util.Collection;
+
+import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
+import org.apache.openjpa.kernel.FetchConfiguration;
+
+/**
+ * JDBC extensions to OpenJPA's {@link FetchConfiguration}.
+ *
+ * @author Abe White
+ * @since 3.0
+ */
+public interface JDBCFetchConfiguration
+    extends FetchConfiguration, EagerFetchModes, LRSSizes, JoinSyntaxes {
+
+    /**
+     * Return the eager fetch mode. Defaults to the
+     * <code>openjpa.jdbc.EagerFetchMode</code> setting.
+     */
+    public int getEagerFetchMode();
+
+    /**
+     * Set the eager fetch mode. Defaults to the
+     * <code>openjpa.jdbc.EagerFetchMode</code> setting.
+     */
+    public JDBCFetchConfiguration setEagerFetchMode(int mode);
+
+    /**
+     * Return the subclass fetch mode. Defaults to the
+     * <code>openjpa.jdbc.SubclassFetchMode</code> setting.
+     */
+    public int getSubclassFetchMode();
+
+    /**
+     * Return the effective subclass fetch mode for the given type.
+     */
+    public int getSubclassFetchMode(ClassMapping cls);
+
+    /**
+     * Set the subclass fetch mode. Defaults to the
+     * <code>openjpa.jdbc.SubclassFetchMode</code> setting.
+     */
+    public JDBCFetchConfiguration setSubclassFetchMode(int mode);
+
+    /**
+     * The result set type to use as a constant from {@link ResultSet}.
+     * Defaults to the <code>openjpa.jdbc.ResultSetType</code> setting.
+     */
+    public int getResultSetType();
+
+    /**
+     * The result set type to use as a constant from {@link ResultSet}.
+     * Defaults to the <code>openjpa.jdbc.ResultSetType</code> setting.
+     */
+    public JDBCFetchConfiguration setResultSetType(int type);
+
+    /**
+     * The fetch direction to use as a constant from {@link ResultSet}.
+     * Defaults to the <code>openjpa.jdbc.FetchDirection</code> setting.
+     */
+    public int getFetchDirection();
+
+    /**
+     * The fetch direction to use as a constant from {@link ResultSet}.
+     * Defaults to the <code>openjpa.jdbc.FetchDirection</code> setting.
+     */
+    public JDBCFetchConfiguration setFetchDirection(int direction);
+
+    /**
+     * The large result set size mode to use.
+     * Defaults to the <code>openjpa.jdbc.LRSSize</code> setting.
+     */
+    public int getLRSSize();
+
+    /**
+     * The large result set size mode to use.
+     * Defaults to the <code>openjpa.jdbc.LRSSize</code> setting.
+     */
+    public JDBCFetchConfiguration setLRSSize(int lrsSize);
+
+    /**
+     * The join syntax to use.
+     */
+    public int getJoinSyntax();
+
+    /**
+     * The join syntax to use.
+     */
+    public JDBCFetchConfiguration setJoinSyntax(int syntax);
+
+    /**
+     * Returns the names of the joins that this component will use
+     * when loading objects. Defaults to the empty set.
+     *
+     * @since 4.0.0
+     */
+    public String[] getJoins();
+
+    /**
+     * Return true if the given fully-qualified join has been added.
+     *
+     * @since 4.0.0
+     */
+    public boolean hasJoin(String field);
+
+    /**
+     * Adds <code>field</code> to the set of fully-qualified field names to
+     * eagerly join when loading objects. Each class can have at most
+     * one to-many eagerly joined fields.
+     *
+     * @since 4.0.0
+     */
+    public JDBCFetchConfiguration addJoin(String field);
+
+    /**
+     * Adds <code>fields</code> to the set of fully-qualified field names to
+     * eagerly join when loading objects. Each class can have at most
+     * one to-many eagerly joined fields.
+     *
+     * @since 4.0.0
+     */
+    public JDBCFetchConfiguration addJoins(Collection fields);
+
+    /**
+     * Removes <code>field</code> to the set of fully-qualified field names to
+     * eagerly join when loading objects.
+     *
+     * @since 4.0.0
+     */
+    public JDBCFetchConfiguration removeJoin(String field);
+
+    /**
+     * Removes <code>fields</code> from the set of fully-qualified
+     * field names to eagerly join when loading objects.
+     *
+     * @since 4.0.0
+     */
+    public JDBCFetchConfiguration removeJoins(Collection fields);
+
+    /**
+     * Clears the set of field names to join when loading data.
+     *
+     * @since 4.0.0
+     */
+    public JDBCFetchConfiguration clearJoins();
+}

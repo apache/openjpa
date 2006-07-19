@@ -709,8 +709,7 @@ public class Filters {
             try {
                 return (AggregateListener) Class.forName((String) hint, true,
                     loader).newInstance();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 cause = e;
             }
         }
@@ -746,8 +745,7 @@ public class Filters {
                     aggs[i] = (AggregateListener) Class.forName(clss[i], true,
                         loader).newInstance();
                 return aggs;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 cause = e;
             }
         }
@@ -771,8 +769,7 @@ public class Filters {
             try {
                 return (FilterListener) Class.forName((String) hint, true,
                     loader).newInstance();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 cause = e;
             }
         }
@@ -807,8 +804,7 @@ public class Filters {
                     filts[i] = (FilterListener) Class.forName(clss[i], true,
                         loader).newInstance();
                 return filts;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 cause = e;
             }
         }
@@ -826,8 +822,7 @@ public class Filters {
         Method getter = ImplHelper.getGetter(target.getClass(), hintKey);
         try {
             return getter.invoke(target, (Object[]) null);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Throwable t = e;
             if (e instanceof InvocationTargetException)
                 t = ((InvocationTargetException) e).getTargetException();
@@ -854,8 +849,7 @@ public class Filters {
                         setter.getParameterTypes()[0]);
             }
             setter.invoke(target, new Object[]{ value });
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Throwable t = e;
             if (e instanceof InvocationTargetException)
                 t = ((InvocationTargetException) e).getTargetException();

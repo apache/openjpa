@@ -111,8 +111,7 @@ public class DelegatingBroker
     public OpenJPAConfiguration getConfiguration() {
         try {
             return _broker.getConfiguration();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -120,8 +119,7 @@ public class DelegatingBroker
     public FetchConfiguration getFetchConfiguration() {
         try {
             return _broker.getFetchConfiguration();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -129,8 +127,7 @@ public class DelegatingBroker
     public ClassLoader getClassLoader() {
         try {
             return _broker.getClassLoader();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -138,8 +135,7 @@ public class DelegatingBroker
     public LockManager getLockManager() {
         try {
             return _broker.getLockManager();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -147,8 +143,7 @@ public class DelegatingBroker
     public DelegatingStoreManager getStoreManager() {
         try {
             return _broker.getStoreManager();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -156,8 +151,7 @@ public class DelegatingBroker
     public String getConnectionUserName() {
         try {
             return _broker.getConnectionUserName();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -165,8 +159,7 @@ public class DelegatingBroker
     public String getConnectionPassword() {
         try {
             return _broker.getConnectionPassword();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -174,8 +167,7 @@ public class DelegatingBroker
     public Object find(Object oid, boolean validate, FindCallbacks call) {
         try {
             return _broker.find(oid, validate, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -184,8 +176,7 @@ public class DelegatingBroker
         FindCallbacks call) {
         try {
             return _broker.findAll(oids, validate, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -193,8 +184,7 @@ public class DelegatingBroker
     public Object findCached(Object oid, FindCallbacks call) {
         try {
             return _broker.findCached(oid, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -203,8 +193,7 @@ public class DelegatingBroker
         Object edata, int flags) {
         try {
             return _broker.find(oid, fetchState, exclude, edata, flags);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -213,8 +202,7 @@ public class DelegatingBroker
         BitSet exclude, Object edata, int flags) {
         try {
             return _broker.findAll(oids, fetchState, exclude, edata, flags);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -223,8 +211,7 @@ public class DelegatingBroker
         FetchConfiguration fetch, boolean ignoreChanges) {
         try {
             return _broker.extentIterator(cls, subs, fetch, ignoreChanges);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -232,8 +219,7 @@ public class DelegatingBroker
     public void retrieve(Object obj, boolean fgOnly, OpCallbacks call) {
         try {
             _broker.retrieve(obj, fgOnly, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -241,8 +227,7 @@ public class DelegatingBroker
     public void retrieveAll(Collection objs, boolean fgOnly, OpCallbacks call) {
         try {
             _broker.retrieveAll(objs, fgOnly, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -251,8 +236,7 @@ public class DelegatingBroker
         OpenJPAStateManager owner, ValueMetaData ownerMeta) {
         try {
             return _broker.embed(obj, id, owner, ownerMeta);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -260,8 +244,7 @@ public class DelegatingBroker
     public Class getObjectIdType(Class cls) {
         try {
             return _broker.getObjectIdType(cls);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -269,8 +252,7 @@ public class DelegatingBroker
     public Object newObjectId(Class cls, Object val) {
         try {
             return _broker.newObjectId(cls, val);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -278,8 +260,7 @@ public class DelegatingBroker
     public Collection getManagedObjects() {
         try {
             return _broker.getManagedObjects();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -287,8 +268,7 @@ public class DelegatingBroker
     public Collection getTransactionalObjects() {
         try {
             return _broker.getTransactionalObjects();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -296,8 +276,7 @@ public class DelegatingBroker
     public Collection getPendingTransactionalObjects() {
         try {
             return _broker.getPendingTransactionalObjects();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -305,8 +284,7 @@ public class DelegatingBroker
     public Collection getDirtyObjects() {
         try {
             return _broker.getDirtyObjects();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -314,8 +292,7 @@ public class DelegatingBroker
     public boolean getOrderDirtyObjects() {
         try {
             return _broker.getOrderDirtyObjects();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -323,8 +300,7 @@ public class DelegatingBroker
     public void setOrderDirtyObjects(boolean order) {
         try {
             _broker.setOrderDirtyObjects(order);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -332,8 +308,7 @@ public class DelegatingBroker
     public Collection getPersistedTypes() {
         try {
             return _broker.getPersistedTypes();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -341,8 +316,7 @@ public class DelegatingBroker
     public Collection getUpdatedTypes() {
         try {
             return _broker.getUpdatedTypes();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -350,8 +324,7 @@ public class DelegatingBroker
     public Collection getDeletedTypes() {
         try {
             return _broker.getDeletedTypes();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -359,8 +332,7 @@ public class DelegatingBroker
     public OpenJPAStateManager getStateManager(Object obj) {
         try {
             return _broker.getStateManager(obj);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -368,8 +340,7 @@ public class DelegatingBroker
     public int getLockLevel(Object obj) {
         try {
             return _broker.getLockLevel(obj);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -377,8 +348,7 @@ public class DelegatingBroker
     public Object getVersion(Object obj) {
         try {
             return _broker.getVersion(obj);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -386,8 +356,7 @@ public class DelegatingBroker
     public boolean isDirty(Object obj) {
         try {
             return _broker.isDirty(obj);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -395,8 +364,7 @@ public class DelegatingBroker
     public boolean isTransactional(Object obj) {
         try {
             return _broker.isTransactional(obj);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -404,8 +372,7 @@ public class DelegatingBroker
     public boolean isPersistent(Object obj) {
         try {
             return _broker.isPersistent(obj);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -413,8 +380,7 @@ public class DelegatingBroker
     public boolean isNew(Object obj) {
         try {
             return _broker.isNew(obj);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -422,8 +388,7 @@ public class DelegatingBroker
     public boolean isDeleted(Object obj) {
         try {
             return _broker.isDeleted(obj);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -431,8 +396,7 @@ public class DelegatingBroker
     public Object getObjectId(Object obj) {
         try {
             return _broker.getObjectId(obj);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -440,8 +404,7 @@ public class DelegatingBroker
     public boolean isManaged() {
         try {
             return _broker.isManaged();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -449,8 +412,7 @@ public class DelegatingBroker
     public boolean isActive() {
         try {
             return _broker.isActive();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -458,8 +420,7 @@ public class DelegatingBroker
     public boolean isStoreActive() {
         try {
             return _broker.isStoreActive();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -467,8 +428,7 @@ public class DelegatingBroker
     public boolean hasConnection() {
         try {
             return _broker.hasConnection();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -476,8 +436,7 @@ public class DelegatingBroker
     public Object getConnection() {
         try {
             return _broker.getConnection();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -485,8 +444,7 @@ public class DelegatingBroker
     public void lock() {
         try {
             _broker.lock();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -494,8 +452,7 @@ public class DelegatingBroker
     public void unlock() {
         try {
             _broker.unlock();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -503,8 +460,7 @@ public class DelegatingBroker
     public boolean beginOperation(boolean read) {
         try {
             return _broker.beginOperation(read);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -512,8 +468,7 @@ public class DelegatingBroker
     public boolean endOperation() {
         try {
             return _broker.endOperation();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -522,8 +477,7 @@ public class DelegatingBroker
         RuntimeExceptionTranslator ex) {
         try {
             _broker.setImplicitBehavior(call, ex);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -531,8 +485,7 @@ public class DelegatingBroker
     public BrokerFactory getBrokerFactory() {
         try {
             return _broker.getBrokerFactory();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -540,8 +493,7 @@ public class DelegatingBroker
     public int getConnectionRetainMode() {
         try {
             return _broker.getConnectionRetainMode();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -549,8 +501,7 @@ public class DelegatingBroker
     public ManagedRuntime getManagedRuntime() {
         try {
             return _broker.getManagedRuntime();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -558,8 +509,7 @@ public class DelegatingBroker
     public InverseManager getInverseManager() {
         try {
             return _broker.getInverseManager();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -567,8 +517,7 @@ public class DelegatingBroker
     public boolean getMultithreaded() {
         try {
             return _broker.getMultithreaded();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -576,8 +525,7 @@ public class DelegatingBroker
     public void setMultithreaded(boolean multi) {
         try {
             _broker.setMultithreaded(multi);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -585,8 +533,7 @@ public class DelegatingBroker
     public boolean getIgnoreChanges() {
         try {
             return _broker.getIgnoreChanges();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -594,8 +541,7 @@ public class DelegatingBroker
     public void setIgnoreChanges(boolean ignore) {
         try {
             _broker.setIgnoreChanges(ignore);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -603,8 +549,7 @@ public class DelegatingBroker
     public boolean getNontransactionalRead() {
         try {
             return _broker.getNontransactionalRead();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -612,8 +557,7 @@ public class DelegatingBroker
     public void setNontransactionalRead(boolean read) {
         try {
             _broker.setNontransactionalRead(read);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -621,8 +565,7 @@ public class DelegatingBroker
     public boolean getNontransactionalWrite() {
         try {
             return _broker.getNontransactionalWrite();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -630,8 +573,7 @@ public class DelegatingBroker
     public void setNontransactionalWrite(boolean write) {
         try {
             _broker.setNontransactionalWrite(write);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -639,8 +581,7 @@ public class DelegatingBroker
     public int getRestoreState() {
         try {
             return _broker.getRestoreState();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -648,8 +589,7 @@ public class DelegatingBroker
     public void setRestoreState(int restore) {
         try {
             _broker.setRestoreState(restore);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -657,8 +597,7 @@ public class DelegatingBroker
     public boolean getOptimistic() {
         try {
             return _broker.getOptimistic();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -666,8 +605,7 @@ public class DelegatingBroker
     public void setOptimistic(boolean opt) {
         try {
             _broker.setOptimistic(opt);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -675,8 +613,7 @@ public class DelegatingBroker
     public boolean getRetainState() {
         try {
             return _broker.getRetainState();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -684,8 +621,7 @@ public class DelegatingBroker
     public void setRetainState(boolean retain) {
         try {
             _broker.setRetainState(retain);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -693,8 +629,7 @@ public class DelegatingBroker
     public int getAutoClear() {
         try {
             return _broker.getAutoClear();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -702,8 +637,7 @@ public class DelegatingBroker
     public void setAutoClear(int clear) {
         try {
             _broker.setAutoClear(clear);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -711,8 +645,7 @@ public class DelegatingBroker
     public int getAutoDetach() {
         try {
             return _broker.getAutoDetach();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -720,8 +653,7 @@ public class DelegatingBroker
     public void setAutoDetach(int flags) {
         try {
             _broker.setAutoDetach(flags);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -729,8 +661,7 @@ public class DelegatingBroker
     public void setAutoDetach(int flag, boolean on) {
         try {
             _broker.setAutoDetach(flag, on);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -738,8 +669,7 @@ public class DelegatingBroker
     public int getDetachState() {
         try {
             return _broker.getDetachState();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -747,8 +677,7 @@ public class DelegatingBroker
     public void setDetachState(int mode) {
         try {
             _broker.setDetachState(mode);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -756,8 +685,7 @@ public class DelegatingBroker
     public boolean isDetachedNew() {
         try {
             return _broker.isDetachedNew();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -765,8 +693,7 @@ public class DelegatingBroker
     public void setDetachedNew(boolean isNew) {
         try {
             _broker.setDetachedNew(isNew);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -774,8 +701,7 @@ public class DelegatingBroker
     public boolean getSyncWithManagedTransactions() {
         try {
             return _broker.getSyncWithManagedTransactions();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -783,8 +709,7 @@ public class DelegatingBroker
     public void setSyncWithManagedTransactions(boolean sync) {
         try {
             _broker.setSyncWithManagedTransactions(sync);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -792,8 +717,7 @@ public class DelegatingBroker
     public boolean getEvictFromDataCache() {
         try {
             return _broker.getEvictFromDataCache();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -801,8 +725,7 @@ public class DelegatingBroker
     public void setEvictFromDataCache(boolean evict) {
         try {
             _broker.setEvictFromDataCache(evict);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -810,8 +733,7 @@ public class DelegatingBroker
     public boolean getPopulateDataCache() {
         try {
             return _broker.getPopulateDataCache();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -819,8 +741,7 @@ public class DelegatingBroker
     public void setPopulateDataCache(boolean cache) {
         try {
             _broker.setPopulateDataCache(cache);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -828,8 +749,7 @@ public class DelegatingBroker
     public boolean isLargeTransaction() {
         try {
             return _broker.isLargeTransaction();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -837,8 +757,7 @@ public class DelegatingBroker
     public void setLargeTransaction(boolean largeTransaction) {
         try {
             _broker.setLargeTransaction(largeTransaction);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -846,8 +765,7 @@ public class DelegatingBroker
     public Object putUserObject(Object key, Object val) {
         try {
             return _broker.putUserObject(key, val);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -855,8 +773,7 @@ public class DelegatingBroker
     public Object getUserObject(Object key) {
         try {
             return _broker.getUserObject(key);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -864,8 +781,7 @@ public class DelegatingBroker
     public void addTransactionListener(Object listener) {
         try {
             _broker.addTransactionListener(listener);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -873,8 +789,7 @@ public class DelegatingBroker
     public void removeTransactionListener(Object listener) {
         try {
             _broker.removeTransactionListener(listener);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -882,8 +797,7 @@ public class DelegatingBroker
     public void addLifecycleListener(Object listener, Class[] classes) {
         try {
             _broker.addLifecycleListener(listener, classes);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -891,8 +805,7 @@ public class DelegatingBroker
     public void removeLifecycleListener(Object listener) {
         try {
             _broker.removeLifecycleListener(listener);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -900,8 +813,7 @@ public class DelegatingBroker
     public LifecycleEventManager getLifecycleEventManager() {
         try {
             return _broker.getLifecycleEventManager();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -909,8 +821,7 @@ public class DelegatingBroker
     public void begin() {
         try {
             _broker.begin();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -918,8 +829,7 @@ public class DelegatingBroker
     public void commit() {
         try {
             _broker.commit();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -927,8 +837,7 @@ public class DelegatingBroker
     public void rollback() {
         try {
             _broker.rollback();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -936,8 +845,7 @@ public class DelegatingBroker
     public boolean syncWithManagedTransaction() {
         try {
             return _broker.syncWithManagedTransaction();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -945,8 +853,7 @@ public class DelegatingBroker
     public void commitAndResume() {
         try {
             _broker.commitAndResume();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -954,8 +861,7 @@ public class DelegatingBroker
     public void rollbackAndResume() {
         try {
             _broker.rollbackAndResume();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -963,8 +869,7 @@ public class DelegatingBroker
     public void setRollbackOnly() {
         try {
             _broker.setRollbackOnly();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -972,8 +877,7 @@ public class DelegatingBroker
     public boolean getRollbackOnly() {
         try {
             return _broker.getRollbackOnly();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -981,8 +885,7 @@ public class DelegatingBroker
     public void setSavepoint(String name) {
         try {
             _broker.setSavepoint(name);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -990,8 +893,7 @@ public class DelegatingBroker
     public void rollbackToSavepoint() {
         try {
             _broker.rollbackToSavepoint();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -999,8 +901,7 @@ public class DelegatingBroker
     public void rollbackToSavepoint(String name) {
         try {
             _broker.rollbackToSavepoint(name);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1008,8 +909,7 @@ public class DelegatingBroker
     public void releaseSavepoint() {
         try {
             _broker.releaseSavepoint();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1017,8 +917,7 @@ public class DelegatingBroker
     public void releaseSavepoint(String name) {
         try {
             _broker.releaseSavepoint(name);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1026,8 +925,7 @@ public class DelegatingBroker
     public void flush() {
         try {
             _broker.flush();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1035,8 +933,7 @@ public class DelegatingBroker
     public void preFlush() {
         try {
             _broker.preFlush();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1044,8 +941,7 @@ public class DelegatingBroker
     public void validateChanges() {
         try {
             _broker.validateChanges();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1053,8 +949,7 @@ public class DelegatingBroker
     public void beginStore() {
         try {
             _broker.beginStore();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1062,8 +957,7 @@ public class DelegatingBroker
     public void persist(Object obj, OpCallbacks call) {
         try {
             _broker.persist(obj, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1071,8 +965,7 @@ public class DelegatingBroker
     public void persistAll(Collection objs, OpCallbacks call) {
         try {
             _broker.persistAll(objs, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1081,8 +974,7 @@ public class DelegatingBroker
         OpCallbacks call) {
         try {
             return _broker.persist(obj, id, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1090,8 +982,7 @@ public class DelegatingBroker
     public void delete(Object obj, OpCallbacks call) {
         try {
             _broker.delete(obj, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1099,8 +990,7 @@ public class DelegatingBroker
     public void deleteAll(Collection objs, OpCallbacks call) {
         try {
             _broker.deleteAll(objs, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1108,8 +998,7 @@ public class DelegatingBroker
     public void release(Object obj, OpCallbacks call) {
         try {
             _broker.release(obj, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1117,8 +1006,7 @@ public class DelegatingBroker
     public void releaseAll(Collection objs, OpCallbacks call) {
         try {
             _broker.releaseAll(objs, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1126,8 +1014,7 @@ public class DelegatingBroker
     public void refresh(Object obj, OpCallbacks call) {
         try {
             _broker.refresh(obj, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1135,8 +1022,7 @@ public class DelegatingBroker
     public void refreshAll(Collection objs, OpCallbacks call) {
         try {
             _broker.refreshAll(objs, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1144,8 +1030,7 @@ public class DelegatingBroker
     public void evict(Object obj, OpCallbacks call) {
         try {
             _broker.evict(obj, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1153,8 +1038,7 @@ public class DelegatingBroker
     public void evictAll(Collection objs, OpCallbacks call) {
         try {
             _broker.evictAll(objs, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1162,8 +1046,7 @@ public class DelegatingBroker
     public void evictAll(OpCallbacks call) {
         try {
             _broker.evictAll(call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1171,8 +1054,7 @@ public class DelegatingBroker
     public void evictAll(Extent extent, OpCallbacks call) {
         try {
             _broker.evictAll(extent, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1180,8 +1062,7 @@ public class DelegatingBroker
     public Object detach(Object obj, OpCallbacks call) {
         try {
             return _broker.detach(obj, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1189,8 +1070,7 @@ public class DelegatingBroker
     public Object[] detachAll(Collection objs, OpCallbacks call) {
         try {
             return _broker.detachAll(objs, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1198,8 +1078,7 @@ public class DelegatingBroker
     public void detachAll(OpCallbacks call) {
         try {
             _broker.detachAll(call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1207,8 +1086,7 @@ public class DelegatingBroker
     public Object attach(Object obj, boolean copyNew, OpCallbacks call) {
         try {
             return _broker.attach(obj, copyNew, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1217,8 +1095,7 @@ public class DelegatingBroker
         OpCallbacks call) {
         try {
             return _broker.attachAll(objs, copyNew, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1227,8 +1104,7 @@ public class DelegatingBroker
         call) {
         try {
             _broker.transactional(pc, updateVersion, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1237,8 +1113,7 @@ public class DelegatingBroker
         OpCallbacks call) {
         try {
             _broker.transactionalAll(objs, updateVersion, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1246,8 +1121,7 @@ public class DelegatingBroker
     public void nontransactional(Object pc, OpCallbacks call) {
         try {
             _broker.nontransactional(pc, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1255,8 +1129,7 @@ public class DelegatingBroker
     public void nontransactionalAll(Collection objs, OpCallbacks call) {
         try {
             _broker.nontransactionalAll(objs, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1264,8 +1137,7 @@ public class DelegatingBroker
     public Extent newExtent(Class cls, boolean subs) {
         try {
             return _broker.newExtent(cls, subs);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1273,8 +1145,7 @@ public class DelegatingBroker
     public Query newQuery(String language, Class cls, Object query) {
         try {
             return _broker.newQuery(language, cls, query);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1282,8 +1153,7 @@ public class DelegatingBroker
     public Query newQuery(String language, Object query) {
         try {
             return _broker.newQuery(language, query);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1291,8 +1161,7 @@ public class DelegatingBroker
     public Seq getIdentitySequence(ClassMetaData meta) {
         try {
             return _broker.getIdentitySequence(meta);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1300,8 +1169,7 @@ public class DelegatingBroker
     public Seq getValueSequence(FieldMetaData fmd) {
         try {
             return _broker.getValueSequence(fmd);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1309,8 +1177,7 @@ public class DelegatingBroker
     public void lock(Object obj, int level, int timeout, OpCallbacks call) {
         try {
             _broker.lock(obj, level, timeout, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1318,8 +1185,7 @@ public class DelegatingBroker
     public void lock(Object obj, OpCallbacks call) {
         try {
             _broker.lock(obj, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1328,8 +1194,7 @@ public class DelegatingBroker
         OpCallbacks call) {
         try {
             _broker.lockAll(objs, level, timeout, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1337,8 +1202,7 @@ public class DelegatingBroker
     public void lockAll(Collection objs, OpCallbacks call) {
         try {
             _broker.lockAll(objs, call);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1346,8 +1210,7 @@ public class DelegatingBroker
     public boolean cancelAll() {
         try {
             return _broker.cancelAll();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1355,8 +1218,7 @@ public class DelegatingBroker
     public void dirtyType(Class cls) {
         try {
             _broker.dirtyType(cls);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1364,8 +1226,7 @@ public class DelegatingBroker
     public void close() {
         try {
             _broker.close();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1373,8 +1234,7 @@ public class DelegatingBroker
     public boolean isClosed() {
         try {
             return _broker.isClosed();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1382,8 +1242,7 @@ public class DelegatingBroker
     public void assertOpen() {
         try {
             _broker.assertOpen();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1391,8 +1250,7 @@ public class DelegatingBroker
     public void assertActiveTransaction() {
         try {
             _broker.assertActiveTransaction();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1400,8 +1258,7 @@ public class DelegatingBroker
     public void assertNontransactionalRead() {
         try {
             _broker.assertNontransactionalRead();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1409,8 +1266,7 @@ public class DelegatingBroker
     public void assertWriteOperation() {
         try {
             _broker.assertWriteOperation();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1422,8 +1278,7 @@ public class DelegatingBroker
     public void beforeCompletion() {
         try {
             _broker.beforeCompletion();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1431,8 +1286,7 @@ public class DelegatingBroker
     public void afterCompletion(int status) {
         try {
             _broker.afterCompletion(status);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1445,8 +1299,7 @@ public class DelegatingBroker
         throws ResourceException {
         try {
             return _broker.getMetaData();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1455,8 +1308,7 @@ public class DelegatingBroker
         throws ResourceException {
         try {
             return _broker.createInteraction();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1470,8 +1322,7 @@ public class DelegatingBroker
         throws ResourceException {
         try {
             return _broker.getResultSetInfo();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1479,8 +1330,7 @@ public class DelegatingBroker
     public Object newInstance(Class cls) {
         try {
             return _broker.newInstance(cls);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -1488,8 +1338,7 @@ public class DelegatingBroker
     public boolean isDetached(Object obj) {
         try {
             return _broker.isDetached(obj);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }

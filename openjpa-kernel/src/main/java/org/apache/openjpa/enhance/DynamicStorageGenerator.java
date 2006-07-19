@@ -166,8 +166,7 @@ public class DynamicStorageGenerator {
                 ((Object[]) null);
             _project.clear(); // remove old refs
             return data;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             throw new InternalException("cons-access", t).setFatal(true);
         }
     }

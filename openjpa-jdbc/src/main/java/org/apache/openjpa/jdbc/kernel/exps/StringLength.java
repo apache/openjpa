@@ -1,0 +1,61 @@
+/*
+ * Copyright 2006 The Apache Software Foundation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.openjpa.jdbc.kernel.exps;
+
+import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.Select;
+
+/**
+ * Returns the number of characters in a string.
+ *
+ * @author Marc Prud'hommeaux
+ */
+class StringLength
+    extends StringFunction {
+
+    private Class _cast = null;
+
+    /**
+     * Constructor. Provide the string to operate on.
+     */
+    public StringLength(Val val) {
+        super(val);
+    }
+
+    public void initialize(Select sel, JDBCStore store, boolean nullTest) {
+        _val.initialize(sel, store, false);
+
+        DBDictionary dict = store.getConfiguration().getDBDictionaryInstance();
+        String func = dict.stringLengthFunction;
+        dict.assertSupport(func != null, "StringLengthFunction");
+
+        int idx = func.indexOf("{0}");
+        _pre = func.substring(0, idx);
+        _post = func.substring(idx + 3);
+    }
+
+    public Class getType() {
+        if (_cast != null)
+            return _cast;
+        return int.class;
+    }
+
+    public void setImplicitType(Class type) {
+        _cast = type;
+    }
+}
+

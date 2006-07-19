@@ -95,8 +95,7 @@ public class DelegatingDataCache
             return null;
         try {
             return _cache.getName();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -106,8 +105,7 @@ public class DelegatingDataCache
             return;
         try {
             _cache.setName(name);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -117,8 +115,7 @@ public class DelegatingDataCache
             return;
         try {
             _cache.initialize(manager);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -129,8 +126,7 @@ public class DelegatingDataCache
             return;
         try {
             _cache.commit(additions, newUpdates, existingUpdates, deletes);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -140,8 +136,7 @@ public class DelegatingDataCache
             return false;
         try {
             return _cache.contains(oid);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -151,8 +146,7 @@ public class DelegatingDataCache
             return EMPTY_BITSET;
         try {
             return _cache.containsAll(oids);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -162,8 +156,7 @@ public class DelegatingDataCache
             return null;
         try {
             return _cache.get(oid);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -173,8 +166,7 @@ public class DelegatingDataCache
             return null;
         try {
             return _cache.put(value);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -184,8 +176,7 @@ public class DelegatingDataCache
             return;
         try {
             _cache.update(value);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -195,8 +186,7 @@ public class DelegatingDataCache
             return null;
         try {
             return _cache.remove(oid);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -206,8 +196,7 @@ public class DelegatingDataCache
             return EMPTY_BITSET;
         try {
             return _cache.removeAll(oids);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -217,8 +206,7 @@ public class DelegatingDataCache
             return;
         try {
             _cache.removeAll(cls, subclasses);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -228,8 +216,7 @@ public class DelegatingDataCache
             return;
         try {
             _cache.clear();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -239,8 +226,7 @@ public class DelegatingDataCache
             return false;
         try {
             return _cache.pin(oid);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -250,8 +236,7 @@ public class DelegatingDataCache
             return EMPTY_BITSET;
         try {
             return _cache.pinAll(oids);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -261,8 +246,7 @@ public class DelegatingDataCache
             return false;
         try {
             return _cache.unpin(oid);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -272,8 +256,7 @@ public class DelegatingDataCache
             return EMPTY_BITSET;
         try {
             return _cache.unpinAll(oids);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -283,8 +266,7 @@ public class DelegatingDataCache
             return;
         try {
             _cache.writeLock();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -294,8 +276,7 @@ public class DelegatingDataCache
             return;
         try {
             _cache.writeUnlock();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -305,8 +286,7 @@ public class DelegatingDataCache
             return;
         try {
             _cache.addExpirationListener(listen);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -316,8 +296,7 @@ public class DelegatingDataCache
             return false;
         try {
             return _cache.removeExpirationListener(listen);
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
         }
     }
@@ -327,8 +306,7 @@ public class DelegatingDataCache
             return;
         try {
             _cache.close();
-        }
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
             throw translate(re);
 		}
 	}

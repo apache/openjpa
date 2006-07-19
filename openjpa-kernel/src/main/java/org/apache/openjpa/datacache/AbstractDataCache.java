@@ -421,8 +421,7 @@ public abstract class AbstractDataCache
         ExpirationEvent ev = (ExpirationEvent) event;
         try {
             listen.onExpire(ev);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             if (log.isWarnEnabled())
                 log.warn(s_loc.get ("exp-listener-ex"), e);
 		}

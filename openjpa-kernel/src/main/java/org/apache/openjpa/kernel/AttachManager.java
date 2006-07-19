@@ -95,12 +95,10 @@ class AttachManager {
         CallbackException excep = null;
         try {
             return attach(pc, null, null, null);
-        }
-        catch (CallbackException ce) {
+        } catch (CallbackException ce) {
             excep = ce;
             return null; // won't be reached as the exceps will be rethrown
-        }
-        finally {
+        } finally {
             List exceps = null;
             if (excep == null || !_failFast)
                 exceps = invokeAfterAttach(null);
@@ -125,8 +123,7 @@ class AttachManager {
             for (Iterator itr = instances.iterator(); itr.hasNext(); i++) {
                 try {
                     attached[i] = attach(itr.next(), null, null, null);
-                }
-                catch (OpenJPAException ke) {
+                } catch (OpenJPAException ke) {
                     // track exceptions and optimistic failed objects
                     if (opt && !(ke instanceof OptimisticException))
                         opt = false;
@@ -143,8 +140,7 @@ class AttachManager {
                     exceps = add(exceps, re);
                 }
             }
-        }
-        finally {
+        } finally {
             // invoke post callbacks unless all failed
             if (!failFast && (exceps == null
                 || exceps.size() < instances.size()))
@@ -171,8 +167,7 @@ class AttachManager {
             try {
                 _broker.fireLifecycleEvent(attached, entry.getKey(),
                     sm.getMetaData(), LifecycleEvent.AFTER_ATTACH);
-            }
-            catch (RuntimeException re) {
+            } catch (RuntimeException re) {
                 exceps = add(exceps, re);
                 if (_failFast && re instanceof CallbackException)
                     break;
