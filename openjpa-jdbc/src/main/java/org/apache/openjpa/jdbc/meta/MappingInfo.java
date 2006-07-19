@@ -1103,7 +1103,6 @@ public abstract class MappingInfo {
 
         int constIdx = 0;
         int idx;
-        Column col;
         for (int i = 0; i < joins.length; i++) {
             // const columns are indexed after std join columns in fk IO
             if (joins[i][1]instanceof Column)

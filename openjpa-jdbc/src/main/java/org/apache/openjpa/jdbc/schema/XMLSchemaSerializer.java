@@ -46,7 +46,6 @@ public class XMLSchemaSerializer
     private static final Localizer _loc = Localizer.forPackage
         (XMLSchemaSerializer.class);
 
-    private final JDBCConfiguration _conf;
     private final Collection _tables = new TreeSet();
     private final Collection _seqs = new TreeSet();
 
@@ -55,7 +54,6 @@ public class XMLSchemaSerializer
      */
     public XMLSchemaSerializer(JDBCConfiguration conf) {
         setLog(conf.getLog(JDBCConfiguration.LOG_SCHEMA));
-        _conf = conf;
     }
 
     public Table[] getTables() {

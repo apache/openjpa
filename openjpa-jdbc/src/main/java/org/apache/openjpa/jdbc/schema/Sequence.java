@@ -18,7 +18,6 @@ package org.apache.openjpa.jdbc.schema;
 import java.io.File;
 
 import org.apache.openjpa.lib.meta.SourceTracker;
-import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Represents a database sequence.
@@ -28,8 +27,6 @@ import org.apache.openjpa.lib.util.Localizer;
 public class Sequence
     extends ReferenceCounter
     implements Comparable, SourceTracker {
-
-    private static final Localizer _loc = Localizer.forPackage(Sequence.class);
 
     private String _name = null;
     private String _fullName = null;

@@ -476,15 +476,13 @@ public class ValueMappingImpl
     private void resolveMapping() {
         // mark mapped columns
         Column[] cols;
-        int insertFlag, updateFlag;
+        int insertFlag;
         if (_fk != null) {
             cols = _fk.getColumns();
             insertFlag = Column.FLAG_FK_INSERT;
-            updateFlag = Column.FLAG_FK_UPDATE;
         } else {
             cols = getColumns();
             insertFlag = Column.FLAG_DIRECT_INSERT;
-            updateFlag = Column.FLAG_DIRECT_UPDATE;
         }
         ColumnIO io = getColumnIO();
         for (int i = 0; i < cols.length; i++) {

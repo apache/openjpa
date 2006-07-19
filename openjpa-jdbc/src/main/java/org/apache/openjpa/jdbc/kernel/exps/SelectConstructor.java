@@ -290,7 +290,7 @@ class SelectConstructor {
         Joins joins = null;
         if (sel.getSubselectPath() != null)
             joins = sel.newJoins().setSubselect(sel.getSubselectPath());
-        JDBCFetchConfiguration fetch = fetchState.getJDBCFetchConfiguration();
+
         // build ordering clauses before select so that any eager join
         // ordering gets applied after query ordering
         for (int i = 0; i < exps.ordering.length; i++)

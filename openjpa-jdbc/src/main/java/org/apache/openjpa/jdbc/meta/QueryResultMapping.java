@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.Joins;
@@ -381,7 +380,6 @@ public class QueryResultMapping
             List rpath = new ArrayList(tokens.length);
             ClassMapping candidate = getCandidateTypeMapping();
             FieldMapping fm = null;
-            Set eagers;
             for (int i = 0; i < tokens.length - 1; i++) {
                 fm = candidate.getFieldMapping(tokens[i]);
                 if (fm == null)

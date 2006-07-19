@@ -87,7 +87,6 @@ class SQLProjectionResultObjectProvider
         }
 
         Object[] vals = new Object[_cols];
-        Integer index;
         for (int i = 0; i < vals.length; i++)
             vals[i] = _res.getObject(Numbers.valueOf(i + 1),
                 JavaSQLTypes.JDBC_DEFAULT, null);

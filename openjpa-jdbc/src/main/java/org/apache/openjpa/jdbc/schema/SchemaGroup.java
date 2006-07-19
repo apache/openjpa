@@ -331,7 +331,6 @@ public class SchemaGroup
         // have to do fks after all schemas are imported
         Table[] tabs;
         ForeignKey[] fks;
-        Schema clone;
         for (int i = 0; i < schemas.length; i++) {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {

@@ -47,10 +47,6 @@ import org.apache.openjpa.util.UserException;
 public class JDBCExpressionFactory
     implements ExpressionFactory {
 
-    private static final int CACHE_NULL = 0;
-    private static final int CACHE_JOINS = 1;
-    private static final int CACHE_FULL = 2;
-
     private static final Val NULL = new Null();
     private static final Val CURRENT_DATE =
         new CurrentDate(CurrentDate.DATE);
