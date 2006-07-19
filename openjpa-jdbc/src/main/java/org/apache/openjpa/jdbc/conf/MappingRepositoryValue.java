@@ -20,7 +20,6 @@ import java.lang.reflect.InvocationTargetException;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.PluginValue;
-import org.apache.openjpa.lib.util.Localizer;
 import serp.util.Strings;
 
 /**
@@ -32,9 +31,6 @@ import serp.util.Strings;
  */
 public class MappingRepositoryValue
     extends PluginValue {
-
-    private static final Localizer _loc = Localizer.forPackage
-        (MappingRepositoryValue.class);
 
     public MappingRepositoryValue(String prop) {
         super(prop, true);

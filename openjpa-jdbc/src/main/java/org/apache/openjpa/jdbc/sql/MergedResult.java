@@ -150,7 +150,6 @@ public class MergedResult
         // the comparator
         int least = -1;
         Object orderVal = null;
-        int cmp;
         for (int i = 0; i < _order.length; i++) {
             if (_status[i] != CURRENT)
                 continue;

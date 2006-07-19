@@ -35,7 +35,6 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.rop.SimpleResultList;
 import org.apache.openjpa.lib.rop.SoftRandomAccessResultList;
 import org.apache.openjpa.lib.rop.WindowResultList;
-import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * JDBC extensions to OpenJPA's {@link FetchConfiguration}.
@@ -48,9 +47,6 @@ public class JDBCFetchConfigurationImpl
     implements JDBCFetchConfiguration {
 
     private static final String[] EMPTY_STRINGS = new String[0];
-
-    private static final Localizer _loc = Localizer.forPackage
-        (JDBCFetchConfigurationImpl.class);
 
     private int _eagerMode = 0;
     private int _subclassMode = 0;

@@ -121,7 +121,6 @@ class InExpression
             buf.append("(");
 
         Object[] vals;
-        int len;
         Column col;
         for (Iterator itr = coll.iterator(); itr.hasNext();) {
             vals = (Object[]) itr.next();

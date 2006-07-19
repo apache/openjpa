@@ -21,7 +21,6 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
-import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Information about the mapping from a version indicator to the schema, in
@@ -33,9 +32,6 @@ import org.apache.openjpa.lib.util.Localizer;
  */
 public class VersionMappingInfo
     extends MappingInfo {
-
-    private static final Localizer _loc = Localizer.forPackage
-        (VersionMappingInfo.class);
 
     /**
      * Return the columns set for this version, based on the given templates.

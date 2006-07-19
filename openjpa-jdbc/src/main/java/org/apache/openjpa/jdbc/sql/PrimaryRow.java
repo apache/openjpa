@@ -40,7 +40,6 @@ public class PrimaryRow
     // VALID flag in superclass uses 2 << 0
     private static final byte PK_SET = 2 << 1;
     private static final byte PK_WHERE = 2 << 2;
-    private static final byte PK_FLUSHED = 2 << 3;
     private static final byte DEPENDENT = 2 << 4;
 
     private static final Localizer _loc = Localizer.forPackage
@@ -214,7 +213,6 @@ public class PrimaryRow
      */
     private void recordForeignKey(ForeignKey fk, ColumnIO io,
         OpenJPAStateManager sm, boolean set) {
-        OpenJPAStateManager[] arr = null;
         if (set) {
             // force valid
             if (canSetAny(io, fk.getColumns().length

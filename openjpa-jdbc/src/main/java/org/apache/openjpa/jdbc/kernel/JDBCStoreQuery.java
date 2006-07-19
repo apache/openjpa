@@ -440,7 +440,6 @@ public class JDBCStoreQuery
         JDBCFetchConfiguration fetch = (JDBCFetchConfiguration)
             ctx.getFetchConfiguration();
         DBDictionary dict = _store.getDBDictionary();
-        int subs = (subclasses) ? Select.SUBS_JOINABLE : Select.SUBS_NONE;
 
         SQLBuffer[] sql = new SQLBuffer[mappings.length];
         JDBCExpressionFactory jdbcFactory;

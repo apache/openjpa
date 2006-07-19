@@ -130,9 +130,6 @@ public class DataSourceFactory {
      */
     public static DecoratingDataSource decorateDataSource(DataSource ds,
         JDBCConfiguration conf, boolean factory2) {
-        String driver = (factory2)
-            ? conf.getConnection2DriverName()
-            : conf.getConnectionDriverName();
         Options opts = Configurations.parseProperties((factory2)
             ? conf.getConnectionFactory2Properties()
             : conf.getConnectionFactoryProperties());

@@ -818,7 +818,7 @@ public class SelectImpl
         PathJoins pj = getJoins(joins, false);
         Column[] cols = mapping.getPrimaryKeyColumns();
         int seld = 0;
-        for (int i = 0, idx; i < cols.length; i++)
+        for (int i = 0; i < cols.length; i++)
             if (columnOperation(cols[i], sel, asc, pj, aliasOrder))
                 seld |= 2 << i;
 

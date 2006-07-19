@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InternalException;
 
 /**
@@ -36,9 +35,6 @@ import org.apache.openjpa.util.InternalException;
  */
 public class RowManagerImpl
     implements RowManager {
-
-    private static final Localizer _loc = Localizer.forPackage
-        (RowManagerImpl.class);
 
     private Map _inserts = null;
     private Map _updates = null;

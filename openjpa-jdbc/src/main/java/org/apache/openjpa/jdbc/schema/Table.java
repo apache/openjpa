@@ -25,7 +25,6 @@ import java.util.TreeMap;
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.meta.SourceTracker;
-import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Represents a database table.
@@ -36,8 +35,6 @@ import org.apache.openjpa.lib.util.Localizer;
 public class Table
     extends NameSet
     implements Comparable, SourceTracker {
-
-    private static final Localizer _loc = Localizer.forPackage(Table.class);
 
     private String _name = null;
     private String _schemaName = null;

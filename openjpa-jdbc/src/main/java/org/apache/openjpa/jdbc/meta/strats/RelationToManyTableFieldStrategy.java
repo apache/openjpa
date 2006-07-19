@@ -53,8 +53,6 @@ public abstract class RelationToManyTableFieldStrategy
     private static final Localizer _loc = Localizer.forPackage
         (RelationToManyTableFieldStrategy.class);
 
-    private Boolean _fkOid = null;
-
     protected ClassMapping[] getIndependentElementMappings(boolean traverse) {
         return (traverse)
             ? field.getElementMapping().getIndependentTypeMappings()
@@ -138,15 +136,6 @@ public abstract class RelationToManyTableFieldStrategy
         field.setOrderColumn(orderCol);
         field.setOrderColumnIO(finfo.getColumnIO());
         field.mapPrimaryKey(adapt);
-    }
-
-    public void initialize() {
-        ValueMapping elem = field.getElementMapping();
-        ForeignKey fk = elem.getForeignKey();
-        if (fk == null)
-            _fkOid = Boolean.TRUE;
-        else
-            _fkOid = elem.getTypeMapping().isForeignKeyObjectId(fk);
     }
 
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
