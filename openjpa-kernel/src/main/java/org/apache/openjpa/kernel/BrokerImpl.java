@@ -733,7 +733,7 @@ public class BrokerImpl
                     // make sure all the configured fields are loaded; do this
                     // after making instance transactional for locking
                     if (!sm.isTransactional()
-                        && useTransactionalState(sm, fetchState.
+                        && useTransactionalState(fetchState.
                         getFetchConfiguration()))
                         sm.transactional();
                     boolean loaded = sm.isLoading();
@@ -824,7 +824,7 @@ public class BrokerImpl
         } else {
             FetchConfiguration fetch = (fetchState == null)
                 ? _fc : fetchState.getFetchConfiguration();
-            PCState state = (useTransactionalState(sm, fetch))
+            PCState state = (useTransactionalState(fetch))
                 ? PCState.PCLEAN : PCState.PNONTRANS;
             sm.setLoading(true);
             try {
@@ -878,7 +878,7 @@ public class BrokerImpl
             List load = null;
             StateManagerImpl sm;
             boolean initialized;
-            boolean transState = useTransactionalState(null, fetch);
+            boolean transState = useTransactionalState(fetch);
             Object obj, oid;
             int idx = 0;
             for (Iterator itr = oids.iterator(); itr.hasNext(); idx++) {
@@ -898,7 +898,7 @@ public class BrokerImpl
 
                 _loading.put(obj, sm);
                 if (requiresLoad(sm, initialized, edata, flags)) {
-                    transState = transState || useTransactionalState(sm, fetch);
+                    transState = transState || useTransactionalState(fetch);
                     if (initialized && !sm.isTransactional() && transState)
                         sm.transactional();
                     if (load == null)
@@ -984,8 +984,7 @@ public class BrokerImpl
     /**
      * Return whether to use a transactional state.
      */
-    private boolean useTransactionalState(StateManagerImpl sm,
-        FetchConfiguration fetch) {
+    private boolean useTransactionalState(FetchConfiguration fetch) {
         return (_flags & FLAG_ACTIVE) != 0 && (!_optimistic
             || _autoClear == CLEAR_ALL
             || fetch.getReadLockLevel() != LOCK_NONE);
@@ -3328,8 +3327,7 @@ public class BrokerImpl
         try {
             StoreQuery sq = _store.newQuery(language);
             if (sq == null) {
-                ExpressionParser ep = (ExpressionParser)
-                    QueryLanguages.parserForLanguage(language);
+                ExpressionParser ep = QueryLanguages.parserForLanguage(language);
                 if (ep != null)
                     sq = new ExpressionStoreQuery(ep);
                 else if (QueryLanguages.LANG_METHODQL.equals(language))
@@ -4475,7 +4473,7 @@ public class BrokerImpl
             // size may not be entirely accurate due to refs expiring, so
             // manually copy each object; doesn't matter this way if size too
             // big by some
-            ArrayList copy = new ArrayList(size());
+            List copy = new ArrayList(size());
             if (_dirty != null)
                 for (Iterator itr = _dirty.iterator(); itr.hasNext();)
                     copy.add(itr.next());
