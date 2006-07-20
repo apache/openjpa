@@ -41,11 +41,11 @@ import org.apache.openjpa.meta.JavaTypes;
  *
  * @author Abe White
  */
-public class ClassTableJDBCSeq
+public class ClassTableJDBCSeq 
     extends TableJDBCSeq {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (ClassTableJDBCSeq.class);
+    private static final Localizer _loc = Localizer
+        .forPackage(ClassTableJDBCSeq.class);
 
     private final Map _stats = new HashMap();
     private boolean _ignore = false;
@@ -109,8 +109,8 @@ public class ClassTableJDBCSeq
 
     protected Column addPrimaryKeyColumn(Table table) {
         DBDictionary dict = getConfiguration().getDBDictionaryInstance();
-        Column pkColumn = table.addColumn(dict.getValidColumnName
-            (getPrimaryKeyColumn(), table));
+        Column pkColumn = table.addColumn(dict.getValidColumnName(
+            getPrimaryKeyColumn(), table));
         pkColumn.setType(dict.getPreferredType(Types.VARCHAR));
         pkColumn.setJavaType(JavaTypes.STRING);
         pkColumn.setSize(dict.characterColumnSize);
@@ -163,8 +163,7 @@ public class ClassTableJDBCSeq
      * <li><i>set</i>: Set the sequence value for the given class.</li>
      * </ul>
      */
-    public static void main(String[] args)
-        throws Exception {
+    public static void main(String[] args) throws Exception {
         Options opts = new Options();
         args = opts.setFromCmdLine(args);
         JDBCConfiguration conf = new JDBCConfigurationImpl();
@@ -180,8 +179,7 @@ public class ClassTableJDBCSeq
      * Run the tool. Returns false if invalid options were given.
      */
     public static boolean run(JDBCConfiguration conf, String[] args,
-        Options opts)
-        throws Exception {
+        Options opts) throws Exception {
         if (opts.containsKey("help") || opts.containsKey("-help"))
             return false;
 
@@ -213,11 +211,11 @@ public class ClassTableJDBCSeq
                 return false;
 
             if (loader == null)
-                loader = conf.getClassResolverInstance().
-                    getClassLoader(ClassTableJDBCSeq.class, null);
+                loader = conf.getClassResolverInstance().getClassLoader(
+                    ClassTableJDBCSeq.class, null);
 
-            ClassArgParser cap = conf.getMetaDataRepository().
-                getMetaDataFactory().newClassArgParser();
+            ClassArgParser cap = conf.getMetaDataRepository()
+                .getMetaDataFactory().newClassArgParser();
             cap.setClassLoader(loader);
             Class cls = cap.parseTypes(args[0])[0];
 
@@ -246,8 +244,7 @@ public class ClassTableJDBCSeq
                     }
                     System.err.println(mapping + ": " + set);
                 }
-            }
-            catch (NumberFormatException nfe) {
+            } catch (NumberFormatException nfe) {
                 return false;
             } finally {
                 try {

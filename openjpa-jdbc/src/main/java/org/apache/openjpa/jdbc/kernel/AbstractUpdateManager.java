@@ -63,8 +63,8 @@ public abstract class AbstractUpdateManager
     public Collection flush(Collection states, JDBCStore store) {
         Connection conn = store.getConnection();
         try {
-            PreparedStatementManager psMgr = newPreparedStatementManager
-                (store, conn);
+            PreparedStatementManager psMgr = newPreparedStatementManager(store,
+                conn);
             return flush(states, store, psMgr);
         } finally {
             try {
@@ -81,9 +81,8 @@ public abstract class AbstractUpdateManager
         Collection customs = new LinkedList();
         Collection exceps = null;
         for (Iterator itr = states.iterator(); itr.hasNext();)
-            exceps =
-                populateRowManager((OpenJPAStateManager) itr.next(), rowMgr,
-                    store, exceps, customs);
+            exceps = populateRowManager((OpenJPAStateManager) itr.next(),
+                rowMgr, store, exceps, customs);
 
         // flush rows
         exceps = flush(rowMgr, psMgr, exceps);
@@ -93,8 +92,7 @@ public abstract class AbstractUpdateManager
             try {
                 ((CustomMapping) itr.next()).execute(store);
             } catch (SQLException se) {
-                exceps = addException(exceps, SQLExceptions.getStore(se,
-                    dict));
+                exceps = addException(exceps, SQLExceptions.getStore(se, dict));
             } catch (OpenJPAException ke) {
                 exceps = addException(exceps, ke);
             }
@@ -118,8 +116,8 @@ public abstract class AbstractUpdateManager
     /**
      * Return a new {@link PreparedStatementManager}.
      */
-    protected abstract PreparedStatementManager newPreparedStatementManager
-        (JDBCStore store, Connection conn);
+    protected abstract PreparedStatementManager newPreparedStatementManager(
+        JDBCStore store, Connection conn);
 
     /**
      * Flush all rows of the given row manager. Add exceptions to
@@ -142,16 +140,15 @@ public abstract class AbstractUpdateManager
         Collection customs) {
         try {
             if (sm.getPCState() == PCState.PNEW && !sm.isFlushed()) {
-                insert(sm, (ClassMapping) sm.getMetaData(), rowMgr,
-                    store, customs);
+                insert(sm, (ClassMapping) sm.getMetaData(), rowMgr, store,
+                    customs);
             } else if (sm.getPCState() == PCState.PNEWFLUSHEDDELETED
                 || sm.getPCState() == PCState.PDELETED) {
-                delete(sm, (ClassMapping) sm.getMetaData(), rowMgr,
-                    store, customs);
-            } else if ((sm.getPCState() == PCState.PDIRTY
-                && (!sm.isFlushed() || sm.isFlushedDirty()))
-                || (sm.getPCState() == PCState.PNEW
-                && sm.isFlushedDirty())) {
+                delete(sm, (ClassMapping) sm.getMetaData(), rowMgr, store,
+                    customs);
+            } else if ((sm.getPCState() == PCState.PDIRTY && (!sm.isFlushed() || sm
+                .isFlushedDirty()))
+                || (sm.getPCState() == PCState.PNEW && sm.isFlushedDirty())) {
                 BitSet dirty = sm.getDirty();
                 if (sm.isFlushed()) {
                     dirty = (BitSet) dirty.clone();
@@ -159,19 +156,18 @@ public abstract class AbstractUpdateManager
                 }
 
                 if (dirty.length() > 0)
-                    update(sm, dirty, (ClassMapping) sm.getMetaData(),
-                        rowMgr, store, customs);
+                    update(sm, dirty, (ClassMapping) sm.getMetaData(), rowMgr,
+                        store, customs);
             } else if (sm.isVersionUpdateRequired()) {
-                updateIndicators(sm, (ClassMapping) sm.getMetaData(),
-                    rowMgr, store, customs, true);
+                updateIndicators(sm, (ClassMapping) sm.getMetaData(), rowMgr,
+                    store, customs, true);
             } else if (sm.isVersionCheckRequired()) {
-                if (!((ClassMapping) sm.getMetaData()).getVersion().
-                    checkVersion(sm, store, false))
-                    exceps = addException(exceps, new OptimisticException
-                        (sm.getManagedInstance()));
+                if (!((ClassMapping) sm.getMetaData()).getVersion()
+                    .checkVersion(sm, store, false))
+                    exceps = addException(exceps, new OptimisticException(sm
+                        .getManagedInstance()));
             }
-        }
-        catch (SQLException se) {
+        } catch (SQLException se) {
             exceps = addException(exceps, SQLExceptions.getStore(se, dict));
         } catch (OpenJPAException ke) {
             exceps = addException(exceps, ke);
@@ -284,8 +280,7 @@ public abstract class AbstractUpdateManager
      */
     private void update(OpenJPAStateManager sm, BitSet dirty,
         ClassMapping mapping, RowManager rowMgr, JDBCStore store,
-        Collection customs)
-        throws SQLException {
+        Collection customs) throws SQLException {
         Boolean custom = mapping.isCustomUpdate(sm, store);
         if (!Boolean.FALSE.equals(custom))
             mapping.customUpdate(sm, store);
@@ -314,8 +309,7 @@ public abstract class AbstractUpdateManager
      */
     private void updateIndicators(OpenJPAStateManager sm, ClassMapping mapping,
         RowManager rowMgr, JDBCStore store, Collection customs,
-        boolean versionUpdateOnly)
-        throws SQLException {
+        boolean versionUpdateOnly) throws SQLException {
         while (mapping.getJoinablePCSuperclassMapping() != null)
             mapping = mapping.getJoinablePCSuperclassMapping();
 
@@ -359,25 +353,23 @@ public abstract class AbstractUpdateManager
         private final OpenJPAStateManager _sm;
         private final Strategy _strat;
 
-        public CustomMapping(int action, OpenJPAStateManager sm,
-            Strategy strat) {
+        public CustomMapping(int action, OpenJPAStateManager sm, Strategy strat) {
             _action = action;
             _sm = sm;
             _strat = strat;
         }
 
-        public void execute(JDBCStore store)
-            throws SQLException {
+        public void execute(JDBCStore store) throws SQLException {
             switch (_action) {
-                case INSERT:
-                    _strat.customInsert(_sm, store);
-                    break;
-                case UPDATE:
-                    _strat.customUpdate(_sm, store);
-                    break;
-                case DELETE:
-                    _strat.customDelete(_sm, store);
-                    break;
+            case INSERT:
+                _strat.customInsert(_sm, store);
+                break;
+            case UPDATE:
+                _strat.customUpdate(_sm, store);
+                break;
+            case DELETE:
+                _strat.customDelete(_sm, store);
+                break;
             }
         }
     }
