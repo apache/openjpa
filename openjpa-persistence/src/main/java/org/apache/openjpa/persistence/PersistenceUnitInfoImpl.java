@@ -301,44 +301,44 @@ public class PersistenceUnitInfoImpl
     public static Map toOpenJPAProperties(PersistenceUnitInfo info) {
         Map map = new HashMap();
         if (info.getTransactionType() == PersistenceUnitTransactionType.JTA)
-            map.put("org.apache.openjpa.TransactionMode", "managed");
+            map.put("openjpa.TransactionMode", "managed");
 
         boolean hasJta = false;
         DataSource ds = info.getJtaDataSource();
         if (ds != null) {
-            map.put("org.apache.openjpa.ConnectionFactory", ds);
-            map.put("org.apache.openjpa.ConnectionFactoryMode", "managed");
+            map.put("openjpa.ConnectionFactory", ds);
+            map.put("openjpa.ConnectionFactoryMode", "managed");
             hasJta = true;
         } else if (info instanceof PersistenceUnitInfoImpl
             && ((PersistenceUnitInfoImpl) info).getJtaDataSourceName() != null)
         {
-            map.put("org.apache.openjpa.ConnectionFactoryName",
+            map.put("openjpa.ConnectionFactoryName",
                 ((PersistenceUnitInfoImpl)
                     info).getJtaDataSourceName());
-            map.put("org.apache.openjpa.ConnectionFactoryMode", "managed");
+            map.put("openjpa.ConnectionFactoryMode", "managed");
             hasJta = true;
         }
 
         ds = info.getNonJtaDataSource();
         if (ds != null) {
             if (!hasJta)
-                map.put("org.apache.openjpa.ConnectionFactory", ds);
+                map.put("openjpa.ConnectionFactory", ds);
             else
-                map.put("org.apache.openjpa.ConnectionFactory2", ds);
+                map.put("openjpa.ConnectionFactory2", ds);
         } else if (info instanceof PersistenceUnitInfoImpl
             && ((PersistenceUnitInfoImpl) info).getNonJtaDataSourceName()
             != null) {
             String nonJtaName = ((PersistenceUnitInfoImpl) info).
                 getNonJtaDataSourceName();
             if (!hasJta)
-                map.put("org.apache.openjpa.ConnectionFactoryName", nonJtaName);
+                map.put("openjpa.ConnectionFactoryName", nonJtaName);
             else
-                map.put("org.apache.openjpa.ConnectionFactory2Name",
+                map.put("openjpa.ConnectionFactory2Name",
                     nonJtaName);
         }
 
         if (info.getClassLoader() != null)
-            map.put("org.apache.openjpa.ClassResolver", new ClassResolverImpl
+            map.put("openjpa.ClassResolver", new ClassResolverImpl
                 (info.getClassLoader()));
 
         Properties props = info.getProperties();
@@ -395,7 +395,7 @@ public class PersistenceUnitInfoImpl
         if (!metaFactoryProps.isEmpty()) {
             // set persistent class locations as properties of metadata factory
             String factory =
-                (String) map.get("org.apache.openjpa.MetaDataFactory");
+                (String) map.get("openjpa.MetaDataFactory");
             if (factory == null)
                 factory = Configurations.serializeProperties(metaFactoryProps);
             else {
@@ -405,7 +405,7 @@ public class PersistenceUnitInfoImpl
                 factory = Configurations.getPlugin(clsName,
                     Configurations.serializeProperties(metaFactoryProps));
             }
-            map.put("org.apache.openjpa.MetaDataFactory", factory);
+            map.put("openjpa.MetaDataFactory", factory);
         }
         return map;
     }
