@@ -71,7 +71,7 @@ public interface Configuration
      * the property's name in XML format (i.e. two-words instead of TwoWords).
      */
     public static final String ATTRIBUTE_XML = "xmlName";
-    
+
     /**
      * Return the product name. Defaults to <code>solarmetric</code>.
      */
@@ -109,16 +109,6 @@ public interface Configuration
      * Return the log to use for configuration messages.
      */
     public Log getConfigurationLog();
-
-    /**
-     * Return the log to use for management messages.
-     */
-    public Log getManagementLog();
-
-    /**
-     * Return the log to use for profiling messages.
-     */
-    public Log getProfilingLog();
 
     /**
      * Return the {@link Value} for the given property, or null if none.

@@ -204,27 +204,11 @@ public class ConfigurationImpl
     }
 
     /**
-     * Returns the logging channel <code>org.apache.openjpa.lib.Runtime</code> by
+     * Returns the logging channel <code>org.apache.openjpa.Runtime</code> by
      * default.
      */
     public Log getConfigurationLog() {
-        return getLog("org.apache.openjpa.lib.Runtime");
-    }
-
-    /**
-     * Returns the logging channel <code>org.apache.openjpa.lib.Manage</code> by
-     * default.
-     */
-    public Log getManagementLog() {
-        return getLog("org.apache.openjpa.lib.Manage");
-    }
-
-    /**
-     * Returns the logging channel <code>org.apache.openjpa.lib.Profile</code> by
-     * default.
-     */
-    public Log getProfilingLog() {
-        return getLog("org.apache.openjpa.lib.Profile");
+        return getLog("org.apache.openjpa.Runtime");
     }
 
     public Value[] getValues() {
