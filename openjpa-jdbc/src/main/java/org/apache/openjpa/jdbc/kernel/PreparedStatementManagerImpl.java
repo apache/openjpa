@@ -37,11 +37,11 @@ import org.apache.openjpa.util.OptimisticException;
  *
  * @author Abe White
  */
-class PreparedStatementManagerImpl
+class PreparedStatementManagerImpl 
     implements PreparedStatementManager {
 
-    private final static Localizer _loc = Localizer.forPackage
-        (PreparedStatementManagerImpl.class);
+    private final static Localizer _loc = Localizer
+        .forPackage(PreparedStatementManagerImpl.class);
 
     private final JDBCStore _store;
     private final Connection _conn;
@@ -76,8 +76,7 @@ class PreparedStatementManagerImpl
     /**
      * Flush the given row.
      */
-    private void flushInternal(RowImpl row)
-        throws SQLException {
+    private void flushInternal(RowImpl row) throws SQLException {
         // can't batch rows with auto-inc columns
         Column[] autoAssign = null;
         if (row.getAction() == Row.ACTION_INSERT)
@@ -96,12 +95,11 @@ class PreparedStatementManagerImpl
                 if (failed != null)
                     _exceptions.add(new OptimisticException(failed));
                 else if (row.getAction() == Row.ACTION_INSERT)
-                    throw new SQLException(_loc.get
-                        ("update-failed-no-failed-obj", String.valueOf(count),
-                            sql));
+                    throw new SQLException(_loc.get(
+                        "update-failed-no-failed-obj", String.valueOf(count),
+                        sql));
             }
-        }
-        catch (SQLException se) {
+        } catch (SQLException se) {
             throw SQLExceptions.getStore(se, row.getFailedObject(), _dict);
         } finally {
             try {
@@ -118,8 +116,8 @@ class PreparedStatementManagerImpl
             Object val;
             for (int i = 0; i < autoAssign.length; i++) {
                 val = _dict.getGeneratedKey(autoAssign[i], _conn);
-                mapping.assertJoinable(autoAssign[i]).setAutoAssignedValue
-                    (sm, _store, autoAssign[i], val);
+                mapping.assertJoinable(autoAssign[i]).setAutoAssignedValue(sm,
+                    _store, autoAssign[i], val);
             }
         }
     }

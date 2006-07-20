@@ -166,8 +166,7 @@ public abstract class AbstractTestCase extends TestCase {
         _watchdog.enteringTest(this);
         try {
             super.run(result);
-        }
-        finally {
+        } finally {
             _watchdog.leavingTest(this);
         }
     }
@@ -530,8 +529,7 @@ public abstract class AbstractTestCase extends TestCase {
                     meth.invoke(thiz, args);
                 }
             });
-        }
-        finally {
+        } finally {
             multiThreadExecuting = null;
         }
     }
@@ -806,8 +804,7 @@ public abstract class AbstractTestCase extends TestCase {
                         method.invoke(thz, (Object[]) null);
                     } catch (Throwable t) {
                         throwable = t;
-                    }
-                    finally {
+                    } finally {
                         completed = true;
                     }
                 }
@@ -846,8 +843,7 @@ public abstract class AbstractTestCase extends TestCase {
 
             // I guess everything was OK
             return true;
-        }
-        finally {
+        } finally {
             inTimeoutThread = false;
         }
     }

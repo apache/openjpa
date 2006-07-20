@@ -65,7 +65,7 @@ import serp.util.Numbers;
  * @author Abe White
  * @nojavadoc
  */
-public class JDBCStoreQuery
+public class JDBCStoreQuery 
     extends ExpressionStoreQuery {
 
     private static final Table INVALID = new Table();
@@ -107,8 +107,8 @@ public class JDBCStoreQuery
     }
 
     public Object newCompilationKey() {
-        JDBCFetchConfiguration fetch = (JDBCFetchConfiguration)
-            ctx.getFetchConfiguration();
+        JDBCFetchConfiguration fetch = (JDBCFetchConfiguration) ctx
+            .getFetchConfiguration();
         return Numbers.valueOf(fetch.getJoinSyntax());
     }
 
@@ -116,10 +116,10 @@ public class JDBCStoreQuery
         return true;
     }
 
-    protected ClassMetaData[] getIndependentExpressionCandidates
-        (ClassMetaData meta, boolean subclasses) {
+    protected ClassMetaData[] getIndependentExpressionCandidates(
+        ClassMetaData meta, boolean subclasses) {
         if (!subclasses)
-            return new ClassMapping[]{ (ClassMapping) meta };
+            return new ClassMapping[] { (ClassMapping) meta };
         return ((ClassMapping) meta).getIndependentAssignableMappings();
     }
 
@@ -132,12 +132,12 @@ public class JDBCStoreQuery
         ExpressionFactory[] facts, QueryExpressions[] exps, Object[] params,
         boolean lrs, long startIdx, long endIdx) {
         if (metas.length > 1 && exps[0].aggregate)
-            throw new UserException(Localizer.forPackage(JDBCStoreQuery.class).
-                get("mult-mapping-aggregate", Arrays.asList(metas)));
+            throw new UserException(Localizer.forPackage(JDBCStoreQuery.class)
+                .get("mult-mapping-aggregate", Arrays.asList(metas)));
 
         ClassMapping[] mappings = (ClassMapping[]) metas;
-        JDBCFetchConfiguration fetch = (JDBCFetchConfiguration)
-            ctx.getFetchConfiguration();
+        JDBCFetchConfiguration fetch = (JDBCFetchConfiguration) ctx
+            .getFetchConfiguration();
         JDBCFetchState fetchState = (JDBCFetchState) fetch.newFetchState();
         if (exps[0].fetchPaths != null) {
             fetch.addFields(Arrays.asList(exps[0].fetchPaths));
@@ -147,8 +147,8 @@ public class JDBCStoreQuery
         int eager = calculateEagerMode(exps[0], startIdx, endIdx);
         int subclassMode = fetch.getSubclassFetchMode((ClassMapping) base);
         DBDictionary dict = _store.getDBDictionary();
-        long start = (mappings.length == 1 && dict.supportsSelectStartIndex)
-            ? startIdx : 0L;
+        long start = (mappings.length == 1 && dict.supportsSelectStartIndex) ? startIdx
+            : 0L;
         long end = (dict.supportsSelectEndIndex) ? endIdx : Long.MAX_VALUE;
 
         // add selects with populate WHERE conditions to list
@@ -157,24 +157,25 @@ public class JDBCStoreQuery
         BitSet subclassBits = new BitSet();
         BitSet nextBits = new BitSet();
         boolean unionable = createWhereSelects(sels, mappings, selMappings,
-            subclasses, subclassBits, nextBits, facts, exps, params, fetchState,
-            subclassMode)
+            subclasses, subclassBits, nextBits, facts, exps, params,
+            fetchState, subclassMode)
             && subclassMode == JDBCFetchConfiguration.EAGER_JOIN
-            && start == 0 && end == Long.MAX_VALUE;
+            && start == 0
+            && end == Long.MAX_VALUE;
 
         // we might want to use lrs settings if we can't use the range
         if (sels.size() > 1)
             start = 0L;
-        lrs = lrs || (fetch.getFetchBatchSize() >= 0
-            && (start != startIdx || end != endIdx));
+        lrs = lrs
+            || (fetch.getFetchBatchSize() >= 0 && (start != startIdx || end != endIdx));
 
         ResultObjectProvider[] rops = null;
         ResultObjectProvider rop = null;
         if (unionable) {
-            Union union = _store.getSQLFactory().newUnion((Select[])
-                sels.toArray(new Select[sels.size()]));
-            BitSet[] paged = populateUnion(union, mappings, subclasses,
-                facts, exps, params, fetchState, lrs, eager, start, end);
+            Union union = _store.getSQLFactory().newUnion(
+                (Select[]) sels.toArray(new Select[sels.size()]));
+            BitSet[] paged = populateUnion(union, mappings, subclasses, facts,
+                exps, params, fetchState, lrs, eager, start, end);
             union.setLRS(lrs);
             rop = executeUnion(union, mappings, exps, paged, fetchState);
         } else {
@@ -209,8 +210,8 @@ public class JDBCStoreQuery
         }
 
         // need to fake result range?
-        if ((rops != null && endIdx != Long.MAX_VALUE)
-            || start != startIdx || end != endIdx)
+        if ((rops != null && endIdx != Long.MAX_VALUE) || start != startIdx
+            || end != endIdx)
             rop = new RangeResultObjectProvider(rop, startIdx, endIdx);
         return rop;
     }
@@ -226,6 +227,7 @@ public class JDBCStoreQuery
         final BitSet[] paged = (exps[0].projections.length > 0) ? null
             : new BitSet[mappings.length];
         union.select(new Union.Selector() {
+
             public void select(Select sel, int idx) {
                 BitSet bits = populateSelect(sel, mappings[idx], subclasses,
                     (JDBCExpressionFactory) facts[idx], exps[idx], params,
@@ -267,8 +269,8 @@ public class JDBCStoreQuery
         ClassMapping[] mappings, QueryExpressions[] exps, BitSet[] paged,
         JDBCFetchState fetchState) {
         if (exps[0].projections.length > 0)
-            return new ProjectionResultObjectProvider(union, _store, fetchState,
-                exps);
+            return new ProjectionResultObjectProvider(union, _store,
+                fetchState, exps);
 
         if (paged != null)
             for (int i = 0; i < paged.length; i++)
@@ -341,11 +343,11 @@ public class JDBCStoreQuery
     private ClassMapping[] getVerticalMappings(ClassMapping mapping,
         boolean subclasses, QueryExpressions exps, int subclassMode) {
         if (!subclasses || exps.projections.length > 0)
-            return new ClassMapping[]{ mapping };
+            return new ClassMapping[] { mapping };
 
         if (subclassMode != JDBCFetchConfiguration.EAGER_PARALLEL
             || !hasVerticalSubclasses(mapping))
-            return new ClassMapping[]{ mapping };
+            return new ClassMapping[] { mapping };
 
         List subs = new ArrayList(4);
         addSubclasses(mapping, subs);
@@ -382,7 +384,7 @@ public class JDBCStoreQuery
     private static boolean hasVerticalSubclasses(ClassMapping mapping) {
         ClassMapping[] subs = mapping.getJoinablePCSubclassMappings();
         for (int i = 0; i < subs.length; i++)
-            if (subs[i].getStrategy()instanceof VerticalClassStrategy)
+            if (subs[i].getStrategy() instanceof VerticalClassStrategy)
                 return true;
         return false;
     }
@@ -405,15 +407,15 @@ public class JDBCStoreQuery
     protected Number executeDelete(Executor ex, ClassMetaData base,
         ClassMetaData[] metas, boolean subclasses, ExpressionFactory[] facts,
         QueryExpressions[] exps, Object[] params) {
-        return executeBulkOperation(ex, base, metas, subclasses, facts,
-            exps, params, null);
+        return executeBulkOperation(ex, base, metas, subclasses, facts, exps,
+            params, null);
     }
 
     protected Number executeUpdate(Executor ex, ClassMetaData base,
         ClassMetaData[] metas, boolean subclasses, ExpressionFactory[] facts,
         QueryExpressions[] exps, Object[] params) {
-        return executeBulkOperation(ex, base, metas, subclasses, facts,
-            exps, params, exps[0].updates);
+        return executeBulkOperation(ex, base, metas, subclasses, facts, exps,
+            params, exps[0].updates);
     }
 
     private Number executeBulkOperation(Executor ex, ClassMetaData base,
@@ -430,15 +432,15 @@ public class JDBCStoreQuery
             if (!isUpdate) {
                 // if there are any delete callbacks, we need to
                 // execute in-memory so the callbacks are invoked
-                LifecycleEventManager mgr = ctx.getStoreContext().getBroker().
-                    getLifecycleEventManager();
+                LifecycleEventManager mgr = ctx.getStoreContext().getBroker()
+                    .getLifecycleEventManager();
                 if (mgr.hasDeleteListeners(null, mappings[i]))
                     return null;
             }
         }
 
-        JDBCFetchConfiguration fetch = (JDBCFetchConfiguration)
-            ctx.getFetchConfiguration();
+        JDBCFetchConfiguration fetch = (JDBCFetchConfiguration) ctx
+            .getFetchConfiguration();
         DBDictionary dict = _store.getDBDictionary();
 
         SQLBuffer[] sql = new SQLBuffer[mappings.length];
@@ -448,8 +450,8 @@ public class JDBCStoreQuery
             jdbcFactory = (JDBCExpressionFactory) facts[i];
             JDBCFetchState fetchState = (JDBCFetchState) fetch.newFetchState();
             sel = jdbcFactory.evaluate(this, fetchState, exps[i], params);
-            jdbcFactory.select(this, mappings[i], subclasses, sel,
-                exps[i], params, fetchState, JDBCFetchConfiguration.EAGER_NONE);
+            jdbcFactory.select(this, mappings[i], subclasses, sel, exps[i],
+                params, fetchState, JDBCFetchConfiguration.EAGER_NONE);
 
             // specification of the "udpates" map indicates that this is
             // an update query; otherwise, this is a delete statement
@@ -487,8 +489,7 @@ public class JDBCStoreQuery
                         }
                 }
             }
-        }
-        catch (SQLException se) {
+        } catch (SQLException se) {
             throw SQLExceptions.getStore(se, ctx, _store.getDBDictionary());
         } finally {
             try {
@@ -577,8 +578,8 @@ public class JDBCStoreQuery
         ClassMetaData[] metas, boolean subclasses, ExpressionFactory[] facts,
         QueryExpressions[] exps, Object[] params, long startIdx, long endIdx) {
         ClassMapping[] mappings = (ClassMapping[]) metas;
-        JDBCFetchConfiguration fetch = (JDBCFetchConfiguration)
-            ctx.getFetchConfiguration();
+        JDBCFetchConfiguration fetch = (JDBCFetchConfiguration) ctx
+            .getFetchConfiguration();
         JDBCFetchState fetchState = (JDBCFetchState) fetch.newFetchState();
         if (exps[0].fetchPaths != null) {
             fetch.addFields(Arrays.asList(exps[0].fetchPaths));
@@ -589,8 +590,8 @@ public class JDBCStoreQuery
         eager = Math.min(eager, JDBCFetchConfiguration.EAGER_JOIN);
         int subclassMode = fetch.getSubclassFetchMode((ClassMapping) base);
         DBDictionary dict = _store.getDBDictionary();
-        long start = (mappings.length == 1 && dict.supportsSelectStartIndex)
-            ? startIdx : 0L;
+        long start = (mappings.length == 1 && dict.supportsSelectStartIndex) ? startIdx
+            : 0L;
         long end = (dict.supportsSelectEndIndex) ? endIdx : Long.MAX_VALUE;
 
         // add selects with populate WHERE conditions to list
@@ -599,20 +600,19 @@ public class JDBCStoreQuery
         BitSet subclassBits = new BitSet();
         BitSet nextBits = new BitSet();
         boolean unionable = createWhereSelects(sels, mappings, selMappings,
-            subclasses, subclassBits, nextBits, facts, exps, params, fetchState,
-            subclassMode)
+            subclasses, subclassBits, nextBits, facts, exps, params,
+            fetchState, subclassMode)
             && subclassMode == JDBCFetchConfiguration.EAGER_JOIN;
         if (sels.size() > 1)
             start = 0L;
 
         if (unionable) {
-            Union union = _store.getSQLFactory().newUnion((Select[])
-                sels.toArray(new Select[sels.size()]));
+            Union union = _store.getSQLFactory().newUnion(
+                (Select[]) sels.toArray(new Select[sels.size()]));
             populateUnion(union, mappings, subclasses, facts, exps, params,
                 fetchState, false, eager, start, end);
             if (union.isUnion())
-                return new String[]{ union.toSelect(false, fetch).
-                    getSQL(true) };
+                return new String[] { union.toSelect(false, fetch).getSQL(true) };
             sels = Arrays.asList(union.getSelects());
         } else {
             Select sel;
@@ -628,8 +628,7 @@ public class JDBCStoreQuery
 
         String[] sql = new String[sels.size()];
         for (int i = 0; i < sels.size(); i++)
-            sql[i] = ((Select) sels.get(i)).toSelect(false, fetch).
-                getSQL(true);
+            sql[i] = ((Select) sels.get(i)).toSelect(false, fetch).getSQL(true);
         return sql;
     }
 }

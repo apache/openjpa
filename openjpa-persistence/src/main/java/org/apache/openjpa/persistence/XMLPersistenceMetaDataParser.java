@@ -1074,8 +1074,7 @@ public class XMLPersistenceMetaDataParser
                     member = meta.getDescribedType().getDeclaredField(name);
                     type = ((Field) member).getType();
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw getException(_loc.get("invalid-attr", name, meta), e);
             }
 
