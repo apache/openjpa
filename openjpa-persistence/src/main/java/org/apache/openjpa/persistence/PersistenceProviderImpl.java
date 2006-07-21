@@ -19,6 +19,8 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.Map;
+import java.util.Properties;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -33,6 +35,7 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 
+
 /**
  * Bootstrapping class that allows the creation of a stand-alone
  * {@link EntityManager}.
@@ -43,7 +46,7 @@ public class PersistenceProviderImpl
     implements PersistenceProvider {
 
     static final String CLASS_TRANSFORMER_OPTIONS =
-        "org.apache.openjpa.ClassTransformerOptions";
+        "openjpa.ClassTransformerOptions";
 
     /**
      * Loads the entity manager specified by <code>name</code>, applying
@@ -81,9 +84,12 @@ public class PersistenceProviderImpl
                 OpenJPAEntityManagerFactory emf =
                     OpenJPAPersistence.toEntityManagerFactory(
                         Bootstrap.newBrokerFactory(cp, cp.getClassLoader()));
+                Properties p = pui.getProperties();
+                String ctOpts = null;
+                if (p != null)
+                    ctOpts = p.getProperty(CLASS_TRANSFORMER_OPTIONS);
                 pui.addTransformer(new ClassTransformerImpl(
-                    emf.getConfiguration(), pui.getProperties().getProperty
-                    (CLASS_TRANSFORMER_OPTIONS),
+                    emf.getConfiguration(), ctOpts,
                     pui.getNewTempClassLoader()));
                 return emf;
             } else
@@ -94,7 +100,7 @@ public class PersistenceProviderImpl
     }
 
     /**
-     * JEE 5 class transformer.
+     * Java EE 5 class transformer.
      */
     private static class ClassTransformerImpl
         implements ClassTransformer {
