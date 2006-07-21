@@ -45,6 +45,8 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
+
+import edu.emory.mathcs.backport.java.util.concurrent.locks.ReentrantReadWriteLock;
 import serp.util.Strings;
 
 /**
@@ -82,7 +84,7 @@ public class TCPRemoteCommitProvider
     private LinkedList _broadcastThreads = new LinkedList();
 
     private ArrayList _addresses = new ArrayList();
-    private edu.emory.mathcs.backport.java.util.concurrent.locks.ReentrantReadWriteLock _addressesLock;
+    private ReentrantReadWriteLock _addressesLock;
 
     public TCPRemoteCommitProvider()
         throws UnknownHostException {

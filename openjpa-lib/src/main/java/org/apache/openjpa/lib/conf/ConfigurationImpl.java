@@ -754,7 +754,7 @@ public class ConfigurationImpl
      * letters and lone digits. A more sophisticated conversion should probably 
      * be handled by a proper parser generator or regular expressions.
      */
-    static String toXMLName(String propName) {
+    public static String toXMLName(String propName) {
         if (propName == null)
             return null;
         StringBuffer buf = new StringBuffer();
