@@ -58,12 +58,10 @@ class Distinct
         if (candidate == null)
             candidate = Collections.EMPTY_LIST;
         
-        // ### should arg be used in eval below?
         Collection arg = candidate instanceof Collection
             ? (Collection) candidate : Collections.singleton(candidate);
 
-        return eval((Collection) candidate, orig, ctx, params).
-            iterator().next();
+        return eval(arg, orig, ctx, params).iterator().next();
     }
 
     protected Collection eval(Collection candidates, Object orig,
