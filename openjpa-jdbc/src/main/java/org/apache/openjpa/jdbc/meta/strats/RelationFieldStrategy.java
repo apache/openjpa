@@ -194,7 +194,6 @@ public class RelationFieldStrategy
         if (field.getMappedBy() != null)
             return;
 
-        Object relObj = sm.fetchObjectField(field.getIndex());
         OpenJPAStateManager rel = RelationStrategies.getStateManager
             (sm.fetchObjectField(field.getIndex()), store.getContext());
 
