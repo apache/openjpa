@@ -526,8 +526,8 @@ public class DataCacheStoreManager
                     _inserts = new LinkedList();
                 _inserts.add(sm);
             } else if (_inserts != null &&
-                sm.getPCState() == PCState.PNEWDELETED ||
-                sm.getPCState() == PCState.PNEWFLUSHEDDELETED)
+                (sm.getPCState() == PCState.PNEWDELETED ||
+                sm.getPCState() == PCState.PNEWFLUSHEDDELETED))
                 _inserts.remove(sm);
             else if (sm.getPCState() == PCState.PDIRTY) {
                 if (_updates == null)
