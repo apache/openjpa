@@ -317,8 +317,7 @@ public class OpenJPAConfigurationImpl
         proxyManagerPlugin.setInstantiatingGetter("getProxyManagerInstance");
 
         mapping = addString("Mapping");
-        metaFactoryPlugin =
-            addPlugin("MetaDataFactory", false);
+        metaFactoryPlugin = addPlugin("MetaDataFactory", false);
 
         connectionFactory = addObject("ConnectionFactory");
         connectionFactory.setInstantiatingGetter("getConnectionFactory");
