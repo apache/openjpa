@@ -45,8 +45,8 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.lib.util.concurrent.ReentrantLock;
 
-import edu.emory.mathcs.backport.java.util.concurrent.locks.ReentrantReadWriteLock;
 import serp.util.Strings;
 
 /**
@@ -84,7 +84,7 @@ public class TCPRemoteCommitProvider
     private LinkedList _broadcastThreads = new LinkedList();
 
     private ArrayList _addresses = new ArrayList();
-    private ReentrantReadWriteLock _addressesLock;
+    private ReentrantLock _addressesLock;
 
     public TCPRemoteCommitProvider()
         throws UnknownHostException {
@@ -95,8 +95,7 @@ public class TCPRemoteCommitProvider
 
         // cache the local IP address.
         _localhost = InetAddress.getLocalHost().getAddress();
-        _addressesLock =
-            new edu.emory.mathcs.backport.java.util.concurrent.locks.ReentrantReadWriteLock();
+        _addressesLock = new ReentrantLock();
         setNumBroadcastThreads(2);
     }
 
@@ -207,7 +206,7 @@ public class TCPRemoteCommitProvider
         // NYI. Could look for equivalence of addresses and avoid
         // changing those that didn't change.
 
-        acquireWriteLock(_addressesLock);
+        _addressesLock.lock();
         try {
             for (Iterator iter = _addresses.iterator(); iter.hasNext();) {
                 ((HostAddress) iter.next()).close();
@@ -257,34 +256,8 @@ public class TCPRemoteCommitProvider
             }
         }
         finally {
-            releaseWriteLock(_addressesLock);
+            _addressesLock.unlock();
         }
-    }
-
-    private void acquireWriteLock(
-        edu.emory.mathcs.backport.java.util.concurrent.locks.ReentrantReadWriteLock lock) {
-        try {
-            lock.writeLock().lockInterruptibly();
-        } catch (InterruptedException e) {
-        }
-    }
-
-    private void releaseWriteLock(
-        edu.emory.mathcs.backport.java.util.concurrent.locks.ReentrantReadWriteLock lock) {
-        lock.writeLock().unlock();
-    }
-
-    private void acquireReadLock(
-        edu.emory.mathcs.backport.java.util.concurrent.locks.ReentrantReadWriteLock lock) {
-        try {
-            lock.readLock().lockInterruptibly();
-        } catch (InterruptedException e) {
-        }
-    }
-
-    private void releaseReadLock(
-        edu.emory.mathcs.backport.java.util.concurrent.locks.ReentrantReadWriteLock lock) {
-        lock.readLock().unlock();
     }
 
     // ---------- Configurable implementation ----------
@@ -322,7 +295,7 @@ public class TCPRemoteCommitProvider
             _listener.addProvider(this);
         }
 
-        acquireWriteLock(_addressesLock);
+        _addressesLock.lock();
         try {
             HostAddress curAddress;
             for (Iterator iter = _addresses.iterator();
@@ -333,7 +306,7 @@ public class TCPRemoteCommitProvider
             }
         }
         finally {
-            releaseWriteLock(_addressesLock);
+            _addressesLock.unlock();
         }
     }
 
@@ -374,12 +347,12 @@ public class TCPRemoteCommitProvider
      * provider cluster.
      */
     private void sendUpdatePacket(byte[] bytes) {
-        acquireReadLock(_addressesLock);
+        _addressesLock.lock();
         try {
             for (Iterator iter = _addresses.iterator(); iter.hasNext();)
                 ((HostAddress) iter.next()).sendUpdatePacket(bytes);
         } finally {
-            releaseReadLock(_addressesLock);
+            _addressesLock.unlock();
         }
     }
 
@@ -387,12 +360,12 @@ public class TCPRemoteCommitProvider
         if (_listener != null)
             _listener.removeProvider(this);
 
-        acquireWriteLock(_addressesLock);
+        _addressesLock.lock();
         try {
             for (Iterator iter = _addresses.iterator(); iter.hasNext();)
                 ((HostAddress) iter.next()).close();
         } finally {
-            releaseWriteLock(_addressesLock);
+            _addressesLock.unlock();
         }
 
         // We are done transmitting. Interrupt any worker threads.
