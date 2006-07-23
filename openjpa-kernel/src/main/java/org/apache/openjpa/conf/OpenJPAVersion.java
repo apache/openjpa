@@ -28,14 +28,12 @@ import java.util.StringTokenizer;
  */
 public class OpenJPAVersion {
 
-    public static final String VERSION_NUMBER = OpenJPAVersion.class
-        .getPackage().getImplementationVersion() == null ? "0.0.0" :
-        OpenJPAVersion.class.getPackage().getImplementationVersion();
+    public static final String VERSION_NUMBER;
     private static final long RELEASE_SECONDS = 1147454303;
 
     public static final Date RELEASE_DATE = new Date(RELEASE_SECONDS * 1000);
 
-    public static final String VERSION_ID = VERSION_NUMBER;
+    public static final String VERSION_ID;
     public static final String VENDOR_NAME = "OpenJPA";
     public static final int MAJOR_RELEASE;
     public static final int MINOR_RELEASE;
@@ -43,17 +41,40 @@ public class OpenJPAVersion {
     public static final String RELEASE_STATUS;
 
     static {
+        Package pack = OpenJPAVersion.class.getPackage();
+        String vers = pack == null ? null : pack.getImplementationVersion();
+        if (vers == null || vers.length() == 0)
+            vers = "0.0.0";
 
-        java.util.StringTokenizer tok =
-            new java.util.StringTokenizer(VERSION_NUMBER,
-                ".ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
-        MAJOR_RELEASE =
-            tok.hasMoreTokens() ? Integer.parseInt(tok.nextToken()) : 0;
-        MINOR_RELEASE =
-            tok.hasMoreTokens() ? Integer.parseInt(tok.nextToken()) : 0;
-        PATCH_RELEASE =
-            tok.hasMoreTokens() ? Integer.parseInt(tok.nextToken()) : 0;
-        RELEASE_STATUS = tok.hasMoreTokens() ? tok.nextToken(".") : "";
+        VERSION_NUMBER = vers;
+        VERSION_ID = VERSION_NUMBER;
+
+        StringTokenizer tok = new StringTokenizer(VERSION_NUMBER, ".-");
+
+        int major, minor, patch;
+
+        try {
+            major = tok.hasMoreTokens() ? Integer.parseInt(tok.nextToken()) : 0;
+        } catch (Exception e) {
+            major = 0;
+        }
+
+        try {
+            minor = tok.hasMoreTokens() ? Integer.parseInt(tok.nextToken()) : 0;
+        } catch (Exception e) {
+            minor = 0;
+        }
+
+        try {
+            patch = tok.hasMoreTokens() ? Integer.parseInt(tok.nextToken()) : 0;
+        } catch (Exception e) {
+            patch = 0;
+        }
+
+        MAJOR_RELEASE = major;
+        MINOR_RELEASE = minor;
+        PATCH_RELEASE = patch;
+        RELEASE_STATUS = tok.hasMoreTokens() ? tok.nextToken("!") : "";
     }
 
     public static void main(String [] args) {
