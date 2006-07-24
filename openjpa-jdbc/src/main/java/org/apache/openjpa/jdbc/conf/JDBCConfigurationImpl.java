@@ -290,8 +290,6 @@ public class JDBCConfigurationImpl
         // native savepoint manager options
         savepointManagerPlugin.setAlias("jdbc",
             "org.apache.openjpa.jdbc.kernel.JDBC3SavepointManager");
-        savepointManagerPlugin.setAlias("oracle",
-            "kodo.jdbc.sql.OracleSavepointManager");
 
         // set new aliases and defaults for sequence
         seqPlugin.setAliases(JDBCSeqValue.ALIASES);
