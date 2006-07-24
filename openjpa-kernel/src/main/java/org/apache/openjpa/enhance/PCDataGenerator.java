@@ -178,7 +178,7 @@ public class PCDataGenerator
         code.afterLast();
         code.previous();
 
-        // private BitSet loaded = new BitSet ();
+        // private BitSet loaded = new BitSet();
         BCField loaded = addBeanField(bc, "loaded", BitSet.class);
         loaded.setFinal(true);
         code.aload().setThis();
@@ -202,17 +202,17 @@ public class PCDataGenerator
         BCField type = bc.declareField("type", Class.class);
         type.setStatic(true);
         type.makePrivate();
-        // public Class getType () {
+        // public Class getType() {
         BCMethod getter = bc.declareMethod("getType", Class.class, null);
         getter.makePublic();
         Code code = getter.getCode(true);
         // if (type == null) {
         // 		try {
         // 			type = Class.forName
-        // 				(meta.getDescribedType ().getName (), true,
-        // 				Thread.currentThread ().getContextClassLoader ());
+        // 				(meta.getDescribedType().getName(), true,
+        // 				Thread.currentThread().getContextClassLoader());
         // 		} catch (ClassNotFoundException cnfe) {
-        // 			throw new InternalException ();
+        // 			throw new InternalException();
         // 		}
         // }
         code.getstatic().setField(type);
@@ -259,7 +259,7 @@ public class PCDataGenerator
      * Add methods for loading and storing class-level impl data.
      */
     private void addImplDataMethods(BCClass bc, ClassMetaData meta) {
-        // void storeImplData (OpenJPAStateManager);
+        // void storeImplData(OpenJPAStateManager);
         BCMethod meth = bc.declareMethod("storeImplData", void.class,
             new Class[]{ OpenJPAStateManager.class });
         Code code = meth.getCode(true);
@@ -268,8 +268,8 @@ public class PCDataGenerator
         if (!usesImplData(meta))
             code.vreturn();
         else {
-            // if (sm.isImplDataCacheable ())
-            // 		setImplData (sm.getImplData ());
+            // if (sm.isImplDataCacheable())
+            // 		setImplData(sm.getImplData());
             impl = addBeanField(bc, "implData", Object.class);
             code.aload().setParam(0);
             code.invokeinterface().setMethod(OpenJPAStateManager.class,
@@ -286,15 +286,15 @@ public class PCDataGenerator
         code.calculateMaxStack();
         code.calculateMaxLocals();
 
-        // void loadImplData (OpenJPAStateManager);
+        // void loadImplData(OpenJPAStateManager);
         meth = bc.declareMethod("loadImplData", void.class,
             new Class[]{ OpenJPAStateManager.class });
         code = meth.getCode(true);
         if (!usesImplData(meta))
             code.vreturn();
         else {
-            // if (sm.getImplData () == null && implData != null)
-            // 		sm.setImplData (impl, true);
+            // if (sm.getImplData() == null && implData != null)
+            // 		sm.setImplData(impl, true);
             code.aload().setParam(0);
             code.invokeinterface().setMethod(OpenJPAStateManager.class,
                 "getImplData", Object.class, null);
@@ -321,7 +321,7 @@ public class PCDataGenerator
      * Add methods for loading and storing class-level impl data.
      */
     private void addFieldImplDataMethods(BCClass bc, ClassMetaData meta) {
-        // public void loadImplData (OpenJPAStateManager sm, int i)
+        // public void loadImplData(OpenJPAStateManager sm, int i)
         BCMethod meth = bc.declareMethod("loadImplData", void.class,
             new Class[]{ OpenJPAStateManager.class, int.class });
         meth.makePrivate();
@@ -351,7 +351,7 @@ public class PCDataGenerator
             Instruction target = code.aload().setLocal(obj);
             code.previous();
 
-            // switch (i)
+            // switch(i)
             code.iload().setParam(1);
             LookupSwitchInstruction lswitch = code.lookupswitch();
             FieldMetaData[] fields = meta.getFields();
@@ -370,11 +370,11 @@ public class PCDataGenerator
             lswitch.setDefaultTarget(target);
 
             // if (obj != null)
-            code.next(); // jump back over target
+            code.next();    // jump back over target
             ifins = code.ifnonnull();
             code.vreturn();
 
-            // sm.setImplData (index, impl);
+            // sm.setImplData(index, impl);
             ifins.setTarget(code.aload().setParam(0));
             code.iload().setParam(1);
             code.aload().setLocal(obj);
@@ -386,7 +386,7 @@ public class PCDataGenerator
         code.calculateMaxLocals();
         code.calculateMaxStack();
 
-        // void storeImplData (OpenJPAStateManager sm, int index, boolean loaded)
+        // void storeImplData(OpenJPAStateManager sm, int index, boolean loaded)
         meth = bc.declareMethod("storeImplData", void.class,
             new Class[]{ OpenJPAStateManager.class, int.class, boolean.class });
         code = meth.getCode(true);
@@ -394,7 +394,7 @@ public class PCDataGenerator
             code.vreturn();
         else {
             // int arrIdx = -1;
-            // switch (index)
+            // switch(index)
             int arrIdx = code.getNextLocalsIndex();
             code.constant().setValue(-1);
             code.istore().setLocal(arrIdx);
@@ -416,7 +416,7 @@ public class PCDataGenerator
                 code.go2().setTarget(switchTarget);
             }
             lswitch.setDefaultTarget(switchTarget);
-            code.next(); // step over switch target
+            code.next();    // step over switch target
 
             // if (arrIdx != -1)
             code.constant().setValue(-1);
@@ -431,7 +431,7 @@ public class PCDataGenerator
             ifins.setTarget(code.iload().setParam(2));
             code.ifeq().setTarget(nullTarget);
 
-            // Object obj = sm.getImplData (index)
+            // Object obj = sm.getImplData(index)
             int obj = code.getNextLocalsIndex();
             code.aload().setParam(0);
             code.iload().setParam(1);
@@ -483,13 +483,13 @@ public class PCDataGenerator
      * Add methods for loading and storing version data.
      */
     protected void addVersionMethods(BCClass bc) {
-        // void storeVersion (OpenJPAStateManager sm);
+        // void storeVersion(OpenJPAStateManager sm);
         addBeanField(bc, "version", Object.class);
         BCMethod meth = bc.declareMethod("storeVersion", void.class,
             new Class[]{ OpenJPAStateManager.class });
         Code code = meth.getCode(true);
 
-        // version = sm.getVersion ();
+        // version = sm.getVersion();
         code.aload().setThis();
         code.aload().setParam(0);
         code.invokeinterface()
@@ -500,13 +500,13 @@ public class PCDataGenerator
         code.calculateMaxStack();
         code.calculateMaxLocals();
 
-        // void loadVersion (OpenJPAStateManager sm)
+        // void loadVersion(OpenJPAStateManager sm)
         meth = bc.declareMethod("loadVersion", void.class,
             new Class[]{ OpenJPAStateManager.class });
         code = meth.getCode(true);
 
-        // if (sm.getVersion () == null)
-        // 		sm.setVersion (version);
+        // if (sm.getVersion() == null)
+        // 		sm.setVersion(version);
         code.aload().setParam(0);
         code.invokeinterface().setMethod(OpenJPAStateManager.class,
             "getVersion", Object.class, null);
@@ -523,12 +523,19 @@ public class PCDataGenerator
     }
 
     private void addLoadMethod(BCClass bc, ClassMetaData meta) {
-        // public void load (OpenJPAStateManager sm, FetchState fc,
+        // public void load(OpenJPAStateManager sm, FetchState fetchState,
         // 		Object context)
         Code code = addLoadMethod(bc, false);
         FieldMetaData[] fmds = meta.getFields();
         Collection jumps = new LinkedList();
         Collection jumps2;
+		// FetchConfiguration fetch = fetchState.getFetchConfiguration();
+		int fetch = code.getNextLocalsIndex();
+		code.aload().setParam(1);
+		code.invokeinterface().setMethod(FetchState.class, 
+			"getFetchConfiguration", FetchConfiguration.class, null);
+		code.astore().setLocal(fetch);
+		
         int local = code.getNextLocalsIndex();
         code.constant().setNull();
         code.astore().setLocal(local);
@@ -542,7 +549,7 @@ public class PCDataGenerator
             jumps2 = new LinkedList();
             intermediate = usesIntermediate(fmds[i]);
             setTarget(code.aload().setThis(), jumps);
-            // if (loaded.get (i)) or (!loaded.get (i)) depending on inter resp
+            // if (loaded.get(i)) or (!loaded.get(i)) depending on inter resp
             code.getfield().setField("loaded", BitSet.class);
             code.constant().setValue(i);
             code.invokevirtual().setMethod(BitSet.class, "get",
@@ -555,19 +562,23 @@ public class PCDataGenerator
             jumps2.add(code.go2());
 
             // if in DFG, no if statement.
-            // else if (fetch.hasFetchGroup (fmds[i].getFetchGroups ())
-            // 	|| fetch.hasField (fmds[i].getFullName ()))
+            // else if (fetch.hasFetchGroup(sm.getMetaData().getField(i).
+			//     getFetchGroups()) || fetch.hasField(fmds[i].getFullName()))
             if (!fmds[i].isInDefaultFetchGroup()) {
-                setTarget(code.aload().setParam(1), jumps);
-                code.constant().setValue(fmds[i]);
+                setTarget(code.aload().setLocal(fetch), jumps);
+                code.aload().setParam(0);
+                code.invokeinterface().setMethod(OpenJPAStateManager.class,
+                    "getMetaData", ClassMetaData.class, null);
+				code.constant().setValue(fmds[i].getIndex());
+                code.invokevirtual().setMethod(ClassMetaData.class,
+                    "getField", FieldMetaData.class, new Class[]{int.class});
                 code.invokevirtual().setMethod(FieldMetaData.class,
                     "getFetchGroups", Set.class, null);
-                code.aload().setParam(0);
                 code.invokeinterface().setMethod
                     (FetchConfiguration.class, "hasFetchGroup",
                         boolean.class, new Class[]{ Set.class });
                 JumpInstruction ifins = code.ifne();
-                code.aload().setParam(1);
+                code.aload().setLocal(fetch);
                 code.constant().setValue(fmds[i].getFullName());
                 code.invokeinterface().setMethod
                     (FetchConfiguration.class, "hasField", boolean.class,
@@ -590,7 +601,7 @@ public class PCDataGenerator
 
     private void addLoadWithFieldsMethod(BCClass bc, ClassMetaData meta) {
         Code code = addLoadMethod(bc, true);
-        // public void load (OpenJPAStateManager sm, FetchConfiguration fc,
+        // public void load(OpenJPAStateManager sm, FetchState fs,
         // 		BitSet fields, Object conn)
         FieldMetaData[] fmds = meta.getFields();
         Collection jumps = new LinkedList();
@@ -607,9 +618,9 @@ public class PCDataGenerator
         for (int i = 0; i < fmds.length; i++) {
             jumps2 = new LinkedList();
             intermediate = usesIntermediate(fmds[i]);
-            // if (fields.get (i))
+            // if (fields.get(i))
             // {
-            // 		if (loaded.get (i))
+            // 		if (loaded.get(i))
             setTarget(code.aload().setParam(1), jumps);
             code.constant().setValue(i);
             code.invokevirtual().setMethod(BitSet.class, "get",
@@ -627,7 +638,7 @@ public class PCDataGenerator
 
             addLoad(bc, code, fmds[i], objectCount, local, true);
             if (usesImplData(fmds[i])) {
-                // loadImplData (sm, i);
+                // loadImplData(sm, i);
                 code.aload().setThis();
                 code.aload().setParam(0);
                 code.constant().setValue(i);
@@ -663,13 +674,13 @@ public class PCDataGenerator
         BCMethod load = bc.declareMethod("load", void.class, args);
         Code code = load.getCode(true);
 
-        //loadVersion (sm);
+        //loadVersion(sm);
         code.aload().setThis();
         code.aload().setParam(0);
         code.invokevirtual().setMethod("loadVersion", void.class,
             new Class[]{ OpenJPAStateManager.class });
 
-        //loadImplData (sm);
+        //loadImplData(sm);
         code.aload().setThis();
         code.aload().setParam(0);
         code.invokevirtual().setMethod("loadImplData", void.class,
@@ -686,7 +697,7 @@ public class PCDataGenerator
         int typeCode = replaceType(fmd);
         Instruction first;
         if (typeCode < JavaTypes.OBJECT) {
-            // sm.store<type> (i, field<i>)
+            // sm.store<type>(i, field<i>)
             Class type = forType(fmd.getTypeCode());
             first = code.aload().setParam(0);
             code.constant().setValue(index);
@@ -696,7 +707,7 @@ public class PCDataGenerator
                 "store" + StringUtils.capitalize(type.getName()),
                 void.class, new Class[]{ int.class, type });
         } else {
-            // fmd = sm.getMetaData ().getField (i);
+            // fmd = sm.getMetaData().getField(i);
             int offset = fields ? 1 : 0;
             first = code.aload().setParam(0);
             code.invokeinterface().setMethod(OpenJPAStateManager.class,
@@ -705,7 +716,7 @@ public class PCDataGenerator
             code.invokevirtual().setMethod(ClassMetaData.class, "getField",
                 FieldMetaData.class, new Class[]{ int.class });
             code.astore().setLocal(local);
-            // sm.storeField (i, toField (sm, fmd, objects[objectCount],
+            // sm.storeField(i, toField(sm, fmd, objects[objectCount],
             // 		fetch, context);
             code.aload().setParam(0);
             code.constant().setValue(index);
@@ -741,7 +752,7 @@ public class PCDataGenerator
         code.constant().setValue(objectCount);
         code.aaload();
         code.astore().setLocal(inter);
-        // 		if (inter != null && !sm.getLoaded ().get (index))
+        // 		if (inter != null && !sm.getLoaded().get(index))
         code.aload().setLocal(inter);
         jumps2.add(code.ifnull());
         code.aload().setParam(0);
@@ -751,8 +762,8 @@ public class PCDataGenerator
         code.invokevirtual().setMethod(BitSet.class, "get",
             boolean.class, new Class[]{ int.class });
         jumps2.add(code.ifne());
-        //			sm.setIntermediate (index, inter);
-        //	} // end else
+        //			sm.setIntermediate(index, inter);
+        //	}  // end else
         code.aload().setParam(0);
         code.constant().setValue(index);
         code.aload().setLocal(inter);
@@ -763,9 +774,9 @@ public class PCDataGenerator
     }
 
     private void addStoreMethods(BCClass bc, ClassMetaData meta) {
-        // i.e. void store (OpenJPAStateManager sm, BitSet fields);
+        // i.e. void store(OpenJPAStateManager sm, BitSet fields);
         addStoreMethod(bc, meta, true);
-        // i.e. void store (OpenJPAStateManager sm);
+        // i.e. void store(OpenJPAStateManager sm);
         addStoreMethod(bc, meta, false);
     }
 
@@ -780,17 +791,17 @@ public class PCDataGenerator
                 new Class[]{ OpenJPAStateManager.class });
         Code code = store.getCode(true);
 
-        // initialize ();
+        // initialize();
         code.aload().setThis();
         code.invokevirtual().setMethod("initialize", void.class, null);
 
-        // storeVersion (sm);
+        // storeVersion(sm);
         code.aload().setThis();
         code.aload().setParam(0);
         code.invokevirtual().setMethod("storeVersion", void.class,
             new Class[]{ OpenJPAStateManager.class });
 
-        // storeImplData (sm);
+        // storeImplData(sm);
         code.aload().setThis();
         code.aload().setParam(0);
         code.invokevirtual().setMethod("storeImplData", void.class,
@@ -801,7 +812,7 @@ public class PCDataGenerator
         int objectCount = 0;
         for (int i = 0; i < fmds.length; i++) {
             if (fields) {
-                //  if (fields != null && fields.get (index))
+                //  if (fields != null && fields.get(index))
                 setTarget(code.aload().setParam(1), jumps);
                 jumps.add(code.ifnull());
                 code.aload().setParam(1);
@@ -810,7 +821,7 @@ public class PCDataGenerator
                     boolean.class, new Class[]{ int.class });
                 jumps.add(code.ifeq());
             } else {
-                // if (sm.getLoaded ().get (index)))
+                // if (sm.getLoaded().get(index)))
                 setTarget(code.aload().setParam(0), jumps);
                 code.invokeinterface().setMethod(OpenJPAStateManager.class,
                     "getLoaded", BitSet.class, null);
@@ -822,7 +833,7 @@ public class PCDataGenerator
             addStore(bc, code, fmds[i], objectCount);
             if (usesIntermediate(fmds[i])) {
                 JumpInstruction elseIns = code.go2();
-                // else if (!loaded.get (index))
+                // else if (!loaded.get(index))
                 setTarget(code.aload().setThis(), jumps);
                 jumps.add(elseIns);
                 code.getfield().setField("loaded", BitSet.class);
@@ -830,7 +841,7 @@ public class PCDataGenerator
                 code.invokevirtual().setMethod(BitSet.class, "get",
                     boolean.class, new Class[]{ int.class });
                 jumps.add(code.ifne());
-                // Object val = sm.getIntermediate (index);
+                // Object val = sm.getIntermediate(index);
                 // if (val != null)
                 // 		objects[objectCount] = val;
                 code.aload().setParam(0);
@@ -861,7 +872,7 @@ public class PCDataGenerator
         int index = fmd.getIndex();
         if (typeCode < JavaTypes.OBJECT) {
             Class type = forType(typeCode);
-            // field<i> = sm.fetch<Type> (index)
+            // field<i> = sm.fetch<Type>(index)
             code.aload().setThis();
             code.aload().setParam(0);
             code.constant().setValue(index);
@@ -875,8 +886,8 @@ public class PCDataGenerator
             code.invokevirtual().setMethod(BitSet.class, "set", void.class,
                 new Class[]{ int.class });
         } else {
-            // Object val = toData (sm.getMetaData ().getField (index),
-            // 		sm.fetchField (index, false), sm.getContext ());
+            // Object val = toData(sm.getMetaData().getField(index),
+            // 		sm.fetchField(index, false), sm.getContext());
             int local = code.getNextLocalsIndex();
             code.aload().setThis();
             code.aload().setParam(0);
@@ -901,9 +912,9 @@ public class PCDataGenerator
 
             // if (val == NULL) {
             // 		val = null;
-            // 		loaded.clear (index);
+            // 		loaded.clear(index);
             // 	} else
-            // 		loaded.set (index);
+            // 		loaded.set(index);
             // 	objects[objectCount] = val;
             code.aload().setLocal(local);
             code.getstatic().setField(AbstractPCData.class, "NULL",
@@ -931,7 +942,7 @@ public class PCDataGenerator
         if (!usesImplData(fmd))
             return;
 
-        // storeImplData (sm, i, loaded.get (i);
+        // storeImplData(sm, i, loaded.get(i);
         code.aload().setThis();
         code.aload().setParam(0);
         code.constant().setValue(index);
@@ -945,12 +956,12 @@ public class PCDataGenerator
     }
 
     private void addNewEmbedded(BCClass bc) {
-        // void newEmbeddedPCData (OpenJPAStateManager embedded)
+        // void newEmbeddedPCData(OpenJPAStateManager embedded)
         BCMethod meth = bc.declareMethod("newEmbeddedPCData", PCData.class,
             new Class[]{ OpenJPAStateManager.class });
         Code code = meth.getCode(true);
-        // return getStorageGenerator ().generatePCData
-        // 		(sm.getId (), sm.getMetaData ());
+        // return getStorageGenerator().generatePCData
+        // 		(sm.getId(), sm.getMetaData());
         code.aload().setThis();
         code.getfield().setField("storageGenerator", PCDataGenerator.class);
         code.aload().setParam(0);
@@ -968,7 +979,7 @@ public class PCDataGenerator
     }
 
     private void addGetData(BCClass bc) {
-        // return getObjectField (i);
+        // return getObjectField(i);
         BCMethod method = bc.declareMethod("getData", Object.class,
             new Class[]{ int.class });
         Code code = method.getCode(true);
