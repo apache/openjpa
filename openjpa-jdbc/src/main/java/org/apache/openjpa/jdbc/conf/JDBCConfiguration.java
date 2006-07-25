@@ -44,21 +44,21 @@ public interface JDBCConfiguration
 
     /**
      * Name of the logger for SQL execution messages:
-     * <code>org.apache.openjpa.jdbc.SQL</code>.
+     * <code>openjpa.jdbc.SQL</code>.
      */
-    public static final String LOG_SQL = "org.apache.openjpa.jdbc.SQL";
+    public static final String LOG_SQL = "openjpa.jdbc.SQL";
 
     /**
      * Name of the logger for JDBC-related messages:
-     * <code>org.apache.openjpa.jdbc.JDBC</code>.
+     * <code>openjpa.jdbc.JDBC</code>.
      */
-    public static final String LOG_JDBC = "org.apache.openjpa.jdbc.JDBC";
+    public static final String LOG_JDBC = "openjpa.jdbc.JDBC";
 
     /**
      * Name of the logger for schema-related messages:
-     * <code>org.apache.openjpa.jdbc.Schema</code>.
+     * <code>openjpa.jdbc.Schema</code>.
      */
-    public static final String LOG_SCHEMA = "org.apache.openjpa.jdbc.Schema";
+    public static final String LOG_SCHEMA = "openjpa.jdbc.Schema";
 
     /**
      * Default schema for unqualified tables.
@@ -564,19 +564,13 @@ public interface JDBCConfiguration
      * Return the mapping repository. Convenience method to cast from
      * the internal metadata repository.
      */
-    public MappingRepository getMappingRepository();
+    public MappingRepository getMappingRepositoryInstance();
 
     /**
-     * Return a new mapping repository instance for this configuration.
+     * Return a new empty mapping repository of the configured type.  
+     * Convenience method to cast from metadata repository.
      */
     public MappingRepository newMappingRepositoryInstance();
-
-    /**
-     * Return a new mapping repository instance for this configuration with
-     * the specified {@link MetaDataFactory} and {@link MappingDefaults}.
-     */
-    public MappingRepository newMappingRepositoryInstance(MetaDataFactory mdf,
-        MappingDefaults mapDefaults);
 
     /**
      * Return the primary data source to use. The data source will

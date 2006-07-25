@@ -53,6 +53,8 @@ import java.util.TreeSet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.LogFactory;
+import org.apache.openjpa.lib.log.LogFactoryImpl;
+import org.apache.openjpa.lib.log.NoneLogFactory;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ParseException;
@@ -102,10 +104,12 @@ public class ConfigurationImpl
 
     public ObjectValue logFactoryPlugin;
 
+    private String _product = null;
     private boolean _readOnly = false;
     private Map _props = null;
     private boolean _defaults = false;
     private final List _vals = new ArrayList();
+    private List _prefixes = new ArrayList(2);
 
     // property listener helper
     private PropertyChangeSupport _changeSupport = null;
@@ -113,8 +117,6 @@ public class ConfigurationImpl
     // cache descriptors
     private PropertyDescriptor[] _pds = null;
     private MethodDescriptor[] _mds = null;
-    
-    private Set _prefixes = new HashSet();
 
     /**
      * Default constructor. Attempts to load default properties through
@@ -130,15 +132,16 @@ public class ConfigurationImpl
      * @param loadDefaults whether to attempt to load the default properties
      */
     public ConfigurationImpl(boolean loadDefaults) {
-        _prefixes.add("openjpa");
+        setProductName("openjpa"); // also adds as prop prefix
 
         logFactoryPlugin = addPlugin("Log", true);
         String[] aliases = new String[]{
-            "true", "org.apache.openjpa.lib.log.LogFactoryImpl",
+            "true", LogFactoryImpl.class.getName(),
             "commons", "org.apache.openjpa.lib.log.CommonsLogFactory",
             "log4j", "org.apache.openjpa.lib.log.Log4JLogFactory",
-            "none", "org.apache.openjpa.lib.log.NoneLogFactory",
-            "false", "org.apache.openjpa.lib.log.NoneLogFactory", };
+            "none", NoneLogFactory.class.getName(),
+            "false", NoneLogFactory.class.getName(),
+        };
         logFactoryPlugin.setAliases(aliases);
         logFactoryPlugin.setDefault(aliases[0]);
         logFactoryPlugin.setString(aliases[0]);
@@ -176,7 +179,12 @@ public class ConfigurationImpl
     }
 
     public String getProductName() {
-        return "openjpa";
+        return _product;
+    }
+
+    public void setProductName(String name) {
+        _product = name;
+        addPropertyPrefix(name);
     }
 
     public LogFactory getLogFactory() {
@@ -204,11 +212,10 @@ public class ConfigurationImpl
     }
 
     /**
-     * Returns the logging channel <code>org.apache.openjpa.Runtime</code> by
-     * default.
+     * Returns the logging channel <code>openjpa.Runtime</code> by default.
      */
     public Log getConfigurationLog() {
-        return getLog("org.apache.openjpa.Runtime");
+        return getLog("openjpa.Runtime");
     }
 
     public Value[] getValues() {
@@ -301,20 +308,26 @@ public class ConfigurationImpl
         // keep cached props up to date
         if (_props != null) {
             if (newString == null)
-                _props.remove(val.getProperty());
-            else if (_props.containsKey(val.getProperty())
+                remove(_props, val);
+            else if (containsKey(_props, val)
                 || val.getDefault() == null
                 || !val.getDefault().equals(newString))
-                _props.put(val.getProperty(), newString);
+                put(_props, val, newString);
         }
     }
 
     /**
-     * Closes all closeable plugins.
+     * Closes all closeable values and plugins.
      */
     public void close() {
         ObjectValue val;
         for (int i = 0; i < _vals.size(); i++) {
+            if (_vals.get(i) instanceof Closeable) {
+                try { ((Closeable) _vals.get(i)).close(); }
+                catch (Exception e) {} 
+                continue;
+            }
+
             if (!(_vals.get(i) instanceof ObjectValue))
                 continue;
 
@@ -515,6 +528,11 @@ public class ConfigurationImpl
     // To/from maps
     ////////////////
 
+    public void addPropertyPrefix(String prefix) {
+        if (!_prefixes.contains(prefix))
+            _prefixes.add(prefix);
+    }
+
     public Map toProperties(boolean storeDefaults) {
         // clone properties before making any modifications; we need to keep
         // the internal properties instance consistent to maintain equals and
@@ -536,13 +554,13 @@ public class ConfigurationImpl
                 // if key in existing properties, we already know value is up
                 // to date
                 val = (Value) _vals.get(i);
-                if (_props != null && _props.containsKey(val.getProperty()))
+                if (_props != null && containsKey(_props, val))
                     continue;
 
                 str = val.getString();
                 if (str != null && (storeDefaults
                     || !str.equals(val.getDefault())))
-                    clone.put(val.getProperty(), str);
+                    put(clone, val, str);
             }
             if (_props == null)
                 _props = new HashMap(clone);
@@ -567,30 +585,28 @@ public class ConfigurationImpl
         Map remaining = new HashMap(map);
         boolean ser = true;
         Value val;
-        Object set;
+        Object o;
         for (int i = 0; i < _vals.size(); i++) {
             val = (Value) _vals.get(i);
-            Object[] propertyInfo = lookUpProperty(val.getProperty(), map);
-            set = propertyInfo[1];
-            if (set == null)
+            o = get(map, val, true);
+            if (o == null)
                 continue;
 
-            if (set instanceof String) {
-                if (!StringUtils.equals((String) set, val.getString()))
-                    val.setString((String) set);
+            if (o instanceof String) {
+                if (!StringUtils.equals((String) o, val.getString()))
+                    val.setString((String) o);
             } else {
-                ser = ser && set instanceof Serializable;
-                val.setObject(set);
+                ser &= o instanceof Serializable;
+                val.setObject(o);
             }
-
-            removeFoundProperty(val, remaining);
+            remove(remaining, val);
         }
         
         // convention is to point product at a resource with the
         // <prefix>.properties System property; remove that property so we
         // we don't warn about it
-        for (Iterator iter = _prefixes.iterator(); iter.hasNext(); )
-            remaining.remove((String) iter.next() + ".properties");
+        for (int i = 0; i < _prefixes.size(); i++)
+            remaining.remove(_prefixes.get(i) + ".properties");
 
         // now warn if there are any remaining properties that there
         // is an unhandled prop
@@ -599,7 +615,7 @@ public class ConfigurationImpl
             entry = (Map.Entry) itr.next();
             if (entry.getKey() != null)
                 warnInvalidProperty((String) entry.getKey());
-            ser = ser && entry.getValue() instanceof Serializable;
+            ser &= entry.getValue() instanceof Serializable;
         }
 
         // cache properties
@@ -608,20 +624,46 @@ public class ConfigurationImpl
     }
 
     /**
-     * Removes <code>val</code> from <code>remaining</code>. Use this method
+     * Adds <code>o</code> to <code>map</code> under key for <code>val</code>.
+     * Use this method instead of attempting to add the value directly because 
+     * this will account for the property prefix.
+     */
+    private void put(Map map, Value val, Object o) {
+        Object key = val.getLoadKey();
+        if (key == null)
+            key = _prefixes.get(0) + "." + val.getProperty();
+        map.put(key, o);
+    }
+
+    /**
+     * Return whether <code>map</code> contains an entry for <code>val</code>.
+     */
+    private boolean containsKey(Map map, Value val) {
+        for (int i = 0; i < _prefixes.size(); i++)
+            if (map.containsKey(_prefixes.get(i) + "." + val.getProperty()))
+                return true;
+        return false;
+    }
+
+    /**
+     * Removes <code>val</code> from <code>map</code>. Use this method
      * instead of attempting to remove the value directly because this will
      * account for any duplicate-but-same-valued keys in the map.
      */
-    private void removeFoundProperty(Value val, Map remaining) {
-        for (Iterator iter = _prefixes.iterator(); iter.hasNext(); )
-            remaining.remove((String) iter.next() + "." + val.getProperty());
+    private void remove(Map map, Value val) {
+        for (int i = 0; i < _prefixes.size(); i++)
+            map.remove(_prefixes.get(i) + "." + val.getProperty());
     }
 
-    private Object[] lookUpProperty(String property, Map map) {
+    /**
+     * Look up the given value, testing all available prefixes.
+     */
+    private Object get(Map map, Value val, boolean setLoadKey) {
         String firstKey = null;
+        String key;
         Object o = null;
-        for (Iterator iter = _prefixes.iterator(); iter.hasNext(); ) {
-            String key = (String) iter.next() + "." + property;
+        for (int i = 0; i < _prefixes.size(); i++) {
+            key = _prefixes.get(i) + "." + val.getProperty();
             if (firstKey == null) {
                 o = map.get(key);
                 if (o != null)
@@ -633,7 +675,9 @@ public class ConfigurationImpl
                     _loc.get("dup-with-different-prefixes", firstKey, key));
             }
         }
-        return new Object[] { firstKey, o };
+        if (firstKey != null && setLoadKey)
+            val.setLoadKey(firstKey);
+        return o;
     }
 
     /**
@@ -657,14 +701,17 @@ public class ConfigurationImpl
             log.warn(_loc.get("invalid-property-hint", propName, closest));
     }
 
+    /**
+     * Return a comprehensive list of recognized map keys.
+     */
     private Collection newPropertyList() {
-        Set s = new HashSet();
-        for (Iterator iter = _vals.iterator(); iter.hasNext(); ) {
-            Value val = (Value) iter.next();
-            for (Iterator iter2 = _prefixes.iterator(); iter2.hasNext(); )
-                s.add(((String) iter2.next()) + "." + val.getProperty());  
+        List l = new ArrayList(_vals.size() * _prefixes.size());
+        for (int i = 0; i < _vals.size(); i++) {
+            for (int j = 0; j < _prefixes.size(); j++)
+                l.add(_prefixes.get(j) + "." 
+                    + ((Value) _vals.get(i)).getProperty());
         }
-        return s;
+        return l;
     }
 
     /**
@@ -676,13 +723,13 @@ public class ConfigurationImpl
         // openjpa.some.subpackage.SomeString, since it might be valid for some
         // specific implementation of OpenJPA
         boolean invalid = false;
-        for (Iterator iter = _prefixes.iterator(); iter.hasNext(); ) {
-            String prefix = (String) iter.next();
+        String prefix;
+        for (int i = 0; i < _prefixes.size(); i++) {
+            prefix = (String) _prefixes.get(i);
             if (propName.toLowerCase().startsWith(prefix)
                 && propName.indexOf('.', prefix.length()) != -1)
                 invalid = true;
         }
-
         return invalid;
     }
 
@@ -767,18 +814,17 @@ public class ConfigurationImpl
             // downcase word.
             if (i != 0 && Character.isUpperCase(c) 
                 && (Character.isLowerCase(propName.charAt(i-1))
-                    || (i > 1 && i < propName.length() - 1
-                        && Character.isUpperCase(propName.charAt(i-1)) 
-                        && Character.isLowerCase(propName.charAt(i+1)))))
+                || (i > 1 && i < propName.length() - 1
+                && Character.isUpperCase(propName.charAt(i-1)) 
+                && Character.isLowerCase(propName.charAt(i+1)))))
                 buf.append('-');
             
             // surround sequences of digits with dashes.
             if (i != 0
                 && ((!Character.isLetter(c) && Character.isLetter(propName
                     .charAt(i - 1))) 
-                    || 
-                    (Character.isLetter(c) && !Character.isLetter(propName
-                        .charAt(i - 1)))))
+                || (Character.isLetter(c) && !Character.isLetter(propName
+                    .charAt(i - 1)))))
                 buf.append('-');
             
             buf.append(Character.toLowerCase(c));
@@ -793,7 +839,7 @@ public class ConfigurationImpl
     public void readExternal(ObjectInput in)
         throws IOException, ClassNotFoundException {
         fromProperties((Map) in.readObject());
-        _prefixes = (Set) in.readObject();
+        _prefixes = (List) in.readObject();
         _defaults = in.readBoolean();
     }
 
@@ -806,7 +852,6 @@ public class ConfigurationImpl
             out.writeObject(_props);
         else
             out.writeObject(toProperties(false));
-        
         out.writeObject(_prefixes);
         out.writeBoolean(_defaults);
     }
@@ -844,10 +889,6 @@ public class ConfigurationImpl
         _vals.add(val);
         val.setListener(this);
         return val;
-    }
-
-    public void addPropertyPrefix(String prefix) {
-        _prefixes.add(prefix);
     }
 
     /**

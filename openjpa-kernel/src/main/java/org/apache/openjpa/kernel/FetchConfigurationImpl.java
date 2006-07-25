@@ -34,8 +34,8 @@ import org.apache.openjpa.lib.rop.SimpleResultList;
 import org.apache.openjpa.lib.rop.WindowResultList;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InternalException;
-import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.NoTransactionException;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Allows configuration and optimization of how objects are loaded from
@@ -79,9 +79,8 @@ public class FetchConfigurationImpl
         if (ctx == null)
             return;
 
-        OpenJPAConfiguration conf = ctx.getConfiguration();
-
         // initialize to conf info
+        OpenJPAConfiguration conf = ctx.getConfiguration();
         setFetchBatchSize(conf.getFetchBatchSize());
         setFlushBeforeQueries(conf.getFlushBeforeQueriesConstant());
         clearFetchGroups();
@@ -131,7 +130,6 @@ public class FetchConfigurationImpl
             fetchBatchSize = _ctx.getConfiguration().getFetchBatchSize();
         if (fetchBatchSize != DEFAULT)
             _fetchBatchSize = fetchBatchSize;
-
         return this;
     }
 
@@ -141,7 +139,6 @@ public class FetchConfigurationImpl
 
     public FetchConfiguration setMaxFetchDepth(int depth) {
         _maxFetchDepth = depth;
-
         return this;
     }
 
@@ -167,25 +164,22 @@ public class FetchConfigurationImpl
         return this;
     }
 
-    public synchronized Set getFetchGroups() {
-        return getImmutableSet(_fetchGroups);
+    public Set getFetchGroups() {
+        return (_fetchGroups == null) ? Collections.EMPTY_SET : _fetchGroups;
     }
 
-    public synchronized boolean hasFetchGroup(String group) {
+    public boolean hasFetchGroup(String group) {
         return _fetchGroups != null
             && (_fetchGroups.contains(group)
             || _fetchGroups.contains(FETCH_GROUP_ALL));
     }
 
-    public synchronized boolean hasAnyFetchGroup(Set groups) {
-        if (_fetchGroups != null && groups != null) {
-            Iterator iter = groups.iterator();
-            while (iter.hasNext()) {
-                Object fg = iter.next();
-                if (fg != null && hasFetchGroup(fg.toString()))
-                    return true;
-            }
-        }
+    public boolean hasAnyFetchGroup(Set groups) {
+        if (groups == null || groups.isEmpty())
+            return false;
+        for (Iterator itr = groups.iterator(); itr.hasNext();)
+            if (hasFetchGroup((String) itr.next()))
+                return true;
         return false;
     }
 
@@ -194,49 +188,63 @@ public class FetchConfigurationImpl
      *
      * @param name must not be null or empty.
      */
-    public synchronized FetchConfiguration addFetchGroup(String name) {
+    public FetchConfiguration addFetchGroup(String name) {
         if (StringUtils.isEmpty(name))
-            throw new MetaDataException(_loc.get("null-fg", name));
+            throw new UserException(_loc.get("null-fg"));
 
-        if (_fetchGroups == null)
-            _fetchGroups = new HashSet();
-        _fetchGroups.add(name);
-        return this;
-    }
-
-    public synchronized FetchConfiguration addFetchGroups(Collection groups) {
-        if (groups == null || groups.isEmpty())
-            return this;
-
-        Iterator iter = groups.iterator();
-        while (iter.hasNext()) {
-            Object group = iter.next();
-            if (group instanceof String)
-                addFetchGroup((String) group);
+        lock();
+        try {
+            if (_fetchGroups == null)
+                _fetchGroups = new HashSet();
+            _fetchGroups.add(name);
+        } finally {
+            unlock();
         }
         return this;
     }
 
-    public synchronized FetchConfiguration removeFetchGroup(String group) {
-        if (_fetchGroups != null)
-            _fetchGroups.remove(group);
+    public FetchConfiguration addFetchGroups(Collection groups) {
+        if (groups == null || groups.isEmpty())
+            return this;
+        for (Iterator itr = groups.iterator(); itr.hasNext();)
+            addFetchGroup((String) itr.next());
         return this;
     }
 
-    public synchronized FetchConfiguration removeFetchGroups(
-        Collection groups) {
-        if (_fetchGroups != null)
-            _fetchGroups.removeAll(groups);
+    public FetchConfiguration removeFetchGroup(String group) {
+        lock();
+        try {
+            if (_fetchGroups != null)
+                _fetchGroups.remove(group);
+        } finally {
+            unlock();
+        }
         return this;
     }
 
-    public synchronized FetchConfiguration clearFetchGroups() {
-        if (_fetchGroups != null)
-            _fetchGroups.clear();
+    public FetchConfiguration removeFetchGroups(Collection groups) {
+        lock();
+        try {
+            if (_fetchGroups != null)
+                _fetchGroups.removeAll(groups);
+        } finally {
+            unlock();
+        }
         return this;
     }
 
-    public synchronized FetchConfiguration resetFetchGroups() {
+    public FetchConfiguration clearFetchGroups() {
+        lock();
+        try {
+            if (_fetchGroups != null)
+                _fetchGroups.clear();
+        } finally {
+            unlock();
+        }
+        return this;
+    }
+
+    public FetchConfiguration resetFetchGroups() {
         clearFetchGroups();
         if (_ctx != null)
             addFetchGroups(Arrays.asList(_ctx.getConfiguration().
@@ -244,46 +252,74 @@ public class FetchConfigurationImpl
         return this;
     }
 
-    public synchronized Set getFields() {
-        return getImmutableSet(_fields);
+    public Set getFields() {
+        return (_fields == null) ? Collections.EMPTY_SET : _fields;
     }
 
-    public synchronized boolean hasField(String field) {
-        return _fields != null && field != null && _fields.contains(field);
+    public boolean hasField(String field) {
+        return _fields != null && _fields.contains(field);
     }
 
-    public synchronized FetchConfiguration addField(String field) {
-        if (_fields == null)
-            _fields = new HashSet();
-        _fields.add(field);
+    public FetchConfiguration addField(String field) {
+        if (StringUtils.isEmpty(field))
+            throw new UserException(_loc.get("null-field"));
+
+        lock();
+        try {
+            if (_fields == null)
+                _fields = new HashSet();
+            _fields.add(field);
+        } finally {
+            unlock();
+        }
         return this;
     }
 
-    public synchronized FetchConfiguration addFields(Collection fields) {
-        if (fields.isEmpty())
+    public FetchConfiguration addFields(Collection fields) {
+        if (fields == null || fields.isEmpty())
             return this;
 
-        if (_fields == null)
-            _fields = new HashSet();
-        _fields.addAll(fields);
+        lock();
+        try {
+            if (_fields == null)
+                _fields = new HashSet();
+            _fields.addAll(fields);
+        } finally {
+            unlock();
+        }
         return this;
     }
 
-    public synchronized FetchConfiguration removeField(String field) {
-        if (_fields != null)
-            _fields.remove(field);
+    public FetchConfiguration removeField(String field) {
+        lock();
+        try {
+            if (_fields != null)
+                _fields.remove(field);
+        } finally {
+            unlock();
+        }
         return this;
     }
 
-    public synchronized FetchConfiguration removeFields(Collection fields) {
-        if (_fields != null)
-            _fields.removeAll(fields);
+    public FetchConfiguration removeFields(Collection fields) {
+        lock();
+        try {
+            if (_fields != null)
+                _fields.removeAll(fields);
+        } finally {
+            unlock();
+        }
         return this;
     }
 
-    public synchronized FetchConfiguration clearFields() {
-        if (_fields != null)
-            _fields.clear();
+    public FetchConfiguration clearFields() {
+        lock();
+        try {
+            if (_fields != null)
+                _fields.clear();
+        } finally {
+            unlock();
+        }
         return this;
     }
 
@@ -306,12 +342,18 @@ public class FetchConfigurationImpl
     public FetchConfiguration setReadLockLevel(int level) {
         if (_ctx == null)
             return this;
-        assertActiveTransaction();
-        if (level == DEFAULT)
-            _readLockLevel = _ctx.getConfiguration().
-                getReadLockLevelConstant();
-        else
-            _readLockLevel = level;
+
+        lock();
+        try {
+            assertActiveTransaction();
+            if (level == DEFAULT)
+                _readLockLevel = _ctx.getConfiguration().
+                    getReadLockLevelConstant();
+            else
+                _readLockLevel = level;
+        } finally {
+            unlock();
+        }
         return this;
     }
 
@@ -322,12 +364,18 @@ public class FetchConfigurationImpl
     public FetchConfiguration setWriteLockLevel(int level) {
         if (_ctx == null)
             return this;
-        assertActiveTransaction();
-        if (level == DEFAULT)
-            _writeLockLevel = _ctx.getConfiguration().
-                getWriteLockLevelConstant();
-        else
-            _writeLockLevel = level;
+
+        lock();
+        try {
+            assertActiveTransaction();
+            if (level == DEFAULT)
+                _writeLockLevel = _ctx.getConfiguration().
+                    getWriteLockLevelConstant();
+            else
+                _writeLockLevel = level;
+        } finally {
+            unlock();
+        }
         return this;
     }
 
@@ -359,74 +407,93 @@ public class FetchConfigurationImpl
             return "Default";
 
         StringBuffer buf = new StringBuffer();
-        if (_fetchGroups != null && !_fetchGroups.isEmpty()) {
-            for (Iterator itr = _fetchGroups.iterator(); itr.hasNext();) {
-                if (buf.length() > 0)
-                    buf.append(", ");
-                buf.append(itr.next());
+        lock();
+        try {
+            if (_fetchGroups != null && !_fetchGroups.isEmpty()) {
+                for (Iterator itr = _fetchGroups.iterator(); itr.hasNext();) {
+                    if (buf.length() > 0)
+                        buf.append(", ");
+                    buf.append(itr.next());
+                }
             }
-        }
-        if (_fields != null && !_fields.isEmpty()) {
-            for (Iterator itr = _fields.iterator(); itr.hasNext();) {
-                if (buf.length() > 0)
-                    buf.append(", ");
-                buf.append(itr.next());
+            if (_fields != null && !_fields.isEmpty()) {
+                for (Iterator itr = _fields.iterator(); itr.hasNext();) {
+                    if (buf.length() > 0)
+                        buf.append(", ");
+                    buf.append(itr.next());
+                }
             }
+        } finally {
+            unlock();
         }
         return buf.toString();
     }
 
-    public synchronized void setHint(String name, Object value) {
-        if (_hints == null)
-            _hints = new HashMap();
-
-        synchronized (_hints) {
+    public void setHint(String name, Object value) {
+        lock();
+        try {
+            if (_hints == null)
+                _hints = new HashMap();
             _hints.put(name, value);
+        } finally {
+            unlock();
         }
     }
 
     public Object getHint(String name) {
-        if (_hints == null)
-            return null;
-
-        synchronized (_hints) {
-            return _hints.get(name);
-        }
+        return (_hints == null) ? null : _hints.get(name);
     }
 
     public Set getRootClasses() {
-        return getImmutableSet(_rootClasses);
+        return (_rootClasses == null) ? Collections.EMPTY_SET : _rootClasses;
     }
 
     public FetchConfiguration setRootClasses(Collection classes) {
-        if (classes == null || classes.isEmpty())
-            return this;
-
-        if (_rootClasses == null)
-            _rootClasses = new HashSet(classes.size());
-
-        _rootClasses.addAll(classes);
-
+        lock();
+        try {
+            if (_rootClasses != null)
+                _rootClasses.clear();
+            if (classes != null && !classes.isEmpty()) {
+                if (_rootClasses == null)
+                    _rootClasses = new HashSet(classes);
+                else 
+                    _rootClasses.addAll(classes);
+            }
+        } finally {
+            unlock();
+        }
         return this;
     }
 
     public Set getRootInstances() {
-        return getImmutableSet(_rootInstances);
+        return (_rootInstances == null) ? Collections.EMPTY_SET 
+            : _rootInstances;
     }
 
-    public FetchConfiguration setRootInstances(Collection roots) {
-        if (roots == null)
-            return this;
-        if (_rootInstances == null)
-            _rootInstances = new HashSet(roots.size());
-
-        _rootInstances.addAll(roots);
-
+    public FetchConfiguration setRootInstances(Collection instances) {
+        lock();
+        try {
+            if (_rootInstances != null)
+                _rootInstances.clear();
+            if (instances != null && !instances.isEmpty()) {
+                if (_rootInstances == null)
+                    _rootInstances = new HashSet(instances);
+                else 
+                    _rootInstances.addAll(instances);
+            }
+        } finally {
+            unlock();
+        }
         return this;
     }
 
-    private Set getImmutableSet(Set input) {
-        return (input == null) ? Collections.EMPTY_SET
-            : Collections.unmodifiableSet(input);
-	}
+    public void lock() {
+        if (_ctx != null)
+            _ctx.lock();
+    }
+
+    public void unlock() {
+        if (_ctx != null)
+            _ctx.unlock();
+    }
 }

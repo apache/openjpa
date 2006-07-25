@@ -42,7 +42,7 @@ public class StoreCache {
      * Constructor; supply delegate.
      */
     public StoreCache(EntityManagerFactoryImpl emf, DataCache cache) {
-        _repos = emf.getConfiguration().getMetaDataRepository();
+        _repos = emf.getConfiguration().getMetaDataRepositoryInstance();
         _cache = new DelegatingDataCache(cache,
             PersistenceExceptions.TRANSLATOR);
     }

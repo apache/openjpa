@@ -63,7 +63,7 @@ public class PCEnhancerAgent {
         conf.instantiateAll(); // avoid threading issues
 
         PCClassFileTransformer transformer = new PCClassFileTransformer
-            (new MetaDataRepository(conf), opts, tmpLoader);
+            (conf.newMetaDataRepositoryInstance(), opts, tmpLoader);
         inst.addTransformer(transformer);
     }
 }

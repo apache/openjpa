@@ -244,7 +244,7 @@ public class DetachManager
         _copy = !full;
         _flushed = full;
         _call = call;
-        _failFast = (broker.getConfiguration().getMetaDataRepository().
+        _failFast = (broker.getConfiguration().getMetaDataRepositoryInstance().
             getMetaDataFactory().getDefaults().getCallbackMode()
             & CallbackModes.CALLBACK_FAIL_FAST) != 0;
 

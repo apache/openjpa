@@ -66,7 +66,7 @@ class AttachManager {
         _proxy = broker.getConfiguration().getProxyManagerInstance();
         _call = call;
         _copyNew = copyNew;
-        _failFast = (broker.getConfiguration().getMetaDataRepository().
+        _failFast = (broker.getConfiguration().getMetaDataRepositoryInstance().
             getMetaDataFactory().getDefaults().getCallbackMode()
             & CallbackModes.CALLBACK_FAIL_FAST) != 0;
     }
@@ -230,7 +230,7 @@ class AttachManager {
 
         //### need to handle ACT_RUN without also ACT_CASCADE
         ClassMetaData meta = _broker.getConfiguration().
-            getMetaDataRepository().getMetaData(toAttach.getClass(),
+            getMetaDataRepositoryInstance().getMetaData(toAttach.getClass(),
             _broker.getClassLoader(), true);
         return getStrategy(toAttach).attach(this, toAttach, meta, into,
             owner, ownerMeta);

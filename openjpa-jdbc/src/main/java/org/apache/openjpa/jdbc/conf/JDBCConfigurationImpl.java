@@ -77,7 +77,6 @@ public class JDBCConfigurationImpl
     public ObjectValue mappingDefaultsPlugin;
     public PluginValue driverDataSourcePlugin;
     public MappingFactoryValue mappingFactoryPlugin;
-    public MappingRepositoryValue mappingRepositoryPlugin;
 
     // used internally
     private String firstUser = null;
@@ -218,8 +217,7 @@ public class JDBCConfigurationImpl
         updateManagerPlugin.setString(aliases[0]);
         updateManagerPlugin.setInstantiatingGetter("getUpdateManagerInstance");
 
-        driverDataSourcePlugin = addPlugin("jdbc.DriverDataSource",
-            false);
+        driverDataSourcePlugin = addPlugin("jdbc.DriverDataSource", false);
         aliases = new String[]{
             "simple", "org.apache.openjpa.jdbc.schema.SimpleDriverDataSource",
         };
@@ -253,18 +251,6 @@ public class JDBCConfigurationImpl
         mappingFactoryPlugin = new MappingFactoryValue("jdbc.MappingFactory");
         addValue(mappingFactoryPlugin);
 
-        mappingRepositoryPlugin = new MappingRepositoryValue
-            ("jdbc.MappingRepository");
-        addValue(mappingRepositoryPlugin);
-        aliases = new String[]{
-            "default", "org.apache.openjpa.jdbc.meta.MappingRepository",
-        };
-        mappingRepositoryPlugin.setAliases(aliases);
-        mappingRepositoryPlugin.setDefault(aliases[0]);
-        mappingRepositoryPlugin.setString(aliases[0]);
-        mappingRepositoryPlugin.setInstantiatingGetter
-            ("getMappingRepository");
-
         mappingDefaultsPlugin = addPlugin("jdbc.MappingDefaults", true);
         aliases = new String[]{
             "default", "org.apache.openjpa.jdbc.meta.MappingDefaultsImpl",
@@ -276,10 +262,15 @@ public class JDBCConfigurationImpl
             ("getMappingDefaultsInstance");
 
         // set up broker factory defaults
-        brokerFactoryPlugin.setAlias("jdbc",
-            JDBCBrokerFactory.class.getName());
+        brokerFactoryPlugin.setAlias("jdbc", JDBCBrokerFactory.class.getName());
         brokerFactoryPlugin.setDefault("jdbc");
         brokerFactoryPlugin.setString("jdbc");
+
+        // set new default for mapping repos
+        metaRepositoryPlugin.setAlias("default",
+            "org.apache.openjpa.jdbc.meta.MappingRepository");
+        metaRepositoryPlugin.setDefault("default");
+        metaRepositoryPlugin.setString("default");
 
         // set new default for lock manager
         lockManagerPlugin.setAlias("pessimistic",
@@ -688,26 +679,12 @@ public class JDBCConfigurationImpl
         return (MappingDefaults) mappingDefaultsPlugin.get();
     }
 
-    public MappingRepository getMappingRepository() {
-        return (MappingRepository) getMetaDataRepository();
+    public MappingRepository getMappingRepositoryInstance() {
+        return (MappingRepository) getMetaDataRepositoryInstance();
     }
 
     public MappingRepository newMappingRepositoryInstance() {
-        return (MappingRepository) getMappingRepository().newInstance();
-    }
-
-    public MappingRepository newMappingRepositoryInstance(MetaDataFactory mdf,
-        MappingDefaults mapDefaults) {
-        return (MappingRepository) getMappingRepository().
-            newInstance(mdf, mapDefaults);
-    }
-
-    public MetaDataRepository getMetaDataRepository() {
-        if (metaRepos == null) {
-            mappingRepositoryPlugin.instantiate(MappingRepository.class, this);
-            metaRepos = (MetaDataRepository) mappingRepositoryPlugin.get();
-        }
-        return metaRepos;
+        return (MappingRepository) newMetaDataRepositoryInstance();
     }
 
     public BrokerImpl newBrokerInstance(String user, String pass) {

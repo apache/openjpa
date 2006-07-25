@@ -450,4 +450,20 @@ public class DelegatingFetchConfiguration
             throw translate(re);
 		}
 	}
+
+    public void lock() {
+        try {
+            _fetch.lock();
+        } catch (RuntimeException re) {
+            throw translate(re);
+		}
+	}
+
+    public void unlock() {
+        try {
+            _fetch.unlock();
+        } catch (RuntimeException re) {
+            throw translate(re);
+		}
+	}
 }

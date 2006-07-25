@@ -26,7 +26,8 @@ import org.apache.openjpa.lib.util.EventManager;
 /**
  * Base event manager that handles adding/removing listeners
  * and firing events. Meant for high concurrency. This class is
- * reentrant-safe; listeners can be added and removed by other listeners when * they receive events. The changes will not be visible until the event fire
+ * reentrant-safe; listeners can be added and removed by other listeners when 
+ * they receive events. The changes will not be visible until the event fire
  * that initiated the recursive sequence of calls completes, however.
  *
  * @author Abe White
@@ -35,7 +36,14 @@ public abstract class AbstractConcurrentEventManager implements EventManager {
 
     private static Exception[] EMPTY_EXCEPTIONS = new Exception[0];
 
-    private Collection _listeners = new CopyOnWriteArraySet();
+    private final Collection _listeners;
+
+    /**
+     * Default constructor.
+     */
+    public AbstractConcurrentEventManager() {
+        _listeners = newListenerCollection();
+    }
 
     /**
      * Register an event listener.
@@ -102,4 +110,12 @@ public abstract class AbstractConcurrentEventManager implements EventManager {
      */
     protected abstract void fireEvent(Object event, Object listener)
         throws Exception;
+
+    /**
+     * Return a new concurrent container for listeners. Uses a 
+     * {@link CopyOnWriteArrayList} by default.
+     */
+    protected Collection newListenerCollection() {
+        return new CopyOnWriteArrayList();
+    }
 }

@@ -147,7 +147,7 @@ class JPQLExpressionBuilder
     private ClassMetaData getClassMetaData(String alias, boolean assertValid) {
         ClassLoader loader = getClassLoader();
         MetaDataRepository repos = resolver.getConfiguration().
-            getMetaDataRepository();
+            getMetaDataRepositoryInstance();
 
         // first check for the alias
         ClassMetaData cmd = repos.getMetaData(alias, loader, false);

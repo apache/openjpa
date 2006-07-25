@@ -60,9 +60,4 @@ public interface ProductDerivation {
      * Called after the specification has been set.
      */
     public void afterSpecificationSet(OpenJPAConfiguration conf);
-
-    /**
-     * Called after the configuration has been closed.
-     */
-    public void afterClose(OpenJPAConfiguration conf);
 }

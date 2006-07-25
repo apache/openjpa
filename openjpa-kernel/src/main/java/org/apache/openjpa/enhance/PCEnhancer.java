@@ -155,7 +155,7 @@ public class PCEnhancer {
         _log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
 
         if (repos == null) {
-            _repos = new MetaDataRepository(conf);
+            _repos = conf.newMetaDataRepositoryInstance();
             _repos.setSourceMode(MetaDataRepository.MODE_META);
         } else
             _repos = repos;
@@ -3408,7 +3408,7 @@ public class PCEnhancer {
             loader = new TemporaryClassLoader(loader);
 
         if (repos == null) {
-            repos = new MetaDataRepository(conf);
+            repos = conf.newMetaDataRepositoryInstance();
             repos.setSourceMode(MetaDataRepository.MODE_META);
         }
 
@@ -3418,7 +3418,7 @@ public class PCEnhancer {
             log.info(_loc.get("running-all-classes"));
             classes = repos.loadPersistentTypes(true, loader);
         } else {
-            ClassArgParser cap = conf.getMetaDataRepository().
+            ClassArgParser cap = conf.getMetaDataRepositoryInstance().
                 getMetaDataFactory().newClassArgParser();
             cap.setClassLoader(loader);
             classes = new HashSet();

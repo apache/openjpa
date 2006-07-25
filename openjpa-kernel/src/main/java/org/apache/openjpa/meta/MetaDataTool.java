@@ -129,7 +129,7 @@ public class MetaDataTool
      * Create a new metadata repository.
      */
     protected MetaDataRepository newRepository() {
-        return new MetaDataRepository(_conf);
+        return _conf.newMetaDataRepositoryInstance();
     }
 
     /**
@@ -312,7 +312,7 @@ public class MetaDataTool
             tool.setWriter(flags.writer);
 
         Log log = conf.getLog(OpenJPAConfiguration.LOG_TOOL);
-        ClassArgParser cap = conf.getMetaDataRepository().
+        ClassArgParser cap = conf.getMetaDataRepositoryInstance().
             getMetaDataFactory().newClassArgParser();
         cap.setClassLoader(loader);
         Class[] classes;

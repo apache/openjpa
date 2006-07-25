@@ -516,9 +516,9 @@ public class ReverseMappingTool
     public MappingRepository getRepository() {
         if (_repos == null) {
             // create empty repository
-            _repos = _conf.newMappingRepositoryInstance
-                (NoneMetaDataFactory.getInstance(),
-                    NoneMappingDefaults.getInstance());
+            _repos = _conf.newMappingRepositoryInstance();
+            _repos.setMetaDataFactory(NoneMetaDataFactory.getInstance());
+            _repos.setMappingDefaults(NoneMappingDefaults.getInstance());
             _repos.setResolve(MODE_NONE);
             _repos.setValidate(_repos.VALIDATE_NONE);
         }

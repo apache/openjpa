@@ -33,18 +33,23 @@ import org.apache.openjpa.lib.util.Localizer;
  * Ant tasks all have a nested <code>&lt;config&rt;</code> tag, which uses
  * the configuration as a bean-like task. E.g., you can do:
  * 
- * <code> &lt;mytask&rt;<br />
- * &nbsp;&nbsp;&lt;config connectionUserName="foo"/&rt;<br /> &lt;/mytask&rt;
- * </code> The defailt configuration for the system will be used if the
+ * <code> 
+ * &lt;mytask&rt;<br />
+ * &nbsp;&nbsp;&lt;config connectionUserName="foo"/&rt;<br /> 
+ * &lt;/mytask&rt;
+ * </code> 
+ *
+ * The defailt configuration for the system will be used if the
  * <code>&lt;config&rt;</code> subtask is excluded.
  *
  * @nojavadoc
  */
 public abstract class AbstractTask extends MatchingTask {
 
-    static final Localizer _loc = Localizer.forPackage(AbstractTask.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (AbstractTask.class);
 
-    protected List fileSets = new ArrayList();
+    protected final List fileSets = new ArrayList();
     protected boolean haltOnError = true;
     protected Path classpath = null;
     protected boolean useParent = false;
@@ -168,11 +173,9 @@ public abstract class AbstractTask extends MatchingTask {
                 File f = new File(dsFiles[j]);
                 if (!f.isFile())
                     f = new File(ds.getBasedir(), dsFiles[j]);
-
                 files.add(f.getAbsolutePath());
             }
         }
-
         return (String[]) files.toArray(new String[files.size()]);
     }
 }

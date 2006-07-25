@@ -358,7 +358,7 @@ public interface StoreManager
 
     /**
      * Return a fetch configuration suitable for this runtime. Typically
-     * will be or extend <code>org.apache.openjpa.kernel.FetchConfigurationImpl</code>.
+     * will be or extend <code>FetchConfigurationImpl</code>.
      */
     public FetchConfiguration newFetchConfiguration();
 

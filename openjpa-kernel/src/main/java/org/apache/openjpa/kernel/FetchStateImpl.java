@@ -1,17 +1,17 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
-/**
- * 
  */
 package org.apache.openjpa.kernel;
 
@@ -32,9 +32,9 @@ import org.apache.openjpa.util.InternalException;
 public class FetchStateImpl implements FetchState {
 
     private final FetchConfiguration _config;
-    private FetchState         _parent;
-    private FieldMetaData      _relation;
-    private int                _availableDepth;
+    private FetchState _parent;
+    private FieldMetaData _relation;
+    private int _availableDepth;
     
     /**
      * Supply configuration.
@@ -42,75 +42,74 @@ public class FetchStateImpl implements FetchState {
      * @param fc must not be null.
      */
     public FetchStateImpl(FetchConfiguration fc) {
-     	_config = fc;
-    	_parent = null;
-    	_relation = null;
-    	_availableDepth  = _config.getMaxFetchDepth();
+        _config = fc;
+        _parent = null;
+        _relation = null;
+        _availableDepth  = _config.getMaxFetchDepth();
     }
 
     public FetchConfiguration getFetchConfiguration() {
         return _config;
     }
 
-    public FetchState getParent () {
-    	return _parent;
+    public FetchState getParent() {
+        return _parent;
     }
     
-    public boolean isRoot () {
-    	return _parent == null;
+    public boolean isRoot() {
+        return _parent == null;
     }
     
     public FetchState getRoot() {
-    	return (isRoot()) ? this : getParent().getRoot();
+        return (isRoot()) ? this : getParent().getRoot();
     }
 
     public int getAvailableFetchDepth() {
         return _availableDepth;
     }
 
-    public List getPath () {
-    	if (isRoot())
-    		return Collections.EMPTY_LIST;
-    	List result = new ArrayList();
-    	result.add (this);
-    	return ((FetchStateImpl)_parent).trackPath (result);
+    public List getPath() {
+        if (isRoot())
+            return Collections.EMPTY_LIST;
+        List result = new ArrayList();
+        result.add(this);
+        return ((FetchStateImpl)_parent).trackPath(result);
     }
     
-    private List trackPath (List path) {
-    	if (isRoot())
-    		return path;
-    	path.add(this);
-    	return ((FetchStateImpl)_parent).trackPath(path);
+    private List trackPath(List path) {
+        if (isRoot())
+            return path;
+        path.add(this);
+        return ((FetchStateImpl)_parent).trackPath(path);
     }
     
-    public List getRelationPath () {
-    	if (isRoot())
-    		return Collections.EMPTY_LIST;
-    	List result = new ArrayList();
-    	result.add (_relation);
-    	return ((FetchStateImpl)_parent).trackRelationPath (result);
+    public List getRelationPath() {
+        if (isRoot())
+            return Collections.EMPTY_LIST;
+        List result = new ArrayList();
+        result.add(_relation);
+        return ((FetchStateImpl)_parent).trackRelationPath(result);
     }
     
-    private List trackRelationPath (List path) {
-    	if (isRoot())
-    		return path;
-    	path.add(_relation);
-    	return ((FetchStateImpl)_parent).trackRelationPath(path);
+    private List trackRelationPath(List path) {
+        if (isRoot())
+            return path;
+        path.add(_relation);
+        return ((FetchStateImpl)_parent).trackRelationPath(path);
     }
     
     
-    public int getCurrentRecursionDepth (FieldMetaData fm) {
-    	if (isRoot())
-    		return 0;
-    	int rd = (_relation == fm) ? 1 : 0;
-    	
-    	return rd + _parent.getCurrentRecursionDepth(fm);
+    public int getCurrentRecursionDepth(FieldMetaData fm) {
+        if (isRoot())
+            return 0;
+        int rd = (_relation == fm) ? 1 : 0;
+        return rd + _parent.getCurrentRecursionDepth(fm);
     }
     
     public boolean isDefault(FieldMetaData fm) {
-        return (_config.hasFetchGroup(FetchConfiguration.FETCH_GROUP_DEFAULT) 
-        		&& fm.isInDefaultFetchGroup())
-        		|| _config.hasFetchGroup(FetchConfiguration.FETCH_GROUP_ALL);
+        return (fm.isInDefaultFetchGroup() 
+            && _config.hasFetchGroup(FetchConfiguration.FETCH_GROUP_DEFAULT)) 
+            || _config.hasFetchGroup(FetchConfiguration.FETCH_GROUP_ALL);
     }
 
     public boolean requiresFetch(FieldMetaData fm) {
@@ -118,25 +117,25 @@ public class FetchStateImpl implements FetchState {
             || _config.hasAnyFetchGroup(fm.getFetchGroups())
             || _config.hasField(fm.getFullName());
         if (selectable && isRelation(fm)) {
-        	int rd  = getRecursionDepth(fm);
-        	int crd = getCurrentRecursionDepth(fm);
-        	selectable = (_availableDepth==INFINITE_DEPTH || _availableDepth>0)
-        		&& ( rd == INFINITE_DEPTH || crd <rd);
+            int rd  = getRecursionDepth(fm);
+            int crd = getCurrentRecursionDepth(fm);
+            selectable = (_availableDepth==INFINITE_DEPTH || _availableDepth>0)
+                && (rd == INFINITE_DEPTH || crd < rd);
         }
         return selectable;
     }
 
     public boolean requiresLoad(OpenJPAStateManager sm, FieldMetaData fm) {
-    	if (sm!=null && sm.getLoaded().get(fm.getIndex()))
-    		return false;
+        if (sm!=null && sm.getLoaded().get(fm.getIndex()))
+            return false;
         boolean loadable = isDefault(fm)
             || _config.hasAnyFetchGroup(fm.getFetchGroups())
             || _config.hasField(fm.getFullName());
         if (loadable && isRelation(fm)) {
-        	int rd  = getRecursionDepth(fm);
-        	int crd = getCurrentRecursionDepth(fm);
+            int rd  = getRecursionDepth(fm);
+            int crd = getCurrentRecursionDepth(fm);
             loadable = (_availableDepth==INFINITE_DEPTH || _availableDepth>0)
-    			&& (rd == INFINITE_DEPTH || crd<rd);
+                && (rd == INFINITE_DEPTH || crd<rd);
         }
         return loadable;
     }
@@ -167,68 +166,62 @@ public class FetchStateImpl implements FetchState {
             }
             dMax = Math.max(d, dMax);
         }
-    	int maxDepth = _config.getMaxFetchDepth();
-    	if (maxDepth != INFINITE_DEPTH)
-    		if (dMax != INFINITE_DEPTH)
-    		   dMax = Math.min (maxDepth, dMax);
-    		else
-    		   dMax = maxDepth;
+        int maxDepth = _config.getMaxFetchDepth();
+        if (maxDepth != INFINITE_DEPTH)
+            if (dMax != INFINITE_DEPTH)
+                dMax = Math.min (maxDepth, dMax);
+            else
+                dMax = maxDepth;
 
         return dMax;
     }
 
 
     public FetchState traverse(FieldMetaData fm) {
-    	if (isRelation(fm)) {
-    		try
-			{
-				FetchStateImpl clone = (FetchStateImpl)clone();
-				clone._parent   = this;
-				clone._relation = fm;
-				clone._availableDepth  = reduce(_availableDepth);
-				return clone;
-			}
-			catch (CloneNotSupportedException e)
-			{
-				// ignore
-			}
-    	}
-    	return this;
+        if (isRelation(fm)) {
+            try {
+                FetchStateImpl clone = (FetchStateImpl)clone();
+                clone._parent = this;
+                clone._relation = fm;
+                clone._availableDepth  = reduce(_availableDepth);
+                return clone;
+            } catch (CloneNotSupportedException e) {
+                // ignore
+            }
+        }
+        return this;
     }
 
 
-    int reduce (int d) {
-    	if (d==0)
-    		return 0;//throw new InternalException(this.toString());
-    	if (d==INFINITE_DEPTH)
-   			return INFINITE_DEPTH;
-    			
-    	return d-1;
+    int reduce(int d) {
+        if (d==0)
+            return 0;//throw new InternalException(this.toString());
+        if (d==INFINITE_DEPTH)
+            return INFINITE_DEPTH;
+        return d-1;
     }
     
-    protected boolean isRelation (FieldMetaData fm) {
-    	return fm != null && 
-    		(fm.isDeclaredTypePC() 
-    		|| (fm.getElement() != null && fm.getElement().isTypePC())
-    		|| (fm.getKey() != null && fm.getKey().isTypePC())
-    		|| (fm.getValue() != null && fm.getValue().isTypePC()));
+    protected boolean isRelation(FieldMetaData fm) {
+        return fm != null && (fm.isDeclaredTypePC() 
+            || fm.getElement().isDeclaredTypePC()
+            || fm.getKey().isDeclaredTypePC());
     }
     
-    public String toString () {
-    	return System.identityHashCode(this) + "("+_availableDepth+"): " 
-    	    + printPath();
+    public String toString() {
+        return System.identityHashCode(this) + "("+_availableDepth+"): " 
+            + printPath();
     }
     
-    private String printPath ()
+    private String printPath()
     {
-    	List path = getRelationPath();
-    	if (path.isEmpty())
-    		return "";
-    	StringBuffer tmp = new StringBuffer();
-    	Iterator i = path.iterator();
-    	tmp.append(((FieldMetaData)i.next()).getName());
-    	for (;i.hasNext();)
-    		tmp.append(".").append(((FieldMetaData)i.next()).getName());
-    	return tmp.toString();
+        List path = getRelationPath();
+        if (path.isEmpty())
+            return "";
+        StringBuffer tmp = new StringBuffer();
+        Iterator i = path.iterator();
+        tmp.append(((FieldMetaData)i.next()).getName());
+        for (;i.hasNext();)
+            tmp.append(".").append(((FieldMetaData)i.next()).getName());
+        return tmp.toString();
     }
 }

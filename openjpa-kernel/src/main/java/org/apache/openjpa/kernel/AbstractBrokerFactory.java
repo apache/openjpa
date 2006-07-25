@@ -215,8 +215,8 @@ public abstract class AbstractBrokerFactory
         ClassLoader loader = _conf.getClassResolverInstance().
             getClassLoader(getClass(), envLoader);
         if (_pcClassNames == null) {
-            Collection clss = _conf.getMetaDataRepository().loadPersistentTypes
-                (false, loader);
+            Collection clss = _conf.getMetaDataRepositoryInstance().
+                loadPersistentTypes(false, loader);
             if (clss.isEmpty())
                 _pcClassNames = Collections.EMPTY_SET;
             else {
@@ -294,7 +294,7 @@ public abstract class AbstractBrokerFactory
 
             // remove metadata repository from listener list
             PCRegistry.removeRegisterClassListener
-                (_conf.getMetaDataRepository());
+                (_conf.getMetaDataRepositoryInstance());
 
             _conf.close();
             _closed = new IllegalStateException();
@@ -523,7 +523,7 @@ public abstract class AbstractBrokerFactory
 
             // register the metdata repository to auto-load persistent types
             // and make sure types are enhanced
-            MetaDataRepository repos = _conf.getMetaDataRepository();
+            MetaDataRepository repos = _conf.getMetaDataRepositoryInstance();
             repos.setValidate(repos.VALIDATE_RUNTIME, true);
             repos.setResolve(repos.MODE_MAPPING_INIT, true);
             PCRegistry.addRegisterClassListener(repos);

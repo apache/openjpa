@@ -94,21 +94,6 @@ public class ProductDerivations {
     }
 
     /**
-     * Apply {@link ProductDerivation#afterClose} callbacks
-     * to the the given instance. Exceptions are swallowed.
-     */
-    public static void afterClose(OpenJPAConfigurationImpl impl) {
-        for (int i = 0; i < _derivations.length; i++) {
-            try {
-                _derivations[i].afterClose(impl);
-            } catch (Exception e) {
-                // logging not available
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
      * Compare {@link ProductDerivation}s.
      */
     private static class ProductDerivationComparator

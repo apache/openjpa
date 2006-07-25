@@ -63,7 +63,7 @@ public abstract class AbstractPCResultObjectProvider
         throws Exception {
         Class type = getPCType();
         MetaDataRepository repos = ctx.getConfiguration().
-            getMetaDataRepository();
+            getMetaDataRepositoryInstance();
         ClassMetaData meta = repos.getMetaData
             (type, ctx.getClassLoader(), true);
 

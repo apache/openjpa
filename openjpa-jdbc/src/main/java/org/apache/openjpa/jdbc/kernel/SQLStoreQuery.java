@@ -167,7 +167,7 @@ public class SQLStoreQuery
             else {
                 ClassLoader envLoader = ctx.getStoreContext().getClassLoader();
                 MappingRepository repos = q.getStore().getConfiguration().
-                    getMappingRepository();
+                    getMappingRepositoryInstance();
                 _resultMapping = repos.getQueryResultMapping
                     (ctx.getResultMappingScope(), resultMapping, envLoader,
                         true);

@@ -214,13 +214,13 @@ public class ClassTableJDBCSeq
                 loader = conf.getClassResolverInstance().getClassLoader(
                     ClassTableJDBCSeq.class, null);
 
-            ClassArgParser cap = conf.getMetaDataRepository()
+            ClassArgParser cap = conf.getMetaDataRepositoryInstance()
                 .getMetaDataFactory().newClassArgParser();
             cap.setClassLoader(loader);
             Class cls = cap.parseTypes(args[0])[0];
 
             if (repos == null)
-                repos = conf.getMappingRepository();
+                repos = conf.getMappingRepositoryInstance();
             ClassMapping mapping = repos.getMapping(cls, null, true);
 
             Connection conn = conf.getDataSource2(null).getConnection();

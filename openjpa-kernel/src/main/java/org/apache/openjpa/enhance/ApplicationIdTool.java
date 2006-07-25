@@ -93,7 +93,7 @@ public class ApplicationIdTool {
         _log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
         _type = type;
 
-        MetaDataRepository repos = new MetaDataRepository(conf);
+        MetaDataRepository repos = conf.newMetaDataRepositoryInstance();
         repos.setValidate(repos.VALIDATE_NONE);
         repos.setSourceMode(repos.MODE_MAPPING, false);
         loadObjectIds(repos, true);
@@ -1324,7 +1324,7 @@ public class ApplicationIdTool {
     public static boolean run(OpenJPAConfiguration conf, String[] args,
         Flags flags, ClassLoader loader)
         throws IOException, ClassNotFoundException {
-        MetaDataRepository repos = new MetaDataRepository(conf);
+        MetaDataRepository repos = conf.newMetaDataRepositoryInstance();
         repos.setValidate(repos.VALIDATE_NONE, true);
         loadObjectIds(repos, flags.name == null && flags.suffix == null);
 
@@ -1334,7 +1334,7 @@ public class ApplicationIdTool {
             log.info(_loc.get("running-all-classes"));
             classes = repos.loadPersistentTypes(true, loader);
         } else {
-            ClassArgParser cap = conf.getMetaDataRepository().
+            ClassArgParser cap = conf.getMetaDataRepositoryInstance().
                 getMetaDataFactory().newClassArgParser();
             cap.setClassLoader(loader);
             classes = new HashSet();

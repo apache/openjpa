@@ -54,6 +54,7 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ClassResolver;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.ProxyManager;
+import org.apache.openjpa.util.StoreFacadeTypeRegistry;
 
 /**
  * Implementation of the {@link OpenJPAConfiguration} interface.
@@ -75,7 +76,7 @@ public class OpenJPAConfigurationImpl
 
     // cached state; some of this is created in getter methods, so make
     // protected in case subclasses want to access without creating
-    protected MetaDataRepository metaRepos = null;
+    protected MetaDataRepository metaRepository = null;
     protected RemoteCommitEventManager remoteEventManager = null;
 
     // openjpa properties
@@ -128,6 +129,7 @@ public class OpenJPAConfigurationImpl
     public BooleanValue multithreaded;
     public StringValue mapping;
     public PluginValue metaFactoryPlugin;
+    public ObjectValue metaRepositoryPlugin;
     public ObjectValue lockManagerPlugin;
     public ObjectValue inverseManagerPlugin;
     public ObjectValue savepointManagerPlugin;
@@ -175,14 +177,13 @@ public class OpenJPAConfigurationImpl
 
         // setup super's log factory plugin
         logFactoryPlugin.setProperty("Log");
-        logFactoryPlugin
-            .setAlias("openjpa", "org.apache.openjpa.lib.log.LogFactoryImpl");
+        logFactoryPlugin.setAlias("openjpa", 
+            "org.apache.openjpa.lib.log.LogFactoryImpl");
         aliases = logFactoryPlugin.getAliases();
         logFactoryPlugin.setDefault(aliases[0]);
         logFactoryPlugin.setString(aliases[0]);
 
-        classResolverPlugin =
-            addPlugin("ClassResolver", true);
+        classResolverPlugin = addPlugin("ClassResolver", true);
         aliases = new String[]{
             "default", "org.apache.openjpa.util.ClassResolverImpl",
             // deprecated alias
@@ -202,8 +203,7 @@ public class OpenJPAConfigurationImpl
         brokerPlugin.setDefault(aliases[0]);
         brokerPlugin.setString(aliases[0]);
 
-        dataCacheManagerPlugin =
-            addPlugin("DataCacheManager", true);
+        dataCacheManagerPlugin = addPlugin("DataCacheManager", true);
         aliases = new String[]{
             "default", DataCacheManagerImpl.class.getName(),
         };
@@ -236,8 +236,7 @@ public class OpenJPAConfigurationImpl
         queryCachePlugin.setDefault(aliases[0]);
         queryCachePlugin.setString(aliases[0]);
 
-        dynamicDataStructs =
-            addBoolean("DynamicDataStructs");
+        dynamicDataStructs = addBoolean("DynamicDataStructs");
         dynamicDataStructs.setDefault("false");
         dynamicDataStructs.set(false);
 
@@ -250,8 +249,7 @@ public class OpenJPAConfigurationImpl
         lockManagerPlugin.setDefault(aliases[0]);
         lockManagerPlugin.setString(aliases[0]);
 
-        inverseManagerPlugin =
-            addPlugin("InverseManager", false);
+        inverseManagerPlugin = addPlugin("InverseManager", false);
         aliases = new String[]{
             "false", null,
             "true", "org.apache.openjpa.kernel.InverseManager",
@@ -260,8 +258,7 @@ public class OpenJPAConfigurationImpl
         inverseManagerPlugin.setDefault(aliases[0]);
         inverseManagerPlugin.setString(aliases[0]);
 
-        savepointManagerPlugin =
-            addPlugin("SavepointManager", true);
+        savepointManagerPlugin = addPlugin("SavepointManager", true);
         aliases = new String[]{
             "in-mem", "org.apache.openjpa.kernel.InMemorySavepointManager",
         };
@@ -271,8 +268,7 @@ public class OpenJPAConfigurationImpl
         savepointManagerPlugin.setInstantiatingGetter
             ("getSavepointManagerInstance");
 
-        orphanedKeyPlugin =
-            addPlugin("OrphanedKeyAction", true);
+        orphanedKeyPlugin = addPlugin("OrphanedKeyAction", true);
         aliases = new String[]{
             "log", "org.apache.openjpa.event.LogOrphanedKeyAction",
             "exception", "org.apache.openjpa.event.ExceptionOrphanedKeyAction",
@@ -295,8 +291,7 @@ public class OpenJPAConfigurationImpl
         transactionMode.setAliases(aliases);
         transactionMode.setDefault(aliases[0]);
 
-        managedRuntimePlugin =
-            addPlugin("ManagedRuntime", true);
+        managedRuntimePlugin = addPlugin("ManagedRuntime", true);
         aliases = new String[]{
             "auto", "org.apache.openjpa.ee.AutomaticManagedRuntime",
             "jndi", "org.apache.openjpa.ee.JNDIManagedRuntime",
@@ -319,6 +314,13 @@ public class OpenJPAConfigurationImpl
         mapping = addString("Mapping");
         metaFactoryPlugin = addPlugin("MetaDataFactory", false);
 
+        metaRepositoryPlugin = addPlugin("MetaDataRepository", false);
+        aliases = new String[]{ "default", 
+            "org.apache.openjpa.meta.MetaDataRepository" };
+        metaRepositoryPlugin.setAliases(aliases);
+        metaRepositoryPlugin.setDefault(aliases[0]);
+        metaRepositoryPlugin.setString(aliases[0]);
+
         connectionFactory = addObject("ConnectionFactory");
         connectionFactory.setInstantiatingGetter("getConnectionFactory");
 
@@ -328,29 +330,20 @@ public class OpenJPAConfigurationImpl
         connectionUserName = addString("ConnectionUserName");
         connectionPassword = addString("ConnectionPassword");
         connectionURL = addString("ConnectionURL");
-        connectionDriverName =
-            addString("ConnectionDriverName");
-        connectionFactoryName =
-            addString("ConnectionFactoryName");
-        connectionProperties =
-            addString("ConnectionProperties");
+        connectionDriverName = addString("ConnectionDriverName");
+        connectionFactoryName = addString("ConnectionFactoryName");
+        connectionProperties = addString("ConnectionProperties");
         connectionFactoryProperties = addString("ConnectionFactoryProperties");
-        connection2UserName =
-            addString("Connection2UserName");
-        connection2Password =
-            addString("Connection2Password");
+        connection2UserName = addString("Connection2UserName");
+        connection2Password = addString("Connection2Password");
         connection2URL = addString("Connection2URL");
-        connection2DriverName =
-            addString("Connection2DriverName");
-        connection2Properties =
-            addString("Connection2Properties");
+        connection2DriverName = addString("Connection2DriverName");
+        connection2Properties = addString("Connection2Properties");
         connectionFactory2Properties = addString(
             "ConnectionFactory2Properties");
-        connectionFactory2Name =
-            addString("ConnectionFactory2Name");
+        connectionFactory2Name = addString("ConnectionFactory2Name");
 
-        connectionFactoryMode =
-            addBoolean("ConnectionFactoryMode");
+        connectionFactoryMode = addBoolean("ConnectionFactoryMode");
         aliases = new String[]{
             "local", "false",
             "managed", "true",
@@ -404,13 +397,11 @@ public class OpenJPAConfigurationImpl
 
         ignoreChanges = addBoolean("IgnoreChanges");
 
-        nontransactionalRead =
-            addBoolean("NontransactionalRead");
+        nontransactionalRead = addBoolean("NontransactionalRead");
         nontransactionalRead.setDefault("true");
         nontransactionalRead.set(true);
 
-        nontransactionalWrite =
-            addBoolean("NontransactionalWrite");
+        nontransactionalWrite = addBoolean("NontransactionalWrite");
         multithreaded = addBoolean("Multithreaded");
 
         fetchBatchSize = addInt("FetchBatchSize");
@@ -460,8 +451,7 @@ public class OpenJPAConfigurationImpl
         seqPlugin.setInstantiatingGetter("getSequenceInstance");
         addValue(seqPlugin);
 
-        connectionRetainMode =
-            addInt("ConnectionRetainMode");
+        connectionRetainMode = addInt("ConnectionRetainMode");
         aliases = new String[]{
             "on-demand",
             String.valueOf(ConnectionRetainModes.CONN_RETAIN_DEMAND),
@@ -478,21 +468,17 @@ public class OpenJPAConfigurationImpl
         connectionRetainMode.setAliasListComprehensive(true);
         connectionRetainMode.set(ConnectionRetainModes.CONN_RETAIN_DEMAND);
 
-        filterListenerPlugins =
-            addPluginList("FilterListeners");
+        filterListenerPlugins = addPluginList("FilterListeners");
         filterListenerPlugins.setInstantiatingGetter
             ("getFilterListenerInstances");
 
-        aggregateListenerPlugins =
-            addPluginList("AggregateListeners");
+        aggregateListenerPlugins = addPluginList("AggregateListeners");
         aggregateListenerPlugins.setInstantiatingGetter
             ("getAggregateListenerInstances");
 
-        retryClassRegistration =
-            addBoolean("RetryClassRegistration");
+        retryClassRegistration = addBoolean("RetryClassRegistration");
 
-        compatibilityPlugin =
-            addPlugin("Compatibility", true);
+        compatibilityPlugin = addPlugin("Compatibility", true);
         aliases = new String[]{ "default", Compatibility.class.getName() };
         compatibilityPlugin.setAliases(aliases);
         compatibilityPlugin.setDefault(aliases[0]);
@@ -520,10 +506,6 @@ public class OpenJPAConfigurationImpl
             ProductDerivations.beforeConfigurationLoad(this);
         if (loadDefaults)
             loadDefaults();
-    }
-
-    public String getProductName() {
-        return "openjpa";
     }
 
     public Collection supportedOptions() {
@@ -842,15 +824,30 @@ public class OpenJPAConfigurationImpl
             (MetaDataFactory.class, this);
     }
 
-    public void setMetaDataRepository(MetaDataRepository meta) {
+    public void setMetaDataRepository(String meta) {
         assertNotReadOnly();
-        metaRepos = meta;
+        this.metaRepositoryPlugin.setString(meta);
     }
 
-    public MetaDataRepository getMetaDataRepository() {
-        if (metaRepos == null)
-            metaRepos = new MetaDataRepository(this);
-        return metaRepos;
+    public String getMetaDataRepository() {
+        return metaRepositoryPlugin.getString();
+    }
+
+    public void setMetaDataRepository(MetaDataRepository meta) {
+        assertNotReadOnly();
+        metaRepository = meta;
+    }
+
+    public MetaDataRepository getMetaDataRepositoryInstance() {
+        if (metaRepository == null)
+            metaRepository = (MetaDataRepository) metaRepositoryPlugin.
+                instantiate(MetaDataRepository.class, this);
+        return metaRepository;
+    }
+
+    public MetaDataRepository newMetaDataRepositoryInstance() {
+        return (MetaDataRepository) metaRepositoryPlugin.instantiate
+            (MetaDataRepository.class, this);
     }
 
     public void setConnectionUserName(String connectionUserName) {
@@ -1396,26 +1393,23 @@ public class OpenJPAConfigurationImpl
         return (Compatibility) compatibilityPlugin.get();
     }
 
+    public StoreFacadeTypeRegistry getStoreFacadeTypeRegistry() {
+        return _storeFacadeRegistry;
+    }
+
     public void instantiateAll() {
         super.instantiateAll();
-
-        // instantiate singletons without values
+        getMetaDataRepositoryInstance();
         getRemoteCommitEventManager();
-        getMetaDataRepository();
     }
 
     public void close() {
+        ImplHelper.close(metaRepository);
         ImplHelper.close(remoteEventManager);
-        ImplHelper.close(metaRepos);
         super.close();
-        ProductDerivations.afterClose(this);
     }
 
     public Log getConfigurationLog() {
         return getLog(LOG_RUNTIME);
 	}
-
-    public StoreFacadeTypeRegistry getStoreFacadeTypeRegistry() {
-        return _storeFacadeRegistry;
-    }
 }

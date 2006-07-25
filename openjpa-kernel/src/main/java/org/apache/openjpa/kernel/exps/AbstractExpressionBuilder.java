@@ -229,7 +229,7 @@ public abstract class AbstractExpressionBuilder {
      */
     protected ClassMetaData getMetaData(Class c, boolean required,
         ClassLoader loader) {
-        return resolver.getConfiguration().getMetaDataRepository().
+        return resolver.getConfiguration().getMetaDataRepositoryInstance().
             getMetaData(c, loader, required);
     }
 

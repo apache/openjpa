@@ -27,14 +27,19 @@ import org.apache.openjpa.lib.conf.ConfigurationProvider;
 public class JDBCProductDerivation
     implements ProductDerivation {
 
+    static {
+        BrokerFactoryValue.addDefaultAlias("jdbc",
+            JDBCBrokerFactory.class.getName());
+    }
+
     public int getType() {
         return TYPE_STORE;
     }
 
     public void beforeConfigurationConstruct(ConfigurationProvider cp) {
         // default to JDBC when no broker factory set
-        if (BrokerFactoryValue.getBrokerFactoryClassName(cp) == null) {
-            cp.addProperty(BrokerFactoryValue.getBrokerFactoryProperty(cp),
+        if (BrokerFactoryValue.get(cp) == null) {
+            cp.addProperty(BrokerFactoryValue.getKey(cp),
                 JDBCBrokerFactory.class.getName());
         }
     }
@@ -43,8 +48,5 @@ public class JDBCProductDerivation
     }
 
     public void afterSpecificationSet(OpenJPAConfiguration c) {
-    }
-
-    public void afterClose(OpenJPAConfiguration c) {
     }
 }

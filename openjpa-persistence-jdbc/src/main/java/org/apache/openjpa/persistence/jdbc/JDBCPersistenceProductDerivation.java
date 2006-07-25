@@ -39,11 +39,10 @@ public class JDBCPersistenceProductDerivation
     }
 
     public void beforeConfigurationLoad(OpenJPAConfiguration c) {
-        if (!(c instanceof JDBCConfigurationImpl))
-            return;
-
         c.getStoreFacadeTypeRegistry().registerImplementation(
             FetchPlan.class, JDBCFetchPlan.class);
+        if (!(c instanceof JDBCConfigurationImpl))
+            return;
 
         JDBCConfigurationImpl conf = (JDBCConfigurationImpl) c;
         String jpa = PersistenceProductDerivation.SPEC_JPA;
@@ -74,8 +73,5 @@ public class JDBCPersistenceProductDerivation
         JDBCConfigurationImpl conf = (JDBCConfigurationImpl) c;
         conf.mappingDefaultsPlugin.setDefault(jpa);
         conf.mappingDefaultsPlugin.setString(jpa);
-    }
-
-    public void afterClose(OpenJPAConfiguration c) {
     }
 }

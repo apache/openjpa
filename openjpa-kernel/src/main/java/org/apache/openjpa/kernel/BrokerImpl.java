@@ -255,8 +255,8 @@ public class BrokerImpl
         _log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
         _cache = new ManagedCache(newManagedObjectCache());
         _lifeEventManager = new LifecycleEventManager();
-        _callbackMode = _conf.getMetaDataRepository().getMetaDataFactory().
-            getDefaults().getCallbackMode();
+        _callbackMode = _conf.getMetaDataRepositoryInstance().
+            getMetaDataFactory(). getDefaults().getCallbackMode();
         _connRetainMode = connMode;
         _managed = managed;
         if (managed)
@@ -1009,7 +1009,7 @@ public class BrokerImpl
 
         beginOperation(false);
         try {
-            ClassMetaData meta = _conf.getMetaDataRepository().
+            ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
                 getMetaData(cls, _loader, false);
             if (meta == null
                 || meta.getIdentityType() == ClassMetaData.ID_UNKNOWN)
@@ -1033,7 +1033,7 @@ public class BrokerImpl
 
         beginOperation(false);
         try {
-            ClassMetaData meta = _conf.getMetaDataRepository().
+            ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
                 getMetaData(cls, _loader, true);
 
             // delegate to store manager for datastore ids
@@ -1092,7 +1092,7 @@ public class BrokerImpl
 
         // find metadata for the oid
         Class pcType = _store.getManagedType(oid);
-        MetaDataRepository repos = _conf.getMetaDataRepository();
+        MetaDataRepository repos = _conf.getMetaDataRepositoryInstance();
         ClassMetaData meta;
         if (pcType != null)
             meta = repos.getMetaData(pcType, _loader, true);
@@ -2266,8 +2266,8 @@ public class BrokerImpl
                         setFailedObject(obj);
             }
 
-            ClassMetaData meta = _conf.getMetaDataRepository().getMetaData
-                (obj.getClass(), _loader, true);
+            ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
+                getMetaData(obj.getClass(), _loader, true);
             fireLifecycleEvent(obj, null, meta, LifecycleEvent.BEFORE_PERSIST);
 
             // create id for instance
@@ -2277,7 +2277,7 @@ public class BrokerImpl
                 else if (meta.getIdentityType() == ClassMetaData.ID_UNKNOWN)
                     throw new UserException(_loc.get("meta-unknownid", meta));
                 else
-                    id = StateManagerId.newInstance();
+                    id = StateManagerId.newInstance(this);
             }
 
             // make sure we don't already have the instance cached
@@ -2320,10 +2320,10 @@ public class BrokerImpl
         if (pc.pcGetStateManager() != null)
             throw newDetachedException(obj, errOp);
 
-        ClassMetaData meta = _conf.getMetaDataRepository().getMetaData
-            (obj.getClass(), _loader, true);
+        ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
+            getMetaData(obj.getClass(), _loader, true);
         StateManagerImpl sm = new StateManagerImpl(StateManagerId.
-            newInstance(), meta, this);
+            newInstance(this), meta, this);
         sm.initialize(pc, PCState.TLOADED);
         try {
             switch (op) {
@@ -2492,7 +2492,7 @@ public class BrokerImpl
                 throw new InternalException(_loc.get("bad-embed", ownerMeta));
 
             if (id == null)
-                id = StateManagerId.newInstance();
+                id = StateManagerId.newInstance(this);
 
             StateManagerImpl sm = new StateManagerImpl(id, meta, this);
             sm.setOwner((StateManagerImpl) owner, ownerMeta);
@@ -2568,7 +2568,8 @@ public class BrokerImpl
             if (!copy.isEmbedded())
                 sm = getStateManagerImplById(oid, true);
             if (sm == null) {
-                MetaDataRepository repos = _conf.getMetaDataRepository();
+                MetaDataRepository repos = _conf.
+                    getMetaDataRepositoryInstance();
                 ClassMetaData meta = repos.getMetaData(type, _loader, true);
                 // construct a new state manager with all info known
                 sm = new StateManagerImpl(oid, meta, this);
@@ -3161,11 +3162,11 @@ public class BrokerImpl
 
                     if (sm == null) {
                         // manage transient instance
-                        meta = _conf.getMetaDataRepository().getMetaData
-                            (obj.getClass(), _loader, true);
+                        meta = _conf.getMetaDataRepositoryInstance().
+                            getMetaData(obj.getClass(), _loader, true);
 
                         sm = new StateManagerImpl
-                            (StateManagerId.newInstance(), meta, this);
+                            (StateManagerId.newInstance(this), meta, this);
                         sm.initialize(assertPersistenceCapable(obj),
                             PCState.TCLEAN);
                     } else if (sm.isPersistent()) {
@@ -3234,9 +3235,9 @@ public class BrokerImpl
                 _flags |= FLAG_FLUSH_REQUIRED; // version check/up
             } else if (sm == null) {
                 // manage transient instance
-                ClassMetaData meta = _conf.getMetaDataRepository().
+                ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
                     getMetaData(obj.getClass(), _loader, true);
-                Object id = StateManagerId.newInstance();
+                Object id = StateManagerId.newInstance(this);
                 sm = new StateManagerImpl(id, meta, this);
                 sm.initialize(assertPersistenceCapable(obj),
                     PCState.TCLEAN);
@@ -4078,7 +4079,7 @@ public class BrokerImpl
             return detached.booleanValue();
 
         // last resort: instance is detached if it has a store record
-        ClassMetaData meta = _conf.getMetaDataRepository().
+        ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
             getMetaData(pc.getClass(), _loader, true);
         Object oid = ApplicationIds.create(pc, meta);
         if (oid == null)
@@ -4616,21 +4617,25 @@ public class BrokerImpl
 
         public static final String STRING_PREFIX = "openjpasm:";
 
-        private static long _generator = System.currentTimeMillis();
+        private static long _generator = 0;
 
+        private final int _bhash;
         private final long _id;
 
-        public static synchronized StateManagerId newInstance() {
-            return new StateManagerId(_generator++);
+        public static StateManagerId newInstance(Broker b) {
+            return new StateManagerId(System.identityHashCode(b), _generator++);
         }
 
-        private StateManagerId(long id) {
+        private StateManagerId(int bhash, long id) {
+            _bhash = bhash;
             _id = id;
         }
 
         public StateManagerId(String str) {
             str = str.substring(STRING_PREFIX.length());
-            _id = Long.parseLong(str);
+            int idx = str.indexOf(':');
+            _bhash = Integer.parseInt(str.substring(0, idx));
+            _id = Long.parseLong(str.substring(idx + 1));
         }
 
         public boolean equals(Object other) {
@@ -4638,7 +4643,8 @@ public class BrokerImpl
                 return true;
             if (!(other instanceof StateManagerId))
                 return false;
-            return _id == ((StateManagerId) other)._id;
+            StateManagerId sid = (StateManagerId) other;
+            return _bhash == sid._bhash && _id == sid._id;
         }
 
         public int hashCode() {
@@ -4646,7 +4652,7 @@ public class BrokerImpl
         }
 
         public String toString() {
-            return STRING_PREFIX + _id;
+            return STRING_PREFIX + _bhash + ":" + _id;
         }
     }
 

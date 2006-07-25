@@ -24,13 +24,15 @@ import org.apache.commons.lang.exception.NestableRuntimeException;
 
 /**
  * UUID value generator. Based on the time-based generator in the LGPL
- * project:<br /> http://www.doomdark.org/doomdark/proj/jug/<br />
+ * project:<br /> 
+ * http://www.doomdark.org/doomdark/proj/jug/<br />
  * The code has been vastly simplified and modified to replace the ethernet
  * address of the host machine with the IP, since we do not want to require
  * native libs and Java cannot access the MAC address directly.
  * Aside from the above modification, implements the IETF UUID draft
- * specification, found here: http://www1.ics.uci.edu/~ejw/authoring/uuid-guid/
- * draft-leach-uuids-guids-01.txt
+ * specification, found here:<br />
+ * http://www1.ics.uci.edu/~ejw/authoring/uuid-guid/draft-leach-uuids-guids-01
+ * .txt
  *
  * @author Abe White
  * @nojavadoc

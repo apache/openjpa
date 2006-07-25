@@ -109,7 +109,7 @@ public class PersistenceProviderImpl
 
         private ClassTransformerImpl(OpenJPAConfiguration conf, String options,
             ClassLoader tempClassLoader) {
-            MetaDataRepository repos = conf.getMetaDataRepository().
+            MetaDataRepository repos = conf.getMetaDataRepositoryInstance().
                 newInstance();
             repos.setResolve(MetaDataModes.MODE_MAPPING, false);
             _trans = new PCClassFileTransformer(repos,
