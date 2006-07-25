@@ -1105,11 +1105,11 @@ public class OpenJPAConfigurationImpl
     }
 
     public void setAutoDetach(int autoDetachFlags) {
-        autoDetach.set(autoDetachFlags);
+        autoDetach.setConstant(autoDetachFlags);
     }
 
     public int getAutoDetachConstant() {
-        return autoDetach.get();
+        return autoDetach.getConstant();
     }
 
     public void setDetachState(String detachState) {
