@@ -694,11 +694,13 @@ public class BrokerImpl
         int flags = OID_COPY | OID_ALLOW_NEW | OID_NODELETED;
         if (!validate)
             flags |= OID_NOVALIDATE;
-        return find(oid, null, null, null, flags, call);
+        return find(oid, _fc.newFetchState (), null, null, flags, call);
     }
 
     public Object find(Object oid, FetchState fetchState, BitSet exclude,
         Object edata, int flags) {
+    	if (fetchState == null)
+    		fetchState = _fc.newFetchState ();
         return find(oid, fetchState, exclude, edata, flags, null);
     }
 
@@ -717,8 +719,6 @@ public class BrokerImpl
         }
 
         beginOperation(true);
-        if (fetchState == null)
-            fetchState = _fc.newFetchState();
         try {
             assertNontransactionalRead();
 
@@ -842,18 +842,18 @@ public class BrokerImpl
         int flags = OID_COPY | OID_ALLOW_NEW | OID_NODELETED;
         if (!validate)
             flags |= OID_NOVALIDATE;
-        return findAll(oids, null, null, null, flags, call);
+        return findAll(oids, _fc, null, null, flags, call);
     }
 
-    public Object[] findAll(Collection oids, FetchState fetchState,
+    public Object[] findAll(Collection oids, FetchConfiguration fetch,
         BitSet exclude, Object edata, int flags) {
-        return findAll(oids, fetchState, exclude, edata, flags, null);
+        return findAll(oids, fetch, exclude, edata, flags, null);
     }
 
     /**
      * Internal finder.
      */
-    protected Object[] findAll(Collection oids, FetchState fetchState,
+    protected Object[] findAll(Collection oids, FetchConfiguration fetch,
         BitSet exclude, Object edata, int flags, FindCallbacks call) {
         // throw any exceptions for null oids up immediately
         if (oids == null)
@@ -867,9 +867,6 @@ public class BrokerImpl
         _loading = new HashMap((int) (oids.size() * 1.33 + 1));
         if (call == null)
             call = this;
-        if (fetchState == null)
-            fetchState = _fc.newFetchState();
-        FetchConfiguration fetch = fetchState.getFetchConfiguration();
         beginOperation(true);
         try {
             assertNontransactionalRead();
@@ -915,7 +912,7 @@ public class BrokerImpl
                 PCState state = (transState) ? PCState.PCLEAN
                     : PCState.PNONTRANS;
                 Collection failed = _store.loadAll(load, state,
-                    StoreManager.FORCE_LOAD_NONE, fetchState, edata);
+                    StoreManager.FORCE_LOAD_NONE, _fc, edata);
 
                 // set failed instances to null
                 if (failed != null && !failed.isEmpty()) {
@@ -937,8 +934,8 @@ public class BrokerImpl
                 sm = (StateManagerImpl) _loading.get(oid);
                 if (sm != null && requiresLoad(sm, true, edata, flags)) {
                     try {
-                        sm.load(fetchState, StateManagerImpl.LOAD_FGS, exclude,
-                            edata, false);
+                        sm.load(fetch.newFetchState(), StateManagerImpl.LOAD_FGS, 
+                        	exclude, edata, false);
                         if (active) {
                             _lm.lock(sm, level, fetch.getLockTimeout(), edata);
                             sm.readLocked(level, fetch.getWriteLockLevel());
@@ -2687,7 +2684,7 @@ public class BrokerImpl
             // refresh all
             if (load != null) {
                 Collection failed = _store.loadAll(load, null,
-                    _store.FORCE_LOAD_REFRESH, _fc.newFetchState(), null);
+                    _store.FORCE_LOAD_REFRESH, _fc, null);
                 if (failed != null && !failed.isEmpty())
                     exceps = add(exceps, newObjectNotFoundException(failed));
 
@@ -2812,8 +2809,7 @@ public class BrokerImpl
             if (load != null) {
                 int mode = (dfgOnly) ? _store.FORCE_LOAD_DFG
                     : _store.FORCE_LOAD_ALL;
-                failed = _store.loadAll(load, null, mode, _fc.newFetchState(),
-                    null);
+                failed = _store.loadAll(load, null, mode, _fc, null);
                 if (failed != null && !failed.isEmpty())
                     exceps = add(exceps, newObjectNotFoundException(failed));
             }
@@ -3196,7 +3192,7 @@ public class BrokerImpl
             Collection failed = null;
             if (load != null) {
                 failed = _store.loadAll(load, null, _store.FORCE_LOAD_NONE,
-                    _fc.newFetchState(), null);
+                    _fc, null);
                 if (failed != null && !failed.isEmpty())
                     exceps = add(exceps,
                         newObjectNotFoundException(failed));
@@ -4087,7 +4083,7 @@ public class BrokerImpl
         Object oid = ApplicationIds.create(pc, meta);
         if (oid == null)
             return false;
-        return find(oid, _fc.newFetchState(), EXCLUDE_ALL, null, 0) != null;
+        return find(oid, null, EXCLUDE_ALL, null, 0) != null;
     }
 
     public OpenJPAStateManager getStateManager(Object obj) {

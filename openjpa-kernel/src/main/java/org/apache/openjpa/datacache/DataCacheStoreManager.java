@@ -408,12 +408,9 @@ public class DataCacheStoreManager
     }
 
     public Collection loadAll(Collection sms, PCState state, int load,
-        FetchState fetchState, Object edata) {
-        FetchConfiguration fetch = (fetchState == null)
-            ? _ctx.getFetchConfiguration()
-            : fetchState.getFetchConfiguration();
+    		FetchConfiguration fetch, Object edata) {
         if (isLocking(fetch))
-            return super.loadAll(sms, state, load, fetchState, edata);
+            return super.loadAll(sms, state, load, fetch, edata);
 
         Map unloaded = null;
         OpenJPAStateManager sm;
@@ -435,7 +432,7 @@ public class DataCacheStoreManager
                     //### the 'data.type' access here probably needs
                     //### to be addressed for bug 511
                     sm.initialize(data.getType(), state);
-                    data.load(sm, fetchState, edata);
+                    data.load(sm, fetch.newFetchState(), edata);
                 } else
                     unloaded = addUnloaded(sm, null, unloaded);
             } else if (load != FORCE_LOAD_NONE
@@ -443,6 +440,7 @@ public class DataCacheStoreManager
                 data = cache.get(sm.getObjectId());
                 if (data != null) {
                     // load unloaded fields
+                	FetchState fetchState = fetch.newFetchState();
                     fields = sm.getUnloaded(fetchState);
                     data.load(sm, fields, fetchState, edata);
                     if (fields.length() > 0)
@@ -458,7 +456,7 @@ public class DataCacheStoreManager
 
         // load with delegate
         Collection failed = super.loadAll(unloaded.keySet(), state, load,
-            fetchState, edata);
+            fetch, edata);
         if (!_ctx.getPopulateDataCache())
             return failed;
 

@@ -575,7 +575,7 @@ public class PCDataGenerator
                 code.invokevirtual().setMethod(FieldMetaData.class,
                     "getFetchGroups", Set.class, null);
                 code.invokeinterface().setMethod
-                    (FetchConfiguration.class, "hasFetchGroup",
+                    (FetchConfiguration.class, "hasAnyFetchGroup",
                         boolean.class, new Class[]{ Set.class });
                 JumpInstruction ifins = code.ifne();
                 code.aload().setLocal(fetch);

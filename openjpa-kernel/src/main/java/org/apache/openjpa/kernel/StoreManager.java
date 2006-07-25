@@ -210,7 +210,7 @@ public interface StoreManager
      * @see org.apache.openjpa.util.ImplHelper#loadAll
      */
     public Collection loadAll(Collection sms, PCState state, int load,
-        FetchState fetchState, Object edata);
+        FetchConfiguration fetch, Object edata);
 
     /**
      * Notification that the given state manager is about to change its

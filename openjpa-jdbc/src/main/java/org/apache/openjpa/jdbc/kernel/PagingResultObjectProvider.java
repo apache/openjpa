@@ -92,7 +92,7 @@ public class PagingResultObjectProvider
         BitSet paged = null;
         for (int i = 0; i < fms.length; i++) {
             if (fetchState != null
-                && !fetchState.requiresSelect(fms[i], false))
+                && !fetchState.requiresFetch(fms[i]))
                 continue;
 
             if (fms[i].supportsSelect(sel, sel.EAGER_PARALLEL, null, store,

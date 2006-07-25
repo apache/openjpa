@@ -102,8 +102,7 @@ class PNonTransState
             if (context.getDirty().length() > 0)
                 context.saveFields(true);
             context.clearFields();
-            context.load(context.getBroker().getFetchConfiguration().
-                newFetchState(), context.LOAD_FGS, null, null, true);
+            context.load(null, context.LOAD_FGS, null, null, true);
         }
         return PDIRTY;
     }

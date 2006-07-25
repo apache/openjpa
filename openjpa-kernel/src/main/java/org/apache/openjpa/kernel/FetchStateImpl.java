@@ -1,13 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -18,17 +15,12 @@
  */
 package org.apache.openjpa.kernel;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.meta.FetchGroup;
 import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.util.InternalException;
 
 /**
  * Holds dynamic status of fetch operation. Decides whether a field
@@ -37,91 +29,118 @@ import org.apache.openjpa.meta.JavaTypes;
  * @author <A HREF="mailto:pinaki.poddar@gmail.com>Pinaki Poddar</A>
  * @nojavadoc
  */
-public class FetchStateImpl
-    implements FetchState, Serializable {
+public class FetchStateImpl implements FetchState {
 
     private final FetchConfiguration _config;
-
-    private Map _selectTraversals;
-    private Map _loadTraversals;
-    private Map _recursionDepths;
-    private Map _depths;
-    private int _depth;
-    private final Set _knownExcludes;
-    private static final int INFINITE_DEPTH = -1;
-
+    private FetchState         _parent;
+    private FieldMetaData      _relation;
+    private int                _availableDepth;
+    
     /**
      * Supply configuration.
      *
      * @param fc must not be null.
      */
     public FetchStateImpl(FetchConfiguration fc) {
-        super();
-        _config = fc;
-        _knownExcludes = new HashSet();
-        _selectTraversals = new HashMap();
-        _loadTraversals = new HashMap();
-        _depths = new HashMap();
-        _recursionDepths = new HashMap();
+     	_config = fc;
+    	_parent = null;
+    	_relation = null;
+    	_availableDepth  = _config.getMaxFetchDepth();
     }
 
     public FetchConfiguration getFetchConfiguration() {
         return _config;
     }
 
-    public boolean isDefault(FieldMetaData fm) {
-        return _config.hasFetchGroup(FetchGroup.getDefaultGroupName())
-            && fm.isInDefaultFetchGroup();
+    public FetchState getParent () {
+    	return _parent;
+    }
+    
+    public boolean isRoot () {
+    	return _parent == null;
+    }
+    
+    public FetchState getRoot() {
+    	return (isRoot()) ? this : getParent().getRoot();
     }
 
-    public boolean requiresSelect(FieldMetaData fm, boolean changeState) {
-        if (_knownExcludes.contains(fm))
-            return false;
-        boolean selectable = isDefault(fm)
-            || _config.hasFetchGroup(fm.getFetchGroups())
-            || _config.hasField(fm.getFullName());
-        if (!selectable)
-            _knownExcludes.add(fm);
+    public int getAvailableFetchDepth() {
+        return _availableDepth;
+    }
 
-        if (selectable && JavaTypes.maybePC(fm)) // relation field
-        {
-            if (canTraverse(fm)) {
-                if (changeState)
-                    traverse(fm);
-            } else
-                selectable = false;
+    public List getPath () {
+    	if (isRoot())
+    		return Collections.EMPTY_LIST;
+    	List result = new ArrayList();
+    	result.add (this);
+    	return ((FetchStateImpl)_parent).trackPath (result);
+    }
+    
+    private List trackPath (List path) {
+    	if (isRoot())
+    		return path;
+    	path.add(this);
+    	return ((FetchStateImpl)_parent).trackPath(path);
+    }
+    
+    public List getRelationPath () {
+    	if (isRoot())
+    		return Collections.EMPTY_LIST;
+    	List result = new ArrayList();
+    	result.add (_relation);
+    	return ((FetchStateImpl)_parent).trackRelationPath (result);
+    }
+    
+    private List trackRelationPath (List path) {
+    	if (isRoot())
+    		return path;
+    	path.add(_relation);
+    	return ((FetchStateImpl)_parent).trackRelationPath(path);
+    }
+    
+    
+    public int getCurrentRecursionDepth (FieldMetaData fm) {
+    	if (isRoot())
+    		return 0;
+    	int rd = (_relation == fm) ? 1 : 0;
+    	
+    	return rd + _parent.getCurrentRecursionDepth(fm);
+    }
+    
+    public boolean isDefault(FieldMetaData fm) {
+        return (_config.hasFetchGroup(FetchConfiguration.FETCH_GROUP_DEFAULT) 
+        		&& fm.isInDefaultFetchGroup())
+        		|| _config.hasFetchGroup(FetchConfiguration.FETCH_GROUP_ALL);
+    }
+
+    public boolean requiresFetch(FieldMetaData fm) {
+        boolean selectable = isDefault(fm)
+            || _config.hasAnyFetchGroup(fm.getFetchGroups())
+            || _config.hasField(fm.getFullName());
+        if (selectable && isRelation(fm)) {
+        	int rd  = getRecursionDepth(fm);
+        	int crd = getCurrentRecursionDepth(fm);
+        	selectable = (_availableDepth==INFINITE_DEPTH || _availableDepth>0)
+        		&& ( rd == INFINITE_DEPTH || crd <rd);
         }
         return selectable;
     }
 
     public boolean requiresLoad(OpenJPAStateManager sm, FieldMetaData fm) {
+    	if (sm!=null && sm.getLoaded().get(fm.getIndex()))
+    		return false;
         boolean loadable = isDefault(fm)
-            || _config.hasFetchGroup(fm.getFetchGroups())
+            || _config.hasAnyFetchGroup(fm.getFetchGroups())
             || _config.hasField(fm.getFullName());
-        if (!loadable)
-            _knownExcludes.add(fm);
-        // relation field
-        if (loadable && JavaTypes.maybePC(fm)) {
-            int d = getLoadCount(fm);
-            loadable = (d < (getTraversalCount(fm) - 1));
-            if (loadable)
-                _loadTraversals.put(fm, new Integer(d + 1));
+        if (loadable && isRelation(fm)) {
+        	int rd  = getRecursionDepth(fm);
+        	int crd = getCurrentRecursionDepth(fm);
+            loadable = (_availableDepth==INFINITE_DEPTH || _availableDepth>0)
+    			&& (rd == INFINITE_DEPTH || crd<rd);
         }
         return loadable;
     }
-
-    /**
-     * Get the recusion depth for the given field.
-     *
-     * @param fm is the field to look for
-     * @return 0 if the field does not appear in the given map.
-     */
-    protected int getRecursionDepth(FieldMetaData fm) {
-        if (_recursionDepths.containsKey(fm)) {
-            return ((Integer) _recursionDepths.get(fm)).intValue();
-        }
-        return initalizeRecusrionDepth(fm);
-    }
+    
 
     /**
      * Sets the recursion depth for the given field as the maximum recusion
@@ -129,19 +148,18 @@ public class FetchStateImpl
      *
      * @param fm
      * @return maximum recursion depth across common fetch groups. -1 is treated
-     * as positive infinity.
+     *         as positive infinity.
      */
-    protected int initalizeRecusrionDepth(FieldMetaData fm) {
+    public int getRecursionDepth(FieldMetaData fm) {
         Set commonFGNs = new HashSet();
         commonFGNs.addAll(_config.getFetchGroups());
         commonFGNs.retainAll(fm.getFetchGroups());
-
-        int dMax = (commonFGNs.isEmpty()) ? FetchGroup.DEFAULT_RECURSION_DEPTH
-            : 0;
+        int dMax =
+            (commonFGNs.isEmpty()) ? FetchGroup.DEFAULT_RECURSION_DEPTH : 0;
         Iterator i = commonFGNs.iterator();
         while (i.hasNext()) {
             FetchGroup fg = fm.getDeclaringMetaData()
-                .getFetchGroup(i.next().toString(), false);
+                .getFetchGroup(i.next().toString());
             int d = fg.getDepthFor(fm);
             if (d == INFINITE_DEPTH) {
                 dMax = INFINITE_DEPTH;
@@ -149,57 +167,68 @@ public class FetchStateImpl
             }
             dMax = Math.max(d, dMax);
         }
-        _recursionDepths.put(fm, new Integer(dMax));
+    	int maxDepth = _config.getMaxFetchDepth();
+    	if (maxDepth != INFINITE_DEPTH)
+    		if (dMax != INFINITE_DEPTH)
+    		   dMax = Math.min (maxDepth, dMax);
+    		else
+    		   dMax = maxDepth;
 
         return dMax;
     }
 
-    boolean canTraverse(FieldMetaData fm) {
-        int maxDepth = _config.getMaxFetchDepth();
-        if (maxDepth != INFINITE_DEPTH && _depth > maxDepth)
-            return false;
-        int sourceDepth = getDepth(fm.getDeclaringMetaData());
-        int traversalCount = getTraversalCount(fm);
-        int recursionDepth = getRecursionDepth(fm);
-        int newtargetDepth = sourceDepth + traversalCount + 1;
-        boolean isRecursive = fm.getDeclaringMetaData() ==
-            fm.getDeclaredTypeMetaData();
-        boolean traversable = (maxDepth == INFINITE_DEPTH)
-            || (recursionDepth == INFINITE_DEPTH);
-        if (isRecursive)
-            traversable = traversable || (traversalCount < recursionDepth);
-        else
-            traversable = traversable || (newtargetDepth <= maxDepth);
 
-        return traversable;
+    public FetchState traverse(FieldMetaData fm) {
+    	if (isRelation(fm)) {
+    		try
+			{
+				FetchStateImpl clone = (FetchStateImpl)clone();
+				clone._parent   = this;
+				clone._relation = fm;
+				clone._availableDepth  = reduce(_availableDepth);
+				return clone;
+			}
+			catch (CloneNotSupportedException e)
+			{
+				// ignore
+			}
+    	}
+    	return this;
     }
 
-    void traverse(FieldMetaData fm) {
-        int sourceDepth = getDepth(fm.getDeclaringMetaData());
-        int traversalCount = getTraversalCount(fm);
-        boolean isRecursive = fm.getDeclaringMetaData() ==
-            fm.getDeclaredTypeMetaData();
-        if (!isRecursive) {
-            int newDepth = sourceDepth + traversalCount;
-            _depths.put(fm.getDeclaredTypeMetaData(), new Integer(newDepth));
-            _depth = Math.max(_depth, newDepth);
-        }
-        _selectTraversals.put(fm, new Integer(traversalCount + 1));
-    }
 
-    int getTraversalCount(FieldMetaData fm) {
-        Integer n = (Integer) _selectTraversals.get(fm);
-        return (n == null) ? 0 : n.intValue();
+    int reduce (int d) {
+    	if (d==0)
+    		return 0;//throw new InternalException(this.toString());
+    	if (d==INFINITE_DEPTH)
+   			return INFINITE_DEPTH;
+    			
+    	return d-1;
     }
-
-    int getLoadCount(FieldMetaData fm) {
-        Integer n = (Integer) _loadTraversals.get(fm);
-        return (n == null) ? 0 : n.intValue();
+    
+    protected boolean isRelation (FieldMetaData fm) {
+    	return fm != null && 
+    		(fm.isDeclaredTypePC() 
+    		|| (fm.getElement() != null && fm.getElement().isTypePC())
+    		|| (fm.getKey() != null && fm.getKey().isTypePC())
+    		|| (fm.getValue() != null && fm.getValue().isTypePC()));
     }
-
-    int getDepth(ClassMetaData cm) {
-        if (_depths.containsKey(cm))
-            return ((Integer) _depths.get(cm)).intValue();
-        return 0;
+    
+    public String toString () {
+    	return System.identityHashCode(this) + "("+_availableDepth+"): " 
+    	    + printPath();
+    }
+    
+    private String printPath ()
+    {
+    	List path = getRelationPath();
+    	if (path.isEmpty())
+    		return "";
+    	StringBuffer tmp = new StringBuffer();
+    	Iterator i = path.iterator();
+    	tmp.append(((FieldMetaData)i.next()).getName());
+    	for (;i.hasNext();)
+    		tmp.append(".").append(((FieldMetaData)i.next()).getName());
+    	return tmp.toString();
     }
 }

@@ -108,6 +108,7 @@ public class FetchConfigurationImpl
 
     public void copy(FetchConfiguration fetch) {
         setFetchBatchSize(fetch.getFetchBatchSize());
+        setMaxFetchDepth(fetch.getMaxFetchDepth());
         setQueryCache(fetch.getQueryCache());
         setFlushBeforeQueries(fetch.getFlushBeforeQueries());
         setLockTimeout(fetch.getLockTimeout());
@@ -172,11 +173,11 @@ public class FetchConfigurationImpl
 
     public synchronized boolean hasFetchGroup(String group) {
         return _fetchGroups != null
-            && ((group != null && _fetchGroups.contains(group))
+            && (_fetchGroups.contains(group)
             || _fetchGroups.contains(FETCH_GROUP_ALL));
     }
 
-    public synchronized boolean hasFetchGroup(Set groups) {
+    public synchronized boolean hasAnyFetchGroup(Set groups) {
         if (_fetchGroups != null && groups != null) {
             Iterator iter = groups.iterator();
             while (iter.hasNext()) {
