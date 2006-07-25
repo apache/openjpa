@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.openjpa.abstractstore.AbstractStoreBrokerFactory;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.PluginValue;
@@ -32,53 +33,19 @@ import org.apache.openjpa.lib.conf.PluginValue;
  * and in {@link org.apache.openjpa.kernel.Bootstrap} with the same
  * encapsulated configuration.
  *
- * @author Abe White
  * @nojavadoc
  */
 public class BrokerFactoryValue
     extends PluginValue {
 
-    private static final String KEY = "BrokerFactory";
+    public static final String KEY = "BrokerFactory";
 
     private static final List _aliases = new ArrayList();
-    private static final Collection _prefixes = new HashSet();
-    
+    private static final List _prefixes = new ArrayList(2);
     static {
         _prefixes.add("openjpa");
         addDefaultAlias("abstractstore",
-            "org.apache.openjpa.abstractstore.AbstractStoreBrokerFactory");
-    }
-
-    public BrokerFactoryValue() {
-        this(KEY);
-    }
-
-    public BrokerFactoryValue(String prop) {
-        super(prop, false);
-        setAliases((String[]) _aliases.toArray(new String[_aliases.size()]));
-    }
-
-    /**
-     * Extract the concrete {@link BrokerFactory} class name that the specified
-     * configuration will use.
-     */
-    public static Object getBrokerFactoryClassName(ConfigurationProvider cp) {
-        Map props = cp.getProperties();
-        for (Iterator iter = _prefixes.iterator(); iter.hasNext(); ) {
-            Object bf = props.get(iter.next() + "." + KEY);
-            if (bf != null)
-                return  bf;
-        }
-        return null;
-    }
-
-    /**
-     * Return the property to use for setting the broker factory for 
-     * <code>cp</code>.
-     */
-    public static String getBrokerFactoryProperty(ConfigurationProvider cp) {
-        return _prefixes.iterator().next() + "." 
-            + BrokerFactoryValue.KEY; 
+            AbstractStoreBrokerFactory.class.getName());
     }
     
     /**
@@ -86,9 +53,9 @@ public class BrokerFactoryValue
      * properties may be scoped.
      */
     public static void addPropertyPrefix(String prefix) {
-        _prefixes.add(prefix);
+        if (!_prefixes.contains(prefix))
+            _prefixes.add(prefix);
     }
-    
     
     /**
      * Add a mapping from <code>alias</code> to <code>cls</code> to the list
@@ -97,5 +64,31 @@ public class BrokerFactoryValue
     public static void addDefaultAlias(String alias, String cls) {
         _aliases.add(alias);
         _aliases.add(cls);
+    }
+
+    /**
+     * Extract the value of this property if set in the given provider.
+     */
+    public static Object get(ConfigurationProvider cp) {
+        Map props = cp.getProperties();
+        Object bf;
+        for (int i = 0; i < _prefixes.size (); i++) {
+            bf = props.get(_prefixes.get(i) + "." + KEY);
+            if (bf != null)
+                return  bf;
+        }
+        return null;
+    }
+
+    /**
+     * Return the key to use for this property.
+     */
+    public static String getKey(ConfigurationProvider cp) {
+        return _prefixes.get(0) + "." + KEY;
+    }
+
+    public BrokerFactoryValue() {
+        super(KEY, false);
+        setAliases((String[]) _aliases.toArray(new String[_aliases.size()]));
     }
 }

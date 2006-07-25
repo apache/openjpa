@@ -214,7 +214,7 @@ public class QueryKey
 
         // calculate the timeout for the key
         MetaDataRepository repos = ctx.getConfiguration().
-            getMetaDataRepository();
+            getMetaDataRepositoryInstance();
 
         // won't find metadata for interfaces.
         if (candidateClass.isInterface())

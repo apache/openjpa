@@ -15,9 +15,10 @@
  */
 package org.apache.openjpa.event;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import org.apache.openjpa.lib.util.concurrent.ConcurrentHashSet;
 
 /**
  * Single-JVM-only implementation of {@link RemoteCommitProvider}
@@ -33,34 +34,28 @@ import java.util.Set;
 public class SingleJVMRemoteCommitProvider
     extends AbstractRemoteCommitProvider {
 
-    private static Set s_providers = new HashSet();
+    private static Set s_providers = new ConcurrentHashSet();
 
     public SingleJVMRemoteCommitProvider() {
-        synchronized (s_providers) {
-            s_providers.add(this);
-        }
+        s_providers.add(this);
     }
 
     public void broadcast(RemoteCommitEvent event) {
-        synchronized (s_providers) {
-            SingleJVMRemoteCommitProvider provider;
-            for (Iterator iter = s_providers.iterator(); iter.hasNext();) {
-                provider = (SingleJVMRemoteCommitProvider) iter.next();
+        SingleJVMRemoteCommitProvider provider;
+        for (Iterator iter = s_providers.iterator(); iter.hasNext();) {
+            provider = (SingleJVMRemoteCommitProvider) iter.next();
 
-                // don't notify this object -- this provider's factory
-                // should not be notified of commits that originated
-                // with one of its brokers
-                if (provider == this)
-                    continue;
+            // don't notify this object -- this provider's factory
+            // should not be notified of commits that originated
+            // with one of its brokers
+            if (provider == this)
+                continue;
 
-                provider.fireEvent(event);
-            }
+            provider.fireEvent(event);
         }
     }
 
     public void close() {
-        synchronized (s_providers) {
-            s_providers.remove(this);
-        }
+        s_providers.remove(this);
     }
 }

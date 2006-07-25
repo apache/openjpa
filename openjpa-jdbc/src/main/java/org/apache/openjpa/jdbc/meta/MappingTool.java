@@ -968,11 +968,11 @@ public class MappingTool
             if (ACTION_IMPORT.equals(flags.action))
                 return false;
             log.info(_loc.get("running-all-classes"));
-            classes = conf.getMappingRepository().loadPersistentTypes(true,
-                loader);
+            classes = conf.getMappingRepositoryInstance().
+                loadPersistentTypes(true, loader);
         } else {
             classes = new HashSet();
-            ClassArgParser classParser = conf.getMetaDataRepository().
+            ClassArgParser classParser = conf.getMetaDataRepositoryInstance().
                 getMetaDataFactory().newClassArgParser();
             classParser.setClassLoader(loader);
             Class[] parsed;

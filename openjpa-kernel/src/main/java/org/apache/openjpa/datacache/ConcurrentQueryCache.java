@@ -81,7 +81,7 @@ public class ConcurrentQueryCache
      * <code>size</code>, then this method will result in the cache
      * flushing values.
      */
-    public synchronized void setSoftReferenceSize(int size) {
+    public void setSoftReferenceSize(int size) {
         _cache.setSoftReferenceSize(size);
     }
 

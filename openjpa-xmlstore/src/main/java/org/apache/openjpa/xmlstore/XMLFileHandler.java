@@ -346,7 +346,7 @@ public class XMLFileHandler {
                 case 'o': // object
                     // get the metadata for the type we're reading
                     String type = attrs.getValue("class");
-                    ClassMetaData meta = _conf.getMetaDataRepository().
+                    ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
                         getMetaData(classForName(type), null, true);
 
                     // construct the oid object

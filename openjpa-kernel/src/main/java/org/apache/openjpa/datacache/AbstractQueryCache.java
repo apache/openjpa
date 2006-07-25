@@ -28,9 +28,10 @@ import org.apache.openjpa.event.RemoteCommitListener;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.AbstractEventManager;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
+import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.Id;
@@ -44,7 +45,7 @@ import org.apache.openjpa.util.Id;
  * @author Abe White
  */
 public abstract class AbstractQueryCache
-    extends AbstractEventManager //### use concurrent; need to mod OpenJPA
+    extends AbstractConcurrentEventManager 
     implements QueryCache, Configurable {
 
     private static final Localizer s_loc =
@@ -216,7 +217,7 @@ public abstract class AbstractQueryCache
         if (classes == null)
             classes = new HashSet();
 
-        MetaDataRepository repos = conf.getMetaDataRepository();
+        MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
         ClassMetaData meta;
         Object oid;
         for (Iterator itr = oids.iterator(); itr.hasNext();) {
@@ -314,7 +315,6 @@ public abstract class AbstractQueryCache
      * the only reference is held by the list of expiration listeners.
      */
     protected Collection newListenerCollection() {
-        //### use concurrent
-        return new ReferenceHashSet (ReferenceHashSet.WEAK);
+        return new ConcurrentReferenceHashSet (ConcurrentReferenceHashSet.WEAK);
 	}
 }

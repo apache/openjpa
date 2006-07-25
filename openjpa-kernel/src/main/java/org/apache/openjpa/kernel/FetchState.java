@@ -1,10 +1,13 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -40,7 +43,7 @@ public interface FetchState
      * Affirms if the given field requires to be fetched in the context
      * of current fetch operation.
      *
-     * @param fm          field metadata. must not be null.
+     * @param fm field metadata. must not be null.
      */
     public boolean requiresFetch(FieldMetaData fm);
 
@@ -56,7 +59,6 @@ public interface FetchState
     /**
      * Traverse the given field to generate (possibly) a new state.
      * 
-     * @param fm
      * @return a new state resulting out of traversal. If the given field is
      * not a relation then return itself.
      */
@@ -73,20 +75,20 @@ public interface FetchState
     
     /**
      * Gets the root state where this receiver is derived from.
-     * @return itself if the state is not derived from another state.
      * 
+     * @return itself if the state is not derived from another state.
      */
     public FetchState getRoot ();
     
     /**
      * Affirms if this receiver is the root state i.e. not derived as a result
      * of traversing a relationship.
-     *  
      */
     public boolean isRoot ();
     
     /**
      * Gets the parent state.
+     *
      * @return can be null for the root state.
      */
     public FetchState getParent ();
@@ -114,9 +116,6 @@ public interface FetchState
     /**
      * Gets the number of times the given field is traversed to arrive
      * at this state.
-     * 
-     * @param fm
-     * @return
      */
     public int getCurrentRecursionDepth (FieldMetaData fm);
     

@@ -33,6 +33,7 @@ public abstract class Value implements Cloneable {
     private static final Localizer s_loc = Localizer.forPackage(Value.class);
 
     private String prop = null;
+    private String loadKey = null;
     private String def = null;
     private String[] aliases = null;
     private String getter = null;
@@ -41,18 +42,18 @@ public abstract class Value implements Cloneable {
     private Class scope = null;
 
     /**
+     * Default constructor.
+     */
+    public Value() {
+    }
+
+    /**
      * Constructor. Supply the property name.
      *
      * @see #setProperty
      */
     public Value(String prop) {
         setProperty(prop);
-    }
-
-    /**
-     * Default constructor.
-     */
-    public Value() {
     }
 
     /**
@@ -69,6 +70,20 @@ public abstract class Value implements Cloneable {
      */
     public void setProperty(String prop) {
         this.prop = prop;
+    }
+
+    /**
+     * The key under which this value was loaded, or null.
+     */
+    public String getLoadKey() {
+        return loadKey;
+    }
+
+    /**
+     * The key under which this value was loaded, or null.
+     */
+    public void setLoadKey(String loadKey) {
+        this.loadKey = loadKey;
     }
 
     /**

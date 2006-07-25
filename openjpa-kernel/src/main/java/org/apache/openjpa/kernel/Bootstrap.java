@@ -115,7 +115,7 @@ public class Bootstrap {
         if (loader == null)
             loader = Thread.currentThread().getContextClassLoader();
 
-        Object cls = BrokerFactoryValue.getBrokerFactoryClassName(conf);
+        Object cls = BrokerFactoryValue.get(conf);
         if (cls instanceof Class)
             return (Class) cls;
 

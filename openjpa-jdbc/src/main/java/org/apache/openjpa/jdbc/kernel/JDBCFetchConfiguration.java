@@ -17,6 +17,7 @@ package org.apache.openjpa.jdbc.kernel;
 
 import java.sql.ResultSet;
 import java.util.Collection;
+import java.util.Set;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
@@ -108,11 +109,12 @@ public interface JDBCFetchConfiguration
 
     /**
      * Returns the names of the joins that this component will use
-     * when loading objects. Defaults to the empty set.
+     * when loading objects. Defaults to the empty set.  This set is not
+     * thread safe.
      *
      * @since 4.0.0
      */
-    public String[] getJoins();
+    public Set getJoins();
 
     /**
      * Return true if the given fully-qualified join has been added.

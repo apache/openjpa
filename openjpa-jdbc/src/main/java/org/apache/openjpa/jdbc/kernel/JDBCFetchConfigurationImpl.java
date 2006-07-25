@@ -18,9 +18,12 @@ package org.apache.openjpa.jdbc.kernel;
 import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -35,6 +38,8 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.rop.SimpleResultList;
 import org.apache.openjpa.lib.rop.SoftRandomAccessResultList;
 import org.apache.openjpa.lib.rop.WindowResultList;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.UserException;
 
 /**
  * JDBC extensions to OpenJPA's {@link FetchConfiguration}.
@@ -46,7 +51,8 @@ public class JDBCFetchConfigurationImpl
     extends FetchConfigurationImpl
     implements JDBCFetchConfiguration {
 
-    private static final String[] EMPTY_STRINGS = new String[0];
+    private static final Localizer _loc = Localizer.forPackage
+        (JDBCFetchConfigurationImpl.class);
 
     private int _eagerMode = 0;
     private int _subclassMode = 0;
@@ -54,7 +60,6 @@ public class JDBCFetchConfigurationImpl
     private int _direction = 0;
     private int _size = 0;
     private int _syntax = 0;
-
     private Set _joins = null;
 
     public void setContext(StoreContext ctx) {
@@ -85,7 +90,7 @@ public class JDBCFetchConfigurationImpl
         setFetchDirection(jf.getFetchDirection());
         setLRSSize(jf.getLRSSize());
         setJoinSyntax(jf.getJoinSyntax());
-        addJoins(Arrays.asList(jf.getJoins()));
+        addJoins(jf.getJoins());
     }
 
     public int getEagerFetchMode() {
@@ -215,6 +220,74 @@ public class JDBCFetchConfigurationImpl
         return new SimpleResultList(rop);
     }
 
+    public Set getJoins() {
+        return (_joins == null) ? Collections.EMPTY_SET : _joins;
+    }
+
+    public boolean hasJoin(String field) {
+        return _joins != null && _joins.contains(field);
+    }
+
+    public JDBCFetchConfiguration addJoin(String join) {
+        if (StringUtils.isEmpty(join))
+            throw new UserException(_loc.get("null-join"));
+        
+        lock();
+        try {
+            if (_joins == null)
+                _joins = new HashSet();
+            _joins.add(join);
+        } finally {
+            unlock();
+        }
+        return this;
+    }
+
+    public JDBCFetchConfiguration addJoins(Collection joins) {
+        if (joins == null || joins.isEmpty())
+            return this;
+        for (Iterator itr = joins.iterator(); itr.hasNext();)
+            addJoin((String) itr.next());
+        return this;
+    }
+
+    public JDBCFetchConfiguration removeJoin(String field) {
+        lock();
+        try {
+            if (_joins != null)
+                _joins.remove(field);
+        } finally {
+            unlock();
+        }
+        return this;
+    }
+
+    public JDBCFetchConfiguration removeJoins(Collection joins) {
+        lock();
+        try {
+            if (_joins != null)
+                _joins.removeAll(joins);
+        } finally {
+            unlock();
+        }
+        return this;
+    }
+
+    public JDBCFetchConfiguration clearJoins() {
+        lock();
+        try {
+            if (_joins != null)
+                _joins.clear();
+        } finally {
+            unlock();
+        }
+        return this;
+    }
+
+    public FetchState newFetchState() {
+        return new JDBCFetchStateImpl(this);
+    }
+
     /**
      * Access JDBC configuration information. May return null if not a
      * JDBC back-end (possible to get a JDBCFetchConfiguration on non-JDBC
@@ -224,58 +297,9 @@ public class JDBCFetchConfigurationImpl
         StoreContext ctx = getContext();
         if (ctx == null)
             return null;
-
         OpenJPAConfiguration conf = ctx.getConfiguration();
         if (!(conf instanceof JDBCConfiguration))
             return null;
         return (JDBCConfiguration) conf;
-    }
-
-    public synchronized String[] getJoins() {
-        if (_joins == null || _joins.isEmpty())
-            return EMPTY_STRINGS;
-        return (String[]) _joins.toArray(new String[_joins.size()]);
-    }
-
-    public synchronized boolean hasJoin(String field) {
-        return _joins != null && field != null && _joins.contains(field);
-    }
-
-    public synchronized JDBCFetchConfiguration addJoin(String field) {
-        if (_joins == null)
-            _joins = new HashSet();
-        _joins.add(field);
-        return this;
-    }
-
-    public synchronized JDBCFetchConfiguration addJoins(Collection fields) {
-        if (fields.isEmpty())
-            return this;
-        if (_joins == null)
-            _joins = new HashSet();
-        _joins.addAll(fields);
-        return this;
-    }
-
-    public synchronized JDBCFetchConfiguration removeJoin(String field) {
-        if (_joins != null)
-            _joins.remove(field);
-        return this;
-    }
-
-    public synchronized JDBCFetchConfiguration removeJoins(Collection fields) {
-        if (_joins != null)
-            _joins.removeAll(fields);
-        return this;
-    }
-
-    public synchronized JDBCFetchConfiguration clearJoins() {
-        if (_joins != null)
-            _joins.clear();
-        return this;
-    }
-
-    public FetchState newFetchState() {
-        return new JDBCFetchStateImpl(this);
     }
 }

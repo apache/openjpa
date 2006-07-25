@@ -63,7 +63,4 @@ public class PersistenceProductDerivation
         conf.nontransactionalWrite.setDefault("true");
         conf.nontransactionalWrite.set(true);
     }
-
-    public void afterClose(OpenJPAConfiguration c) {
-    }
 }

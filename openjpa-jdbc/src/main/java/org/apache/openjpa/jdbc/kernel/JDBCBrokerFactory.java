@@ -141,7 +141,7 @@ public class JDBCBrokerFactory
         if (action == null || action.length() == 0)
             return;
 
-        Collection classes = conf.getMetaDataRepository().
+        Collection classes = conf.getMetaDataRepositoryInstance().
             loadPersistentTypes(false, loader);
         if (classes.isEmpty())
             return;

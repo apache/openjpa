@@ -47,7 +47,7 @@ class DetachedStateAttachStrategy
         PersistenceCapable pc = (PersistenceCapable) toAttach;
         Broker broker = manager.getBroker();
         ClassMetaData meta = broker.getConfiguration().
-            getMetaDataRepository().getMetaData(toAttach.getClass(),
+            getMetaDataRepositoryInstance().getMetaData(toAttach.getClass(),
             broker.getClassLoader(), true);
 
         switch (meta.getIdentityType()) {

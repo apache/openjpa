@@ -112,15 +112,6 @@ public class XMLPersistenceMappingParser
         super(conf);
     }
 
-    /**
-     * Create a new metadata repository.
-     */
-    @Override
-    protected MetaDataRepository newRepository() {
-        return ((JDBCConfiguration) getConfiguration()).
-            newMappingRepositoryInstance();
-    }
-
     @Override
     protected void reset() {
         super.reset();

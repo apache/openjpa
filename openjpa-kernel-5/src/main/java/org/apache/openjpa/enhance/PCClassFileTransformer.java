@@ -16,7 +16,6 @@
 package org.apache.openjpa.enhance;
 
 import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
@@ -29,6 +28,7 @@ import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
 import serp.bytecode.Project;
+import serp.bytecode.lowlevel.ConstantPoolTable;
 
 /**
  * Transformer that makes persistent classes implement the
@@ -173,58 +173,21 @@ public class PCClassFileTransformer
      * {@link PersistenceCapable}.
      */
     private static boolean isEnhanced(byte[] b) {
-        // each entry is the index in the byte array of the data for a const
-        // pool entry
-        int[] entries = new int[readUnsignedShort(b, 8)];
-        int idx = 10;
-        for (int i = 1; i < entries.length; i++) {
-            entries[i] = idx + 1; // skip entry type
-            switch (b[idx]) {
-                case 1: // utf8
-                    idx += 3 + readUnsignedShort(b, idx + 1);
-                    break;
-                case 3: // integer
-                case 4: // float
-                case 9: // field
-                case 10: // method
-                case 11: // interface method
-                case 12: // name
-                    idx += 5;
-                    break;
-                case 5: // long
-                case 6: // double
-                    idx += 9;
-                    i++; // wide entry
-                    break;
-                default:
-                    idx += 3;
-            }
-        }
+        ConstantPoolTable table = new ConstantPoolTable(b);
+        int idx = table.getEndIndex();
 
-        idx += 6;
-        int ifaces = readUnsignedShort(b, idx);
+        idx += 6; // skip access, cls, super
+        int ifaces = table.readUnsignedShort(idx);
         int clsEntry, utfEntry, len;
         String name;
         for (int i = 0; i < ifaces; i++) {
             idx += 2;
-            clsEntry = readUnsignedShort(b, idx);
-            utfEntry = readUnsignedShort(b, entries[clsEntry]);
-            len = readUnsignedShort(b, entries[utfEntry]);
-            try {
-                name = new String(b, entries[utfEntry] + 2, len, "UTF-8");
-                if ("openjpa/enhance/PersistenceCapable".equals(name))
-                    return true;
-            } catch (UnsupportedEncodingException uee) {
-                throw new ClassFormatError(uee.toString());
-            }
+            clsEntry = table.readUnsignedShort(idx);
+            utfEntry = table.readUnsignedShort(table.get(clsEntry));
+            name = table.readString(table.get(utfEntry));
+            if ("openjpa/enhance/PersistenceCapable".equals(name))
+                return true;
         }
         return false;
     }
-
-    /**
-     * Read an unsigned short from the given array at the given offset.
-     */
-    private static int readUnsignedShort(byte[] b, int idx) {
-        return ((b[idx] & 0xFF) << 8) | (b[idx + 1] & 0xFF);
-	}
 }

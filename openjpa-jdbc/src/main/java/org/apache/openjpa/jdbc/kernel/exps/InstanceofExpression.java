@@ -86,7 +86,7 @@ class InstanceofExpression
         if (_dsc != null) {
             // cache mapping for cast
             MappingRepository repos = store.getConfiguration().
-                getMappingRepository();
+                getMappingRepositoryInstance();
             _mapping = repos.getMapping(_cls, store.getContext().
                 getClassLoader(), false);
 

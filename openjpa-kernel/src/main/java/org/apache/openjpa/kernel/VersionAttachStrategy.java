@@ -47,7 +47,7 @@ class VersionAttachStrategy
         Object toAttach) {
         Broker broker = manager.getBroker();
         ClassMetaData meta = broker.getConfiguration().
-            getMetaDataRepository().getMetaData(toAttach.getClass(),
+            getMetaDataRepositoryInstance().getMetaData(toAttach.getClass(),
             broker.getClassLoader(), true);
         return ApplicationIds.create((PersistenceCapable) toAttach, meta);
     }

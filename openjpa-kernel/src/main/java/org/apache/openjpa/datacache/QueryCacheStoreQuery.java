@@ -211,7 +211,7 @@ public class QueryCacheStoreQuery
     public void setContext(QueryContext qctx) {
         _query.setContext(qctx);
         _sctx = qctx.getStoreContext();
-        _repos = _sctx.getConfiguration().getMetaDataRepository();
+        _repos = _sctx.getConfiguration().getMetaDataRepositoryInstance();
     }
 
     public boolean setQuery(Object query) {

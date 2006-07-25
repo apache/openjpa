@@ -470,7 +470,7 @@ public class XMLPersistenceMetaDataSerializer
         }
         if (fieldAccess != propertyAccess) // i.e. only one
         {
-            int def = getConfiguration().getMetaDataRepository().
+            int def = getConfiguration().getMetaDataRepositoryInstance().
                 getMetaDataFactory().getDefaults().getDefaultAccessType();
             String access = null;
             if (fieldAccess && def == ClassMetaData.ACCESS_PROPERTY)
@@ -798,7 +798,7 @@ public class XMLPersistenceMetaDataSerializer
     private void addClassAttributes(ClassMetaData meta, boolean access) {
         if (!access)
             return;
-        int def = getConfiguration().getMetaDataRepository().
+        int def = getConfiguration().getMetaDataRepositoryInstance().
             getMetaDataFactory().getDefaults().getDefaultAccessType();
         if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD
             && def == ClassMetaData.ACCESS_PROPERTY)
@@ -941,9 +941,9 @@ public class XMLPersistenceMetaDataSerializer
             serializeCascades(cascades);
         if (isMappingMode() && strat == PersistenceStrategy.EMBEDDED) {
             ClassMetaData meta = fmd.getEmbeddedMetaData();
-            ClassMetaData owner = getConfiguration().getMetaDataRepository().
-                getMetaData(meta.getDescribedType(),
-                    meta.getEnvClassLoader(), true);
+            ClassMetaData owner = getConfiguration().
+                getMetaDataRepositoryInstance().getMetaData
+                (meta.getDescribedType(), meta.getEnvClassLoader(), true);
             FieldMetaData eorig;
             for (FieldMetaData efmd : meta.getFields()) {
                 eorig = owner.getField(efmd.getName());

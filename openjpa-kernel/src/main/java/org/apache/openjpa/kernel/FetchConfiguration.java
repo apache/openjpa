@@ -42,10 +42,14 @@ public interface FetchConfiguration
      * Special fetch group name that is used by OpenJPA to indicate that all
      * fetch groups should be loaded by this configuration.
      */
-    public static final String FETCH_GROUP_ALL =
-        "org.apache.openjpa.kernel.FetchConfiguration.FETCH_GROUP_ALL";
+    public static final String FETCH_GROUP_ALL = "openjpa.FetchGroupAll";
 
+    /**
+     * Special fetch group name that is used by OpenJPA to denote the default
+     * fetch group.
+     */
     public static final String FETCH_GROUP_DEFAULT = "default";
+
     /**
      * Return the context assiciated with this configuration;
      * may be null if it has not been set or this object has been serialized.
@@ -73,14 +77,14 @@ public interface FetchConfiguration
 
     /**
      * Return the fetch batch size for large result set support.
-     * Defaults to the	<code>org.apache.openjpa.FetchBatchSize</code> setting. Note
+     * Defaults to the	<code>openjpa.FetchBatchSize</code> setting. Note
      * that this property will be ignored under some data stores.
      */
     public int getFetchBatchSize();
 
     /**
      * Set the fetch batch size for large result set support.
-     * Defaults to the	<code>org.apache.openjpa.FetchBatchSize</code> setting. Note
+     * Defaults to the	<code>openjpa.FetchBatchSize</code> setting. Note
      * that this property will be ignored under some data stores.
      */
     public FetchConfiguration setFetchBatchSize(int fetchBatchSize);
@@ -129,9 +133,7 @@ public interface FetchConfiguration
     /**
      * Returns immutable set of names of the fetch groups that this component
      * will use when loading objects. Defaults to the
-     * <code>org.apache.openjpa.FetchGroups</code> setting.
-     *
-     * @return empty set if no group has been added.
+     * <code>openjpa.FetchGroups</code> setting.  This set is not thread safe.
      */
     public Set getFetchGroups();
 
@@ -185,7 +187,8 @@ public interface FetchConfiguration
 
     /**
      * Returns the set of fully-qualified field names that this component
-     * will use when loading objects. Defaults to the empty set.
+     * will use when loading objects. Defaults to the empty set.  This set is
+     * not thread safe.
      */
     public Set getFields();
 
@@ -225,14 +228,23 @@ public interface FetchConfiguration
     public FetchConfiguration clearFields();
 
     /**
-     * Return the root instances.
+     * Root classes for recursive operations. This set is not thread safe.
      */
     public Set getRootClasses();
 
+    /**
+     * Root classes for recursive operations.
+     */
     public FetchConfiguration setRootClasses(Collection classes);
 
+    /**
+     * Root instances for recursive operations. This set is not thread safe.
+     */
     public Set getRootInstances();
 
+    /**
+     * Root instances for recursive operations.
+     */
     public FetchConfiguration setRootInstances(Collection roots);
 
     /**
@@ -310,4 +322,14 @@ public interface FetchConfiguration
 	 * @since	4.0
 	 */
 	public Object getHint (String name);
+
+    /**
+     * Synchronize on internal lock if multithreaded is true.
+     */
+    public void lock();
+
+    /**
+     * Release internal lock if multithreaded is true.
+     */
+    public void unlock();
 }

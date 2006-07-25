@@ -18,8 +18,9 @@ package org.apache.openjpa.lib.log;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.openjpa.lib.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A LogFactory implementation to pass events through multiple
@@ -32,41 +33,43 @@ public class MultiLogFactory implements LogFactory {
     private List _delegates;
 
     /**
-     * create an instance with two delegates
+     * Create an instance with the given delegates.
      */
     public MultiLogFactory(LogFactory d1, LogFactory d2) {
-        this(new LogFactory []{ d1, d2 });
-    }
-
-    public MultiLogFactory(LogFactory d1, LogFactory d2, LogFactory d3) {
-        this(new LogFactory []{ d1, d2, d3 });
+        this(new LogFactory[]{ d1, d2 });
     }
 
     /**
-     * create an instance with the given delegates
+     * Create an instance with the given delegates.
      */
-    public MultiLogFactory(LogFactory [] delegates) {
-        _delegates = new LinkedList(Arrays.asList(delegates));
-        ;
+    public MultiLogFactory(LogFactory d1, LogFactory d2, LogFactory d3) {
+        this(new LogFactory[]{ d1, d2, d3 });
     }
 
-    public synchronized void addLogFactory(LogFactory factory) {
+    /**
+     * Create an instance with the given delegates.
+     */
+    public MultiLogFactory(LogFactory[] delegates) {
+        _delegates = new CopyOnWriteArrayList(Arrays.asList(delegates));
+    }
+
+    public void addLogFactory(LogFactory factory) {
         _delegates.add(factory);
     }
 
-    public synchronized void removeLogFactory(LogFactory factory) {
+    public void removeLogFactory(LogFactory factory) {
         _delegates.remove(factory);
     }
 
     /**
      * Returns the delegates that this MultiLogFactory delegates messages to.
      */
-    public synchronized LogFactory[] getDelegates() {
+    public LogFactory[] getDelegates() {
         return (LogFactory[]) _delegates.toArray(new LogFactory[0]);
     }
 
     /**
-     * returns a Log impl that combines all logs.
+     * Returns a Log impl that combines all logs.
      */
     public synchronized Log getLog(String channel) {
         List logs = new ArrayList(_delegates.size());
@@ -78,7 +81,6 @@ public class MultiLogFactory implements LogFactory {
                     logs.add(l);
             }
         }
-
         return new MultiLog((Log[]) logs.toArray(new Log[logs.size()]));
     }
 
@@ -164,7 +166,6 @@ public class MultiLogFactory implements LogFactory {
             for (int i = 0; i < _logs.length; i++)
                 if (_logs[i].isTraceEnabled())
                     return true;
-
             return false;
         }
 
@@ -172,7 +173,6 @@ public class MultiLogFactory implements LogFactory {
             for (int i = 0; i < _logs.length; i++)
                 if (_logs[i].isInfoEnabled())
                     return true;
-
             return false;
         }
 
@@ -180,7 +180,6 @@ public class MultiLogFactory implements LogFactory {
             for (int i = 0; i < _logs.length; i++)
                 if (_logs[i].isWarnEnabled())
                     return true;
-
             return false;
         }
 
@@ -188,7 +187,6 @@ public class MultiLogFactory implements LogFactory {
             for (int i = 0; i < _logs.length; i++)
                 if (_logs[i].isDebugEnabled())
                     return true;
-
             return false;
         }
 
@@ -196,7 +194,6 @@ public class MultiLogFactory implements LogFactory {
             for (int i = 0; i < _logs.length; i++)
                 if (_logs[i].isErrorEnabled())
                     return true;
-
             return false;
         }
 
@@ -204,7 +201,6 @@ public class MultiLogFactory implements LogFactory {
             for (int i = 0; i < _logs.length; i++)
                 if (_logs[i].isFatalEnabled())
                     return true;
-
             return false;
         }
     }

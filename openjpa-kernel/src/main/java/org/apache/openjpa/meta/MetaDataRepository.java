@@ -34,6 +34,8 @@ import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PCRegistry.RegisterClassListener;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.LifecycleEventManager;
+import org.apache.openjpa.lib.conf.Configurable;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
@@ -50,7 +52,8 @@ import serp.util.Strings;
  * @author Steve Kim (query metadata)
  */
 public class MetaDataRepository
-    implements PCRegistry.RegisterClassListener, Closeable, MetaDataModes {
+    implements PCRegistry.RegisterClassListener, Configurable, Closeable, 
+    MetaDataModes {
 
     /**
      * Constant to not validate any metadata.
@@ -106,10 +109,9 @@ public class MetaDataRepository
     // map of classes to lists of their subclasses
     private final Map _subs = Collections.synchronizedMap(new HashMap());
 
-    private final OpenJPAConfiguration _conf;
-    private final Log _log;
-    private final MetaDataFactory _factory;
-
+    private OpenJPAConfiguration _conf = null;
+    private Log _log = null;
+    private MetaDataFactory _factory = null;
     private int _resMode = MODE_META | MODE_MAPPING;
     private int _sourceMode = MODE_META | MODE_MAPPING | MODE_QUERY;
     private int _validate = VALIDATE_META | VALIDATE_UNENHANCED;
@@ -130,21 +132,9 @@ public class MetaDataRepository
         new LifecycleEventManager.ListenerList(3);
 
     /**
-     * Constructor. Supply configuration.
+     * Default constructor.  Configure via {@link Configurable}.
      */
-    public MetaDataRepository(OpenJPAConfiguration conf) {
-        this(conf, conf.newMetaDataFactoryInstance());
-    }
-
-    /**
-     * Constructor. Supply configuration and metadata generator.
-     */
-    public MetaDataRepository(OpenJPAConfiguration conf,
-        MetaDataFactory factory) {
-        _conf = conf;
-        _log = conf.getLog(OpenJPAConfiguration.LOG_METADATA);
-        _factory = factory;
-        _factory.setRepository(this);
+    public MetaDataRepository() {
         EMPTY_METAS = newClassMetaDataArray(0);
         EMPTY_FIELDS = newFieldMetaDataArray(0);
         EMPTY_ORDERS = newOrderArray(0);
@@ -165,6 +155,18 @@ public class MetaDataRepository
     }
 
     /**
+     * Create a new instance of the same type as this instance, using this
+     * instance's configuration.
+     */
+    public MetaDataRepository newInstance() {
+        MetaDataRepository repos = new MetaDataRepository();
+        repos.setConfiguration(_conf);
+        repos.startConfiguration();
+        repos.endConfiguration();
+        return repos;
+    }
+
+    /**
      * The I/O used to load metadata.
      */
     public MetaDataFactory getMetaDataFactory() {
@@ -172,11 +174,11 @@ public class MetaDataRepository
     }
 
     /**
-     * Create a new instance of the same type as this instance, using this
-     * instance's configuration.
+     * The I/O used to load metadata.
      */
-    public MetaDataRepository newInstance() {
-        return new MetaDataRepository(getConfiguration());
+    public void setMetaDataFactory(MetaDataFactory factory) {
+        factory.setRepository(this);
+        _factory = factory;
     }
 
     /**
@@ -314,13 +316,12 @@ public class MetaDataRepository
         processRegisteredClasses();
         List classList = (List) _aliases.get(alias);
 
-        Class cls = null;
-
         // multiple classes may have been defined with the same alias: we
         // will filter by checking against the current list of the
         // persistent types and filted based on which classes are loadable
         // via the current environment's ClassLoader
         Set pcNames = getPersistentTypeNames(false, envLoader);
+        Class cls = null;
         for (int i = 0; classList != null && i < classList.size(); i++) {
             Class c = (Class) classList.get(i);
             try {
@@ -345,7 +346,6 @@ public class MetaDataRepository
                 // other class loading problems
             }
         }
-
         if (cls != null)
             return getMetaData(cls, envLoader, mustExist);
 
@@ -1270,6 +1270,23 @@ public class MetaDataRepository
             }
             coll.add(value);
         }
+    }
+
+    ///////////////////////////////
+    // Configurable implementation
+    ///////////////////////////////
+
+    public void setConfiguration(Configuration conf) {
+        _conf = (OpenJPAConfiguration) conf;
+        _log = _conf.getLog(OpenJPAConfiguration.LOG_METADATA);
+    }
+
+    public void startConfiguration() {
+    }
+
+    public void endConfiguration() {
+        if (_factory == null)
+            setMetaDataFactory(_conf.newMetaDataFactoryInstance());
     }
 
     //////////////////

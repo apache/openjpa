@@ -34,9 +34,9 @@ import serp.util.Strings;
 /**
  * Cron-style cache eviction. Understands schedules based on cron format:
  * <code>minute hour mday month wday</code>
- *  For example:
+ * For example:
  * <code>15,30 6,19 2,10 1 2 </code>
- *  Would run at 15 and 30 past the 6AM and 7PM, on the 2nd and 10th
+ * Would run at 15 and 30 past the 6AM and 7PM, on the 2nd and 10th
  * of January when its a Monday.
  *
  * @author Steve Kim

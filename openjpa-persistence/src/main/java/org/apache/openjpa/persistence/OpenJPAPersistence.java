@@ -276,7 +276,7 @@ public class OpenJPAPersistence
 
         OpenJPAEntityManager kem = cast(em);
         try {
-            return kem.getConfiguration().getMetaDataRepository().
+            return kem.getConfiguration().getMetaDataRepositoryInstance().
                 getMetaData(cls, kem.getClassLoader(), false);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
@@ -294,7 +294,7 @@ public class OpenJPAPersistence
 
         OpenJPAEntityManagerFactory kemf = cast(emf);
         try {
-            return kemf.getConfiguration().getMetaDataRepository().
+            return kemf.getConfiguration().getMetaDataRepositoryInstance().
                 getMetaData(cls, null, false);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);

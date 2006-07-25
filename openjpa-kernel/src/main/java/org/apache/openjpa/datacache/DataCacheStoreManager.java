@@ -109,7 +109,7 @@ public class DataCacheStoreManager
             return;
 
         MetaDataRepository mdr = _ctx.getConfiguration().
-            getMetaDataRepository();
+            getMetaDataRepositoryInstance();
         ClassLoader loader = _ctx.getClassLoader();
 
         Class cls;

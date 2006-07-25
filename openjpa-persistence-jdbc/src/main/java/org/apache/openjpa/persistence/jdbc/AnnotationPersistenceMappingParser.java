@@ -158,12 +158,6 @@ public class AnnotationPersistenceMappingParser
     }
 
     @Override
-    protected MetaDataRepository newRepository() {
-        return ((JDBCConfiguration) getConfiguration()).
-            newMappingRepositoryInstance();
-    }
-
-    @Override
     protected void parsePackageMappingAnnotations(Package pkg) {
         MappingTag tag;
         for (Annotation anno : pkg.getDeclaredAnnotations()) {

@@ -20,7 +20,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.WeakHashMap;
+
+import org.apache.openjpa.lib.util.ReferenceMap;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
 /**
  * Tracks registered persistence-capable classes.
@@ -37,8 +39,8 @@ public class PCRegistry {
     private static final String NO_META = "No metadata found for class ";
 
     // map of pc classes to meta structs; weak so the VM can GC classes
-    private static final Map _metas = new WeakHashMap();
-
+    private static final Map _metas = new ConcurrentReferenceHashMap
+        (ReferenceMap.WEAK, ReferenceMap.HARD);
     // register class listeners
     private static final Collection _listeners = new LinkedList();
 
@@ -49,6 +51,8 @@ public class PCRegistry {
         if (rcl == null)
             return;
 
+        // we have to be positive that every listener gets notified for
+        // every class, so lots of locking
         synchronized (_listeners) {
             _listeners.add(rcl);
         }
@@ -182,14 +186,15 @@ public class PCRegistry {
         if (pcClass == null)
             throw new NullPointerException();
 
+        // we have to be positive that every listener gets notified for
+        // every class, so lots of locking
         Meta meta = new Meta(pc, fieldNames, fieldTypes, sup, alias);
         synchronized (_metas) {
             _metas.put(pcClass, meta);
         }
         synchronized (_listeners) {
-            if (!_listeners.isEmpty())
-                for (Iterator i = _listeners.iterator(); i.hasNext();)
-                    ((RegisterClassListener) i.next()).register(pcClass);
+            for (Iterator i = _listeners.iterator(); i.hasNext();)
+                ((RegisterClassListener) i.next()).register(pcClass);
         }
     }
 
@@ -198,28 +203,21 @@ public class PCRegistry {
      * persistence-capable classes.
      */
     public static Collection getRegisteredTypes() {
-        synchronized (_metas) {
-            return Collections.unmodifiableCollection(_metas.keySet());
-        }
+        return Collections.unmodifiableCollection(_metas.keySet());
     }
 
     /**
      * Returns <code>true</code> if <code>cls</code> is already registered.
      */
     public static boolean isRegistered(Class cls) {
-        synchronized (_metas) {
-            return _metas.containsKey(cls);
-        }
+        return _metas.containsKey(cls);
     }
 
     /**
      * Look up the metadata for a <code>PersistenceCapable</code> class.
      */
     private static Meta getMeta(Class pcClass) {
-        Meta ret;
-        synchronized (_metas) {
-            ret = (Meta) _metas.get(pcClass);
-        }
+        Meta ret = (Meta) _metas.get(pcClass);
         if (ret == null)
             throw new IllegalStateException(NO_META + pcClass.getName());
         return ret;

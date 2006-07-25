@@ -115,7 +115,7 @@ public class ExtentImpl
 
             // add database iterators for each implementing class
             MetaDataRepository repos = _broker.getConfiguration().
-                getMetaDataRepository();
+                getMetaDataRepositoryInstance();
             ClassMetaData meta = repos.getMetaData(_type,
                 _broker.getClassLoader(), false);
 

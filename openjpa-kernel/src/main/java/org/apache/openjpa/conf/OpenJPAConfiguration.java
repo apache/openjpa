@@ -42,6 +42,7 @@ import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ClassResolver;
 import org.apache.openjpa.util.ProxyManager;
+import org.apache.openjpa.util.StoreFacadeTypeRegistry;
 
 /**
  * Defines the properties necessary to configure runtime properties and
@@ -60,146 +61,143 @@ public interface OpenJPAConfiguration
 
     /**
      * Name of logger for metadata-related messages:
-     * <code>org.apache.openjpa.MetaData</code>.
+     * <code>openjpa.MetaData</code>.
      */
-    public static final String LOG_METADATA = "org.apache.openjpa.MetaData";
+    public static final String LOG_METADATA = "openjpa.MetaData";
 
     /**
      * Name of logger for enhancement-related messages:
-     * <code>org.apache.openjpa.Enhance</code>.
+     * <code>openjpa.Enhance</code>.
      */
-    public static final String LOG_ENHANCE = "org.apache.openjpa.Enhance";
+    public static final String LOG_ENHANCE = "openjpa.Enhance";
 
     /**
      * Name of logger for messages from the runtime system:
-     * <code>org.apache.openjpa.Runtime</code>.
+     * <code>openjpa.Runtime</code>.
      */
-    public static final String LOG_RUNTIME = "org.apache.openjpa.Runtime";
+    public static final String LOG_RUNTIME = "openjpa.Runtime";
 
     /**
      * Name of logger for query logging:
-     * <code>org.apache.openjpa.Query</code>.
+     * <code>openjpa.Query</code>.
      */
-    public static final String LOG_QUERY = "org.apache.openjpa.Query";
+    public static final String LOG_QUERY = "openjpa.Query";
 
     /**
      * Name of logger for messages from the data cache:
-     * <code>org.apache.openjpa.DataCache</code>.
+     * <code>openjpa.DataCache</code>.
      */
-    public static final String LOG_DATACACHE = "org.apache.openjpa.DataCache";
+    public static final String LOG_DATACACHE = "openjpa.DataCache";
 
     /**
      * Name of logger for messages from the development tools:
-     * <code>org.apache.openjpa.Tool</code>.
+     * <code>openjpa.Tool</code>.
      */
-    public static final String LOG_TOOL = "org.apache.openjpa.Tool";
+    public static final String LOG_TOOL = "openjpa.Tool";
 
     /**
      * Option for runtimes that support nontransactional reads.
      */
     public static final String OPTION_NONTRANS_READ =
-        "org.apache.openjpa.option.NontransactionalRead";
+        "openjpa.option.NontransactionalRead";
 
     /**
      * Option for runtimes that support optimistic transactions.
      */
     public static final String OPTION_OPTIMISTIC =
-        "org.apache.openjpa.option.Optimistic";
+        "openjpa.option.Optimistic";
 
     /**
      * Option for runtimes that support application identity.
      */
     public static final String OPTION_ID_APPLICATION =
-        "org.apache.openjpa.option.ApplicationIdentity";
+        "openjpa.option.ApplicationIdentity";
 
     /**
      * Option for runtimes that support application identity.
      */
     public static final String OPTION_ID_DATASTORE =
-        "org.apache.openjpa.option.DatastoreIdentity";
+        "openjpa.option.DatastoreIdentity";
 
     /**
      * Option for SQL support.
      */
-    public static final String OPTION_QUERY_SQL =
-        "org.apache.openjpa.option.SQL";
+    public static final String OPTION_QUERY_SQL = "openjpa.option.SQL";
 
     /**
      * Option for runtimes that support persistent collection fields.
      */
     public static final String OPTION_TYPE_COLLECTION =
-        "org.apache.openjpa.option.Collection";
+        "openjpa.option.Collection";
 
     /**
      * Option for runtimes that support persistent map fields.
      */
-    public static final String OPTION_TYPE_MAP =
-        "org.apache.openjpa.option.Map";
+    public static final String OPTION_TYPE_MAP = "openjpa.option.Map";
 
     /**
      * Option for runtimes that support persistent array fields.
      */
-    public static final String OPTION_TYPE_ARRAY =
-        "org.apache.openjpa.option.Array";
+    public static final String OPTION_TYPE_ARRAY = "openjpa.option.Array";
 
     /**
      * Option for runtime that can differentiate between null and empty
      * container fields.
      */
     public static final String OPTION_NULL_CONTAINER =
-        "org.apache.openjpa.option.NullContainer";
+        "openjpa.option.NullContainer";
 
     /**
      * Option for runtimes that support embedded relations to other
      * persistence capable objects.
      */
     public static final String OPTION_EMBEDDED_RELATION =
-        "org.apache.openjpa.option.EmbeddedRelation";
+        "openjpa.option.EmbeddedRelation";
 
     /**
      * Option for runtimes that support collections of embedded
      * relations to other persistence capable objects.
      */
     public static final String OPTION_EMBEDDED_COLLECTION_RELATION =
-        "org.apache.openjpa.option.EmbeddedCollectionRelation";
+        "openjpa.option.EmbeddedCollectionRelation";
 
     /**
      * Option for runtimes that support maps of embedded
      * relations to other persistence capable objects.
      */
     public static final String OPTION_EMBEDDED_MAP_RELATION =
-        "org.apache.openjpa.option.EmbeddedMapRelation";
+        "openjpa.option.EmbeddedMapRelation";
 
     /**
      * Option for runtimes that support incremental flushing.
      */
     public static final String OPTION_INC_FLUSH =
-        "org.apache.openjpa.option.IncrementalFlush";
+        "openjpa.option.IncrementalFlush";
 
     /**
      * Option for runtimes that the autoassign value strategy.
      */
     public static final String OPTION_VALUE_AUTOASSIGN =
-        "org.apache.openjpa.option.AutoassignValue";
+        "openjpa.option.AutoassignValue";
 
     /**
      * Option for runtimes that the increment value strategy.
      */
     public static final String OPTION_VALUE_INCREMENT =
-        "org.apache.openjpa.option.IncrementValue";
+        "openjpa.option.IncrementValue";
 
     /**
      * Option for runtimes that support returning the datastore connection.
      */
     public static final String OPTION_DATASTORE_CONNECTION =
-        "org.apache.openjpa.option.DataStoreConnection";
+        "openjpa.option.DataStoreConnection";
 
     /**
      * Option for runtimes that support returning the datastore connection
      * that is a JDBC Connection.
      */
     public static final String OPTION_JDBC_CONNECTION =
-        "org.apache.openjpa.option.JDBCConnection";
+        "openjpa.option.JDBCConnection";
 
     /**
      * Return the set of option strings supported by this runtime. This set
@@ -592,12 +590,27 @@ public interface OpenJPAConfiguration
     public MetaDataFactory newMetaDataFactoryInstance();
 
     /**
+     * A plugin string describing the {@link MetaDataRepository} to use.
+     */
+    public String getMetaDataRepository();
+
+    /**
+     * A plugin string describing the {@link MetaDataRepository} to use.
+     */
+    public void setMetaDataRepository(String meta);
+
+    /**
      * The metadata repository of managed class information. If no
      * repository has been set, creates one.
      *
      * @since 3.0
      */
-    public MetaDataRepository getMetaDataRepository();
+    public MetaDataRepository getMetaDataRepositoryInstance();
+
+    /**
+     * Create a new empty metadata repository of the configured type.
+     */
+    public MetaDataRepository newMetaDataRepositoryInstance();
 
     /**
      * The metadata repository of managed class information.

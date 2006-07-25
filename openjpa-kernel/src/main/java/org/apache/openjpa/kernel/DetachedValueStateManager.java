@@ -50,7 +50,7 @@ public class DetachedValueStateManager
 
     public DetachedValueStateManager(Object pc, StoreContext ctx) {
         this((PersistenceCapable) pc, ctx.getConfiguration().
-            getMetaDataRepository().getMetaData(pc.getClass(),
+            getMetaDataRepositoryInstance().getMetaData(pc.getClass(),
             ctx.getClassLoader(), true), ctx);
     }
 

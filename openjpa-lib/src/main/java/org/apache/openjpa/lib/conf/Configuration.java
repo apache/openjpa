@@ -73,9 +73,15 @@ public interface Configuration
     public static final String ATTRIBUTE_XML = "xmlName";
 
     /**
-     * Return the product name. Defaults to <code>solarmetric</code>.
+     * Return the product name. Defaults to <code>openjpa</code>.
      */
     public String getProductName();
+    
+    /**
+     * Set the product name.  The set name will automatically be added to
+     * the property prefixes.
+     */
+    public void setProductName(String name);
 
     /**
      * The log factory. If no log factory has been set explicitly,
@@ -155,6 +161,14 @@ public interface Configuration
     public void fromProperties(Map map);
 
     /**
+     * Add <code>prefix</code> to the list of prefixes to use
+     * to identify valid configuration properties. "openjpa" and any
+     * product name set with {@link #setProductName} will automatically
+     * be added.
+     */
+    public void addPropertyPrefix(String prefix);
+
+    /**
      * Adds a listener for any property changes. The property events fired
      * will <b>not</b> include the old value.
      *
@@ -196,10 +210,4 @@ public interface Configuration
      * Return a copy of this configuration.
      */
     public Object clone();
-
-    /**
-     * Add <code>prefix</code> to the list of prefixes to use
-     * to identify valid configuration properties.
-     */
-    public void addPropertyPrefix(String prefix);
 }

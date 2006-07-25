@@ -82,7 +82,7 @@ public class PCEnhancerTask
         flags.directory = (dirName == null) ? null
             : Files.getFile(dirName, getClassLoader());
         OpenJPAConfiguration conf = (OpenJPAConfiguration) getConfiguration();
-        MetaDataRepository repos = new MetaDataRepository(conf);
+        MetaDataRepository repos = conf.newMetaDataRepositoryInstance();
         PCEnhancer.run(conf, files, flags, repos, null, getClassLoader ());
 	}
 }

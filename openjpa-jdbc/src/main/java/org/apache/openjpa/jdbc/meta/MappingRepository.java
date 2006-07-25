@@ -95,29 +95,18 @@ public class MappingRepository
             "org.apache.openjpa.jdbc.meta.strats.EnumValueHandler");
     }
 
-    private final MappingDefaults _defaults;
-    private final DBDictionary _dict;
-    private final Map _results = new HashMap(); // object->queryresultmapping
+    private DBDictionary _dict = null;
+    private MappingDefaults _defaults = null;
+    private Map _results = new HashMap(); // object->queryresultmapping
     private SchemaGroup _schema = null;
     private StrategyInstaller _installer = null;
 
     /**
-     * Constructor; supply configuration.
+     * Default constructor.  Configure via 
+     * {@link org.apache.openjpa.lib.conf.Configurable}.
      */
-    public MappingRepository(JDBCConfiguration conf) {
-        this(conf, conf.newMetaDataFactoryInstance(),
-            conf.getMappingDefaultsInstance());
-    }
-
-    /**
-     * Constructor; supply configuration and mapping factory.
-     */
-    public MappingRepository(JDBCConfiguration conf, MetaDataFactory mdf,
-        MappingDefaults mapDefaults) {
-        super(conf, mdf);
+    public MappingRepository() {
         setValidate(VALIDATE_MAPPING, true);
-        _defaults = mapDefaults;
-        _dict = conf.getDBDictionaryInstance();
     }
 
     /**
@@ -132,6 +121,13 @@ public class MappingRepository
      */
     public MappingDefaults getMappingDefaults() {
         return _defaults;
+    }
+
+    /**
+     * Mapping default.
+     */
+    public void setMappingDefaults(MappingDefaults defaults) {
+        _defaults = defaults;
     }
 
     /**
@@ -272,13 +268,11 @@ public class MappingRepository
     }
 
     public MetaDataRepository newInstance() {
-        return new MappingRepository((JDBCConfiguration) getConfiguration());
-    }
-
-    public MetaDataRepository newInstance(MetaDataFactory mdf,
-        MappingDefaults mapDefaults) {
-        return new MappingRepository
-            ((JDBCConfiguration) getConfiguration(), mdf, mapDefaults);
+        MappingRepository repos = new MappingRepository();
+        repos.setConfiguration(getConfiguration());
+        repos.startConfiguration();
+        repos.endConfiguration();
+        return repos;
     }
 
     public ClassMapping getMapping(Class cls, ClassLoader envLoader,
@@ -614,6 +608,9 @@ public class MappingRepository
         return instantiateVersionStrategy(strat, version, props);
     }
 
+    /**
+     * Instantiate the given version strategy.
+     */
     protected VersionStrategy instantiateVersionStrategy(Class strat,
         Version version, String props) {
         try {
@@ -1131,5 +1128,15 @@ public class MappingRepository
             default:
                 return NoneVersionStrategy.getInstance();
         }
+    }
+
+    public void endConfiguration()
+    {
+        super.endConfiguration();
+
+        JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
+        _dict = conf.getDBDictionaryInstance();
+        if (_defaults == null)
+            _defaults = conf.getMappingDefaultsInstance();
     }
 }

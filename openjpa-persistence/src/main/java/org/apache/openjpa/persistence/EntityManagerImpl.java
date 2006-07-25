@@ -609,7 +609,7 @@ public class EntityManagerImpl
     public Generator getNamedGenerator(String name) {
         try {
             SequenceMetaData meta = _broker.getConfiguration().
-                getMetaDataRepository().getSequenceMetaData(name,
+                getMetaDataRepositoryInstance().getSequenceMetaData(name,
                 _broker.getClassLoader(), true);
             Seq seq = meta.getInstance(_broker.getClassLoader());
             return new Generator(seq, name, _broker, null);
@@ -621,7 +621,7 @@ public class EntityManagerImpl
     public Generator getIdGenerator(Class forClass) {
         try {
             ClassMetaData meta = _broker.getConfiguration().
-                getMetaDataRepository().getMetaData(forClass,
+                getMetaDataRepositoryInstance().getMetaData(forClass,
                 _broker.getClassLoader(), true);
             Seq seq = _broker.getIdentitySequence(meta);
             return (seq == null) ? null : new Generator(seq, null, _broker,
@@ -634,7 +634,7 @@ public class EntityManagerImpl
     public Generator getFieldGenerator(Class forClass, String fieldName) {
         try {
             ClassMetaData meta = _broker.getConfiguration().
-                getMetaDataRepository().getMetaData(forClass,
+                getMetaDataRepositoryInstance().getMetaData(forClass,
                 _broker.getClassLoader(), true);
             FieldMetaData fmd = meta.getField(fieldName);
             if (fmd == null)
@@ -672,7 +672,7 @@ public class EntityManagerImpl
     public OpenJPAQuery createNamedQuery(String name) {
         try {
             QueryMetaData meta = _broker.getConfiguration().
-                getMetaDataRepository().getQueryMetaData(null, name,
+                getMetaDataRepositoryInstance().getQueryMetaData(null, name,
                 _broker.getClassLoader(), true);
             org.apache.openjpa.kernel.Query del =
                 _broker.newQuery(meta.getLanguage(), null);

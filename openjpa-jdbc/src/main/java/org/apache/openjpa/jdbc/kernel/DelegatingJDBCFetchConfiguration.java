@@ -16,6 +16,7 @@
 package org.apache.openjpa.jdbc.kernel;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
@@ -170,7 +171,7 @@ public class DelegatingJDBCFetchConfiguration
         }
     }
 
-    public String[] getJoins() {
+    public Set getJoins() {
         try {
             return getJDBCDelegate().getJoins();
         } catch (RuntimeException re) {

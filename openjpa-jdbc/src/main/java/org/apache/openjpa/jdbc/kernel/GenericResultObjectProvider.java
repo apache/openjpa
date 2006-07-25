@@ -48,7 +48,7 @@ public class GenericResultObjectProvider
      */
     public GenericResultObjectProvider(Class pcClass,
         JDBCStore store, JDBCFetchConfiguration fetch, Result res) {
-        this(store.getConfiguration().getMappingRepository().getMapping
+        this(store.getConfiguration().getMappingRepositoryInstance().getMapping
             (pcClass, store.getContext().getClassLoader(), true),
             store, fetch, res);
     }

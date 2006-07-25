@@ -668,7 +668,7 @@ public class QueryImpl
         assertCandidateType();
 
         MetaDataRepository repos = _broker.getConfiguration().
-            getMetaDataRepository();
+            getMetaDataRepositoryInstance();
         ClassMetaData meta = repos.getMetaData(_class,
             _broker.getClassLoader(), false);
 
@@ -1572,7 +1572,7 @@ public class QueryImpl
         ClassLoader loader = (_class == null) ? _loader
             : _class.getClassLoader();
         ClassMetaData meta = _broker.getConfiguration().
-            getMetaDataRepository().getMetaData(name, loader, false);
+            getMetaDataRepositoryInstance().getMetaData(name, loader, false);
         if (meta != null)
             return meta.getDescribedType();
 

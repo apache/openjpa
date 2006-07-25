@@ -207,7 +207,7 @@ public class XMLPersistenceMetaDataParser
      */
     public MetaDataRepository getRepository() {
         if (_repos == null) {
-            MetaDataRepository repos = newRepository();
+            MetaDataRepository repos = _conf.newMetaDataRepositoryInstance();
             MetaDataFactory mdf = repos.getMetaDataFactory();
             if (mdf instanceof DelegatingMetaDataFactory)
                 mdf = ((DelegatingMetaDataFactory) mdf).getInnermostDelegate();
@@ -216,13 +216,6 @@ public class XMLPersistenceMetaDataParser
             _repos = repos;
         }
         return _repos;
-    }
-
-    /**
-     * Create a new metadata repository.
-     */
-    protected MetaDataRepository newRepository() {
-        return new MetaDataRepository(_conf);
     }
 
     /**
