@@ -84,7 +84,7 @@ public class TableJDBCSeq
     /**
      * The sequence table name. Defaults to <code>OPENJPA_SEQUENCE_TABLE</code>.
      * By default, the table will be placed in the first schema listed in your
-     * <code>org.apache.openjpa.jdbc.Schemas</code> property, or in the default schema if
+     * <code>openjpa.jdbc.Schemas</code> property, or in the default schema if
      * the property is not given. If you specify a table name in the form
      * <code>&lt;schema&gt;.&lt;table&gt;</code>, then the given schema
      * will be used.
@@ -96,7 +96,7 @@ public class TableJDBCSeq
     /**
      * The sequence table name. Defaults to <code>OPENJPA_SEQUENCE_TABLE</code>.
      * By default, the table will be placed in the first schema listed in your
-     * <code>org.apache.openjpa.jdbc.Schemas</code> property, or in the default schema if
+     * <code>openjpa.jdbc.Schemas</code> property, or in the default schema if
      * the property is not given. If you specify a table name in the form
      * <code>&lt;schema&gt;.&lt;table&gt;</code>, then the given schema
      * will be used.
