@@ -42,7 +42,7 @@ import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ClassResolver;
 import org.apache.openjpa.util.ProxyManager;
-import org.apache.openjpa.util.StoreFacadeTypeRegistry;
+import org.apache.openjpa.conf.StoreFacadeTypeRegistry;
 
 /**
  * Defines the properties necessary to configure runtime properties and
