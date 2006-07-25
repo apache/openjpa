@@ -229,9 +229,9 @@ public class DelegatingFetchConfiguration
         }
     }
 
-    public boolean hasFetchGroup(Set groups) {
+    public boolean hasAnyFetchGroup(Set groups) {
         try {
-            return _fetch.hasFetchGroup(groups);
+            return _fetch.hasAnyFetchGroup(groups);
         } catch (RuntimeException re) {
             throw translate(re);
         }

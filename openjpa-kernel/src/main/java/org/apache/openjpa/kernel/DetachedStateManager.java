@@ -136,9 +136,10 @@ public class DetachedStateManager
                             load.set(i);
                 }
             }
-
-            sm.loadFields(load, null, broker.getFetchConfiguration().
-                getWriteLockLevel(), null, true);
+            FetchConfiguration fc = broker.getFetchConfiguration();
+            FetchState fetchState = fc.newFetchState();
+            sm.loadFields(load, fetchState, fc.getWriteLockLevel(), null, true);
+                
         }
         sm.setVersion(_version);
 

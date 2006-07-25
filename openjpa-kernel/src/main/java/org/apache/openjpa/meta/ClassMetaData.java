@@ -1922,10 +1922,12 @@ public class ClassMetaData
      * the same name.
      */
     public synchronized FetchGroup addFetchGroup(String name) {
+    	if (name == null || name.trim().length()==0)
+    		throw new MetaDataException(_loc.get("empty-fg-name", this));
         FetchGroup fg = (FetchGroup) _fgs.get(name);
         if (fg == null) {
-            fg = newFetchGroup(name);
-            _fgs.put(name, fg);
+        	fg = new FetchGroup(this, name);
+        	_fgs.put(name, fg);
         }
 
         return fg;
@@ -1933,33 +1935,19 @@ public class ClassMetaData
 
     /**
      * Gets a named fecth group. If not available in this receiver then looks
-     * up the inheritence hierarchy. Creates if it does not exist and
-     * <code>mustBe</code> is false.
+     * up the inheritence hierarchy. 
      *
      * @param name name of a fetch group.
-     * @param mustBe if true then the named group must exist in this receiver
-     * or any of its persistent super classes.
-     * @return an existing or newly created fecth group of the given name.
+     * @return an existing fecth group of the given name if known to this 
+     * receiver or any of its superclasses. Otherwise null.
      */
-    public synchronized FetchGroup getFetchGroup(String name, boolean mustBe) {
+    public synchronized FetchGroup getFetchGroup(String name) {
         FetchGroup fg = (FetchGroup) _fgs.get(name);
         if (fg == null) {
             ClassMetaData scm = getPCSuperclassMetaData();
             if (scm != null)
-                fg = scm.getFetchGroup(name, false);
+                fg = scm.getFetchGroup(name);
         }
-
-        if (fg == null)
-            if (mustBe)
-                return null;
-            else
-                fg = addFetchGroup(name);
-
-        return fg;
-    }
-
-    protected FetchGroup newFetchGroup(String name) {
-        FetchGroup fg = new FetchGroup(this, name);
         return fg;
     }
 

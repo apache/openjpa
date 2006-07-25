@@ -39,6 +39,7 @@ import org.apache.commons.collections.comparators.ComparatorChain;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -849,13 +850,13 @@ public class FieldMetaData
      */
     public void addFetchGroup(String fg) {
         if (StringUtils.isEmpty(fg))
-            return;
-        if (getDeclaringMetaData().getFetchGroup(fg, false) == null)
+            throw new MetaDataException(_loc.get("bad-fg", fg));
+        if (getDeclaringMetaData().getFetchGroup(fg) == null)
             throw new MetaDataException(_loc.get("unknown-fg", fg));
         if (_fgs == null)
             _fgs = new HashSet();
         _fgs.add(fg);
-        if (fg.equals(FetchGroup.getDefaultGroupName()))
+        if (fg.equals(FetchConfiguration.FETCH_GROUP_DEFAULT))
             setInDefaultFetchGroup(true);
     }
 
@@ -863,7 +864,7 @@ public class FieldMetaData
         if (_fgs == null)
             return;
         _fgs.remove(fg);
-        if (fg != null && fg.equals(FetchGroup.getDefaultGroupName()))
+        if (FetchConfiguration.FETCH_GROUP_DEFAULT.equals(fg))
             setInDefaultFetchGroup(false);
     }
 

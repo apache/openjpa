@@ -45,6 +45,7 @@ public interface FetchConfiguration
     public static final String FETCH_GROUP_ALL =
         "org.apache.openjpa.kernel.FetchConfiguration.FETCH_GROUP_ALL";
 
+    public static final String FETCH_GROUP_DEFAULT = "default";
     /**
      * Return the context assiciated with this configuration;
      * may be null if it has not been set or this object has been serialized.
@@ -144,7 +145,7 @@ public interface FetchConfiguration
      *
      * @since 4.1
      */
-    public boolean hasFetchGroup(Set groups);
+    public boolean hasAnyFetchGroup(Set groups);
 
     /**
      * Adds <code>group</code> to the set of fetch group names to

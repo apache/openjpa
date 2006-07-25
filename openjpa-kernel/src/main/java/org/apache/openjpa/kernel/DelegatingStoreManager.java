@@ -114,8 +114,8 @@ public abstract class DelegatingStoreManager
     }
 
     public Collection loadAll(Collection sms, PCState state, int load,
-        FetchState fetchState, Object context) {
-        return _store.loadAll(sms, state, load, fetchState, context);
+        FetchConfiguration fetch, Object context) {
+        return _store.loadAll(sms, state, load, fetch, context);
     }
 
     public void beforeStateChange(OpenJPAStateManager sm, PCState fromState,

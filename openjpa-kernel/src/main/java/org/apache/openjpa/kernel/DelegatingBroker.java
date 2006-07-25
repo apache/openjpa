@@ -198,10 +198,10 @@ public class DelegatingBroker
         }
     }
 
-    public Object[] findAll(Collection oids, FetchState fetchState,
+    public Object[] findAll(Collection oids, FetchConfiguration fetch,
         BitSet exclude, Object edata, int flags) {
         try {
-            return _broker.findAll(oids, fetchState, exclude, edata, flags);
+            return _broker.findAll(oids, fetch, exclude, edata, flags);
         } catch (RuntimeException re) {
             throw translate(re);
         }

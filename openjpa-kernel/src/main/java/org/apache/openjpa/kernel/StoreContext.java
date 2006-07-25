@@ -143,7 +143,7 @@ public interface StoreContext {
      *
      * @see #find(Object,FetchState,BitSet,Object,int)
      */
-    public Object[] findAll(Collection oids, FetchState fetchState,
+    public Object[] findAll(Collection oids, FetchConfiguration fetch,
         BitSet exclude, Object edata, int flags);
 
     /**

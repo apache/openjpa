@@ -223,7 +223,7 @@ public class DetachManager
         FieldMetaData[] fmds = sm.getMetaData().getFields();
         for (int i = 0; i < fmds.length; i++) {
             if (fmds[i].isPrimaryKey() || fmds[i].isInDefaultFetchGroup()
-                || fetch.hasFetchGroup(fmds[i].getFetchGroups())
+                || fetch.hasAnyFetchGroup(fmds[i].getFetchGroups())
                 || fetch.hasField(fmds[i].getFullName()))
                 idxs.set(i);
         }

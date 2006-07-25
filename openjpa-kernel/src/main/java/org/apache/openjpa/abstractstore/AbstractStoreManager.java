@@ -233,8 +233,8 @@ public abstract class AbstractStoreManager
      * advantageous.
      */
     public Collection loadAll(Collection sms, PCState state, int load,
-        FetchState fetchState, Object context) {
-        return ImplHelper.loadAll(sms, this, state, load, fetchState, context);
+        FetchConfiguration fetch, Object context) {
+        return ImplHelper.loadAll(sms, this, state, load, fetch, context);
     }
 
     /**
