@@ -16,8 +16,7 @@
 package org.apache.openjpa.conf;
 
 import org.apache.openjpa.kernel.AutoDetach;
-import org.apache.openjpa.lib.conf.Value;
-import serp.util.Strings;
+import org.apache.openjpa.lib.conf.StringListValue;
 
 /**
  * Value type used to represent auto detach flags. Separate to
@@ -27,7 +26,7 @@ import serp.util.Strings;
  * @nojavadoc
  */
 class AutoDetachValue
-    extends Value {
+    extends StringListValue {
 
     public static final String DETACH_CLOSE = "close";
     public static final String DETACH_COMMIT = "commit";
@@ -43,49 +42,30 @@ class AutoDetachValue
     };
 
     private int _flags;
+    private boolean _flagsSet;
 
     public AutoDetachValue() {
         super("AutoDetach");
         setAliases(ALIASES);
+        setAliasListComprehensive(true);
     }
 
     public Class getValueType() {
         return String[].class;
     }
 
-    public void set(int flags) {
+    public void setConstant(int flags) {
         _flags = flags;
     }
 
-    public int get() {
-        return _flags;
-    }
-
-    protected String getInternalString() {
-        StringBuffer buf = new StringBuffer();
-        String[] aliases = getAliases();
-        boolean start = false;
-        for (int i = 0; i < aliases.length; i += 2) {
-            if ((_flags & Integer.parseInt(aliases[i + 1])) != 0) {
-                buf.append(aliases[i]);
-                if (start)
-                    buf.append(", ");
-                else
-                    start = true;
-            }
+    public int getConstant() {
+        if (!_flagsSet) {
+            String[] vals = get();
+            for (int i = 0; i < vals.length; i++)
+                _flags |= Integer.parseInt(unalias(vals[i]));
+            _flagsSet = true;
         }
-        return buf.toString();
-    }
-
-    public void setInternalString(String val) {
-        String[] vals = Strings.split(val, ",", 0);
-        for (int i = 0; i < vals.length; i++)
-            _flags |= Integer.parseInt(unalias(vals[i]));
-    }
-
-    public void setInternalObject(Object val) {
-        String[] vals = (String[]) val;
-        for (int i = 0; i < vals.length; i++)
-            _flags |= Integer.parseInt(unalias(vals[i]));
+            
+        return _flags;
     }
 }
