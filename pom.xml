@@ -1,15 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+            http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <prerequisites>
+        <maven>2.0.4</maven>
+    </prerequisites>
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa</artifactId>
     <packaging>pom</packaging>
 
     <name>OpenJPA</name>
     <description>OpenJPA</description>
-    <version>0.0.1</version>
+
+    <!--
+        Changing this version needs to also be done in all children poms
+        See: http://jira.codehaus.org/browse/MNG-624
+    -->
+    <version>0.9.0</version>
+
     <url>http://incubator.apache.org/projects/openjpa</url>
+
     <issueManagement>
         <system>jira</system>
         <url>http://issues.apache.org/jira/browse/OPENJPA</url>
@@ -75,81 +87,111 @@
     </organization>
     <scm>
         <connection>
-            scm:svn:http://svn.apache.org/repos/asf/incubator/openjpa/${pom.artifactId}</connection>
+            scm:svn:http://svn.apache.org/repos/asf/incubator/openjpa/trunk</connection>
         <developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/incubator/openjpa/${pom.artifactId}</developerConnection>
+            scm:svn:https://svn.apache.org/repos/asf/incubator/openjpa/trunk</developerConnection>
         <url>
-            https://svn.apache.org/repos/asf/incubator/openjpa/${pom.artifactId}</url>
+            https://svn.apache.org/repos/asf/incubator/openjpa/trunk</url>
     </scm>
-    <modules>
 
+    <modules>
         <module>openjpa-lib</module>
         <module>openjpa-kernel</module>
-        <module>openjpa-kernel-5</module>
         <module>openjpa-jdbc</module>
-        <module>openjpa-jdbc-5</module>
-        <module>openjpa-persistence</module>
-        <module>openjpa-persistence-jdbc</module>
         <module>openjpa-xmlstore</module>
-
+        <module>openjpa-project</module>
     </modules>
-    <repositories>
 
+    <profiles>
+        <profile>
+            <id>jdk1.5</id>
+            <activation>
+                <jdk>1.5</jdk>
+            </activation>
+            <modules>
+                <module>openjpa-persistence</module>
+                <module>openjpa-persistence-jdbc</module>
+                <module>openjpa-kernel-5</module>
+                <module>openjpa-jdbc-5</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>release</name>
+                </property>
+            </activation>
+            <modules>
+                <module>openjpa-project</module>
+            </modules>
+        </profile>
+    </profiles>
+
+    <repositories>
         <repository>
             <id>central</id>
             <name>Maven Repository Switchboard</name>
             <url>http://www.ibiblio.org/maven2</url>
         </repository>
-
-
         <repository>
             <id>java-net</id>
             <name>dev.java.net repository</name>
             <url>https://maven-repository.dev.java.net/nonav/repository</url>
             <layout>legacy</layout>
         </repository>
-
-
         <repository>
             <id>serp</id>
             <name>Serp Project Repository</name>
             <url>http://serp.sourceforge.net/m2repo</url>
         </repository>
-
     </repositories>
     <dependencies>
-
         <dependency>
-
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>3.8.1</version>
             <scope>compile</scope>
-
         </dependency>
-
     </dependencies>
+
     <build>
+        <!-- needed to let maven pass the "compile" phase -->
+        <testSourceDirectory>/none/</testSourceDirectory>
 
         <plugins>
-
             <plugin>
-
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
                 </configuration>
-
             </plugin>
-
         </plugins>
-
     </build>
 
     <reporting>
         <plugins>
+            <plugin>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>jdepend-maven-plugin</report>
+                            <!-- <report>jxr-maven-plugin</report> -->
+                            <report>surefire-report-maven-plugin</report>
+                            <report>maven-javadoc-plugin</report>
+                            <report>project-team</report>
+                            <report>mailing-list</report>
+                            <report>issue-tracking</report>
+                            <report>license</report>
+                            <report>scm</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
@@ -157,42 +199,40 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>taglist-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jxr-maven-plugin</artifactId>
-                <configuration>
-                    <aggregate>true</aggregate>
-                </configuration>
-            </plugin>
+
+
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <aggregate>true</aggregate>
                     <linksource>true</linksource>
+                    <maxmemory>512m</maxmemory>
                     <links>
                         <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
                         <link>http://java.sun.com/javaee/5/docs/api</link>
-                        <link>
-                            http://jakarta.apache.org/commons/collections/api-release</link>
+                        <link>http://jakarta.apache.org/commons/collections/api-release</link>
                     </links>
                 </configuration>
             </plugin>
+            -->
+
+
         </plugins>
     </reporting>
     <distributionManagement>
-        <repository>
-            <id>bea-internal</id>
-            <name>Internal BEA OpenJPA test site</name>
-            <url>file:///${user.home}/web/devel/openjpa/dist</url>
-        </repository>
-        <site>
-            <id>bea-internal</id>
-            <name>Internal BEA OpenJPA test sit</name>
-            <url>file:///${user.home}/web/devel/openjpa/site</url>
-        </site>
+      <repository>
+        <id>people.apache.org</id>
+        <url>scp://people.apache.org/home/mprudhom/public_html/openjpa/m2repo</url>
+      </repository>
+      <snapshotRepository>
+        <id>openjpa</id>
+        <url>scp://people.apache.org/home/mprudhom/public_html/openjpa/m2snapshot</url>
+      </snapshotRepository>
+      <site>
+        <id>people.apache.org</id>
+        <url>scpexe://people.apache.org/home/mprudhom/public_html/openjpa/site/</url>
+      </site>
     </distributionManagement>
-
 </project>
-
-

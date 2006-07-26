@@ -1,0 +1,23 @@
+ ------
+ openjpa
+ ------
+
+Building OpenJPA
+
+ Building OpenJPA requires an installation of {{{http://maven.apache.org/}Maven 2}}.
+
+ Check out the sources then run:
+
++--------------------------------+                        
+mvn compile
++--------------------------------+                        
+
+ To run the tests:
+
++--------------------------------+                        
+mvn test
++--------------------------------+                        
+
+
+
+
