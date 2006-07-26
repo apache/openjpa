@@ -1,7 +1,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='1.0'>
 
     <!-- docbook stylesheet customizations for openjpa manual -->
-	<xsl:import href="http://docbook.sourceforge.net/release/xsl/1.69.1/xhtml/docbook.xsl"/>
+	<xsl:import href="http://docbook.sourceforge.net/release/xsl/1.69.1/html/docbook.xsl"/>
 
 	<xsl:param name="html.stylesheet">../css/docbook.css</xsl:param>
 
