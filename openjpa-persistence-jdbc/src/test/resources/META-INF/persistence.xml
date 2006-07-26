@@ -3,10 +3,10 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              version="1.0">
 
-    <persistence-unit name="simple-emf-test" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="simple-emf-test">
 
-        <!--
-          <provider>kodo.persistence.PersistenceProviderImpl</provider>
+        <!-- This is not needed if OpenJPA is the only persistence provider
+             in the classpath.
           <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
           -->
 

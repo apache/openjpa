@@ -90,9 +90,6 @@
                                              pathsep=" "/>
                                 <java
                                     classname="org.apache.openjpa.enhance.PCEnhancer">
-                                    <arg value="-MetaDataFactory"/>
-                                    <arg
-                                        value="org.apache.openjpa.persistence.PersistenceMetaDataFactory"/>
                                     <arg line="${enhance.files}"/>
                                     <classpath>
                                         <path
