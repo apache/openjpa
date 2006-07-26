@@ -45,11 +45,13 @@
                             <tasks>
                             <echo>Building docbook manual</echo>
                             <style includes="**/manual.xml"
+                                force="true"
                                 basedir="${project.basedir}/src/doc/manual"
                                 destdir="${project.basedir}/target/filtered-site/resources/manual"
                                 style="manual-xhtml.xsl"
                                 classpathref="maven.runtime.classpath"/>
                             <style includes="**/manual.xml"
+                                force="true"
                                 basedir="${project.basedir}/src/doc/manual"
                                 destdir="${project.basedir}/target/filtered-site/resources/manual"
                                 style="manual-xhtml-chunk.xsl"

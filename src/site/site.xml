@@ -8,7 +8,7 @@
     <body>
         <menu name="OpenJPA">
             <item name="Home" href="index.html"/>
-            <item name="Manual" href="openjpa-project/manual/manual.html"/>
+            <item name="Manual" href="openjpa-project/manual/index.html"/>
             <item name="Download" href="downloads.html"/>
             <item name="Building" href="building.html"/>
         </menu>
@@ -26,9 +26,11 @@
         <!-- <menu ref="modules"/> -->
     </body>
 
+    <!--
     <skin>
         <groupId>org.apache.maven.skins</groupId>
         <artifactId>maven-stylus-skin</artifactId>
         <version>1.0</version>
     </skin>
+    -->
 </project>
