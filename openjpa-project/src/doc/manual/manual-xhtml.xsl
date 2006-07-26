@@ -3,9 +3,7 @@
     <!-- docbook stylesheet customizations for openjpa manual -->
 	<xsl:import href="http://docbook.sourceforge.net/release/xsl/1.69.1/xhtml/docbook.xsl"/>
 
-    <!--
-	<xsl:param name="html.stylesheet">../css/maven-base.css ../css/maven-theme.css ../css/site.css</xsl:param>
-    -->
+	<xsl:param name="html.stylesheet">../css/docbook.css</xsl:param>
 
 	<xsl:param name="html.cleanup" select="1"/>
 	<xsl:param name="label.from.part" select="1"/>
