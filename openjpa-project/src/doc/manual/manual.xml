@@ -13987,10 +13987,10 @@ public class TrialSubscription
     <chapter id="ejb_tutorials">
       <title>JPA Tutorials</title>
       <section id="jpa_tutorials_intro">
-        <title>OpenJPA JPA Tutorials</title>
+        <title>OpenJPA Tutorials</title>
         <para>
   These tutorials provide step-by-step examples of how to use various
-  facets of the OpenJPA JPA system. They assume a general knowledge 
+  facets of the OpenJPA system. They assume a general knowledge 
   of JPA and Java. For more information on these subjects, see
   the following URLs:
   </para>
@@ -14022,7 +14022,7 @@ public class TrialSubscription
         </section>
       </section>
       <section id="jpa_tutorial">
-        <title>OpenJPA JPA Tutorial</title>
+        <title>OpenJPA Tutorial</title>
         <para>
   In this tutorial you will become familiar with the basic tools and 
   development processes under OpenJPA by creating a simple JPA application.
@@ -14362,7 +14362,7 @@ openjpac -p persistence.xml Animal.java Dog.java
                 <para>
           The <literal>-p</literal> flag points the enhancer to your
           <filename>persistence.xml</filename> configuration file.
-          All OpenJPA JPA tools look for default configuration in a
+          All OpenJPA tools look for default configuration in a
           resource called <filename>openjpa.xml</filename> or
           <filename>META-INF/openjpa.xml</filename>.  Thus you
           can avoid passing the <literal>-p</literal> argument to
@@ -24832,7 +24832,7 @@ public class Employee
         system caching defaults.
         </para>
             <para>
-        OpenJPA JPA defines the 
+        OpenJPA defines the 
         <ulink url="../apidocs/org/apache/openjpa/persistence/DataCache.html"><classname>org.apache.openjpa.persistence.DataCache</classname></ulink>
         annotation for caching information.  This annotation has the
         following properties:
@@ -24911,7 +24911,7 @@ public class Employee
         concurrency errors during detached modifications.
         </para>
             <para>
-        OpenJPA JPA defines the 
+        OpenJPA defines the 
         <ulink url="../apidocs/org/apache/openjpa/persistence/DetachedState.html"><classname>org.apache.openjpa.persistence.DetachedState</classname></ulink> annotation for controlling detached state.  When used
         to annotate a class, <classname>DetachedState</classname>
         recognizes the following properties:
@@ -24994,7 +24994,7 @@ public class Employee
         </para>
             <para>
         
-        OpenJPA JPA offers a family of marker annotations to
+        OpenJPA offers a family of marker annotations to
         denote dependent relations in JPA entities:
         </para>
             <itemizedlist>
@@ -25113,7 +25113,7 @@ public class Employee
         This extension names the inverse field in a logical 
         bidirectional relation.  
         <phrase>
-        To create a logical bidrectional relation in OpenJPA JPA, use the
+        To create a logical bidrectional relation in OpenJPA, use the
         <ulink url="../apidocs/org/apache/openjpa/persistence/InverseLogical.html"><classname>org.apache.openjpa.persistence.InverseLogical</classname></ulink> 
         annotation.
         </phrase>
@@ -25135,7 +25135,7 @@ public class Employee
         concurrency.  
         Use
         <phrase>
-        OpenJPA JPA's 
+        OpenJPA's 
         <ulink url="../apidocs/org/apache/openjpa/persistence/LockGroup.html"><classname>org.apache.openjpa.persistence.LockGroup</classname></ulink>
         annotation
         </phrase>
@@ -25268,7 +25268,7 @@ public class Employee
         described in <xref linkend="ref_guide_pc_extern"/>.
         </para>
             <para>
-        OpenJPA JPA defines the following type annotations for field 
+        OpenJPA defines the following type annotations for field 
         values, collection, array, and map elements, and map keys,
         respectively:
         </para>
@@ -28117,7 +28117,7 @@ public class Article
           </para>
             </note>
             <para>
-        OpenJPA JPA defines the following extensions for nonpolymorphic
+        OpenJPA defines the following extensions for nonpolymorphic
         values:
         </para>
             <itemizedlist>
@@ -28183,7 +28183,7 @@ public class Article
         append class criteria to its select SQL.
         </para>
             <para>
-        OpenJPA JPA defines the following class criteria annotations
+        OpenJPA defines the following class criteria annotations
         for field relations, array, collection, and map element 
         relations, and map key relations, respectively:
         </para>
@@ -28427,7 +28427,7 @@ public class Article
         the full name of your implementation class in the proper mapping
         metadata extension.  
         <phrase>
-        OpenJPA JPA includes the
+        OpenJPA includes the
         <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/Strategy.html"><classname>org.apache.openjpa.persistence.jdbc.Strategy</classname></ulink>,
         <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/ElementStrategy.html"><classname>org.apache.openjpa.persistence.jdbc.ElementStrategy</classname></ulink>,
         and
@@ -28613,7 +28613,7 @@ public class Magazine
       </para>
         </section>
         <section id="ref_guide_deploy_jca_ejb">
-          <title>OpenJPA JPA JCA Deployment</title>
+          <title>OpenJPA JCA Deployment</title>
           <indexterm zone="ref_guide_deploy_jca_ejb">
             <primary>deployment</primary>
             <secondary>JCA</secondary>
@@ -28624,7 +28624,7 @@ public class Magazine
             <secondary>deployment</secondary>
           </indexterm>
           <para>
-      OpenJPA can deploy OpenJPA JPA through the Java Connector Architecture
+      OpenJPA can deploy OpenJPA through the Java Connector Architecture
       (JCA) in any JCA-compliant application server that supports
       JDK 1.5 (all EJB 3 implementations require JDK 1.5).  We present
       the deployment steps for the most common servers below.
@@ -30153,7 +30153,7 @@ private long id;
             <secondary>runtime access</secondary>
           </indexterm>
           <para>
-      OpenJPA JPA allows you to access named generators at runtime
+      OpenJPA allows you to access named generators at runtime
       through the <methodname>OpenJPAEntityManager.getNamedGenerator
       </methodname> method:
       </para>
@@ -30605,7 +30605,7 @@ kem.evict (changedMag);  // will evict from data cache also
     traversed.
     </para>
           <para>
-    OpenJPA JPA exposes a high-level interface to the query cache through
+    OpenJPA exposes a high-level interface to the query cache through
     the <ulink url="../../api/openjpa/persistence/QueryResultCache.html"><classname>org.apache.openjpa.persistence.QueryResultCache</classname></ulink> class.
     You can access this class through the <classname>
     OpenJPAEntityManagerFactory</classname>.
