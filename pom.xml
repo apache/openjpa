@@ -169,6 +169,36 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
+
+            <!--
+                get the svn revision number and set it in the
+                project.revision setting - disabled for now
+                since we need to be able to build from sources
+                zip (when there is no .svn/ metadata)
+            -->
+            <!--
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <configuration>
+                            <tasks>
+                                <xmlproperty file="${basedir}/.svn/entries"
+                                    collapseAttributes="true"/>
+                                <property name="project.revision"
+                                    value="${wc-entries.entry.revision}"/>
+                                <echo>Revision: ${project.revision}</echo>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
+
         </plugins>
     </build>
 
