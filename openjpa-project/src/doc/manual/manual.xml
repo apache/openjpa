@@ -507,7 +507,7 @@
       <mediaobject>
         <imageobject>
 <!-- PNG image data 400 x 256 (see README) -->
-          <imagedata fileref="img/ejb3-arch.png" width="267px"/>
+          <imagedata fileref="img/jpa-arch.png" width="267px"/>
         </imageobject>
         <textobject>
           <phrase>EJB architecture</phrase>
@@ -662,7 +662,7 @@ for (Object res : results)
         <mediaobject>
           <imageobject>
 <!-- PNG image data, 427 x 355 (see README) -->
-            <imagedata fileref="img/ejb3-exceptions.png" width="285px"/>
+            <imagedata fileref="img/jpa-exceptions.png" width="285px"/>
           </imageobject>
           <textobject>
             <phrase>EJB persistence exception architecture</phrase>
@@ -1822,7 +1822,7 @@ public class MagazineLogger
       <mediaobject>
         <imageobject>
 <!-- PNG image data, 553 x 580 (see README) -->
-          <imagedata fileref="img/ejb3-meta-model.png" width="369"/>
+          <imagedata fileref="img/jpa-meta-model.png" width="369"/>
         </imageobject>
       </mediaobject>
       <para>
@@ -6230,7 +6230,7 @@ public void lock (Object entity, LockModeType mode);
         <mediaobject>
           <imageobject>
 <!-- PNG image data, 445 x 337 (see README) -->
-            <imagedata fileref="img/ejb3-state-transitions.png" width="297px"/>
+            <imagedata fileref="img/jpa-state-transitions.png" width="297px"/>
           </imageobject>
         </mediaobject>
       </section>
@@ -6726,7 +6726,7 @@ public void transferFunds (User from, User to, double amnt)
         <mediaobject>
           <imageobject>
 <!-- PNG image data, 193 x 157 (see README) -->
-            <imagedata fileref="img/ejb3-transaction.png" width="129px"/>
+            <imagedata fileref="img/jpa-transaction.png" width="129px"/>
           </imageobject>
         </mediaobject>
         <para>
@@ -6812,7 +6812,7 @@ public void transferFunds (EntityManager em, User from, User to, double amnt)
       <mediaobject>
         <imageobject>
 <!-- PNG image data, 292 x 265 (see README) -->
-          <imagedata fileref="img/ejb3-query.png" width="195px"/>
+          <imagedata fileref="img/jpa-query.png" width="195px"/>
         </imageobject>
       </mediaobject>
       <para>
@@ -9771,7 +9771,7 @@ Magazine jdj = (Magazine) query.execute ("JDJ");
       <mediaobject>
         <imageobject>
 <!-- PNG image data, 553 x 580 (see README) -->
-          <imagedata fileref="img/ejb3-meta-model.png" width="369px"/>
+          <imagedata fileref="img/jpa-meta-model.png" width="369px"/>
         </imageobject>
       </mediaobject>
       <para>
@@ -10256,7 +10256,7 @@ public class Article
         <mediaobject>
           <imageobject>
 <!-- PNG image data, 513 x 410 (see README) -->
-            <imagedata fileref="img/ejb3-mapping-identity.png" width="341px"/>
+            <imagedata fileref="img/jpa-mapping-identity.png" width="341px"/>
           </imageobject>
         </mediaobject>
         <para>
@@ -11022,7 +11022,7 @@ public class LifetimeSubscription
           <mediaobject>
             <imageobject>
 <!-- PNG image data, 256 x 229 (see README) -->
-              <imagedata fileref="img/ejb3-inher-joined.png" width="171px"/>
+              <imagedata fileref="img/jpa-inher-joined.png" width="171px"/>
             </imageobject>
           </mediaobject>
           <para><classname>PrimaryKeyJoinColumn</classname> annotations 
@@ -11351,7 +11351,7 @@ public class Tabloid
           <mediaobject>
             <imageobject>
 <!-- PNG image data, 513 x 410 (see README) -->
-              <imagedata fileref="img/ejb3-inher-all.png" width="341px"/>
+              <imagedata fileref="img/jpa-inher-all.png" width="341px"/>
             </imageobject>
           </mediaobject>
           <para>
@@ -11726,7 +11726,7 @@ public class TrialSubscription
         <mediaobject>
           <imageobject>
 <!-- PNG image data, 513 x 410 (see README) -->
-            <imagedata fileref="img/ejb3-discrim-all.png" width="341px"/>
+            <imagedata fileref="img/jpa-discrim-all.png" width="341px"/>
           </imageobject>
         </mediaobject>
         <para>
@@ -12176,7 +12176,7 @@ public class TrialSubscription
             <mediaobject>
               <imageobject>
 <!-- PNG image data, 580 x 553 (see README) -->
-                <imagedata fileref="img/ejb3-basic-field.png" width="387px"/>
+                <imagedata fileref="img/jpa-basic-field.png" width="387px"/>
               </imageobject>
             </mediaobject>
             <example id="jpa_overview_mapping_basicex">
@@ -12650,7 +12650,7 @@ public class Article
           <mediaobject>
             <imageobject>
 <!-- PNG image data, 464 x 203 (see README) -->
-              <imagedata fileref="img/ejb3-embedded.png" width="309px"/>
+              <imagedata fileref="img/jpa-embedded.png" width="309px"/>
             </imageobject>
           </mediaobject>
           <para>
@@ -12890,7 +12890,7 @@ public class Contract
           <mediaobject>
             <imageobject>
 <!-- PNG image data, 374 x 386 (see README) -->
-              <imagedata fileref="img/ejb3-direct-relation.png" width="249px"/>
+              <imagedata fileref="img/jpa-direct-relation.png" width="249px"/>
             </imageobject>
           </mediaobject>
           <para>
@@ -13153,7 +13153,7 @@ public class Subscription
           <mediaobject>
             <imageobject>
 <!-- PNG image data, 391 x 407 (see README) -->
-              <imagedata fileref="img/ejb3-assoc-table.png" width="261px"/>
+              <imagedata fileref="img/jpa-assoc-table.png" width="261px"/>
             </imageobject>
           </mediaobject>
           <para>
@@ -13373,7 +13373,7 @@ public class Author
           <mediaobject>
             <imageobject>
 <!-- PNG image data, 382 x 274 (see README) -->
-              <imagedata fileref="img/ejb3-map.png" width="255px"/>
+              <imagedata fileref="img/jpa-map.png" width="255px"/>
             </imageobject>
           </mediaobject>
           <para>
@@ -13452,7 +13452,7 @@ public static class LineItem
         <mediaobject>
           <imageobject>
 <!-- PNG image data, 553 x 580 (see README) -->
-            <imagedata fileref="img/ejb3-meta-model.png" width="369px"/>
+            <imagedata fileref="img/jpa-meta-model.png" width="369px"/>
           </imageobject>
         </mediaobject>
         <para>
@@ -13463,7 +13463,7 @@ public static class LineItem
         <mediaobject>
           <imageobject>
 <!-- PNG image data, 490 x 662 (see README) -->
-            <imagedata fileref="img/ejb3-data-model.png" width="326px"/>
+            <imagedata fileref="img/jpa-data-model.png" width="326px"/>
           </imageobject>
         </mediaobject>
         <para>
