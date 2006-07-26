@@ -28,7 +28,7 @@
                 <directory>${project.basedir}/src/site</directory>
                 <!-- targetPath is relative to target/classes/ -->
                 <targetPath>../filtered-site</targetPath>
-                <filtering>true</filtering>
+                <filtering>false</filtering>
             </resource>
         </resources>
 
