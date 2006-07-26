@@ -49,18 +49,18 @@ public class JavaSQLTypes
 
     private static final Byte ZERO_BYTE = new Byte((byte) 0);
     private static final Character ZERO_CHAR = new Character((char) 0);
-    private static final Double ZERO_DOUBLE = new Double(0);
-    private static final Float ZERO_FLOAT = new Float(0);
+    private static final Double ZERO_DOUBLE = new Double(0d);
+    private static final Float ZERO_FLOAT = new Float(0f);
     private static final Short ZERO_SHORT = new Short((short) 0);
-    private static final BigDecimal ZERO_BIGDECIMAL = new BigDecimal(0);
+    private static final BigDecimal ZERO_BIGDECIMAL = new BigDecimal(0d);
 
     private static final Byte NONZERO_BYTE = new Byte((byte) 1);
     private static final Character NONZERO_CHAR = new Character((char) 'a');
-    private static final Double NONZERO_DOUBLE = new Double(1);
-    private static final Float NONZERO_FLOAT = new Float(1);
+    private static final Double NONZERO_DOUBLE = new Double(1d);
+    private static final Float NONZERO_FLOAT = new Float(1f);
     private static final Short NONZERO_SHORT = new Short((short) 1);
     private static final BigInteger NONZERO_BIGINTEGER = new BigInteger("1");
-    private static final BigDecimal NONZERO_BIGDECIMAL = new BigDecimal(1);
+    private static final BigDecimal NONZERO_BIGDECIMAL = new BigDecimal(1d);
 
     /**
      * Return the proper date typecode.
