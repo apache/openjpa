@@ -1,0 +1,94 @@
+<assembly>
+    <id></id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <includes>
+                <include>README*</include>
+                <include>LICENSE*</include>
+                <include>NOTICE*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>licenses</directory>
+            <outputDirectory>/lib</outputDirectory>
+            <includes>
+                <include>*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>target/manual/OpenJPA</directory>
+            <outputDirectory>/manual</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>../target/site/apidocs</directory>
+            <outputDirectory>/javadoc</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>target/examples</directory>
+            <outputDirectory>/examples</outputDirectory>
+        </fileSet>
+    </fileSets>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>/lib</outputDirectory>
+            <unpack>false</unpack>
+            <scope>runtime</scope>
+            <excludes>
+                <!-- only used for the ant tasks, which will already have it -->
+                <exclude>ant:ant</exclude>
+                <exclude>ant:ant-xalan2</exclude>
+                <exclude>ant:ant-trax</exclude>
+                <exclude>bcel:bcel</exclude>
+
+                <!-- exclude empty distribution jars -->
+                <exclude>openjpa:openjpa-project</exclude>
+
+                <!-- already included in JDK 1.5 -->
+                <exclude>xerces:xerces</exclude>
+                <exclude>xerces:xercesImpl</exclude>
+                <exclude>xalan:xalan</exclude>
+                <exclude>xml-apis:xml-apis</exclude>
+                <exclude>xerces:xmlParserAPIs</exclude>
+
+                <!-- not required for release -->
+                <exclude>hsqldb:hsqldb</exclude>
+
+                <!-- only required for persistence server -->
+                <exclude>javax.servlet:servlet-api</exclude>
+
+                <!-- optional log implementation -->
+                <exclude>log4j:log4j</exclude>
+
+                <!-- optional -->
+                <exclude>junit:junit</exclude>
+            </excludes>
+        </dependencySet>
+
+
+        <!--
+        <dependencySet>
+            <outputDirectory>/optional</outputDirectory>
+            <unpack>false</unpack>
+            <scope>runtime</scope>
+            <includes>
+                <include>org.apache.derby:derby</include>
+            </includes>
+        </dependencySet>
+        -->
+
+        <!--
+         <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <unpack>false</unpack>
+            <scope>runtime</scope>
+            <includes>
+                <include>org.apache.openjpa:openjpa-all</include>
+            </includes>
+        </dependencySet>
+        -->
+    </dependencySets>
+</assembly>

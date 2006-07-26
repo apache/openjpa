@@ -1,0 +1,11 @@
+ ------
+ openjpa
+ ------
+
+Welcome to the OpenJPA project site!
+
+ OpenJPA is a set of Java persistence Application Program Interfaces (APIs) that are based on the Enterprise Java Beans 3.0 persistenace specification. This is the distribution and project management site for OpenJPA. For community resources, please see the {{{http://wiki.apache.org/incubator/OpenJPA}OpenJPA wiki}}.
+
+ To download OpenJPA, please go to the {{{downloads.html}downloads}} page.
+
+

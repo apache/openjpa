@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>OpenJPA Downloads</title>
+    </properties>
+    <body>
+        <section name="Certified Downloads">
+            <p>
+            Currently, Apache OpenJPA has no certified releases.
+            </p>
+        </section>
+
+        <section name="Milestone Downloads">
+            <p>
+            The following non-certified milestone releases are available.
+            These milestone releases are 'technology demonstrations' and not
+            offered as a J2EE-compatible JPA implementation.
+            </p>
+
+            <p><strong>0.9.0</strong> - <i>July 25, 2006</i></p>
+            <ul>
+                <li>
+                    <a href="openjpa-project/downloads/openjpa-0.9.0.zip">binary zip</a>
+                    -
+                    <a href="openjpa-project/downloads/openjpa-0.9.0-sources.zip">source zip</a>
+                </li>
+            </ul>
+
+        </section>
+    </body>
+</document>
+
