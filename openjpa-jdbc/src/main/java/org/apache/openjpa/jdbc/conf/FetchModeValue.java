@@ -45,5 +45,6 @@ public class FetchModeValue
     public FetchModeValue(String prop) {
         super(prop);
         setAliases(ALIASES);
+        setAliasListComprehensive(true);
     }
 }
