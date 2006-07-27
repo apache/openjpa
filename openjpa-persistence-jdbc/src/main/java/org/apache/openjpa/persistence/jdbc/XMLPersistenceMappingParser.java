@@ -50,7 +50,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.XMLPersistenceMetaDataParser;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.*;
 

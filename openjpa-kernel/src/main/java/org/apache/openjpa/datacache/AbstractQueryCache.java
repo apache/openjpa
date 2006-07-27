@@ -29,7 +29,6 @@ import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.ReferenceHashSet;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 import org.apache.openjpa.meta.ClassMetaData;
