@@ -47,7 +47,6 @@ import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataFactory;
-import org.apache.openjpa.meta.MetaDataRepository;
 
 /**
  * Default implementation of the {@link JDBCConfiguration} interface.
@@ -129,6 +128,7 @@ public class JDBCConfigurationImpl
         transactionIsolation.setAliases(aliases);
         transactionIsolation.setDefault(aliases[0]);
         transactionIsolation.set(-1);
+        transactionIsolation.setAliasListComprehensive(true);
 
         resultSetType = addInt("jdbc.ResultSetType");
         aliases = new String[]{
@@ -141,6 +141,7 @@ public class JDBCConfigurationImpl
         resultSetType.setAliases(aliases);
         resultSetType.setDefault(aliases[0]);
         resultSetType.set(ResultSet.TYPE_FORWARD_ONLY);
+        resultSetType.setAliasListComprehensive(true);
 
         fetchDirection = addInt("jdbc.FetchDirection");
         aliases = new String[]{
@@ -151,6 +152,7 @@ public class JDBCConfigurationImpl
         fetchDirection.setAliases(aliases);
         fetchDirection.setDefault(aliases[0]);
         fetchDirection.set(ResultSet.FETCH_FORWARD);
+        fetchDirection.setAliasListComprehensive(true);
 
         eagerFetchMode = new FetchModeValue("jdbc.EagerFetchMode");
         eagerFetchMode.setDefault(FetchModeValue.EAGER_PARALLEL);
@@ -171,6 +173,7 @@ public class JDBCConfigurationImpl
         lrsSize.setAliases(aliases);
         lrsSize.setDefault(aliases[0]);
         lrsSize.set(LRSSizes.SIZE_QUERY);
+        lrsSize.setAliasListComprehensive(true);
 
         synchronizeMappings = addString("jdbc.SynchronizeMappings");
         aliases = new String[]{ "false", null };

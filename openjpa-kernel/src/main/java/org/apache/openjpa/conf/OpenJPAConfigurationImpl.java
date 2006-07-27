@@ -363,6 +363,7 @@ public class OpenJPAConfigurationImpl
         autoClear.setAliases(aliases);
         autoClear.setDefault(aliases[0]);
         autoClear.set(AutoClear.CLEAR_DATASTORE);
+        autoClear.setAliasListComprehensive(true);
 
         retainState = addBoolean("RetainState");
         retainState.setDefault("true");
@@ -380,6 +381,7 @@ public class OpenJPAConfigurationImpl
         restoreState.setAliases(aliases);
         restoreState.setDefault(aliases[0]);
         restoreState.set(RestoreState.RESTORE_IMMUTABLE);
+        restoreState.setAliasListComprehensive(true);
 
         autoDetach = new AutoDetachValue();
         addValue(autoDetach);
@@ -422,6 +424,7 @@ public class OpenJPAConfigurationImpl
         flushBeforeQueries.setAliases(aliases);
         flushBeforeQueries.setDefault(aliases[0]);
         flushBeforeQueries.set(QueryFlushModes.FLUSH_TRUE);
+        flushBeforeQueries.setAliasListComprehensive(true);
 
         lockTimeout = addInt("LockTimeout");
         lockTimeout.setDefault("-1");
@@ -436,6 +439,7 @@ public class OpenJPAConfigurationImpl
         readLockLevel.setAliases(aliases);
         readLockLevel.setDefault(aliases[0]);
         readLockLevel.set(LockLevels.LOCK_READ);
+        readLockLevel.setAliasListComprehensive(true);
 
         writeLockLevel = addInt("WriteLockLevel");
         aliases = new String[]{
@@ -446,6 +450,7 @@ public class OpenJPAConfigurationImpl
         writeLockLevel.setAliases(aliases);
         writeLockLevel.setDefault(aliases[1]);
         writeLockLevel.set(LockLevels.LOCK_WRITE);
+        writeLockLevel.setAliasListComprehensive(true);
 
         seqPlugin = new SeqValue("Sequence");
         seqPlugin.setInstantiatingGetter("getSequenceInstance");
