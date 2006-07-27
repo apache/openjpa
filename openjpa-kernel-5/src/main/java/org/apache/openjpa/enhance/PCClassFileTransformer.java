@@ -178,7 +178,7 @@ public class PCClassFileTransformer
 
         idx += 6; // skip access, cls, super
         int ifaces = table.readUnsignedShort(idx);
-        int clsEntry, utfEntry, len;
+        int clsEntry, utfEntry;
         String name;
         for (int i = 0; i < ifaces; i++) {
             idx += 2;

@@ -70,7 +70,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.Order;
 import org.apache.openjpa.meta.SequenceMetaData;

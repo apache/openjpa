@@ -30,7 +30,6 @@ import org.apache.openjpa.lib.util.ParameterTemplate;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.meta.MetaDataRepository;
 import serp.util.Strings;
 
 /**

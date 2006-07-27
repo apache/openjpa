@@ -17,10 +17,8 @@ package org.apache.openjpa.kernel;
 
 import java.util.*;
 
-import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.meta.FetchGroup;
 import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.util.InternalException;
 
 /**
  * Holds dynamic status of fetch operation. Decides whether a field

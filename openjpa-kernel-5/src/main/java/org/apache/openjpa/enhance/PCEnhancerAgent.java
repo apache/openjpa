@@ -22,7 +22,6 @@ import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.TemporaryClassLoader;
-import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ClassResolver;
 
 /**
