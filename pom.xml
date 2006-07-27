@@ -157,9 +157,6 @@
     </dependencies>
 
     <build>
-        <!-- needed to let maven pass the "compile" phase -->
-        <testSourceDirectory>/none/</testSourceDirectory>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
