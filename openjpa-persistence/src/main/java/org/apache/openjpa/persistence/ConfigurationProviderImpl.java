@@ -354,10 +354,12 @@ public class ConfigurationProviderImpl
             _info = new PersistenceUnitInfoImpl();
             _info.setPersistenceUnitName(attrs.getValue("name"));
 
-            // default is JTA according to spec
+            // we only parse this ourselves outside a container, so default
+            // transaction type to local
             String val = attrs.getValue("transaction-type");
             if (val == null)
-                _info.setTransactionType(PersistenceUnitTransactionType.JTA);
+                _info.setTransactionType
+                    (PersistenceUnitTransactionType.RESOURCE_LOCAL);
             else
                 _info.setTransactionType(Enum.valueOf
                     (PersistenceUnitTransactionType.class, val));
