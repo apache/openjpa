@@ -28,7 +28,6 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfigurationImpl;
-import org.apache.openjpa.kernel.FetchState;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.rop.EagerResultList;
 import org.apache.openjpa.lib.rop.ListResultObjectProvider;
@@ -38,6 +37,7 @@ import org.apache.openjpa.lib.rop.SimpleResultList;
 import org.apache.openjpa.lib.rop.SoftRandomAccessResultList;
 import org.apache.openjpa.lib.rop.WindowResultList;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -53,13 +53,35 @@ public class JDBCFetchConfigurationImpl
     private static final Localizer _loc = Localizer.forPackage
         (JDBCFetchConfigurationImpl.class);
 
-    private int _eagerMode = 0;
-    private int _subclassMode = 0;
-    private int _type = 0;
-    private int _direction = 0;
-    private int _size = 0;
-    private int _syntax = 0;
-    private Set _joins = null;
+    /**
+     * Configurable JDBC state shared throughout a traversal chain.
+     */
+    private static class JDBCConfigurationState {
+        public int eagerMode = 0;
+        public int subclassMode = 0;
+        public int type = 0;
+        public int direction = 0;
+        public int size = 0;
+        public int syntax = 0;
+        public Set joins = null;
+    }
+
+    private final JDBCConfigurationState _state;
+
+    public JDBCFetchConfigurationImpl() {
+        this(null, null);
+    }
+
+    private JDBCFetchConfigurationImpl(ConfigurationState state, 
+        JDBCConfigurationState jstate) {
+        super(state);
+        _state = (jstate == null) ? new JDBCConfigurationState() : jstate;
+    }
+
+    protected FetchConfigurationImpl newInstance(ConfigurationState state) {
+        JDBCConfigurationState jstate = (state == null) ? null : _state;
+        return new JDBCFetchConfigurationImpl(state, jstate);
+    }
 
     public void setContext(StoreContext ctx) {
         super.setContext(ctx);
@@ -75,11 +97,6 @@ public class JDBCFetchConfigurationImpl
         setJoinSyntax(conf.getDBDictionaryInstance().joinSyntax);
     }
 
-    protected FetchConfigurationImpl newInstance() {
-        JDBCFetchConfigurationImpl fetch = new JDBCFetchConfigurationImpl();
-        return fetch;
-    }
-
     public void copy(FetchConfiguration fetch) {
         super.copy(fetch);
         JDBCFetchConfiguration jf = (JDBCFetchConfiguration) fetch;
@@ -93,7 +110,7 @@ public class JDBCFetchConfigurationImpl
     }
 
     public int getEagerFetchMode() {
-        return _eagerMode;
+        return _state.eagerMode;
     }
 
     public JDBCFetchConfiguration setEagerFetchMode(int mode) {
@@ -103,21 +120,21 @@ public class JDBCFetchConfigurationImpl
                 mode = conf.getEagerFetchModeConstant();
         }
         if (mode != DEFAULT)
-            _eagerMode = mode;
+            _state.eagerMode = mode;
         return this;
     }
 
     public int getSubclassFetchMode() {
-        return _subclassMode;
+        return _state.subclassMode;
     }
 
     public int getSubclassFetchMode(ClassMapping cls) {
         if (cls == null)
-            return _subclassMode;
+            return _state.subclassMode;
         int mode = cls.getSubclassFetchMode();
         if (mode == DEFAULT)
-            return _subclassMode;
-        return Math.min(mode, _subclassMode);
+            return _state.subclassMode;
+        return Math.min(mode, _state.subclassMode);
     }
 
     public JDBCFetchConfiguration setSubclassFetchMode(int mode) {
@@ -127,63 +144,63 @@ public class JDBCFetchConfigurationImpl
                 mode = conf.getSubclassFetchModeConstant();
         }
         if (mode != DEFAULT)
-            _subclassMode = mode;
+            _state.subclassMode = mode;
         return this;
     }
 
     public int getResultSetType() {
-        return _type;
+        return _state.type;
     }
 
     public JDBCFetchConfiguration setResultSetType(int type) {
         if (type == DEFAULT) {
             JDBCConfiguration conf = getJDBCConfiguration();
             if (conf != null)
-                _type = conf.getResultSetTypeConstant();
+                _state.type = conf.getResultSetTypeConstant();
         } else
-            _type = type;
+            _state.type = type;
         return this;
     }
 
     public int getFetchDirection() {
-        return _direction;
+        return _state.direction;
     }
 
     public JDBCFetchConfiguration setFetchDirection(int direction) {
         if (direction == DEFAULT) {
             JDBCConfiguration conf = getJDBCConfiguration();
             if (conf != null)
-                _direction = conf.getFetchDirectionConstant();
+                _state.direction = conf.getFetchDirectionConstant();
         } else
-            _direction = direction;
+            _state.direction = direction;
         return this;
     }
 
     public int getLRSSize() {
-        return _size;
+        return _state.size;
     }
 
     public JDBCFetchConfiguration setLRSSize(int size) {
         if (size == DEFAULT) {
             JDBCConfiguration conf = getJDBCConfiguration();
             if (conf != null)
-                _size = conf.getLRSSizeConstant();
+                _state.size = conf.getLRSSizeConstant();
         } else
-            _size = size;
+            _state.size = size;
         return this;
     }
 
     public int getJoinSyntax() {
-        return _syntax;
+        return _state.syntax;
     }
 
     public JDBCFetchConfiguration setJoinSyntax(int syntax) {
         if (syntax == DEFAULT) {
             JDBCConfiguration conf = getJDBCConfiguration();
             if (conf != null)
-                _syntax = conf.getDBDictionaryInstance().joinSyntax;
+                _state.syntax = conf.getDBDictionaryInstance().joinSyntax;
         } else
-            _syntax = syntax;
+            _state.syntax = syntax;
         return this;
     }
 
@@ -203,8 +220,8 @@ public class JDBCFetchConfigurationImpl
             return new EagerResultList(rop);
 
         // if foward only or forward direction use a forward window
-        if (_type == ResultSet.TYPE_FORWARD_ONLY
-            || _direction == ResultSet.FETCH_FORWARD
+        if (_state.type == ResultSet.TYPE_FORWARD_ONLY
+            || _state.direction == ResultSet.FETCH_FORWARD
             || !rop.supportsRandomAccess()) {
             if (getFetchBatchSize() > 0 && getFetchBatchSize() <= 50)
                 return new WindowResultList(rop, getFetchBatchSize());
@@ -212,7 +229,7 @@ public class JDBCFetchConfigurationImpl
         }
 
         // if skipping around use a caching random access list
-        if (_direction == ResultSet.FETCH_UNKNOWN)
+        if (_state.direction == ResultSet.FETCH_UNKNOWN)
             return new SoftRandomAccessResultList(rop);
 
         // scrolling reverse... just use non-caching simple result list
@@ -220,11 +237,11 @@ public class JDBCFetchConfigurationImpl
     }
 
     public Set getJoins() {
-        return (_joins == null) ? Collections.EMPTY_SET : _joins;
+        return (_state.joins == null) ? Collections.EMPTY_SET : _state.joins;
     }
 
     public boolean hasJoin(String field) {
-        return _joins != null && _joins.contains(field);
+        return _state.joins != null && _state.joins.contains(field);
     }
 
     public JDBCFetchConfiguration addJoin(String join) {
@@ -233,9 +250,9 @@ public class JDBCFetchConfigurationImpl
         
         lock();
         try {
-            if (_joins == null)
-                _joins = new HashSet();
-            _joins.add(join);
+            if (_state.joins == null)
+                _state.joins = new HashSet();
+            _state.joins.add(join);
         } finally {
             unlock();
         }
@@ -253,8 +270,8 @@ public class JDBCFetchConfigurationImpl
     public JDBCFetchConfiguration removeJoin(String field) {
         lock();
         try {
-            if (_joins != null)
-                _joins.remove(field);
+            if (_state.joins != null)
+                _state.joins.remove(field);
         } finally {
             unlock();
         }
@@ -264,8 +281,8 @@ public class JDBCFetchConfigurationImpl
     public JDBCFetchConfiguration removeJoins(Collection joins) {
         lock();
         try {
-            if (_joins != null)
-                _joins.removeAll(joins);
+            if (_state.joins != null)
+                _state.joins.removeAll(joins);
         } finally {
             unlock();
         }
@@ -275,16 +292,16 @@ public class JDBCFetchConfigurationImpl
     public JDBCFetchConfiguration clearJoins() {
         lock();
         try {
-            if (_joins != null)
-                _joins.clear();
+            if (_state.joins != null)
+                _state.joins.clear();
         } finally {
             unlock();
         }
         return this;
     }
 
-    public FetchState newFetchState() {
-        return new JDBCFetchStateImpl(this);
+    public JDBCFetchConfiguration traverseJDBC(FieldMetaData fm) {
+        return (JDBCFetchConfiguration) traverse(fm);
     }
 
     /**

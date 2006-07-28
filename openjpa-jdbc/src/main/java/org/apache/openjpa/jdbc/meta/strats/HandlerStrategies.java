@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.RelationId;
@@ -175,7 +175,7 @@ public class HandlerStrategies {
      * Load the Object value from the given result.
      */
     public static Object loadObject(ValueMapping vm, OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, Result res,
+        JDBCStore store, JDBCFetchConfiguration fetch, Result res,
         Joins joins, Column[] cols, boolean objectValueRequiresLoad)
         throws SQLException {
         if (cols.length == 0)
@@ -184,8 +184,7 @@ public class HandlerStrategies {
 
         Object val = loadDataStore(vm, res, joins, cols);
         if (objectValueRequiresLoad)
-            return vm.getHandler().toObjectValue(vm, val, sm, store,
-                fetchState);
+            return vm.getHandler().toObjectValue(vm, val, sm, store, fetch);
         return vm.getHandler().toObjectValue(vm, val);
     }
 

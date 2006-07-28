@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -98,9 +98,9 @@ class ConstPath
     }
 
     public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchState fetchState) {
-        super.calculateValue(sel, store, params, other, fetchState);
-        _constant.calculateValue(sel, store, params, null, fetchState);
+        Object[] params, Val other, JDBCFetchConfiguration fetch) {
+        super.calculateValue(sel, store, params, other, fetch);
+        _constant.calculateValue(sel, store, params, null, fetch);
         _val = _constant.getValue();
         boolean failed = false;
 
@@ -163,7 +163,7 @@ class ConstPath
     }
 
     public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState) {
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         if (_otherLen > 1)
             sql.appendValue(((Object[]) _sqlVal)[index], getColumn(index));
         else

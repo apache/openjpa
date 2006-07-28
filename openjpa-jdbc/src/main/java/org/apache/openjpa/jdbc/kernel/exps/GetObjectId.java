@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Joinable;
@@ -134,29 +134,29 @@ class GetObjectId
     }
 
     public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchState fetchState) {
-        selectColumns(sel, store, params, true, fetchState);
+        boolean pks, JDBCFetchConfiguration fetch) {
+        selectColumns(sel, store, params, true, fetch);
     }
 
     public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchState fetchState) {
-        _path.selectColumns(sel, store, params, true, fetchState);
+        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
+        _path.selectColumns(sel, store, params, true, fetch);
     }
 
     public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchState fetchState) {
-        _path.groupBy(sel, store, params, fetchState);
+        JDBCFetchConfiguration fetch) {
+        _path.groupBy(sel, store, params, fetch);
     }
 
     public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchState fetchState) {
-        _path.orderBy(sel, store, params, asc, fetchState);
+        boolean asc, JDBCFetchConfiguration fetch) {
+        _path.orderBy(sel, store, params, asc, fetch);
     }
 
     public Object load(Result res, JDBCStore store,
-        JDBCFetchState fetchState)
+        JDBCFetchConfiguration fetch)
         throws SQLException {
-        return _path.load(res, store, true, fetchState);
+        return _path.load(res, store, true, fetch);
     }
 
     public boolean hasVariable(Variable var) {
@@ -164,8 +164,8 @@ class GetObjectId
     }
 
     public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchState fetchState) {
-        _path.calculateValue(sel, store, params, null, fetchState);
+        Object[] params, Val other, JDBCFetchConfiguration fetch) {
+        _path.calculateValue(sel, store, params, null, fetch);
     }
 
     public void clearParameters() {
@@ -177,8 +177,8 @@ class GetObjectId
     }
 
     public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState) {
-        _path.appendTo(sql, index, sel, store, params, fetchState);
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+        _path.appendTo(sql, index, sel, store, params, fetch);
     }
 }
 

@@ -67,16 +67,14 @@ public class PagingResultObjectProvider
      * @see #PagingResultObjectProvider
      */
     public static BitSet getPagedFields(Select sel, ClassMapping mapping,
-        JDBCStore store, JDBCFetchState fetchState, int eagerMode,
+        JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode,
         long size) {
-        JDBCFetchConfiguration fetch = fetchState.getJDBCFetchConfiguration();
         // if we have a range then we always use paging if there are any
         // eager select fields; otherwise it depends on lrs and fetch settings
         if (size == Long.MAX_VALUE || !sel.getAutoDistinct()) {
             // not lrs?
             if (!sel.isLRS())
                 return null;
-
             // not configured for lazy loading?
             if (fetch.getFetchBatchSize() < 0)
                 return null;
@@ -91,8 +89,7 @@ public class PagingResultObjectProvider
         FieldMapping[] fms = mapping.getDefinedFieldMappings();
         BitSet paged = null;
         for (int i = 0; i < fms.length; i++) {
-            if (fetchState != null
-                && !fetchState.requiresFetch(fms[i]))
+            if (!fetch.requiresFetch(fms[i]))
                 continue;
 
             if (fms[i].supportsSelect(sel, sel.EAGER_PARALLEL, null, store,
@@ -119,9 +116,9 @@ public class PagingResultObjectProvider
      * {@link Long#MAX_VALUE} for no known limit
      */
     public PagingResultObjectProvider(SelectExecutor sel,
-        ClassMapping mapping, JDBCStore store, JDBCFetchState fetchState,
+        ClassMapping mapping, JDBCStore store, JDBCFetchConfiguration fetch,
         BitSet paged, long size) {
-        this(sel, new ClassMapping[]{ mapping }, store, fetchState,
+        this(sel, new ClassMapping[]{ mapping }, store, fetch,
             new BitSet[]{ paged }, size);
     }
 
@@ -139,9 +136,9 @@ public class PagingResultObjectProvider
      * {@link Long#MAX_VALUE} for no known limit
      */
     public PagingResultObjectProvider(SelectExecutor sel,
-        ClassMapping[] mappings, JDBCStore store, JDBCFetchState fetchState,
+        ClassMapping[] mappings, JDBCStore store, JDBCFetchConfiguration fetch,
         BitSet[] paged, long size) {
-        super(sel, store, fetchState);
+        super(sel, store, fetch);
         _mappings = mappings;
         _paged = paged;
 
@@ -255,7 +252,7 @@ public class PagingResultObjectProvider
             // rather than use the standard result.load(), we go direct to
             // the store manager so we can pass in our eager-fetched fields as
             // fields to exclude from the initial load of the objects
-            _page[i] = storeMgr.load(mapping, getFetchState(),
+            _page[i] = storeMgr.load(mapping, getFetchConfiguration(),
                 _paged[idx], res);
             if (i != _page.length - 1 && !getResult().next()) {
                 setSize(_pos + i + 1);
@@ -287,7 +284,7 @@ public class PagingResultObjectProvider
         for (int i = 0, len = _paged[idx].length(); i < len; i++) {
             if (_paged[idx].get(i)) {
                 _mappings[idx].getFieldMapping(i).load(sm, store,
-                    getFetchState());
+                    getFetchConfiguration());
             }
         }
     }
@@ -354,7 +351,6 @@ public class PagingResultObjectProvider
 
         StoreContext ctx = store.getContext();
         JDBCFetchConfiguration fetch = getFetchConfiguration();
-        JDBCFetchState fetchState = (JDBCFetchState) fetch.newFetchState();
         // do each batch select
         Object res;
         int esels = 0;
@@ -377,14 +373,14 @@ public class PagingResultObjectProvider
                 esel = sel;
 
             // get result
-            fms[i].selectEagerParallel(esel, null, store, fetchState,
+            fms[i].selectEagerParallel(esel, null, store, fetch,
                 JDBCFetchConfiguration.EAGER_PARALLEL);
             res = esel.execute(store, fetch);
             try {
                 // and load result into paged instances
                 for (int j = start; j < end && _page[j] != null; j++)
                     res = fms[i].loadEagerParallel(ctx.getStateManager
-                        (_page[j]), store, fetchState, res);
+                        (_page[j]), store, fetch, res);
             } finally {
                 if (res instanceof Closeable)
                     try {

@@ -129,14 +129,14 @@ public interface StoreManager
      *
      * @param sm the instance to initialize
      * @param state the lifecycle state to initialize the state manager with
-     * @param fetchState configuration for how to load the instance
+     * @param fetch configuration for how to load the instance
      * @param edata the current execution data, or null if not
      * given to the calling method of the broker
      * @return true if the matching instance exists in the data
      * store, false otherwise
      */
     public boolean initialize(OpenJPAStateManager sm, PCState state,
-        FetchState fetchState, Object edata);
+        FetchConfiguration fetch, Object edata);
 
     /**
      * Load the given state manager.
@@ -153,7 +153,7 @@ public interface StoreManager
      * @param sm the instance to load
      * @param fields set of fields to load; all field indexes in this
      * set must be loaded; this set is mutable
-     * @param fetchState the fetch configuration to use when loading
+     * @param fetch the fetch configuration to use when loading
      * related objects
      * @param lockLevel attempt to load simple fields at this lock level;
      * relations should be loaded at the read lock level
@@ -164,7 +164,7 @@ public interface StoreManager
      * database, true otherwise
      */
     public boolean load(OpenJPAStateManager sm, BitSet fields,
-        FetchState fetchState, int lockLevel, Object edata);
+        FetchConfiguration fetch, int lockLevel, Object edata);
 
     /**
      * Initialize, load, or validate the existance of all of the given
@@ -192,7 +192,8 @@ public interface StoreManager
      * be included outside of refresh invocations if a user calls
      * <code>findAll</code> with the <code>validate</code>
      * parameter set to <code>true</code>.</li>
-     * </ul> Store managers that cannot efficiently batch load can simply test
+     * </ul> 
+     * Store managers that cannot efficiently batch load can simply test
      * for these conditions and delegate to the proper methods.
      *
      * @param sms the state manager instances to load
@@ -201,7 +202,7 @@ public interface StoreManager
      * instances are included in <code>sms</code>
      * @param load one of the FORCE_LOAD_* constants describing the
      * fields to force-load if this is a refresh or retrieve action
-     * @param fetchState the current fetch configuration to use when loading
+     * @param fetch the current fetch configuration to use when loading
      * related objects
      * @param edata the current execution data, or null if not
      * given to the calling method of the broker

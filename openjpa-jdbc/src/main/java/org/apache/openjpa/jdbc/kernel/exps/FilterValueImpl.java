@@ -15,7 +15,7 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -36,15 +36,15 @@ class FilterValueImpl
     private final Select _sel;
     private final JDBCStore _store;
     private final Object[] _params;
-    private final JDBCFetchState _fetchState;
+    private final JDBCFetchConfiguration _fetch;
 
     public FilterValueImpl(Val val, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
+        Object[] params, JDBCFetchConfiguration fetch) {
         _val = val;
         _sel = sel;
         _store = store;
         _params = params;
-        _fetchState = fetchState;
+        _fetch = fetch;
     }
 
     public Class getType() {
@@ -60,7 +60,7 @@ class FilterValueImpl
     }
 
     public void appendTo(SQLBuffer buf, int index) {
-        _val.appendTo(buf, index, _sel, _store, _params, _fetchState);
+        _val.appendTo(buf, index, _sel, _store, _params, _fetch);
     }
 
     public String getColumnAlias(Column col) {

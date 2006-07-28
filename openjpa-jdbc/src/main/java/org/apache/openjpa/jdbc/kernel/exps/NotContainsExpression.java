@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
@@ -49,7 +49,7 @@ class NotContainsExpression
     }
 
     public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
+        Object[] params, JDBCFetchConfiguration fetch) {
         DBDictionary dict = store.getDBDictionary();
         dict.assertSupport(dict.supportsSubselect, "SupportsSubselect");
 
@@ -59,17 +59,17 @@ class NotContainsExpression
         sub.where(sub.and(null, _exp.getJoins()));
 
         SQLBuffer where = new SQLBuffer(dict).append("(");
-        _exp.appendTo(where, sub, store, params, fetchState);
+        _exp.appendTo(where, sub, store, params, fetch);
         if (where.getSQL().length() > 1)
             sub.where(where.append(")"));
 
         buf.append("0 = ");
-        buf.appendCount(sub, fetchState.getJDBCFetchConfiguration());
+        buf.appendCount(sub, fetch);
     }
 
     public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchState fetchState) {
-        _exp.selectColumns(sel, store, params, true, fetchState);
+        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
+        _exp.selectColumns(sel, store, params, true, fetch);
     }
 
     public Joins getJoins() {

@@ -34,6 +34,6 @@ public interface PCResultObjectProvider
      * @see StoreManager#initialize
      */
     public void initialize(OpenJPAStateManager sm, PCState state,
-        FetchState fetchState)
+        FetchConfiguration fetch)
         throws Exception;
 }

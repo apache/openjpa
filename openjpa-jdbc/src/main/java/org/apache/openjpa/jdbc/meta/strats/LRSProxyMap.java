@@ -25,7 +25,6 @@ import java.util.NoSuchElementException;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -166,8 +165,6 @@ class LRSProxyMap
 
         final ClassMapping[] clss = _strat.getIndependentKeyMappings(true);
         final JDBCFetchConfiguration fetch = store.getFetchConfiguration();
-        final JDBCFetchState jfetchState = (JDBCFetchState) fetch
-            .newFetchState();
         final Joins[] resJoins = new Joins[Math.max(1, clss.length)];
 
         Union union = store.getSQLFactory().newUnion
@@ -207,8 +204,7 @@ class LRSProxyMap
                 if (resJoins[idx] == null)
                     resJoins[idx] = _strat.joinKeyRelation(sel.newJoins(),
                         cls);
-                _strat.selectKey(sel, cls, sm, store, jfetchState,
-                    resJoins[idx]);
+                _strat.selectKey(sel, cls, sm, store, fetch, resJoins[idx]);
             }
         });
 
@@ -217,7 +213,7 @@ class LRSProxyMap
         try {
             res = union.execute(store, fetch);
             while (res.next())
-                keys.add(_strat.loadKey(sm, store, jfetchState, res,
+                keys.add(_strat.loadKey(sm, store, fetch, res,
                     resJoins[res.indexOf()]));
             return keys;
         } catch (SQLException se) {
@@ -239,8 +235,6 @@ class LRSProxyMap
         }
 
         final JDBCFetchConfiguration fetch = store.getFetchConfiguration();
-        final JDBCFetchState fetchState =
-            (JDBCFetchState) fetch.newFetchState();
         final ClassMapping[] clss = _strat.getIndependentValueMappings(true);
         final Joins[] resJoins = new Joins[Math.max(1, clss.length)];
         Union union = store.getSQLFactory().newUnion
@@ -282,8 +276,7 @@ class LRSProxyMap
                 if (resJoins[idx] == null)
                     resJoins[idx] = _strat.joinValueRelation(sel.newJoins(),
                         cls);
-                _strat.selectValue(sel, cls, sm, store, fetchState,
-                    resJoins[idx]);
+                _strat.selectValue(sel, cls, sm, store, fetch, resJoins[idx]);
             }
         });
 
@@ -291,7 +284,7 @@ class LRSProxyMap
         try {
             res = union.execute(store, fetch);
             if (res.next())
-                return _strat.loadValue(sm, store, fetchState, res,
+                return _strat.loadValue(sm, store, fetch, res,
                     resJoins[res.indexOf()]);
             return null;
         } catch (SQLException se) {
@@ -306,12 +299,11 @@ class LRSProxyMap
         OpenJPAStateManager sm = assertOwner();
         JDBCStore store = getStore();
         JDBCFetchConfiguration fetch = store.getFetchConfiguration();
-        JDBCFetchState jfetchState = (JDBCFetchState) fetch.newFetchState();
         try {
             Joins[] joins = new Joins[2];
-            Result[] res = _strat.getResults(sm, store, jfetchState,
-                fetch.EAGER_JOIN, joins, true);
-            return new ResultIterator(sm, store, jfetchState, res, joins);
+            Result[] res = _strat.getResults(sm, store, fetch, fetch.EAGER_JOIN,
+                joins, true);
+            return new ResultIterator(sm, store, fetch, res, joins);
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se, store.getDBDictionary());
         }
@@ -338,16 +330,16 @@ class LRSProxyMap
 
         private final OpenJPAStateManager _sm;
         private final JDBCStore _store;
-        private final JDBCFetchState _fetchState;
+        private final JDBCFetchConfiguration _fetch;
         private final Result[] _res;
         private final Joins[] _joins;
         private Boolean _next = null;
 
         public ResultIterator(OpenJPAStateManager sm, JDBCStore store,
-            JDBCFetchState fetchState, Result[] res, Joins[] joins) {
+            JDBCFetchConfiguration fetch, Result[] res, Joins[] joins) {
             _sm = sm;
             _store = store;
-            _fetchState = fetchState;
+            _fetch = fetch;
             _res = res;
             _joins = joins;
         }
@@ -378,11 +370,11 @@ class LRSProxyMap
             try {
 
                 if (!keyDerived)
-                    entry.key = _strat.loadKey(_sm, _store, _fetchState,
-                        _res[0], _joins[0]);
+                    entry.key = _strat.loadKey(_sm, _store, _fetch, _res[0], 
+                        _joins[0]);
                 if (!valDerived)
-                    entry.val = _strat.loadValue(_sm, _store, _fetchState,
-                        _res[1], _joins[1]);
+                    entry.val = _strat.loadValue(_sm, _store, _fetch, _res[1], 
+                        _joins[1]);
                 if (keyDerived)
                     entry.key = _strat.deriveKey(_store, entry.val);
                 if (valDerived)

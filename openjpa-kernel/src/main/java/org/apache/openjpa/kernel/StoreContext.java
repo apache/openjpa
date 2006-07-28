@@ -135,13 +135,13 @@ public interface StoreContext {
      * if a cached instance has been deleted concurrently. These options
      * are controllable through the given <code>OID_XXX</code> flags.
      */
-    public Object find(Object oid, FetchState fetchState, BitSet exclude,
+    public Object find(Object oid, FetchConfiguration fetch, BitSet exclude,
         Object edata, int flags);
 
     /**
      * Return the objects with the given oids.
      *
-     * @see #find(Object,FetchState,BitSet,Object,int)
+     * @see #find(Object,FetchConfiguration,BitSet,Object,int)
      */
     public Object[] findAll(Collection oids, FetchConfiguration fetch,
         BitSet exclude, Object edata, int flags);

@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -78,12 +77,12 @@ public class RelationMapInverseKeyFieldStrategy
     }
 
     public void selectKey(Select sel, ClassMapping key, OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, Joins joins) {
+        JDBCStore store, JDBCFetchConfiguration fetch, Joins joins) {
         throw new InternalException();
     }
 
     public Object loadKey(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res, Joins joins)
+        JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
         throw new InternalException();
     }
@@ -100,38 +99,36 @@ public class RelationMapInverseKeyFieldStrategy
     }
 
     public void selectValue(Select sel, ClassMapping val,
-        OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, Joins joins) {
-        selectElement(sel, val, store, fetchState,
-            JDBCFetchConfiguration.EAGER_NONE, joins);
+        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch, 
+        Joins joins) {
+        selectElement(sel, val, store, fetch, JDBCFetchConfiguration.EAGER_NONE,
+            joins);
     }
 
     public Object loadValue(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res, Joins joins)
+        JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
-        return loadElement(sm, store, fetchState, res, joins);
+        return loadElement(sm, store, fetch, res, joins);
     }
 
     public Result[] getResults(final OpenJPAStateManager sm,
-        final JDBCStore store, final JDBCFetchState fetchState,
+        final JDBCStore store, final JDBCFetchConfiguration fetch,
         final int eagerMode, final Joins[] joins, boolean lrs)
         throws SQLException {
         ValueMapping val = field.getElementMapping();
         final ClassMapping[] vals = val.getIndependentTypeMappings();
         Union union = store.getSQLFactory().newUnion(vals.length);
-        JDBCFetchConfiguration fetch = fetchState.getJDBCFetchConfiguration();
         if (fetch.getSubclassFetchMode(val.getTypeMapping())
             != JDBCFetchConfiguration.EAGER_JOIN)
             union.abortUnion();
         union.setLRS(lrs);
         union.select(new Union.Selector() {
             public void select(Select sel, int idx) {
-                joins[1] = selectAll(sel, vals[idx], sm, store, fetchState,
+                joins[1] = selectAll(sel, vals[idx], sm, store, fetch,
                     eagerMode);
             }
         });
-        Result res = union.execute(store,
-            fetchState.getJDBCFetchConfiguration());
+        Result res = union.execute(store, fetch);
         return new Result[]{ res, res };
     }
 

@@ -148,9 +148,7 @@ public class DetachManager
             exclude = StoreContext.EXCLUDE_ALL;
         else if (detachMode == DETACH_ALL)
             loadMode = StateManagerImpl.LOAD_ALL;
-        FetchState fetchState = broker.getFetchConfiguration().
-            newFetchState();
-        sm.load(fetchState, loadMode, exclude, null, false);
+        sm.load(broker.getFetchConfiguration(), loadMode, exclude, null, false);
 
         // create bitset of fields to detach; if mode is all we can use
         // currently loaded bitset clone, since we know all fields are loaded
@@ -221,12 +219,9 @@ public class DetachManager
         StateManagerImpl sm, BitSet idxs) {
         FetchConfiguration fetch = broker.getFetchConfiguration();
         FieldMetaData[] fmds = sm.getMetaData().getFields();
-        for (int i = 0; i < fmds.length; i++) {
-            if (fmds[i].isPrimaryKey() || fmds[i].isInDefaultFetchGroup()
-                || fetch.hasAnyFetchGroup(fmds[i].getFetchGroups())
-                || fetch.hasField(fmds[i].getFullName()))
+        for (int i = 0; i < fmds.length; i++)
+            if (fmds[i].isPrimaryKey() || fetch.requiresFetch(fmds[i]))
                 idxs.set(i);
-        }
     }
 
     /**

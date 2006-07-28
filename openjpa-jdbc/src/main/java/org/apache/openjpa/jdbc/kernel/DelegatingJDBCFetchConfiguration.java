@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
 ///////////////////////////////////////////////////////////////
@@ -227,6 +228,14 @@ public class DelegatingJDBCFetchConfiguration
         try {
             getJDBCDelegate().clearJoins();
             return this;
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public JDBCFetchConfiguration traverseJDBC(FieldMetaData fm) {
+        try {
+            return getJDBCDelegate().traverseJDBC(fm);
         } catch (RuntimeException re) {
             throw translate(re);
         }

@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -114,7 +113,7 @@ public abstract class MapTableFieldStrategy
     }
 
     public void load(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState)
+        JDBCFetchConfiguration fetch)
         throws SQLException {
         if (field.isLRS()) {
             sm.storeObjectField(field.getIndex(), new LRSProxyMap(this,
@@ -124,7 +123,7 @@ public abstract class MapTableFieldStrategy
 
         // select all and load into a normal proxy
         Joins[] joins = new Joins[2];
-        Result[] res = getResults(sm, store, fetchState,
+        Result[] res = getResults(sm, store, fetch,
             JDBCFetchConfiguration.EAGER_PARALLEL, joins, false);
         try {
             Map map = (Map) sm.newProxy(field.getIndex());
@@ -133,8 +132,8 @@ public abstract class MapTableFieldStrategy
                 if (res[1] != res[0] && !res[1].next())
                     break;
 
-                key = loadKey(sm, store, fetchState, res[0], joins[0]);
-                val = loadValue(sm, store, fetchState, res[1], joins[1]);
+                key = loadKey(sm, store, fetch, res[0], joins[0]);
+                val = loadValue(sm, store, fetch, res[1], joins[1]);
                 map.put(key, val);
             }
             sm.storeObject(field.getIndex(), map);
@@ -146,15 +145,15 @@ public abstract class MapTableFieldStrategy
     }
 
     public Object loadKeyProjection(JDBCStore store,
-        JDBCFetchState fetchState, Result res, Joins joins)
+        JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
-        return loadKey(null, store, fetchState, res, joins);
+        return loadKey(null, store, fetch, res, joins);
     }
 
-    public Object loadProjection(JDBCStore store, JDBCFetchState fetchState,
+    public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
-        return loadValue(null, store, fetchState, res, joins);
+        return loadValue(null, store, fetch, res, joins);
     }
 
     public Joins join(Joins joins, boolean forceOuter) {

@@ -30,6 +30,7 @@ import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FetchGroup;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.UpdateStrategies;
@@ -69,7 +70,7 @@ public class StateManagerImpl
 
     private static final int FLAG_SAVE = 2 << 0;
     private static final int FLAG_DEREF = 2 << 1;
-    private static final int FLAG_DFG = 2 << 2;
+    private static final int FLAG_LOADED = 2 << 2;
     private static final int FLAG_READ_LOCKED = 2 << 3;
     private static final int FLAG_WRITE_LOCKED = 2 << 4;
     private static final int FLAG_OID_ASSIGNED = 2 << 5;
@@ -131,7 +132,8 @@ public class StateManagerImpl
     /**
      * Constructor; supply id, type metadata, and owning persistence manager.
      */
-    protected StateManagerImpl(Object id, ClassMetaData meta, BrokerImpl broker) {
+    protected StateManagerImpl(Object id, ClassMetaData meta, 
+        BrokerImpl broker) {
         _id = id;
         _meta = meta;
         _broker = broker;
@@ -304,23 +306,21 @@ public class StateManagerImpl
             _meta, type);
     }
 
-    public void load(FetchState fetchState) {
-        load(fetchState, LOAD_FGS, null, null, false);
+    public void load(FetchConfiguration fetch) {
+        load(fetch, LOAD_FGS, null, null, false);
     }
 
     /**
      * Load the state of this instance based on the given fetch configuration
      * and load mode. Return true if any data was loaded, false otherwise.
      */
-    protected boolean load(FetchState fetchState, int loadMode,
+    protected boolean load(FetchConfiguration fetch, int loadMode,
         BitSet exclude, Object sdata, boolean forWrite) {
         if (!forWrite && (!isPersistent() || isNew() || isDeleted()))
             return false;
 
-        if (fetchState==null)
-        	fetchState = _broker.getFetchConfiguration().newFetchState();
         // if any fields being loaded, do state transitions for read
-        BitSet fields = getUnloadedInternal(fetchState, loadMode, exclude);
+        BitSet fields = getUnloadedInternal(fetch, loadMode, exclude);
         boolean active = _broker.isActive();
         if (!forWrite && fields != null)
             beforeRead(-1);
@@ -328,10 +328,8 @@ public class StateManagerImpl
         // call load even if no fields are being loaded, because it takes
         // care of checking if the DFG is loaded, making sure version info
         // is loaded, etc
-        FetchConfiguration fetch = fetchState.getFetchConfiguration();
         int lockLevel = calculateLockLevel(active, forWrite, fetch);
-        boolean ret = loadFields(fields, fetchState, lockLevel, sdata,
-            forWrite);
+        boolean ret = loadFields(fields, fetch, lockLevel, sdata, forWrite);
         obtainLocks(active, forWrite, lockLevel, fetch, sdata);
         return ret;
     }
@@ -380,9 +378,9 @@ public class StateManagerImpl
         return _dirty;
     }
 
-    public BitSet getUnloaded(FetchState fetchState) {
+    public BitSet getUnloaded(FetchConfiguration fetch) {
         // collect fields to load from data store based on fetch configuration
-        BitSet fields = getUnloadedInternal(fetchState, LOAD_FGS, null);
+        BitSet fields = getUnloadedInternal(fetch, LOAD_FGS, null);
         return (fields == null) ? new BitSet(0) : fields;
     }
 
@@ -391,7 +389,7 @@ public class StateManagerImpl
      * creating an empty bit set by returning null when there are no unloaded
      * fields.
      */
-    private BitSet getUnloadedInternal(FetchState fetchState, int mode,
+    private BitSet getUnloadedInternal(FetchConfiguration fetch, int mode,
         BitSet exclude) {
         if (exclude == StoreContext.EXCLUDE_ALL)
             return null;
@@ -408,8 +406,7 @@ public class StateManagerImpl
                     load = !fmds[i].isTransient();
                     break;
                 case LOAD_FGS:
-                    load = fetchState == null ||
-                        fetchState.requiresLoad(this, fmds[i]);
+                    load = fetch == null || fetch.requiresFetch(fmds[i]);
                     break;
                 default: // LOAD_ALL
                     load = true;
@@ -1204,8 +1201,8 @@ public class StateManagerImpl
             if (_meta.isDetachable())
                 return DetachManager.preSerialize(this);
 
-            load(_broker.getFetchConfiguration().newFetchState(),
-                LOAD_SERIALIZE, null, null, false);
+            load(_broker.getFetchConfiguration(), LOAD_SERIALIZE, null, null, 
+                false);
             return false;
         } catch (RuntimeException re) {
             throw translate(re);
@@ -2412,10 +2409,10 @@ public class StateManagerImpl
                 setLoaded(i, val);
         }
         if (!val) {
-            _flags &= ~FLAG_DFG;
+            _flags &= ~FLAG_LOADED;
             setDirty(false);
         } else
-            _flags |= FLAG_DFG;
+            _flags |= FLAG_LOADED;
     }
 
     /**
@@ -2438,7 +2435,7 @@ public class StateManagerImpl
         }
 
         if (val)
-            _flags |= FLAG_DFG;
+            _flags |= FLAG_LOADED;
     }
 
     /**
@@ -2706,7 +2703,7 @@ public class StateManagerImpl
      * Load the given field set from the data store into the instance.
      * Return true if any data is loaded, false otherwise.
      */
-    boolean loadFields(BitSet fields, FetchState fetchState, int lockLevel,
+    boolean loadFields(BitSet fields, FetchConfiguration fetch, int lockLevel,
         Object sdata, boolean forWrite) {
         // can't load version field from store
         if (fields != null) {
@@ -2721,7 +2718,7 @@ public class StateManagerImpl
             // if any fields given, load them
             int len = (fields == null) ? 0 : fields.length();
             if (len > 0) {
-                if (!_broker.getStoreManager().load(this, fields, fetchState,
+                if (!_broker.getStoreManager().load(this, fields, fetch,
                     lockLevel, sdata)) {
                     throw new ObjectNotFoundException(_loc.get("del-instance",
                         _meta.getDescribedType(), _oid)).
@@ -2748,36 +2745,33 @@ public class StateManagerImpl
         // see if the dfg is now loaded; do this regardless of whether we
         // loaded any fields, cause may already have been loaded by
         // StoreManager during initialization
-        postLoad(-1, fetchState);
+        postLoad(-1, fetch);
         return ret;
     }
-
-    protected void loadField(int field, int lockLevel, boolean forWrite,
-        boolean fgs) {
-    	FetchConfiguration fc = _broker.getFetchConfiguration();
-        loadField(field, fc.newFetchState(),lockLevel, forWrite, fgs);
-     }
 
     /**
      * Load the given field's fetch group; the field itself may already be
      * loaded if it is being set by the user.
      */
-    protected void loadField(int field, FetchState fetchState, int lockLevel,
-        boolean forWrite, boolean fgs) {
+    protected void loadField(int field, int lockLevel, boolean forWrite,
+        boolean fgs) {
+    	FetchConfiguration fetch = _broker.getFetchConfiguration();
         FieldMetaData fmd = _meta.getField(field);
         BitSet fields = null;
         // if this is a dfg field or we need to load our dfg, do so
         if (fmd.isInDefaultFetchGroup()
-            || (fgs && (_flags & FLAG_DFG) == 0)) {
-            fields = getUnloadedInternal(fetchState, LOAD_FGS, null);
-        }
-
+            || (fgs && (_flags & FLAG_LOADED) == 0)) 
+            fields = getUnloadedInternal(fetch, LOAD_FGS, null);
+        
+        // if not a dfg field, use first custom fetch group as load group
+        //### need to use metadata load-fetch-group
         if (!fmd.isInDefaultFetchGroup()) {
-            if (fmd.getFetchGroups() != null) {
+            if (fmd.getCustomFetchGroups().length > 0) {  
+                String fg = fmd.getCustomFetchGroups()[0];
                 FieldMetaData[] fmds = _meta.getFields();
                 for (int i = 0; i < fmds.length; i++) {
                     if (!_loaded.get(i) && (i == field
-                        || fmd.fetchGroupOverlapsWith(fmds[i]))) {
+                        || fmds[i].isInFetchGroup(fg))) {
                         if (fields == null)
                             fields = new BitSet(fmds.length);
                         fields.set(i);
@@ -2785,7 +2779,7 @@ public class StateManagerImpl
                 }
             } else if (!_loaded.get(fmd.getIndex())) {
                 if (fields == null)
-                    fields = new BitSet(fmd.getIndex());
+                    fields = new BitSet();
                 fields.set(fmd.getIndex());
             }
         }
@@ -2793,7 +2787,20 @@ public class StateManagerImpl
         // call this method even if there are no unloaded fields; loadFields
         // takes care of things like loading version info and setting PC
         // flags
-        loadFields(fields, fetchState, lockLevel, null, forWrite);
+        loadFields(fields, fetch, lockLevel, null, forWrite);
+    }
+
+    /**
+     * Return whether the second field has any custom fetch groups in common 
+     * with the first.
+     */
+    private static boolean sharesCustomFetchGroups(FieldMetaData fmd1, 
+        FieldMetaData fmd2) {
+        String[] fgs = fmd1.getCustomFetchGroups();
+        for (int i = 0; i < fgs.length; i++)
+            if (fmd2.isInFetchGroup(fgs[i]))
+                return true;
+        return false;
     }
 
     /**
@@ -2848,12 +2855,9 @@ public class StateManagerImpl
      * @param field the field index that was loaded, or -1 to indicate
      * that a group of possibly unknown fields was loaded
      */
-    private void postLoad(int field, FetchState fetchState) {
+    private void postLoad(int field, FetchConfiguration fetch) {
         // no need for postLoad callback?
-        if ((_flags & FLAG_DFG) > 0)
-            return;
-        LifecycleEventManager mgr = _broker.getLifecycleEventManager();
-        if (mgr == null || !mgr.hasLoadListeners(getManagedInstance(), _meta))
+        if ((_flags & FLAG_LOADED) != 0)
             return;
 
         // in the middle of a group load, after which this method will be
@@ -2861,33 +2865,46 @@ public class StateManagerImpl
         if (field != -1 && isLoading())
             return;
 
-        // is this field in the dfg?
-        FieldMetaData[] fmds = _meta.getDefaultFetchGroupFields();
+        // no listeners?
+        LifecycleEventManager mgr = _broker.getLifecycleEventManager();
+        if (mgr == null || !mgr.hasLoadListeners(getManagedInstance(), _meta))
+            return;
 
-        // see if any fetch group with postLoad=true is fully loaded
-        boolean isLoaded = true;
-        for (int i = 0; isLoaded && i < fmds.length; i++)
-            if (!_loaded.get(fmds[i].getIndex())
-                && requiresPostLoadCallabck(fmds[i], fetchState))
-                isLoaded = false;
-        if (isLoaded) {
-            _flags |= FLAG_DFG;
-            fireLifecycleEvent(LifecycleEvent.AFTER_LOAD);
+        // is this field a post-load field?
+        if (field != -1) {
+            FieldMetaData fmd = _meta.getField (field);
+            if (fmd.isInDefaultFetchGroup() 
+                && postLoad(_meta.getFetchGroup(FetchGroup.NAME_DEFAULT)))
+                return;
+            String[] fgs = fmd.getCustomFetchGroups();
+            for (int i = 0; i < fgs.length; i++)
+                if (postLoad(_meta.getFetchGroup(fgs[i])))
+                    return;
+        } else {
+            if (postLoad(_meta.getFetchGroup(FetchGroup.NAME_DEFAULT)))
+                return;
+            FetchGroup[] fgs = _meta.getCustomFetchGroups();
+            for (int i = 0; i < fgs.length; i++)
+                if (postLoad(fgs[i]))
+                    return; 
         }
     }
 
-    private boolean requiresPostLoadCallabck(FieldMetaData fm, FetchState fetchState) {
-        if (fm == null)
+    /**
+     * Perform post-load actions if the given fetch group is a post-load group
+     * and is fully loaded.
+     */
+    private boolean postLoad(FetchGroup fg) {
+        if (!fg.isPostLoad())
             return false;
-        Set fetchGroups = fm.getFetchGroups();
-        for (Iterator i = fetchGroups.iterator(); i.hasNext();) 
-        {
-        	String fg = i.next().toString();
-        	if (_broker.getFetchConfiguration().hasFetchGroup(fg)
-        		&& fm.getDeclaringMetaData().getFetchGroup(fg).isPostLoad())
-        		return true;
-        }
-        return false;
+        FieldMetaData[] fmds = _meta.getFields();
+        for (int i = 0; i < fmds.length; i++)
+            if (!_loaded.get(i) && fmds[i].isInFetchGroup(fg.getName()))
+                return false;
+
+        _flags |= FLAG_LOADED;
+        fireLifecycleEvent(LifecycleEvent.AFTER_LOAD);
+        return true;
     }
 
     /**

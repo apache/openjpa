@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -74,7 +74,7 @@ public interface LRSCollectionFieldStrategy
      * {@link #loadElement}.
      */
     public void selectElement(Select sel, ClassMapping elem,
-        JDBCStore store, JDBCFetchState fetchState, int eagerMode,
+        JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode,
         Joins joins);
 
     /**
@@ -83,7 +83,7 @@ public interface LRSCollectionFieldStrategy
      * results.
      */
     public Object loadElement(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res, Joins joins)
+        JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException;
 
     /**

@@ -114,6 +114,7 @@ public class ClassMetaData
     // the repository this class belongs to, if any, and source file
     private final MetaDataRepository _repos;
     private final ValueMetaData _owner;
+    private final LifecycleMetaData _lifeMeta = new LifecycleMetaData(this);
     private ClassLoader _loader = null;
     private File _srcFile = null;
     private int _srcType = SRC_OTHER;
@@ -128,6 +129,7 @@ public class ClassMetaData
     private boolean _defSupFields = false;
     private Collection _staticFields = null;
     private int[] _fieldDataTable = null;
+    private Map _fgMap = null;
 
     ////////////////////////////////////////////////////////////////////
     // Note: if you add additional state, make sure to add it to copy()
@@ -144,7 +146,6 @@ public class ClassMetaData
 
     private String _seqName = DEFAULT_STRING;
     private SequenceMetaData _seqMeta = null;
-    private Map _fgs = new HashMap();
     private String _cacheName = DEFAULT_STRING;
     private int _cacheTimeout = Integer.MIN_VALUE;
     private Boolean _detachable = null;
@@ -166,8 +167,8 @@ public class ClassMetaData
     private FieldMetaData[] _definedFields = null;
     private FieldMetaData[] _listingFields = null;
     private FieldMetaData[] _allListingFields = null;
-
-    private final LifecycleMetaData _lifeMeta = new LifecycleMetaData(this);
+    private FetchGroup[] _fgs = null;
+    private FetchGroup[] _customFGs = null;
 
     /**
      * Constructor. Supply described type and repository.
@@ -1493,8 +1494,7 @@ public class ClassMetaData
             ClassMetaData meta = _repos.getMetaData(_type, _loader, true);
             meta.resolve(MODE_META);
             copy(this, meta);
-            _embedded =
-                Boolean.FALSE; // embedded instance isn't embedded-only
+            _embedded = Boolean.FALSE; // embedded instance isn't embedded-only
         }
 
         // make sure superclass is resolved
@@ -1549,6 +1549,11 @@ public class ClassMetaData
 
         // resolve lifecycle metadata now to prevent lazy threading problems
         _lifeMeta.resolve();
+
+        // resolve fetch groups
+        if (_fgMap != null)
+            for (Iterator itr = _fgMap.values().iterator(); itr.hasNext();)
+                ((FetchGroup) itr.next()).resolve();
 
         // if this is runtime, create a pc instance and scan it for comparators
         if (runtime && !Modifier.isAbstract(_type.getModifiers())) {
@@ -1910,27 +1915,46 @@ public class ClassMetaData
         }
     }
 
-    /////////////////////
+    ///////////////
     // Fetch Group
-    /////////////////////
+    ///////////////
 
     /**
-     * Adds fecth group of the given name.
-     *
-     * @param name a non-null, non-empty name. Must be unique within this
-     * receiver's scope. The super class <em>may</em> have a group with
-     * the same name.
+     * Return the fetch groups declared explicitly in this type.
      */
-    public synchronized FetchGroup addFetchGroup(String name) {
-    	if (name == null || name.trim().length()==0)
-    		throw new MetaDataException(_loc.get("empty-fg-name", this));
-        FetchGroup fg = (FetchGroup) _fgs.get(name);
-        if (fg == null) {
-        	fg = new FetchGroup(this, name);
-        	_fgs.put(name, fg);
-        }
+    public FetchGroup[] getDeclaredFetchGroups() {
+        if (_fgs == null)
+            _fgs = (_fgMap == null) ? new FetchGroup[0] : (FetchGroup[])
+                _fgMap.values().toArray(new FetchGroup[_fgMap.size()]); 
+        return _fgs;
+    }
 
-        return fg;
+    /**
+     * Return all fetch groups for this type, including superclass groups.
+     */
+    public FetchGroup[] getCustomFetchGroups() {
+        if (_customFGs == null) {
+            // map fgs to names, allowing our fgs to override supers
+            Map fgs = new HashMap();
+            ClassMetaData sup = getPCSuperclassMetaData();
+            if (sup != null)
+            {
+                FetchGroup[] supFGs = sup.getCustomFetchGroups();
+                for (int i = 0; i < supFGs.length; i++)
+                    fgs.put(supFGs[i].getName(), supFGs[i]);
+            }
+            FetchGroup[] decs = getDeclaredFetchGroups();
+            for (int i = 0; i < decs.length; i++)
+                fgs.put(decs[i].getName(), decs[i]);
+            
+            // remove std groups
+            fgs.remove(FetchGroup.NAME_DEFAULT);
+            fgs.remove(FetchGroup.NAME_ALL);
+
+            _customFGs = (FetchGroup[]) fgs.values().toArray
+                (new FetchGroup[fgs.size()]);
+        }
+        return _customFGs;
     }
 
     /**
@@ -1941,14 +1965,54 @@ public class ClassMetaData
      * @return an existing fecth group of the given name if known to this 
      * receiver or any of its superclasses. Otherwise null.
      */
-    public synchronized FetchGroup getFetchGroup(String name) {
-        FetchGroup fg = (FetchGroup) _fgs.get(name);
+    public FetchGroup getFetchGroup(String name) {
+        FetchGroup fg = (_fgMap == null) ? null : (FetchGroup) _fgMap.get(name);
+        if (fg != null)
+            return fg;
+        ClassMetaData sup = getPCSuperclassMetaData();
+        if (sup != null)
+            return sup.getFetchGroup(name);
+        if (FetchGroup.NAME_DEFAULT.equals(name))
+            return FetchGroup.DEFAULT;
+        if (FetchGroup.NAME_ALL.equals(name))
+            return FetchGroup.ALL;
+        return null;
+    }
+
+    /**
+     * Adds fetch group of the given name, or returns existing instance.
+     *
+     * @param name a non-null, non-empty name. Must be unique within this
+     * receiver's scope. The super class <em>may</em> have a group with
+     * the same name.
+     */
+    public FetchGroup addDeclaredFetchGroup(String name) {
+    	if (StringUtils.isEmpty(name))
+    		throw new MetaDataException(_loc.get("empty-fg-name", this));
+        if (_fgMap == null)
+            _fgMap = new HashMap();
+        FetchGroup fg = (FetchGroup) _fgMap.get(name);
         if (fg == null) {
-            ClassMetaData scm = getPCSuperclassMetaData();
-            if (scm != null)
-                fg = scm.getFetchGroup(name);
+        	fg = new FetchGroup(this, name);
+        	_fgMap.put(name, fg);
+            _fgs = null;
+            _customFGs = null;
         }
         return fg;
+    }
+
+    /**
+     * Remove a declared fetch group.
+     */
+    public boolean removeDeclaredFetchGroup(FetchGroup fg) {
+        if (fg == null)
+            return false;
+        if (_fgMap.remove(fg.getName()) != null) {
+            _fgs = null;
+            _customFGs = null;
+            return true;
+        }
+        return false;
     }
 
     /////////////////
@@ -2082,6 +2146,14 @@ public class ClassMetaData
             field.setDeclaredIndex(-1);
             field.setIndex(-1);
             field.copy(fields[i]);
+        }
+
+        // copy fetch groups
+        FetchGroup[] fgs = meta.getDeclaredFetchGroups();
+        FetchGroup fg;
+        for (int i = 0; i < fgs.length; i++) {
+            fg = addDeclaredFetchGroup(fgs[i].getName());
+            fg.copy(fgs[i]); 
         }
     }
 

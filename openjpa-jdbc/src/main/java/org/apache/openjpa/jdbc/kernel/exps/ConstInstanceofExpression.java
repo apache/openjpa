@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
@@ -49,8 +49,8 @@ class ConstInstanceofExpression
     }
 
     public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
-        _const.calculateValue(sel, store, params, null, fetchState);
+        Object[] params, JDBCFetchConfiguration fetch) {
+        _const.calculateValue(sel, store, params, null, fetch);
         if (_cls.isInstance(_const.getValue()))
             buf.append("1 = 1");
         else
@@ -59,8 +59,8 @@ class ConstInstanceofExpression
     }
 
     public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchState fetchState) {
-        _const.selectColumns(sel, store, params, pks, fetchState);
+        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
+        _const.selectColumns(sel, store, params, pks, fetch);
     }
 
     public Joins getJoins() {

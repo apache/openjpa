@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -322,7 +322,7 @@ public interface Select
      * case the given mapping batches other selects.
      */
     public void select(ClassMapping mapping, int subclasses,
-        JDBCStore store, JDBCFetchState fetchState, int eager);
+        JDBCStore store, JDBCFetchConfiguration fetch, int eager);
 
     /**
      * Select the columns of the given mapping, possibly including subclasses.
@@ -330,7 +330,7 @@ public interface Select
      * case the given mapping batches other selects.
      */
     public void select(ClassMapping mapping, int subclasses,
-        JDBCStore store, JDBCFetchState fetchState, int eager,
+        JDBCStore store, JDBCFetchConfiguration fetch, int eager,
         Joins joins);
 
     /**
@@ -383,7 +383,7 @@ public interface Select
      * not using an LRSSize setting of <code>count</code>.
      */
     public void selectIdentifier(ClassMapping mapping, int subclasses,
-        JDBCStore store, JDBCFetchState fetchState, int eager);
+        JDBCStore store, JDBCFetchConfiguration fetch, int eager);
 
     /**
      * Select the columns of the given mapping, possibly including subclasses.
@@ -395,7 +395,7 @@ public interface Select
      * not using an LRSSize setting of <code>count</code>.
      */
     public void selectIdentifier(ClassMapping mapping, int subclasses,
-        JDBCStore store, JDBCFetchState fetchState, int eager,
+        JDBCStore store, JDBCFetchConfiguration fetch, int eager,
         Joins joins);
 
     /**

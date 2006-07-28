@@ -63,11 +63,10 @@ public interface PCData
      * into the given state manager.
      *
      * @param sm the state manager to load
-     * @param fetchState the fetch configuration to use for loading related
-     * objects
+     * @param fetch the fetch configuration to use for loading related objects
      * @param context current context information
      */
-    public void load(OpenJPAStateManager sm, FetchState fetchState,
+    public void load(OpenJPAStateManager sm, FetchConfiguration fetch,
         Object context);
 
     /**
@@ -77,12 +76,11 @@ public interface PCData
      * @param sm the state manager to load
      * @param fields the fields to load; clear the bits for the fields
      * that are successfully loaded
-     * @param fetchState the fetch configuration to use for loading related
-     * objects
+     * @param fetch the fetch configuration to use for loading related objects
      * @param context current context information
      */
     public void load(OpenJPAStateManager sm, BitSet fields,
-        FetchState fetchState, Object context);
+        FetchConfiguration fetch, Object context);
 
     /**
      * Store all loaded fields of the state manager.

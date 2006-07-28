@@ -36,7 +36,6 @@ public abstract class SelectResultObjectProvider
     private final SelectExecutor _sel;
     private final JDBCStore _store;
     private final JDBCFetchConfiguration _fetch;
-    private final JDBCFetchState _fetchState;
     private Result _res = null;
     private int _size = -1;
     private Boolean _ra = null;
@@ -49,15 +48,10 @@ public abstract class SelectResultObjectProvider
      * @param fetch the fetch configuration, or null for the default
      */
     public SelectResultObjectProvider(SelectExecutor sel, JDBCStore store,
-        JDBCFetchState fetchState) {
+        JDBCFetchConfiguration fetch) {
         _sel = sel;
         _store = store;
-//		if (fetch == null)
-//			_fetch = store.getFetchConfiguration ();
-//		else
-//			_fetch = fetch;
-        _fetchState = fetchState;
-        _fetch = fetchState.getJDBCFetchConfiguration();
+        _fetch = fetch;
     }
 
     public SelectExecutor getSelect() {
@@ -70,10 +64,6 @@ public abstract class SelectResultObjectProvider
 
     public JDBCFetchConfiguration getFetchConfiguration() {
         return _fetch;
-    }
-
-    public JDBCFetchState getFetchState() {
-        return _fetchState;
     }
 
     public Result getResult() {

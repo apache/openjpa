@@ -694,20 +694,18 @@ public class BrokerImpl
         int flags = OID_COPY | OID_ALLOW_NEW | OID_NODELETED;
         if (!validate)
             flags |= OID_NOVALIDATE;
-        return find(oid, _fc.newFetchState (), null, null, flags, call);
+        return find(oid, _fc, null, null, flags, call);
     }
 
-    public Object find(Object oid, FetchState fetchState, BitSet exclude,
+    public Object find(Object oid, FetchConfiguration fetch, BitSet exclude,
         Object edata, int flags) {
-    	if (fetchState == null)
-    		fetchState = _fc.newFetchState ();
-        return find(oid, fetchState, exclude, edata, flags, null);
+        return find(oid, fetch, exclude, edata, flags, null);
     }
 
     /**
      * Internal finder.
      */
-    protected Object find(Object oid, FetchState fetchState, BitSet exclude,
+    protected Object find(Object oid, FetchConfiguration fetch, BitSet exclude,
         Object edata, int flags, FindCallbacks call) {
         if (call == null)
             call = this;
@@ -717,6 +715,8 @@ public class BrokerImpl
                 throw new ObjectNotFoundException(_loc.get("null-oid"));
             return call.processReturn(oid, null);
         }
+        if (fetch == null)
+            fetch = _fc;
 
         beginOperation(true);
         try {
@@ -732,16 +732,13 @@ public class BrokerImpl
                 if (!sm.isLoading()) {
                     // make sure all the configured fields are loaded; do this
                     // after making instance transactional for locking
-                    if (!sm.isTransactional()
-                        && useTransactionalState(fetchState.
-                        getFetchConfiguration()))
+                    if (!sm.isTransactional() && useTransactionalState(fetch))
                         sm.transactional();
                     boolean loaded = sm.isLoading();
                     if (!loaded) {
                         try {
-                            loaded = sm.load(fetchState,
-                                StateManagerImpl.LOAD_FGS, exclude, edata,
-                                false);
+                            loaded = sm.load(fetch, StateManagerImpl.LOAD_FGS, 
+                                exclude, edata, false);
                         } catch (ObjectNotFoundException onfe) {
                             if ((flags & OID_NODELETED) != 0
                                 || (flags & OID_NOVALIDATE) != 0)
@@ -767,8 +764,6 @@ public class BrokerImpl
                 // since the object was cached, we may need to upgrade lock
                 // if current level is higher than level of initial load
                 if ((_flags & FLAG_ACTIVE) != 0) {
-                    FetchConfiguration fetch =
-                        fetchState.getFetchConfiguration();
                     int level = fetch.getReadLockLevel();
                     _lm.lock(sm, level, fetch.getLockTimeout(), edata);
                     sm.readLocked(level, fetch.getWriteLockLevel());
@@ -784,7 +779,7 @@ public class BrokerImpl
             // initialize a new state manager for the datastore instance
             sm = newStateManagerImpl(oid, (flags & OID_COPY) != 0);
             boolean load = requiresLoad(sm, false, edata, flags);
-            sm = initialize(sm, load, fetchState, edata);
+            sm = initialize(sm, load, fetch, edata);
             if (sm == null) {
                 if ((flags & OID_NOVALIDATE) != 0)
                     throw new ObjectNotFoundException(oid);
@@ -794,7 +789,7 @@ public class BrokerImpl
             // make sure all configured fields were loaded
             if (load) {
                 try {
-                    sm.load(fetchState, StateManagerImpl.LOAD_FGS, exclude,
+                    sm.load(fetch, StateManagerImpl.LOAD_FGS, exclude,
                         edata, false);
                 } catch (ObjectNotFoundException onfe) {
                     if ((flags & OID_NODELETED) != 0
@@ -817,18 +812,16 @@ public class BrokerImpl
      * Initialize a newly-constructed state manager.
      */
     protected StateManagerImpl initialize(StateManagerImpl sm, boolean load,
-        FetchState fetchState, Object edata) {
+        FetchConfiguration fetch, Object edata) {
         if (!load) {
             sm.initialize(sm.getMetaData().getDescribedType(),
                 PCState.HOLLOW);
         } else {
-            FetchConfiguration fetch = (fetchState == null)
-                ? _fc : fetchState.getFetchConfiguration();
             PCState state = (useTransactionalState(fetch))
                 ? PCState.PCLEAN : PCState.PNONTRANS;
             sm.setLoading(true);
             try {
-                if (!_store.initialize(sm, state, fetchState, edata))
+                if (!_store.initialize(sm, state, fetch, edata))
                     return null;
             } finally {
                 sm.setLoading(false);
@@ -867,6 +860,9 @@ public class BrokerImpl
         _loading = new HashMap((int) (oids.size() * 1.33 + 1));
         if (call == null)
             call = this;
+        if (fetch == null)
+            fetch = _fc;
+
         beginOperation(true);
         try {
             assertNontransactionalRead();
@@ -912,7 +908,7 @@ public class BrokerImpl
                 PCState state = (transState) ? PCState.PCLEAN
                     : PCState.PNONTRANS;
                 Collection failed = _store.loadAll(load, state,
-                    StoreManager.FORCE_LOAD_NONE, _fc, edata);
+                    StoreManager.FORCE_LOAD_NONE, fetch, edata);
 
                 // set failed instances to null
                 if (failed != null && !failed.isEmpty()) {
@@ -934,7 +930,7 @@ public class BrokerImpl
                 sm = (StateManagerImpl) _loading.get(oid);
                 if (sm != null && requiresLoad(sm, true, edata, flags)) {
                     try {
-                        sm.load(fetch.newFetchState(), StateManagerImpl.LOAD_FGS, 
+                        sm.load(fetch, StateManagerImpl.LOAD_FGS,
                         	exclude, edata, false);
                         if (active) {
                             _lm.lock(sm, level, fetch.getLockTimeout(), edata);
@@ -2482,8 +2478,7 @@ public class BrokerImpl
 
                 // otherwise make sure pc is fully loaded for when we copy its
                 // data below
-                orig.load(_fc.newFetchState(), StateManagerImpl.LOAD_ALL,
-                    null, null, false);
+                orig.load(_fc, StateManagerImpl.LOAD_ALL, null, null, false);
             }
 
             // create new state manager with embedded metadata
@@ -2698,8 +2693,8 @@ public class BrokerImpl
 
                     try {
                         sm.afterRefresh();
-                        sm.load(_fc.newFetchState(),
-                            StateManagerImpl.LOAD_FGS, null, null, false);
+                        sm.load(_fc, StateManagerImpl.LOAD_FGS, null, null, 
+                            false);
                     } catch (OpenJPAException ke) {
                         exceps = add(exceps, ke);
                     }
@@ -2739,8 +2734,7 @@ public class BrokerImpl
                 if (sm.isDetached())
                     throw newDetachedException(obj, "refresh");
                 else if (sm.beforeRefresh(false)) {
-                    sm.load(_fc.newFetchState(), StateManagerImpl.LOAD_FGS,
-                        null, null, false);
+                    sm.load(_fc, StateManagerImpl.LOAD_FGS, null, null, false);
                     sm.afterRefresh();
                 }
                 fireLifecycleEvent(sm.getManagedInstance(), null,
@@ -2825,7 +2819,7 @@ public class BrokerImpl
                     : StateManagerImpl.LOAD_ALL;
                 try {
                     sm.beforeRead(-1);
-                    sm.load(_fc.newFetchState(), mode, null, null, false);
+                    sm.load(_fc, mode, null, null, false);
                 } catch (OpenJPAException ke) {
                     exceps = add(exceps, ke);
                 }
@@ -2861,7 +2855,7 @@ public class BrokerImpl
                     int mode = (dfgOnly) ? StateManagerImpl.LOAD_FGS
                         : StateManagerImpl.LOAD_ALL;
                     sm.beforeRead(-1);
-                    sm.load(_fc.newFetchState(), mode, null, null, false);
+                    sm.load(_fc, mode, null, null, false);
                 }
             } else if (assertPersistenceCapable(obj).pcIsDetached()
                 == Boolean.TRUE)
@@ -3227,8 +3221,7 @@ public class BrokerImpl
             if (sm != null && sm.isPersistent()) {
                 assertActiveTransaction();
                 sm.transactional();
-                sm.load(_fc.newFetchState(), StateManagerImpl.LOAD_FGS, null,
-                    null, false);
+                sm.load(_fc, StateManagerImpl.LOAD_FGS, null, null, false);
                 sm.setCheckVersion(true);
                 if (updateVersion)
                     sm.setUpdateVersion(true);
@@ -3266,8 +3259,7 @@ public class BrokerImpl
 
             try {
                 sm.transactional();
-                sm.load(_fc.newFetchState(), StateManagerImpl.LOAD_FGS, null,
-                    null, false);
+                sm.load(_fc, StateManagerImpl.LOAD_FGS, null, null, false);
             } catch (OpenJPAException ke) {
                 exceps = add(exceps, ke);
             }

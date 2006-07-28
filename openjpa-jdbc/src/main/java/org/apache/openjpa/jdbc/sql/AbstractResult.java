@@ -34,7 +34,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -243,16 +243,15 @@ public abstract class AbstractResult
     }
 
     public Object load(ClassMapping mapping, JDBCStore store,
-        JDBCFetchState fetchState)
+        JDBCFetchConfiguration fetch)
         throws SQLException {
-        return load(mapping, store, fetchState, null);
+        return load(mapping, store, fetch, null);
     }
 
     public Object load(ClassMapping mapping, JDBCStore store,
-        JDBCFetchState fetchState, Joins joins)
+        JDBCFetchConfiguration fetch, Joins joins)
         throws SQLException {
-        return ((JDBCStoreManager) store).load(mapping, fetchState, null,
-            this);
+        return ((JDBCStoreManager) store).load(mapping, fetch, null, this);
     }
 
     public Array getArray(Object obj)

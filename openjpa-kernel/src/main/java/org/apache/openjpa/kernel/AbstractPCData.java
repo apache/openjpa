@@ -64,7 +64,7 @@ public abstract class AbstractPCData
      * Transform the given data value into its field value.
      */
     protected Object toField(OpenJPAStateManager sm, FieldMetaData fmd,
-        Object data, FetchState fetchState, Object context) {
+        Object data, FetchConfiguration fetch, Object context) {
         if (data == null)
             return null;
 
@@ -74,7 +74,7 @@ public abstract class AbstractPCData
                 Collection c2 = (Collection) sm.newFieldProxy(fmd.getIndex());
                 for (int i = 0; i < c.size(); i++)
                     c2.add(toNestedField(sm, fmd.getElement(), c.get(i),
-                        fetchState, context));
+                        fetch, context));
                 if (c2 instanceof Proxy) {
                     ChangeTracker ct = ((Proxy) c2).getChangeTracker();
                     if (ct != null)
@@ -90,9 +90,9 @@ public abstract class AbstractPCData
                 for (Iterator mi = m.entrySet().iterator(); mi.hasNext();) {
                     e = (Map.Entry) mi.next();
                     key = toNestedField(sm, fmd.getKey(), e.getKey(),
-                        fetchState, context);
+                        fetch, context);
                     value = toNestedField(sm, fmd.getElement(), e.getValue(),
-                        fetchState, context);
+                        fetch, context);
                     m2.put(key, value);
                 }
                 return m2;
@@ -102,11 +102,11 @@ public abstract class AbstractPCData
                     l.size());
                 for (int i = 0; i < l.size(); i++) {
                     Array.set(a, i, toNestedField(sm, fmd.getElement(),
-                        l.get(i), fetchState, context));
+                        l.get(i), fetch, context));
                 }
                 return a;
             default:
-                return toNestedField(sm, fmd, data, fetchState, context);
+                return toNestedField(sm, fmd, data, fetch, context);
         }
     }
 
@@ -115,7 +115,7 @@ public abstract class AbstractPCData
      * may be a key, value, or element of a map or collection.
      */
     protected Object toNestedField(OpenJPAStateManager sm, ValueMetaData vmd,
-        Object data, FetchState fetchState, Object context) {
+        Object data, FetchConfiguration fetch, Object context) {
         if (data == null)
             return null;
 
@@ -126,11 +126,11 @@ public abstract class AbstractPCData
                 return (Locale) data;
             case JavaTypes.PC:
                 if (vmd.isEmbedded())
-                    return toEmbeddedField(sm, vmd, data, fetchState, context);
+                    return toEmbeddedField(sm, vmd, data, fetch, context);
                 // no break
             case JavaTypes.PC_UNTYPED:
                 Object ret =
-                    toRelationField(sm, vmd, data, fetchState, context);
+                    toRelationField(sm, vmd, data, fetch, context);
                 if (ret != null)
                     return ret;
                 OrphanedKeyAction action = sm.getContext().getConfiguration().
@@ -146,8 +146,8 @@ public abstract class AbstractPCData
      * implementation assumes the data is an oid.
      */
     protected Object toRelationField(OpenJPAStateManager sm, ValueMetaData vmd,
-        Object data, FetchState fetchState, Object context) {
-        return sm.getContext().find(data, fetchState, null, null, 0);
+        Object data, FetchConfiguration fetch, Object context) {
+        return sm.getContext().find(data, fetch, null, null, 0);
     }
 
     /**
@@ -155,12 +155,12 @@ public abstract class AbstractPCData
      * implementation assumes the data is an {@link AbstractPCData}.
      */
     protected Object toEmbeddedField(OpenJPAStateManager sm, ValueMetaData vmd,
-        Object data, FetchState fetchState, Object context) {
+        Object data, FetchConfiguration fetch, Object context) {
         AbstractPCData pcdata = (AbstractPCData) data;
         OpenJPAStateManager embedded = sm.getContext().embed(null,
             pcdata.getId(), sm, vmd);
         pcdata.load(embedded, (BitSet) pcdata.getLoaded().clone(),
-            fetchState, context);
+            fetch, context);
         return embedded.getManagedInstance();
     }
 

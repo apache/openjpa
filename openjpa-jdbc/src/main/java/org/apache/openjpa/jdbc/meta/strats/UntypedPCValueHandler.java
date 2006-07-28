@@ -18,7 +18,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 import java.sql.SQLException;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.RelationId;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
@@ -83,7 +83,7 @@ public class UntypedPCValueHandler
     }
 
     public Object toObjectValue(ValueMapping vm, Object val,
-        OpenJPAStateManager sm, JDBCStore store, JDBCFetchState fetchState)
+        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch)
         throws SQLException {
         if (val == null)
             return null;
@@ -107,7 +107,7 @@ public class UntypedPCValueHandler
         }
 
         Object oid = ctx.newObjectId(cls, oidStr);
-        return store.find(oid, vm, fetchState);
+        return store.find(oid, vm, fetch);
     }
 
     public Object toRelationDataStoreValue(OpenJPAStateManager sm, Column col) {

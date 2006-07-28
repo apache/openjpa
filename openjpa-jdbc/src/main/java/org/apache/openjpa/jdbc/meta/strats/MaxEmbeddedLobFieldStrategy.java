@@ -21,7 +21,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
@@ -192,7 +191,7 @@ abstract class MaxEmbeddedLobFieldStrategy
     }
 
     public void load(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res)
+        JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
         Column col = field.getColumns()[0];
         if (res.contains(col))
@@ -200,15 +199,14 @@ abstract class MaxEmbeddedLobFieldStrategy
     }
 
     public void load(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState)
+        JDBCFetchConfiguration fetch)
         throws SQLException {
         Column col = field.getColumns()[0];
         Select sel = store.getSQLFactory().newSelect();
         sel.select(col);
         field.wherePrimaryKey(sel, sm, store);
 
-        Result res = sel.execute(store,
-            fetchState.getJDBCFetchConfiguration());
+        Result res = sel.execute(store, fetch);
         Object val = null;
         try {
             if (res.next())
@@ -243,7 +241,7 @@ abstract class MaxEmbeddedLobFieldStrategy
         return field.join(joins, forceOuter, false);
     }
 
-    public Object loadProjection(JDBCStore store, JDBCFetchState fetchState,
+    public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
         return load(field.getColumns()[0], res, joins);

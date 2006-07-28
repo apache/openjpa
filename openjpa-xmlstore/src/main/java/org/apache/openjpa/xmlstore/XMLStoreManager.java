@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.openjpa.abstractstore.AbstractStoreManager;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
-import org.apache.openjpa.kernel.FetchState;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.lib.rop.ListResultObjectProvider;
@@ -94,7 +93,7 @@ public class XMLStoreManager
     }
 
     public boolean initialize(OpenJPAStateManager sm, PCState state,
-        FetchState fetchState, Object context) {
+        FetchConfiguration fetch, Object context) {
         // we may already have looked up the backing ObjectData (see our extent
         // implementation below), and passed it through as the context; if
         // not, then look it up in the store
@@ -115,12 +114,12 @@ public class XMLStoreManager
         // load the data from the ObjectData into the state mgr; note that
         // this store manager doesn't do any locking -- it relies on the
         // system's lock manager to lock after the load is complete
-        data.load(sm, fetchState);
+        data.load(sm, fetch);
         return true;
     }
 
     public boolean load(OpenJPAStateManager sm, BitSet fields,
-        FetchState fetchState, int lockLevel, Object context) {
+        FetchConfiguration fetch, int lockLevel, Object context) {
         // we may already have looked up the backing ObjectData (see our extent
         // implementation below), and passed it through as the context; if
         // not, then look it up in the store
@@ -137,7 +136,7 @@ public class XMLStoreManager
         // load the data from the ObjectData into the state mgr; note that
         // this store manager doesn't do any locking -- it relies on the
         // system's lock manager to lock after the load is complete
-        data.load(sm, fields, fetchState);
+        data.load(sm, fields, fetch);
         return true;
     }
 
@@ -278,8 +277,7 @@ public class XMLStoreManager
             // being passed through and save ourselves a trip to the store
             // if it is present; this is particularly important in systems
             // where a trip to the store can be expensive.
-            pcs.add(ctx.find(datas[i].getId(), fetch.newFetchState(),
-                null, datas[i], 0));
+            pcs.add(ctx.find(datas[i].getId(), fetch, null, datas[i], 0));
         }
         return new ListResultObjectProvider(pcs);
     }

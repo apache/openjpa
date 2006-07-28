@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -60,7 +59,7 @@ class SelectConstructor {
      */
     public Select evaluate(JDBCStore store, Select parent, String alias,
         QueryExpressions exps, Object[] params, int level,
-        JDBCFetchState fetchState) {
+        JDBCFetchConfiguration fetch) {
         // already know that this query is equivalent to an extent?
         Select sel;
         if (_extent) {
@@ -85,8 +84,7 @@ class SelectConstructor {
         } else {
             // create a new select and initialize it with the joins needed for
             // the criteria of this query
-            sel = newJoinsSelect(store, parent, alias, exps, params,
-                fetchState);
+            sel = newJoinsSelect(store, parent, alias, exps, params, fetch);
         }
 
         // if this select wasn't cloned from a full template,
@@ -97,7 +95,7 @@ class SelectConstructor {
             // query should be treated like an extent
             Select inner = sel.getFromSelect();
             SQLBuffer where = buildWhere((inner != null) ? inner : sel,
-                store, exps.filter, params, fetchState);
+                store, exps.filter, params, fetch);
             if (where == null && exps.projections.length == 0
                 && exps.ordering.length == 0
                 && (sel.getJoins() == null || sel.getJoins().isEmpty())) {
@@ -132,12 +130,11 @@ class SelectConstructor {
             if (exps.having != null) {
                 Exp havingExp = (Exp) exps.having;
                 SQLBuffer buf = new SQLBuffer(store.getDBDictionary());
-                havingExp.appendTo(buf, sel, store, params, fetchState);
+                havingExp.appendTo(buf, sel, store, params, fetch);
                 sel.having(buf);
             }
             for (int i = 0; i < exps.grouping.length; i++)
-                ((Val) exps.grouping[i]).groupBy(sel, store, params,
-                    fetchState);
+                ((Val) exps.grouping[i]).groupBy(sel, store, params, fetch);
 
             // if template is still null at this point, must be a full cache
             if (_template == null && level == CACHE_FULL) {
@@ -154,13 +151,9 @@ class SelectConstructor {
      */
     private Select newJoinsSelect(JDBCStore store, Select parent,
         String alias, QueryExpressions exps, Object[] params,
-        JDBCFetchState fetchState) {
+        JDBCFetchConfiguration fetch) {
         Select sel = store.getSQLFactory().newSelect();
         sel.setAutoDistinct((exps.distinct & exps.DISTINCT_AUTO) != 0);
-        JDBCFetchConfiguration fetch = (fetchState == null)
-            ?
-            (JDBCFetchConfiguration) store.getContext().getFetchConfiguration()
-            : fetchState.getJDBCFetchConfiguration();
         sel.setJoinSyntax(fetch.getJoinSyntax());
         sel.setParent(parent, alias);
         initializeJoins(sel, store, exps, params);
@@ -267,12 +260,12 @@ class SelectConstructor {
      * Create the where sql.
      */
     private SQLBuffer buildWhere(Select sel, JDBCStore store,
-        Expression filter, Object[] params, JDBCFetchState fetchState) {
+        Expression filter, Object[] params, JDBCFetchConfiguration fetch) {
         // create where buffer
         SQLBuffer where = new SQLBuffer(store.getDBDictionary());
         where.append("(");
         Exp filterExp = (Exp) filter;
-        filterExp.appendTo(where, sel, store, params, fetchState);
+        filterExp.appendTo(where, sel, store, params, fetch);
 
         if (where.sqlEquals("(") || where.sqlEquals("(1 = 1"))
             return null;
@@ -284,7 +277,7 @@ class SelectConstructor {
      */
     public void select(JDBCStore store, ClassMapping mapping,
         boolean subclasses, Select sel, QueryExpressions exps,
-        Object[] params, JDBCFetchState fetchState, int eager) {
+        Object[] params, JDBCFetchConfiguration fetch, int eager) {
         Select inner = sel.getFromSelect();
         Val val;
         Joins joins = null;
@@ -295,12 +288,12 @@ class SelectConstructor {
         // ordering gets applied after query ordering
         for (int i = 0; i < exps.ordering.length; i++)
             ((Val) exps.ordering[i]).orderBy(sel, store, params,
-                exps.ascending[i], fetchState);
+                exps.ascending[i], fetch);
 
         // if no result string set, select matching objects like normal
         if (exps.projections.length == 0 && sel.getParent() == null) {
             int subs = (subclasses) ? sel.SUBS_JOINABLE : sel.SUBS_NONE;
-            sel.selectIdentifier(mapping, subs, store, fetchState, eager);
+            sel.selectIdentifier(mapping, subs, store, fetch, eager);
         } else if (exps.projections.length == 0) {
             // subselect for objects; we really just need the primary key values
             sel.select(mapping.getPrimaryKeyColumns(), joins);
@@ -316,8 +309,8 @@ class SelectConstructor {
             for (int i = 0; i < exps.projections.length; i++) {
                 val = (Val) exps.projections[i];
                 if (inner != null)
-                    val.selectColumns(inner, store, params, pks, fetchState);
-                val.select(sel, store, params, pks, fetchState);
+                    val.selectColumns(inner, store, params, pks, fetch);
+                val.select(sel, store, params, pks, fetch);
             }
 
             // make sure grouping and having columns are selected since it
@@ -325,12 +318,12 @@ class SelectConstructor {
             // result processing
             if (exps.having != null && inner != null)
                 ((Exp) exps.having).selectColumns(inner, store, params, true,
-                    fetchState);
+                    fetch);
             for (int i = 0; i < exps.grouping.length; i++) {
                 val = (Val) exps.grouping[i];
                 if (inner != null)
-                    val.selectColumns(inner, store, params, true, fetchState);
-                val.select(sel, store, params, true, fetchState);
+                    val.selectColumns(inner, store, params, true, fetch);
+                val.select(sel, store, params, true, fetch);
             }
         }
 
@@ -338,8 +331,8 @@ class SelectConstructor {
         for (int i = 0; i < exps.ordering.length; i++) {
             val = (Val) exps.ordering[i];
             if (inner != null)
-                val.selectColumns(inner, store, params, true, fetchState);
-            val.select(sel, store, params, true, fetchState);
+                val.selectColumns(inner, store, params, true, fetch);
+            val.select(sel, store, params, true, fetch);
         }
 
         // add conditions limiting the projections to the proper classes; if

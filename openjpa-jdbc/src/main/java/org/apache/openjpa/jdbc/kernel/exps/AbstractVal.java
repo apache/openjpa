@@ -15,7 +15,7 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -32,29 +32,29 @@ abstract class AbstractVal
     private static final String FALSE = "1 <> 1";
 
     public void appendIsEmpty(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
+        Object[] params, JDBCFetchConfiguration fetch) {
         sql.append(FALSE);
     }
 
     public void appendIsNotEmpty(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
+        Object[] params, JDBCFetchConfiguration fetch) {
         sql.append(TRUE);
     }
 
     public void appendIsNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState) {
-        appendTo(sql, 0, sel, store, params, fetchState);
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+        appendTo(sql, 0, sel, store, params, fetch);
         sql.append(" IS ").appendValue(null);
     }
 
     public void appendIsNotNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState) {
-        appendTo(sql, 0, sel, store, params, fetchState);
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+        appendTo(sql, 0, sel, store, params, fetch);
         sql.append(" IS NOT ").appendValue(null);
     }
 
     public void appendSize(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
+        Object[] params, JDBCFetchConfiguration fetch) {
         sql.append("1");
     }
 }

@@ -53,10 +53,10 @@ public abstract class AbstractPCResultObjectProvider
     }
 
     public void initialize(OpenJPAStateManager sm, PCState state,
-        FetchState fetchState)
+        FetchConfiguration fetch)
         throws Exception {
         sm.initialize(getPCType(), state);
-        load(sm, fetchState);
+        load(sm, fetch);
     }
 
     public Object getResultObject()
@@ -93,7 +93,8 @@ public abstract class AbstractPCResultObjectProvider
      * manager. Remember to call {@link OpenJPAStateManager#setVersion} to set
      * the optimistic versioning information, if it has any.
      */
-    protected abstract void load(OpenJPAStateManager sm, FetchState fetch)
+    protected abstract void load(OpenJPAStateManager sm, 
+        FetchConfiguration fetch)
         throws Exception;
 
     /**

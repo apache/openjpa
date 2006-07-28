@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
@@ -64,17 +64,17 @@ class CompareExpression
     }
 
     public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
-        _val1.calculateValue(sel, store, params, _val2, fetchState);
-        _val2.calculateValue(sel, store, params, _val1, fetchState);
+        Object[] params, JDBCFetchConfiguration fetch) {
+        _val1.calculateValue(sel, store, params, _val2, fetch);
+        _val2.calculateValue(sel, store, params, _val1, fetch);
         if (!Filters.canConvert(_val1.getType(), _val2.getType(), false)
             && !Filters.canConvert(_val2.getType(), _val1.getType(), false))
             throw new UserException(_loc.get("cant-convert", _val1.getType(),
                 _val2.getType()));
 
         store.getDBDictionary().comparison(buf, _op,
-            new FilterValueImpl(_val1, sel, store, params, fetchState),
-            new FilterValueImpl(_val2, sel, store, params, fetchState));
+            new FilterValueImpl(_val1, sel, store, params, fetch),
+            new FilterValueImpl(_val2, sel, store, params, fetch));
         sel.append(buf, _joins);
 
         _val1.clearParameters();
@@ -82,9 +82,9 @@ class CompareExpression
     }
 
     public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchState fetchState) {
-        _val1.selectColumns(sel, store, params, true, fetchState);
-        _val2.selectColumns(sel, store, params, true, fetchState);
+        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
+        _val1.selectColumns(sel, store, params, true, fetch);
+        _val2.selectColumns(sel, store, params, true, fetch);
     }
 
     public Joins getJoins() {

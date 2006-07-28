@@ -18,7 +18,6 @@ package org.apache.openjpa.jdbc.meta;
 import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.strats.NoneFieldStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -694,15 +693,13 @@ public class FieldMapping
     }
 
     public void selectEagerParallel(SelectExecutor sel, OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, int eagerMode) {
-        assertStrategy().selectEagerParallel(sel, sm, store, fetchState,
-            eagerMode);
+        JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
+        assertStrategy().selectEagerParallel(sel, sm, store, fetch, eagerMode);
     }
 
     public void selectEagerJoin(Select sel, OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, int eagerMode) {
-        assertStrategy().selectEagerJoin(sel, sm, store, fetchState,
-            eagerMode);
+        JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
+        assertStrategy().selectEagerJoin(sel, sm, store, fetch, eagerMode);
     }
 
     public boolean isEagerSelectToMany() {
@@ -710,8 +707,8 @@ public class FieldMapping
     }
 
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, int eagerMode) {
-        return assertStrategy().select(sel, sm, store, fetchState, eagerMode);
+        JDBCFetchConfiguration fetch, int eagerMode) {
+        return assertStrategy().select(sel, sm, store, fetch, eagerMode);
     }
 
     /**
@@ -771,27 +768,27 @@ public class FieldMapping
     }
 
     public Object loadEagerParallel(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Object res)
+        JDBCFetchConfiguration fetch, Object res)
         throws SQLException {
-        return assertStrategy().loadEagerParallel(sm, store, fetchState, res);
+        return assertStrategy().loadEagerParallel(sm, store, fetch, res);
     }
 
     public void loadEagerJoin(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res)
+        JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
-        assertStrategy().loadEagerJoin(sm, store, fetchState, res);
+        assertStrategy().loadEagerJoin(sm, store, fetch, res);
     }
 
     public void load(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res)
+        JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
-        assertStrategy().load(sm, store, fetchState, res);
+        assertStrategy().load(sm, store, fetch, res);
     }
 
     public void load(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState)
+        JDBCFetchConfiguration fetch)
         throws SQLException {
-        assertStrategy().load(sm, store, fetchState);
+        assertStrategy().load(sm, store, fetch);
     }
 
     public Object toDataStoreValue(Object val, JDBCStore store) {
@@ -852,17 +849,17 @@ public class FieldMapping
         return joins.join(_fk, true, toMany);
     }
 
-    public Object loadProjection(JDBCStore store, JDBCFetchState fetchState,
+    public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
-        return assertStrategy().loadProjection(store, fetchState, res, joins);
+        return assertStrategy().loadProjection(store, fetch, res, joins);
     }
 
     public Object loadKeyProjection(JDBCStore store,
-        JDBCFetchState fetchState, Result res, Joins joins)
+        JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
         return assertStrategy()
-            .loadKeyProjection(store, fetchState, res, joins);
+            .loadKeyProjection(store, fetch, res, joins);
     }
 
     public boolean isVersionable() {

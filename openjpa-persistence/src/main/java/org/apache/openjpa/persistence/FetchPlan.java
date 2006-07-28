@@ -23,6 +23,7 @@ import javax.persistence.LockModeType;
 
 import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
+import org.apache.openjpa.meta.FetchGroup;
 
 /**
  * The fetch plan allows you to dynamically alter eager fetching
@@ -37,8 +38,17 @@ public class FetchPlan {
     /**
      * Fetch group representing all fields.
      */
-    public static final String FETCH_GROUP_ALL =
-        FetchConfiguration.FETCH_GROUP_ALL;
+    public static final String GROUP_ALL = FetchGroup.NAME_ALL;
+
+    /**
+     * The default fetch group.
+     */
+    public static final String GROUP_DEFAULT = FetchGroup.NAME_DEFAULT;
+
+    /**
+     * Infinite fetch depth.
+     */
+    public static final int DEPTH_INFINITE = FetchGroup.DEPTH_INFINITE;
 
     /**
      * Constant to revert any setting to its default value.
@@ -71,8 +81,23 @@ public class FetchPlan {
     }
 
     /**
+     * The maximum fetch depth when loading an object.
+     */
+    public int getMaxFetchDepth(int depth) {
+        return _fetch.getMaxFetchDepth();
+    }
+
+    /**
+     * The maximum fetch depth when loading an object.
+     */
+    public FetchPlan setMaxFetchDepth(int depth) {
+        _fetch.setMaxFetchDepth(depth);
+        return this;
+    }
+
+    /**
      * Return the fetch batch size for large result set support.
-     * Defaults to the	<code>org.apache.openjpa.FetchBatchSize</code> setting. Note
+     * Defaults to the	<code>openjpa.FetchBatchSize</code> setting. Note
      * that this property will be ignored under some data stores.
      */
     public int getFetchBatchSize() {
@@ -81,7 +106,7 @@ public class FetchPlan {
 
     /**
      * Set the fetch batch size for large result set support.
-     * Defaults to the	<code>org.apache.openjpa.FetchBatchSize</code> setting. Note
+     * Defaults to the	<code>openjpa.FetchBatchSize</code> setting. Note
      * that this property will be ignored under some data stores.
      */
     public FetchPlan setFetchBatchSize(int fetchBatchSize) {
@@ -116,7 +141,6 @@ public class FetchPlan {
      * <code>org.apache.openjpa.FetchGroups</code> setting.
      */
     public Collection<String> getFetchGroups() {
-//		return new FetchGroupSet ();
         return _fetch.getFetchGroups();
     }
 
@@ -195,7 +219,6 @@ public class FetchPlan {
      * will use when loading objects. Defaults to the empty set.
      */
     public Collection<String> getFields() {
-//		return new FetchFieldSet ();
         return (Collection<String>) _fetch.getFields();
     }
 
@@ -398,66 +421,4 @@ public class FetchPlan {
             return false;
         return _fetch.equals(((FetchPlan) other)._fetch);
     }
-
-    /**
-     * View of fetch groups as collection.
-     */
-//	private class FetchGroupSet
-//		extends AbstractCollection<String>
-//	{
-//		private String[] _groups = null;
-//
-//
-//		public boolean contains (Object o)
-//		{
-//			return o instanceof String && _fetch.hasFetchGroup ((String) o);
-//		}
-//
-//
-//		public Iterator iterator ()
-//		{
-//			if (_groups == null)
-//				_groups = _fetch.getFetchGroups ();
-//			return new ObjectArrayIterator (_groups);
-//		}
-//
-//
-//		public int size ()
-//		{
-//			if (_groups == null)
-//				_groups = _fetch.getFetchGroups ();
-//			return _groups.length;
-//		}
-//	}
-
-    /**
-     * View of fetch fields as collection.
-     */
-//	private class FetchFieldSet
-//		extends AbstractCollection<String>
-//	{
-//		private String[] _fields = null;
-//
-//
-//		public boolean contains (Object o)
-//		{
-//			return o instanceof String && _fetch.hasField ((String) o);
-//		}
-//
-//
-//		public Iterator iterator ()
-//		{
-//			if (_fields == null)
-//				_fields = _fetch.getFields ();
-//			return new ObjectArrayIterator (_fields);
-//		}
-//
-//
-//		public int size ()
-//		{
-//			if (_fields == null)
-//				_fields = _fetch.getFields ();
-//			return _fields.length;
-//		}
-//	}
 }

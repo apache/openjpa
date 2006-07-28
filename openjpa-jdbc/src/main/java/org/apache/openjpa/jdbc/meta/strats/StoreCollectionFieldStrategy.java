@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -67,7 +66,7 @@ public abstract class StoreCollectionFieldStrategy
      * {@link #loadElement}.
      */
     protected abstract void selectElement(Select sel, ClassMapping elem,
-        JDBCStore store, JDBCFetchState fetchState, int eagerMode,
+        JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode,
         Joins joins);
 
     /**
@@ -76,8 +75,7 @@ public abstract class StoreCollectionFieldStrategy
      * results.
      */
     protected abstract Object loadElement(OpenJPAStateManager sm,
-        JDBCStore store,
-        JDBCFetchState fetchState, Result res, Joins joins)
+        JDBCStore store, JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException;
 
     /**
@@ -143,34 +141,32 @@ public abstract class StoreCollectionFieldStrategy
 
     public void selectEagerParallel(SelectExecutor sel,
         final OpenJPAStateManager sm, final JDBCStore store,
-        final JDBCFetchState fetchState, final int eagerMode) {
+        final JDBCFetchConfiguration fetch, final int eagerMode) {
         if (!(sel instanceof Union))
             selectEager((Select) sel, getDefaultElementMapping(true), sm,
-                store, fetchState, eagerMode, true, false);
+                store, fetch, eagerMode, true, false);
         else {
             final ClassMapping[] elems = getIndependentElementMappings(true);
             Union union = (Union) sel;
-            JDBCFetchConfiguration fetch =
-                fetchState.getJDBCFetchConfiguration();
             if (fetch.getSubclassFetchMode(field.getElementMapping().
                 getTypeMapping()) != fetch.EAGER_JOIN)
                 union.abortUnion();
             union.select(new Union.Selector() {
                 public void select(Select sel, int idx) {
-                    selectEager(sel, elems[idx], sm, store, fetchState,
-                        eagerMode, true, false);
+                    selectEager(sel, elems[idx], sm, store, fetch, eagerMode, 
+                        true, false);
                 }
             });
         }
     }
 
     public void selectEagerJoin(Select sel, OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, int eagerMode) {
+        JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
         // we limit further eager fetches to joins, because after this point
         // the select has been modified such that parallel clones may produce
         // invalid sql
-        selectEager(sel, getDefaultElementMapping(true), sm, store,
-            fetchState, JDBCFetchConfiguration.EAGER_JOIN, false,
+        selectEager(sel, getDefaultElementMapping(true), sm, store, fetch, 
+            JDBCFetchConfiguration.EAGER_JOIN, false,
             field.getNullValue()
                 != FieldMapping.NULL_EXCEPTION);
     }
@@ -183,7 +179,7 @@ public abstract class StoreCollectionFieldStrategy
      * Select our data eagerly.
      */
     private void selectEager(Select sel, ClassMapping elem,
-        OpenJPAStateManager sm, JDBCStore store, JDBCFetchState fetchState,
+        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch,
         int eagerMode, boolean selectOid, boolean outer) {
         // force distinct if there was a to-many join to avoid dups, but
         // if this is a parallel select don't make distinct based on the
@@ -221,17 +217,16 @@ public abstract class StoreCollectionFieldStrategy
         if (outer)
             joins = sel.outer(joins);
         field.orderRelation(sel, elem, joins);
-        selectElement(sel, elem, store, fetchState, eagerMode, joins);
+        selectElement(sel, elem, store, fetch, eagerMode, joins);
     }
 
     public Object loadEagerParallel(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Object res)
+        JDBCFetchConfiguration fetch, Object res)
         throws SQLException {
         // process batched results if we haven't already
         Map rels;
         if (res instanceof Result)
-            rels = processEagerParallelResult(sm, store, fetchState,
-                (Result) res);
+            rels = processEagerParallelResult(sm, store, fetch, (Result) res);
         else
             rels = (Map) res;
 
@@ -252,7 +247,7 @@ public abstract class StoreCollectionFieldStrategy
      * Process the given batched result.
      */
     private Map processEagerParallelResult(OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, Result res)
+        JDBCStore store, JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
         // do same joins as for load
         //### cheat: we know typical result joins only care about the relation
@@ -293,8 +288,7 @@ public abstract class StoreCollectionFieldStrategy
 
             if (field.getOrderColumn() != null)
                 seq = res.getInt(field.getOrderColumn(), orderJoins) + 1;
-            add(store, coll, loadElement(null, store, fetchState, res,
-                dataJoins));
+            add(store, coll, loadElement(null, store, fetch, res, dataJoins));
         }
         res.close();
 
@@ -324,7 +318,7 @@ public abstract class StoreCollectionFieldStrategy
     }
 
     public void loadEagerJoin(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res)
+        JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
         // initialize field value
         Object coll;
@@ -364,8 +358,7 @@ public abstract class StoreCollectionFieldStrategy
             if (field.getOrderColumn() != null)
                 seq = res.getInt(field.getOrderColumn(), refJoins) + 1;
             res.setBaseMapping(null);
-            add(store, coll, loadElement(sm, store, fetchState, res,
-                dataJoins));
+            add(store, coll, loadElement(sm, store, fetch, res, dataJoins));
             if (!res.next() || res.indexOf() != typeIdx) {
                 res.pushBack();
                 break;
@@ -413,7 +406,7 @@ public abstract class StoreCollectionFieldStrategy
     }
 
     public void load(final OpenJPAStateManager sm, final JDBCStore store,
-        final JDBCFetchState fetchState)
+        final JDBCFetchConfiguration fetch)
         throws SQLException {
         if (field.isLRS()) {
             Proxy coll = newLRSProxy(store.getConfiguration());
@@ -434,8 +427,7 @@ public abstract class StoreCollectionFieldStrategy
                 sel.whereForeignKey(getJoinForeignKey(rel),
                     sm.getObjectId(), field.getDefiningMapping(), store);
 
-                Result res = sel.execute(store,
-                    fetchState.getJDBCFetchConfiguration());
+                Result res = sel.execute(store, fetch);
                 try {
                     res.next();
                     coll.getChangeTracker().setNextSequence
@@ -456,7 +448,7 @@ public abstract class StoreCollectionFieldStrategy
         union.select(new Union.Selector() {
             public void select(Select sel, int idx) {
                 ClassMapping elem = (elems.length == 0) ? null : elems[idx];
-                resJoins[idx] = selectAll(sel, elem, sm, store, fetchState,
+                resJoins[idx] = selectAll(sel, elem, sm, store, fetch,
                     JDBCFetchConfiguration.EAGER_PARALLEL);
             }
         });
@@ -473,14 +465,13 @@ public abstract class StoreCollectionFieldStrategy
         }
 
         // load values
-        Result res = union.execute(store,
-            fetchState.getJDBCFetchConfiguration());
+        Result res = union.execute(store, fetch);
         try {
             int seq = 0;
             while (res.next()) {
                 if (ct != null && field.getOrderColumn() != null)
                     seq = res.getInt(field.getOrderColumn());
-                add(store, coll, loadElement(sm, store, fetchState, res,
+                add(store, coll, loadElement(sm, store, fetch, res,
                     resJoins[res.indexOf()]));
             }
             if (ct != null && field.getOrderColumn() != null)
@@ -501,7 +492,7 @@ public abstract class StoreCollectionFieldStrategy
      * Select data for loading, starting in field table.
      */
     protected Joins selectAll(Select sel, ClassMapping elem,
-        OpenJPAStateManager sm, JDBCStore store, JDBCFetchState fetchState,
+        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch,
         int eagerMode) {
         sel.whereForeignKey(getJoinForeignKey(elem), sm.getObjectId(),
             field.getDefiningMapping(), store);
@@ -511,14 +502,14 @@ public abstract class StoreCollectionFieldStrategy
         field.orderLocal(sel, elem, null);
         Joins joins = joinElementRelation(sel.newJoins(), elem);
         field.orderRelation(sel, elem, joins);
-        selectElement(sel, elem, store, fetchState, eagerMode, joins);
+        selectElement(sel, elem, store, fetch, eagerMode, joins);
         return joins;
     }
 
-    public Object loadProjection(JDBCStore store, JDBCFetchState fetchState,
+    public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
-        return loadElement(null, store, fetchState, res, joins);
+        return loadElement(null, store, fetch, res, joins);
     }
 
     protected ForeignKey getJoinForeignKey() {

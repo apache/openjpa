@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -555,19 +554,18 @@ public class LogicalUnion
         }
 
         public void select(ClassMapping mapping, int subclasses,
-            JDBCStore store, JDBCFetchState fetchState, int eager) {
-            select(mapping, subclasses, store, fetchState, eager, null, false);
+            JDBCStore store, JDBCFetchConfiguration fetch, int eager) {
+            select(mapping, subclasses, store, fetch, eager, null, false);
         }
 
         public void select(ClassMapping mapping, int subclasses,
-            JDBCStore store, JDBCFetchState fetchState, int eager,
+            JDBCStore store, JDBCFetchConfiguration fetch, int eager,
             Joins joins) {
-            select(mapping, subclasses, store, fetchState, eager, joins,
-                false);
+            select(mapping, subclasses, store, fetch, eager, joins, false);
         }
 
         private void select(ClassMapping mapping, int subclasses,
-            JDBCStore store, JDBCFetchState fetchState, int eager,
+            JDBCStore store, JDBCFetchConfiguration fetch, int eager,
             Joins joins, boolean identifier) {
             // if this is the first (primary) mapping selected for this
             // SELECT, record it so we can figure out what the result type is
@@ -575,7 +573,7 @@ public class LogicalUnion
             if (mappings[pos] == null)
                 mappings[pos] = mapping;
 
-            sel.select(this, mapping, subclasses, store, fetchState, eager,
+            sel.select(this, mapping, subclasses, store, fetch, eager,
                 joins, identifier);
         }
 
@@ -596,14 +594,14 @@ public class LogicalUnion
         }
 
         public void selectIdentifier(ClassMapping mapping, int subclasses,
-            JDBCStore store, JDBCFetchState fetchState, int eager) {
-            select(mapping, subclasses, store, fetchState, eager, null, true);
+            JDBCStore store, JDBCFetchConfiguration fetch, int eager) {
+            select(mapping, subclasses, store, fetch, eager, null, true);
         }
 
         public void selectIdentifier(ClassMapping mapping, int subclasses,
-            JDBCStore store, JDBCFetchState fetchState, int eager,
+            JDBCStore store, JDBCFetchConfiguration fetch, int eager,
             Joins joins) {
-            select(mapping, subclasses, store, fetchState, eager, joins, true);
+            select(mapping, subclasses, store, fetch, eager, joins, true);
         }
 
         public int selectPrimaryKey(ClassMapping mapping) {

@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.openjpa.event.OrphanedKeyAction;
-import org.apache.openjpa.kernel.FetchState;
+import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -105,17 +105,14 @@ public final class ObjectData
      * given state manager. Only fields in the given fetch configuration are
      * loaded.
      */
-    public void load(OpenJPAStateManager sm, FetchState fetchState) {
+    public void load(OpenJPAStateManager sm, FetchConfiguration fetch) {
         if (sm.getVersion() == null)
             sm.setVersion(_version);
 
         FieldMetaData[] fmds = _meta.getFields();
-        for (int i = 0; i < fmds.length; i++) {
-            if (fmds[i].getManagement() == fmds[i].MANAGE_PERSISTENT
-                && (fetchState.requiresLoad(sm, fmds[i]))) {
-                sm.store(i, toLoadable(sm, fmds[i], _data[i], fetchState));
-            }
-        }
+        for (int i = 0; i < fmds.length; i++)
+            if (!sm.getLoaded().get(i) && fetch.requiresFetch(fmds[i]))
+                sm.store(i, toLoadable(sm, fmds[i], _data[i], fetch));
     }
 
     /**
@@ -123,14 +120,14 @@ public final class ObjectData
      * given state manager. Only fields in the given bit set will be loaded.
      */
     public void load(OpenJPAStateManager sm, BitSet fields,
-        FetchState fetchState) {
+        FetchConfiguration fetch) {
         if (sm.getVersion() == null)
             sm.setVersion(_version);
 
         FieldMetaData[] fmds = _meta.getFields();
         for (int i = 0; i < fmds.length; i++)
             if (fields.get(i))
-                sm.store(i, toLoadable(sm, fmds[i], _data[i], fetchState));
+                sm.store(i, toLoadable(sm, fmds[i], _data[i], fetch));
     }
 
     /**
@@ -138,7 +135,7 @@ public final class ObjectData
      * into a state manager.
      */
     private static Object toLoadable(OpenJPAStateManager sm,
-        FieldMetaData fmd, Object val, FetchState fetchState) {
+        FieldMetaData fmd, Object val, FetchConfiguration fetch) {
         if (val == null)
             return null;
 
@@ -157,7 +154,7 @@ public final class ObjectData
                 // it to the right type from its stored form
                 for (Iterator itr = c.iterator(); itr.hasNext();)
                     c2.add(toNestedLoadable(sm, fmd.getElement(), itr.next(),
-                        fetchState));
+                        fetch));
                 return c2;
 
             case JavaTypes.ARRAY:
@@ -175,7 +172,7 @@ public final class ObjectData
                 int idx = 0;
                 for (Iterator itr = c.iterator(); itr.hasNext(); idx++)
                     Array.set(a, idx, toNestedLoadable(sm, fmd.getElement(),
-                        itr.next(), fetchState));
+                        itr.next(), fetch));
                 return a;
 
             case JavaTypes.MAP:
@@ -191,16 +188,15 @@ public final class ObjectData
                 // it to the right type from its stored form
                 for (Iterator itr = m.entrySet().iterator(); itr.hasNext();) {
                     Map.Entry e = (Map.Entry) itr.next();
-                    m2.put(toNestedLoadable(sm, fmd.getKey(), e.getKey(),
-                        fetchState),
+                    m2.put(toNestedLoadable(sm, fmd.getKey(), e.getKey(),fetch),
                         toNestedLoadable(sm, fmd.getElement(), e.getValue(),
-                            fetchState));
+                            fetch));
                 }
                 return m2;
 
             default:
                 // just convert the stored value into its loadable equivalent.
-                return toNestedLoadable(sm, fmd, val, fetchState);
+                return toNestedLoadable(sm, fmd, val, fetch);
         }
     }
 
@@ -210,7 +206,7 @@ public final class ObjectData
      * value; it cannot be a container.
      */
     private static Object toNestedLoadable(OpenJPAStateManager sm,
-        ValueMetaData vmd, Object val, FetchState fetchState) {
+        ValueMetaData vmd, Object val, FetchConfiguration fetch) {
         if (val == null)
             return null;
 
@@ -224,7 +220,7 @@ public final class ObjectData
                 // for relations to other persistent objects, we store the related
                 // object's oid -- convert it back into a persistent instance
                 StoreContext ctx = sm.getContext();
-                Object pc = ctx.find(val, fetchState, null, null, 0);
+                Object pc = ctx.find(val, fetch, null, null, 0);
                 if (pc != null)
                     return pc;
                 OrphanedKeyAction action = ctx.getConfiguration().

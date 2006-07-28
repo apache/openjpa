@@ -18,7 +18,6 @@ package org.apache.openjpa.jdbc.meta.strats;
 import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.FieldStrategy;
@@ -68,11 +67,11 @@ public abstract class AbstractFieldStrategy
     }
 
     public void selectEagerJoin(Select sel, OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, int eagerMode) {
+        JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
     }
 
     public void selectEagerParallel(SelectExecutor sel, OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, int eagerMode) {
+        JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
     }
 
     public boolean isEagerSelectToMany() {
@@ -80,28 +79,28 @@ public abstract class AbstractFieldStrategy
     }
 
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, int eagerMode) {
+        JDBCFetchConfiguration fetch, int eagerMode) {
         return -1;
     }
 
     public Object loadEagerParallel(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Object res)
+        JDBCFetchConfiguration fetch, Object res)
         throws SQLException {
         return res;
     }
 
     public void loadEagerJoin(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res)
+        JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
     }
 
     public void load(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res)
+        JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
     }
 
     public void load(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState)
+        JDBCFetchConfiguration fetch)
         throws SQLException {
     }
 
@@ -151,14 +150,14 @@ public abstract class AbstractFieldStrategy
         return joins;
     }
 
-    public Object loadProjection(JDBCStore store, JDBCFetchState fetchState,
+    public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
         return null;
     }
 
     public Object loadKeyProjection(JDBCStore store,
-        JDBCFetchState fetchState, Result res, Joins joins)
+        JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
         return null;
     }

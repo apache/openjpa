@@ -39,7 +39,6 @@ import org.apache.commons.collections.comparators.ComparatorChain;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -110,7 +109,6 @@ public class FieldMetaData
     private static final int DFG_EXPLICIT = 4;
 
     private static final Method DEFAULT_METHOD;
-
     static {
         try {
             DEFAULT_METHOD = Object.class.getMethod("wait", (Class[]) null);
@@ -152,7 +150,8 @@ public class FieldMetaData
     private int _pkIndex = -1;
     private boolean _explicit = false;
     private int _dfg = 0;
-    private Set _fgs = null;
+    private Set _fgSet = null;
+    private String[] _fgs = null;
     private Boolean _lrs = null;
     private String _extName = null;
     private Method _extMethod = DEFAULT_METHOD;
@@ -554,6 +553,61 @@ public class FieldMetaData
     }
 
     /**
+     * Gets the name of the custom fetch groups those are associated to this 
+     * receiver.  This does not include the "default" and "all" fetch groups.
+     *
+     * @return the set of fetch group names, not including the default and
+     * all fetch groups.
+     */
+    public String[] getCustomFetchGroups() {
+        if (_fgs == null) {
+            if (_fgSet == null || _manage != MANAGE_PERSISTENT 
+                || isPrimaryKey() || isVersion())
+                _fgs = new String[0];
+            else
+                _fgs = (String[]) _fgSet.toArray(new String[_fgSet.size()]);
+        }
+        return _fgs;
+    }
+
+    /**
+     * Whether this field is in the given fetch group.
+     */
+    public boolean isInFetchGroup(String fg) {
+        if (_manage != MANAGE_PERSISTENT || isPrimaryKey() || isVersion())
+            return false;
+        if (FetchGroup.NAME_ALL.equals(fg))
+            return true;
+        if (FetchGroup.NAME_DEFAULT.equals(fg))
+            return isInDefaultFetchGroup();
+        return _fgSet != null && _fgSet.contains(fg);
+    }
+
+    /**
+     * Set whether this field is in the given fetch group.
+     *
+     * @param fg is the name of a fetch group that must be present in the
+     * class that declared this field or any of its persistent superclasses.
+     */
+    public void setInFetchGroup(String fg, boolean in) {
+        if (StringUtils.isEmpty(fg))
+            throw new MetaDataException(_loc.get("empty-fg-name", this));
+        if (fg.equals(FetchGroup.NAME_ALL))
+            return;
+        if (fg.equals(FetchGroup.NAME_DEFAULT)) {
+            setInDefaultFetchGroup(in);
+            return;
+        }
+        if (_owner.getFetchGroup(fg) == null)
+            throw new MetaDataException(_loc.get("unknown-fg", fg, this));
+        if (in && _fgSet == null)
+            _fgSet = new HashSet();
+        if ((in && _fgSet.add(fg))
+            || (!in && _fgSet != null && _fgSet.remove(fg)))
+            _fgs = null;
+    }
+
+    /**
      * How the data store should treat null values for this field:
      * <ul>
      * <li>{@link #NULL_UNSET}: no value supplied</li>
@@ -825,62 +879,6 @@ public class FieldMetaData
      */
     public void setLRS(boolean lrs) {
         _lrs = (lrs) ? Boolean.TRUE : Boolean.FALSE;
-    }
-
-    /**
-     * Gets the name of the fetch groups those are associated to this receiver.
-     *
-     * @return the set of fetch group names.
-     * null if this field is a primary key or a version field.
-     * zero-length array if no fetch group has been associated.
-     */
-    public Set getFetchGroups() {
-        if (isPrimaryKey() || isVersion())
-            return null;
-        if (_fgs == null)
-            return new HashSet();
-        return _fgs;
-    }
-
-    /**
-     * Add the fetch group of given name for this field.
-     *
-     * @param fg is the name of a fetch group that must be present in the
-     * class that declared this field or any of its persistent superclasses.
-     */
-    public void addFetchGroup(String fg) {
-        if (StringUtils.isEmpty(fg))
-            throw new MetaDataException(_loc.get("bad-fg", fg));
-        if (getDeclaringMetaData().getFetchGroup(fg) == null)
-            throw new MetaDataException(_loc.get("unknown-fg", fg));
-        if (_fgs == null)
-            _fgs = new HashSet();
-        _fgs.add(fg);
-        if (fg.equals(FetchConfiguration.FETCH_GROUP_DEFAULT))
-            setInDefaultFetchGroup(true);
-    }
-
-    public void removeFetchGroup(String fg) {
-        if (_fgs == null)
-            return;
-        _fgs.remove(fg);
-        if (FetchConfiguration.FETCH_GROUP_DEFAULT.equals(fg))
-            setInDefaultFetchGroup(false);
-    }
-
-    public boolean fetchGroupOverlapsWith(FieldMetaData that) {
-        Set other = that.getFetchGroups();
-        if (_fgs == null || other == null || other.isEmpty())
-            return false;
-
-        for (Iterator fg = _fgs.iterator(); fg.hasNext();)
-            if (other.contains(fg.next()))
-                return true;
-        return false;
-    }
-
-    public boolean isDeclaredInFetchGroup(String fg) {
-        return (_fgs != null && _fgs.contains(fg));
     }
 
     /**
@@ -1649,8 +1647,8 @@ public class FieldMetaData
             if (field.isDefaultFetchGroupExplicit())
                 _dfg |= DFG_EXPLICIT;
         }
-        if (_fgs == null)
-            _fgs = field.getFetchGroups();
+        if (_fgSet == null && field._fgSet != null)
+            _fgSet = new HashSet(field._fgSet);
         if (_lrs == null)
             _lrs = (field.isLRS()) ? Boolean.TRUE : Boolean.FALSE;
         if (_valStrategy == -1)

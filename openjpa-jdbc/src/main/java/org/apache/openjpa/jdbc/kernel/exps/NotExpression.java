@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
@@ -48,15 +48,15 @@ class NotExpression
     }
 
     public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
+        Object[] params, JDBCFetchConfiguration fetch) {
         buf.append("NOT (");
-        _exp.appendTo(buf, sel, store, params, fetchState);
+        _exp.appendTo(buf, sel, store, params, fetch);
         buf.append(")");
     }
 
     public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchState fetchState) {
-        _exp.selectColumns(sel, store, params, pks, fetchState);
+        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
+        _exp.selectColumns(sel, store, params, pks, fetch);
     }
 
     public Joins getJoins() {

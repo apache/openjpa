@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.meta;
 
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
@@ -77,6 +77,6 @@ public interface Embeddable {
      * does not have to be loaded immediately; it may be stored as impl data.
      */
     public void loadEmbedded(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Object val)
+        JDBCFetchConfiguration fetch, Object val)
         throws SQLException;
 }

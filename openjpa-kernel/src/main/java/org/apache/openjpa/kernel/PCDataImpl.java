@@ -127,7 +127,7 @@ public class PCDataImpl
         _version = version;
     }
 
-    public void load(OpenJPAStateManager sm, FetchState fetchState,
+    public void load(OpenJPAStateManager sm, FetchConfiguration fetch,
         Object context) {
         loadVersion(sm);
         loadImplData(sm);
@@ -138,13 +138,13 @@ public class PCDataImpl
             // fields in configured fetch groups
             if (!isLoaded(i))
                 loadIntermediate(sm, fmds[i]);
-            else if (fetchState.requiresLoad(sm, fmds[i]))
-                loadField(sm, fmds[i], fetchState, context);
+            else if (!sm.getLoaded().get(i) && fetch.requiresFetch(fmds[i]))
+                loadField(sm, fmds[i], fetch, context);
         }
     }
 
     public void load(OpenJPAStateManager sm, BitSet fields,
-        FetchState fetchState, Object context) {
+        FetchConfiguration fetch, Object context) {
         loadVersion(sm);
         loadImplData(sm);
 
@@ -159,7 +159,7 @@ public class PCDataImpl
             if (!isLoaded(i))
                 loadIntermediate(sm, fmd);
             else {
-                loadField(sm, fmd, fetchState, context);
+                loadField(sm, fmd, fetch, context);
                 loadImplData(sm, fmd);
                 fields.clear(i);
             }
@@ -187,9 +187,9 @@ public class PCDataImpl
      * Set field-level information into the given state manager.
      */
     protected void loadField(OpenJPAStateManager sm, FieldMetaData fmd,
-        FetchState fetchState, Object context) {
+        FetchConfiguration fetch, Object context) {
         int index = fmd.getIndex();
-        Object val = toField(sm, fmd, getData(index), fetchState, context);
+        Object val = toField(sm, fmd, getData(index), fetch, context);
         sm.storeField(index, val);
     }
 

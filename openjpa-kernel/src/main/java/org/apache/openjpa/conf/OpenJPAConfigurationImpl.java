@@ -54,7 +54,7 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ClassResolver;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.ProxyManager;
-import org.apache.openjpa.conf.StoreFacadeTypeRegistry;
+import org.apache.openjpa.util.StoreFacadeTypeRegistry;
 
 /**
  * Implementation of the {@link OpenJPAConfiguration} interface.
