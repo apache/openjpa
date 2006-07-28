@@ -20,13 +20,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TransformerHandler;
 
 import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.w3c.dom.Document;
@@ -73,9 +67,6 @@ public class XMLFactory {
                 _domFactories[arrIdx] = domFactory;
             }
         }
-
-        _transFactory = (SAXTransformerFactory) TransformerFactory.
-            newInstance();
         _validating = new ValidatingErrorHandler();
     }
 
@@ -128,47 +119,6 @@ public class XMLFactory {
      */
     public static Document getDocument() {
         return getDOMParser(false, false).newDocument();
-    }
-
-    /**
-     * Return a Transformer that will apply the XSL transformation
-     * from the given source. If the source is null,
-     * no transformation will be applied.
-     */
-    public static Transformer getTransformer(Source source) {
-        try {
-            if (source == null)
-                return _transFactory.newTransformer();
-            return _transFactory.newTransformer(source);
-        } catch (TransformerConfigurationException tfce) {
-            throw new NestableRuntimeException(tfce);
-        }
-    }
-
-    /**
-     * Return a Templates for the given XSL source.
-     */
-    public static Templates getTemplates(Source source) {
-        try {
-            return _transFactory.newTemplates(source);
-        } catch (TransformerConfigurationException tfce) {
-            throw new NestableRuntimeException(tfce);
-        }
-    }
-
-    /**
-     * Return a TransformerHandler for transforming SAX events, applying the
-     * XSL transform from the given source. If the source is null, no
-     * transform will be applied.
-     */
-    public static TransformerHandler getTransformerHandler(Source source) {
-        try {
-            if (source == null)
-                return _transFactory.newTransformerHandler();
-            return _transFactory.newTransformerHandler(source);
-        } catch (TransformerConfigurationException tfce) {
-            throw new NestableRuntimeException(tfce);
-        }
     }
 
     /**
