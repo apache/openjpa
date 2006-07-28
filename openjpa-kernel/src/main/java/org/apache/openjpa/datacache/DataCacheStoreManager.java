@@ -29,7 +29,6 @@ import java.util.Map;
 import org.apache.openjpa.enhance.PCDataGenerator;
 import org.apache.openjpa.kernel.DelegatingStoreManager;
 import org.apache.openjpa.kernel.FetchConfiguration;
-import org.apache.openjpa.kernel.FetchState;
 import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
@@ -316,25 +315,22 @@ public class DataCacheStoreManager
     }
 
     public boolean initialize(OpenJPAStateManager sm, PCState state,
-        FetchState fetchState, Object edata) {
+        FetchConfiguration fetch, Object edata) {
         DataCache cache = sm.getMetaData().getDataCache();
         if (cache == null || sm.isEmbedded())
-            return super.initialize(sm, state, fetchState, edata);
+            return super.initialize(sm, state, fetch, edata);
 
         DataCachePCData data = cache.get(sm.getObjectId());
-        FetchConfiguration fetch = (fetchState == null)
-            ? _ctx.getFetchConfiguration()
-            : fetchState.getFetchConfiguration();
         if (data != null && !isLocking(fetch)) {
             //### the 'data.type' access here probably needs to be
             //### addressed for bug 511
             sm.initialize(data.getType(), state);
-            data.load(sm, fetchState, edata);
+            data.load(sm, fetch, edata);
             return true;
         }
 
         // initialize from store manager
-        if (!super.initialize(sm, state, fetchState, edata))
+        if (!super.initialize(sm, state, fetch, edata))
             return false;
         if (!_ctx.getPopulateDataCache())
             return true;
@@ -361,25 +357,21 @@ public class DataCacheStoreManager
     }
 
     public boolean load(OpenJPAStateManager sm, BitSet fields,
-        FetchState fetchState, int lockLevel, Object edata) {
-        FetchConfiguration fetch = (fetchState == null)
-            ? _ctx.getFetchConfiguration()
-            : fetchState.getFetchConfiguration();
+        FetchConfiguration fetch, int lockLevel, Object edata) {
         DataCache cache = sm.getMetaData().getDataCache();
         if (cache == null || sm.isEmbedded())
-            return super.load(sm, fields, fetchState, lockLevel, edata);
+            return super.load(sm, fields, fetch, lockLevel, edata);
 
         DataCachePCData data = cache.get(sm.getObjectId());
         if (lockLevel == LockLevels.LOCK_NONE && !isLocking(fetch)
             && data != null)
-            data.load(sm, fields, fetchState, edata);
+            data.load(sm, fields, fetch, edata);
         if (fields.length() == 0)
             return true;
 
         // load from store manager; clone the set of still-unloaded fields
         // so that if the store manager decides to modify it it won't affect us
-        if (!super.load(sm, (BitSet) fields.clone(), fetchState,
-            lockLevel, edata))
+        if (!super.load(sm, (BitSet) fields.clone(), fetch, lockLevel, edata))
             return false;
         if (!_ctx.getPopulateDataCache())
             return true;
@@ -432,7 +424,7 @@ public class DataCacheStoreManager
                     //### the 'data.type' access here probably needs
                     //### to be addressed for bug 511
                     sm.initialize(data.getType(), state);
-                    data.load(sm, fetch.newFetchState(), edata);
+                    data.load(sm, fetch, edata);
                 } else
                     unloaded = addUnloaded(sm, null, unloaded);
             } else if (load != FORCE_LOAD_NONE
@@ -440,9 +432,8 @@ public class DataCacheStoreManager
                 data = cache.get(sm.getObjectId());
                 if (data != null) {
                     // load unloaded fields
-                	FetchState fetchState = fetch.newFetchState();
-                    fields = sm.getUnloaded(fetchState);
-                    data.load(sm, fields, fetchState, edata);
+                    fields = sm.getUnloaded(fetch);
+                    data.load(sm, fields, fetch, edata);
                     if (fields.length() > 0)
                         unloaded = addUnloaded(sm, fields, unloaded);
                 } else

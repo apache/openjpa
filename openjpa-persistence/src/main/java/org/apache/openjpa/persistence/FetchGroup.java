@@ -30,7 +30,18 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface FetchGroup {
 
+    /**
+     * Name of fetch group.
+     */
     String name() default "";
 
+    /**
+     * Whether loading this group results in a post-load callback.
+     */
+    boolean postLoad() default false;
+
+    /**
+     * Included attributes.
+     */
     FetchAttribute[] attributes() default {};
 }

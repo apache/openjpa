@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.Joins;
@@ -60,9 +60,9 @@ class MatchesExpression
     }
 
     public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
-        _val.calculateValue(sel, store, params, _const, fetchState);
-        _const.calculateValue(sel, store, params, _val, fetchState);
+        Object[] params, JDBCFetchConfiguration fetch) {
+        _val.calculateValue(sel, store, params, _const, fetch);
+        _const.calculateValue(sel, store, params, _val, fetch);
 
         Column col = null;
         if (_val instanceof PCPath) {
@@ -91,7 +91,7 @@ class MatchesExpression
             // append target
             if (ignoreCase)
                 buf.append("LOWER(");
-            _val.appendTo(buf, 0, sel, store, params, fetchState);
+            _val.appendTo(buf, 0, sel, store, params, fetch);
             if (ignoreCase)
                 buf.append(")");
 
@@ -114,9 +114,9 @@ class MatchesExpression
     }
 
     public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchState fetchState) {
-        _val.selectColumns(sel, store, params, true, fetchState);
-        _const.selectColumns(sel, store, params, true, fetchState);
+        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
+        _val.selectColumns(sel, store, params, true, fetch);
+        _const.selectColumns(sel, store, params, true, fetch);
     }
 
     public Joins getJoins() {

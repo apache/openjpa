@@ -21,7 +21,6 @@ import java.util.NoSuchElementException;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -127,8 +126,6 @@ public class LRSProxyCollection
         final OpenJPAStateManager sm = assertOwner();
         final JDBCStore store = getStore();
         final JDBCFetchConfiguration fetch = store.getFetchConfiguration();
-        final JDBCFetchState fetchState =
-            (JDBCFetchState) fetch.newFetchState();
         final Joins[] resJoins = new Joins[Math.max(1, elems.length)];
         final FieldMapping fm = _strat.getFieldMapping();
 
@@ -150,14 +147,14 @@ public class LRSProxyCollection
                 resJoins[idx] = _strat.joinElementRelation(sel.newJoins(),
                     elem);
                 fm.orderRelation(sel, elem, resJoins[idx]);
-                _strat.selectElement(sel, elem, store, fetchState,
-                    fetch.EAGER_JOIN, resJoins[idx]);
+                _strat.selectElement(sel, elem, store, fetch, fetch.EAGER_JOIN,
+                    resJoins[idx]);
             }
         });
 
         try {
             Result res = union.execute(store, fetch);
-            return new ResultIterator(sm, store, fetchState, res, resJoins);
+            return new ResultIterator(sm, store, fetch, res, resJoins);
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se, store.getDBDictionary());
         }
@@ -184,16 +181,16 @@ public class LRSProxyCollection
 
         private final OpenJPAStateManager _sm;
         private final JDBCStore _store;
-        private final JDBCFetchState _fetchState;
+        private final JDBCFetchConfiguration _fetch;
         private final Result _res;
         private final Joins[] _joins;
         private Boolean _next = null;
 
         public ResultIterator(OpenJPAStateManager sm, JDBCStore store,
-            JDBCFetchState fetchState, Result res, Joins[] joins) {
+            JDBCFetchConfiguration fetch, Result res, Joins[] joins) {
             _sm = sm;
             _store = store;
-            _fetchState = fetchState;
+            _fetch = fetch;
             _res = res;
             _joins = joins;
         }
@@ -214,7 +211,7 @@ public class LRSProxyCollection
                 throw new NoSuchElementException();
             try {
                 _next = null;
-                return _strat.loadElement(_sm, _store, _fetchState, _res,
+                return _strat.loadElement(_sm, _store, _fetch, _res,
                     _joins[_res.indexOf()]);
             } catch (SQLException se) {
                 throw SQLExceptions.getStore(se, _store.getDBDictionary());

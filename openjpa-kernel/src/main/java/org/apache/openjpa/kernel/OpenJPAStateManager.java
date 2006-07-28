@@ -74,7 +74,7 @@ public interface OpenJPAStateManager
     /**
      * Load fetch group fields.
      */
-    public void load(FetchState fetchState);
+    public void load(FetchConfiguration fetch);
 
     /**
      * Return the managed instance.
@@ -141,13 +141,14 @@ public interface OpenJPAStateManager
      * on the given fetch configuration. Pass in null to retrieve all
      * unloaded fields.
      */
-    public BitSet getUnloaded(FetchState fetchState);
+    public BitSet getUnloaded(FetchConfiguration fetch);
 
     /**
      * Create a new hollow proxy instance for the given field. In cases where
      * the field externalizes to an SCO but is declared something else, the
      * returned object may not implement {@link Proxy}. In all other cases,
-     * this method delegates to the system {@link org.apache.openjpa.util.ProxyManager}
+     * this method delegates to the system 
+     * {@link org.apache.openjpa.util.ProxyManager}
      * with the correct field information. The returned proxy's owner is
      * unset so that modifications to the proxy will not be tracked while its
      * state is initialized. Calling {@link #storeField} or {@link #store}

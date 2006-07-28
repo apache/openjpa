@@ -18,7 +18,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 import java.sql.SQLException;
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
@@ -121,39 +121,39 @@ class Extension
     }
 
     public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchState fetchState) {
-        sel.select(newSQLBuffer(sel, store, params, fetchState), this);
+        boolean pks, JDBCFetchConfiguration fetch) {
+        sel.select(newSQLBuffer(sel, store, params, fetch), this);
     }
 
     public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchState fetchState) {
+        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
         if (_target != null)
-            _target.selectColumns(sel, store, params, true, fetchState);
+            _target.selectColumns(sel, store, params, true, fetch);
         if (_arg != null)
-            _arg.selectColumns(sel, store, params, true, fetchState);
+            _arg.selectColumns(sel, store, params, true, fetch);
     }
 
     public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchState fetchState) {
-        sel.groupBy(newSQLBuffer(sel, store, params, fetchState), false);
+        JDBCFetchConfiguration fetch) {
+        sel.groupBy(newSQLBuffer(sel, store, params, fetch), false);
     }
 
     public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchState fetchState) {
-        sel.orderBy(newSQLBuffer(sel, store, params, fetchState), asc, false);
+        boolean asc, JDBCFetchConfiguration fetch) {
+        sel.orderBy(newSQLBuffer(sel, store, params, fetch), asc, false);
     }
 
     private SQLBuffer newSQLBuffer(Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
-        calculateValue(sel, store, params, null, fetchState);
+        Object[] params, JDBCFetchConfiguration fetch) {
+        calculateValue(sel, store, params, null, fetch);
         SQLBuffer buf = new SQLBuffer(store.getDBDictionary());
-        appendTo(buf, 0, sel, store, params, fetchState);
+        appendTo(buf, 0, sel, store, params, fetch);
         clearParameters();
         return buf;
     }
 
     public Object load(Result res, JDBCStore store,
-        JDBCFetchState fetchState)
+        JDBCFetchConfiguration fetch)
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
@@ -165,11 +165,11 @@ class Extension
     }
 
     public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchState fetchState) {
+        Object[] params, Val other, JDBCFetchConfiguration fetch) {
         if (_target != null)
-            _target.calculateValue(sel, store, params, null, fetchState);
+            _target.calculateValue(sel, store, params, null, fetch);
         if (_arg != null)
-            _arg.calculateValue(sel, store, params, null, fetchState);
+            _arg.calculateValue(sel, store, params, null, fetch);
     }
 
     public void clearParameters() {
@@ -184,16 +184,16 @@ class Extension
     }
 
     public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState) {
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         FilterValue target = (_target == null) ? null
-            : new FilterValueImpl(_target, sel, store, params, fetchState);
-        _listener.appendTo(sql, target, getArgs(sel, store, params,
-            fetchState), _candidate, store);
+            : new FilterValueImpl(_target, sel, store, params, fetch);
+        _listener.appendTo(sql, target, getArgs(sel, store, params, fetch), 
+            _candidate, store);
         sel.append(sql, _joins);
     }
 
     private FilterValue[] getArgs(Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
+        Object[] params, JDBCFetchConfiguration fetch) {
         if (_arg == null)
             return null;
         if (_arg instanceof Args) {
@@ -201,11 +201,11 @@ class Extension
             FilterValue[] filts = new FilterValue[vals.length];
             for (int i = 0; i < vals.length; i++)
                 filts[i] = new FilterValueImpl(vals[i], sel, store, params,
-                    fetchState);
+                    fetch);
             return filts;
         }
         return new FilterValue[]{
-            new FilterValueImpl(_arg, sel, store, params, fetchState)
+            new FilterValueImpl(_arg, sel, store, params, fetch)
         };
     }
 
@@ -219,9 +219,9 @@ class Extension
     }
 
     public void appendTo(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
-        calculateValue(sel, store, params, null, fetchState);
-        appendTo(sql, 0, sel, store, params, fetchState);
+        Object[] params, JDBCFetchConfiguration fetch) {
+        calculateValue(sel, store, params, null, fetch);
+        appendTo(sql, 0, sel, store, params, fetch);
         sel.append(sql, getJoins());
         clearParameters();
     }

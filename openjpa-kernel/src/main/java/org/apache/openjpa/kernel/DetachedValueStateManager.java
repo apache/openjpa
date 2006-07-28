@@ -65,7 +65,7 @@ public class DetachedValueStateManager
         throw new UnsupportedOperationException();
     }
 
-    public void load(FetchState fetchState) {
+    public void load(FetchConfiguration fetch) {
         throw new UnsupportedOperationException();
     }
 
@@ -113,7 +113,7 @@ public class DetachedValueStateManager
         throw new UnsupportedOperationException();
     }
 
-    public BitSet getUnloaded(FetchState fetchState) {
+    public BitSet getUnloaded(FetchConfiguration fetch) {
         throw new UnsupportedOperationException();
     }
 

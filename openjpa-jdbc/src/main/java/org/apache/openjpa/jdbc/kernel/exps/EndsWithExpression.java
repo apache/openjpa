@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -66,9 +66,9 @@ class EndsWithExpression
     }
 
     public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
-        _val1.calculateValue(sel, store, params, _val2, fetchState);
-        _val2.calculateValue(sel, store, params, _val1, fetchState);
+        Object[] params, JDBCFetchConfiguration fetch) {
+        _val1.calculateValue(sel, store, params, _val2, fetch);
+        _val2.calculateValue(sel, store, params, _val1, fetch);
 
         if (_val1 instanceof Const && ((Const) _val1).getValue() == null)
             buf.append("1 <> 1");
@@ -84,7 +84,7 @@ class EndsWithExpression
                         col = cols[0];
                 }
 
-                _val1.appendTo(buf, 0, sel, store, params, fetchState);
+                _val1.appendTo(buf, 0, sel, store, params, fetch);
                 buf.append(" LIKE ");
                 buf.appendValue("%" + o.toString(), col);
             }
@@ -94,11 +94,11 @@ class EndsWithExpression
             DBDictionary dict = store.getDBDictionary();
             dict.assertSupport(_pre != null, "StringLengthFunction");
             dict.substring(buf,
-                new FilterValueImpl(_val1, sel, store, params, fetchState),
+                new FilterValueImpl(_val1, sel, store, params, fetch),
                 new StringLengthDifferenceFilterValue(sel, store, params,
-                    fetchState), null);
+                    fetch), null);
             buf.append(" = ");
-            _val2.appendTo(buf, 0, sel, store, params, fetchState);
+            _val2.appendTo(buf, 0, sel, store, params, fetch);
         }
 
         sel.append(buf, _joins);
@@ -107,9 +107,9 @@ class EndsWithExpression
     }
 
     public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchState fetchState) {
-        _val1.selectColumns(sel, store, params, true, fetchState);
-        _val2.selectColumns(sel, store, params, true, fetchState);
+        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
+        _val1.selectColumns(sel, store, params, true, fetch);
+        _val2.selectColumns(sel, store, params, true, fetch);
     }
 
     public Joins getJoins() {
@@ -133,14 +133,14 @@ class EndsWithExpression
         private final Select _sel;
         private final JDBCStore _store;
         private final Object[] _params;
-        private final JDBCFetchState _fetchState;
+        private final JDBCFetchConfiguration _fetch;
 
         public StringLengthDifferenceFilterValue(Select sel,
-            JDBCStore store, Object[] params, JDBCFetchState fetchState) {
+            JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
             _sel = sel;
             _store = store;
             _params = params;
-            _fetchState = fetchState;
+            _fetch = fetch;
         }
 
         public Class getType() {
@@ -157,9 +157,9 @@ class EndsWithExpression
 
         public void appendTo(SQLBuffer buf, int index) {
             buf.append(_pre);
-            _val1.appendTo(buf, index, _sel, _store, _params, _fetchState);
+            _val1.appendTo(buf, index, _sel, _store, _params, _fetch);
             buf.append(_post).append(" - ").append(_pre);
-            _val2.appendTo(buf, index, _sel, _store, _params, _fetchState);
+            _val2.appendTo(buf, index, _sel, _store, _params, _fetch);
             buf.append(_post);
         }
 

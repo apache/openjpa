@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
@@ -49,20 +49,20 @@ class InSubQExpression
     }
 
     public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
-        _val.calculateValue(sel, store, params, null, fetchState);
-        _sub.calculateValue(sel, store, params, null, fetchState);
-        _val.appendTo(buf, 0, sel, store, params, fetchState);
+        Object[] params, JDBCFetchConfiguration fetch) {
+        _val.calculateValue(sel, store, params, null, fetch);
+        _sub.calculateValue(sel, store, params, null, fetch);
+        _val.appendTo(buf, 0, sel, store, params, fetch);
         buf.append(" IN ");
-        _sub.appendTo(buf, 0, sel, store, params, fetchState);
+        _sub.appendTo(buf, 0, sel, store, params, fetch);
         _val.clearParameters();
         _sub.clearParameters();
     }
 
     public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchState fetchState) {
-        _val.selectColumns(sel, store, params, true, fetchState);
-        _sub.selectColumns(sel, store, params, pks, fetchState);
+        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
+        _val.selectColumns(sel, store, params, true, fetch);
+        _sub.selectColumns(sel, store, params, pks, fetch);
     }
 
     public Joins getJoins() {

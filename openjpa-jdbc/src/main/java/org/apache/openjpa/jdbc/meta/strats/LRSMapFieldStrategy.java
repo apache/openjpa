@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -89,14 +89,14 @@ public interface LRSMapFieldStrategy
      * This method is only used if the key is not derived from the value.
      */
     public void selectKey(Select sel, ClassMapping key, OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, Joins joins);
+        JDBCStore store, JDBCFetchConfiguration fetch, Joins joins);
 
     /**
      * Load a key from the given result.
      * This method is only used if the key is not derived from the value.
      */
     public Object loadKey(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res, Joins joins)
+        JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException;
 
     /**
@@ -114,14 +114,14 @@ public interface LRSMapFieldStrategy
      * Elements of the result will be loaded with {@link #loadValue}.
      */
     public void selectValue(Select sel, ClassMapping val,
-        OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, Joins joins);
+        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch, 
+        Joins joins);
 
     /**
      * Load a value from the given result.
      */
     public Object loadValue(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res, Joins joins)
+        JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException;
 
     /**
@@ -132,7 +132,7 @@ public interface LRSMapFieldStrategy
      * {@link #deriveKey} and {@link #loadValue} methods.
      */
     public Result[] getResults(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, int eagerMode, Joins[] joins, boolean lrs)
+        JDBCFetchConfiguration fetch, int eagerMode, Joins[] joins, boolean lrs)
         throws SQLException;
 
     /**

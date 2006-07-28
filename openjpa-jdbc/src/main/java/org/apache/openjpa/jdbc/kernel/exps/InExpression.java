@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.Joins;
@@ -62,9 +62,9 @@ class InExpression
     }
 
     public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
-        _val.calculateValue(sel, store, params, null, fetchState);
-        _const.calculateValue(sel, store, params, null, fetchState);
+        Object[] params, JDBCFetchConfiguration fetch) {
+        _val.calculateValue(sel, store, params, null, fetch);
+        _const.calculateValue(sel, store, params, null, fetch);
 
         Collection coll = getCollection();
         if (coll != null) {
@@ -83,9 +83,9 @@ class InExpression
         if (coll == null || coll.isEmpty())
             buf.append("1 <> 1");
         else if (_val.length() == 1)
-            inContains(buf, sel, store, params, fetchState, coll, cols);
+            inContains(buf, sel, store, params, fetch, coll, cols);
         else
-            orContains(buf, sel, store, params, fetchState, coll, cols);
+            orContains(buf, sel, store, params, fetch, coll, cols);
         sel.append(buf, _val.getJoins());
 
         _val.clearParameters();
@@ -96,9 +96,9 @@ class InExpression
      * Construct an IN clause with the value of the given collection.
      */
     private void inContains(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState,
+        Object[] params, JDBCFetchConfiguration fetch,
         Collection coll, Column[] cols) {
-        _val.appendTo(buf, 0, sel, store, params, fetchState);
+        _val.appendTo(buf, 0, sel, store, params, fetch);
         buf.append(" IN (");
 
         Column col = (cols != null && cols.length == 1) ? cols[0] : null;
@@ -115,7 +115,7 @@ class InExpression
      * so create a clause like '(a = b AND c = d) OR (e = f AND g = h) ...'
      */
     private void orContains(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState, Collection coll,
+        Object[] params, JDBCFetchConfiguration fetch, Collection coll,
         Column[] cols) {
         if (coll.size() > 1)
             buf.append("(");
@@ -132,7 +132,7 @@ class InExpression
                 if (i > 0)
                     buf.append(" AND ");
 
-                _val.appendTo(buf, i, sel, store, params, fetchState);
+                _val.appendTo(buf, i, sel, store, params, fetch);
                 if (vals[i] == null)
                     buf.append(" IS ");
                 else
@@ -149,9 +149,9 @@ class InExpression
     }
 
     public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchState fetchState) {
-        _val.selectColumns(sel, store, params, true, fetchState);
-        _const.selectColumns(sel, store, params, pks, fetchState);
+        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
+        _val.selectColumns(sel, store, params, true, fetch);
+        _const.selectColumns(sel, store, params, pks, fetch);
     }
 
     public Joins getJoins() {

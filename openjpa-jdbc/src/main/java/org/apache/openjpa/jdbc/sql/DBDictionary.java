@@ -58,7 +58,6 @@ import javax.sql.DataSource;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -1858,15 +1857,14 @@ public class DBDictionary
             sql.append(col.getName());
             sql.append(" = ");
             val.initialize(sel, store, false);
-            JDBCFetchState fetchState = (JDBCFetchState) store.
-                getFetchConfiguration().newFetchState();
-            val.calculateValue(sel, store, params, null, fetchState);
+            JDBCFetchConfiguration fetch = store.getFetchConfiguration();
+            val.calculateValue(sel, store, params, null, fetch);
 
             // append the value with a null for the Select; i
             // indicates that the
             for (int j = 0; j < val.length(); j++)
-                val.appendTo(sql, j, allowAlias ? sel : null,
-                    store, params, fetchState);
+                val.appendTo(sql, j, (allowAlias) ? sel : null, store, params, 
+                    fetch);
 
             if (i.hasNext())
                 sql.append(", ");
@@ -2083,13 +2081,20 @@ public class DBDictionary
             group, having, order, distinct, forUpdate, start, end);
     }
 
+    /**
+     * Return the "SELECT" operation clause, adding any available hints, etc.
+     */
     public String getSelectOperation(JDBCFetchConfiguration fetch) {
         return "SELECT";
     }
 
-    public SQLBuffer toOperation(String op, SQLBuffer selects, SQLBuffer from,
-        SQLBuffer where, SQLBuffer group, SQLBuffer having, SQLBuffer order,
-        boolean distinct, boolean forUpdate, long start, long end) {
+    /**
+     * Return the SQL for the given selecting operation.
+     */
+    protected SQLBuffer toOperation(String op, SQLBuffer selects, 
+        SQLBuffer from, SQLBuffer where, SQLBuffer group, SQLBuffer having, 
+        SQLBuffer order, boolean distinct, boolean forUpdate, long start, 
+        long end) {
         SQLBuffer buf = new SQLBuffer(this);
         buf.append(op);
 

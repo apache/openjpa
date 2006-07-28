@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ValueHandler;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
@@ -51,7 +51,7 @@ public abstract class AbstractValueHandler
     }
 
     public Object toObjectValue(ValueMapping vm, Object val,
-        OpenJPAStateManager sm, JDBCStore store, JDBCFetchState fetchState)
+        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch)
         throws SQLException {
         return val;
     }

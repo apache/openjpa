@@ -29,7 +29,13 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface FetchAttribute {
 
+    /**
+     * Included field/property name.
+     */
     String name() default "";
 
-    int depth() default 1;
+    /**
+     * Recursion depth for relation field.
+     */
+    int recursionDepth() default Integer.MIN_VALUE;
 }

@@ -189,10 +189,10 @@ public class DelegatingBroker
         }
     }
 
-    public Object find(Object oid, FetchState fetchState, BitSet exclude,
+    public Object find(Object oid, FetchConfiguration fetch, BitSet exclude,
         Object edata, int flags) {
         try {
-            return _broker.find(oid, fetchState, exclude, edata, flags);
+            return _broker.find(oid, fetch, exclude, edata, flags);
         } catch (RuntimeException re) {
             throw translate(re);
         }

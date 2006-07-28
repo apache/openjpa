@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Embeddable;
@@ -342,19 +341,18 @@ public class RelationFieldStrategy
 
     public void selectEagerParallel(SelectExecutor sel,
         final OpenJPAStateManager sm, final JDBCStore store,
-        final JDBCFetchState fetchState, final int eagerMode) {
+        final JDBCFetchConfiguration fetch, final int eagerMode) {
         final ClassMapping[] clss = field.getIndependentTypeMappings();
         if (!(sel instanceof Union))
-            selectEagerParallel((Select) sel, clss[0], store, fetchState,
-                eagerMode);
+            selectEagerParallel((Select) sel, clss[0], store, fetch, eagerMode);
         else {
             Union union = (Union) sel;
-            if (fetchState.getJDBCFetchConfiguration().getSubclassFetchMode
-                (field.getTypeMapping()) != JDBCFetchConfiguration.EAGER_JOIN)
+            if (fetch.getSubclassFetchMode (field.getTypeMapping()) 
+                != JDBCFetchConfiguration.EAGER_JOIN)
                 union.abortUnion();
             union.select(new Union.Selector() {
                 public void select(Select sel, int idx) {
-                    selectEagerParallel(sel, clss[idx], store, fetchState,
+                    selectEagerParallel(sel, clss[idx], store, fetch,
                         eagerMode);
                 }
             });
@@ -365,7 +363,7 @@ public class RelationFieldStrategy
      * Perform an eager parallel select.
      */
     private void selectEagerParallel(Select sel, ClassMapping cls,
-        JDBCStore store, JDBCFetchState fetchState, int eagerMode) {
+        JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
         sel.selectPrimaryKey(field.getDefiningMapping());
         // set a variable name that does not conflict with any in the query;
         // using a variable guarantees that the selected data will use different
@@ -373,18 +371,18 @@ public class RelationFieldStrategy
         // that might otherwise limit the relations that match
         Joins joins = sel.newJoins().setVariable("*");
         eagerJoin(joins, cls, true);
-        sel.select(cls, field.getSelectSubclasses(), store, fetchState,
-            eagerMode, joins);
+        sel.select(cls, field.getSelectSubclasses(), store, fetch, eagerMode, 
+            joins);
     }
 
     public void selectEagerJoin(Select sel, OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, int eagerMode) {
+        JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
         // limit the eager mode to single on recursive eager fetching b/c
         // at this point the select has been modified and an attempt to
         // clone it for a to-many eager select can result in a clone that
         // produces invalid SQL
         ClassMapping cls = field.getIndependentTypeMappings()[0];
-        sel.select(cls, field.getSelectSubclasses(), store, fetchState,
+        sel.select(cls, field.getSelectSubclasses(), store, fetch,
             JDBCFetchConfiguration.EAGER_JOIN,
             eagerJoin(sel.newJoins(), cls, false));
     }
@@ -405,7 +403,7 @@ public class RelationFieldStrategy
     }
 
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, int eagerMode) {
+        JDBCFetchConfiguration fetch, int eagerMode) {
         if (field.getJoinDirection() == field.JOIN_INVERSE)
             return -1;
         // already cached oid?
@@ -418,13 +416,12 @@ public class RelationFieldStrategy
     }
 
     public Object loadEagerParallel(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Object res)
+        JDBCFetchConfiguration fetch, Object res)
         throws SQLException {
         // process batched results if we haven't already
         Map rels;
         if (res instanceof Result)
-            rels = processEagerParallelResult(sm, store, fetchState,
-                (Result) res);
+            rels = processEagerParallelResult(sm, store, fetch, (Result) res);
         else
             rels = (Map) res;
 
@@ -437,7 +434,7 @@ public class RelationFieldStrategy
      * Process the given batched result.
      */
     private Map processEagerParallelResult(OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, Result res)
+        JDBCStore store, JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
         // do same joins as for load
         //### cheat: we know typical result joins only care about the relation
@@ -455,7 +452,7 @@ public class RelationFieldStrategy
             if (cls == null)
                 cls = clss[0];
             oid = owner.getObjectId(store, res, null, true, null);
-            rels.put(oid, res.load(cls, store, fetchState, joins));
+            rels.put(oid, res.load(cls, store, fetch, joins));
         }
         res.close();
 
@@ -463,15 +460,15 @@ public class RelationFieldStrategy
     }
 
     public void loadEagerJoin(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res)
+        JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
         ClassMapping cls = field.getIndependentTypeMappings()[0];
-        sm.storeObject(field.getIndex(), res.load(cls, store, fetchState,
+        sm.storeObject(field.getIndex(), res.load(cls, store, fetch,
             eagerJoin(res.newJoins(), cls, false)));
     }
 
     public void load(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res)
+        JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
         if (field.getJoinDirection() == field.JOIN_INVERSE)
             return;
@@ -522,15 +519,13 @@ public class RelationFieldStrategy
     }
 
     public void load(final OpenJPAStateManager sm, final JDBCStore store,
-        final JDBCFetchState fetchState)
+        final JDBCFetchConfiguration fetch)
         throws SQLException {
-        final JDBCFetchConfiguration fetch =
-            fetchState.getJDBCFetchConfiguration();
         // check for cached oid value, or load oid if no way to join
         if (Boolean.TRUE.equals(_fkOid)) {
             Object oid = sm.getIntermediate(field.getIndex());
             if (oid != null) {
-                Object val = store.find(oid, field, fetchState);
+                Object val = store.find(oid, field, fetch);
                 sm.storeObject(field.getIndex(), val);
                 return;
             }
@@ -559,8 +554,8 @@ public class RelationFieldStrategy
                             false, false);
                     field.wherePrimaryKey(sel, sm, store);
                 }
-                sel.select(rels[idx], subs, store, fetchState,
-                    fetch.EAGER_JOIN, resJoins[idx]);
+                sel.select(rels[idx], subs, store, fetch, fetch.EAGER_JOIN, 
+                    resJoins[idx]);
             }
         });
 
@@ -568,7 +563,7 @@ public class RelationFieldStrategy
         try {
             Object val = null;
             if (res.next())
-                val = res.load(rels[res.indexOf()], store, fetchState,
+                val = res.load(rels[res.indexOf()], store, fetch,
                     resJoins[res.indexOf()]);
             sm.storeObject(field.getIndex(), val);
         } finally {
@@ -695,7 +690,7 @@ public class RelationFieldStrategy
     }
 
     public void loadEmbedded(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Object val)
+        JDBCFetchConfiguration fetch, Object val)
         throws SQLException {
         ClassMapping relMapping = field.getTypeMapping();
         Object oid;

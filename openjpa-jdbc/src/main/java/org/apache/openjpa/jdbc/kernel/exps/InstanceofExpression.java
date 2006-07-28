@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
@@ -113,7 +113,7 @@ class InstanceofExpression
     }
 
     public void appendTo(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
+        Object[] params, JDBCFetchConfiguration fetch) {
         // if no class indicator or a final class, just append true or false
         // depending on whether the cast matches the expected type
         if (_dsc == null) {
@@ -134,7 +134,7 @@ class InstanceofExpression
     }
 
     public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchState fetchState) {
+        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
         if (_dsc != null)
             sel.select(_dsc.getColumns(), _joins);
     }

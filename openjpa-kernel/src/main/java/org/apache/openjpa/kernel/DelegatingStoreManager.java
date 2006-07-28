@@ -104,13 +104,13 @@ public abstract class DelegatingStoreManager
     }
 
     public boolean initialize(OpenJPAStateManager sm, PCState state,
-        FetchState fetchState, Object context) {
-        return _store.initialize(sm, state, fetchState, context);
+        FetchConfiguration fetch, Object context) {
+        return _store.initialize(sm, state, fetch, context);
     }
 
     public boolean load(OpenJPAStateManager sm, BitSet fields,
-        FetchState fetchState, int lockLevel, Object context) {
-        return _store.load(sm, fields, fetchState, lockLevel, context);
+        FetchConfiguration fetch, int lockLevel, Object context) {
+        return _store.load(sm, fields, fetch, lockLevel, context);
     }
 
     public Collection loadAll(Collection sms, PCState state, int load,

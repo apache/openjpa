@@ -42,8 +42,8 @@ public class InstanceResultObjectProvider
      * @param fetch the fetch configuration, or null for default
      */
     public InstanceResultObjectProvider(SelectExecutor sel,
-        ClassMapping mapping, JDBCStore store, JDBCFetchState fetchState) {
-        super(sel, store, fetchState);
+        ClassMapping mapping, JDBCStore store, JDBCFetchConfiguration fetch) {
+        super(sel, store, fetch);
         _mapping = mapping;
     }
 
@@ -53,6 +53,6 @@ public class InstanceResultObjectProvider
         ClassMapping mapping = res.getBaseMapping();
         if (mapping == null)
             mapping = _mapping;
-        return res.load(mapping, getStore(), (JDBCFetchState) getFetchState());
+        return res.load(mapping, getStore(), getFetchConfiguration());
     }
 }

@@ -86,7 +86,7 @@ public interface JDBCStore {
      * @param vm the mapping holding this oid, or null if not applicable
      */
     public Object find(Object oid, ValueMapping vm,
-        JDBCFetchState fetchState);
+        JDBCFetchConfiguration fetch);
 
     /**
      * Makes sure all subclasses of the given type are loaded in the JVM.

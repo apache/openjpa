@@ -92,14 +92,12 @@ class MappedQueryResultObjectProvider
         if (pcs.length == 0 && cols.length == 1)
             return _mres.getObject(cols[0], JavaSQLTypes.JDBC_DEFAULT, null);
         if (pcs.length == 1 && cols.length == 0)
-            return _mres.load(pcs[0], _store,
-                (JDBCFetchState) _fetch.newFetchState());
+            return _mres.load(pcs[0], _store, _fetch);
 
         // multiple objects
         Object[] ret = new Object[pcs.length + cols.length];
         for (int i = 0; i < pcs.length; i++)
-            ret[i] = _mres.load(pcs[i], _store,
-                (JDBCFetchState) _fetch.newFetchState());
+            ret[i] = _mres.load(pcs[i], _store, _fetch);
         for (int i = 0; i < cols.length; i++)
             ret[pcs.length + i] = _mres.getObject(cols[i],
                 JavaSQLTypes.JDBC_DEFAULT, null);
@@ -162,31 +160,31 @@ class MappedQueryResultObjectProvider
          * {@link Result#load}.
          */
         public Object load(QueryResultMapping.PCResult pc, JDBCStore store,
-            JDBCFetchState fetchState)
+            JDBCFetchConfiguration fetch)
             throws SQLException {
             _pc = pc;
             try {
-                return load(pc.getCandidateTypeMapping(), store, fetchState);
+                return load(pc.getCandidateTypeMapping(), store, fetch);
             } finally {
                 _pc = null;
             }
         }
 
         public Object load(ClassMapping mapping, JDBCStore store,
-            JDBCFetchState fetchState)
+            JDBCFetchConfiguration fetch)
             throws SQLException {
-            return load(mapping, store, fetchState, null);
+            return load(mapping, store, fetch, null);
         }
 
         public Object load(ClassMapping mapping, JDBCStore store,
-            JDBCFetchState fetchState, Joins joins)
+            JDBCFetchConfiguration fetch, Joins joins)
             throws SQLException {
             if (_pc == null)
-                return super.load(mapping, store, fetchState, joins);
+                return super.load(mapping, store, fetch, joins);
 
             // we go direct to the store manager so we can tell it not to load
             // anything additional
-            return ((JDBCStoreManager) store).load(mapping, fetchState,
+            return ((JDBCStoreManager) store).load(mapping, fetch,
                 _pc.getExcludes(_requests), this);
         }
 

@@ -18,7 +18,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 import java.sql.SQLException;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -63,14 +63,14 @@ public class RelationCollectionInverseKeyFieldStrategy
     }
 
     public void selectElement(Select sel, ClassMapping elem, JDBCStore store,
-        JDBCFetchState fetchState, int eagerMode, Joins joins) {
-        super.selectElement(sel, elem, store, fetchState, eagerMode, joins);
+        JDBCFetchConfiguration fetch, int eagerMode, Joins joins) {
+        super.selectElement(sel, elem, store, fetch, eagerMode, joins);
     }
 
     public Object loadElement(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res, Joins joins)
+        JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
-        return super.loadElement(sm, store, fetchState, res, joins);
+        return super.loadElement(sm, store, fetch, res, joins);
     }
 
     public Joins join(Joins joins, ClassMapping elem) {

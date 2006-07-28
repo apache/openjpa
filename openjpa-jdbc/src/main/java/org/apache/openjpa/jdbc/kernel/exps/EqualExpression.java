@@ -15,7 +15,7 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -36,7 +36,7 @@ class EqualExpression
     }
 
     public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState,
+        Object[] params, JDBCFetchConfiguration fetch,
         boolean val1Null, boolean val2Null) {
         if (val1Null && val2Null)
             buf.appendValue(null).append(" IS ").appendValue(null);
@@ -47,27 +47,27 @@ class EqualExpression
                 for (int i = 0; i < len; i++) {
                     if (i > 0)
                         buf.append(" AND ");
-                    val.appendTo(buf, i, sel, store, params, fetchState);
+                    val.appendTo(buf, i, sel, store, params, fetch);
                     buf.append(" IS ").appendValue(null);
                 }
             } else
-                val.appendIsNull(buf, sel, store, params, fetchState);
+                val.appendIsNull(buf, sel, store, params, fetch);
         } else {
             Val val1 = getValue1();
             Val val2 = getValue2();
             if (val1.length() == 1 && val2.length() == 1) {
                 store.getDBDictionary().comparison(buf, "=",
-                    new FilterValueImpl(val1, sel, store, params, fetchState),
-                    new FilterValueImpl(val2, sel, store, params, fetchState));
+                    new FilterValueImpl(val1, sel, store, params, fetch),
+                    new FilterValueImpl(val2, sel, store, params, fetch));
             } else {
                 int len = java.lang.Math.max(val1.length(), val2.length());
                 for (int i = 0; i < len; i++) {
                     if (i > 0)
                         buf.append(" AND ");
 
-                    val1.appendTo(buf, i, sel, store, params, fetchState);
+                    val1.appendTo(buf, i, sel, store, params, fetch);
                     buf.append(" = ");
-                    val2.appendTo(buf, i, sel, store, params, fetchState);
+                    val2.appendTo(buf, i, sel, store, params, fetch);
                 }
             }
         }

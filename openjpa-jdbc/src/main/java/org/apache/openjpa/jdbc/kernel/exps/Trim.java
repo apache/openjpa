@@ -18,7 +18,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 import java.lang.Math;
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -98,36 +98,36 @@ class Trim
     }
 
     public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchState fetchState) {
-        sel.select(newSQLBuffer(sel, store, params, fetchState), this);
+        boolean pks, JDBCFetchConfiguration fetch) {
+        sel.select(newSQLBuffer(sel, store, params, fetch), this);
     }
 
     public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchState fetchState) {
-        _val.selectColumns(sel, store, params, true, fetchState);
+        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
+        _val.selectColumns(sel, store, params, true, fetch);
     }
 
     public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchState fetchState) {
-        sel.groupBy(newSQLBuffer(sel, store, params, fetchState), false);
+        JDBCFetchConfiguration fetch) {
+        sel.groupBy(newSQLBuffer(sel, store, params, fetch), false);
     }
 
     public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchState fetchState) {
-        sel.orderBy(newSQLBuffer(sel, store, params, fetchState), asc, false);
+        boolean asc, JDBCFetchConfiguration fetch) {
+        sel.orderBy(newSQLBuffer(sel, store, params, fetch), asc, false);
     }
 
     private SQLBuffer newSQLBuffer(Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
-        calculateValue(sel, store, params, null, fetchState);
+        Object[] params, JDBCFetchConfiguration fetch) {
+        calculateValue(sel, store, params, null, fetch);
         SQLBuffer buf = new SQLBuffer(store.getDBDictionary());
-        appendTo(buf, 0, sel, store, params, fetchState);
+        appendTo(buf, 0, sel, store, params, fetch);
         clearParameters();
         return buf;
     }
 
     public Object load(Result res, JDBCStore store,
-        JDBCFetchState fetchState)
+        JDBCFetchConfiguration fetch)
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
@@ -138,8 +138,8 @@ class Trim
     }
 
     public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchState fetchState) {
-        _val.calculateValue(sel, store, params, null, fetchState);
+        Object[] params, Val other, JDBCFetchConfiguration fetch) {
+        _val.calculateValue(sel, store, params, null, fetch);
     }
 
     public void clearParameters() {
@@ -151,9 +151,9 @@ class Trim
     }
 
     public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState) {
-        _val.calculateValue(sel, store, params, _trimChar, fetchState);
-        _trimChar.calculateValue(sel, store, params, _val, fetchState);
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+        _val.calculateValue(sel, store, params, _trimChar, fetch);
+        _trimChar.calculateValue(sel, store, params, _val, fetch);
 
         int fromPart = _func.indexOf("{0}");
         int charPart = _func.indexOf("{1}");
@@ -172,12 +172,12 @@ class Trim
 
         sql.append(part1);
         (fromPart < charPart ? _val : _trimChar).
-            appendTo(sql, 0, sel, store, params, fetchState);
+            appendTo(sql, 0, sel, store, params, fetch);
         sql.append(part2);
 
         if (charPart != _func.length()) {
             (fromPart > charPart ? _val : _trimChar).
-                appendTo(sql, 0, sel, store, params, fetchState);
+                appendTo(sql, 0, sel, store, params, fetch);
             sql.append(part3);
         } else {
             // since the trim statement did not specify the token for

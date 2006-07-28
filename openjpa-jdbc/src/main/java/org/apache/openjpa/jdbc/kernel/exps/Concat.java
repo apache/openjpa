@@ -18,7 +18,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 import java.lang.Math;
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -101,37 +101,37 @@ class Concat
     }
 
     public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchState fetchState) {
-        sel.select(newSQLBuffer(sel, store, params, fetchState), this);
+        boolean pks, JDBCFetchConfiguration fetch) {
+        sel.select(newSQLBuffer(sel, store, params, fetch), this);
     }
 
     public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchState fetchState) {
-        _val1.selectColumns(sel, store, params, true, fetchState);
-        _val2.selectColumns(sel, store, params, true, fetchState);
+        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
+        _val1.selectColumns(sel, store, params, true, fetch);
+        _val2.selectColumns(sel, store, params, true, fetch);
     }
 
     public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchState fetchState) {
-        sel.groupBy(newSQLBuffer(sel, store, params, fetchState), false);
+        JDBCFetchConfiguration fetch) {
+        sel.groupBy(newSQLBuffer(sel, store, params, fetch), false);
     }
 
     public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchState fetchState) {
-        sel.orderBy(newSQLBuffer(sel, store, params, fetchState), asc, false);
+        boolean asc, JDBCFetchConfiguration fetch) {
+        sel.orderBy(newSQLBuffer(sel, store, params, fetch), asc, false);
     }
 
     private SQLBuffer newSQLBuffer(Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
-        calculateValue(sel, store, params, null, fetchState);
+        Object[] params, JDBCFetchConfiguration fetch) {
+        calculateValue(sel, store, params, null, fetch);
         SQLBuffer buf = new SQLBuffer(store.getDBDictionary());
-        appendTo(buf, 0, sel, store, params, fetchState);
+        appendTo(buf, 0, sel, store, params, fetch);
         clearParameters();
         return buf;
     }
 
-    public Object load(Result res, JDBCStore store,
-        JDBCFetchState fetchState)
+    public Object load(Result res, JDBCStore store, 
+        JDBCFetchConfiguration fetch)
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
@@ -142,9 +142,9 @@ class Concat
     }
 
     public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchState fetchState) {
-        _val1.calculateValue(sel, store, params, null, fetchState);
-        _val2.calculateValue(sel, store, params, null, fetchState);
+        Object[] params, Val other, JDBCFetchConfiguration fetch) {
+        _val1.calculateValue(sel, store, params, null, fetch);
+        _val2.calculateValue(sel, store, params, null, fetch);
     }
 
     public void clearParameters() {
@@ -157,14 +157,14 @@ class Concat
     }
 
     public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState) {
-        _val1.calculateValue(sel, store, params, _val2, fetchState);
-        _val2.calculateValue(sel, store, params, _val1, fetchState);
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+        _val1.calculateValue(sel, store, params, _val2, fetch);
+        _val2.calculateValue(sel, store, params, _val1, fetch);
 
         sql.append(_part1);
-        _val1.appendTo(sql, 0, sel, store, params, fetchState);
+        _val1.appendTo(sql, 0, sel, store, params, fetch);
         sql.append(_part2);
-        _val2.appendTo(sql, 0, sel, store, params, fetchState);
+        _val2.appendTo(sql, 0, sel, store, params, fetch);
         sql.append(_part3);
     }
 }

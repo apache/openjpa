@@ -18,7 +18,6 @@ package org.apache.openjpa.jdbc.meta;
 import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
@@ -62,7 +61,7 @@ public interface FieldStrategy
      * @see #select
      */
     public void selectEagerParallel(SelectExecutor sel, OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, int eagerMode);
+        JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode);
 
     /**
      * Fill in joined select to related objects.
@@ -70,7 +69,7 @@ public interface FieldStrategy
      * @see #select
      */
     public void selectEagerJoin(Select sel, OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, int eagerMode);
+        JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode);
 
     /**
      * Whether the eager joins or selects used by this field are to-many.
@@ -92,7 +91,7 @@ public interface FieldStrategy
      * require it, or &lt; 0 if no data was selected
      */
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, int eagerMode);
+        JDBCFetchConfiguration fetch, int eagerMode);
 
     /**
      * Load the batched eager result.
@@ -102,14 +101,14 @@ public interface FieldStrategy
      * passed to subsequent calls
      */
     public Object loadEagerParallel(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Object res)
+        JDBCFetchConfiguration fetch, Object res)
         throws SQLException;
 
     /**
      * Load the joined eager result.
      */
     public void loadEagerJoin(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res)
+        JDBCFetchConfiguration fetch, Result res)
         throws SQLException;
 
     /**
@@ -118,14 +117,14 @@ public interface FieldStrategy
      * result contains its needed column data before loading.
      */
     public void load(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res)
+        JDBCFetchConfiguration fetch, Result res)
         throws SQLException;
 
     /**
      * Load secondary data using a connection from the store manager.
      */
     public void load(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState)
+        JDBCFetchConfiguration fetch)
         throws SQLException;
 
     ///////////
@@ -212,7 +211,7 @@ public interface FieldStrategy
      * Load this field value using the given result. The result
      * will contain the columns from {@link ValueMapping#getColumns}.
      */
-    public Object loadProjection(JDBCStore store, JDBCFetchState fetchState,
+    public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException;
 
@@ -221,7 +220,7 @@ public interface FieldStrategy
      * contain the columns from {@link ValueMapping#getColumns}.
      */
     public Object loadKeyProjection(JDBCStore store,
-        JDBCFetchState fetchState, Result res, Joins joins)
+        JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException;
 
     //////////////

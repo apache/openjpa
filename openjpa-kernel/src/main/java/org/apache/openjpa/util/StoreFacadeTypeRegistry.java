@@ -1,8 +1,8 @@
-package org.apache.openjpa.conf;
+package org.apache.openjpa.util;
 
-import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 
 /**
  * Repository of store-specific facade classes. This is used by facade 
@@ -11,10 +11,9 @@ import java.util.Map;
  */
 public class StoreFacadeTypeRegistry {
 
-    private Map _impls = new HashMap();
+    private Map _impls = new ConcurrentHashMap();
 
-    public void registerImplementation(Class facadeType, 
-        Class implType) {
+    public void registerImplementation(Class facadeType, Class implType) {
         _impls.put(facadeType, implType);
     }
     

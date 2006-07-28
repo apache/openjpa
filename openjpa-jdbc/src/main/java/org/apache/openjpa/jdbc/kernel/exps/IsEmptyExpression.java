@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
@@ -46,16 +46,16 @@ class IsEmptyExpression
     }
 
     public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
-        _val.calculateValue(sel, store, params, null, fetchState);
-        _val.appendIsEmpty(buf, sel, store, params, fetchState);
+        Object[] params, JDBCFetchConfiguration fetch) {
+        _val.calculateValue(sel, store, params, null, fetch);
+        _val.appendIsEmpty(buf, sel, store, params, fetch);
         sel.append(buf, _val.getJoins());
         _val.clearParameters();
     }
 
     public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchState fetchState) {
-        _val.selectColumns(sel, store, params, true, fetchState);
+        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
+        _val.selectColumns(sel, store, params, true, fetch);
     }
 
     public Joins getJoins() {

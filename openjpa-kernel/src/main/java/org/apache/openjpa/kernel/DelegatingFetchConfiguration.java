@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
 ///////////////////////////////////////////////////////////////
@@ -229,14 +230,6 @@ public class DelegatingFetchConfiguration
         }
     }
 
-    public boolean hasAnyFetchGroup(Set groups) {
-        try {
-            return _fetch.hasAnyFetchGroup(groups);
-        } catch (RuntimeException re) {
-            throw translate(re);
-        }
-    }
-
     public FetchConfiguration addFetchGroup(String group) {
         try {
             _fetch.addFetchGroup(group);
@@ -411,14 +404,6 @@ public class DelegatingFetchConfiguration
         }
     }
 
-    public FetchState newFetchState() {
-        try {
-            return _fetch.newFetchState();
-        } catch (RuntimeException re) {
-            throw translate(re);
-        }
-    }
-
     public void copy(FetchConfiguration fetch) {
         try {
             _fetch.copy(fetch);
@@ -450,6 +435,22 @@ public class DelegatingFetchConfiguration
             throw translate(re);
 		}
 	}
+
+    public boolean requiresFetch(FieldMetaData fmd) {
+        try {
+            return _fetch.requiresFetch(fmd);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public FetchConfiguration traverse(FieldMetaData fmd) {
+        try {
+            return _fetch.traverse(fmd);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        } 
+    }
 
     public void lock() {
         try {

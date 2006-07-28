@@ -21,7 +21,6 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -471,12 +470,12 @@ class PCPath
     }
 
     public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchState fetchState) {
-        selectColumns(sel, store, params, pks, fetchState);
+        boolean pks, JDBCFetchConfiguration fetch) {
+        selectColumns(sel, store, params, pks, fetch);
     }
 
     public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchState fetchState) {
+        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
         ClassMapping mapping = getClassMapping();
         if (mapping == null || !_joinedRel)
             sel.select(getColumns(), _joins);
@@ -490,42 +489,42 @@ class PCPath
             // the candidate class on the select
             int subs = (_type == UNBOUND_VAR) ? sel.SUBS_JOINABLE
                 : sel.SUBS_ANY_JOINABLE;
-            sel.select(mapping, subs, store, fetchState,
+            sel.select(mapping, subs, store, fetch,
                 JDBCFetchConfiguration.EAGER_NONE, sel.outer(_joins));
         }
     }
 
     public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchState fetchState) {
+        JDBCFetchConfiguration fetch) {
         sel.groupBy(getColumns(), sel.outer(_joins), false);
     }
 
     public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchState fetchState) {
+        boolean asc, JDBCFetchConfiguration fetch) {
         sel.orderBy(getColumns(), asc, sel.outer(_joins), false);
     }
 
     public Object load(Result res, JDBCStore store,
-        JDBCFetchState fetchState)
+        JDBCFetchConfiguration fetch)
         throws SQLException {
-        return load(res, store, false, fetchState);
+        return load(res, store, false, fetch);
     }
 
     Object load(Result res, JDBCStore store, boolean pks,
-        JDBCFetchState fetchState)
+        JDBCFetchConfiguration fetch)
         throws SQLException {
         ClassMapping mapping = getClassMapping();
         if (mapping != null && (_field == null || !_field.isEmbedded())) {
             if (pks)
                 return mapping.getObjectId(store, res, null, true, _joins);
-            return res.load(mapping, store, fetchState, _joins);
+            return res.load(mapping, store, fetch, _joins);
         }
 
         Object ret;
         if (_key)
-            ret = _field.loadKeyProjection(store, fetchState, res, _joins);
+            ret = _field.loadKeyProjection(store, fetch, res, _joins);
         else
-            ret = _field.loadProjection(store, fetchState, res, _joins);
+            ret = _field.loadProjection(store, fetch, res, _joins);
         if (_cast != null)
             ret = Filters.convert(ret, _cast);
         return ret;
@@ -545,7 +544,7 @@ class PCPath
     }
 
     public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchState fetchState) {
+        Object[] params, Val other, JDBCFetchConfiguration fetch) {
         // we don't create the SQL b/c it forces the Select to cache aliases
         // for the tables we use, and these aliases might not ever be used if
         // we eventually call appendIsEmpty or appendIsNull rather than appendTo
@@ -559,7 +558,7 @@ class PCPath
     }
 
     public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState) {
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         Column col = getColumns()[index];
 
         // if select is null, it means we are not aliasing columns
@@ -571,7 +570,7 @@ class PCPath
     }
 
     public void appendIsEmpty(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState) {
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         if (_field == null)
             sql.append("1 <> 1");
         else
@@ -579,7 +578,7 @@ class PCPath
     }
 
     public void appendIsNotEmpty(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState) {
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         if (_field == null)
             sql.append("1 <> 1");
         else
@@ -587,7 +586,7 @@ class PCPath
     }
 
     public void appendSize(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState) {
+        Object[] params, JDBCFetchConfiguration fetch) {
         if (_field == null)
             sql.append("1");
         else
@@ -595,7 +594,7 @@ class PCPath
     }
 
     public void appendIsNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState) {
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         if (_field == null)
             sql.append("1 <> 1");
         else
@@ -603,7 +602,7 @@ class PCPath
     }
 
     public void appendIsNotNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState) {
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         if (_field == null)
             sql.append("1 = 1");
         else

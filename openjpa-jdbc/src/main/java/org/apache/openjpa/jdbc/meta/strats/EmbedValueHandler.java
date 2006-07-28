@@ -18,7 +18,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.Embeddable;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -128,12 +128,12 @@ public abstract class EmbedValueHandler
      * @param vm owning value
      * @param val datastore value
      * @param store optional store manager
-     * @param fetchState optional fetch configuration
+     * @param fetch optional fetch configuration
      * @param cols embedded columns
      * @param idx index in columns array to start
      */
     protected void toObjectValue(OpenJPAStateManager em, ValueMapping vm,
-        Object val, JDBCStore store, JDBCFetchState fetchState,
+        Object val, JDBCStore store, JDBCFetchConfiguration fetch,
         Column[] cols, int idx)
         throws SQLException {
         FieldMapping[] fms = vm.getEmbeddedMapping().getFieldMappings();
@@ -159,7 +159,7 @@ public abstract class EmbedValueHandler
             }
 
             if (store != null)
-                embed.loadEmbedded(em, store, fetchState, cval);
+                embed.loadEmbedded(em, store, fetch, cval);
             else {
                 cval = embed.toEmbeddedObjectValue(cval);
                 em.store(fms[i].getIndex(), cval);

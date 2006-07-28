@@ -15,7 +15,7 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -56,9 +56,9 @@ class ConstGetObjectId
     }
 
     public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchState fetchState) {
-        super.calculateValue(sel, store, params, other, fetchState);
-        _constant.calculateValue(sel, store, params, null, fetchState);
+        Object[] params, Val other, JDBCFetchConfiguration fetch) {
+        super.calculateValue(sel, store, params, other, fetch);
+        _constant.calculateValue(sel, store, params, null, fetch);
         _val = store.getContext().getObjectId(_constant.getValue());
         if (other != null) {
             _sqlVal = other.toDataStoreValue(_val, store);
@@ -68,7 +68,7 @@ class ConstGetObjectId
     }
 
     public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState) {
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         if (_otherLen > 1)
             sql.appendValue(((Object[]) _sqlVal)[index], getColumn(index));
         else

@@ -26,7 +26,6 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfigurationImpl;
-import org.apache.openjpa.kernel.FetchState;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.kernel.Seq;
@@ -211,7 +210,7 @@ public abstract class AbstractStoreManager
      * data into the object.
      */
     public abstract boolean initialize(OpenJPAStateManager sm, PCState state,
-        FetchState fetchState, Object context);
+        FetchConfiguration fetch, Object context);
 
     /**
      * This method is invoked when OpenJPA needs to load additional data
@@ -223,7 +222,7 @@ public abstract class AbstractStoreManager
      * data into the object.
      */
     public abstract boolean load(OpenJPAStateManager sm, BitSet fields,
-        FetchState fetchState, int lockLevel, Object context);
+        FetchConfiguration fetch, int lockLevel, Object context);
 
     /**
      * This implementation just delegates to the proper singular
@@ -364,7 +363,8 @@ public abstract class AbstractStoreManager
      *  The implementation of the result provider will typically execute
      * some sort of data store query to find all the applicable objects, loop
      * through the returned data, extracting object IDs from the data, and
-     * invoking {@link StoreContext#find(Object,FetchState,BitSet,Object,int)}
+     * invoking 
+     * {@link StoreContext#find(Object,FetchConfiguration,BitSet,Object,int)}
      * on each OID. When invoking this method, the first argument is the OID.
      * The second is the given fetch configuration. The
      * third argument is a mask of fields to exclude from loading; it will

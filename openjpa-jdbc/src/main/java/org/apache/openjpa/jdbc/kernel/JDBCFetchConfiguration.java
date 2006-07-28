@@ -22,6 +22,7 @@ import java.util.Set;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.kernel.FetchConfiguration;
+import org.apache.openjpa.meta.FieldMetaData;
 
 /**
  * JDBC extensions to OpenJPA's {@link FetchConfiguration}.
@@ -163,4 +164,9 @@ public interface JDBCFetchConfiguration
      * @since 4.0.0
      */
     public JDBCFetchConfiguration clearJoins();
+
+    /**
+     * Convenience method to cast traversal to store-specific type.
+     */
+    public JDBCFetchConfiguration traverseJDBC(FieldMetaData fm);
 }

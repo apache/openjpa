@@ -26,7 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.AbstractPCData;
 import org.apache.openjpa.kernel.FetchConfiguration;
-import org.apache.openjpa.kernel.FetchState;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCData;
 import org.apache.openjpa.kernel.StoreContext;
@@ -523,18 +522,12 @@ public class PCDataGenerator
     }
 
     private void addLoadMethod(BCClass bc, ClassMetaData meta) {
-        // public void load(OpenJPAStateManager sm, FetchState fetchState,
+        // public void load(OpenJPAStateManager sm, FetchConfiguration fetch,
         // 		Object context)
         Code code = addLoadMethod(bc, false);
         FieldMetaData[] fmds = meta.getFields();
         Collection jumps = new LinkedList();
         Collection jumps2;
-		// FetchConfiguration fetch = fetchState.getFetchConfiguration();
-		int fetch = code.getNextLocalsIndex();
-		code.aload().setParam(1);
-		code.invokeinterface().setMethod(FetchState.class, 
-			"getFetchConfiguration", FetchConfiguration.class, null);
-		code.astore().setLocal(fetch);
 		
         int local = code.getNextLocalsIndex();
         code.constant().setNull();
@@ -558,38 +551,22 @@ public class PCDataGenerator
 
             if (intermediate)
                 addLoadIntermediate(code, i, objectCount, jumps2, inter);
-
             jumps2.add(code.go2());
 
-            // if in DFG, no if statement.
-            // else if (fetch.hasFetchGroup(sm.getMetaData().getField(i).
-			//     getFetchGroups()) || fetch.hasField(fmds[i].getFullName()))
-            if (!fmds[i].isInDefaultFetchGroup()) {
-                setTarget(code.aload().setLocal(fetch), jumps);
-                code.aload().setParam(0);
-                code.invokeinterface().setMethod(OpenJPAStateManager.class,
-                    "getMetaData", ClassMetaData.class, null);
-				code.constant().setValue(fmds[i].getIndex());
-                code.invokevirtual().setMethod(ClassMetaData.class,
-                    "getField", FieldMetaData.class, new Class[]{int.class});
-                code.invokevirtual().setMethod(FieldMetaData.class,
-                    "getFetchGroups", Set.class, null);
-                code.invokeinterface().setMethod
-                    (FetchConfiguration.class, "hasAnyFetchGroup",
-                        boolean.class, new Class[]{ Set.class });
-                JumpInstruction ifins = code.ifne();
-                code.aload().setLocal(fetch);
-                code.constant().setValue(fmds[i].getFullName());
-                code.invokeinterface().setMethod
-                    (FetchConfiguration.class, "hasField", boolean.class,
-                        new Class[]{ String.class });
-                jumps2.add(code.ifeq());
-                ifins.setTarget(addLoad(bc, code, fmds[i], objectCount,
-                    local, false));
-            } else {
-                setTarget(addLoad(bc, code, fmds[i], objectCount,
-                    local, false), jumps);
-            }
+            // if (fetch.requiresFetch(fmds[i]))
+            setTarget(code.aload().setParam(1), jumps);
+            code.aload().setParam(0);
+            code.invokeinterface().setMethod(OpenJPAStateManager.class,
+                "getMetaData", ClassMetaData.class, null);
+            code.constant().setValue(fmds[i].getIndex());
+            code.invokevirtual().setMethod(ClassMetaData.class,
+                "getField", FieldMetaData.class, new Class[]{int.class});
+            code.invokeinterface().setMethod (FetchConfiguration.class, 
+                "requiresFetch", boolean.class, 
+                new Class[]{FieldMetaData.class});
+            jumps2.add(code.ifeq());
+            addLoad(bc, code, fmds[i], objectCount, local, false);
+
             jumps = jumps2;
             if (replaceType(fmds[i]) >= JavaTypes.OBJECT)
                 objectCount++;
@@ -601,7 +578,7 @@ public class PCDataGenerator
 
     private void addLoadWithFieldsMethod(BCClass bc, ClassMetaData meta) {
         Code code = addLoadMethod(bc, true);
-        // public void load(OpenJPAStateManager sm, FetchState fs,
+        // public void load(OpenJPAStateManager sm, FetchConfiguration fetch,
         // 		BitSet fields, Object conn)
         FieldMetaData[] fmds = meta.getFields();
         Collection jumps = new LinkedList();
@@ -667,10 +644,10 @@ public class PCDataGenerator
         Class[] args = null;
         if (fields)
             args = new Class[]{ OpenJPAStateManager.class, BitSet.class,
-                FetchState.class, Object.class };
+                FetchConfiguration.class, Object.class };
         else
             args = new Class[]{ OpenJPAStateManager.class,
-                FetchState.class, Object.class };
+                FetchConfiguration.class, Object.class };
         BCMethod load = bc.declareMethod("load", void.class, args);
         Code code = load.getCode(true);
 
@@ -730,9 +707,9 @@ public class PCDataGenerator
             code.aload().setParam(1 + offset);
             code.aload().setParam(2 + offset);
             code.invokevirtual().setMethod(bc.getName(), "toField",
-                Object.class.getName(), toStrings
-                (new Class[]{ OpenJPAStateManager.class, FieldMetaData.class,
-                    Object.class, FetchState.class, Object.class }));
+                Object.class.getName(), toStrings(new Class[]{ 
+                OpenJPAStateManager.class, FieldMetaData.class,
+                Object.class, FetchConfiguration.class, Object.class }));
             code.invokeinterface().setMethod(OpenJPAStateManager.class,
                 "storeField", void.class,
                 new Class[]{ int.class, Object.class });

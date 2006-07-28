@@ -18,7 +18,6 @@ package org.apache.openjpa.jdbc.meta.strats;
 import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.Embeddable;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -140,13 +139,13 @@ public class StringFieldStrategy
     }
 
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetch, int eagerMode) {
+        JDBCFetchConfiguration fetch, int eagerMode) {
         sel.select(field.getColumns()[0], field.join(sel));
         return 1;
     }
 
     public void load(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res)
+        JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
         Column col = field.getColumns()[0];
         if (res.contains(col))
@@ -169,7 +168,7 @@ public class StringFieldStrategy
         return field.join(joins, forceOuter, false);
     }
 
-    public Object loadProjection(JDBCStore store, JDBCFetchState fetchState,
+    public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
         return res.getString(field.getColumns()[0], joins);
@@ -250,7 +249,7 @@ public class StringFieldStrategy
     }
 
     public void loadEmbedded(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Object val)
+        JDBCFetchConfiguration fetch, Object val)
         throws SQLException {
         sm.storeString(field.getIndex(), (String) val);
     }

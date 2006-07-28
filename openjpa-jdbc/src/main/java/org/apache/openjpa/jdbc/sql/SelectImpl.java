@@ -38,7 +38,6 @@ import java.util.TreeMap;
 import org.apache.commons.collections.iterators.EmptyIterator;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCLockManager;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
@@ -699,22 +698,21 @@ public class SelectImpl
     }
 
     public void select(ClassMapping mapping, int subclasses,
-        JDBCStore store, JDBCFetchState fetchState, int eager) {
-        select(mapping, subclasses, store, fetchState, eager, null);
+        JDBCStore store, JDBCFetchConfiguration fetch, int eager) {
+        select(mapping, subclasses, store, fetch, eager, null);
     }
 
     public void select(ClassMapping mapping, int subclasses,
-        JDBCStore store, JDBCFetchState fetchState, int eager,
+        JDBCStore store, JDBCFetchConfiguration fetch, int eager,
         Joins joins) {
-        select(this, mapping, subclasses, store, fetchState, eager, joins,
-            false);
+        select(this, mapping, subclasses, store, fetch, eager, joins, false);
     }
 
     /**
      * Select the given mapping.
      */
     void select(Select wrapper, ClassMapping mapping, int subclasses,
-        JDBCStore store, JDBCFetchState fetchState, int eager,
+        JDBCStore store, JDBCFetchConfiguration fetch, int eager,
         Joins joins, boolean ident) {
         // note that this is one case where we don't want to use the result
         // of getJoins(); just use the given joins, which will either be clean
@@ -744,7 +742,7 @@ public class SelectImpl
 
         // delegate to store manager to select in same order it loads result
         ((JDBCStoreManager) store).select(wrapper, mapping, subclasses, null,
-            null, fetchState, eager, ident);
+            null, fetch, eager, ident);
 
         // reset
         if (hasJoins)
@@ -777,15 +775,14 @@ public class SelectImpl
     }
 
     public void selectIdentifier(ClassMapping mapping, int subclasses,
-        JDBCStore store, JDBCFetchState fetchState, int eager) {
-        selectIdentifier(mapping, subclasses, store, fetchState, eager, null);
+        JDBCStore store, JDBCFetchConfiguration fetch, int eager) {
+        selectIdentifier(mapping, subclasses, store, fetch, eager, null);
     }
 
     public void selectIdentifier(ClassMapping mapping, int subclasses,
-        JDBCStore store, JDBCFetchState fetchState, int eager,
+        JDBCStore store, JDBCFetchConfiguration fetch, int eager,
         Joins joins) {
-        select(this, mapping, subclasses, store, fetchState, eager, joins,
-            true);
+        select(this, mapping, subclasses, store, fetch, eager, joins, true);
     }
 
     public int selectPrimaryKey(ClassMapping mapping) {
@@ -2055,7 +2052,7 @@ public class SelectImpl
         }
 
         public Object load(ClassMapping mapping, JDBCStore store,
-            JDBCFetchState fetchState, Joins joins)
+            JDBCFetchConfiguration fetch, Joins joins)
             throws SQLException {
             boolean hasJoins = joins != null
                 && ((PathJoins) joins).path() != null;
@@ -2065,7 +2062,7 @@ public class SelectImpl
                 _preJoins.push(joins);
             }
 
-            Object obj = super.load(mapping, store, fetchState, joins);
+            Object obj = super.load(mapping, store, fetch, joins);
 
             // reset
             if (hasJoins)

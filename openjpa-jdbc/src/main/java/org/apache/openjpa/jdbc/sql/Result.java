@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -167,14 +167,14 @@ public interface Result
      * Load a pc object using the given store manager.
      */
     public Object load(ClassMapping mapping, JDBCStore store,
-        JDBCFetchState fetchState)
+        JDBCFetchConfiguration fetch)
         throws SQLException;
 
     /**
      * Load a pc object using the given store manager.
      */
     public Object load(ClassMapping mapping, JDBCStore store,
-        JDBCFetchState fetchState, Joins joins)
+        JDBCFetchConfiguration fetch, Joins joins)
         throws SQLException;
 
     /**

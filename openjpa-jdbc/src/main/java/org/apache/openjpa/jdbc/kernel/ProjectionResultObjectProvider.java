@@ -39,8 +39,8 @@ class ProjectionResultObjectProvider
      * @param exps the query expressions
      */
     public ProjectionResultObjectProvider(SelectExecutor sel, JDBCStore store,
-        JDBCFetchState fetchState, QueryExpressions exps) {
-        this(sel, store, fetchState, new QueryExpressions[]{ exps });
+        JDBCFetchConfiguration fetch, QueryExpressions exps) {
+        this(sel, store, fetch, new QueryExpressions[]{ exps });
     }
 
     /**
@@ -52,8 +52,8 @@ class ProjectionResultObjectProvider
      * @param exps the query expressions
      */
     public ProjectionResultObjectProvider(SelectExecutor sel, JDBCStore store,
-        JDBCFetchState fetchState, QueryExpressions[] exps) {
-        super(sel, store, fetchState);
+        JDBCFetchConfiguration fetch, QueryExpressions[] exps) {
+        super(sel, store, fetch);
         _exps = exps;
     }
 
@@ -64,7 +64,7 @@ class ProjectionResultObjectProvider
         Object[] arr = new Object[_exps[idx].projections.length];
         for (int i = 0; i < _exps[idx].projections.length; i++)
             arr[i] = ((Val) _exps[idx].projections[i]).load(res, getStore(),
-                getFetchState());
+                getFetchConfiguration());
         return arr;
     }
 }

@@ -137,9 +137,7 @@ public class DetachedStateManager
                 }
             }
             FetchConfiguration fc = broker.getFetchConfiguration();
-            FetchState fetchState = fc.newFetchState();
-            sm.loadFields(load, fetchState, fc.getWriteLockLevel(), null, true);
-                
+            sm.loadFields(load, fc, fc.getWriteLockLevel(), null, true);
         }
         sm.setVersion(_version);
 
@@ -646,15 +644,15 @@ public class DetachedStateManager
         return ret;
     }
 
-    ///////////////////////////////////
+    //////////////////////////////////////
     // OpenJPAStateManager implementation
-    ///////////////////////////////////
+    //////////////////////////////////////
 
     public void initialize(Class forType, PCState state) {
         throw new UnsupportedOperationException();
     }
 
-    public void load(FetchState fetchState) {
+    public void load(FetchConfiguration fetch) {
         throw new UnsupportedOperationException();
     }
 
@@ -702,7 +700,7 @@ public class DetachedStateManager
         throw new UnsupportedOperationException();
     }
 
-    public BitSet getUnloaded(FetchState fetchState) {
+    public BitSet getUnloaded(FetchConfiguration fetch) {
         throw new UnsupportedOperationException();
     }
 

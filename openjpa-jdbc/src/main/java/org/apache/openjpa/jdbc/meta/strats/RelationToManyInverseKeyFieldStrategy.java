@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -68,19 +68,19 @@ public abstract class RelationToManyInverseKeyFieldStrategy
     }
 
     protected void selectElement(Select sel, ClassMapping elem,
-        JDBCStore store, JDBCFetchState fetchState, int eagerMode,
+        JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode,
         Joins joins) {
         sel.select(elem, field.getElementMapping().getSelectSubclasses(),
-            store, fetchState, eagerMode, joins);
+            store, fetch, eagerMode, joins);
     }
 
     protected Object loadElement(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res, Joins joins)
+        JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
         ClassMapping elem = res.getBaseMapping();
         if (elem == null)
             elem = field.getElementMapping().getIndependentTypeMappings()[0];
-        return res.load(elem, store, fetchState, joins);
+        return res.load(elem, store, fetch, joins);
     }
 
     protected Joins join(Joins joins, ClassMapping elem) {

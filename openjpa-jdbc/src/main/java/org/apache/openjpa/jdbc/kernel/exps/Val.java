@@ -17,7 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
@@ -69,31 +69,31 @@ public interface Val
      * Select the data for this value.
      */
     public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchState fetchState);
+        boolean pks, JDBCFetchConfiguration fetch);
 
     /**
      * Select just the columns for this value.
      */
     public void selectColumns(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchState fetchState);
+        boolean pks, JDBCFetchConfiguration fetch);
 
     /**
      * Group by this value.
      */
     public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchState fetchState);
+        JDBCFetchConfiguration fetch);
 
     /**
      * Order by this value.
      */
     public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchState fetchState);
+        boolean asc, JDBCFetchConfiguration fetch);
 
     /**
      * Load the data for this value.
      */
     public Object load(Result res, JDBCStore store,
-        JDBCFetchState fetchState)
+        JDBCFetchConfiguration fetch)
         throws SQLException;
 
     /**
@@ -108,7 +108,7 @@ public interface Val
      * @param other the value being compared to, or null if not a comparison
      */
     public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchState fetchState);
+        Object[] params, Val other, JDBCFetchConfiguration fetch);
 
     /**
      * Clear parameter values held by this value or its subcomponents.
@@ -125,37 +125,37 @@ public interface Val
      * Append the <code>index</code>th SQL element to the given buffer.
      */
     public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState);
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch);
 
     /**
      * Append the SQL testing whether this value is empty to the given buffer.
      */
     public void appendIsEmpty(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState);
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch);
 
     /**
      * Append the SQL testing whether this value is not empty to
      * the given buffer.
      */
     public void appendIsNotEmpty(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchState fetchState);
+        Object[] params, JDBCFetchConfiguration fetch);
 
     /**
      * Append the SQL checking the size of this value.
      */
     public void appendSize(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState);
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch);
 
     /**
      * Append the SQL testing whether this value is null to the given buffer.
      */
     public void appendIsNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState);
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch);
 
     /**
      * Append the SQL testing whether this value is not null to the given
      * buffer.
      */
     public void appendIsNotNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState);
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch);
 }

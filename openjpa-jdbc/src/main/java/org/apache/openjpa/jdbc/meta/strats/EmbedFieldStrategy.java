@@ -35,7 +35,6 @@ import java.util.Locale;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -52,7 +51,7 @@ import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
-import org.apache.openjpa.kernel.FetchState;
+import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.kernel.StoreContext;
@@ -377,7 +376,7 @@ public class EmbedFieldStrategy
     }
 
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, int eagerMode) {
+        JDBCFetchConfiguration fetch, int eagerMode) {
         Joins joins = field.join(sel);
         sel.select(field.getColumns(), joins); // null indicator
 
@@ -386,12 +385,12 @@ public class EmbedFieldStrategy
         // result in a clone that produces invalid SQL
         eagerMode = Math.min(eagerMode, JDBCFetchConfiguration.EAGER_JOIN);
         sel.select(field.getEmbeddedMapping(), sel.SUBS_EXACT, store,
-            fetchState, eagerMode, joins);
+            fetch, eagerMode, joins);
         return 1;
     }
 
     public void load(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res)
+        JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
         Boolean isNull = indicatesNull(res);
         if (isNull == null)
@@ -420,15 +419,14 @@ public class EmbedFieldStrategy
             res.startDataRequest(fields[i]);
             try {
                 if (eres == res)
-                    fields[i].loadEagerJoin(em, store, fetchState, res);
+                    fields[i].loadEagerJoin(em, store, fetch, res);
                 else if (eres != null) {
                     processed =
-                        fields[i].loadEagerParallel(em, store, fetchState,
-                            eres);
+                        fields[i].loadEagerParallel(em, store, fetch, eres);
                     if (processed != eres)
                         res.putEager(fields[i], processed);
                 } else
-                    fields[i].load(em, store, fetchState, res);
+                    fields[i].load(em, store, fetch, res);
                 loaded |= em.getLoaded().get(i);
             } finally {
                 res.endDataRequest();
@@ -438,7 +436,7 @@ public class EmbedFieldStrategy
         // after loading everything from result, load the rest of the
         // configured fields
         if (loaded)
-            em.load(fetchState);
+            em.load(fetch);
     }
 
     /**
@@ -517,7 +515,7 @@ public class EmbedFieldStrategy
         return field.join(joins, forceOuter, false);
     }
 
-    public Object loadProjection(JDBCStore store, JDBCFetchState fetchState,
+    public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
         throw new UserException(_loc.get("cant-project-owned", field));
@@ -557,7 +555,7 @@ public class EmbedFieldStrategy
             throw new InternalException();
         }
 
-        public void load(FetchState fetchState) {
+        public void load(FetchConfiguration fetch) {
             throw new InternalException();
         }
 
@@ -655,7 +653,7 @@ public class EmbedFieldStrategy
             return EMPTY_BITSET;
         }
 
-        public BitSet getUnloaded(FetchState fetchState) {
+        public BitSet getUnloaded(FetchConfiguration fetch) {
             throw new InternalException();
         }
 

@@ -15,7 +15,7 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -40,9 +40,9 @@ class Size
     }
 
     public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchState fetchState) {
-        getVal().calculateValue(sel, store, params, null, fetchState);
-        getVal().appendSize(sql, sel, store, params, fetchState);
+        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+        getVal().calculateValue(sel, store, params, null, fetch);
+        getVal().appendSize(sql, sel, store, params, fetch);
         sel.append(sql, getVal().getJoins());
         getVal().clearParameters();
     }

@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.ValueHandler;
@@ -68,18 +68,18 @@ public class HandlerHandlerMapTableFieldStrategy
     }
 
     public void selectKey(Select sel, ClassMapping cls, OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, Joins joins) {
+        JDBCStore store, JDBCFetchConfiguration fetch, Joins joins) {
         sel.select(_kcols, joins);
     }
 
     public void selectValue(Select sel, ClassMapping cls,
         OpenJPAStateManager sm,
-        JDBCStore store, JDBCFetchState fetchState, Joins joins) {
+        JDBCStore store, JDBCFetchConfiguration fetch, Joins joins) {
         sel.select(_vcols, joins);
     }
 
     public Result[] getResults(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, int eagerMode, Joins[] joins, boolean lrs)
+        JDBCFetchConfiguration fetch, int eagerMode, Joins[] joins, boolean lrs)
         throws SQLException {
         Select sel = store.getSQLFactory().newSelect();
         sel.setLRS(lrs);
@@ -87,23 +87,22 @@ public class HandlerHandlerMapTableFieldStrategy
         sel.select(_vcols);
         sel.whereForeignKey(field.getJoinForeignKey(), sm.getObjectId(),
             field.getDefiningMapping(), store);
-        Result res = sel.execute(store,
-            fetchState.getJDBCFetchConfiguration());
+        Result res = sel.execute(store, fetch);
         return new Result[]{ res, res };
     }
 
     public Object loadKey(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res, Joins joins)
+        JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
         return HandlerStrategies.loadObject(field.getKeyMapping(),
-            sm, store, fetchState, res, joins, _kcols, _kload);
+            sm, store, fetch, res, joins, _kcols, _kload);
     }
 
     public Object loadValue(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res, Joins joins)
+        JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
         return HandlerStrategies.loadObject(field.getElementMapping(),
-            sm, store, fetchState, res, joins, _vcols, _vload);
+            sm, store, fetch, res, joins, _vcols, _vload);
     }
 
     public void map(boolean adapt) {

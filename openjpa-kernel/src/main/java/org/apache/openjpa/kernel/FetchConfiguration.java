@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
+import org.apache.openjpa.meta.FieldMetaData;
 
 /**
  * Allows configuration and optimization of how objects are loaded from
@@ -28,7 +29,7 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
  *
  * @since 3.0
  * @author Abe White
- * @author Patrick Linskey
+ * @author Pinaki Poddar
  */
 public interface FetchConfiguration
     extends Serializable, Cloneable, LockLevels, QueryFlushModes {
@@ -37,18 +38,6 @@ public interface FetchConfiguration
      * Constant to revert any setting back to its default value.
      */
     public static final int DEFAULT = -99;
-
-    /**
-     * Special fetch group name that is used by OpenJPA to indicate that all
-     * fetch groups should be loaded by this configuration.
-     */
-    public static final String FETCH_GROUP_ALL = "openjpa.FetchGroupAll";
-
-    /**
-     * Special fetch group name that is used by OpenJPA to denote the default
-     * fetch group.
-     */
-    public static final String FETCH_GROUP_DEFAULT = "default";
 
     /**
      * Return the context assiciated with this configuration;
@@ -143,13 +132,6 @@ public interface FetchConfiguration
     public boolean hasFetchGroup(String group);
 
     /**
-     * Return true if any of the given fetch groups has been added.
-     *
-     * @since 4.1
-     */
-    public boolean hasAnyFetchGroup(Set groups);
-
-    /**
      * Adds <code>group</code> to the set of fetch group names to
      * use when loading objects.
      */
@@ -228,26 +210,6 @@ public interface FetchConfiguration
     public FetchConfiguration clearFields();
 
     /**
-     * Root classes for recursive operations. This set is not thread safe.
-     */
-    public Set getRootClasses();
-
-    /**
-     * Root classes for recursive operations.
-     */
-    public FetchConfiguration setRootClasses(Collection classes);
-
-    /**
-     * Root instances for recursive operations. This set is not thread safe.
-     */
-    public Set getRootInstances();
-
-    /**
-     * Root instances for recursive operations.
-     */
-    public FetchConfiguration setRootInstances(Collection roots);
-
-    /**
      * The number of milliseconds to wait for an object lock, or -1 for no
      * limit.
      *
@@ -297,13 +259,6 @@ public interface FetchConfiguration
     public ResultList newResultList(ResultObjectProvider rop);
 
     /**
-     * Create a new fecth state for the current fetch configuration.
-     *
-     * @since 4.1
-     */
-    public FetchState newFetchState();
-
-    /**
      * Sets an arbitrary query hint that may be utilized during
      * execution. The hint may be datastore-specific.
      *
@@ -318,10 +273,29 @@ public interface FetchConfiguration
      * is not specified.
      *
 	 * @param name the hint name
-	 *
-	 * @since	4.0
+	 * @since 4.0
 	 */
 	public Object getHint (String name);
+
+    /**
+     * Root classes for recursive operations. This set is not thread safe.
+     */
+    public Set getRootClasses();
+
+    /**
+     * Root classes for recursive operations.
+     */
+    public FetchConfiguration setRootClasses(Collection classes);
+
+    /**
+     * Root instances for recursive operations. This set is not thread safe.
+     */
+    public Set getRootInstances();
+
+    /**
+     * Root instances for recursive operations.
+     */
+    public FetchConfiguration setRootInstances(Collection roots);
 
     /**
      * Synchronize on internal lock if multithreaded is true.
@@ -332,4 +306,21 @@ public interface FetchConfiguration
      * Release internal lock if multithreaded is true.
      */
     public void unlock();
+
+    /**
+     * Affirms if the given field requires to be fetched in the context
+     * of current fetch operation.
+     *
+     * @since 4.1
+     */
+    public boolean requiresFetch(FieldMetaData fm);
+    
+    /**
+     * Traverse the given field to generate (possibly) a new configuration 
+     * state.
+     * 
+     * @return a new configuration state resulting out of traversal
+     * @since 4.1
+     */
+    public FetchConfiguration traverse(FieldMetaData fm);
 }

@@ -87,9 +87,8 @@ public class GenericResultObjectProvider
         throws SQLException {
         // rather than use the standard result.load(), we go direct to
         // the store manager so we can tell it not to load anything additional
-        return ((JDBCStoreManager) _store).load(_mapping,
-            (JDBCFetchState) _fetch.newFetchState(), StoreContext.EXCLUDE_ALL,
-            _res);
+        return ((JDBCStoreManager) _store).load(_mapping, _fetch,
+            StoreContext.EXCLUDE_ALL, _res);
     }
 
     public boolean next()

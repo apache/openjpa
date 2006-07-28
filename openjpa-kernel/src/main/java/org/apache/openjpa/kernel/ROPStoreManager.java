@@ -40,11 +40,10 @@ class ROPStoreManager
     }
 
     public boolean initialize(OpenJPAStateManager sm, PCState state,
-        FetchState fetchState, Object context) {
+        FetchConfiguration fetch, Object context) {
         if (context instanceof PCResultObjectProvider) {
             try {
-                ((PCResultObjectProvider) context).initialize
-                    (sm, state, fetchState);
+                ((PCResultObjectProvider) context).initialize(sm, state, fetch);
             } catch (OpenJPAException ke) {
                 throw ke;
             } catch (Exception e) {
@@ -52,7 +51,7 @@ class ROPStoreManager
             }
             return true;
         }
-        return super.initialize(sm, state, fetchState, context);
+        return super.initialize(sm, state, fetch, context);
     }
 
     public boolean syncVersion(OpenJPAStateManager sm, Object context) {
@@ -66,13 +65,13 @@ class ROPStoreManager
     }
 
     public boolean load(OpenJPAStateManager sm, BitSet fields,
-        FetchState fetchState, int lockLevel, Object context) {
+        FetchConfiguration fetch, int lockLevel, Object context) {
         // the only way this gets called with a rop context is if the
         // rop didn't load the field on initialize, so just null
         // it out so we don't get unexpected results when our delegate
         // expectes a different context type
         if (context instanceof PCResultObjectProvider)
             context = null;
-        return super.load(sm, fields, fetchState, lockLevel, context);
+        return super.load(sm, fields, fetch, lockLevel, context);
     }
 }

@@ -16,7 +16,7 @@
 package org.apache.openjpa.jdbc.kernel.exps;
 
 import org.apache.commons.collections.map.LinkedMap;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreQuery;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -76,11 +76,11 @@ public class JDBCExpressionFactory
      * queries at the same time.
      */
     public synchronized Select evaluate(JDBCStoreQuery q,
-        JDBCFetchState fetchState, QueryExpressions exps, Object[] params) {
+        JDBCFetchConfiguration fetch, QueryExpressions exps, Object[] params) {
         // figure out proper cache level based on parameters
         int level = getCacheLevel(q, params);
         return _cons.evaluate(q.getStore(), null, null, exps, params,
-            level, fetchState);
+            level, fetch);
     }
 
     /**
@@ -116,9 +116,9 @@ public class JDBCExpressionFactory
      */
     public void select(JDBCStoreQuery q, ClassMapping mapping,
         boolean subclasses, Select sel, QueryExpressions exps,
-        Object[] params, JDBCFetchState fetchState, int eager) {
+        Object[] params, JDBCFetchConfiguration fetch, int eager) {
         _cons.select(q.getStore(), mapping, subclasses, sel, exps,
-            params, fetchState, eager);
+            params, fetch, eager);
     }
 
     public Expression emptyExpression() {

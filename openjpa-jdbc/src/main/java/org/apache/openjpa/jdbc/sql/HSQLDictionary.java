@@ -189,9 +189,10 @@ public class HSQLDictionary
         return buf.toString();
     }
 
-    public SQLBuffer toOperation(String op, SQLBuffer selects, SQLBuffer from,
-        SQLBuffer where, SQLBuffer group, SQLBuffer having, SQLBuffer order,
-        boolean distinct, boolean forUpdate, long start, long end) {
+    protected SQLBuffer toOperation(String op, SQLBuffer selects, 
+        SQLBuffer from, SQLBuffer where, SQLBuffer group, SQLBuffer having, 
+        SQLBuffer order, boolean distinct, boolean forUpdate, long start, 
+        long end) {
         // hsql requires ordering when limit is used
         if ((start != 0 || end != Long.MAX_VALUE)
             && (order == null || order.isEmpty()))

@@ -860,28 +860,32 @@ public class AnnotationPersistenceMetaDataParser
      * Create fetch groups.
      */
     private void parseFetchGroups(ClassMetaData meta, FetchGroup... groups) {
+        org.apache.openjpa.meta.FetchGroup fg;
         for (FetchGroup group : groups) {
             if (StringUtils.isEmpty(group.name()))
                 throw new MetaDataException(_loc.get("unnamed-fg", meta));
-            meta.addFetchGroup(group.name());
+
+            fg = meta.addDeclaredFetchGroup(group.name());
+            if (group.postLoad())
+                fg.setPostLoad(true); 
             for (FetchAttribute attr : group.attributes())
-                parseFetchAttribute(meta, group.name(), attr);
+                parseFetchAttribute(meta, fg, attr);
         }
     }
 
     /**
      * Set a field's fetch group.
      */
-    private void parseFetchAttribute(ClassMetaData meta, String group,
-        FetchAttribute attr) {
+    private void parseFetchAttribute(ClassMetaData meta, 
+        org.apache.openjpa.meta.FetchGroup fg, FetchAttribute attr) {
         FieldMetaData field = meta.getDeclaredField(attr.name());
         if (field == null
             || field.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
-            throw new MetaDataException(_loc.get("bad-fg-field", group,
+            throw new MetaDataException(_loc.get("bad-fg-field", fg.getName(),
                 meta, attr.name()));
 
-        // validations passed; set fetch group
-        field.addFetchGroup(group);
+        if (attr.recursionDepth() != Integer.MIN_VALUE)
+            fg.setRecursionDepth(field, attr.recursionDepth());
     }
 
     /**

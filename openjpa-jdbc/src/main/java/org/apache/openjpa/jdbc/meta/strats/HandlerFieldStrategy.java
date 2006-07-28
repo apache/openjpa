@@ -18,7 +18,6 @@ package org.apache.openjpa.jdbc.meta.strats;
 import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.Embeddable;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -148,7 +147,7 @@ public class HandlerFieldStrategy
     }
 
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, int eagerMode) {
+        JDBCFetchConfiguration fetch, int eagerMode) {
         if (_cols.length == 0)
             return -1;
 
@@ -161,7 +160,7 @@ public class HandlerFieldStrategy
     }
 
     public void load(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Result res)
+        JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
         if (_cols.length == 0 || !res.containsAll(_cols))
             return;
@@ -178,13 +177,13 @@ public class HandlerFieldStrategy
     }
 
     public void load(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState)
+        JDBCFetchConfiguration fetch)
         throws SQLException {
         // even if no columns, allow a handler to load a generated value
         if (_cols.length == 0) {
             if (_load)
                 sm.store(field.getIndex(), field.getHandler().
-                    toObjectValue(field, null, sm, store, fetchState));
+                    toObjectValue(field, null, sm, store, fetch));
             else
                 sm.store(field.getIndex(), field.getHandler().
                     toObjectValue(field, null));
@@ -198,7 +197,7 @@ public class HandlerFieldStrategy
                 if (ds == NULL)
                     ds = null;
                 sm.store(field.getIndex(), field.getHandler().
-                    toObjectValue(field, ds, sm, store, fetchState));
+                    toObjectValue(field, ds, sm, store, fetch));
                 return;
             }
         }
@@ -207,8 +206,7 @@ public class HandlerFieldStrategy
         sel.select(_cols);
         field.wherePrimaryKey(sel, sm, store);
 
-        Result res = sel.execute(store,
-            fetchState.getJDBCFetchConfiguration());
+        Result res = sel.execute(store, fetch);
         Object val = null;
         try {
             if (res.next())
@@ -217,7 +215,7 @@ public class HandlerFieldStrategy
             res.close();
         }
 
-        loadEmbedded(sm, store, fetchState, val);
+        loadEmbedded(sm, store, fetch, val);
     }
 
     public Object toDataStoreValue(Object val, JDBCStore store) {
@@ -259,10 +257,10 @@ public class HandlerFieldStrategy
         return joins;
     }
 
-    public Object loadProjection(JDBCStore store, JDBCFetchState fetchState,
+    public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
-        return HandlerStrategies.loadObject(field, null, store, fetchState, res,
+        return HandlerStrategies.loadObject(field, null, store, fetch, res,
             joins, _cols, _load);
     }
 
@@ -387,13 +385,13 @@ public class HandlerFieldStrategy
     }
 
     public void loadEmbedded(OpenJPAStateManager sm, JDBCStore store,
-        JDBCFetchState fetchState, Object val)
+        JDBCFetchConfiguration fetch, Object val)
         throws SQLException {
         if (val == null && _cols.length > 1)
             val = new Object[_cols.length];
         if (_load)
             sm.store(field.getIndex(), field.getHandler().
-                toObjectValue(field, val, sm, store, fetchState));
+                toObjectValue(field, val, sm, store, fetch));
         else
             sm.store(field.getIndex(), field.getHandler().
                 toObjectValue(field, val));

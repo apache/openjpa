@@ -32,7 +32,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchState;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -213,15 +213,15 @@ public class MergedResult
     }
 
     public Object load(ClassMapping mapping, JDBCStore store,
-        JDBCFetchState fetchState)
+        JDBCFetchConfiguration fetch)
         throws SQLException {
-        return _res[_idx].load(mapping, store, fetchState);
+        return _res[_idx].load(mapping, store, fetch);
     }
 
     public Object load(ClassMapping mapping, JDBCStore store,
-        JDBCFetchState fetchState, Joins joins)
+        JDBCFetchConfiguration fetch, Joins joins)
         throws SQLException {
-        return _res[_idx].load(mapping, store, fetchState, joins);
+        return _res[_idx].load(mapping, store, fetch, joins);
     }
 
     public Array getArray(Object obj)
