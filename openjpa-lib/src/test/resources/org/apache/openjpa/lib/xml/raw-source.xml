@@ -1,0 +1,2 @@
+<?xml version="1.0"?>
+<root attr1="1" attr2="2"><list/><list>text 1</list><list><inner-list/><inner-list>text 2</inner-list></list></root>
