@@ -48,8 +48,6 @@ public class PersistenceProductDerivation
             PersistenceMetaDataFactory.class.getName());
         conf.metaFactoryPlugin.setAlias(ALIAS_EJB,
             PersistenceMetaDataFactory.class.getName());
-        conf.metaFactoryPlugin.setDefault(SPEC_JPA);
-        conf.metaFactoryPlugin.setString(SPEC_JPA);
     }
 
     public void afterSpecificationSet(OpenJPAConfiguration c) {

@@ -15,6 +15,7 @@ package org.apache.openjpa.lib.xml;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -48,7 +49,7 @@ public class TestXMLWriter extends TestCase {
         StringWriter formatted = new StringWriter();
         StreamResult result = new StreamResult(new XMLWriter(formatted));
 
-        Transformer trans = XMLFactory.getTransformer(null);
+        Transformer trans = TransformerFactory.newInstance().newTransformer();
         trans.transform(source, result);
 
         // read the correct output into a buffer

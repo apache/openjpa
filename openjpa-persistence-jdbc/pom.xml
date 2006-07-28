@@ -90,6 +90,7 @@
                                              pathsep=" "/>
                                 <java
                                     classname="org.apache.openjpa.enhance.PCEnhancer">
+                                    <arg line="-p persistence.xml"/>
                                     <arg line="${enhance.files}"/>
                                     <classpath>
                                         <path
@@ -110,6 +111,5 @@
         </plugins>
 
     </build>
-
 
 </project>
