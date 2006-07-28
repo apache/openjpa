@@ -51,7 +51,7 @@ public class TestDocTypeReader extends TestCase {
     public void setUp() {
         StringBuffer docType = new StringBuffer();
         docType.append("<!DOCTYPE foo [\n");
-        docType.append("\t<!ELEMENT foo(bar)>\n");
+        docType.append("\t<!ELEMENT foo (bar)>\n");
         docType.append("\t<!ELEMENT bar EMPTY>\n");
         docType.append("\t<!ATTLIST bar attr CDATA \"value\">\n");
         docType.append("\t<!ATTLIST bar attr2 CDATA \"value2\">\n");
