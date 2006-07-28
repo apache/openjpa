@@ -798,7 +798,8 @@ public class JDBCStoreManager
         JDBCFetchState fetchState, Result res) throws SQLException {
         FieldMapping eagerToMany = load(mapping, sm, fetchState, res, null);
         if (eagerToMany != null)
-            eagerToMany.loadEagerJoin(sm, this, fetchState, res);
+            eagerToMany.loadEagerJoin(sm, this, 
+            	(JDBCFetchState)fetchState.traverse(eagerToMany), res);
         if (_active && _lm != null && res.isLocking())
             _lm.loadedForUpdate(sm);
     }
@@ -901,7 +902,8 @@ public class JDBCStoreManager
         // advance the result set and could exhaust it, so no other mappings
         // can load afterwords
         if (eagerToMany != null)
-            eagerToMany.selectEagerJoin(sel, sm, this, fetchState, eager);
+            eagerToMany.selectEagerJoin(sel, sm, this, 
+            		(JDBCFetchState)fetchState.traverse(eagerToMany), eager);
 
         // optionally select subclass mappings
         if (subs == sel.SUBS_JOINABLE || subs == sel.SUBS_ANY_JOINABLE)
