@@ -43,24 +43,19 @@ public class TestConfigurationImpl extends AbstractTestCase {
     }
 
     public void setUp() {
-        _def = System.getProperty("openjpa.properties");
-        System.setProperty("openjpa.properties", "test.properties");
+        System.setProperty("openjpatest.properties", "test.properties");
     }
 
     public void tearDown() throws Exception {
-    	if (_def != null)
-    		System.setProperty("openjpa.properties", _def);
-
+        System.setProperty("openjpatest.properties", "");
     	super.tearDown();
     }
 
     /**
      * Test that default properties are found and loaded.
-     * ### This test method requires some sort of ConfigurationProvider
-     * ### to be available in the openjpa-lib module, which is not the case.
      */
     public void testDefaults() {
-        System.setProperty("sysKey", "sysvalue");
+        System.setProperty("openjpa.sysKey", "sysvalue");
         assertNull(_conf.getTestKey());
         assertNull(_conf.getSysKey());
         assertNull(_conf.getPluginKey());
@@ -74,7 +69,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
         // override the properties location to a non-existant value
         _conf.setTestKey(null);
         _conf.setSysKey(null);
-        System.setProperty("openjpa.properties", "foo.properties");
+        System.setProperty("openjpatest.properties", "foo.properties");
         try {
             assertTrue(!_conf.loadDefaults());
             fail("Should have thrown exception for missing resource.");
@@ -82,8 +77,8 @@ public class TestConfigurationImpl extends AbstractTestCase {
         }
 
         // set back for remainder of tests
-        System.setProperty("openjpa.properties", "test.properties");
-        System.setProperty("pluginKey", "java.lang.Object");
+        System.setProperty("openjpatest.properties", "test.properties");
+        System.setProperty("openjpa.pluginKey", "java.lang.Object");
         assertTrue(_conf.loadDefaults());
         assertEquals("testvalue", _conf.getTestKey());
         assertEquals("sysvalue", _conf.getSysKey());
@@ -99,15 +94,15 @@ public class TestConfigurationImpl extends AbstractTestCase {
         assertTrue(_conf.loadDefaults());
         assertEquals("testvalue", _conf.getTestKey());
         Map props = _conf.toProperties(false);
-        assertEquals("testvalue", props.get("testKey"));
-        assertFalse(props.containsKey("objectKey"));
+        assertEquals("testvalue", props.get("openjpa.testKey"));
+        assertFalse(props.containsKey("openjpa.objectKey"));
         _conf.setTestKey("foo");
         _conf.setPluginKey(new Object());
         _conf.setObjectKey(new Object());
         props = _conf.toProperties(false);
-        assertEquals("foo", props.get("testKey"));
-        assertEquals("java.lang.Object", props.get("pluginKey"));
-        assertFalse(props.containsKey("objectKey"));
+        assertEquals("foo", props.get("openjpa.testKey"));
+        assertEquals("java.lang.Object", props.get("openjpa.pluginKey"));
+        assertFalse(props.containsKey("openjpa.objectKey"));
     }
 
     /**
@@ -261,10 +256,6 @@ public class TestConfigurationImpl extends AbstractTestCase {
             _sysKey = addString("sysKey");
             _pluginKey = addPlugin("pluginKey", canSetPlugin);
             _objectKey = addObject("objectKey");
-        }
-
-        public String getProductName() {
-            return "test";
         }
 
         public String getTestKey() {
