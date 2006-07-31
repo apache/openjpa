@@ -434,11 +434,16 @@ public class Configurations {
         Class[] impls = Services.getImplementorClasses
             (ConfigurationProvider.class, loader);
         ConfigurationProvider provider = null;
+        int providerCount = 0;
         StringBuffer errs = null;
         for (int i = 0; i < impls.length; i++) {
             provider = newProvider(impls[i]);
+            if (provider == null)
+                continue;
+
+            providerCount++;
             try {
-                if (provider != null && provider.loadDefaults(loader))
+                if (provider.loadDefaults(loader))
                     return provider;
             } catch (MissingResourceException mre) {
                 throw mre;
@@ -453,7 +458,10 @@ public class Configurations {
         if (errs != null)
             throw new MissingResourceException(errs.toString(),
                 Configurations.class.getName(), "defaults");
-
+        if (providerCount == 0)
+            throw new MissingResourceException(_loc.get ("no-providers", 
+                ConfigurationProvider.class.getName()),
+                Configurations.class.getName(), "defaults"); 
         return null;
     }
 
@@ -484,11 +492,16 @@ public class Configurations {
         Class[] impls = Services.getImplementorClasses
             (ConfigurationProvider.class, loader);
         ConfigurationProvider provider = null;
+        int providerCount = 0;
         StringBuffer errs = null;
         for (int i = 0; i < impls.length; i++) {
             provider = newProvider(impls[i]);
+            if (provider == null)
+                continue;
+
+            providerCount++;
             try {
-                if (provider != null && provider.load(resource, loader))
+                if (provider.load(resource, loader))
                     return provider;
             } catch (MissingResourceException mre) {
                 throw mre;
@@ -503,6 +516,9 @@ public class Configurations {
         String msg;
         if (errs != null)
             msg = errs.toString();
+        else if (providerCount == 0)
+            msg = _loc.get("no-providers", 
+                ConfigurationProvider.class.getName());
         else
             msg = _loc.get("no-provider", resource);
         

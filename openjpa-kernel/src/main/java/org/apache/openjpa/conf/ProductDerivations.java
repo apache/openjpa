@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.MissingResourceException;
 
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Services;
 
 /**
@@ -43,6 +45,16 @@ public class ProductDerivations {
                 // invalid service
             }
         }
+
+        // there must be some product derivation to define metadata factories,
+        // etc. 
+        if (derivations.isEmpty()) {
+            Localizer loc = Localizer.forPackage(ProductDerivations.class);
+            throw new MissingResourceException(loc.get("no-product-derivations",
+                ProductDerivation.class.getName()),
+                ProductDerivations.class.getName(), "derivations");
+        }
+
         Collections.sort(derivations, new ProductDerivationComparator());
         _derivations = (ProductDerivation[]) derivations.toArray
             (new ProductDerivation[derivations.size()]);
