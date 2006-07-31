@@ -931,6 +931,7 @@ public class ConfigurationImpl
     public BooleanValue addBoolean(String property) {
         BooleanValue val = new BooleanValue(property);
         addValue(val);
+        val.setDefault("false");
         return val;
     }
 
