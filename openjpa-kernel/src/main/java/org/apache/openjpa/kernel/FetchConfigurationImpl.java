@@ -113,6 +113,7 @@ public class FetchConfigurationImpl
         setFlushBeforeQueries(conf.getFlushBeforeQueriesConstant());
         clearFetchGroups();
         addFetchGroups(Arrays.asList(conf.getFetchGroupsList()));
+        setMaxFetchDepth(conf.getMaxFetchDepth());
     }
 
     /**
@@ -170,9 +171,14 @@ public class FetchConfigurationImpl
     }
 
     public FetchConfiguration setMaxFetchDepth(int depth) {
-        _state.maxFetchDepth = depth;
-        if (_parent == null)
-            _availableDepth = depth;
+        if (depth == DEFAULT && _state.ctx != null)
+            depth = _state.ctx.getConfiguration().getMaxFetchDepth();
+        if (depth != DEFAULT)
+        {
+            _state.maxFetchDepth = depth;
+            if (_parent == null)
+                _availableDepth = depth;
+        }
         return this;
     }
 

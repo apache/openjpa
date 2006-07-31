@@ -17409,6 +17409,38 @@ true(CacheSize=1000)
       of the object-to-datastore mapping to use.
       </para>
         </section>
+        <section id="openjpa.MaxFetchDepth">
+          <title>openjpa.MaxFetchDepth</title>
+          <indexterm zone="openjpa.MaxFetchDepth">
+            <primary>MaxFetchDepth</primary>
+          </indexterm>
+          <indexterm zone="openjpa.MaxFetchDepth">
+            <primary>eager fetching</primary>
+            <secondary>MaxFetchDepth</secondary>
+          </indexterm>
+          <para>
+            <emphasis role="bold">Property name:</emphasis>
+            <literal>openjpa.MaxFetchDepth</literal>
+          </para>
+          <para>
+            <emphasis role="bold">Configuration API:</emphasis>
+            <ulink url="../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getMaxFetchDepth">
+              <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getMaxFetchDepth</methodname>
+            </ulink>
+          </para>
+          <para>
+            <emphasis role="bold">Resource adaptor config-property:</emphasis>
+            <literal>MaxFetchDepth</literal>
+          </para>
+          <para>
+            <emphasis role="bold">Default:</emphasis>
+            <literal>1</literal>
+          </para>
+          <para><emphasis role="bold">Description:</emphasis>  The maximum
+      depth of relations to traverse when eager fetching.  Use -1 for no limit.
+      Defaults to 1.
+      </para>
+        </section>
         <section id="openjpa.MetaDataFactory">
           <title>openjpa.MetaDataFactory</title>
           <indexterm zone="openjpa.MetaDataFactory">
