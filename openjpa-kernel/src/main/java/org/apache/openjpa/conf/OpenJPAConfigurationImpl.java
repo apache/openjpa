@@ -91,6 +91,7 @@ public class OpenJPAConfigurationImpl
     public BooleanValue transactionMode;
     public IntValue connectionRetainMode;
     public IntValue fetchBatchSize;
+    public IntValue maxFetchDepth;
     public StringListValue fetchGroups;
     public IntValue flushBeforeQueries;
     public IntValue lockTimeout;
@@ -409,6 +410,10 @@ public class OpenJPAConfigurationImpl
         fetchBatchSize = addInt("FetchBatchSize");
         fetchBatchSize.setDefault("-1");
         fetchBatchSize.set(-1);
+
+        maxFetchDepth = addInt("MaxFetchDepth");
+        maxFetchDepth.setDefault("1");
+        maxFetchDepth.set(1);
 
         fetchGroups = addStringList("FetchGroups");
         fetchGroups.setDefault("default");
@@ -1205,6 +1210,20 @@ public class OpenJPAConfigurationImpl
 
     public int getFetchBatchSize() {
         return fetchBatchSize.get();
+    }
+
+    public void setMaxFetchDepth(int maxFetchDepth) {
+        assertNotReadOnly();
+        this.maxFetchDepth.set(maxFetchDepth);
+    }
+
+    public void setMaxFetchDepth(Integer maxFetchDepth) {
+        if (maxFetchDepth != null)
+            setMaxFetchDepth(maxFetchDepth.intValue());
+    }
+
+    public int getMaxFetchDepth() {
+        return maxFetchDepth.get();
     }
 
     public void setFetchGroups(String fetchGroups) {

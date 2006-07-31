@@ -1024,6 +1024,23 @@ public interface OpenJPAConfiguration
     public void setFetchBatchSize(Integer size);
 
     /**
+     * The maximum relation depth to traverse when eager fetching.  Use
+     * -1 for no limit.
+     */
+    public int getMaxFetchDepth();
+
+    /**
+     * The maximum relation depth to traverse when eager fetching.  Use
+     * -1 for no limit.
+     */
+    public void setMaxFetchDepth(int depth);
+
+    /**
+     * Wrapper for JCA usage of {@link #setMaxFetchDepth(int)}.
+     */
+    public void setMaxFetchDepth(Integer size);
+
+    /**
      * Comma-separated list of fetch group names that will be pre-set for
      * all new {@link FetchConfiguration}s.
      *
