@@ -2718,6 +2718,8 @@ public class StateManagerImpl
             // if any fields given, load them
             int len = (fields == null) ? 0 : fields.length();
             if (len > 0) {
+                if (fetch == null)
+                    fetch = _broker.getFetchConfiguration();
                 if (!_broker.getStoreManager().load(this, fields, fetch,
                     lockLevel, sdata)) {
                     throw new ObjectNotFoundException(_loc.get("del-instance",
