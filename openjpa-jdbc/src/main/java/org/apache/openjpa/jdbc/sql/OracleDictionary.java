@@ -54,8 +54,7 @@ import serp.util.Numbers;
 public class OracleDictionary
     extends DBDictionary {
 
-    public static final String SELECT_HINT =
-        "org.apache.openjpa.hint.OracleSelectHint";
+    public static final String SELECT_HINT = "openjpa.hint.OracleSelectHint";
     public static final String VENDOR_ORACLE = "oracle";
 
     private static final int BEHAVE_OTHER = 0;
