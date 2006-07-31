@@ -34,7 +34,6 @@ public class QueryLanguages {
     public static final String LANG_METHODQL = "org.apache.openjpa.MethodQL";
 
     private static Map _expressionParsers = new HashMap();
-
     static {
         // Load and cache all the query languages available in the system.
         Class[] classes = Services.getImplementorClasses(
