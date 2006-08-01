@@ -81,10 +81,17 @@ public class SimpleDriverDataSource
         throws SQLException {
         Properties props = new Properties();
 
-        props.put("user",
-            username != null ? username : _connectionUserName);
-        props.put("password",
-            password != null ? password : _connectionPassword);
+        if (username == null)
+            username = _connectionUserName;
+
+        if (username != null)
+            props.put("user", username);
+
+        if (password == null)
+            password = _connectionPassword;
+
+        if (password != null)
+            props.put("password", password);
 
         return getConnection(props);
     }
