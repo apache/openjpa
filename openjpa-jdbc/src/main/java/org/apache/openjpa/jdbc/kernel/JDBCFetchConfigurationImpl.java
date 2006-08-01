@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,7 +57,7 @@ public class JDBCFetchConfigurationImpl
     /**
      * Configurable JDBC state shared throughout a traversal chain.
      */
-    private static class JDBCConfigurationState {
+    private static class JDBCConfigurationState implements Serializable {
         public int eagerMode = 0;
         public int subclassMode = 0;
         public int type = 0;
