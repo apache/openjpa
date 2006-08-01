@@ -463,9 +463,12 @@ public class FieldMetaData
      * <li>{@link #MANAGE_TRANSACTIONAL}: the field is transactional but not
      * persistent</li>
      * <li>{@link #MANAGE_NONE}: the field is not managed</li>
-     * </ul> Defaults to {@link #MANAGE_PERSISTENT}.
+     * </ul> 
+     * Defaults to {@link #MANAGE_PERSISTENT}.
      */
     public void setManagement(int manage) {
+        if ((_manage == MANAGE_NONE) != (manage == MANAGE_NONE))
+            _owner.clearFieldCache();
         _manage = manage;
     }
 

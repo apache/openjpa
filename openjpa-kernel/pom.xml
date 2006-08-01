@@ -5,7 +5,6 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-kernel</artifactId>
     <packaging>jar</packaging>
-
     <name>Kernel</name>
     <description>Kernel</description>
     <url>http://incubator.apache.org/projects/openjpa</url>
@@ -15,58 +14,46 @@
         <version>0.9.0</version>
     </parent>
     <dependencies>
-
         <dependency>
-
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-lib</artifactId>
             <version>${pom.version}</version>
             <scope>compile</scope>
-
         </dependency>
-
-
         <dependency>
-
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jms_1.1_spec</artifactId>
             <version>1.0.1</version>
             <scope>compile</scope>
-
         </dependency>
         <dependency>
-
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-j2ee-connector_1.5_spec</artifactId>
             <version>1.0.1</version>
             <scope>compile</scope>
-
         </dependency>
-
         <dependency>
-
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
             <version>1.0.1</version>
             <scope>compile</scope>
-
         </dependency>
-
-
+        <dependency>
+            <groupId>commons-pool</groupId>
+            <artifactId>commons-pool</artifactId>
+            <version>1.3</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <build>
-
         <plugins>
-
             <plugin>
-
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>1.3</source>
                     <target>1.3</target>
                 </configuration>
-
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -119,8 +106,5 @@
                 </executions>
             </plugin>
         </plugins>
-
     </build>
-
-
 </project>

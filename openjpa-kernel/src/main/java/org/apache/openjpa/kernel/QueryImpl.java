@@ -950,10 +950,7 @@ public class QueryImpl
             return toResult(ex, rop, lrs);
         } catch (Exception e) {
             if (rop != null)
-                try {
-                    rop.close();
-                } catch (Exception e2) {
-                }
+                try { rop.close(); } catch (Exception e2) {}
             throw e;
         }
     }

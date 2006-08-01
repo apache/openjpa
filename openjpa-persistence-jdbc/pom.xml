@@ -5,7 +5,6 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-persistence-jdbc</artifactId>
     <packaging>jar</packaging>
-
     <name>JPA JDBC</name>
     <description>JPA JDBC</description>
     <url>http://incubator.apache.org/projects/openjpa</url>
@@ -15,62 +14,46 @@
         <version>0.9.0</version>
     </parent>
     <dependencies>
-
         <dependency>
-
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-jdbc-5</artifactId>
             <version>${pom.version}</version>
             <scope>compile</scope>
-
         </dependency>
         <dependency>
-
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence</artifactId>
             <version>${pom.version}</version>
             <scope>compile</scope>
-
         </dependency>
         <dependency>
-
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
             <version>10.1.3.1</version>
             <scope>test</scope>
-
         </dependency>
         <dependency>
-
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
             <version>1.2.1</version>
             <scope>test</scope>
-
         </dependency>
         <dependency>
-
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <version>3.1</version>
             <scope>test</scope>
-
         </dependency>
-
     </dependencies>
     <build>
-
         <plugins>
-
             <plugin>
-
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
                 </configuration>
-
             </plugin>
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -80,21 +63,18 @@
                         <configuration>
                             <tasks>
                                 <path id="enhance.path.ref">
-                                    <fileset
-                                        dir="${project.build.testOutputDirectory}">
+                                    <fileset dir="${project.build.testOutputDirectory}">
                                         <include name="**/*.class"/>
                                     </fileset>
                                 </path>
                                 <pathconvert property="enhance.files"
                                              refid="enhance.path.ref"
                                              pathsep=" "/>
-                                <java
-                                    classname="org.apache.openjpa.enhance.PCEnhancer">
+                                <java classname="org.apache.openjpa.enhance.PCEnhancer">
                                     <arg line="-p persistence.xml"/>
                                     <arg line="${enhance.files}"/>
                                     <classpath>
-                                        <path
-                                            refid="maven.dependency.classpath"/>
+                                        <path refid="maven.dependency.classpath"/>
                                         <path refid="maven.compile.classpath"/>
                                         <path refid="maven.test.classpath"/>
                                     </classpath>
@@ -107,9 +87,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
-
     </build>
-
 </project>

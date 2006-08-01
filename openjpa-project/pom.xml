@@ -17,7 +17,6 @@
         <artifactId>openjpa</artifactId>
         <version>0.9.0</version>
     </parent>
-
     <build>
         <!-- needed to let maven pass the "compile" phase -->
         <testSourceDirectory>/none/</testSourceDirectory>
@@ -33,7 +32,6 @@
         </resources>
 
         <plugins>
-
             <!-- build the docs when creating the site from docbook source -->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -64,7 +62,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
@@ -98,9 +95,9 @@
             </plugin>
 
             <!--
-                copy over site files from src/site to target/filtered-site
+                Copy over site files from src/site to target/filtered-site
                 so we can filter resources and include other generated
-                content from the openjpa-project module
+                content from the openjpa-project module.
             -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -125,7 +122,6 @@
             </plugin>
         </plugins>
     </build>
-
 
     <!-- need to explicitly list dependencies for assembly to work -->
     <dependencies>
@@ -176,7 +172,6 @@
             <artifactId>derby</artifactId>
             <version>10.1.3.1</version>
         </dependency>
-
 
         <!-- jars needed for for docbook -->
         <dependency>
