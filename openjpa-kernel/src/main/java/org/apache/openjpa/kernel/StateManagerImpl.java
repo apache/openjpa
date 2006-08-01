@@ -2793,20 +2793,7 @@ public class StateManagerImpl
     }
 
     /**
-     * Return whether the second field has any custom fetch groups in common 
-     * with the first.
-     */
-    private static boolean sharesCustomFetchGroups(FieldMetaData fmd1, 
-        FieldMetaData fmd2) {
-        String[] fgs = fmd1.getCustomFetchGroups();
-        for (int i = 0; i < fgs.length; i++)
-            if (fmd2.isInFetchGroup(fgs[i]))
-                return true;
-        return false;
-    }
-
-    /**
-     * Helper method to privde the given field number to the given
+     * Helper method to provide the given field number to the given
      * field manager.
      */
     void provideField(PersistenceCapable pc, FieldManager store, int field) {

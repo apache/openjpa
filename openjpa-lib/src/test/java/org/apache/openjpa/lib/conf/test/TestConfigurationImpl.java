@@ -36,7 +36,6 @@ import org.apache.openjpa.lib.test.AbstractTestCase;
 public class TestConfigurationImpl extends AbstractTestCase {
 
     private ConfigurationTest _conf = new ConfigurationTest();
-    private String _def;
 
     public TestConfigurationImpl(String test) {
         super(test);
@@ -307,6 +306,13 @@ public class TestConfigurationImpl extends AbstractTestCase {
 
         public void deriveObjectKey(Object val) {
             _objectKey.set(val, true);
+        }
+        
+        protected boolean isInvalidProperty(String s) {
+            if ("openjpatest.properties".equals(s))
+                return false;
+            else 
+                return super.isInvalidProperty(s);
         }
     }
 }

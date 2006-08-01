@@ -267,4 +267,3 @@ public class DelegatingStatement implements Statement, Closeable {
         throw new UnsupportedOperationException();
     }
 }
-
