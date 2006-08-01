@@ -20,7 +20,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.sax.SAXTransformerFactory;
 
 import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.w3c.dom.Document;
@@ -42,7 +41,6 @@ public class XMLFactory {
     // cache parsers and transformers in all possible configurations
     private static SAXParserFactory[] _saxFactories = null;
     private static DocumentBuilderFactory[] _domFactories = null;
-    private static SAXTransformerFactory _transFactory = null;
     private static ErrorHandler _validating;
 
     static {
