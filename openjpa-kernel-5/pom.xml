@@ -5,7 +5,6 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-kernel-5</artifactId>
     <packaging>jar</packaging>
-
     <name>Kernel 1.5</name>
     <description>Kernel 1.5</description>
     <url>http://incubator.apache.org/projects/openjpa</url>
@@ -15,16 +14,12 @@
         <version>0.9.0</version>
     </parent>
     <dependencies>
-
         <dependency>
-
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-kernel</artifactId>
             <version>${pom.version}</version>
             <scope>compile</scope>
-
         </dependency>
-
     </dependencies>
     <build>
         <plugins>
@@ -36,7 +31,6 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
-
             <!-- create enhancer pre-main attribute -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

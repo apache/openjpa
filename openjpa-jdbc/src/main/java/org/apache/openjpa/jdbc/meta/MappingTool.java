@@ -1054,8 +1054,7 @@ public class MappingTool
                 instances[i] = (ImportExport) types[i].newInstance();
             return instances;
         } catch (Throwable t) {
-            throw new InternalException(_loc.get("importexport-instantiate"),
-                t);
+            throw new InternalException(_loc.get("importexport-instantiate"),t);
         }
     }
 
