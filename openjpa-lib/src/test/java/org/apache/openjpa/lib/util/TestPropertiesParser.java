@@ -39,9 +39,11 @@ import org.apache.openjpa.lib.util.FormatPreservingProperties.DuplicateKeyExcept
 
 public class TestPropertiesParser extends TestCase {
 
+    private static final String LS = System.getProperty( "line.separator" );
+
     public void testSimpleProperties() throws IOException {
         StringBuffer buf = new StringBuffer();
-        buf.append("key: value\n");
+        buf.append("key: value" + LS);
         buf.append("key2: value2"); // no EOL -- this is intentional
         Properties p = toProperties(buf.toString());
         assertProperties(new String[][]{
@@ -50,43 +52,43 @@ public class TestPropertiesParser extends TestCase {
 
     public void testComments() throws IOException {
         StringBuffer buf = new StringBuffer();
-        buf.append("# this is a comment\n");
-        buf.append(" # another one, with leading whitespace	\n");
-        buf.append(" 	# 	and more with interesting whitespace	\n");
-        buf.append("! and with a ! delimiter\n");
-        buf.append("! and with escape \t chars\n");
-        buf.append("#and a comment with no whitespace\n");
+        buf.append("# this is a comment" + LS);
+        buf.append(" # another one, with leading whitespace	" + LS);
+        buf.append(" 	# 	and more with interesting whitespace	" + LS);
+        buf.append("! and with a ! delimiter" + LS);
+        buf.append("! and with escape \t chars" + LS);
+        buf.append("#and a comment with no whitespace" + LS);
         Properties p = toProperties(buf.toString());
         assertEquals(0, p.size());
     }
 
     public void testMixedContent() throws IOException {
         StringBuffer buf = new StringBuffer();
-        buf.append("# this is a comment\n");
-        buf.append(" # another one, with leading whitespace	\n");
-        buf.append("foo: bar#baz\n");
-        buf.append("! and with a ! delimiter\n");
-        buf.append("! and with escape \t chars\n");
+        buf.append("# this is a comment" + LS);
+        buf.append(" # another one, with leading whitespace	" + LS);
+        buf.append("foo: bar#baz" + LS);
+        buf.append("! and with a ! delimiter" + LS);
+        buf.append("! and with escape \t chars" + LS);
         Properties p = toProperties(buf.toString());
         assertProperties(new String[][]{ { "foo", "bar#baz" } }, p);
     }
 
     public void testMultiLineInput() throws IOException {
-        String s = "foo: bar\\\n" + "more line goes here";
+        String s = "foo: bar\\" + LS + "more line goes here";
         Properties p = toProperties(s);
         assertProperties(
             new String[][]{ { "foo", "barmore line goes here" } }, p);
     }
 
     public void testEmptyLines() throws IOException {
-        Properties p = toProperties("\nfoo: bar\n\nbaz: val");
+        Properties p = toProperties(LS + "foo: bar" + LS + LS + "baz: val");
         assertProperties(new String[][]{ { "foo", "bar" }, { "baz", "val" } },
             p);
     }
 
     public void testAddProperties() throws IOException {
         // intentionally left out the trailing end line
-        String s = "foo: bar\nbaz: val";
+        String s = "foo: bar" + LS + "baz: val";
         Properties p = toProperties(s);
         assertProperties(new String[][]{ { "foo", "bar" }, { "baz", "val" } },
             p);
@@ -94,19 +96,20 @@ public class TestPropertiesParser extends TestCase {
         p.put("new-key", "val1");
         p.put("new-key-2", "val2");
         p.put("another-new-key", "val3");
-        assertRoundTrip(s + "\nnew-key: val1\nnew-key-2: val2\n" +
-            "another-new-key: val3\n", p);
+        assertRoundTrip(s + LS + "new-key: val1" + LS + "new-key-2: val2" + LS +
+            "another-new-key: val3" + LS, p);
     }
 
     public void testAddAndMutateProperties() throws IOException {
         // intentionally left out the trailing end line
-        Properties p = toProperties("foo: bar\nbaz: val");
+        Properties p = toProperties("foo: bar" + LS + "baz: val");
         assertProperties(new String[][]{ { "foo", "bar" }, { "baz", "val" } },
             p);
 
         p.put("new-key", "new value");
         p.put("foo", "barbar");
-        assertRoundTrip("foo: barbar\nbaz: val\nnew-key: new value\n", p);
+        assertRoundTrip("foo: barbar" + LS + "baz: val" + LS 
+            + "new-key: new value" + LS, p);
     }
 
     public void testEscapedEquals() throws IOException {
@@ -116,10 +119,11 @@ public class TestPropertiesParser extends TestCase {
 
     public void testLineTypes() throws IOException {
         StringBuffer buf = new StringBuffer();
-        buf.append("   !comment\n \t  \nname = no\n    "
-            + "#morec\tomm\\\nents\n\n  dog=no\\cat   \nburps    "
-            + ":\ntest=\ndate today\n\n\nlong\\\n   value=tryin \\\n "
-            + "gto\n4:vier\nvier     :4");
+        buf.append("   !comment" + LS + " \t  " + LS + "name = no" + LS + "    "
+            + "#morec\tomm\\" + LS + "ents" + LS + LS + "  dog=no\\cat   " + LS 
+            + "burps    :" + LS + "test=" + LS + "date today" + LS + LS + LS 
+            + "long\\" + LS + "   value=tryin \\" + LS + " "
+            + "gto" + LS + "4:vier" + LS + "vier     :4");
         Properties p = toProperties(buf.toString());
         assertProperties(new String[][]{
             { "name", "no" }, { "ents", "" }, { "dog", "nocat   " },
@@ -146,10 +150,11 @@ public class TestPropertiesParser extends TestCase {
     public void testSpecialChars(boolean formattingProps, boolean value)
         throws Throwable {
         List valueList = new ArrayList(Arrays.asList(new String[]{
-            "xxyy", "xx\\yy", "xx\nyy", "xx\\nyy", "xx\tyy", "xx\\tyy",
-            "xx\ryy", "xx\\ryy", "xx\fyy", "xx\\fyy", "xx\r\n\\\t\r\t\nyy",
-            "xx\\r\n\\\t\\r\t\\nyy",
-            "xx\r\n\\\\\\\\\\\\\\\\\\\\\\\\\\\t\r\t\nyy",
+            "xxyy", "xx\\yy", "xx" + LS + "yy", "xx\\nyy", "xx\tyy", "xx\\tyy",
+            "xx\ryy", "xx\\ryy", "xx\fyy", "xx\\fyy", "xx\r" + LS + "\\\t\r\t" 
+            + LS + "yy",
+            "xx\\r" + LS + "\\\t\\r\t\\nyy",
+            "xx\r" + LS + "\\\\\\\\\\\\\\\\\\\\\\\\\\\t\r\t" + LS + "yy",
             "C:\\Program Files\\Some Application\\OpenJPA\\My File.dat", }));
 
         // also store every individual character
@@ -240,11 +245,22 @@ public class TestPropertiesParser extends TestCase {
         ((FormatPreservingProperties) p2).setDefaultEntryDelimiter('=');
         ((FormatPreservingProperties) p2).setAddWhitespaceAfterDelimiter(false);
 
-        String[] values = new String[]{
-            "x", "x\ny", "x\\ny", "x\ty", "x\\ty", "x\fy", "x\\fy", "x\ry",
-            "x\\ry", "C:\\Foo Bar\\Baz", randomString(5).replace('a', '\\'),
-            randomString(500).replace('a', '\\'),
-            randomString(5000).replace('a', '\\'), };
+        String[] values =
+            new String[] { 
+                "x", 
+                "x" + LS + "y", 
+                "x\\ny", 
+                "x\ty", 
+                "x\\ty",
+                "x\fy", 
+                "x\\fy", 
+                "x\ry", 
+                "x\\ry", 
+                "C:\\Foo Bar\\Baz",
+                randomString(5).replace('a', '\\'),
+                randomString(500).replace('a', '\\'),
+                randomString(5000).replace('a', '\\'), 
+                };
 
         for (int i = 0; i < values.length; i++) {
             p1.clear();
@@ -278,7 +294,7 @@ public class TestPropertiesParser extends TestCase {
                 continue;
 
             sbuf.append(line);
-            sbuf.append('\n');
+            sbuf.append(LS);
         }
 
         return sbuf.toString();
@@ -287,7 +303,7 @@ public class TestPropertiesParser extends TestCase {
     public void testDuplicateProperties() throws IOException {
         FormatPreservingProperties p = new FormatPreservingProperties();
         try {
-            toProperties("foo=bar\nfoo=baz", p);
+            toProperties("foo=bar" + LS + "foo=baz", p);
             fail("expected duplicate keys to cause exception");
         } catch (DuplicateKeyException e) {
             // expected
@@ -296,13 +312,13 @@ public class TestPropertiesParser extends TestCase {
         // now test the expected behavior when duplicates are allowed.
         p = new FormatPreservingProperties();
         p.setAllowDuplicates(true);
-        toProperties("foo=bar\nfoo=baz", p);
+        toProperties("foo=bar" + LS + "foo=baz", p);
         assertProperties(new String[][]{ { "foo", "baz" } }, p);
     }
 
     public void testMultipleLoads() throws IOException {
-        String props = "foo=bar\nbaz=quux";
-        String props2 = "a=b\nc=d";
+        String props = "foo=bar" + LS + "baz=quux";
+        String props2 = "a=b" + LS + "c=d";
         Properties vanilla = new Properties();
         vanilla.load(new BufferedInputStream
             (new StringBufferInputStream(props)));
