@@ -152,6 +152,7 @@ public class FieldMetaData
     private int _dfg = 0;
     private Set _fgSet = null;
     private String[] _fgs = null;
+    private String   _lfg = null;
     private Boolean _lrs = null;
     private String _extName = null;
     private Method _extMethod = DEFAULT_METHOD;
@@ -574,6 +575,16 @@ public class FieldMetaData
     }
 
     /**
+     * Gets the fetch group that is to be loaded when this receiver is loaded.
+     *  
+     * @return name of the load fetch group. Can be null, if not explicitly 
+     * set.
+     */
+    public String getLoadFetchGroup () {
+    	return _lfg;
+    }
+    
+    /**
      * Whether this field is in the given fetch group.
      */
     public boolean isInFetchGroup(String fg) {
@@ -610,6 +621,12 @@ public class FieldMetaData
             _fgs = null;
     }
 
+    public void setLoadFetchGroup (String lfg) {
+    	if (StringUtils.isEmpty(lfg))
+    		throw new MetaDataException(_loc.get("empty-fg-name"),this);
+    	_lfg = lfg;
+    }
+    
     /**
      * How the data store should treat null values for this field:
      * <ul>
