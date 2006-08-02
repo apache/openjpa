@@ -110,10 +110,14 @@ public class Filters {
      * to before performing any mathematical operations between them.
      */
     public static Class promote(Class c1, Class c2) {
-        c1 = wrap(c1);
-        c2 = wrap(c2);
         if (c1 == c2)
             return c1;
+        Class w1 = wrap(c1);
+        Class w2 = wrap(c2);
+        if (w1 == w2)
+            return c1;
+        c1 = w1;
+        c2 = w2;
 
         // not numbers?
         boolean c1Number = Number.class.isAssignableFrom(c1);
