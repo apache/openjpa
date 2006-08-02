@@ -2,6 +2,7 @@ package org.apache.openjpa.util;
 
 import java.util.Map;
 
+import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -37,21 +38,24 @@ public class StoreFacadeTypeRegistry {
      * @param implType the registered implementor
      */
     public Class getImplementation(Class facadeType, Class storeType) {
-        Object key = (storeType == null) ? (Object)facadeType 
-            : new Key(facadeType, storeType);
-        Class c = (Class) _impls.get(key);
-        // if no store-specific type, see if there is a generic avaialble
-        if (c == null && storeType != null)
-            c = (Class) _impls.get(facadeType);
-        return c; 
+        // traverse store type hierarchy to store manager to find most specific
+        // store avaialble
+        Class impl;
+        for (; storeType != null && storeType != StoreManager.class; 
+            storeType = storeType.getSuperclass()) {
+            impl = (Class) _impls.get(new Key(facadeType, storeType));
+            if (impl != null)
+                return impl; 
+        }    
+        return (Class) _impls.get(facadeType);
     }
 
     /**
      * Lookup key for facade+store hash.
      */
     private static class Key {
-        private final Class _facadeType;
-        private final Class _storeType;
+        public final Class _facadeType;
+        public final Class _storeType;
 
         public Key(Class facadeType, Class storeType) {
             _facadeType = facadeType;

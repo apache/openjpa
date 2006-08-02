@@ -2751,68 +2751,58 @@ public class StateManagerImpl
         return ret;
     }
 
-    protected void loadField(int field, int lockLevel, boolean forWrite,
-            boolean fgs) {
-    	loadField (field, lockLevel, forWrite, fgs, null);
-    }
-    
     /**
      * Load the given field's fetch group; the field itself may already be
      * loaded if it is being set by the user.
      */
     protected void loadField(int field, int lockLevel, boolean forWrite,
-        boolean fgs, FetchConfiguration fetch) {
-    	if (fetch == null) 
-    		fetch = _broker.getFetchConfiguration();
-    	boolean isLoadFetchGroupAdded = false;
+        boolean fgs) {
+        FetchConfiguration fetch = _broker.getFetchConfiguration();
         FieldMetaData fmd = _meta.getField(field);
         BitSet fields = null;
+
         // if this is a dfg field or we need to load our dfg, do so
-        if (fmd.isInDefaultFetchGroup()
-            || (fgs && (_flags & FLAG_LOADED) == 0)) 
+        if (fgs && (_flags & FLAG_LOADED) == 0)
             fields = getUnloadedInternal(fetch, LOAD_FGS, null);
         
-        // if not a dfg field, use first custom fetch group as load group
-        //### need to use metadata load-fetch-group
-        if (!fmd.isInDefaultFetchGroup()) {
-            String lfg = fmd.getLoadFetchGroup();
-            if (lfg != null) {  
-                FieldMetaData[] fmds = _meta.getFields();
-                for (int i = 0; i < fmds.length; i++) {
-                    if (!_loaded.get(i) && (i == field
-                        || fmds[i].isInFetchGroup(lfg))) {
-                        if (fields == null)
-                            fields = new BitSet(fmds.length);
-                        fields.set(i);
-                    }
+        // check for load fetch group
+        String lfg = fmd.getLoadFetchGroup();
+        boolean lfgAdded = false;
+        if (lfg != null) {  
+            FieldMetaData[] fmds = _meta.getFields();
+            for (int i = 0; i < fmds.length; i++) {
+                if (!_loaded.get(i) && (i == field
+                    || fmds[i].isInFetchGroup(lfg))) {
+                    if (fields == null)
+                        fields = new BitSet(fmds.length);
+                    fields.set(i);
                 }
-                // relation field is loaded with the load-fetch-group
-                // but this addition must be reverted once the load is over
-                if (isRelation(fmd) && !fetch.hasFetchGroup(lfg)) {
-                	fetch.addFetchGroup(fmd.getLoadFetchGroup());
-                	isLoadFetchGroupAdded = true;
-                }
-            } else if (!_loaded.get(fmd.getIndex())) {
-                if (fields == null)
-                    fields = new BitSet();
-                fields.set(fmd.getIndex());
             }
+
+            // relation field is loaded with the load-fetch-group
+            // but this addition must be reverted once the load is over
+            if (!fetch.hasFetchGroup(lfg)) {
+                fetch.addFetchGroup(lfg);
+                lfgAdded = true;
+            }
+        } else if (fmd.isInDefaultFetchGroup() && fields == null) {
+            // no load group but dfg: add dfg fields if we haven't already
+            fields = getUnloadedInternal(fetch, LOAD_FGS, null);
+        } else if (!_loaded.get(fmd.getIndex())) {
+            // no load group or dfg: load individual field
+            if (fields == null)
+                fields = new BitSet();
+            fields.set(fmd.getIndex());
         }
 
         // call this method even if there are no unloaded fields; loadFields
-        // takes care of things like loading version info and setting PC
-        // flags
-        loadFields(fields, fetch, lockLevel, null, forWrite);
-        
-        // remove the load fetch group 
-        if (isLoadFetchGroupAdded)
-        	fetch.removeFetchGroup(fmd.getLoadFetchGroup());
-    }
-    
-    private static boolean isRelation(FieldMetaData fm) {
-    	return fm.isDeclaredTypePC() 
-    	    || fm.getElement().isDeclaredTypePC()
-    	    || fm.getKey().isDeclaredTypePC();
+        // takes care of things like loading version info and setting PC flags
+        try {
+            loadFields(fields, fetch, lockLevel, null, forWrite);
+        } finally {
+            if (lfgAdded)
+                fetch.removeFetchGroup(lfg);
+        }
     }
 
     /**

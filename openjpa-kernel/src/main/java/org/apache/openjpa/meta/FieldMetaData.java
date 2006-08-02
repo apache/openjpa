@@ -575,15 +575,21 @@ public class FieldMetaData
     }
 
     /**
-     * Gets the fetch group that is to be loaded when this receiver is loaded.
-     *  
-     * @return name of the load fetch group. Can be null, if not explicitly 
-     * set.
+     * The fetch group that is to be loaded when this receiver is loaded, or
+     * null if none set.
      */
     public String getLoadFetchGroup () {
     	return _lfg;
     }
     
+    /**
+     * The fetch group that is to be loaded when this receiver is loaded, or
+     * null if none set.
+     */
+    public void setLoadFetchGroup (String lfg) {
+    	_lfg = lfg;
+    }
+
     /**
      * Whether this field is in the given fetch group.
      */
@@ -619,12 +625,6 @@ public class FieldMetaData
         if ((in && _fgSet.add(fg))
             || (!in && _fgSet != null && _fgSet.remove(fg)))
             _fgs = null;
-    }
-
-    public void setLoadFetchGroup (String lfg) {
-    	if (StringUtils.isEmpty(lfg))
-    		throw new MetaDataException(_loc.get("empty-fg-name"),this);
-    	_lfg = lfg;
     }
     
     /**
@@ -1669,6 +1669,8 @@ public class FieldMetaData
         }
         if (_fgSet == null && field._fgSet != null)
             _fgSet = new HashSet(field._fgSet);
+        if (_lfg == null)
+            _lfg = field.getLoadFetchGroup();
         if (_lrs == null)
             _lrs = (field.isLRS()) ? Boolean.TRUE : Boolean.FALSE;
         if (_valStrategy == -1)
