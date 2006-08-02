@@ -79,8 +79,8 @@ public class Extent<T>
         try {
             if (_fetch == null)
                 _fetch = ((EntityManagerFactoryImpl) _em.
-                    getEntityManagerFactory()).toFetchPlan(_extent.
-                    getFetchConfiguration());
+                    getEntityManagerFactory()).toFetchPlan(_extent.getBroker(),
+                    _extent.getFetchConfiguration());
             return _fetch;
         } finally {
             _extent.unlock();

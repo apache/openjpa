@@ -259,7 +259,7 @@ public class EntityManagerFactoryImpl
      * Create a store-specific facade for the given fetch configuration.
 	 * If no facade class exists, we use the default {@link FetchPlan}.
      */
-    FetchPlan toFetchPlan(FetchConfiguration fetch) {
+    FetchPlan toFetchPlan(Broker broker, FetchConfiguration fetch) {
         if (fetch == null)
             return null;
 
@@ -268,15 +268,16 @@ public class EntityManagerFactoryImpl
             inner = ((DelegatingFetchConfiguration) inner).
                 getInnermostDelegate();
 
-        _factory.lock();
         try {
             if (_plan == null) {
-                Class cls = _factory.getConfiguration()
-                    .getStoreFacadeTypeRegistry().getImplementation(
-                        FetchPlan.class);
+                Class storeType = (broker == null) ? null : broker.
+                    getStoreManager().getInnermostDelegate().getClass();
+                Class cls = _factory.getConfiguration().
+                    getStoreFacadeTypeRegistry().
+                    getImplementation(FetchPlan.class, storeType);
                 if (cls == null)
                     cls = FetchPlan.class;
-                _plan = cls.getConstructor(FetchPlan.class);
+                _plan = cls.getConstructor(FetchConfiguration.class);
             }
             return _plan.newInstance(fetch);
         } catch (InvocationTargetException ite) {
@@ -284,8 +285,6 @@ public class EntityManagerFactoryImpl
                 (ite.getTargetException());
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
-        } finally {
-            _factory.unlock();
         }
 	}
 }

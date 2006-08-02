@@ -22,6 +22,7 @@ import javax.persistence.Persistence;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 /**
  * Simple test case to get an EntityManager and perform some basic operations.
@@ -68,6 +69,12 @@ public class TestPersistence
         t.begin();
         t.setRollbackOnly();
         t.rollback();
+
+        // openjpa-facade test
+        assertTrue(em instanceof OpenJPAEntityManager);
+        OpenJPAEntityManager ojem = (OpenJPAEntityManager) em;
+        ojem.getFetchPlan().setMaxFetchDepth(-1);
+        assertEquals(-1, ojem.getFetchPlan().getMaxFetchDepth());
 
         em.close();
     }
