@@ -18,6 +18,7 @@ package org.apache.openjpa.persistence.jdbc;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.ProductDerivation;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
+import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.PersistenceProductDerivation;
@@ -39,8 +40,8 @@ public class JDBCPersistenceProductDerivation
     }
 
     public void beforeConfigurationLoad(OpenJPAConfiguration c) {
-        c.getStoreFacadeTypeRegistry().registerImplementation(
-            FetchPlan.class, JDBCFetchPlan.class);
+        c.getStoreFacadeTypeRegistry().registerImplementation(FetchPlan.class, 
+            JDBCStoreManager.class, JDBCFetchPlan.class);
         if (!(c instanceof JDBCConfigurationImpl))
             return;
 

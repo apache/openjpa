@@ -99,8 +99,8 @@ public class QueryImpl
         try {
             if (_fetch == null)
                 _fetch = ((EntityManagerFactoryImpl) _em.
-                    getEntityManagerFactory()).toFetchPlan(_query.
-                    getFetchConfiguration());
+                    getEntityManagerFactory()).toFetchPlan(_query.getBroker(),
+                    _query.getFetchConfiguration());
             return _fetch;
         } finally {
             _query.unlock();

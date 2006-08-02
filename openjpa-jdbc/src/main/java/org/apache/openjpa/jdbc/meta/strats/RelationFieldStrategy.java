@@ -492,8 +492,8 @@ public class RelationFieldStrategy
                 long id = res.getLong(cols[0]);
                 if (!res.wasNull())
                     oid = store.newDataStoreId(id, relMapping, true);
-            } else // application id
-            {
+            } else { 
+                // application id
                 if (cols.length == 1) {
                     Object val = res.getObject(cols[0], null, null);
                     if (val != null)

@@ -119,7 +119,8 @@ public class EntityManagerImpl
         _broker.lock();
         try {
             if (_fetch == null)
-                _fetch = _emf.toFetchPlan(_broker.getFetchConfiguration());
+                _fetch = _emf.toFetchPlan(_broker, 
+                    _broker.getFetchConfiguration());
             return _fetch;
         } finally {
             _broker.unlock();

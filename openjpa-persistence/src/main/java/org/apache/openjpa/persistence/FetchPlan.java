@@ -83,7 +83,7 @@ public class FetchPlan {
     /**
      * The maximum fetch depth when loading an object.
      */
-    public int getMaxFetchDepth(int depth) {
+    public int getMaxFetchDepth() {
         return _fetch.getMaxFetchDepth();
     }
 
