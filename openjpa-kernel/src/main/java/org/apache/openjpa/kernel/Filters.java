@@ -112,6 +112,11 @@ public class Filters {
     public static Class promote(Class c1, Class c2) {
         if (c1 == c2)
             return c1;
+        if (c1 == Object.class)
+            return c2;
+        if (c2 == Object.class)
+            return c1;
+
         Class w1 = wrap(c1);
         Class w2 = wrap(c2);
         if (w1 == w2)
