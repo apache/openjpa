@@ -1081,8 +1081,7 @@ public class JDBCStoreManager
         return !fm.isDefaultFetchGroupExplicit()
             && (sm == null || sm.getPCState() == PCState.TRANSIENT 
             || !sm.getLoaded().get(fm.getIndex()))
-            && fm.supportsSelect(sel, sel.TYPE_TWO_PART, sm, this, fetch) > 0
-            && fetch.requiresFetch(fm);
+            && fm.supportsSelect(sel, sel.TYPE_TWO_PART, sm, this, fetch) > 0;
     }
 
     /**
