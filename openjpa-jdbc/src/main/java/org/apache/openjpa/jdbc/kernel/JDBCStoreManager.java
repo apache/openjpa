@@ -1078,7 +1078,8 @@ public class JDBCStoreManager
      */
     private boolean optSelect(FieldMapping fm, Select sel,
         OpenJPAStateManager sm, JDBCFetchConfiguration fetch) {
-        return !fm.isDefaultFetchGroupExplicit()
+        return !fm.isInDefaultFetchGroup() 
+            && !fm.isDefaultFetchGroupExplicit()
             && (sm == null || sm.getPCState() == PCState.TRANSIENT 
             || !sm.getLoaded().get(fm.getIndex()))
             && fm.supportsSelect(sel, sel.TYPE_TWO_PART, sm, this, fetch) > 0;
@@ -1121,9 +1122,11 @@ public class JDBCStoreManager
             fms = subMappings[i].getDefinedFieldMappings();
             for (int j = 0; j < fms.length; j++) {
                 // make sure in one of configured fetch groups
-            	if (fetch.requiresFetch(fms[j]) 
-            	  || fms[j].supportsSelect(sel, sel.TYPE_TWO_PART, sm, this, 
-                    fetch) <= 0) 
+            	if (!fetch.requiresFetch(fms[j]) 
+                    && ((!fms[j].isInDefaultFetchGroup() 
+                    && fms[j].isDefaultFetchGroupExplicit())
+                    || fms[j].supportsSelect(sel, sel.TYPE_TWO_PART, sm, this, 
+                    fetch) <= 0)) 
             		continue;
 
                 // if we can join to the subclass, do so; much better chance
@@ -1137,10 +1140,9 @@ public class JDBCStoreManager
 
                 // if can select with tables already selected, do it
                 if (fms[j].supportsSelect(sel, sel.TYPE_JOINLESS, sm, this,
-                    fetch) > 0 && fetch.requiresFetch(fms[j])) {
-                    fms[j].select(sel, null, this, fetch.traverseJDBC (fms[j]),
+                    fetch) > 0)
+                    fms[j].select(sel, null, this, fetch.traverseJDBC(fms[j]),
                         fetch.EAGER_NONE);
-                }
             }
         }
     }
