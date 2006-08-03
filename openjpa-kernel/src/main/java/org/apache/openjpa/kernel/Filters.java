@@ -29,6 +29,7 @@ import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UserException;
@@ -106,76 +107,100 @@ public class Filters {
     }
 
     /**
-     * Given two numeric types, return type they should both be converted
-     * to before performing any mathematical operations between them.
+     * Given two types, return type they should both be converted
+     * to before performing any operations between them.
      */
     public static Class promote(Class c1, Class c2) {
         if (c1 == c2)
-            return c1;
-        if (c1 == Object.class)
-            return c2;
-        if (c2 == Object.class)
-            return c1;
-
+            return unwrap(c1);
         Class w1 = wrap(c1);
         Class w2 = wrap(c2);
         if (w1 == w2)
-            return c1;
-        c1 = w1;
-        c2 = w2;
+            return unwrap(c1);
 
         // not numbers?
-        boolean c1Number = Number.class.isAssignableFrom(c1);
-        boolean c2Number = Number.class.isAssignableFrom(c2);
-        if (!c1Number || !c2Number) {
+        boolean w1Number = Number.class.isAssignableFrom(w1);
+        boolean w2Number = Number.class.isAssignableFrom(w2);
+        if (!w1Number || !w2Number) {
             // the only non-numeric promotion we do is string to char,
             // or from char/string to number
-            if (!c1Number) {
-                if (c2Number && (c1 == Character.class || c1 == String.class))
-                    return (c2 == Byte.class || c2 == Short.class)
-                        ? Integer.class : c2;
-                if (!c2Number && c1 == Character.class && c2 == String.class)
+            if (!w1Number) {
+                if (w2Number && (w1 == Character.class || w1 == String.class))
+                    return (w2 == Byte.class || w2 == Short.class)
+                        ? Integer.class : unwrap(c2);
+                if (!w2Number && w1 == Character.class && w2 == String.class)
                     return String.class;
+                if (w2Number)
+                    return unwrap(c2);
             }
-            if (!c2Number) {
-                if (c1Number && (c2 == Character.class || c2 == String.class))
-                    return (c1 == Byte.class || c1 == Short.class)
-                        ? Integer.class : c1;
-                if (!c1Number && c2 == Character.class && c1 == String.class)
+            if (!w2Number) {
+                if (w1Number && (w2 == Character.class || w2 == String.class))
+                    return (w1 == Byte.class || w1 == Short.class)
+                        ? Integer.class : unwrap(c1);
+                if (!w1Number && w2 == Character.class && w1 == String.class)
                     return String.class;
+                if (w1Number)
+                    return unwrap(c1);
             }
 
-            // if neither are numbers and one is a superclass of the
-            // other, return the least-derived of the two types
-            if (!c1Number && !c2Number) {
-                if (c1.isAssignableFrom(c2))
-                    return c1;
-                if (c2.isAssignableFrom(c1))
-                    return c2;
+            // if neither are numbers, use least-derived of the two.  if neither
+            // is assignable from the other but one is a standard type, assume
+            // the other can be converted to that standard type
+            if (!w1Number && !w2Number) {
+                if (w1 == Object.class)
+                    return unwrap(c2);
+                if (w2 == Object.class)
+                    return unwrap(c1);
+                if (w1.isAssignableFrom(w2))
+                    return unwrap(c1);
+                if (w2.isAssignableFrom(w1))
+                    return unwrap(c2);
+                if (isNonstandardType(w1))
+                    return (isNonstandardType(w2)) ? Object.class : unwrap(c2);
+                if (isNonstandardType(w2))
+                    return (isNonstandardType(w1)) ? Object.class : unwrap(c1);
             }
-
-            return c1;
+            return Object.class;
         }
 
-        if (c1 == BigDecimal.class || c2 == BigDecimal.class)
+        if (w1 == BigDecimal.class || w2 == BigDecimal.class)
             return BigDecimal.class;
-        if (c1 == BigInteger.class) {
-            if (c2 == Float.class || c2 == Double.class)
+        if (w1 == BigInteger.class) {
+            if (w2 == Float.class || w2 == Double.class)
                 return BigDecimal.class;
             return BigInteger.class;
         }
-        if (c2 == BigInteger.class) {
-            if (c1 == Float.class || c1 == Double.class)
+        if (w2 == BigInteger.class) {
+            if (w1 == Float.class || w1 == Double.class)
                 return BigDecimal.class;
             return BigInteger.class;
         }
-        if (c1 == Double.class || c2 == Double.class)
+        if (w1 == Double.class || w2 == Double.class)
             return double.class;
-        if (c1 == Float.class || c2 == Float.class)
+        if (w1 == Float.class || w2 == Float.class)
             return float.class;
-        if (c1 == Long.class || c2 == Long.class)
+        if (w1 == Long.class || w2 == Long.class)
             return long.class;
         return int.class;
+    }
+
+    /**
+     * Return whether the given type is not a standard persistent type.
+     */
+    private static boolean isNonstandardType(Class c) {
+        switch (JavaTypes.getTypeCode(c))
+        {
+        case JavaTypes.ARRAY:
+        case JavaTypes.COLLECTION:
+        case JavaTypes.MAP:
+        case JavaTypes.PC:
+        case JavaTypes.PC_UNTYPED:
+        case JavaTypes.OID:
+        case JavaTypes.OBJECT:
+            return true;
+        default:
+            return false;
+        }
     }
 
     /**
