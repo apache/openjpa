@@ -274,9 +274,11 @@ public class FetchGroup {
 
         if (_meta != null) {
             ClassMetaData sup = _meta.getPCSuperclassMetaData();
-            FetchGroup supFG = sup.getFetchGroup(_name);
-            if (supFG != null && supFG.isPostLoad())
-                return true;
+            if (sup != null) {
+                FetchGroup supFG = sup.getFetchGroup(_name);
+                if (supFG != null && supFG.isPostLoad())
+                    return true;
+            }
         }
 
         if (_includes == null)
