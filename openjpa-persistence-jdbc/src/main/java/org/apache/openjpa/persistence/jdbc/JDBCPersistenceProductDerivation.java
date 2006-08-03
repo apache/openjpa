@@ -49,19 +49,19 @@ public class JDBCPersistenceProductDerivation
         String jpa = PersistenceProductDerivation.SPEC_JPA;
         String ejb = PersistenceProductDerivation.ALIAS_EJB;
 
-        conf.metaFactoryPlugin.setAlias(jpa,
-            PersistenceMappingFactory.class.getName());
         conf.metaFactoryPlugin.setAlias(ejb,
             PersistenceMappingFactory.class.getName());
-
-        conf.mappingFactoryPlugin.setAlias(jpa,
+        conf.metaFactoryPlugin.setAlias(jpa,
             PersistenceMappingFactory.class.getName());
+
         conf.mappingFactoryPlugin.setAlias(ejb,
             PersistenceMappingFactory.class.getName());
+        conf.mappingFactoryPlugin.setAlias(jpa,
+            PersistenceMappingFactory.class.getName());
 
-        conf.mappingDefaultsPlugin.setAlias(jpa,
-            PersistenceMappingDefaults.class.getName());
         conf.mappingDefaultsPlugin.setAlias(ejb,
+            PersistenceMappingDefaults.class.getName());
+        conf.mappingDefaultsPlugin.setAlias(jpa,
             PersistenceMappingDefaults.class.getName());
     }
 

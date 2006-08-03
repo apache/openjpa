@@ -44,9 +44,9 @@ public class PersistenceProductDerivation
             return;
 
         OpenJPAConfigurationImpl conf = (OpenJPAConfigurationImpl) c;
-        conf.metaFactoryPlugin.setAlias(SPEC_JPA,
-            PersistenceMetaDataFactory.class.getName());
         conf.metaFactoryPlugin.setAlias(ALIAS_EJB,
+            PersistenceMetaDataFactory.class.getName());
+        conf.metaFactoryPlugin.setAlias(SPEC_JPA,
             PersistenceMetaDataFactory.class.getName());
     }
 
