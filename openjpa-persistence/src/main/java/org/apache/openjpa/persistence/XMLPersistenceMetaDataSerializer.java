@@ -1025,7 +1025,7 @@ public class XMLPersistenceMetaDataSerializer
             startElement("cascade");
             for (String cascade : cascades) {
                 startElement(cascade);
-                endElement("cascade");
+                endElement(cascade);
             }
             endElement("cascade");
         }
