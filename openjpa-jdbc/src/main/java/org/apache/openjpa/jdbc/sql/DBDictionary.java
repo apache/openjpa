@@ -2293,11 +2293,13 @@ public class DBDictionary
         if (requiresCastForMathFunctions && (lc != rc
             || (lhs.isConstant() && rhs.isConstant()))) {
             Class c = Filters.promote(lhs.getType(), rhs.getType());
-            castlhs = (lhs.isConstant() && rhs.isConstant())
-                || Filters.wrap(lhs.getType()) != c;
-            castrhs = (lhs.isConstant() && rhs.isConstant())
-                || Filters.wrap(rhs.getType()) != c;
             type = getJDBCType(JavaTypes.getTypeCode(c), false);
+            if (type != Types.VARBINARY && type != Types.BLOB) {
+                castlhs = (lhs.isConstant() && rhs.isConstant())
+                    || Filters.wrap(lhs.getType()) != c;
+                castrhs = (lhs.isConstant() && rhs.isConstant())
+                    || Filters.wrap(rhs.getType()) != c;
+            }
         }
 
         boolean mod = "MOD".equals(op);
@@ -2345,11 +2347,13 @@ public class DBDictionary
         if (requiresCastForComparisons && (lc != rc
             || (lhs.isConstant() && rhs.isConstant()))) {
             Class c = Filters.promote(lhs.getType(), rhs.getType());
-            castlhs = (lhs.isConstant() && rhs.isConstant())
-                || Filters.wrap(lhs.getType()) != c;
-            castrhs = (lhs.isConstant() && rhs.isConstant())
-                || Filters.wrap(rhs.getType()) != c;
             type = getJDBCType(JavaTypes.getTypeCode(c), false);
+            if (type != Types.VARBINARY && type != Types.BLOB) {
+                castlhs = (lhs.isConstant() && rhs.isConstant())
+                    || Filters.wrap(lhs.getType()) != c;
+                castrhs = (lhs.isConstant() && rhs.isConstant())
+                    || Filters.wrap(rhs.getType()) != c;
+            }
         }
 
         if (castlhs)

@@ -2872,25 +2872,24 @@ public class StateManagerImpl
         if (mgr == null || !mgr.hasLoadListeners(getManagedInstance(), _meta))
             return;
 
+        if (fetch == null)
+            fetch = _broker.getFetchConfiguration();
         // is this field a post-load field?
         if (field != -1) {
-            FieldMetaData fmd = _meta.getField (field);
+            FieldMetaData fmd = _meta.getField(field);
             if (fmd.isInDefaultFetchGroup() 
-               && postLoad(_meta.getFetchGroup(FetchGroup.NAME_DEFAULT), fetch))
-               return;
+                && fetch.hasFetchGroup(FetchGroup.NAME_DEFAULT)
+                && postLoad(FetchGroup.NAME_DEFAULT, fetch))
+                return;
             String[] fgs = fmd.getCustomFetchGroups();
             for (int i = 0; i < fgs.length; i++)
-                if (postLoad(_meta.getFetchGroup(fgs[i]), fetch))
+                if (fetch.hasFetchGroup(fgs[i]) && postLoad(fgs[i], fetch))
                     return;
         } else {
-            if (postLoad(_meta.getFetchGroup(FetchGroup.NAME_DEFAULT), fetch))
-                return;
-            
-            Iterator fgs = fetch.getFetchGroups().iterator();
-            for (;fgs.hasNext();) {
-            	FetchGroup fg = _meta.getFetchGroup(fgs.next().toString());
-                if (fg != null && postLoad(fg, fetch))
-                    return; 
+            for (Iterator itr = fetch.getFetchGroups().iterator(); 
+                itr.hasNext();) {
+                if (postLoad((String) itr.next(), fetch))
+                    return;
             }
         }
     }
@@ -2899,14 +2898,15 @@ public class StateManagerImpl
      * Perform post-load actions if the given fetch group is a post-load group
      * and is fully loaded.
      */
-    private boolean postLoad(FetchGroup fg, FetchConfiguration fetch) {
-        if (!fg.isPostLoad())
+    private boolean postLoad(String fgName, FetchConfiguration fetch) {
+        FetchGroup fg = _meta.getFetchGroup(fgName);
+        if (fg == null || !fg.isPostLoad())
             return false;
+
         FieldMetaData[] fmds = _meta.getFields();
         for (int i = 0; i < fmds.length; i++)
-        	if (fmds[i].isInFetchGroup(fg.getName()))
-        		if (!_loaded.get(i))
-        			return false;
+            if (!_loaded.get(i) && fmds[i].isInFetchGroup(fgName))
+                return false;
 
         _flags |= FLAG_LOADED;
         _broker.fireLifecycleEvent(getManagedInstance(), fetch, _meta, 
