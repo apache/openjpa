@@ -128,10 +128,6 @@ class DetachedStateAttachStrategy
         } else
             sm = manager.assertManaged(into);
 
-        // invoke any preAttach on the detached instance
-        broker.fireLifecycleEvent(pc, null, meta,
-            LifecycleEvent.BEFORE_DETACH);
-
         // mark that we attached the instance *before* we
         // fill in values to avoid endless recursion
         manager.setAttachedCopy(pc, into);
