@@ -884,6 +884,7 @@ public class AnnotationPersistenceMetaDataParser
             throw new MetaDataException(_loc.get("bad-fg-field", fg.getName(),
                 meta, attr.name()));
 
+        field.setInFetchGroup(fg.getName(), true);
         if (attr.recursionDepth() != Integer.MIN_VALUE)
             fg.setRecursionDepth(field, attr.recursionDepth());
     }
