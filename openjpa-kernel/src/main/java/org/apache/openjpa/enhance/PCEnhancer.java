@@ -536,14 +536,12 @@ public class PCEnhancer {
         // look through all methods; this is done before any methods are added
         // so we don't need to worry about excluding synthetic methods.
         BCMethod[] methods = _pc.getDeclaredMethods();
-        Set nonEnhancedMethods = getUnenhancedMethods();
         Code code;
         for (int i = 0; i < methods.length; i++) {
             code = methods[i].getCode(false);
 
             // don't modify the methods specified by the auxiliary enhancers
-            if (code != null
-            	&& !nonEnhancedMethods.contains(methods[i].getName())) {
+            if (code != null && !skipEnhance(methods[i])) {
                 replaceAndValidateFieldAccess(code, get, true, stat);
                 replaceAndValidateFieldAccess(code, put, false, stat);
             }
@@ -2639,16 +2637,19 @@ public class PCEnhancer {
     		auxEnhancers[i].run(_pc, _meta);
     }
     
-    private Set getUnenhancedMethods() {
-    	Set result = new HashSet();
+    /**
+     * Affirms if the given method be skipped.
+     * 
+     * @param method method to be skipped or not
+     * @return true if any of the auxiliary enhancers skips the given method.
+     */
+    private boolean skipEnhance(BCMethod method) {
     	AuxiliaryEnhancer[] auxEnhancers = getAuxiliaryEnhancers();
     	for (int i = 0; i < auxEnhancers.length; i++) {
-    		Set contrib = auxEnhancers[i].getUnenhancedMethods();
-    		if (contrib != null || !contrib.isEmpty()) {
-    			result.addAll(contrib);
-     		}
+    		if (auxEnhancers[i].skipEnhance(method))
+    			return true;
      	}
-    	return result;
+    	return false;
     }
 
     /**
@@ -3509,6 +3510,6 @@ public class PCEnhancer {
 	public static interface AuxiliaryEnhancer
 	{
 		public void run (BCClass bc, ClassMetaData meta);
-		public Set getUnenhancedMethods();
+		public boolean skipEnhance(BCMethod m);
 	}
 }
