@@ -67,6 +67,7 @@ public enum MetaDataTag {
     FACTORY,
     FETCH_GROUP,
     FETCH_GROUPS,
+    LOAD_FETCH_GROUP,
     INVERSE_LOGICAL,
     KEY_DEPENDENT,
     KEY_TYPE,
