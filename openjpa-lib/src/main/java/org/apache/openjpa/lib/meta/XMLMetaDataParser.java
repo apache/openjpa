@@ -92,7 +92,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     private final Collection _curResults = new LinkedList();
     private List _results = null;
     private String _sourceName = null;
-    protected File _sourceFile = null;
+    private File _sourceFile = null;
     private StringBuffer _text = null;
     private List _comments = null;
     private Location _location = new Location();
