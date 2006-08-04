@@ -2292,13 +2292,11 @@ public class DBDictionary
         int type = 0;
         if (requiresCastForMathFunctions && (lc != rc
             || (lhs.isConstant() && rhs.isConstant()))) {
-            Class c = Filters.promote(lhs.getType(), rhs.getType());
+            Class c = Filters.promote(lc, rc);
             type = getJDBCType(JavaTypes.getTypeCode(c), false);
             if (type != Types.VARBINARY && type != Types.BLOB) {
-                castlhs = (lhs.isConstant() && rhs.isConstant())
-                    || Filters.wrap(lhs.getType()) != c;
-                castrhs = (lhs.isConstant() && rhs.isConstant())
-                    || Filters.wrap(rhs.getType()) != c;
+                castlhs = (lhs.isConstant() && rhs.isConstant()) || lc != c;
+                castrhs = (lhs.isConstant() && rhs.isConstant()) || rc != c;
             }
         }
 
@@ -2346,13 +2344,11 @@ public class DBDictionary
         int type = 0;
         if (requiresCastForComparisons && (lc != rc
             || (lhs.isConstant() && rhs.isConstant()))) {
-            Class c = Filters.promote(lhs.getType(), rhs.getType());
+            Class c = Filters.promote(lc, rc);
             type = getJDBCType(JavaTypes.getTypeCode(c), false);
             if (type != Types.VARBINARY && type != Types.BLOB) {
-                castlhs = (lhs.isConstant() && rhs.isConstant())
-                    || Filters.wrap(lhs.getType()) != c;
-                castrhs = (lhs.isConstant() && rhs.isConstant())
-                    || Filters.wrap(rhs.getType()) != c;
+                castlhs = (lhs.isConstant() && rhs.isConstant()) || lc != c;
+                castrhs = (lhs.isConstant() && rhs.isConstant()) || rc != c;
             }
         }
 
