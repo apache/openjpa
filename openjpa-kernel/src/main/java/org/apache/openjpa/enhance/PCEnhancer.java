@@ -536,14 +536,14 @@ public class PCEnhancer {
         // look through all methods; this is done before any methods are added
         // so we don't need to worry about excluding synthetic methods.
         BCMethod[] methods = _pc.getDeclaredMethods();
+        Set nonEnhancedMethods = getUnenhancedMethods();
         Code code;
         for (int i = 0; i < methods.length; i++) {
             code = methods[i].getCode(false);
 
-            // don't modify some of the InstanceCallbacks methods
+            // don't modify the methods specified by the auxiliary enhancers
             if (code != null
-                && !(PRE + "PostLoad").equals(methods[i].getName())
-                && !(PRE + "PreClear").equals(methods[i].getName())) {
+            	&& !nonEnhancedMethods.contains(methods[i].getName())) {
                 replaceAndValidateFieldAccess(code, get, true, stat);
                 replaceAndValidateFieldAccess(code, put, false, stat);
             }
@@ -2608,23 +2608,47 @@ public class PCEnhancer {
     }
 
     /**
+     * Gets the auxiliary enhancers registered as {@link Services services}.
+     * Multi-call safe -- the first call locates the auxiliary enhancers,
+     * subsequent calls merely returns the existing set.
+     * 
+     * @return array of auxiliary enhancers. empty array if none is registered.
+     */
+    public AuxiliaryEnhancer[] getAuxiliaryEnhancers() {
+		if (_auxEnhancers == null) {
+		    try {
+			Class[] classes = Services
+			    .getImplementorClasses(AuxiliaryEnhancer.class);
+			_auxEnhancers = new AuxiliaryEnhancer[classes.length];
+			for (int i = 0; i < _auxEnhancers.length; i++)
+			    _auxEnhancers[i] = (AuxiliaryEnhancer) classes[i]
+				.newInstance();
+		    } catch (Throwable t) {
+			    throw new GeneralException(t);
+		    }
+		}
+    	return _auxEnhancers;	
+    }
+    
+    /**
      * Allow any registered auxiliary code generators to run.
      */
     private void runAuxiliaryEnhancers() {
-	if (_auxEnhancers == null) {
-	    try {
-		Class[] classes = Services
-		    .getImplementorClasses(AuxiliaryEnhancer.class);
-		_auxEnhancers = new AuxiliaryEnhancer[classes.length];
-		for (int i = 0; i < _auxEnhancers.length; i++)
-		    _auxEnhancers[i] = (AuxiliaryEnhancer) classes[i]
-			.newInstance();
-	    } catch (Throwable t) {
-		throw new GeneralException(t);
-	    }
-	}
-	for (int i = 0; i < _auxEnhancers.length; i++)
-	    _auxEnhancers[i].run(_pc, _meta);
+    	AuxiliaryEnhancer[] auxEnhancers = getAuxiliaryEnhancers();
+    	for (int i = 0; i < auxEnhancers.length; i++)
+    		auxEnhancers[i].run(_pc, _meta);
+    }
+    
+    private Set getUnenhancedMethods() {
+    	Set result = new HashSet();
+    	AuxiliaryEnhancer[] auxEnhancers = getAuxiliaryEnhancers();
+    	for (int i = 0; i < auxEnhancers.length; i++) {
+    		Set contrib = auxEnhancers[i].getUnenhancedMethods();
+    		if (contrib != null || !contrib.isEmpty()) {
+    			result.addAll(contrib);
+     		}
+     	}
+    	return result;
     }
 
     /**
@@ -3485,5 +3509,6 @@ public class PCEnhancer {
 	public static interface AuxiliaryEnhancer
 	{
 		public void run (BCClass bc, ClassMetaData meta);
+		public Set getUnenhancedMethods();
 	}
 }
