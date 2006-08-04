@@ -25,7 +25,6 @@ import java.lang.annotation.Target;
  * Fetch group loaded when the annotated field/property is loaded. 
  *
  * @author Pinaki Poddar
- * @since 4.0
  */
 @Target({ METHOD, FIELD })
 @Retention(RUNTIME)

@@ -587,6 +587,8 @@ public class FieldMetaData
      * null if none set.
      */
     public void setLoadFetchGroup (String lfg) {
+        if ("".equals(lfg))
+            lfg = null;
     	_lfg = lfg;
     }
 

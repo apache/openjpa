@@ -104,7 +104,7 @@ import org.apache.openjpa.util.ImplHelper;
  * execute a query against an extent or a class, OpenJPA will
  * automatically load the full extent of objects into memory and
  * execute the query in memory.</li>
- * <li><em>org.apache.openjpa.MethodQL</em>: MethodQL allows
+ * <li><em>openjpa.MethodQL</em>: MethodQL allows
  * you to use the query APIs to execute a method that finds
  * data in your back-end and returns that data as a
  * {@link org.apache.openjpa.lib.rop.ResultList}. For more details on

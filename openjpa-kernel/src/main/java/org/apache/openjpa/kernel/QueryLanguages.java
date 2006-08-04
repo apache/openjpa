@@ -24,14 +24,11 @@ import org.apache.openjpa.util.InternalException;
 
 /**
  * Constants and utilities for query languages.
- *
- * @author Abe White
- * @since 4.0
  */
 public class QueryLanguages {
 
-    public static final String LANG_SQL = "org.apache.openjpa.SQL";
-    public static final String LANG_METHODQL = "org.apache.openjpa.MethodQL";
+    public static final String LANG_SQL = "openjpa.SQL";
+    public static final String LANG_METHODQL = "openjpa.MethodQL";
 
     private static Map _expressionParsers = new HashMap();
     static {

@@ -3301,31 +3301,31 @@ public class BrokerImpl
         return extent.iterator();
     }
 
-    public Query newQuery(String language, Class cls, Object query) {
-        Query q = newQuery(language, query);
+    public Query newQuery(String lang, Class cls, Object query) {
+        Query q = newQuery(lang, query);
         q.setCandidateType(cls, true);
         return q;
     }
 
-    public Query newQuery(String language, Object query) {
+    public Query newQuery(String lang, Object query) {
         // common mistakes
         if (query instanceof Extent || query instanceof Class)
             throw new UserException(_loc.get("bad-new-query"));
 
         beginOperation(false);
         try {
-            StoreQuery sq = _store.newQuery(language);
+            StoreQuery sq = _store.newQuery(lang);
             if (sq == null) {
-                ExpressionParser ep = QueryLanguages.parserForLanguage(language);
+                ExpressionParser ep = QueryLanguages.parserForLanguage(lang);
                 if (ep != null)
                     sq = new ExpressionStoreQuery(ep);
-                else if (QueryLanguages.LANG_METHODQL.equals(language))
+                else if (QueryLanguages.LANG_METHODQL.equals(lang))
                     sq = new MethodStoreQuery();
                 else
-                    throw new UnsupportedException(language);
+                    throw new UnsupportedException(lang);
             }
 
-            Query q = newQueryImpl(language, sq);
+            Query q = newQueryImpl(lang, sq);
             q.setIgnoreChanges(_ignoreChanges);
             if (query != null)
                 q.setQuery(query);
@@ -3347,8 +3347,8 @@ public class BrokerImpl
     /**
      * Create a new query.
      */
-    protected QueryImpl newQueryImpl(String language, StoreQuery sq) {
-        return new QueryImpl(this, language, sq);
+    protected QueryImpl newQueryImpl(String lang, StoreQuery sq) {
+        return new QueryImpl(this, lang, sq);
     }
 
     public Seq getIdentitySequence(ClassMetaData meta) {

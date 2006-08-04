@@ -2641,14 +2641,13 @@ public class PCEnhancer {
      * Affirms if the given method be skipped.
      * 
      * @param method method to be skipped or not
-     * @return true if any of the auxiliary enhancers skips the given method.
+     * @return true if any of the auxiliary enhancers skips the given method
      */
     private boolean skipEnhance(BCMethod method) {
     	AuxiliaryEnhancer[] auxEnhancers = getAuxiliaryEnhancers();
-    	for (int i = 0; i < auxEnhancers.length; i++) {
+    	for (int i = 0; i < auxEnhancers.length; i++)
     		if (auxEnhancers[i].skipEnhance(method))
     			return true;
-     	}
     	return false;
     }
 
