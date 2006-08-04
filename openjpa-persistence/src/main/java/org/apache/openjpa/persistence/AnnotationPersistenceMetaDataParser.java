@@ -160,10 +160,10 @@ public class AnnotationPersistenceMetaDataParser
         _tags.put(Factory.class, FACTORY);
         _tags.put(FetchGroup.class, FETCH_GROUP);
         _tags.put(FetchGroups.class, FETCH_GROUPS);
-        _tags.put(LoadFetchGroup.class, LOAD_FETCH_GROUP);
         _tags.put(InverseLogical.class, INVERSE_LOGICAL);
         _tags.put(KeyDependent.class, KEY_DEPENDENT);
         _tags.put(KeyType.class, KEY_TYPE);
+        _tags.put(LoadFetchGroup.class, LOAD_FETCH_GROUP);
         _tags.put(LRS.class, LRS);
         _tags.put(ReadOnly.class, READ_ONLY);
         _tags.put(Type.class, TYPE);
@@ -1030,6 +1030,10 @@ public class AnnotationPersistenceMetaDataParser
                         fmd.getKey().setTypeOverride(toOverrideType(((KeyType)
                             anno).value()));
                     break;
+                case LOAD_FETCH_GROUP:
+                	if (isMetaDataMode())
+                		fmd.setLoadFetchGroup(((LoadFetchGroup)anno).value());
+                	break;
                 case LRS:
                     if (isMetaDataMode())
                         fmd.setLRS(((LRS) anno).value());
@@ -1043,10 +1047,6 @@ public class AnnotationPersistenceMetaDataParser
                         fmd.setTypeOverride(toOverrideType(((Type) anno).
                             value()));
                     break;
-                case LOAD_FETCH_GROUP:
-                	if (isMetaDataMode())
-                		fmd.setLoadFetchGroup(((LoadFetchGroup)anno).value());
-                	break;
                 default:
                     throw new UnsupportedException(_loc.get("unsupported", fmd,
                         anno.toString()));
