@@ -791,6 +791,12 @@ public class MappingRepository
             case JavaTypes.ARRAY:
             case JavaTypes.COLLECTION:
                 ValueMapping elem = field.getElementMapping();
+                ValueHandler ehandler = namedHandler(elem);
+                if (ehandler == null)
+                    ehandler = defaultHandler(elem);
+                if (ehandler != null)
+                    return handlerCollectionStrategy(field, ehandler, 
+                        installHandlers);
                 if (elem.getTypeCode() == JavaTypes.PC
                     && !elem.isSerialized() && !elem.isEmbeddedPC()) {
                     if (useInverseKeyMapping(field))
@@ -800,18 +806,50 @@ public class MappingRepository
                 break;
             case JavaTypes.MAP:
                 ValueMapping key = field.getKeyMapping();
+                ValueHandler khandler = namedHandler(key);
+                if (khandler == null)
+                    khandler = defaultHandler(key);
                 ValueMapping val = field.getElementMapping();
-                boolean krel = key.getTypeCode() == JavaTypes.PC
+                ValueHandler vhandler = namedHandler(val);
+                if (vhandler == null)
+                    vhandler = defaultHandler(val);
+                boolean krel = khandler == null 
+                    && key.getTypeCode() == JavaTypes.PC
                     && !key.isSerialized() && !key.isEmbeddedPC();
-                boolean vrel = val.getTypeCode() == JavaTypes.PC
+                boolean vrel = vhandler == null 
+                    && val.getTypeCode() == JavaTypes.PC
                     && !val.isSerialized() && !val.isEmbeddedPC();
                 if (!krel && vrel && key.getValueMappedBy() != null) {
                     if (useInverseKeyMapping(field))
                         return new RelationMapInverseKeyFieldStrategy();
                     return new RelationMapTableFieldStrategy();
                 }
-                break;
+                if (!krel && khandler == null)
+                    break;
+                if (!vrel && vhandler == null)
+                    break;
+                return handlerMapStrategy(field, khandler, vhandler, krel,
+                    vrel, installHandlers);
         }
+        return null;
+    }
+
+    /**
+     * Return the collection strategy for the given element handler, or null
+     * if none.
+     */
+    protected FieldStrategy handlerCollectionStrategy(FieldMapping field, 
+        ValueHandler ehandler, boolean installHandlers) {
+        return null;
+    }
+
+    /**
+     * Return the map strategy for the given key and value handlers / relations,
+     * or null if none.
+     */
+    protected FieldStrategy handlerMapStrategy(FieldMapping field, 
+        ValueHandler khandler, ValueHandler vhandler, boolean krel, 
+        boolean vrel,  boolean installHandlers) {
         return null;
     }
 
