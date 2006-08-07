@@ -222,8 +222,9 @@ public class Filters {
             || (c2Number && (c1 == Character.class
             || (!strict && c1 == String.class))))
             return true;
-        if ((c1 == String.class && c2 == Character.class)
-            || (c1 == Character.class && c2 == String.class))
+        if (c1 == String.class && c2 == Character.class)
+            return true;
+        if (c2 == String.class)
             return true;
         return false;
     }
