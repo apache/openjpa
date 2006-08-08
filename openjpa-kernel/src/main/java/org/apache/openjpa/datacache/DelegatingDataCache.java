@@ -241,6 +241,16 @@ public class DelegatingDataCache
         }
     }
 
+    public void pinAll(Class cls, boolean subs) {
+        if (_cache == null)
+            return;
+        try {
+            _cache.pinAll(cls, subs);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
     public boolean unpin(Object oid) {
         if (_cache == null)
             return false;
@@ -256,6 +266,16 @@ public class DelegatingDataCache
             return EMPTY_BITSET;
         try {
             return _cache.unpinAll(oids);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public void unpinAll(Class cls, boolean subs) {
+        if (_cache == null)
+            return;
+        try {
+            _cache.unpinAll(cls, subs);
         } catch (RuntimeException re) {
             throw translate(re);
         }

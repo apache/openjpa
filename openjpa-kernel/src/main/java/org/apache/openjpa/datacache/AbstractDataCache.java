@@ -224,6 +224,11 @@ public abstract class AbstractDataCache
         return set;
     }
 
+    public void pinAll(Class cls, boolean subs) {
+        if (log.isWarnEnabled())
+            log.warn(s_loc.get("cache-class-pin", getName()));
+    }
+
     public boolean unpin(Object key) {
         boolean bool = unpinInternal(key);
         if (log.isTraceEnabled()) {
@@ -245,6 +250,11 @@ public abstract class AbstractDataCache
             if (unpin(iter.next()))
                 set.set(i);
         return set;
+    }
+
+    public void unpinAll(Class cls, boolean subs) {
+        if (log.isWarnEnabled())
+            log.warn(s_loc.get("cache-class-unpin", getName()));
     }
 
     public void clear() {
@@ -423,7 +433,7 @@ public abstract class AbstractDataCache
             listen.onExpire(ev);
         } catch (Exception e) {
             if (log.isWarnEnabled())
-                log.warn(s_loc.get ("exp-listener-ex"), e);
+                log.warn(s_loc.get("exp-listener-ex"), e);
 		}
 	}
 }
