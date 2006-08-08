@@ -3989,7 +3989,7 @@ public class BrokerImpl
         //### JDO2
         if (cls.isInterface() || Modifier.isAbstract(cls.getModifiers()))
             throw new UnsupportedOperationException(_loc.get
-                ("new-abstract", cls));
+                ("new-abstract", cls).getMessage());
 
         // 1.5 doesn't initialize classes without a true Class.forName
         if (!PCRegistry.isRegistered(cls)) {

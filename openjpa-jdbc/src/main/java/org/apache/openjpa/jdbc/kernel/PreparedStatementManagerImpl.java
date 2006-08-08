@@ -97,7 +97,7 @@ class PreparedStatementManagerImpl
                 else if (row.getAction() == Row.ACTION_INSERT)
                     throw new SQLException(_loc.get(
                         "update-failed-no-failed-obj", String.valueOf(count),
-                        sql));
+                        sql).getMessage());
             }
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se, row.getFailedObject(), _dict);

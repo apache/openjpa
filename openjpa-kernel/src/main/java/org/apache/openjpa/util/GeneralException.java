@@ -15,6 +15,8 @@
  */
 package org.apache.openjpa.util;
 
+import org.apache.openjpa.lib.util.Localizer.Message;
+
 /**
  * General exception type.
  *
@@ -30,11 +32,15 @@ public class GeneralException
         super(msg);
     }
 
+    public GeneralException(Message msg) {
+        super(msg);
+    }
+
     public GeneralException(Throwable cause) {
         super(cause);
     }
 
-    public GeneralException(String msg, Throwable cause) {
+    public GeneralException(Message msg, Throwable cause) {
         super(msg, cause);
     }
 

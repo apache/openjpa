@@ -772,7 +772,7 @@ public class SchemaGenerator {
             pkTable = group.findTable(pkTableName);
             if (pkTable == null)
                 throw new SQLException(_loc.get("gen-nofktable",
-                    table, pkTableName));
+                    table, pkTableName).getMessage());
 
             // this sucks, because it is *not* guaranteed to work;
             // the fk resultset is ordered by primary key table, then
@@ -870,7 +870,8 @@ public class SchemaGenerator {
         for (Iterator i = _listeners.iterator(); i.hasNext();) {
             Listener l = (Listener) i.next();
             if (!l.schemaObjectGenerated(e))
-                throw new SQLException(_loc.get("refresh-cancelled"));
+                throw new SQLException(_loc.get("refresh-cancelled")
+                    .getMessage());
         }
     }
 

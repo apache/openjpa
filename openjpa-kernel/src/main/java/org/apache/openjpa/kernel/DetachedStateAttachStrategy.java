@@ -18,7 +18,6 @@ package org.apache.openjpa.kernel;
 import java.util.BitSet;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;

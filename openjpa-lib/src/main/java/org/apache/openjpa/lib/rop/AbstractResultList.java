@@ -33,43 +33,48 @@ public abstract class AbstractResultList implements ResultList {
         (AbstractResultList.class);
 
     public void add(int index, Object element) {
-        throw new UnsupportedOperationException(_loc.get("read-only"));
+        throw readOnly();
+    }
+
+    private UnsupportedOperationException readOnly() {
+        return new UnsupportedOperationException(_loc.get("read-only")
+            .getMessage());
     }
 
     public boolean add(Object o) {
-        throw new UnsupportedOperationException(_loc.get("read-only"));
+        throw readOnly();
     }
 
     public boolean addAll(Collection c) {
-        throw new UnsupportedOperationException(_loc.get("read-only"));
+        throw readOnly();
     }
 
     public boolean addAll(int index, Collection c) {
-        throw new UnsupportedOperationException(_loc.get("read-only"));
+        throw readOnly();
     }
 
     public Object remove(int index) {
-        throw new UnsupportedOperationException(_loc.get("read-only"));
+        throw readOnly();
     }
 
     public boolean remove(Object o) {
-        throw new UnsupportedOperationException(_loc.get("read-only"));
+        throw readOnly();
     }
 
     public boolean removeAll(Collection c) {
-        throw new UnsupportedOperationException(_loc.get("read-only"));
+        throw readOnly();
     }
 
     public boolean retainAll(Collection c) {
-        throw new UnsupportedOperationException(_loc.get("read-only"));
+        throw readOnly();
     }
 
     public Object set(int index, Object element) {
-        throw new UnsupportedOperationException(_loc.get("read-only"));
+        throw readOnly();
     }
 
     public void clear() {
-        throw new UnsupportedOperationException(_loc.get("read-only"));
+        throw readOnly();
     }
 
     public List subList(int from, int to) {
@@ -83,6 +88,6 @@ public abstract class AbstractResultList implements ResultList {
 
     protected void assertOpen() {
         if (isClosed())
-            throw new NoSuchElementException(_loc.get("closed"));
+            throw new NoSuchElementException(_loc.get("closed").getMessage());
     }
 }

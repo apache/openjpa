@@ -22,6 +22,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.UserException;
@@ -40,6 +41,11 @@ public class TransactionRequiredException
     private transient boolean _fatal = false;
     private transient Object _failed = null;
     private transient Throwable[] _nested = null;
+
+    public TransactionRequiredException(Message msg, Throwable[] nested,
+        Object failed, boolean fatal) {
+        this(msg.getMessage(), nested, failed, fatal);
+    }
 
     public TransactionRequiredException(String msg, Throwable[] nested,
         Object failed, boolean fatal) {

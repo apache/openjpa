@@ -215,7 +215,8 @@ public class PersistenceUnitInfoImpl
                 }
             }
         }
-        throw new IllegalArgumentException(s_loc.get("bad-jar-name", name));
+        throw new IllegalArgumentException(s_loc.get("bad-jar-name", name)
+            .getMessage());
     }
 
     public List<String> getManagedClassNames() {

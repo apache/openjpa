@@ -378,7 +378,7 @@ public class DetachedStateManager
     public void accessingField(int idx) {
         if (!_access && !_loaded.get(idx))
             throw new IllegalStateException(_loc.get("unloaded-detached",
-                _pc));
+                _pc).getMessage());
     }
 
     public boolean serializing() {

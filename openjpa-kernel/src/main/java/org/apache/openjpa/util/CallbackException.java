@@ -15,6 +15,8 @@
  */
 package org.apache.openjpa.util;
 
+import org.apache.openjpa.lib.util.Localizer.Message;
+
 /**
  * Exception type thrown when an error occurs in a callback.
  *
@@ -24,16 +26,8 @@ package org.apache.openjpa.util;
 public class CallbackException
     extends UserException {
 
-    public CallbackException() {
-    }
-
-    public CallbackException(String msg) {
+    public CallbackException(Message msg) {
         super(msg);
-    }
-
-    public CallbackException(String msg, Object failed) {
-        super(msg);
-        setFailedObject(failed);
     }
 
     public int getSubtype() {

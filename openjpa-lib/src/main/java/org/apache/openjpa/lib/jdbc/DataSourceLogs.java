@@ -19,6 +19,7 @@ import java.sql.Connection;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.NoneLogFactory;
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Provies basic logging facilities to a DataSource.
@@ -27,6 +28,9 @@ import org.apache.openjpa.lib.log.NoneLogFactory;
  * @nojavadoc
  */
 public class DataSourceLogs {
+
+    private static final Localizer _loc =
+        Localizer.forPackage(DataSourceLogs.class);
 
     private Log _jdbcLog = null;
     private Log _sqlLog = null;
@@ -136,12 +140,12 @@ public class DataSourceLogs {
             buf.append(", ").append(conn);
         buf.append("> ");
 
-        // in the time != -1, append time profiling information
+        // if the time != -1, append time profiling information
         if (totalTime != -1)
             buf.append("[").append(totalTime).append(" ms] ");
 
         buf.append(msg);
-        log.trace(buf.toString());
+        log.trace(_loc.get("datasource-trace-data", buf.toString()));
     }
 }
 

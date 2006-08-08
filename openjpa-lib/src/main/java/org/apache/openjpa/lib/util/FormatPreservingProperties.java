@@ -557,7 +557,7 @@ public class FormatPreservingProperties extends Properties {
 
         public DuplicateKeyException(String key, Object firstVal,
             String secondVal) {
-            super(_loc.get("dup-key", key, firstVal, secondVal));
+            super(_loc.get("dup-key", key, firstVal, secondVal).getMessage());
         }
     }
 

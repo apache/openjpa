@@ -18,6 +18,7 @@ package org.apache.openjpa.kernel.jpql;
 import java.util.TreeSet;
 
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -28,7 +29,8 @@ import org.apache.openjpa.util.UserException;
 public class ParseException
     extends UserException {
 
-    private static Localizer _loc = Localizer.forPackage(ParseException.class);
+    private static final Localizer _loc =
+        Localizer.forPackage(ParseException.class);
 
     /**
      * This constructor is used by the method "generateParseException"
@@ -59,10 +61,6 @@ public class ParseException
         super();
     }
 
-    public ParseException(String message) {
-        super(message);
-    }
-
     /**
      * This method has the standard behavior when this object has been
      * created using the standard constructors. Otherwise, it uses
@@ -73,7 +71,7 @@ public class ParseException
      * of the final stack trace, and hence the correct error message
      * gets displayed.
      */
-    private static String initMessage(Token currentToken,
+    private static Message initMessage(Token currentToken,
         int[][]expectedTokenSequences, String[]tokenImage) {
         TreeSet expected = new TreeSet();
 

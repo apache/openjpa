@@ -126,7 +126,7 @@ public abstract class AbstractTask extends MatchingTask {
      */
     protected void assertFiles(String[] files) {
         if (files.length == 0)
-            throw new BuildException(_loc.get("no-filesets"));
+            throw new BuildException(_loc.get("no-filesets").getMessage());
     }
 
     public void setClasspath(Path classPath) {

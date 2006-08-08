@@ -185,7 +185,8 @@ public class MappingToolTask
         conf.setClassResolver(resolver);
 
         if (!MappingTool.run(conf, files, flags, loader))
-            throw new BuildException(_loc.get("bad-conf", "MappingToolTask"));
+            throw new BuildException(_loc.get("bad-conf", "MappingToolTask")
+                .getMessage());
     }
 
     public static class Action

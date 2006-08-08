@@ -15,6 +15,8 @@
  */
 package org.apache.openjpa.util;
 
+import org.apache.openjpa.lib.util.Localizer.Message;
+
 /**
  * Exception type thrown when attempting to execute an operation that
  * is not allowed by the current state.
@@ -25,14 +27,11 @@ package org.apache.openjpa.util;
 public class InvalidStateException
     extends UserException {
 
-    public InvalidStateException() {
-    }
-
-    public InvalidStateException(String msg) {
+    public InvalidStateException(Message msg) {
         super(msg);
     }
 
-    public InvalidStateException(String msg, Object failed) {
+    public InvalidStateException(Message msg, Object failed) {
         super(msg);
         setFailedObject(failed);
     }

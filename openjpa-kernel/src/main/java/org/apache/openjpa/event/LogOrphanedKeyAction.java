@@ -82,10 +82,6 @@ public class LogOrphanedKeyAction
                 if (log.isTraceEnabled())
                     log.trace(_loc.get(msg, oid, vmd, owner));
                 break;
-            case Log.DEBUG:
-                if (log.isDebugEnabled())
-                    log.debug(_loc.get(msg, oid, vmd, owner));
-                break;
             case Log.INFO:
                 if (log.isInfoEnabled())
                     log.info(_loc.get(msg, oid, vmd, owner));

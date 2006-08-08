@@ -322,7 +322,7 @@ public class TableJDBCSeq
                 if (!setSequence(mapping, stat, alloc, updateStatSeq,
                     getConnection(store)))
                     throw(err != null) ? err : new SQLException(_loc.get
-                        ("no-seq-row", mapping, _table));
+                        ("no-seq-row", mapping, _table).getMessage());
             }
         }
         catch (SQLException se2) {

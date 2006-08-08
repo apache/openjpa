@@ -40,6 +40,7 @@ import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.JavaVersions;
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.lib.xml.DocTypeReader;
@@ -655,9 +656,19 @@ public abstract class XMLMetaDataParser extends DefaultHandler
      * Returns a SAXException with the source file name and the given error
      * message.
      */
-    protected SAXException getException(String msg, Throwable cause) {
+    protected SAXException getException(Message msg) {
+        return new SAXException(getSourceName() + currentLocation() +
+            ": " + msg.getMessage());
+    }
+
+    /**
+     * Returns a SAXException with the source file name and the given error
+     * message.
+     */
+    protected SAXException getException(Message msg, Throwable cause) {
         if (cause != null && _log != null && _log.isTraceEnabled())
-            _log.trace(cause);
+            _log.trace(_loc.get("sax-exception",
+                getSourceName(), _location.getLocation()), cause);
         return new SAXException(getSourceName() + currentLocation() +
             ": " + msg + " [" + cause + "]");
     }

@@ -15,6 +15,8 @@
  */
 package org.apache.openjpa.util;
 
+import org.apache.openjpa.lib.util.Localizer.Message;
+
 /**
  * Exception type for internal errors.
  *
@@ -33,12 +35,22 @@ public class InternalException
         setFatal(true);
     }
 
+    public InternalException(Message msg) {
+        super(msg);
+        setFatal(true);
+    }
+
     public InternalException(Throwable cause) {
         super(cause);
         setFatal(true);
     }
 
     public InternalException(String msg, Throwable cause) {
+        super(msg, cause);
+        setFatal(true);
+    }
+
+    public InternalException(Message msg, Throwable cause) {
         super(msg, cause);
         setFatal(true);
     }

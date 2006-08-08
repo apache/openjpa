@@ -276,7 +276,7 @@ public class ConfigurationImpl
         }
         if (errs != null)
             throw new RuntimeException(_loc.get("get-prop-errs",
-                errs.toString()));
+                errs.toString()).getMessage());
     }
 
     public boolean isReadOnly() {
@@ -503,7 +503,7 @@ public class ConfigurationImpl
         if (scope != null) {
             loc = Localizer.forPackage(scope);
             try {
-                return loc.getFatal(key);
+                return loc.getFatal(key).getMessage();
             } catch (MissingResourceException mse) {
             }
         }
@@ -512,7 +512,7 @@ public class ConfigurationImpl
             cls = cls.getSuperclass()) {
             loc = Localizer.forPackage(cls);
             try {
-                return loc.getFatal(key);
+                return loc.getFatal(key).getMessage();
             } catch (MissingResourceException mse) {
             }
         }
@@ -670,7 +670,8 @@ public class ConfigurationImpl
                 // if we've already found a property with a previous prefix,
                 // then this is a collision.
                 throw new IllegalStateException(
-                    _loc.get("dup-with-different-prefixes", firstKey, key));
+                    _loc.get("dup-with-different-prefixes", firstKey, key)
+                        .getMessage());
             }
         }
         if (firstKey != null && setLoadKey)
@@ -761,7 +762,7 @@ public class ConfigurationImpl
      */
     public void assertNotReadOnly() {
         if (isReadOnly())
-            throw new IllegalStateException(_loc.get("read-only"));
+            throw new IllegalStateException(_loc.get("read-only").getMessage());
     }
 
     /**

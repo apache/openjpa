@@ -15,7 +15,7 @@
  */
 package org.apache.openjpa.util;
 
-import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Localizer.Message;
 
 /**
  * Exception type reserved for conflicts with existing objects.
@@ -25,19 +25,8 @@ import org.apache.openjpa.lib.util.Localizer;
 public class ObjectExistsException
     extends StoreException {
 
-    private static final transient Localizer _loc = Localizer.forPackage
-        (ObjectExistsException.class);
-
-    public ObjectExistsException() {
-    }
-
-    public ObjectExistsException(String msg) {
+    public ObjectExistsException(Message msg) {
         super(msg);
-    }
-
-    public ObjectExistsException(Object failed) {
-        super(_loc.get("obj-exists", Exceptions.toString(failed)));
-        setFailedObject(failed);
     }
 
     public int getSubtype() {

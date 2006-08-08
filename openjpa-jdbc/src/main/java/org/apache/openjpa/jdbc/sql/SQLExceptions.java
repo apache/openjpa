@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.StoreException;
 
@@ -61,6 +62,14 @@ public class SQLExceptions {
     public static OpenJPAException getStore(SQLException se, Object failed,
         DBDictionary dict) {
         return getStore(se.getMessage(), se, failed, dict);
+    }
+
+    /**
+     * Convert the specified exception into a {@link StoreException}.
+     */
+    public static OpenJPAException getStore(Message msg, SQLException se,
+        DBDictionary dict) {
+        return getStore(msg.getMessage(), se, null, dict);
     }
 
     /**

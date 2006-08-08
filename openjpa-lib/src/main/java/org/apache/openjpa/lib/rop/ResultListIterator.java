@@ -56,7 +56,7 @@ public class ResultListIterator extends AbstractListIterator {
 
     public Object next() {
         if (_rl.isClosed())
-            throw new NoSuchElementException(_loc.get("closed"));
+            throw new NoSuchElementException(_loc.get("closed").getMessage());
         return _li.next();
     }
 

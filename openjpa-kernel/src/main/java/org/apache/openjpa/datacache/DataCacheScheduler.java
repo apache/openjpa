@@ -96,7 +96,7 @@ public class DataCacheScheduler
         _caches.put(cache, schedule);
         _stop = false;
         if (_thread == null) {
-            _thread = new Thread(this, _loc.get("scheduler-name"));
+            _thread = new Thread(this, _loc.get("scheduler-name").getMessage());
             _thread.start();
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("scheduler-start", _thread.getName()));
@@ -191,7 +191,7 @@ public class DataCacheScheduler
         }
 
         private int[] parse(String token, int min, int max) {
-            if (token.trim().equals("*"))
+            if ("*".equals(token.trim()))
                 return WILDCARD;
             String[] tokens = Strings.split(token, ",", 0);
             int [] times = new int[tokens.length];

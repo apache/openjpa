@@ -69,9 +69,6 @@ public class LogOutputStream extends ByteArrayOutputStream {
             case Log.TRACE:
                 _log.trace(msg);
                 break;
-            case Log.DEBUG:
-                _log.debug(msg);
-                break;
             case Log.INFO:
                 _log.info(msg);
                 break;

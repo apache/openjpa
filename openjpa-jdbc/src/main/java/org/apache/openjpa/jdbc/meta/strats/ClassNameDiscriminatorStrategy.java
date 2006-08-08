@@ -90,7 +90,7 @@ public class ClassNameDiscriminatorStrategy
                 className = dict.getString(rs, 1);
                 if (className == null || className.length() == 0)
                     throw new ClassNotFoundException(_loc.get("no-class-name",
-                        disc.getClassMapping(), col));
+                        disc.getClassMapping(), col).getMessage());
                 Class.forName(className, true, loader);
             }
             disc.setSubclassesLoaded(true);

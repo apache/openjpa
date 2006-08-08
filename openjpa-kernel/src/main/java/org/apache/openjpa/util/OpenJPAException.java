@@ -22,6 +22,8 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 
+import org.apache.openjpa.lib.util.Localizer.Message;
+
 /**
  * Exception type for all OpenJPA exceptions. Meant to be easily
  * transformed into an appropriate exception at the API layer, since most APIs
@@ -52,6 +54,13 @@ public abstract class OpenJPAException
     }
 
     /**
+     * Constructor; supply message.
+     */
+    public OpenJPAException(Message msg) {
+        super(msg.getMessage());
+    }
+
+    /**
      * Construct with cause.
      */
     public OpenJPAException(Throwable cause) {
@@ -63,6 +72,14 @@ public abstract class OpenJPAException
      */
     public OpenJPAException(String msg, Throwable cause) {
         super(msg);
+        setCause(cause);
+    }
+
+    /**
+     * Construct with message and cause.
+     */
+    public OpenJPAException(Message msg, Throwable cause) {
+        super(msg.getMessage());
         setCause(cause);
     }
 

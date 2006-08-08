@@ -18,6 +18,7 @@ package org.apache.openjpa.util;
 import java.util.Collection;
 
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Localizer.Message;
 
 /**
  * Exception type for optimistic concurrency violations.
@@ -32,10 +33,7 @@ public class OptimisticException
     private static final transient Localizer _loc = Localizer.forPackage
         (OptimisticException.class);
 
-    public OptimisticException() {
-    }
-
-    public OptimisticException(String msg) {
+    public OptimisticException(Message msg) {
         super(msg);
     }
 

@@ -33,11 +33,19 @@ public class ParseException extends NestableRuntimeException {
         super(msg);
     }
 
+    public ParseException(Localizer.Message msg) {
+        super(msg.getMessage());
+    }
+
     public ParseException(Throwable cause) {
         super(cause);
     }
 
     public ParseException(String msg, Throwable cause) {
         super(msg, cause);
+    }
+
+    public ParseException(Localizer.Message msg, Throwable cause) {
+        super(msg.getMessage(), cause);
     }
 }

@@ -42,12 +42,11 @@ public class LogFactoryImpl implements LogFactory, GenericConfigurable {
 
     private static Localizer _loc = Localizer.forPackage(LogFactoryImpl.class);
 
-    public static final String TRACE_STR = _loc.get("log-trace");
-    public static final String DEBUG_STR = _loc.get("log-debug");
-    public static final String INFO_STR = _loc.get("log-info");
-    public static final String WARN_STR = _loc.get("log-warn");
-    public static final String ERROR_STR = _loc.get("log-error");
-    public static final String FATAL_STR = _loc.get("log-fatal");
+    public static final String TRACE_STR = _loc.get("log-trace").getMessage();
+    public static final String INFO_STR = _loc.get("log-info").getMessage();
+    public static final String WARN_STR = _loc.get("log-warn").getMessage();
+    public static final String ERROR_STR = _loc.get("log-error").getMessage();
+    public static final String FATAL_STR = _loc.get("log-fatal").getMessage();
 
     public static final String STDOUT = "stdout";
     public static final String STDERR = "stderr";
@@ -187,8 +186,6 @@ public class LogFactoryImpl implements LogFactory, GenericConfigurable {
         switch (level) {
             case Log.TRACE:
                 return TRACE_STR;
-            case Log.DEBUG:
-                return DEBUG_STR;
             case Log.INFO:
                 return INFO_STR;
             case Log.WARN:
@@ -198,7 +195,7 @@ public class LogFactoryImpl implements LogFactory, GenericConfigurable {
             case Log.FATAL:
                 return FATAL_STR;
             default:
-                return _loc.get("log-unknown");
+                return _loc.get("log-unknown").getMessage();
         }
     }
 
@@ -208,15 +205,14 @@ public class LogFactoryImpl implements LogFactory, GenericConfigurable {
     public static short getLevel(String str) {
         str = str.toUpperCase().trim();
         short val = TRACE_STR.equals(str) ? Log.TRACE :
-            DEBUG_STR.equals(str) ? Log.DEBUG :
-                INFO_STR.equals(str) ? Log.INFO :
-                    WARN_STR.equals(str) ? Log.WARN :
-                        ERROR_STR.equals(str) ? Log.ERROR :
-                            FATAL_STR.equals(str) ? Log.FATAL : -1;
+            INFO_STR.equals(str) ? Log.INFO :
+                WARN_STR.equals(str) ? Log.WARN :
+                    ERROR_STR.equals(str) ? Log.ERROR :
+                        FATAL_STR.equals(str) ? Log.FATAL : -1;
 
         if (val == -1)
             throw new IllegalArgumentException
-                (_loc.get("log-bad-constant", str));
+                (_loc.get("log-bad-constant", str).getMessage());
 
         return val;
     }

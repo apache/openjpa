@@ -47,17 +47,16 @@ public class Location {
         if (_locator == null) {
             if (_nullOnNoLocator)
                 return null;
-            return _loc.get("no-locator");
+            return _loc.get("no-locator").getMessage();
         }
-        String forma = MessageFormat.format(format, new Object []{
+        return MessageFormat.format(format, new Object []{
             Numbers.valueOf(_locator.getLineNumber()),
             Numbers.valueOf(_locator.getColumnNumber()), _locator.getPublicId(),
             _locator.getSystemId() });
-        return forma;
     }
 
     public String getLocation() {
-        return getLocation(_loc.get("location-format"));
+        return getLocation(_loc.get("location-format").getMessage());
     }
 
     public void setLocator(Locator locator) {

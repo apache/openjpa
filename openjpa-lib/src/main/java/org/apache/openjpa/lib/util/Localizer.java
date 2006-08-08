@@ -56,6 +56,9 @@ public class Localizer {
     // the local file name and class' classloader
     private ResourceBundle _bundle = null;
 
+    // the package that this localizer was created for.
+    private Package _package;
+
     /**
      * Return a Localizer instance that will access the properties file
      * in the package of the given class using the system default locale.
@@ -106,7 +109,7 @@ public class Localizer {
         }
 
         // cache the localizer
-        loc = new Localizer();
+        loc = new Localizer(cls == null ? null : cls.getPackage());
         loc._bundle = bundle;
         _localizers.put(key, loc);
         return loc;
@@ -126,18 +129,22 @@ public class Localizer {
         return _providers.remove(provider);
     }
 
-    /**
-     * Return the localized string matching the given key.
-     */
-    public String get(String key) {
-        return get(key, false);
+    private Localizer(Package p) {
+        _package = p;
     }
 
     /**
      * Return the localized string matching the given key.
      */
-    public String getFatal(String key) {
-        return get(key, true);
+    public Message get(String key) {
+        return get(key, null);
+    }
+
+    /**
+     * Return the localized string matching the given key.
+     */
+    public Message getFatal(String key) {
+        return getFatal(key, null);
     }
 
     /**
@@ -148,7 +155,7 @@ public class Localizer {
      *
      * @see #get(String)
      */
-    public String get(String key, Object sub) {
+    public Message get(String key, Object sub) {
         return get(key, new Object[]{ sub });
     }
 
@@ -160,7 +167,7 @@ public class Localizer {
      *
      * @see #getFatal(String)
      */
-    public String getFatal(String key, Object sub) {
+    public Message getFatal(String key, Object sub) {
         return getFatal(key, new Object[]{ sub });
     }
 
@@ -169,7 +176,7 @@ public class Localizer {
      *
      * @see #get(String,Object)
      */
-    public String get(String key, Object sub1, Object sub2) {
+    public Message get(String key, Object sub1, Object sub2) {
         return get(key, new Object[]{ sub1, sub2 });
     }
 
@@ -178,7 +185,7 @@ public class Localizer {
      *
      * @see #getFatal(String,Object)
      */
-    public String getFatal(String key, Object sub1, Object sub2) {
+    public Message getFatal(String key, Object sub1, Object sub2) {
         return getFatal(key, new Object[]{ sub1, sub2 });
     }
 
@@ -187,7 +194,7 @@ public class Localizer {
      *
      * @see #get(String,Object)
      */
-    public String get(String key, Object sub1, Object sub2, Object sub3) {
+    public Message get(String key, Object sub1, Object sub2, Object sub3) {
         return get(key, new Object[]{ sub1, sub2, sub3 });
     }
 
@@ -199,9 +206,8 @@ public class Localizer {
      *
      * @see #get(String)
      */
-    public String get(String key, Object[] subs) {
-        String str = get(key);
-        return MessageFormat.format(str, subs);
+    public Message get(String key, Object[] subs) {
+        return new Message(key, subs, false);
     }
 
     /**
@@ -212,24 +218,70 @@ public class Localizer {
      *
      * @see #getFatal(String)
      */
-    public String getFatal(String key, Object[] subs) {
-        String str = getFatal(key);
-        return MessageFormat.format(str, subs);
+    public Message getFatal(String key, Object[] subs) {
+        return new Message(key, subs, true);
     }
 
-    private String get(String key, boolean fatal) {
-        if (_bundle == null) {
-            if (fatal)
-                throw new MissingResourceException(key, key, key);
+    /**
+     * A <code>Message</code> can provide a localized message via the 
+     * {@link #getMessage} method call, and can also provide the original key,
+     * package, and substitution array that were used to assemble the message.
+     */
+    public class Message {
+
+        private final String key;
+        private final Object[] subs;
+        private String localizedMessage;
+        private boolean messageFound = false;
+
+        private Message(String key, Object[] subs, boolean fatal) {
+            this.key = key;
+            this.subs = subs;
+
+            if (_bundle == null) {
+                if (fatal)
+                    throw new MissingResourceException(key, key, key);
+                else {
+                    localizedMessage = key;
+                    messageFound = false;
+                }
+            } else {
+                try {
+                    localizedMessage = _bundle.getString(key);
+                    messageFound = true;
+                } catch (MissingResourceException mre) {
+                    if (!fatal)
+                        localizedMessage = key;
+                    else
+                        throw mre;
+                }
+            }
+        }
+
+        /**
+         * The localized message.
+         */
+        public String getMessage() {
+            if (messageFound)
+                return MessageFormat.format(localizedMessage, subs);
+            else
+                return key;
+        }
+
+        public String getKey() {
             return key;
         }
 
-        try {
-            return _bundle.getString(key);
-        } catch (MissingResourceException mre) {
-            if (!fatal)
-                return key;
-            throw mre;
+        public Object[] getSubstitutions() {
+            return subs;
+        }
+
+        public Package getPackage() {
+            return _package;
+        }
+        
+        public String toString() {
+            return getMessage();
         }
     }
 }

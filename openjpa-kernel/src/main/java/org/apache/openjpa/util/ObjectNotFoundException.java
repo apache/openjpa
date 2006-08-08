@@ -18,6 +18,7 @@ package org.apache.openjpa.util;
 import java.util.Collection;
 
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Localizer.Message;
 
 /**
  * Exception type reserved for failed object lookups.
@@ -30,10 +31,7 @@ public class ObjectNotFoundException
     private static final transient Localizer _loc = Localizer.forPackage
         (ObjectNotFoundException.class);
 
-    public ObjectNotFoundException() {
-    }
-
-    public ObjectNotFoundException(String msg) {
+    public ObjectNotFoundException(Message msg) {
         super(msg);
     }
 

@@ -51,7 +51,8 @@ public class NameSet {
     protected void addName(String name, boolean validate) {
         if (name == null || name.length() == 0) {
             if (validate)
-                throw new IllegalArgumentException(_loc.get("bad-name", name));
+                throw new IllegalArgumentException(_loc.get("bad-name", name)
+                    .getMessage());
             return;
         }
 

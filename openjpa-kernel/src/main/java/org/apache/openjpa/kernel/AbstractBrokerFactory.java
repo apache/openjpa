@@ -235,7 +235,8 @@ public abstract class AbstractBrokerFactory
                 try {
                     Class.forName((String) itr.next(), true, loader);
                 } catch (Throwable t) {
-                    _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME).warn(t, t);
+                    _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME)
+                        .warn(null, t);
                 }
             }
         }
@@ -515,7 +516,7 @@ public abstract class AbstractBrokerFactory
                     if (itr.hasNext())
                         buf.append(lineSep);
                 }
-                log.trace(buf.toString());
+                log.trace(_loc.get("factory-properties", buf.toString()));
             }
 
             // setup transient state

@@ -46,10 +46,6 @@ public class Log4JLogFactory extends LogFactoryAdapter {
         }
 
         public boolean isTraceEnabled() {
-            return isDebugEnabled();
-        }
-
-        public boolean isDebugEnabled() {
             return _log.getEffectiveLevel().toInt() >= Level.DEBUG_INT;
         }
 
@@ -74,14 +70,6 @@ public class Log4JLogFactory extends LogFactoryAdapter {
         }
 
         public void trace(Object o, Throwable t) {
-            _log.debug(o, t);
-        }
-
-        public void debug(Object o) {
-            _log.debug(o);
-        }
-
-        public void debug(Object o, Throwable t) {
             _log.debug(o, t);
         }
 

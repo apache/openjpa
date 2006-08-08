@@ -74,7 +74,7 @@ public class FileMetaDataIterator implements MetaDataIterator {
         Collection metas, int scanned) throws IOException {
         if (scanned > SCAN_LIMIT)
             throw new IllegalStateException(_loc.get("too-many-files",
-                String.valueOf(SCAN_LIMIT)));
+                String.valueOf(SCAN_LIMIT)).getMessage());
         scanned++;
 
         if (filter == null)
