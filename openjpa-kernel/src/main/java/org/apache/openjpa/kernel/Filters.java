@@ -276,7 +276,7 @@ public class Filters {
         }
         if (!num)
             throw new ClassCastException(_loc.get("cant-convert", o,
-                o.getClass(), type));
+                o.getClass(), type).getMessage());
 
         if (type == Integer.class) {
             return Numbers.valueOf(((Number) o).intValue());

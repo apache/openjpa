@@ -113,9 +113,10 @@ public class ForeignKey
 
         String msg;
         if (closest != null)
-            msg = _loc.get("bad-fk-action-hint", name, closest, recognized);
+            msg = _loc.get("bad-fk-action-hint", name, closest, recognized)
+                .getMessage();
         else
-            msg = _loc.get("bad-fk-action", name, recognized);
+            msg = _loc.get("bad-fk-action", name, recognized).getMessage();
         throw new IllegalArgumentException(msg);
     }
 

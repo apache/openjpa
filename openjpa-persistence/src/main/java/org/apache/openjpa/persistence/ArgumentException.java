@@ -25,6 +25,8 @@ import java.io.Serializable;
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.Exceptions;
 
+import org.apache.openjpa.lib.util.Localizer.Message;
+
 /**
  * Extended {@link IllegalArgumentException}.
  *
@@ -46,6 +48,11 @@ public class ArgumentException
         _nested = nested;
         _failed = failed;
         _fatal = fatal;
+    }
+
+    public ArgumentException(Message msg, Throwable[] nested, Object failed,
+        boolean fatal) {
+        this(msg.getMessage(), nested, failed, fatal);
     }
 
     public int getType() {

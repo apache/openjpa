@@ -15,6 +15,8 @@
  */
 package org.apache.openjpa.util;
 
+import org.apache.openjpa.lib.util.Localizer.Message;
+
 /**
  * Exception type for attempts to perform unsupported operations.
  *
@@ -33,12 +35,12 @@ public class UnsupportedException
         setFatal(true);
     }
 
-    public UnsupportedException(Throwable cause) {
-        super(cause);
+    public UnsupportedException(Message msg) {
+        super(msg);
         setFatal(true);
     }
 
-    public UnsupportedException(String msg, Throwable cause) {
+    public UnsupportedException(Message msg, Throwable cause) {
         super(msg, cause);
         setFatal(true);
     }

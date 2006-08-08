@@ -122,16 +122,6 @@ public class MultiLogFactory implements LogFactory {
                 _logs[i].info(msg, t);
         }
 
-        public void debug(Object msg) {
-            for (int i = 0; i < _logs.length; i++)
-                _logs[i].debug(msg);
-        }
-
-        public void debug(Object msg, Throwable t) {
-            for (int i = 0; i < _logs.length; i++)
-                _logs[i].debug(msg, t);
-        }
-
         public void warn(Object msg) {
             for (int i = 0; i < _logs.length; i++)
                 _logs[i].warn(msg);
@@ -179,13 +169,6 @@ public class MultiLogFactory implements LogFactory {
         public boolean isWarnEnabled() {
             for (int i = 0; i < _logs.length; i++)
                 if (_logs[i].isWarnEnabled())
-                    return true;
-            return false;
-        }
-
-        public boolean isDebugEnabled() {
-            for (int i = 0; i < _logs.length; i++)
-                if (_logs[i].isDebugEnabled())
                     return true;
             return false;
         }

@@ -81,6 +81,7 @@ import org.apache.openjpa.lib.jdbc.ConnectionDecorator;
 import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.GeneralException;
@@ -1362,7 +1363,7 @@ public class DBDictionary
 
         if (storageLimitationsFatal || (warn && log.isWarnEnabled())
             || (!warn && log.isTraceEnabled())) {
-            String msg = _loc.get("storage-restriction", new Object[]{
+            Message msg = _loc.get("storage-restriction", new Object[]{
                 platform,
                 orig,
                 orig.getClass().getName(),

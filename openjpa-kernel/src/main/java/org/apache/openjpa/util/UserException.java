@@ -15,6 +15,8 @@
  */
 package org.apache.openjpa.util;
 
+import org.apache.openjpa.lib.util.Localizer.Message;
+
 /**
  * Base exception type for user errors.
  *
@@ -36,11 +38,19 @@ public class UserException
         super(msg);
     }
 
+    public UserException(Message msg) {
+        super(msg);
+    }
+
     public UserException(Throwable cause) {
         super(cause);
     }
 
     public UserException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+
+    public UserException(Message msg, Throwable cause) {
         super(msg, cause);
     }
 

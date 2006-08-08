@@ -57,7 +57,7 @@ public class RangeResultObjectProvider implements ResultObjectProvider {
         _delegate = delegate;
         if (startIdx > Integer.MAX_VALUE || endIdx > Integer.MAX_VALUE)
             throw new IllegalArgumentException(_loc.get("range-too-high",
-                String.valueOf(startIdx), String.valueOf(endIdx)));
+                String.valueOf(startIdx), String.valueOf(endIdx)).getMessage());
 
         _startIdx = (int) startIdx;
         _endIdx = (int) endIdx;

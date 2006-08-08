@@ -89,8 +89,8 @@ public class PCDataGenerator
         if (storage == null) {
             storage = generateStorage(meta);
             _generated.put(type, storage);
-            if (_log.isDebugEnabled())
-                _log.debug(_loc.get("pcdata-created", type.getName(), meta));
+            if (_log.isTraceEnabled())
+                _log.trace(_loc.get("pcdata-created", type.getName(), meta));
         }
         DynamicPCData data = (DynamicPCData) storage.newInstance();
         data.setId(oid);
@@ -103,8 +103,8 @@ public class PCDataGenerator
      * Actually generate the factory instance.
      */
     private DynamicStorage generateStorage(ClassMetaData meta) {
-        if (_log.isDebugEnabled())
-            _log.debug(_loc.get("pcdata-generate", meta));
+        if (_log.isTraceEnabled())
+            _log.trace(_loc.get("pcdata-generate", meta));
 
         FieldMetaData[] fields = meta.getFields();
         int[] types = new int[fields.length];

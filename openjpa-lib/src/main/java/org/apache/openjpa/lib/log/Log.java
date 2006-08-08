@@ -24,7 +24,7 @@ package org.apache.openjpa.lib.log;
 public interface Log {
 
     public static final short TRACE = 1;
-    public static final short DEBUG = 2;
+    // the old DEBUG constant was 2. Leaving a hole for compatibility.
     public static final short INFO = 3;
     public static final short WARN = 4;
     public static final short ERROR = 5;
@@ -34,11 +34,6 @@ public interface Log {
      * Returns if the {@link #TRACE} log level is enabled.
      */
     public boolean isTraceEnabled();
-
-    /**
-     * Returns if the {@link #DEBUG} log level is enabled.
-     */
-    public boolean isDebugEnabled();
 
     /**
      * Returns if the {@link #INFO} log level is enabled.
@@ -73,20 +68,6 @@ public interface Log {
      * of the message, also outputting <code>t</code> to the log.
      */
     public void trace(Object o, Throwable t);
-
-    /**
-     * Write out a log message at the {@link #DEBUG}
-     * level with the stringification of <code>o</code> as the body
-     * of the message, also outputting <code>t</code> to the log.
-     */
-    public void debug(Object o);
-
-    /**
-     * Write out a log message at the {@link #DEBUG}
-     * level with the stringification of <code>o</code> as the body
-     * of the message, also outputting <code>t</code> to the log.
-     */
-    public void debug(Object o, Throwable t);
 
     /**
      * Write out a log message at the {@link #INFO}

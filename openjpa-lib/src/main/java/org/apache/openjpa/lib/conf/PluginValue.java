@@ -106,7 +106,7 @@ public class PluginValue extends ObjectValue {
     public void set(Object obj, boolean derived) {
         if (!_singleton)
             throw new IllegalStateException(_loc.get("not-singleton",
-                getProperty()));
+                getProperty()).getMessage());
         super.set(obj, derived);
     }
 

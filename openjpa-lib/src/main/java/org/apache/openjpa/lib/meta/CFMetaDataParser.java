@@ -279,7 +279,7 @@ public class CFMetaDataParser extends XMLMetaDataParser {
             return null;
         Class cls = classForName(name, _package, resolve, currentClassLoader());
         if (cls == null)
-            throw getException(_loc.get("invalid-class", name));
+            throw getException(_loc.get("invalid-class", name).getMessage());
         return cls;
     }
 

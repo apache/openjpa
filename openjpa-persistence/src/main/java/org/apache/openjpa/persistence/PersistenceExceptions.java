@@ -168,8 +168,8 @@ public class PersistenceExceptions
         Exception e;
         switch (ke.getSubtype()) {
             case UserException.NO_TRANSACTION:
-                e =
-                    new org.apache.openjpa.persistence.TransactionRequiredException
+                e = new 
+                    org.apache.openjpa.persistence.TransactionRequiredException
                         (ke.getMessage(), getNestedThrowables(ke),
                             getFailedObject(ke), ke.isFatal());
                 break;

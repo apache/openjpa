@@ -107,7 +107,7 @@ public class ObjectValue extends Value {
             set(null);
         else
             throw new IllegalArgumentException(_loc.get("cant-set-string",
-                getProperty()));
+                getProperty()).getMessage());
     }
 
     protected void setInternalObject(Object obj) {

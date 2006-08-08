@@ -31,14 +31,17 @@ abstract class AbstractListIterator implements ListIterator {
         (AbstractListIterator.class);
 
     public void add(Object o) {
-        throw new UnsupportedOperationException(_loc.get("read-only"));
+        throw new UnsupportedOperationException(_loc.get("read-only")
+            .getMessage());
     }
 
     public void set(Object o) {
-        throw new UnsupportedOperationException(_loc.get("read-only"));
+        throw new UnsupportedOperationException(_loc.get("read-only")
+            .getMessage());
     }
 
     public void remove() {
-        throw new UnsupportedOperationException(_loc.get("read-only"));
+        throw new UnsupportedOperationException(_loc.get("read-only")
+            .getMessage());
     }
 }

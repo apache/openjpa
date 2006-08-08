@@ -51,6 +51,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.Services;
 import org.apache.openjpa.lib.util.TemporaryClassLoader;
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -513,7 +514,7 @@ public class PCEnhancer {
             if (itr.hasNext())
                 buf.append(sep);
         }
-        String msg = _loc.get("property-violations", buf);
+        Message msg = _loc.get("property-violations", buf);
 
         if (_fail)
             throw new UserException(msg);
@@ -730,7 +731,7 @@ public class PCEnhancer {
             if (fmds[i].getManagement() != FieldMetaData.MANAGE_PERSISTENT)
                 continue;
 
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             switch (fmds[i].getDeclaredTypeCode()) {
                 case JavaTypes.BOOLEAN:
                 case JavaTypes.BYTE:
@@ -884,11 +885,11 @@ public class PCEnhancer {
             // <field> = pcStateManager.provided<type>Field
             //     (this, fieldNumber);
             for (int i = 0; i < fmds.length; i++) {
-                tabins.addTarget(loadManagedInstance(code, false, false));
+                tabins.addTarget(loadManagedInstance(code, false));
                 code.getfield().setField(SM, SMTYPE);
-                loadManagedInstance(code, false, false);
+                loadManagedInstance(code, false);
                 code.iload().setParam(0);
-                loadManagedInstance(code, true, false);
+                loadManagedInstance(code, false);
                 addGetManagedValueCode(code, fmds[i]);
                 code.invokeinterface().setMethod(getStateManagerMethod
                     (fmds[i].getDeclaredType(), "provided", false, false));
@@ -935,11 +936,11 @@ public class PCEnhancer {
             //  (this, fieldNumber);
             for (int i = 0; i < fmds.length; i++) {
                 // for the addSetManagedValueCode call below.
-                tabins.addTarget(loadManagedInstance(code, true, false));
+                tabins.addTarget(loadManagedInstance(code, false));
 
-                loadManagedInstance(code, false, false);
+                loadManagedInstance(code, false);
                 code.getfield().setField(SM, SMTYPE);
-                loadManagedInstance(code, false, false);
+                loadManagedInstance(code, false);
                 code.iload().setParam(0);
                 code.invokeinterface().setMethod(getStateManagerMethod
                     (fmds[i].getDeclaredType(), "replace", true, false));
@@ -990,7 +991,7 @@ public class PCEnhancer {
             for (int i = 0; i < fmds.length; i++) {
                 // <field> = other.<field>;
                 // or set<field> (other.get<field>);
-                tabins.addTarget(loadManagedInstance(code, true, false));
+                tabins.addTarget(loadManagedInstance(code, false));
                 code.aload().setParam(0);
                 addGetManagedValueCode(code, fmds[i]);
                 addSetManagedValueCode(code, fmds[i]);
@@ -1035,7 +1036,7 @@ public class PCEnhancer {
         // no super: if (rel < 0) throw new IllegalArgumentException ();
         JumpInstruction ifins = code.ifge();
         if (_meta.getPCSuperclass() != null) {
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             String[] args;
             if (copy) {
                 args = new String[]{ _meta.getPCSuperclass().getName(),
@@ -1087,7 +1088,7 @@ public class PCEnhancer {
             //	throw new IllegalArgumentException
             code.aload().setLocal(inst);
             code.getfield().setField(SM, SMTYPE);
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.getfield().setField(SM, SMTYPE);
             JumpInstruction ifins = code.ifacmpeq();
             throwException(code, IllegalArgumentException.class);
@@ -1095,7 +1096,7 @@ public class PCEnhancer {
 
             // if (pcStateManager == null)
             //  throw new IllegalStateException
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.getfield().setField(SM, SMTYPE);
             ifins = code.ifnonnull();
             throwException(code, IllegalStateException.class);
@@ -1109,7 +1110,7 @@ public class PCEnhancer {
         JumpInstruction testins = code.go2();
 
         // <method> (fields[i]);
-        Instruction bodyins = loadManagedInstance(code, false, false);
+        Instruction bodyins = loadManagedInstance(code, false);
         if (copy)
             code.aload().setLocal(inst);
         code.aload().setParam(fieldNumbers);
@@ -1178,7 +1179,7 @@ public class PCEnhancer {
         BCMethod meth = _pc.declareMethod(PRE + "GetStateManager",
             StateManager.class, null);
         Code code = meth.getCode(true);
-        loadManagedInstance(code, false, false);
+        loadManagedInstance(code, false);
         code.getfield().setField(SM, StateManager.class);
         code.areturn();
         code.calculateMaxStack();
@@ -1202,7 +1203,7 @@ public class PCEnhancer {
         Code code = method.getCode(true);
 
         // if (pcStateManager == null) return <default>;
-        loadManagedInstance(code, false, false);
+        loadManagedInstance(code, false);
         code.getfield().setField(SM, SMTYPE);
         JumpInstruction ifins = code.ifnonnull();
         if (returnType.equals(boolean.class))
@@ -1212,7 +1213,7 @@ public class PCEnhancer {
         code.xreturn().setType(returnType);
 
         // return pcStateManager.<method> (<args>);
-        ifins.setTarget(loadManagedInstance(code, false, false));
+        ifins.setTarget(loadManagedInstance(code, false));
         code.getfield().setField(SM, SMTYPE);
         for (int i = 0; i < params.length; i++)
             code.xload().setParam(i);
@@ -1233,7 +1234,7 @@ public class PCEnhancer {
         Code code = method.getCode(true);
 
         // if (pcStateManager == null)
-        loadManagedInstance(code, false, false);
+        loadManagedInstance(code, false);
         code.getfield().setField(SM, SMTYPE);
         JumpInstruction ifins = code.ifnonnull();
         FieldMetaData versionField = _meta.getVersionField();
@@ -1247,7 +1248,7 @@ public class PCEnhancer {
                 code.anew().setType(wrapper);
                 code.dup();
             }
-            loadManagedInstance(code, true, false);
+            loadManagedInstance(code, false);
             addGetManagedValueCode(code, versionField);
             if (wrapper != null)
                 code.invokespecial().setMethod(wrapper, "<init>", void.class,
@@ -1256,7 +1257,7 @@ public class PCEnhancer {
         code.areturn();
 
         // return pcStateManager.getVersion ();
-        ifins.setTarget(loadManagedInstance(code, false, false));
+        ifins.setTarget(loadManagedInstance(code, false));
         code.getfield().setField(SM, SMTYPE);
         code.invokeinterface().setMethod(SMTYPE, "getVersion", Object.class,
             null);
@@ -1297,14 +1298,14 @@ public class PCEnhancer {
         Code code = method.getCode(true);
 
         // if (pcStateManager != null)
-        loadManagedInstance(code, false, false);
+        loadManagedInstance(code, false);
         code.getfield().setField(SM, SMTYPE);
         JumpInstruction ifins = code.ifnonnull();
         code.vreturn();
 
         // pcFlags = pcStateManager.replaceFlags ();
-        ifins.setTarget(loadManagedInstance(code, false, false));
-        loadManagedInstance(code, false, false);
+        ifins.setTarget(loadManagedInstance(code, false));
+        loadManagedInstance(code, false);
         code.getfield().setField(SM, SMTYPE);
         code.invokeinterface().setMethod(SMTYPE, "replaceFlags",
             byte.class, null);
@@ -1329,11 +1330,11 @@ public class PCEnhancer {
 
         // if (pcStateManager != null)
         //	pcStateManager = pcStateManager.replaceStateManager(sm);
-        loadManagedInstance(code, false, false);
+        loadManagedInstance(code, false);
         code.getfield().setField(SM, SMTYPE);
         JumpInstruction ifins = code.ifnull();
-        loadManagedInstance(code, false, false);
-        loadManagedInstance(code, false, false);
+        loadManagedInstance(code, false);
+        loadManagedInstance(code, false);
         code.getfield().setField(SM, SMTYPE);
         code.aload().setParam(0);
         code.invokeinterface().setMethod(SMTYPE, "replaceStateManager",
@@ -1348,7 +1349,7 @@ public class PCEnhancer {
             "getSecurityManager", SecurityManager.class, null));
 
         // pcStateManager = sm;
-        ifins.setTarget(loadManagedInstance(code, false, false));
+        ifins.setTarget(loadManagedInstance(code, false));
         code.aload().setParam(0);
         code.putfield().setField(SM, SMTYPE);
         code.vreturn();
@@ -1438,7 +1439,7 @@ public class PCEnhancer {
 
         // call superclass method
         if (_meta.getPCSuperclass() != null) {
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             for (int i = 0; i < args.length; i++)
                 code.aload().setParam(i);
             code.invokespecial().setMethod(_meta.getPCSuperclass().getName(),
@@ -1496,7 +1497,7 @@ public class PCEnhancer {
                     && !type.getName().equals(String.class.getName()))
                     code.checkcast().setType(type);
             } else {
-                loadManagedInstance(code, true, false);
+                loadManagedInstance(code, false);
                 addGetManagedValueCode(code, fmds[i]);
             }
 
@@ -1531,7 +1532,7 @@ public class PCEnhancer {
 
         // call superclass method
         if (_meta.getPCSuperclass() != null) {
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             for (int i = 0; i < args.length; i++)
                 code.aload().setParam(i);
             code.invokespecial().setMethod(_meta.getPCSuperclass().getName(),
@@ -1585,7 +1586,7 @@ public class PCEnhancer {
                 code.iload().setLocal(inherited);
                 code.iadd();
             } else
-                loadManagedInstance(code, true, false);
+                loadManagedInstance(code, false);
 
             if (unwrapped != type) {
                 code.anew().setType(type);
@@ -1710,7 +1711,7 @@ public class PCEnhancer {
         if (obj && usesClsString == null) {
             // throw new IllegalArgumentException (...);
             String msg = _loc.get("str-cons", oidType,
-                _meta.getDescribedType());
+                _meta.getDescribedType()).getMessage();
             code.anew().setType(IllegalArgumentException.class);
             code.dup();
             code.constant().setValue(msg);
@@ -1745,7 +1746,7 @@ public class PCEnhancer {
                 args = new Class[]{ String.class };
         } else if (_meta.isOpenJPAIdentity()) {
             // new <type>Identity (XXX.class, <pk>);
-            loadManagedInstance(code, true, false);
+            loadManagedInstance(code, false);
             FieldMetaData pk = _meta.getPrimaryKeyFields()[0];
             addGetManagedValueCode(code, pk);
             if (_meta.getObjectIdType() == ObjectId.class)
@@ -2112,7 +2113,7 @@ public class PCEnhancer {
         code.beforeFirst();
 
         // bool clear = pcSerializing ();
-        loadManagedInstance(code, false, false);
+        loadManagedInstance(code, false);
         code.invokevirtual().setMethod(PRE + "Serializing",
             boolean.class, null);
         int clear = code.getNextLocalsIndex();
@@ -2135,7 +2136,7 @@ public class PCEnhancer {
             // if (clear) pcSetDetachedState (null);
             code.iload().setLocal(clear);
             toret = code.ifeq();
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.constant().setNull();
             code.invokevirtual().setMethod(PRE + "SetDetachedState",
                 void.class, new Class[]{ Object.class });
@@ -2157,7 +2158,7 @@ public class PCEnhancer {
         // if this instance uses synthetic detached state, note that it has
         // been deserialized
         if (ClassMetaData.SYNTHETIC.equals(_meta.getDetachedState())) {
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.getstatic().setField(PersistenceCapable.class,
                 "DESERIALIZED", Object.class);
             code.invokevirtual().setMethod(PRE + "SetDetachedState",
@@ -2207,10 +2208,10 @@ public class PCEnhancer {
 
         // if (sm != null)
         //		return (sm.isDetached ()) ? Boolean.TRUE : Boolean.FALSE;
-        loadManagedInstance(code, false, false);
+        loadManagedInstance(code, false);
         code.getfield().setField(SM, SMTYPE);
         JumpInstruction ifins = code.ifnull();
-        loadManagedInstance(code, false, false);
+        loadManagedInstance(code, false);
         code.getfield().setField(SM, SMTYPE);
         code.invokeinterface().setMethod(SMTYPE, "isDetached",
             boolean.class, null);
@@ -2229,11 +2230,11 @@ public class PCEnhancer {
         JumpInstruction notdeser = null;
         Instruction target;
         if (state != Boolean.FALSE) {
-            ifins.setTarget(loadManagedInstance(code, false, false));
+            ifins.setTarget(loadManagedInstance(code, false));
             code.invokevirtual().setMethod(PRE + "GetDetachedState",
                 Object.class, null);
             ifins = code.ifnull();
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.invokevirtual().setMethod(PRE + "GetDetachedState",
                 Object.class, null);
             code.getstatic().setField(PersistenceCapable.class,
@@ -2269,7 +2270,7 @@ public class PCEnhancer {
         if (state != Boolean.TRUE && version != null) {
             // if (<version> != <default>)
             //		return true;
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             addGetManagedValueCode(code, version);
             ifins = ifDefaultValue(code, version);
             code.getstatic().setField(Boolean.class, "TRUE", Boolean.class);
@@ -2300,7 +2301,7 @@ public class PCEnhancer {
         if (state == null) {
             // if (pcGetDetachedState () == null) // instead of DESERIALIZED
             //     return Boolean.FALSE;
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.invokevirtual().setMethod(PRE + "GetDetachedState",
                 Object.class, null);
             ifins = code.ifnonnull();
@@ -2322,7 +2323,7 @@ public class PCEnhancer {
                 if (pks[i].getValueStrategy() == ValueStrategies.NONE)
                     continue;
 
-                target = loadManagedInstance(code, false, false);
+                target = loadManagedInstance(code, false);
                 if (ifins != null)
                     ifins.setTarget(target);
                 if (ifins2 != null)
@@ -2333,7 +2334,7 @@ public class PCEnhancer {
                 ifins = ifDefaultValue(code, pks[i]);
                 if (pks[i].getDeclaredTypeCode() == JavaTypes.STRING) {
                     code.constant().setValue("");
-                    loadManagedInstance(code, false, false);
+                    loadManagedInstance(code, false);
                     addGetManagedValueCode(code, pks[i]);
                     code.invokevirtual().setMethod(String.class, "equals",
                         boolean.class, new Class[]{ Object.class });
@@ -2451,7 +2452,7 @@ public class PCEnhancer {
             code = clone.getCode(true);
 
             // return super.clone ();
-            loadManagedInstance(code, true, false);
+            loadManagedInstance(code, false);
             code.invokespecial().setMethod(_pc.getSuperclassName(),
                 "clone", Object.class.getName(), null);
             code.areturn();
@@ -2681,7 +2682,7 @@ public class PCEnhancer {
         byte fieldFlag = getFieldFlag(fmd);
         if ((fieldFlag & PersistenceCapable.CHECK_READ) == 0
             && (fieldFlag & PersistenceCapable.MEDIATE_READ) == 0) {
-            loadManagedInstance(code, true, true);
+            loadManagedInstance(code, true);
             addGetManagedValueCode(code, fmd);
             code.xreturn().setType(fmd.getDeclaredType());
 
@@ -2693,21 +2694,21 @@ public class PCEnhancer {
         // dfg: if (inst.pcFlags <= 0) return inst.<field>;
         JumpInstruction ifins = null;
         if ((fieldFlag & PersistenceCapable.CHECK_READ) > 0) {
-            loadManagedInstance(code, false, true);
+            loadManagedInstance(code, true);
             code.getfield().setField(PRE + "Flags", byte.class);
             ifins = code.ifgt();
-            loadManagedInstance(code, true, true);
+            loadManagedInstance(code, true);
             addGetManagedValueCode(code, fmd);
             code.xreturn().setType(fmd.getDeclaredType());
         }
 
         // if (inst.pcStateManager == null) return inst.<field>;
-        Instruction ins = loadManagedInstance(code, false, true);
+        Instruction ins = loadManagedInstance(code, true);
         if (ifins != null)
             ifins.setTarget(ins);
         code.getfield().setField(SM, SMTYPE);
         ifins = code.ifnonnull();
-        loadManagedInstance(code, true, true);
+        loadManagedInstance(code, true);
         addGetManagedValueCode(code, fmd);
         code.xreturn().setType(fmd.getDeclaredType());
 
@@ -2720,12 +2721,12 @@ public class PCEnhancer {
 
         // inst.pcStateManager.accessingField (field);
         // return inst.<field>;
-        loadManagedInstance(code, false, true);
+        loadManagedInstance(code, true);
         code.getfield().setField(SM, SMTYPE);
         code.iload().setLocal(fieldLocal);
         code.invokeinterface().setMethod(SMTYPE, "accessingField", void.class,
             new Class[]{ int.class });
-        loadManagedInstance(code, true, true);
+        loadManagedInstance(code, true);
         addGetManagedValueCode(code, fmd);
         code.xreturn().setType(fmd.getDeclaredType());
 
@@ -2753,35 +2754,35 @@ public class PCEnhancer {
         JumpInstruction ifins = null;
         byte fieldFlag = getFieldFlag(fmd);
         if ((fieldFlag & PersistenceCapable.CHECK_WRITE) > 0) {
-            loadManagedInstance(code, false, true);
+            loadManagedInstance(code, true);
             code.getfield().setField(PRE + "Flags", byte.class);
             ifins = code.ifne();
-            loadManagedInstance(code, true, true);
+            loadManagedInstance(code, true);
             code.xload().setParam(firstParamOffset);
             addSetManagedValueCode(code, fmd);
             code.vreturn();
         }
 
         // if (inst.pcStateManager == null) inst.<field> = value;
-        Instruction ins = loadManagedInstance(code, false, true);
+        Instruction ins = loadManagedInstance(code, true);
         if (ifins != null)
             ifins.setTarget(ins);
         code.getfield().setField(SM, SMTYPE);
         ifins = code.ifnonnull();
-        loadManagedInstance(code, true, true);
+        loadManagedInstance(code, true);
         code.xload().setParam(firstParamOffset);
         addSetManagedValueCode(code, fmd);
         code.vreturn();
 
         // inst.pcStateManager.setting<fieldType>Field (inst,
         //	pcInheritedFieldCount + <index>, inst.<field>, value, 0);
-        ifins.setTarget(loadManagedInstance(code, false, true));
+        ifins.setTarget(loadManagedInstance(code, true));
         code.getfield().setField(SM, SMTYPE);
-        loadManagedInstance(code, false, true);
+        loadManagedInstance(code, true);
         code.getstatic().setField(INHERIT, int.class);
         code.constant().setValue(index);
         code.iadd();
-        loadManagedInstance(code, true, true);
+        loadManagedInstance(code, true);
         addGetManagedValueCode(code, fmd);
         code.xload().setParam(firstParamOffset);
         code.constant().setValue(0);
@@ -2860,7 +2861,7 @@ public class PCEnhancer {
         Code code = method.getCode(true);
         if (impl) {
             // return pcDetachedState;
-            loadManagedInstance(code, true, false);
+            loadManagedInstance(code, false);
             code.getfield().setField(declarer, name, Object.class.getName());
         } else
             code.constant().setNull();
@@ -2875,7 +2876,7 @@ public class PCEnhancer {
         code = method.getCode(true);
         if (impl) {
             // pcDetachedState = state;
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.aload().setParam(0);
             code.putfield().setField(declarer, name,
                 Object.class.getName());
@@ -2941,21 +2942,21 @@ public class PCEnhancer {
         // super.readExternal (in);
         Class sup = _meta.getDescribedType().getSuperclass();
         if (!parentDetachable && Externalizable.class.isAssignableFrom(sup)) {
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.aload().setParam(0);
             code.invokespecial().setMethod(sup, "readExternal",
                 void.class, inargs);
         }
 
         // readUnmanaged (in);
-        loadManagedInstance(code, false, false);
+        loadManagedInstance(code, false);
         code.aload().setParam(0);
         code.invokevirtual().setMethod(_meta.getDescribedType(),
             PRE + "ReadUnmanaged", void.class, inargs);
 
         if (detachedState) {
             // pcSetDetachedState (in.readObject ());
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.aload().setParam(0);
             code.invokeinterface().setMethod(ObjectInput.class, "readObject",
                 Object.class, null);
@@ -2963,7 +2964,7 @@ public class PCEnhancer {
                 void.class, new Class[]{ Object.class });
 
             // pcReplaceStateManager ((StateManager) in.readObject ());
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.aload().setParam(0);
             code.invokeinterface().setMethod(ObjectInput.class, "readObject",
                 Object.class, null);
@@ -3000,7 +3001,7 @@ public class PCEnhancer {
 
         // super.readUnmanaged (in);
         if (parentDetachable) {
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.aload().setParam(0);
             code.invokespecial().setMethod(_meta.getPCSuperclass(),
                 PRE + "ReadUnmanaged", void.class, inargs);
@@ -3033,7 +3034,7 @@ public class PCEnhancer {
             methName = "readObject";
 
         // <field> = in.read<type> ();
-        loadManagedInstance(code, true, false);
+        loadManagedInstance(code, false);
         code.aload().setParam(0);
         Class ret = (type.isPrimitive()) ? type : Object.class;
         code.invokeinterface().setMethod(ObjectInput.class, methName,
@@ -3053,10 +3054,10 @@ public class PCEnhancer {
                 case JavaTypes.CALENDAR:
                     // if (sm != null)
                     //   sm.proxyDetachedDeserialized (<index>);
-                    loadManagedInstance(code, false, false);
+                    loadManagedInstance(code, false);
                     code.getfield().setField(SM, SMTYPE);
                     IfInstruction ifins = code.ifnull();
-                    loadManagedInstance(code, false, false);
+                    loadManagedInstance(code, false);
                     code.getfield().setField(SM, SMTYPE);
                     code.constant().setValue(fmd.getIndex());
                     code.invokeinterface().setMethod(SMTYPE,
@@ -3082,14 +3083,14 @@ public class PCEnhancer {
         // super.writeExternal (out);
         Class sup = _meta.getDescribedType().getSuperclass();
         if (!parentDetachable && Externalizable.class.isAssignableFrom(sup)) {
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.aload().setParam(0);
             code.invokespecial().setMethod(sup, "writeExternal",
                 void.class, outargs);
         }
 
         // writeUnmanaged (out);
-        loadManagedInstance(code, false, false);
+        loadManagedInstance(code, false);
         code.aload().setParam(0);
         code.invokevirtual().setMethod(_meta.getDescribedType(),
             PRE + "WriteUnmanaged", void.class, outargs);
@@ -3099,10 +3100,10 @@ public class PCEnhancer {
             // if (sm != null)
             //   if (sm.writeDetached (out))
             //      return;
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.getfield().setField(SM, SMTYPE);
             IfInstruction ifnull = code.ifnull();
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.getfield().setField(SM, SMTYPE);
             code.aload().setParam(0);
             code.invokeinterface().setMethod(SMTYPE, "writeDetached",
@@ -3114,7 +3115,7 @@ public class PCEnhancer {
             //   out.writeObject (pcGetDetachedState ());
             Class[] objargs = new Class[]{ Object.class };
             ifnull.setTarget(code.aload().setParam(0));
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.invokevirtual().setMethod(PRE + "GetDetachedState",
                 Object.class, null);
             code.invokeinterface().setMethod(ObjectOutput.class,
@@ -3133,7 +3134,7 @@ public class PCEnhancer {
         for (int i = 0; i < fmds.length; i++)
             if (!fmds[i].isTransient())
                 writeExternal(code, fmds[i].getName(),
-                    fmds[i].getDeclaredType(), i, fmds[i]);
+                    fmds[i].getDeclaredType(), fmds[i]);
 
         // return
         code.vreturn();
@@ -3156,7 +3157,7 @@ public class PCEnhancer {
 
         // super.writeUnmanaged (out);
         if (parentDetachable) {
-            loadManagedInstance(code, false, false);
+            loadManagedInstance(code, false);
             code.aload().setParam(0);
             code.invokespecial().setMethod(_meta.getPCSuperclass(),
                 PRE + "WriteUnmanaged", void.class, outargs);
@@ -3166,7 +3167,7 @@ public class PCEnhancer {
         BCField field;
         for (Iterator itr = unmgd.iterator(); itr.hasNext();) {
             field = (BCField) itr.next();
-            writeExternal(code, field.getName(), field.getType(), -1, null);
+            writeExternal(code, field.getName(), field.getType(), null);
         }
         code.vreturn();
         code.calculateMaxStack();
@@ -3177,7 +3178,7 @@ public class PCEnhancer {
      * Helper method to write a field to an externalization output stream.
      */
     private void writeExternal(Code code, String fieldName, Class type,
-        int idx, FieldMetaData fmd)
+        FieldMetaData fmd)
         throws NoSuchMethodException {
         String methName;
         if (type.isPrimitive()) {
@@ -3190,7 +3191,7 @@ public class PCEnhancer {
 
         // out.write<type> (<field>);
         code.aload().setParam(0);
-        loadManagedInstance(code, true, false);
+        loadManagedInstance(code, false);
         if (fmd == null)
             code.getfield().setField(fieldName, type);
         else
@@ -3256,7 +3257,7 @@ public class PCEnhancer {
      *
      * @return the first instruction added to <code>code</code>.
      */
-    private Instruction loadManagedInstance(Code code, boolean userObject,
+    private Instruction loadManagedInstance(Code code,
         boolean forAccessor) {
         if (_meta.getAccessType() == ClassMetaData.ACCESS_FIELD && forAccessor)
             return code.aload().setParam(0);

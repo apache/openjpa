@@ -25,6 +25,7 @@ import java.io.Serializable;
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.lib.util.Localizer.Message;
 
 /**
  * Extended {@link IllegalStateException}.
@@ -40,6 +41,11 @@ public class InvalidStateException
     private transient boolean _fatal = false;
     private transient Object _failed = null;
     private transient Throwable[] _nested = null;
+
+    public InvalidStateException(Message msg, Throwable[] nested, Object failed,
+        boolean fatal) {
+        this(msg.getMessage(), nested, failed, fatal);
+    }
 
     public InvalidStateException(String msg, Throwable[] nested, Object failed,
         boolean fatal) {

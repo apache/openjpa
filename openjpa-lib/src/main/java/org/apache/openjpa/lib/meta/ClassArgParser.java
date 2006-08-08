@@ -101,12 +101,12 @@ public class ClassArgParser {
                 if (i == 0) {
                     if (charIdx == packageElementName.length())
                         throw new UnsupportedOperationException(_loc.get
-                            ("cant-diff-elems"));
+                            ("cant-diff-elems").getMessage());
                     buf[i] = packageElementName.charAt(charIdx);
                 } else {
                     if (charIdx == classElementNames[i - 1].length())
                         throw new UnsupportedOperationException(_loc.get
-                            ("cant-diff-elems"));
+                            ("cant-diff-elems").getMessage());
                     buf[i] = classElementNames[i - 1].charAt(charIdx);
                 }
             }
@@ -212,7 +212,8 @@ public class ClassArgParser {
                 return (String[]) col.toArray(new String[col.size()]);
             }
         } catch (Exception e) {
-            throw new NestableRuntimeException(_loc.get("class-arg", arg), e);
+            throw new NestableRuntimeException(
+                _loc.get("class-arg", arg).getMessage(), e);
         }
 
         // must be a class name
@@ -234,8 +235,8 @@ public class ClassArgParser {
                 appendTypeNames(source, itr.getInputStream(), names);
             }
         } catch (Exception e) {
-            throw new NestableRuntimeException(_loc.get("class-arg", source),
-                e);
+            throw new NestableRuntimeException(
+                _loc.get("class-arg", source).getMessage(), e);
         }
         return (String[]) names.toArray(new String[names.size()]);
     }
@@ -279,8 +280,8 @@ public class ClassArgParser {
                 names.clear();
             }
         } catch (Exception e) {
-            throw new NestableRuntimeException(_loc.get("class-arg", source),
-                e);
+            throw new NestableRuntimeException(
+                _loc.get("class-arg", source).getMessage(), e);
         }
         return map;
     }

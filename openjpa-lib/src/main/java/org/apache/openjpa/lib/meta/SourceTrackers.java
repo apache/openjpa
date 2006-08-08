@@ -42,7 +42,7 @@ public class SourceTrackers {
         String sourceFilePath;
         for (int i = 0; i < trackers.length; i++) {
             sourceFilePath = (trackers[i].getSourceFile() == null ?
-                _loc.get("source-tracker-file-unknown") :
+                _loc.get("source-tracker-file-unknown").getMessage() :
                 trackers[i].getSourceFile().getAbsolutePath());
             buf.append("  ").append(_loc.get(
                 "source-trackers-location-line-item",

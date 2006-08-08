@@ -386,7 +386,8 @@ public class EntityManagerImpl
 
     public boolean getRollbackOnly() {
         if (!isActive())
-            throw new IllegalStateException(_loc.get("no-transaction"));
+            throw new IllegalStateException(_loc.get("no-transaction")
+                .getMessage());
 
         return _broker.getRollbackOnly();
     }

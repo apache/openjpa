@@ -51,7 +51,7 @@ public class ProductDerivations {
         if (derivations.isEmpty()) {
             Localizer loc = Localizer.forPackage(ProductDerivations.class);
             throw new MissingResourceException(loc.get("no-product-derivations",
-                ProductDerivation.class.getName()),
+                ProductDerivation.class.getName()).getMessage(),
                 ProductDerivations.class.getName(), "derivations");
         }
 

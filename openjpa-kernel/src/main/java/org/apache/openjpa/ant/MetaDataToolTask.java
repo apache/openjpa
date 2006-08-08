@@ -73,7 +73,8 @@ public class MetaDataToolTask
             flags.file = Files.getFile(fileName, loader);
         if (!MetaDataTool.run((OpenJPAConfiguration) getConfiguration(), files,
             flags, null, loader))
-            throw new BuildException(_loc.get("bad-conf", "MetaDataToolTask"));
+            throw new BuildException(_loc.get("bad-conf", "MetaDataToolTask")
+                .getMessage());
     }
 
     public static class Action

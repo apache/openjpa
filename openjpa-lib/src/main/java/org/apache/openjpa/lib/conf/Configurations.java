@@ -140,7 +140,7 @@ public class Configurations {
                 throw re;
             Log log = (conf == null) ? null : conf.getConfigurationLog();
             if (log != null && log.isErrorEnabled())
-                log.error(re);
+                log.error(_loc.get("plugin-creation-exception", val), re);
             return null;
         }
 
@@ -148,12 +148,12 @@ public class Configurations {
             return cls.newInstance();
         } catch (Exception e) {
             RuntimeException re = new NestableRuntimeException(_loc.get
-                ("obj-create", cls), e);
+                ("obj-create", cls).getMessage(), e);
             if (fatal)
                 throw re;
             Log log = (conf == null) ? null : conf.getConfigurationLog();
             if (log != null && log.isErrorEnabled())
-                log.error(re);
+                log.error(_loc.get("plugin-creation-exception", val), re);
             return null;
         }
     }
@@ -279,7 +279,7 @@ public class Configurations {
             ((GenericConfigurable) obj).setInto(invalidEntries);
 
 		if (!invalidEntries.isEmpty() && configurationName != null) {
-			String msg = null;
+			Localizer.Message msg = null;
 			String first = (String) invalidEntries.keySet().iterator().next();
 			if (invalidEntries.keySet().size() == 1 &&
 				first.indexOf('.') == -1) {
@@ -460,7 +460,7 @@ public class Configurations {
                 Configurations.class.getName(), "defaults");
         if (providerCount == 0)
             throw new MissingResourceException(_loc.get ("no-providers", 
-                ConfigurationProvider.class.getName()),
+                ConfigurationProvider.class.getName()).getMessage(),
                 Configurations.class.getName(), "defaults"); 
         return null;
     }
@@ -518,9 +518,9 @@ public class Configurations {
             msg = errs.toString();
         else if (providerCount == 0)
             msg = _loc.get("no-providers", 
-                ConfigurationProvider.class.getName());
+                ConfigurationProvider.class.getName()).getMessage();
         else
-            msg = _loc.get("no-provider", resource);
+            msg = _loc.get("no-provider", resource).getMessage();
         
         throw new MissingResourceException(msg,
             Configurations.class.getName(), resource);
@@ -572,8 +572,8 @@ public class Configurations {
             ctx = new InitialContext();
             return ctx.lookup(name);
         } catch (NamingException ne) {
-            throw new NestableRuntimeException(_loc.get("naming-err", name),
-                ne);
+            throw new NestableRuntimeException(
+                _loc.get("naming-err", name).getMessage(), ne);
         } finally {
             if (ctx != null)
                 try {

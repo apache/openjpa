@@ -15,6 +15,8 @@
  */
 package org.apache.openjpa.util;
 
+import org.apache.openjpa.lib.util.Localizer.Message;
+
 /**
  * Exception type thrown when attempting a transactional operation without
  * an active transaction.
@@ -25,16 +27,8 @@ package org.apache.openjpa.util;
 public class NoTransactionException
     extends InvalidStateException {
 
-    public NoTransactionException() {
-    }
-
-    public NoTransactionException(String msg) {
+    public NoTransactionException(Message msg) {
         super(msg);
-    }
-
-    public NoTransactionException(String msg, Object failed) {
-        super(msg);
-        setFailedObject(failed);
     }
 
     public int getSubtype() {

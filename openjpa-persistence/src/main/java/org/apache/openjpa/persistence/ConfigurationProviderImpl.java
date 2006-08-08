@@ -180,7 +180,7 @@ public class ConfigurationProviderImpl
             String msg = (pinfo == null) ? "missing-xml-config"
                 : "cantload-xml-config";
             throw new MissingResourceException(_loc.get(msg, rsrc,
-                String.valueOf(name)), getClass().getName(), rsrc);
+                String.valueOf(name)).getMessage(), getClass().getName(), rsrc);
         }
         return true;
     }

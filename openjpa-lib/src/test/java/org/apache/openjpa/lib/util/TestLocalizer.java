@@ -19,6 +19,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.util.testlocalizer.LocalizerTestHelper;
 
 /**
@@ -107,6 +109,10 @@ public class TestLocalizer extends TestCase {
             fail("No exception for fatal get on missing key.");
         } catch (MissingResourceException mre) {
         }
+    }
+    
+    public static void assertEquals(String s, Message m) {
+        assertEquals(s, m.getMessage());
     }
 
     public static Test suite() {

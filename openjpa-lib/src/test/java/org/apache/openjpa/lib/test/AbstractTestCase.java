@@ -61,6 +61,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.LogFactoryImpl;
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * TestCase framework to run various tests against solarmetric code.
@@ -84,6 +85,9 @@ public abstract class AbstractTestCase extends TestCase {
 
     public static final String SKIP_TOKEN = "SOLARSKIP";
     public static final String SKIP_DELIMITER = "|";
+
+    private static final Localizer _loc =
+        Localizer.forPackage(AbstractTestCase.class);
 
     protected String multiThreadExecuting = null;
     protected boolean inTimeoutThread = false;
@@ -148,7 +152,7 @@ public abstract class AbstractTestCase extends TestCase {
             try {
                 _lastTest.tearDownTestClass();
             } catch (Throwable t) {
-                getLog().error(t);
+                getLog().error(null, t);
             }
         }
 
@@ -156,7 +160,7 @@ public abstract class AbstractTestCase extends TestCase {
             try {
                 setUpTestClass();
             } catch (Throwable t) {
-                getLog().error(t);
+                getLog().error(null, t);
             }
         }
 
@@ -875,8 +879,8 @@ public abstract class AbstractTestCase extends TestCase {
         if (time != null)
             elapsed = System.currentTimeMillis() - time.longValue();
 
-        getLog()
-            .info(name + ": " + (time == null ? "???" : "" + elapsed) + "ms");
+        getLog().info(_loc.get("profile-info", name,
+            (time == null ? "???" : "" + elapsed)));
         return elapsed;
     }
 
@@ -1234,9 +1238,10 @@ public abstract class AbstractTestCase extends TestCase {
         long used = total - free;
 
         NumberFormat nf = NumberFormat.getInstance();
-        getLog().warn("memory:" + " used: " + nf.format(used)
-            + " total: " + nf.format(total)
-            + " free: " + nf.format(free));
+        getLog().warn(_loc.get("mem-info",
+            nf.format(used),
+            nf.format(total),
+            nf.format(free)));
     }
 
     /**

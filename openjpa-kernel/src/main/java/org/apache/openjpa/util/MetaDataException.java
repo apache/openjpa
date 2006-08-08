@@ -15,6 +15,8 @@
  */
 package org.apache.openjpa.util;
 
+import org.apache.openjpa.lib.util.Localizer.Message;
+
 /**
  * Exception type reserved for missing or invalid metadata.
  *
@@ -33,7 +35,12 @@ public class MetaDataException
         setFatal(true);
     }
 
-    public MetaDataException(String msg, Object failed) {
+    public MetaDataException(Message msg) {
+        super(msg);
+        setFatal(true);
+    }
+
+    public MetaDataException(Message msg, Object failed) {
         super(msg);
         setFatal(true);
         setFailedObject(failed);

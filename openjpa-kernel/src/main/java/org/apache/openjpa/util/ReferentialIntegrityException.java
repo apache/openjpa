@@ -40,9 +40,6 @@ public class ReferentialIntegrityException
 
     private int _iv = IV_UNKNOWN;
 
-    public ReferentialIntegrityException() {
-    }
-
     public ReferentialIntegrityException(String msg) {
         super(msg);
     }
@@ -55,11 +52,11 @@ public class ReferentialIntegrityException
     private static String getMessage(int iv) {
         switch (iv) {
             case IV_DUPLICATE_OID:
-                return _loc.get("dup-oid");
+                return _loc.get("dup-oid").getMessage();
             case IV_UNIQUE:
-                return _loc.get("unique");
+                return _loc.get("unique").getMessage();
             default:
-                return _loc.get("ref-integrity");
+                return _loc.get("ref-integrity").getMessage();
         }
     }
 

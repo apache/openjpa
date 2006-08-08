@@ -49,10 +49,6 @@ public class CommonsLogFactory extends LogFactoryAdapter {
             return _log;
         }
 
-        public boolean isDebugEnabled() {
-            return _log.isDebugEnabled();
-        }
-
         public boolean isErrorEnabled() {
             return _log.isErrorEnabled();
         }
@@ -79,14 +75,6 @@ public class CommonsLogFactory extends LogFactoryAdapter {
 
         public void trace(Object o, Throwable t) {
             _log.trace(o, t);
-        }
-
-        public void debug(Object o) {
-            _log.debug(o);
-        }
-
-        public void debug(Object o, Throwable t) {
-            _log.debug(o, t);
         }
 
         public void info(Object o) {

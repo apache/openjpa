@@ -80,9 +80,10 @@ public class UpdateStrategies {
         String msg;
         if (closest != null)
             msg = _loc.get("bad-update-strategy-hint", new Object[]{
-                context, val, closest, opts });
+                context, val, closest, opts }).getMessage();
         else
-            msg = _loc.get("bad-update-strategy", context, val, opts);
+            msg = _loc.get("bad-update-strategy", context, val, opts)
+                .getMessage();
         throw new IllegalArgumentException(msg);
 	}
 }

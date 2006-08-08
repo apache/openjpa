@@ -278,11 +278,11 @@ public class QueryImpl
             Iterator itr = res.iterator();
             if (!itr.hasNext())
                 throw new NoResultException(_loc.get("no-results",
-                    _query.getQueryString()), null, null, false);
+                    _query.getQueryString()).getMessage(), null, null, false);
             Object ret = itr.next();
             if (itr.hasNext())
                 throw new NonUniqueResultException(_loc.get("mult-results",
-                    _query.getQueryString()), null, null, false);
+                    _query.getQueryString()).getMessage(), null, null, false);
             return ret;
         } finally {
             OpenJPAPersistence.close(res);

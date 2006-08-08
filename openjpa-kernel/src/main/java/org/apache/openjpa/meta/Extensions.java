@@ -320,7 +320,7 @@ public abstract class Extensions {
         // way a new vendor could theoretically add in their
         // own prefix into the localizer.properties file and
         // not have to issue warnings for their extensions
-        String prefixes = _loc.get("extension-datastore-prefix");
+        String prefixes = _loc.get("extension-datastore-prefix").getMessage();
         String[] allowedPrefixes = null;
         if (prefixes != null)
             allowedPrefixes = Strings.split(prefixes, ",", 0);

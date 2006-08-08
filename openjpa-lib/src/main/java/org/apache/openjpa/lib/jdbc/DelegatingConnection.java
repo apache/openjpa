@@ -557,7 +557,8 @@ public class DelegatingConnection implements Connection, Closeable {
 
     private static void assertJDBC3() {
         if (_jdbc3 == null)
-            throw new UnsupportedOperationException(_loc.get("not-jdbc3"));
+            throw new UnsupportedOperationException(_loc.get("not-jdbc3")
+                .getMessage());
     }
 
     private Object invokeJDBC3(Method m, Object[] args) throws SQLException {
@@ -566,7 +567,8 @@ public class DelegatingConnection implements Connection, Closeable {
         } catch (Throwable t) {
             if (t instanceof SQLException)
                 throw(SQLException) t;
-            throw new NestableRuntimeException(_loc.get("invoke-jdbc3"), t);
+            throw new NestableRuntimeException(_loc.get("invoke-jdbc3")
+                .getMessage(), t);
         }
     }
 
@@ -577,7 +579,8 @@ public class DelegatingConnection implements Connection, Closeable {
             _jdbc3.put(key, m);
             return m;
         } catch (Throwable t) {
-            throw new NestableRuntimeException(_loc.get("error-jdbc3"), t);
+            throw new NestableRuntimeException(_loc.get("error-jdbc3")
+                .getMessage(), t);
         }
     }
 }

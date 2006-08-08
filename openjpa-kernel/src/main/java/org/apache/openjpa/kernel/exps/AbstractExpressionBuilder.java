@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.InternalException;
@@ -97,11 +98,11 @@ public abstract class AbstractExpressionBuilder {
         Exception nest) {
         String argStr;
         if (args == null)
-            argStr = getLocalizer().get(token);
+            argStr = getLocalizer().get(token).getMessage();
         else
-            argStr = getLocalizer().get(token, args);
+            argStr = getLocalizer().get(token, args).getMessage();
 
-        String msg = _loc.get("parse-error", argStr, currentQuery());
+        Message msg = _loc.get("parse-error", argStr, currentQuery());
 
         switch (e) {
             case EX_FATAL:
@@ -361,14 +362,14 @@ public abstract class AbstractExpressionBuilder {
         String right;
         if (val1 instanceof Path && ((Path) val1).last() != null)
             left = _loc.get("non-numeric-path", ((Path) val1).last().
-                getName(), t1.getName());
+                getName(), t1.getName()).getMessage();
         else
-            left = _loc.get("non-numeric-value", t1.getName());
+            left = _loc.get("non-numeric-value", t1.getName()).getMessage();
         if (val2 instanceof Path && ((Path) val2).last() != null)
             right = _loc.get("non-numeric-path", ((Path) val2).last().
-                getName(), t2.getName());
+                getName(), t2.getName()).getMessage();
         else
-            right = _loc.get("non-numeric-value", t2.getName());
+            right = _loc.get("non-numeric-value", t2.getName()).getMessage();
         throw new UserException(_loc.get("non-numeric-comparison",
             left, right));
     }

@@ -133,7 +133,8 @@ public class SchemaToolTask
         flags.writer = Files.getWriter(file, loader);
         if (!SchemaTool.run((JDBCConfiguration) getConfiguration(), files,
             flags, loader))
-            throw new BuildException(_loc.get("bad-conf", "SchemaToolTask"));
+            throw new BuildException(_loc.get("bad-conf", "SchemaToolTask")
+                .getMessage());
     }
 
     public static class Action

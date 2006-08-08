@@ -35,13 +35,6 @@ public class LockException
 
     private int timeout = -1;
 
-    public LockException() {
-    }
-
-    public LockException(String msg) {
-        super(msg);
-    }
-
     public LockException(Object failed) {
         super(_loc.get("lock-failed", Exceptions.toString(failed)));
         setFailedObject(failed);

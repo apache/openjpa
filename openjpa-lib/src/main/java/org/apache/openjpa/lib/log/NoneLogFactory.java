@@ -38,10 +38,6 @@ public class NoneLogFactory implements LogFactory {
             return s_log;
         }
 
-        public final boolean isDebugEnabled() {
-            return false;
-        }
-
         public final boolean isErrorEnabled() {
             return false;
         }
@@ -66,12 +62,6 @@ public class NoneLogFactory implements LogFactory {
         }
 
         public final void trace(Object o, Throwable t) {
-        }
-
-        public final void debug(Object o) {
-        }
-
-        public final void debug(Object o, Throwable t) {
         }
 
         public final void info(Object o) {

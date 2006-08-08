@@ -44,10 +44,6 @@ public abstract class AbstractLog implements Log {
         return isEnabled(TRACE);
     }
 
-    public boolean isDebugEnabled() {
-        return isEnabled(DEBUG);
-    }
-
     public boolean isInfoEnabled() {
         return isEnabled(INFO);
     }
@@ -71,15 +67,6 @@ public abstract class AbstractLog implements Log {
     public void trace(Object message, Throwable t) {
         if (isTraceEnabled())
             log(TRACE, toString(message), throwableParam(message, t));
-    }
-
-    public void debug(Object message) {
-        debug(message, throwableParam(message, null));
-    }
-
-    public void debug(Object message, Throwable t) {
-        if (isDebugEnabled())
-            log(DEBUG, toString(message), throwableParam(message, t));
     }
 
     public void info(Object message) {

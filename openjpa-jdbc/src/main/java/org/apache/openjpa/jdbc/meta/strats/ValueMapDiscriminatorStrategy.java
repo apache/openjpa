@@ -95,7 +95,7 @@ public class ValueMapDiscriminatorStrategy
         throw new ClassNotFoundException(_loc.get("unknown-discrim-value",
             new Object[]{ str,
                 disc.getClassMapping().getDescribedType().getName(),
-                new TreeSet(_vals.keySet()) }));
+                new TreeSet(_vals.keySet()) }).getMessage());
     }
 
     /**

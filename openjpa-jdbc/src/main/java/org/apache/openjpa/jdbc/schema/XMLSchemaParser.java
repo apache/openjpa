@@ -28,6 +28,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.meta.XMLMetaDataParser;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -553,8 +554,8 @@ public class XMLSchemaParser
         return new Double(val);
     }
 
-    private void throwUserException(String msg) {
-        throw new UserException(getSourceName() + ": " + msg);
+    private void throwUserException(Message msg) {
+        throw new UserException(getSourceName() + ": " + msg.getMessage());
     }
 
     /**

@@ -108,9 +108,10 @@ public class ValueStrategies {
         String msg;
         if (closest != null)
             msg = _loc.get("bad-value-strategy-hint", new Object[]{
-                context, val, closest, _map.keySet() });
+                context, val, closest, _map.keySet() }).getMessage();
         else
-            msg = _loc.get("bad-value-strategy", context, val, _map.keySet());
+            msg = _loc.get("bad-value-strategy", context, val, _map.keySet())
+                .getMessage();
         throw new IllegalArgumentException(msg);
     }
 

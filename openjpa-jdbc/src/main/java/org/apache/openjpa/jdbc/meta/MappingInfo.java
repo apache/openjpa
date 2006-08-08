@@ -34,9 +34,11 @@ import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.util.MetaDataException;
+
 import serp.util.Strings;
 
 /**
@@ -315,7 +317,7 @@ public abstract class MappingInfo {
             return;
         }
 
-        String msg = _loc.get("unexpected-cols", context);
+        Message msg = _loc.get("unexpected-cols", context);
         if (die)
             throw new MetaDataException(msg);
         context.getRepository().getLog().warn(msg);
@@ -344,7 +346,7 @@ public abstract class MappingInfo {
         else
             strat = contextStrat.getClass().getName();
 
-        String msg = _loc.get("unexpected-strategy", context, expected,
+        Message msg = _loc.get("unexpected-strategy", context, expected,
             strat);
         if (die)
             throw new MetaDataException(msg);
@@ -358,7 +360,7 @@ public abstract class MappingInfo {
         if (_idx == null)
             return;
 
-        String msg = _loc.get("unexpected-index", context);
+        Message msg = _loc.get("unexpected-index", context);
         if (die)
             throw new MetaDataException(msg);
         context.getRepository().getLog().warn(msg);
@@ -372,7 +374,7 @@ public abstract class MappingInfo {
         if (_unq == null)
             return;
 
-        String msg = _loc.get("unexpected-unique", context);
+        Message msg = _loc.get("unexpected-unique", context);
         if (die)
             throw new MetaDataException(msg);
         context.getRepository().getLog().warn(msg);
@@ -385,7 +387,7 @@ public abstract class MappingInfo {
         if (_fk == null)
             return;
 
-        String msg = _loc.get("unexpected-fk", context);
+        Message msg = _loc.get("unexpected-fk", context);
         if (die)
             throw new MetaDataException(msg);
         context.getRepository().getLog().warn(msg);
@@ -407,7 +409,7 @@ public abstract class MappingInfo {
         if (!join)
             return;
 
-        String msg = _loc.get("unexpected-join", context);
+        Message msg = _loc.get("unexpected-join", context);
         if (die)
             throw new MetaDataException(msg);
         context.getRepository().getLog().warn(msg);
@@ -643,7 +645,7 @@ public abstract class MappingInfo {
         } else if ((compat || !ttype) && !col.isCompatible(type, size)) {
             // if existing column isn't compatible with desired type, die if
             // can't adapt, else warn and change the existing column type
-            String msg = _loc.get(prefix + "-bad-col", context,
+            Message msg = _loc.get(prefix + "-bad-col", context,
                 Schemas.getJDBCName(type), col.getDescription());
             if (!adapt)
                 throw new MetaDataException(msg);
