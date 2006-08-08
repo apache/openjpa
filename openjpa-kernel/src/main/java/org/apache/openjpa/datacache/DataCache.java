@@ -196,6 +196,12 @@ public interface DataCache
     public BitSet pinAll(Collection oids);
 
     /**
+     * Pin all oids for the given type.
+     * @param subs Whether to include subclasses.
+     */
+    public void pinAll(Class cls, boolean subs);
+
+    /**
      * Unpin the value stored under <code>oid</code> from the cache.
      * This method reverses a previous invocation of {@link #pin}.
      * This method does not remove anything from the cache; it merely
@@ -214,6 +220,12 @@ public interface DataCache
      * @see #unpin
      */
     public BitSet unpinAll(Collection oids);
+
+    /**
+     * Unpin all oids associaed with the given type from the cache.
+     * @param subs Whether to include subclasses.
+     */
+    public void unpinAll(Class cls, boolean subs);
 
     /**
      * Obtain a write lock on the cache.

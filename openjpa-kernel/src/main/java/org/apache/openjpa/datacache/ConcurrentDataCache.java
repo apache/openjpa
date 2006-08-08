@@ -16,6 +16,7 @@
 package org.apache.openjpa.datacache;
 
 import org.apache.openjpa.event.RemoteCommitListener;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.CacheMap;
 
 /**
@@ -30,6 +31,9 @@ import org.apache.openjpa.util.CacheMap;
 public class ConcurrentDataCache
     extends AbstractDataCache
     implements RemoteCommitListener {
+
+    private static final Localizer _loc = Localizer.forPackage
+        (ConcurrentDataCache.class);
 
     private final CacheMap _cache = newCacheMap();
 
@@ -83,6 +87,12 @@ public class ConcurrentDataCache
     public void initialize(DataCacheManager mgr) {
         super.initialize(mgr);
         conf.getRemoteCommitEventManager().addListener(this);
+    }
+
+    public void unpinAll(Class cls, boolean subs) {
+        if (log.isWarnEnabled())
+            log.warn(_loc.get("cache-class-unpin-all", getName()));
+        unpinAll(_cache.getPinnedKeys());
     }
 
     public void writeLock() {
