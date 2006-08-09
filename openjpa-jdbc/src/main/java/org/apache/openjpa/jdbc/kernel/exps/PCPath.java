@@ -306,11 +306,17 @@ class PCPath
 
         if (fld != null) {
             switch (fld.getDeclaredTypeCode()) {
+                case JavaTypes.ARRAY:
+                    if (fld.getDeclaredType() == byte[].class
+                        || fld.getDeclaredType() == Byte[].class
+                        || fld.getDeclaredType() == char[].class
+                        || fld.getDeclaredType() == Character[].class)
+                        return fld.getDeclaredType();
+                    return fld.getElement().getDeclaredType();
                 case JavaTypes.MAP:
                     if (key)
                         return fld.getKey().getDeclaredType();
-                    // no break
-                case JavaTypes.ARRAY:
+                    return fld.getElement().getDeclaredType();
                 case JavaTypes.COLLECTION:
                     return fld.getElement().getDeclaredType();
                 default:
