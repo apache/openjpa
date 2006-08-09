@@ -721,15 +721,15 @@ public class ConfigurationImpl
         // handle warnings for openjpa.SomeString, but not for
         // openjpa.some.subpackage.SomeString, since it might be valid for some
         // specific implementation of OpenJPA
-        boolean invalid = false;
         String prefix;
         for (int i = 0; i < _prefixes.size(); i++) {
-            prefix = (String) _prefixes.get(i);
+            prefix = (String) _prefixes.get(i) + ".";
             if (propName.toLowerCase().startsWith(prefix)
-                && propName.indexOf('.', prefix.length()) != -1)
-                invalid = true;
+                && propName.length() > prefix.length()
+                && propName.indexOf('.', prefix.length()) == -1)
+                return true;
         }
-        return invalid;
+        return false;
     }
 
     /**
