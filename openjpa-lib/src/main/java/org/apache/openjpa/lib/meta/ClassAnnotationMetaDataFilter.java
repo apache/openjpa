@@ -51,35 +51,39 @@ public class ClassAnnotationMetaDataFilter implements MetaDataFilter {
         if (_annos.length == 0 || !rsrc.getName().endsWith(".class"))
             return false;
 
-        ConstantPoolTable table = new ConstantPoolTable(rsrc.getContent());
-        int idx = table.getEndIndex();
-        idx += 6; // skip access, cls, super
+        try {
+            ConstantPoolTable table = new ConstantPoolTable(rsrc.getContent());
+            int idx = table.getEndIndex();
+            idx += 6; // skip access, cls, super
 
-        // skip interfaces
-        int interfaces = table.readUnsignedShort(idx);
-        idx += 2 + interfaces * 2;
+            // skip interfaces
+            int interfaces = table.readUnsignedShort(idx);
+            idx += 2 + interfaces * 2;
 
-        // skip fields and methods
-        int fields = table.readUnsignedShort(idx);
-        idx += 2;
-        for (int i = 0; i < fields; i++)
-            idx += skipFieldOrMethod(table, idx);
-        int methods = table.readUnsignedShort(idx);
-        idx += 2;
-        for (int i = 0; i < methods; i++)
-            idx += skipFieldOrMethod(table, idx);
-
-        // look for annotation attrs
-        int attrs = table.readUnsignedShort(idx);
-        idx += 2;
-        int name;
-        for (int i = 0; i < attrs; i++) {
-            name = table.readUnsignedShort(idx);
+            // skip fields and methods
+            int fields = table.readUnsignedShort(idx);
             idx += 2;
-            if ("RuntimeVisibleAnnotations".equals(table.readString
-                (table.get(name))))
-                return matchAnnotations(table, idx + 4);
-            idx += 4 + table.readInt(idx);
+            for (int i = 0; i < fields; i++)
+                idx += skipFieldOrMethod(table, idx);
+            int methods = table.readUnsignedShort(idx);
+            idx += 2;
+            for (int i = 0; i < methods; i++)
+                idx += skipFieldOrMethod(table, idx);
+
+            // look for annotation attrs
+            int attrs = table.readUnsignedShort(idx);
+            idx += 2;
+            int name;
+            for (int i = 0; i < attrs; i++) {
+                name = table.readUnsignedShort(idx);
+                idx += 2;
+                if ("RuntimeVisibleAnnotations".equals(table.readString
+                    (table.get(name))))
+                    return matchAnnotations(table, idx + 4);
+                idx += 4 + table.readInt(idx);
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new ClassFormatError(rsrc.getName());
         }
         return false;
     }
