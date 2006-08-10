@@ -89,9 +89,9 @@ public class DetachManager
         if (setState) {
             sm.getPersistenceCapable().pcSetDetachedState(getDetachedState
                 (sm, idxs));
-            return true;
+            return false; // don't null state
         }
-        return false;
+        return true;
     }
 
     /**

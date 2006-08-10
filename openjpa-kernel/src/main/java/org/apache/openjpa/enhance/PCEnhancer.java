@@ -2892,6 +2892,15 @@ public class PCEnhancer {
     private void addDetachExternalize(boolean parentDetachable,
         boolean detachedState)
         throws NoSuchMethodException {
+        // ensure that the declared default constructor is public 
+        // for externalization
+        BCMethod meth = _pc.getDeclaredMethod("<init>", (String[]) null);
+        if (!meth.isPublic()) {
+            if (_log.isWarnEnabled())
+                _log.warn(_loc.get("enhance-defcons-extern", 
+                  _meta.getDescribedType()));
+            meth.makePublic();
+        }
         // declare externalizable interface
         if (!Externalizable.class.isAssignableFrom(_meta.getDescribedType()))
             _pc.declareInterface(Externalizable.class);
