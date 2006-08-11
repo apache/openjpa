@@ -30,6 +30,11 @@ import java.util.Map;
 public interface ConfigurationProvider {
 
     /**
+     * Load globals, or return false if no globals for this provider found.
+     */
+    public boolean loadGlobals(ClassLoader loader) throws Exception;
+
+    /**
      * Load defaults, or return false if no defaults for this provider found.
      */
     public boolean loadDefaults(ClassLoader loader) throws Exception;
@@ -37,14 +42,20 @@ public interface ConfigurationProvider {
     /**
      * Load the given given resource, or return false if it is not a resource
      * this provider understands. The given class loader may be null.
+     *
+     * @param anchor optional named anchor within a multiple-configuration
+     * resource
      */
-    public boolean load(String resource, ClassLoader loader) throws Exception;
+    public boolean load(String resource, String anchor, ClassLoader loader) 
+        throws Exception;
 
     /**
      * Load given file, or return false if it is not a file this provider
      * understands.
+     *
+     * @param anchor optional named anchor within a multiple-configuration file
      */
-    public boolean load(File file) throws Exception;
+    public boolean load(File file, String anchor) throws Exception;
 
     /**
      * Return properties loaded thus far, or empty map if none.

@@ -51,15 +51,15 @@ public class TestConfigurationImpl extends AbstractTestCase {
     }
 
     /**
-     * Test that default properties are found and loaded.
+     * Test that global properties are found and loaded.
      */
-    public void testDefaults() {
+    public void testGlobals() {
         System.setProperty("openjpa.sysKey", "sysvalue");
         assertNull(_conf.getTestKey());
         assertNull(_conf.getSysKey());
         assertNull(_conf.getPluginKey());
         assertNull(_conf.getObjectKey());
-        assertTrue(_conf.loadDefaults());
+        assertTrue(_conf.loadGlobals());
         assertEquals("testvalue", _conf.getTestKey());
         assertEquals("sysvalue", _conf.getSysKey());
         assertNull(_conf.getPluginKey());
@@ -70,7 +70,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
         _conf.setSysKey(null);
         System.setProperty("openjpatest.properties", "foo.properties");
         try {
-            assertTrue(!_conf.loadDefaults());
+            assertTrue(!_conf.loadGlobals());
             fail("Should have thrown exception for missing resource.");
         } catch (MissingResourceException mre) {
         }
@@ -78,7 +78,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
         // set back for remainder of tests
         System.setProperty("openjpatest.properties", "test.properties");
         System.setProperty("openjpa.pluginKey", "java.lang.Object");
-        assertTrue(_conf.loadDefaults());
+        assertTrue(_conf.loadGlobals());
         assertEquals("testvalue", _conf.getTestKey());
         assertEquals("sysvalue", _conf.getSysKey());
         assertEquals("java.lang.Object", _conf.getPluginKey());
@@ -90,7 +90,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
      * Test that the configuration is serialized to properties correctly.
      */
     public void testToProperties() {
-        assertTrue(_conf.loadDefaults());
+        assertTrue(_conf.loadGlobals());
         assertEquals("testvalue", _conf.getTestKey());
         Map props = _conf.toProperties(false);
         assertEquals("testvalue", props.get("openjpa.testKey"));
@@ -209,7 +209,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
      * Test serialization.
      */
     public void testSerialization() throws Exception {
-        assertTrue(_conf.loadDefaults());
+        assertTrue(_conf.loadGlobals());
         _conf.setTestKey("testvalue");
         _conf.setSysKey("sysvalue");
         _conf.setObjectKey(new Object());

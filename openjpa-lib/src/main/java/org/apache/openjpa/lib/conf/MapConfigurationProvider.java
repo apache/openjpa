@@ -51,15 +51,20 @@ public class MapConfigurationProvider implements ConfigurationProvider {
         addProperties(props);
     }
 
+    public boolean loadGlobals(ClassLoader loader) throws Exception {
+        return false;
+    }
+
     public boolean loadDefaults(ClassLoader loader) throws Exception {
         return false;
     }
 
-    public boolean load(String resource, ClassLoader loader) throws Exception {
+    public boolean load(String resource, String anchor, ClassLoader loader) 
+        throws Exception {
         return false;
     }
 
-    public boolean load(File file) throws Exception {
+    public boolean load(File file, String anchor) throws Exception {
         return false;
     }
 

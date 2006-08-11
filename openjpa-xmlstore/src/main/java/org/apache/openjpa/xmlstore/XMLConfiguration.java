@@ -47,7 +47,7 @@ public class XMLConfiguration
         lockManagerPlugin.setString("version");
 
         ProductDerivations.beforeConfigurationLoad(this);
-        loadDefaults();
+        loadGlobals();
     }
 
     /**

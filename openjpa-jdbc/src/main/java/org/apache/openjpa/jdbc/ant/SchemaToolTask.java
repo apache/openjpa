@@ -21,7 +21,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.SchemaTool;
 import org.apache.openjpa.lib.ant.AbstractTask;
-import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer;
 
@@ -121,7 +121,7 @@ public class SchemaToolTask
         this.file = file;
     }
 
-    protected Configuration newConfiguration() {
+    protected ConfigurationImpl newConfiguration() {
         return new JDBCConfigurationImpl();
     }
 

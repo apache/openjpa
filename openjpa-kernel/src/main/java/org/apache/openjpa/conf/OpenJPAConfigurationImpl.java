@@ -58,10 +58,6 @@ import org.apache.openjpa.util.StoreFacadeTypeRegistry;
 
 /**
  * Implementation of the {@link OpenJPAConfiguration} interface.
- *  On construction, the class will attempt to locate a default properties
- * file called <code>openjpa.properties</code> located at any top level token
- * of the CLASSPATH. See the {@link ConfigurationImpl} class description
- * for details.
  *
  * @see ConfigurationImpl
  * @author Marc Prud'hommeaux
@@ -149,7 +145,7 @@ public class OpenJPAConfigurationImpl
         new StoreFacadeTypeRegistry();
 
     /**
-     * Default constructor. Attempts to load default properties.
+     * Default constructor. Attempts to load global properties.
      */
     public OpenJPAConfigurationImpl() {
         this(true);
@@ -158,21 +154,19 @@ public class OpenJPAConfigurationImpl
     /**
      * Constructor.
      *
-     * @param loadDefaults whether to attempt to load the default
-     * <code>openjpa.properties</code> resource
+     * @param loadGlobals whether to attempt to load the global properties
      */
-    public OpenJPAConfigurationImpl(boolean loadDefaults) {
-        this(true, loadDefaults);
+    public OpenJPAConfigurationImpl(boolean loadGlobals) {
+        this(true, loadGlobals);
     }
 
     /**
      * Constructor.
      *
      * @param derivations whether to apply product derivations
-     * @param loadDefaults whether to attempt to load the default
-     * <code>openjpa.properties</code> resource
+     * @param loadGlobals whether to attempt to load the global properties
      */
-    public OpenJPAConfigurationImpl(boolean derivations, boolean loadDefaults) {
+    public OpenJPAConfigurationImpl(boolean derivations, boolean loadGlobals) {
         super(false);
         String[] aliases;
 
@@ -514,8 +508,8 @@ public class OpenJPAConfigurationImpl
 
         if (derivations)
             ProductDerivations.beforeConfigurationLoad(this);
-        if (loadDefaults)
-            loadDefaults();
+        if (loadGlobals)
+            loadGlobals();
     }
 
     public Collection supportedOptions() {

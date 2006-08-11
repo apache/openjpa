@@ -23,7 +23,7 @@ import org.apache.tools.ant.types.EnumeratedAttribute;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.ant.AbstractTask;
-import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataTool;
@@ -58,7 +58,7 @@ public class MetaDataToolTask
         this.fileName = fileName;
     }
 
-    protected Configuration newConfiguration() {
+    protected ConfigurationImpl newConfiguration() {
         return new OpenJPAConfigurationImpl();
     }
 

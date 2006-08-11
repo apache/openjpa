@@ -21,9 +21,14 @@ public class ConfigurationTestConfigurationProvider
         super(null);
     }
 
-    public boolean loadDefaults(ClassLoader loader)
+    public boolean loadGlobals(ClassLoader loader)
         throws IOException {
         return load(null, loader);
+    }
+
+    public boolean loadDefaults(ClassLoader loader)
+        throws IOException {
+        return false;
     }
 
     public boolean load(String rsrc, ClassLoader loader)
