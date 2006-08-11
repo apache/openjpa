@@ -18,6 +18,7 @@ package org.apache.openjpa.persistence;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -26,8 +27,7 @@ import java.util.MissingResourceException;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.MapConfigurationProvider;
@@ -35,15 +35,21 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.XMLMetaDataParser;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.GeneralException;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 /**
  * Configuration provider capable of loading a {@link Configuration} from
  * the current environment's JPA-style XML configuration data.
  * 
- * For defaults, looks in <code>openjpa.properties</code> system property for
+ * For globals, looks in <code>openjpa.properties</code> system property for
  * the location of a file to parse. If no system property is defined, the
- * default resource location of <code>openjpa.xml</code> is used.
- * If it exists, the resource is parsed as an XML file.
+ * default resource location of <code>META-INF/openjpa.xml</code> is used.
+ *
+ * For defaults, looks for <code>META-INF/persistence.xml</code>.
+ * Within <code>persistence.xml</code>, look for the named persistence unit, or
+ * if no name given, an OpenJPA unit (preferring an unnamed OpenJPA unit to 
+ * a named one).
  *
  * @nojavadoc
  * @since 4.0.0
@@ -51,8 +57,8 @@ import org.apache.openjpa.util.GeneralException;
 public class ConfigurationProviderImpl
     extends MapConfigurationProvider {
 
-    private static final String RSRC_DEFAULT = "openjpa.xml";
-    private static final String RSRC_SPEC = "META-INF/persistence.xml";
+    private static final String RSRC_GLOBAL = "META-INF/openjpa.xml";
+    private static final String RSRC_DEFAULT = "META-INF/persistence.xml";
 
     private static final Localizer _loc = Localizer.forPackage
         (ConfigurationProviderImpl.class);
@@ -86,7 +92,7 @@ public class ConfigurationProviderImpl
         if (pinfo == null)
             return false;
         String providerName = pinfo.getPersistenceProviderClassName();
-        if (providerName != null && providerName.length() != 0
+        if (!StringUtils.isEmpty(providerName)
             && !PersistenceProviderImpl.class.getName().equals(providerName))
             return false;
 
@@ -100,7 +106,6 @@ public class ConfigurationProviderImpl
             if (impl.getPersistenceXmlFileUrl() != null)
                 _source = impl.getPersistenceXmlFileUrl().toString();
         }
-
         return true;
     }
 
@@ -109,12 +114,12 @@ public class ConfigurationProviderImpl
      * overrides. If the resource is null, tries to load from persistence.xml,
      * but still returns true if persistence.xml does not exist.
      */
-    public boolean load(String name, String rsrc, Map m)
+    public boolean load(String rsrc, String name, Map m)
         throws IOException {
-        boolean explicit = rsrc != null && rsrc.length() > 0;
+        boolean explicit = !StringUtils.isEmpty(rsrc);
         if (!explicit)
-            rsrc = RSRC_SPEC;
-        Boolean ret = load(name, rsrc, m, null, explicit);
+            rsrc = RSRC_DEFAULT;
+        Boolean ret = load(rsrc, name, m, null, explicit);
         if (ret != null)
             return ret.booleanValue();
         if (explicit)
@@ -127,30 +132,35 @@ public class ConfigurationProviderImpl
     }
 
     @Override
-    public boolean loadDefaults(ClassLoader loader)
+    public boolean loadGlobals(ClassLoader loader)
         throws IOException {
         String rsrc = System.getProperty("openjpa.properties");
-        String name = null;
-        boolean explicit = false;
-        if (rsrc == null)
-            rsrc = RSRC_DEFAULT;
-        else {
-            // separate name from <resrouce>:<name> string
-            explicit = true;
-            int idx = rsrc.lastIndexOf(':');
-            if (idx != -1) {
-                name = rsrc.substring(idx + 1);
-                rsrc = rsrc.substring(0, idx);
-            }
-            if (!rsrc.endsWith(".xml"))
-                return false;
+        boolean explicit = !StringUtils.isEmpty(rsrc);
+        String anchor = null;
+        int idx = (!explicit) ? -1 : rsrc.lastIndexOf('#');
+        if (idx != -1) {
+            // separate name from <resrouce>#<name> string
+            if (idx < rsrc.length() - 1)
+                anchor = rsrc.substring(idx + 1);
+            rsrc = rsrc.substring(0, idx);
         }
-        return load(name, rsrc, null, loader, explicit) == Boolean.TRUE;
+        if (StringUtils.isEmpty(rsrc))
+            rsrc = RSRC_GLOBAL;
+        else if (!rsrc.endsWith(".xml"))
+            return false;
+        return load(rsrc, anchor, null, loader, explicit) == Boolean.TRUE;
+
+    }
+
+    @Override
+    public boolean loadDefaults(ClassLoader loader)
+        throws IOException {
+        return load(RSRC_DEFAULT, null, null, loader, false) == Boolean.TRUE;
     }
 
     /**
      * Looks through the resources at <code>rsrc</code> for a configuration
-     * file that matches <code>name</code> (or the first one if
+     * file that matches <code>name</code> (or an unnamed one if
      * <code>name</code> is <code>null</code>), and loads the XML in the
      * resource into a new {@link PersistenceUnitInfo}. Then, applies the
      * overrides in <code>m</code>.
@@ -158,7 +168,7 @@ public class ConfigurationProviderImpl
      * @return {@link Boolean#TRUE} if the resource was loaded, null if it
      * does not exist, or {@link Boolean#FALSE} if it is not for OpenJPA
      */
-    private Boolean load(String name, String rsrc, Map m, ClassLoader loader,
+    private Boolean load(String rsrc, String name, Map m, ClassLoader loader,
         boolean explicit)
         throws IOException {
         if (loader == null)
@@ -187,52 +197,68 @@ public class ConfigurationProviderImpl
 
     /**
      * Parse resources at the given location. Searches for a
-     * PersistenceUnitInfo with the requested name, or the first
-     * one if no name is passed in.
+     * PersistenceUnitInfo with the requested name, or an OpenJPA unit if
+     * no name given (preferring an unnamed OpenJPA unit to a named one).
      */
     private PersistenceUnitInfo parseResources(ConfigurationParser parser,
         Enumeration<URL> urls, String name, ClassLoader loader)
         throws IOException {
+        List<PersistenceUnitInfo> pinfos = new ArrayList<PersistenceUnitInfo>();
         for (URL url : Collections.list(urls)) {
             parser.parse(url);
-            List pinfos = parser.getResults();
-            for (PersistenceUnitInfo pinfo : (List<PersistenceUnitInfo>) pinfos)
-            {
-                if (name == null
-                    || name.equals(pinfo.getPersistenceUnitName()))
+            pinfos.addAll((List<PersistenceUnitInfo>) parser.getResults());
+        }
+        return findUnit(pinfos, name);
+    }
+
+    /**
+     * Find the unit with the given name, or an OpenJPA unit if no name is
+     * given (preferring an unnamed OpenJPA unit to a named one).
+     */
+    private PersistenceUnitInfo findUnit(List<PersistenceUnitInfo> pinfos,
+        String name) {
+        PersistenceUnitInfo ojpa = null;
+        for (PersistenceUnitInfo pinfo : pinfos) {
+            // found named unit?
+            if (name != null) {
+                if (name.equals(pinfo.getPersistenceUnitName()))
                     return pinfo;
+                continue;
+            }
+
+            if (StringUtils.isEmpty(pinfo.getPersistenceProviderClassName())
+                || PersistenceProviderImpl.class.getName().equals(pinfo.
+                    getPersistenceProviderClassName())) {
+                // if no name given and found unnamed unit, return it.  
+                // otherwise record as default unit unless we find a 
+                // better match later
+                if (StringUtils.isEmpty(pinfo.getPersistenceUnitName()))
+                    return pinfo;
+                if (ojpa == null)
+                    ojpa = pinfo;
             }
         }
-        return null;
+        return ojpa;
     }
 
     @Override
-    public boolean load(String rsrc, ClassLoader loader)
+    public boolean load(String rsrc, String anchor, ClassLoader loader)
         throws IOException {
-        String name = null;
-        int idx = rsrc.lastIndexOf(':');
-        if (idx != -1) {
-            name = rsrc.substring(idx + 1);
-            rsrc = rsrc.substring(0, idx);
-        }
         if (!rsrc.endsWith(".xml"))
             return false;
-        return load(name, rsrc, null, loader, true) == Boolean.TRUE;
+        return load(rsrc, anchor, null, loader, true) == Boolean.TRUE;
     }
 
     @Override
-    public boolean load(File file) {
+    public boolean load(File file, String anchor) {
         if (!file.getName().endsWith(".xml"))
             return false;
 
         try {
             ConfigurationParser parser = new ConfigurationParser(null);
             parser.parse(file);
-            List pinfos = parser.getResults();
-            for (PersistenceUnitInfo pinfo : (List<PersistenceUnitInfo>) pinfos)
-                if (load(pinfo))
-                    return true;
-            return false;
+            return load(findUnit((List<PersistenceUnitInfo>) 
+                parser.getResults(), anchor));
         } catch (IOException ioe) {
             throw new GeneralException(ioe);
         }

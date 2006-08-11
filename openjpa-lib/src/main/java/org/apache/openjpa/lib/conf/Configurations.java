@@ -16,6 +16,7 @@
 package org.apache.openjpa.lib.conf;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -386,10 +387,8 @@ public class Configurations {
                         } else
                             buf.append(props[i]);
                     }
-
                     val = buf.toString();
                 }
-
                 opts.put(prop, val);
             }
             return opts;
@@ -409,18 +408,35 @@ public class Configurations {
     public static void populateConfiguration(Configuration conf, Options opts) {
         String props = opts.removeProperty("properties", "p", null);
         if (props != null && props.length() > 0) {
-            File file = new File(props);
+            String path = props;
+            String anchor = null;
+            int idx = path.lastIndexOf('#');
+            if (idx != -1) {
+                if (idx < path.length() - 1)
+                    anchor = path.substring(idx + 1);
+                path = path.substring(0, idx);
+                if (path.length() == 0)
+                    throw new MissingResourceException(_loc.get("anchor-only",
+                        props).getMessage(), Configurations.class.getName(), 
+                        props);
+            }
+
+            File file = new File(path);
             ConfigurationProvider provider;
             if (file.isFile())
-                provider = load(file, null);
+                provider = load(file, anchor, null);
             else {
-                file = new File("META-INF" + File.separatorChar + props);
+                file = new File("META-INF" + File.separatorChar + path);
                 if (file.isFile())
-                    provider = load(file, null);
+                    provider = load(file, anchor, null);
                 else
-                    provider = load(props, null);
+                    provider = load(path, anchor, null);
             }
             provider.setInto(conf);
+        } else {
+            ConfigurationProvider provider = loadDefaults(null);
+            if (provider != null)
+                provider.setInto(conf);
         }
         opts.setInto(conf);
     }
@@ -429,6 +445,21 @@ public class Configurations {
      * Return a {@link ConfigurationProvider} that has parsed system defaults.
      */
     public static ConfigurationProvider loadDefaults(ClassLoader loader) {
+        return load(loader, false);
+    }
+
+    /**
+     * Return a {@link ConfigurationProvider} that has parsed system globals.
+     */
+    static ConfigurationProvider loadGlobals(ClassLoader loader) {
+        return load(loader, true);
+    }
+
+    /**
+     * Load globals or defaults.
+     */
+    private static ConfigurationProvider load(ClassLoader loader, 
+        boolean globals) {
         if (loader == null)
             loader = Thread.currentThread().getContextClassLoader();
         Class[] impls = Services.getImplementorClasses
@@ -443,7 +474,8 @@ public class Configurations {
 
             providerCount++;
             try {
-                if (provider.loadDefaults(loader))
+                if ((globals && provider.loadGlobals(loader))
+                    || (!globals && provider.loadDefaults(loader)))
                     return provider;
             } catch (MissingResourceException mre) {
                 throw mre;
@@ -455,13 +487,15 @@ public class Configurations {
                 errs.append(e.toString());
             }
         }
+
+        String type = (globals) ? "globals" : "defaults";
         if (errs != null)
             throw new MissingResourceException(errs.toString(),
-                Configurations.class.getName(), "defaults");
+                Configurations.class.getName(), type);
         if (providerCount == 0)
             throw new MissingResourceException(_loc.get ("no-providers", 
                 ConfigurationProvider.class.getName()).getMessage(),
-                Configurations.class.getName(), "defaults"); 
+                Configurations.class.getName(), type);
         return null;
     }
 
@@ -482,7 +516,32 @@ public class Configurations {
      * resource. Throws {@link MissingResourceException} if resource does
      * not exist.
      */
-    public static ConfigurationProvider load(String resource,
+    public static ConfigurationProvider load(String resource, 
+        ClassLoader loader) {
+        if (resource == null || resource.length() == 0)
+            return null;
+
+        String path = resource;
+        String anchor = null;
+        int idx = path.indexOf('.');
+        if (idx != -1) {
+            if (idx < path.length() - 1)
+                anchor = path.substring(idx + 1);
+            path = path.substring(0, idx);
+            if (path.length() == 0)
+                throw new MissingResourceException(_loc.get("anchor-only", 
+                    resource).getMessage(), Configurations.class.getName(), 
+                    resource);
+        }
+        return load(path, anchor, loader);
+    }
+
+    /**
+     * Return a {@link ConfigurationProvider} that has parsed the given
+     * resource. Throws {@link MissingResourceException} if resource does
+     * not exist.
+     */
+    public static ConfigurationProvider load(String resource, String anchor, 
         ClassLoader loader) {
         if (resource == null || resource.length() == 0)
             return null;
@@ -501,7 +560,7 @@ public class Configurations {
 
             providerCount++;
             try {
-                if (provider.load(resource, loader))
+                if (provider.load(resource, anchor, loader))
                     return provider;
             } catch (MissingResourceException mre) {
                 throw mre;
@@ -534,6 +593,35 @@ public class Configurations {
         if (file == null)
             return null;
 
+        String anchor = null;
+        try {
+            String path = file.getCanonicalPath();
+            int idx = path.indexOf('.');
+            if (idx != -1) {
+                if (idx < path.length() - 1)
+                    anchor = path.substring(idx + 1);
+                path = path.substring(0, idx);
+                if (path.length() == 0)
+                    throw new MissingResourceException(_loc.get("anchor-only",
+                        file).getMessage(), Configurations.class.getName(), 
+                        file.toString());
+                file = new File(path);
+            }
+        } catch (IOException ioe) {
+            // ignore
+        }
+        return load(file, anchor, loader);
+    }
+
+    /**
+     * Return a {@link ConfigurationProvider} that has parsed the given
+     * file. Throws {@link MissingResourceException} if file does not exist.
+     */
+    public static ConfigurationProvider load(File file, String anchor, 
+        ClassLoader loader) {
+        if (file == null)
+            return null;
+
         if (loader == null)
             loader = Thread.currentThread().getContextClassLoader();
         Class[] impls = Services.getImplementorClasses
@@ -543,7 +631,7 @@ public class Configurations {
         for (int i = 0; i < impls.length; i++) {
             provider = newProvider(impls[i]);
             try {
-                if (provider != null && provider.load(file))
+                if (provider != null && provider.load(file, anchor))
                     return provider;
             } catch (MissingResourceException mre) {
                 throw mre;
@@ -576,10 +664,7 @@ public class Configurations {
                 _loc.get("naming-err", name).getMessage(), ne);
         } finally {
             if (ctx != null)
-                try {
-                    ctx.close();
-                } catch (Exception e) {
-                }
+                try { ctx.close(); } catch (Exception e) {}
         }
     }
 }

@@ -26,7 +26,7 @@ import org.apache.openjpa.jdbc.meta.PropertiesReverseCustomizer;
 import org.apache.openjpa.jdbc.meta.ReverseCustomizer;
 import org.apache.openjpa.jdbc.meta.ReverseMappingTool;
 import org.apache.openjpa.lib.ant.AbstractTask;
-import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.util.CodeFormat;
 import org.apache.openjpa.lib.util.Files;
@@ -215,7 +215,7 @@ public class ReverseMappingToolTask
         return flags.format;
     }
 
-    protected Configuration newConfiguration() {
+    protected ConfigurationImpl newConfiguration() {
         return new JDBCConfigurationImpl();
     }
 

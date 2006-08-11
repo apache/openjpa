@@ -105,7 +105,8 @@ public class ConfigurationImpl
     private String _product = null;
     private boolean _readOnly = false;
     private Map _props = null;
-    private boolean _defaults = false;
+    private boolean _globals = false;
+    private String _auto = null;
     private final List _vals = new ArrayList();
     private List _prefixes = new ArrayList(2);
 
@@ -127,9 +128,9 @@ public class ConfigurationImpl
     /**
      * Constructor.
      *
-     * @param loadDefaults whether to attempt to load the default properties
+     * @param loadGlobals whether to attempt to load the global properties
      */
-    public ConfigurationImpl(boolean loadDefaults) {
+    public ConfigurationImpl(boolean loadGlobals) {
         setProductName("openjpa"); // also adds as prop prefix
 
         logFactoryPlugin = addPlugin("Log", true);
@@ -145,28 +146,28 @@ public class ConfigurationImpl
         logFactoryPlugin.setString(aliases[0]);
         logFactoryPlugin.setInstantiatingGetter("getLogFactory");
 
-        if (loadDefaults)
-            loadDefaults();
+        if (loadGlobals)
+            loadGlobals();
     }
 
     /**
-     * Automatically load default values from the system's
+     * Automatically load global values from the system's
      * {@link ConfigurationProvider}s, and from System properties.
      */
-    public boolean loadDefaults() {
-        ConfigurationProvider provider = Configurations.loadDefaults
+    public boolean loadGlobals() {
+        ConfigurationProvider provider = Configurations.loadGlobals
             (getClass().getClassLoader());
         if (provider != null)
             provider.setInto(this);
 
-        // let system properties override other defaults
+        // let system properties override other globals
         try {
             fromProperties(new HashMap(System.getProperties()));
         } catch (SecurityException se) {
             // security manager might disallow
         }
 
-        _defaults = true;
+        _globals = true;
         if (provider == null) {
             Log log = getConfigurationLog();
             if (log.isTraceEnabled())
@@ -575,9 +576,9 @@ public class ConfigurationImpl
         // this way we preserve the original formatting of the user's props
         // instead of the defaults.  this is important for caching on
         // configuration objects
-        if (_defaults) {
+        if (_globals) {
             _props = null;
-            _defaults = false;
+            _globals = false;
         }
 
         Map remaining = new HashMap(map);
@@ -732,6 +733,10 @@ public class ConfigurationImpl
         return false;
     }
 
+    //////////////////////
+    // Auto-configuration
+    //////////////////////
+
     /**
      * This method loads the named resource as a properties file. It is
      * useful for auto-configuration tools so users can specify a
@@ -740,6 +745,7 @@ public class ConfigurationImpl
     public void setProperties(String resourceName) throws IOException {
         Configurations.load(resourceName, getClass().getClassLoader()).
             setInto(this);
+        _auto = resourceName;
     }
 
     /**
@@ -749,6 +755,15 @@ public class ConfigurationImpl
      */
     public void setPropertiesFile(File file) throws IOException {
         Configurations.load(file, getClass().getClassLoader()).setInto(this);
+        _auto = file.toString();
+    }
+
+    /**
+     * Return the resource that was set via auto-configuration methods
+     * {@link #setProperties} or {@link #setPropertiesFile}, or null if none.
+     */
+    public String getPropertiesResource() {
+        return _auto;
     }
 
     /////////////
@@ -839,7 +854,7 @@ public class ConfigurationImpl
         throws IOException, ClassNotFoundException {
         fromProperties((Map) in.readObject());
         _prefixes = (List) in.readObject();
-        _defaults = in.readBoolean();
+        _globals = in.readBoolean();
     }
 
     /**
@@ -852,7 +867,7 @@ public class ConfigurationImpl
         else
             out.writeObject(toProperties(false));
         out.writeObject(_prefixes);
-        out.writeBoolean(_defaults);
+        out.writeBoolean(_globals);
     }
 
     /**
@@ -867,7 +882,7 @@ public class ConfigurationImpl
                 (new Object[]{ Boolean.FALSE });
             clone._prefixes.clear();
             clone._prefixes.addAll(_prefixes);
-            clone._defaults = _defaults;
+            clone._globals = _globals;
             clone.fromProperties(toProperties(true));
             return clone;
         } catch (RuntimeException re) {

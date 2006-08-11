@@ -62,7 +62,7 @@ public class PersistenceProviderImpl
         String resource, Map m) {
         ConfigurationProviderImpl cp = new ConfigurationProviderImpl();
         try {
-            if (cp.load(name, resource, m))
+            if (cp.load(resource, name, m))
                 return OpenJPAPersistence.toEntityManagerFactory(
                     Bootstrap.newBrokerFactory(cp, cp.getClassLoader()));
             else

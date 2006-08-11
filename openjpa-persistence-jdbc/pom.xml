@@ -71,7 +71,6 @@
                                              refid="enhance.path.ref"
                                              pathsep=" "/>
                                 <java classname="org.apache.openjpa.enhance.PCEnhancer">
-                                    <arg line="-p persistence.xml"/>
                                     <arg line="${enhance.files}"/>
                                     <classpath>
                                         <path refid="maven.dependency.classpath"/>

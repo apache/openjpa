@@ -21,7 +21,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.lib.ant.AbstractTask;
-import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.meta.MetaDataRepository;
 
@@ -73,7 +73,7 @@ public class PCEnhancerTask
         flags.tmpClassLoader = tmpClassLoader;
     }
 
-    protected Configuration newConfiguration() {
+    protected ConfigurationImpl newConfiguration() {
         return new OpenJPAConfigurationImpl();
     }
 

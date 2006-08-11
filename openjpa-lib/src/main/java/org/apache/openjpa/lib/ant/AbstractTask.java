@@ -27,6 +27,9 @@ import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.conf.ConfigurationImpl;
+import org.apache.openjpa.lib.conf.ConfigurationProvider;
+import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
@@ -55,7 +58,7 @@ public abstract class AbstractTask extends MatchingTask {
     protected boolean useParent = false;
     protected boolean isolate = false;
 
-    private Configuration _conf = null;
+    private ConfigurationImpl _conf = null;
     private AntClassLoader _cl = null;
 
     /**
@@ -94,7 +97,7 @@ public abstract class AbstractTask extends MatchingTask {
      * Implement this method to return a configuration object for the
      * product in use.
      */
-    protected abstract Configuration newConfiguration();
+    protected abstract ConfigurationImpl newConfiguration();
 
     /**
      * Perform the task action on the given files.
@@ -148,6 +151,16 @@ public abstract class AbstractTask extends MatchingTask {
     }
 
     public void execute() throws BuildException {
+        // if the user didn't supply a conf file, load the default
+        if (_conf == null)
+            _conf = newConfiguration();
+        if (_conf.getPropertiesResource() == null) {
+            ConfigurationProvider cp = Configurations.
+                loadDefaults(getClassLoader());
+            if (cp != null)
+                cp.setInto(_conf);
+        }
+
         String[] files = getFiles();
         try {
             executeOn(files);
@@ -156,8 +169,7 @@ public abstract class AbstractTask extends MatchingTask {
             if (haltOnError)
                 throw new BuildException(e);
         } finally {
-            if (_conf != null)
-                _conf.close();
+            _conf.close();
             _conf = null;
         }
     }

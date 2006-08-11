@@ -93,20 +93,19 @@ public class JDBCConfigurationImpl
     /**
      * Constructor.
      *
-     * @param loadDefaults whether to attempt to load the default
-     * <code>org.apache.openjpa.properties</code> resource
+     * @param loadGlobals whether to attempt to load the global properties
      */
-    public JDBCConfigurationImpl(boolean loadDefaults) {
-        this(true, loadDefaults);
+    public JDBCConfigurationImpl(boolean loadGlobals) {
+        this(true, loadGlobals);
     }
 
     /**
      * Constructor.
      *
      * @param derivations whether to apply product derivations
-     * @param loadDefaults whether to attempt to load the default properties
+     * @param loadGlobals whether to attempt to load the global properties
      */
-    public JDBCConfigurationImpl(boolean derivations, boolean loadDefaults) {
+    public JDBCConfigurationImpl(boolean derivations, boolean loadGlobals) {
         super(false, false);
         String[] aliases;
 
@@ -297,14 +296,10 @@ public class JDBCConfigurationImpl
         // a bug in JRun, and we can get around it by forcing
         // Instruction.class to be loaded and initialized
         // before TypedInstruction.class
-        try {
-            serp.bytecode.lowlevel.Entry.class.getName();
-        } catch (Throwable t) {
-        }
-        try {
-            serp.bytecode.Instruction.class.getName();
-        } catch (Throwable t) {
-        }
+        try { serp.bytecode.lowlevel.Entry.class.getName(); } 
+        catch (Throwable t) {}
+        try { serp.bytecode.Instruction.class.getName(); } 
+        catch (Throwable t) {}
 
         supportedOptions().add(OPTION_QUERY_SQL);
         supportedOptions().add(OPTION_JDBC_CONNECTION);
@@ -313,8 +308,8 @@ public class JDBCConfigurationImpl
 
         if (derivations)
             ProductDerivations.beforeConfigurationLoad(this);
-        if (loadDefaults)
-            loadDefaults();
+        if (loadGlobals)
+            loadGlobals();
     }
 
     /**
