@@ -155,7 +155,8 @@ public abstract class AbstractTask extends MatchingTask {
         if (_conf == null)
             _conf = newConfiguration();
         if (_conf.getPropertiesResource() == null) {
-            ConfigurationProvider cp = Configurations.loadDefaults(null);
+            ConfigurationProvider cp = Configurations.loadDefaults
+                (_conf.getClass().getClassLoader());
             if (cp != null)
                 cp.setInto(_conf);
         }
