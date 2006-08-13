@@ -523,7 +523,7 @@ public class Configurations {
 
         String path = resource;
         String anchor = null;
-        int idx = path.indexOf('.');
+        int idx = path.indexOf('#');
         if (idx != -1) {
             if (idx < path.length() - 1)
                 anchor = path.substring(idx + 1);
@@ -596,7 +596,7 @@ public class Configurations {
         String anchor = null;
         try {
             String path = file.getCanonicalPath();
-            int idx = path.indexOf('.');
+            int idx = path.indexOf('#');
             if (idx != -1) {
                 if (idx < path.length() - 1)
                     anchor = path.substring(idx + 1);
