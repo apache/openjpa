@@ -233,7 +233,6 @@ public class Localizer {
         private final String _key;
         private final Object[] _subs;
         private final String _localizedMessage;
-        private final boolean _messageFound;
 
         private Message(Package pkg, ResourceBundle bundle, String key, 
             Object[] subs, boolean fatal) {
@@ -245,7 +244,6 @@ public class Localizer {
             _subs = subs;
             if (bundle == null) {
                 _localizedMessage = key;
-                _messageFound = false;
             } else {
                 String localized = null;
                 try {
@@ -255,7 +253,6 @@ public class Localizer {
                         throw mre;
                 }
                 _localizedMessage = (localized == null) ? key : localized;
-                _messageFound = localized != null;
             }
         }
 
