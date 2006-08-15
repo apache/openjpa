@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.lib.meta;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -134,14 +135,24 @@ public class FileMetaDataIterator implements MetaDataIterator {
 
         public byte[] getContent() throws IOException {
             long len = _file.length();
-            if (len <= 0)
-                return new byte[0];
-
-            byte[] content = new byte[(int) len];
             FileInputStream fin = new FileInputStream(_file);
-            fin.read(content);
-            fin.close();
-            return content;
+            try {
+                byte[] content;
+                if (len <= 0 || len > Integer.MAX_VALUE) {
+                    // some JVMs don't return a proper length
+                    ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                    byte[] buf = new byte[1024]; 
+                    for (int r; (r = fin.read(buf)) != -1;)
+                        bout.write(buf, 0, r);
+                    content = bout.toByteArray();
+                } else {
+                    content = new byte[(int) len];
+                    fin.read(content);
+                }
+                return content;
+            } finally {
+                try { fin.close(); } catch (IOException ioe) {}
+            }
         }
     }
 }
