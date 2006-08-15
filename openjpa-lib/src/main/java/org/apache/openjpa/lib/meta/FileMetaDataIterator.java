@@ -147,7 +147,8 @@ public class FileMetaDataIterator implements MetaDataIterator {
                     content = bout.toByteArray();
                 } else {
                     content = new byte[(int) len];
-                    fin.read(content);
+                    for (int r, o = 0; o < content.length && (r = fin.
+                        read(content, o, content.length - o)) != -1; o += r);
                 }
                 return content;
             } finally {
