@@ -289,6 +289,35 @@ public class Discriminator
         _subsLoaded = loaded;
     }
 
+    /**
+     * Add WHERE conditions to the given select limiting the returned results
+     * to our mapping type, possibly including subclasses.
+     */
+    public boolean addClassConditions(Select sel, boolean subs, Joins joins) {
+        if (_mapping.getJoinablePCSuperclassMapping() == null
+            && _mapping.getJoinablePCSubclassMappings().length == 0)
+            return false;
+
+        // join down to base class where conditions will be added
+        ClassMapping from = _mapping;
+        ClassMapping sup = _mapping.getJoinablePCSuperclassMapping();
+        for (; sup != null; from = sup, sup = from
+            .getJoinablePCSuperclassMapping()) {
+            if (from.getTable() != sup.getTable()) {
+                if (joins == null)
+                    joins = sel.newJoins();
+                joins = from.joinSuperclass(joins, false);
+            }
+        }
+
+        SQLBuffer buf = getClassConditions(sel, joins, _mapping, subs);
+        if (buf != null) {
+            sel.where(buf, joins);
+            return true;
+        }
+        return false;
+    }
+
     ////////////////////////////////////////
     // DiscriminatorStrategy implementation
     ////////////////////////////////////////
@@ -365,10 +394,9 @@ public class Discriminator
         return assertStrategy().getClass(store, base, result);
     }
 
-    public SQLBuffer getClassConditions(JDBCStore store, Select sel,
-        Joins joins, ClassMapping base, boolean subs) {
-        return assertStrategy().getClassConditions(store, sel, joins,
-            base, subs);
+    public SQLBuffer getClassConditions(Select sel, Joins joins, 
+        ClassMapping base, boolean subs) {
+        return assertStrategy().getClassConditions(sel, joins, base, subs);
     }
 
     private DiscriminatorStrategy assertStrategy() {

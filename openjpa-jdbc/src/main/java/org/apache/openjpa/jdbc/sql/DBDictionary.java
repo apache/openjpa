@@ -60,6 +60,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
+import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
@@ -1659,6 +1660,7 @@ public class DBDictionary
     public SQLBuffer toSelectCount(Select sel) {
         SQLBuffer selectSQL = new SQLBuffer(this);
         SQLBuffer from;
+        sel.addJoinClassConditions();
         if (sel.getFromSelect() != null)
             from = getFromSelect(sel, false);
         else
@@ -1751,13 +1753,14 @@ public class DBDictionary
      * @return the SQLBuffer for the update, or <em>null</em> if it is not
      * possible to perform the bulk update
      */
-    public SQLBuffer toBulkOperation(ClassMapping mapping, Select sel,
+    protected SQLBuffer toBulkOperation(ClassMapping mapping, Select sel,
         JDBCStore store, Object[] params, Map updateParams) {
         SQLBuffer sql = new SQLBuffer(this);
         if (updateParams == null)
             sql.append("DELETE FROM ");
         else
             sql.append("UPDATE ");
+        sel.addJoinClassConditions();
 
         // if there is only a single table in the select, then we can
         // just issue a single DELETE FROM TABLE WHERE <conditions>
@@ -1851,8 +1854,7 @@ public class DBDictionary
         for (Iterator i = updateParams.entrySet().iterator(); i.hasNext();) {
             Map.Entry next = (Map.Entry) i.next();
             FieldMetaData fmd = (FieldMetaData) next.getKey();
-            org.apache.openjpa.jdbc.kernel.exps.Val val =
-                (org.apache.openjpa.jdbc.kernel.exps.Val) next.getValue();
+            Val val = (Val) next.getValue();
 
             Column col = ((FieldMapping) fmd).getColumns()[0];
             sql.append(col.getName());
@@ -1878,6 +1880,7 @@ public class DBDictionary
      */
     public SQLBuffer toSelect(Select sel, boolean forUpdate,
         JDBCFetchConfiguration fetch) {
+        sel.addJoinClassConditions();
         boolean update = forUpdate && sel.getFromSelect() == null;
         SQLBuffer select = getSelects(sel, false, update);
         SQLBuffer ordering = null;
@@ -1906,7 +1909,6 @@ public class DBDictionary
                 fromSQL.append(itr.next().toString());
                 if (forUpdate && tableForUpdateClause != null)
                     fromSQL.append(" ").append(tableForUpdateClause);
-
                 if (itr.hasNext())
                     fromSQL.append(", ");
             }

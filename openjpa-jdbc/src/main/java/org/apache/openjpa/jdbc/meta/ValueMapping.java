@@ -189,10 +189,10 @@ public interface ValueMapping
     public ClassMapping[] getIndependentTypeMappings();
 
     /**
-     * Return the {@link org.apache.openjpa.sql.Select} subclasses constant for loading
-     * this relation, based on how the related type is mapped, whether this
-     * relation is polymorphic, and whether it is configured to use class
-     * criteria.
+     * Return the {@link org.apache.openjpa.sql.Select} subclasses constant 
+     * for loading this relation, based on how the related type is mapped, 
+     * whether this relation is polymorphic, and whether it is configured to 
+     * use class criteria.
      */
     public int getSelectSubclasses();
 

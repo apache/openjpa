@@ -64,6 +64,6 @@ public interface DiscriminatorStrategy
      * no conditions needed. The select and joins instances are supplied
      * in order to get column aliases.
      */
-    public SQLBuffer getClassConditions(JDBCStore store, Select sel,
-        Joins joins, ClassMapping base, boolean subs);
+    public SQLBuffer getClassConditions(Select sel, Joins joins, 
+        ClassMapping base, boolean subs);
 }

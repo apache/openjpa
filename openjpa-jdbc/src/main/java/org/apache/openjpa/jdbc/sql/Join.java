@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
 
@@ -37,6 +38,9 @@ public class Join
     private Table _table1;
     private Table _table2;
     private ForeignKey _fk;
+    private ClassMapping _target;
+    private int _subs;
+    private Joins _joins;
     private boolean _inverse;
 
     /**
@@ -99,6 +103,38 @@ public class Join
     }
 
     /**
+     * If joining a relation, the target type.  
+     */
+    public ClassMapping getRelationTarget() {
+        return _target;
+    }
+
+    /**
+     * If joining a relation, how to deal with subclasses.  See subclass
+     * constants in {@link Select}.
+     */
+    public int getSubclasses() {
+        return _subs;
+    }
+
+    /**
+     * If joining a relation, the joins leading to the relation.
+     */
+    public Joins getRelationJoins() {
+        return _joins;
+    }
+
+    /**
+     * When joining a relation, set target type and how to deal with
+     * subclasses.  See subclass constants in {@link #Select}.
+     */
+    public void setRelation(ClassMapping target, int subs, Joins joins) {
+        _target = target;
+        _subs = subs;
+        _joins = joins;
+    }
+
+    /**
      * Return a join that is this join in reverse.
      */
     public Join reverse() {
@@ -108,8 +144,11 @@ public class Join
         join._alias1 = _alias2;
         join._table2 = _table1;
         join._alias2 = _alias1;
-        join._fk = _fk;
         join._inverse = !_inverse;
+        join._fk = _fk;
+        join._target = _target;
+        join._subs = _subs;
+        join._joins = _joins;
         return join;
     }
 

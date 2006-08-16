@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
 
@@ -49,15 +50,15 @@ public interface Joins {
      * Join the columns of the given foreign key, which represents a relation
      * via the given field name.
      */
-    public Joins joinRelation(String name, ForeignKey fk, boolean inverse,
-        boolean toMany);
+    public Joins joinRelation(String name, ForeignKey fk, ClassMapping target,
+        int subclasses, boolean inverse, boolean toMany);
 
     /**
      * Join the columns of the given foreign key, which represents a relation
      * via the given field name.
      */
-    public Joins outerJoinRelation(String name, ForeignKey fk, boolean inverse,
-        boolean toMany);
+    public Joins outerJoinRelation(String name, ForeignKey fk, 
+        ClassMapping target, int subclasses, boolean inverse, boolean toMany);
 
     /**
      * Set the variable name being traversed into with the next join.

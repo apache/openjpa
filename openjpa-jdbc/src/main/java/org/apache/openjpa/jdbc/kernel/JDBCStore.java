@@ -93,14 +93,4 @@ public interface JDBCStore {
      * This is usually done automatically.
      */
     public void loadSubclasses(ClassMapping mapping);
-
-    /**
-     * Add WHERE conditions to the given select limiting the returned results
-     * to the given mapping type, possibly including subclasses.
-     *
-     * @return true if the mapping was joined down to its base class
-     * in order to add the conditions
-     */
-    public boolean addClassConditions(Select sel, ClassMapping mapping,
-        boolean subs, Joins joins);
 }

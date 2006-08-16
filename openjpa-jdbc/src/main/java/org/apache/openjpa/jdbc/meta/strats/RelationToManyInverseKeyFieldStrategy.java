@@ -84,8 +84,9 @@ public abstract class RelationToManyInverseKeyFieldStrategy
     }
 
     protected Joins join(Joins joins, ClassMapping elem) {
-        return joins.joinRelation(field.getName(),
-            field.getElementMapping().getForeignKey(elem), true, true);
+        ValueMapping vm = field.getElementMapping();
+        return joins.joinRelation(field.getName(), vm.getForeignKey(elem), 
+            elem, vm.getSelectSubclasses(), true, true);
     }
 
     protected Joins joinElementRelation(Joins joins, ClassMapping elem) {
@@ -295,10 +296,11 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         if (clss.length != 1)
             throw RelationStrategies.unjoinable(elem);
         if (forceOuter)
-            return joins.outerJoinRelation(field.getName(),
-                elem.getForeignKey(clss[0]), true, true);
-        return joins.joinRelation(field.getName(),
-            elem.getForeignKey(clss[0]), true, true);
+            return joins.outerJoinRelation(field.getName(), 
+                elem.getForeignKey(clss[0]), clss[0],
+                elem.getSelectSubclasses(), true, true);
+        return joins.joinRelation(field.getName(), elem.getForeignKey(clss[0]),
+            clss[0], elem.getSelectSubclasses(), true, true);
     }
 
     private void assertInversable() {

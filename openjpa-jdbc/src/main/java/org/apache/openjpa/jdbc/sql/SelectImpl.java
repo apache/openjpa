@@ -269,20 +269,11 @@ public class SelectImpl
             return rs.getInt(1);
         } finally {
             if (rs != null)
-                try {
-                    rs.close();
-                } catch (SQLException se) {
-                }
+                try { rs.close(); } catch (SQLException se) {}
             if (stmnt != null)
-                try {
-                    stmnt.close();
-                } catch (SQLException se) {
-                }
+                try { stmnt.close(); } catch (SQLException se) {}
             if (conn != null)
-                try {
-                    conn.close();
-                } catch (SQLException se) {
-                }
+                try { conn.close(); } catch (SQLException se) {}
         }
     }
 
@@ -331,14 +322,8 @@ public class SelectImpl
         } catch (SQLException se) {
             // clean up statement
             if (stmnt != null)
-                try {
-                    stmnt.close();
-                } catch (SQLException se2) {
-                }
-            try {
-                conn.close();
-            } catch (SQLException se2) {
-            }
+                try { stmnt.close(); } catch (SQLException se2) {}
+            try { conn.close(); } catch (SQLException se2) {}
             throw se;
         }
 
@@ -494,6 +479,23 @@ public class SelectImpl
 
     public SQLBuffer getHaving() {
         return _having;
+    }
+
+    public void addJoinClassConditions() {
+        if (_joins == null || _joins.joins() == null)
+            return;
+
+        // join set iterator allows concurrent modification
+        Join j;
+        for (Iterator itr = _joins.joins().iterator(); itr.hasNext();) {
+            j = (Join) itr.next();
+            if (j.getRelationTarget() != null) {
+                j.getRelationTarget().getDiscriminator().addClassConditions
+                    (this, j.getSubclasses() == SUBS_JOINABLE, 
+                    j.getRelationJoins());
+                j.setRelation(null, 0, null);
+            }
+        }
     }
 
     public Joins getJoins() {
@@ -1928,15 +1930,16 @@ public class SelectImpl
         return new SelectJoins(this).outerJoin(fk, inverse, toMany);
     }
 
-    public Joins joinRelation(String name, ForeignKey fk, boolean inverse,
-        boolean toMany) {
-        return new SelectJoins(this).joinRelation(name, fk, inverse, toMany);
+    public Joins joinRelation(String name, ForeignKey fk, ClassMapping target,
+        int subs, boolean inverse, boolean toMany) {
+        return new SelectJoins(this).joinRelation(name, fk, target, subs, 
+            inverse, toMany);
     }
 
-    public Joins outerJoinRelation(String name, ForeignKey fk,
-        boolean inverse, boolean toMany) {
-        return new SelectJoins(this).outerJoinRelation(name, fk, inverse,
-            toMany);
+    public Joins outerJoinRelation(String name, ForeignKey fk, 
+        ClassMapping target, int subs, boolean inverse, boolean toMany) {
+        return new SelectJoins(this).outerJoinRelation(name, fk, target, subs, 
+            inverse, toMany);
     }
 
     public Joins setVariable(String var) {
@@ -2268,15 +2271,16 @@ public class SelectImpl
             return this;
         }
 
-        public Joins joinRelation(String name, ForeignKey fk, boolean inverse,
-            boolean toMany) {
-            return new PathJoinsImpl().joinRelation(name, fk, inverse, toMany);
+        public Joins joinRelation(String name, ForeignKey fk, 
+            ClassMapping target, int subs, boolean inverse, boolean toMany) {
+            return new PathJoinsImpl().joinRelation(name, fk, target, subs, 
+                inverse, toMany);
         }
 
         public Joins outerJoinRelation(String name, ForeignKey fk,
-            boolean inverse, boolean toMany) {
-            return new PathJoinsImpl().outerJoinRelation(name, fk, inverse,
-                toMany);
+            ClassMapping target, int subs, boolean inverse, boolean toMany) {
+            return new PathJoinsImpl().outerJoinRelation(name, fk, target, subs,
+                inverse, toMany);
         }
 
         public Joins setVariable(String var) {
@@ -2361,8 +2365,8 @@ public class SelectImpl
             return this;
         }
 
-        public Joins joinRelation(String name, ForeignKey fk, boolean inverse,
-            boolean toMany) {
+        public Joins joinRelation(String name, ForeignKey fk, 
+            ClassMapping target, int subs, boolean inverse, boolean toMany) {
             append(name);
             append(var);
             var = null;
@@ -2370,7 +2374,7 @@ public class SelectImpl
         }
 
         public Joins outerJoinRelation(String name, ForeignKey fk,
-            boolean inverse, boolean toMany) {
+            ClassMapping target, int subs, boolean inverse, boolean toMany) {
             append(name);
             append(var);
             var = null;
@@ -2396,7 +2400,8 @@ public class SelectImpl
      * Joins implementation.
      */
     private static class SelectJoins
-        extends PathJoinsImpl {
+        extends PathJoinsImpl 
+        implements Cloneable {
 
         private final SelectImpl _sel;
         private JoinSet _joins = null;
@@ -2482,25 +2487,25 @@ public class SelectImpl
         }
 
         public Joins join(ForeignKey fk, boolean inverse, boolean toMany) {
-            return join(null, fk, inverse, toMany, false);
+            return join(null, fk, null, -1, inverse, toMany, false);
         }
 
         public Joins outerJoin(ForeignKey fk, boolean inverse, boolean toMany) {
-            return join(null, fk, inverse, toMany, true);
+            return join(null, fk, null, -1, inverse, toMany, true);
         }
 
-        public Joins joinRelation(String name, ForeignKey fk, boolean inverse,
-            boolean toMany) {
-            return join(name, fk, inverse, toMany, false);
+        public Joins joinRelation(String name, ForeignKey fk, 
+            ClassMapping target, int subs, boolean inverse, boolean toMany) {
+            return join(name, fk, target, subs, inverse, toMany, false);
         }
 
         public Joins outerJoinRelation(String name, ForeignKey fk,
-            boolean inverse, boolean toMany) {
-            return join(name, fk, inverse, toMany, true);
+            ClassMapping target, int subs, boolean inverse, boolean toMany) {
+            return join(name, fk, target, subs, inverse, toMany, true);
         }
 
-        private Joins join(String name, ForeignKey fk, boolean inverse,
-            boolean toMany, boolean outer) {
+        private Joins join(String name, ForeignKey fk, ClassMapping target,
+            int subs, boolean inverse, boolean toMany, boolean outer) {
             // don't let the get alias methods see that a var has been set
             // until we get past the local table
             String var = this.var;
@@ -2536,7 +2541,9 @@ public class SelectImpl
 
                 if (_joins == null)
                     _joins = new JoinSet();
-                _joins.add(j);
+                if (_joins.add(j) && (subs == Select.SUBS_JOINABLE 
+                    || subs == Select.SUBS_NONE))
+                    j.setRelation(target, subs, clone(_sel));
             }
             return this;
         }

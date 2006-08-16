@@ -42,7 +42,7 @@ import org.apache.openjpa.util.UserException;
 import serp.util.Numbers;
 import serp.util.Strings;
 
-////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 // NOTE: Do not change property names; see SequenceMetaData
 // and SequenceMapping for standard property names.
 ////////////////////////////////////////////////////////////
@@ -270,15 +270,9 @@ public class NativeJDBCSeq
         } finally {
             // clean up our resources
             if (rs != null)
-                try {
-                    rs.close();
-                } catch (SQLException se) {
-                }
+                try { rs.close(); } catch (SQLException se) {}
             if (stmnt != null)
-                try {
-                    stmnt.close();
-                } catch (SQLException se) {
-                }
+                try { stmnt.close(); } catch (SQLException se) {}
         }
     }
 
@@ -357,10 +351,7 @@ public class NativeJDBCSeq
                 long cur = seq.getSequence(conn);
                 System.out.println(cur);
             } finally {
-                try {
-                    conn.close();
-                } catch (SQLException se) {
-                }
+                try { conn.close(); } catch (SQLException se) {}
             }
         } else
             return false;

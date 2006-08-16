@@ -338,8 +338,10 @@ class SelectConstructor {
         // add conditions limiting the projections to the proper classes; if
         // this isn't a projection then they will already be added
         if (exps.projections.length > 0) {
+            store.loadSubclasses(mapping);
             Select indSel = (inner == null) ? sel : inner;
-            store.addClassConditions(indSel, mapping, subclasses, joins);
+            mapping.getDiscriminator().addClassConditions(indSel, subclasses, 
+                joins);
         }
     }
 }

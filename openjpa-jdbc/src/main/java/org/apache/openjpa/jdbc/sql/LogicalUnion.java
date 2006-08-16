@@ -461,6 +461,10 @@ public class LogicalUnion
             return sel.getHaving();
         }
 
+        public void addJoinClassConditions() {
+            sel.addJoinClassConditions();
+        }
+
         public Joins getJoins() {
             return sel.getJoins();
         }

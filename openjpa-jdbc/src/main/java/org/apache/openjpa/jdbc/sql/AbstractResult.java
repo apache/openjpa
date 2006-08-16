@@ -822,13 +822,13 @@ public abstract class AbstractResult
             return this;
         }
 
-        public Joins joinRelation(String name, ForeignKey fk, boolean inverse,
-            boolean toMany) {
+        public Joins joinRelation(String name, ForeignKey fk, 
+            ClassMapping target, int subs, boolean inverse, boolean toMany) {
             return this;
         }
 
         public Joins outerJoinRelation(String name, ForeignKey fk,
-            boolean inverse, boolean toMany) {
+            ClassMapping target, int subs, boolean inverse, boolean toMany) {
             return this;
         }
 

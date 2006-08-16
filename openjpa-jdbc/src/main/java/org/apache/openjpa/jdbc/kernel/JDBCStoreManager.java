@@ -862,9 +862,11 @@ public class JDBCStoreManager
         // add class conditions so that they're cloned for any batched selects
         boolean joinedSupers = false;
         if ((sm == null || sm.getPCState() == PCState.TRANSIENT)
-            && (subs == sel.SUBS_JOINABLE || subs == sel.SUBS_NONE))
-            joinedSupers = addClassConditions(sel, mapping,
+            && (subs == sel.SUBS_JOINABLE || subs == sel.SUBS_NONE)) {
+            loadSubclasses(mapping); 
+            joinedSupers = mapping.getDiscriminator().addClassConditions(sel,
                 subs == sel.SUBS_JOINABLE, null);
+        }
 
         // create all our eager selects so that those fields are reserved
         // and cannot be reused during the actual eager select process,
@@ -1188,41 +1190,6 @@ public class JDBCStoreManager
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se, _dict);
         }
-    }
-
-    /**
-     * Add WHERE conditions to the given select limiting the returned results
-     * to the given mapping type, possibly including subclasses.
-     *
-     * @return true if the mapping was joined down to its base class
-     * in order to add the conditions
-     */
-    public boolean addClassConditions(Select sel, ClassMapping mapping,
-        boolean subs, Joins joins) {
-        loadSubclasses(mapping);
-        if (mapping.getJoinablePCSuperclassMapping() == null
-            && mapping.getJoinablePCSubclassMappings().length == 0)
-            return false;
-
-        // join down to base class where the conditions will be added
-        ClassMapping from = mapping;
-        ClassMapping sup = mapping.getJoinablePCSuperclassMapping();
-        for (; sup != null; from = sup, sup = from
-            .getJoinablePCSuperclassMapping()) {
-            if (from.getTable() != sup.getTable()) {
-                if (joins == null)
-                    joins = sel.newJoins();
-                joins = from.joinSuperclass(joins, false);
-            }
-        }
-
-        Discriminator dsc = mapping.getDiscriminator();
-        SQLBuffer buf = dsc.getClassConditions(this, sel, joins, mapping, subs);
-        if (buf != null) {
-            sel.where(buf, joins);
-            return true;
-        }
-        return false;
     }
 
     /**

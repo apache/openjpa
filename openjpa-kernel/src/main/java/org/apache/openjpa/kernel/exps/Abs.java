@@ -23,8 +23,6 @@ import serp.util.Numbers;
 
 /**
  * Take the absolute value of a number.
- *
- * @author Abe White
  */
 class Abs
     extends UnaryMathVal {
@@ -44,11 +42,12 @@ class Abs
             || wrap == Long.class
             || wrap == BigDecimal.class
             || wrap == BigInteger.class)
-            return c;
+            return Filters.unwrap(c);
         return int.class;
     }
 
     protected Object operate(Object o, Class c) {
+        c = Filters.wrap(c);
         if (c == Integer.class)
             return Numbers.valueOf(Math.abs(((Number) o).intValue()));
         if (c == Float.class)
