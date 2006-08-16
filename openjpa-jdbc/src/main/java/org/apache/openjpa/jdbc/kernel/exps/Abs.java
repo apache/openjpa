@@ -22,8 +22,6 @@ import org.apache.openjpa.kernel.Filters;
 
 /**
  * Absolute value.
- *
- * @author Abe White
  */
 class Abs
     extends UnaryOp {
@@ -36,14 +34,8 @@ class Abs
     }
 
     protected Class getType(Class c) {
-        Class wrap = Filters.wrap(c);
-        if (wrap == Integer.class
-            || wrap == Float.class
-            || wrap == Double.class
-            || wrap == Long.class
-            || wrap == BigDecimal.class
-            || wrap == BigInteger.class)
-            return c;
+        if (c == Long.class || c == long.class)
+            return long.class;
         return int.class;
     }
 

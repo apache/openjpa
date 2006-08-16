@@ -53,10 +53,9 @@ public class SuperclassDiscriminatorStrategy
             getDiscriminator().getClass(store, base, res);
     }
 
-    public SQLBuffer getClassConditions(JDBCStore store, Select sel,
-        Joins joins, ClassMapping base, boolean subclasses) {
+    public SQLBuffer getClassConditions(Select sel, Joins joins, 
+        ClassMapping base, boolean subclasses) {
         return disc.getClassMapping().getPCSuperclassMapping().
-            getDiscriminator().getClassConditions(store, sel, joins, base,
-            subclasses);
+            getDiscriminator().getClassConditions(sel, joins, base, subclasses);
     }
 }

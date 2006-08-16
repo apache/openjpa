@@ -398,8 +398,10 @@ public class RelationFieldStrategy
         // and join into relation
         ForeignKey fk = field.getForeignKey(cls);
         if (!forceInner && field.getNullValue() != FieldMapping.NULL_EXCEPTION)
-            return joins.outerJoinRelation(field.getName(), fk, inverse, false);
-        return joins.joinRelation(field.getName(), fk, inverse, false);
+            return joins.outerJoinRelation(field.getName(), fk, field.
+                getTypeMapping(), field.getSelectSubclasses(), inverse, false);
+        return joins.joinRelation(field.getName(), fk, field.getTypeMapping(), 
+            field.getSelectSubclasses(), inverse, false);
     }
 
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
@@ -549,9 +551,9 @@ public class RelationFieldStrategy
                     sel.whereForeignKey(field.getForeignKey(rels[idx]),
                         sm.getObjectId(), field.getDefiningMapping(), store);
                 else {
-                    resJoins[idx] = sel.newJoins().joinRelation
-                        (field.getName(), field.getForeignKey(rels[idx]),
-                            false, false);
+                    resJoins[idx] = sel.newJoins().joinRelation(field.getName(),
+                        field.getForeignKey(rels[idx]), rels[idx],
+                        field.getSelectSubclasses(), false, false);
                     field.wherePrimaryKey(sel, sm, store);
                 }
                 sel.select(rels[idx], subs, store, fetch, fetch.EAGER_JOIN, 
@@ -638,13 +640,15 @@ public class RelationFieldStrategy
         // already traversed the relation; just join back to owner table
         if (field.getJoinDirection() != field.JOIN_INVERSE)
             return field.join(joins, forceOuter, false);
-        if (field.getIndependentTypeMappings().length != 1)
+        ClassMapping[] clss = field.getIndependentTypeMappings();
+        if (clss.length != 1)
             throw RelationStrategies.uninversable(field);
         if (forceOuter)
             return joins.outerJoinRelation(field.getName(),
-                field.getForeignKey(), true, false);
+                field.getForeignKey(), clss[0], field.getSelectSubclasses(), 
+                true, false);
         return joins.joinRelation(field.getName(), field.getForeignKey(),
-            true, false);
+            clss[0], field.getSelectSubclasses(), true, false);
     }
 
     public Joins joinRelation(Joins joins, boolean forceOuter,
@@ -659,10 +663,11 @@ public class RelationFieldStrategy
             return joins;
         }
         if (forceOuter)
-            return joins.outerJoinRelation(field.getName(),
-                field.getForeignKey(clss[0]), false, false);
-        return joins.joinRelation(field.getName(),
-            field.getForeignKey(clss[0]), false, false);
+            return joins.outerJoinRelation(field.getName(), 
+                field.getForeignKey(clss[0]), clss[0], 
+                field.getSelectSubclasses(), false, false);
+        return joins.joinRelation(field.getName(), field.getForeignKey(clss[0]),
+            clss[0], field.getSelectSubclasses(), false, false);
     }
 
     /////////////////////////////

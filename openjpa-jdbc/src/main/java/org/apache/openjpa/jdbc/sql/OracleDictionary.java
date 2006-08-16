@@ -866,14 +866,8 @@ public class OracleDictionary
             return Numbers.valueOf(rs.getLong(1));
         } finally {
             if (rs != null)
-                try {
-                    rs.close();
-                } catch (SQLException se) {
-                }
-            try {
-                stmnt.close();
-            } catch (SQLException se) {
-            }
+                try { rs.close(); } catch (SQLException se) {}
+            try { stmnt.close(); } catch (SQLException se) {}
         }
     }
 

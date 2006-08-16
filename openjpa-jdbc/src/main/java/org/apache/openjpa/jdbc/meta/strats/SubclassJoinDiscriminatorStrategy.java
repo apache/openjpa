@@ -130,8 +130,8 @@ public class SubclassJoinDiscriminatorStrategy
         return derived;
     }
 
-    public SQLBuffer getClassConditions(JDBCStore store, Select sel,
-        Joins joins, ClassMapping base, boolean subclasses) {
+    public SQLBuffer getClassConditions(Select sel, Joins joins, 
+        ClassMapping base, boolean subclasses) {
         if (isFinal || subclasses)
             return null;
         ClassMapping[] subs = base.getJoinablePCSubclassMappings();
@@ -150,7 +150,8 @@ public class SubclassJoinDiscriminatorStrategy
             if (buf == null) {
                 // make sure the base class is aliased first so that we don't
                 // end up with our outer joins before the inner ones
-                buf = new SQLBuffer(store.getDBDictionary());
+                buf = new SQLBuffer(sel.getConfiguration().
+                    getDBDictionaryInstance());
                 sel.getColumnAlias(base.getPrimaryKeyColumns()[0], joins);
             } else
                 buf.append(" AND ");

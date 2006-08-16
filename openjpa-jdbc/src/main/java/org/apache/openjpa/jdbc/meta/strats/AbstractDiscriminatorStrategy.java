@@ -82,8 +82,8 @@ public abstract class AbstractDiscriminatorStrategy
         return base.getDescribedType();
     }
 
-    public SQLBuffer getClassConditions(JDBCStore store, Select sel,
-        Joins joins, ClassMapping base, boolean subs) {
+    public SQLBuffer getClassConditions(Select sel, Joins joins, 
+        ClassMapping base, boolean subs) {
         return null;
     }
 }

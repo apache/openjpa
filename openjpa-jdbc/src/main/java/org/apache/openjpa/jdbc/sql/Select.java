@@ -182,6 +182,13 @@ public interface Select
     public SQLBuffer getHaving();
 
     /**
+     * Apply class conditions from relation joins.  This may affect the return
+     * values of {@link #getJoins}, {@link #getJoinIterator}, and
+     * {@link #getWhere}.
+     */
+    public void addJoinClassConditions();
+
+    /**
      * Return the top-level joins for this select.
      */
     public Joins getJoins();

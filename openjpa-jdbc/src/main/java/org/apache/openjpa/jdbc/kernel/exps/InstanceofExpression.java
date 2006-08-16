@@ -123,8 +123,8 @@ class InstanceofExpression
                 sql.append("1 <> 1");
         } else {
             store.loadSubclasses(_dsc.getClassMapping());
-            SQLBuffer buf = _dsc.getClassConditions(store, sel, _joins,
-                _mapping, true);
+            SQLBuffer buf = _dsc.getClassConditions(sel, _joins, _mapping, 
+                true);
             if (buf == null)
                 sql.append("1 = 1");
             else

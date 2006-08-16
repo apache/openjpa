@@ -84,8 +84,9 @@ public abstract class RelationToManyTableFieldStrategy
     }
 
     protected Joins joinElementRelation(Joins joins, ClassMapping elem) {
-        return joins.joinRelation(field.getName(), field.getElementMapping().
-            getForeignKey(elem), false, false);
+        ValueMapping vm = field.getElementMapping();
+        return joins.joinRelation(field.getName(), vm.getForeignKey(elem), 
+            elem, vm.getSelectSubclasses(), false, false);
     }
 
     public void map(boolean adapt) {
@@ -258,8 +259,9 @@ public abstract class RelationToManyTableFieldStrategy
         }
         if (forceOuter)
             return joins.outerJoinRelation(field.getName(),
-                elem.getForeignKey(clss[0]), false, false);
-        return joins.joinRelation(field.getName(),
-            elem.getForeignKey(clss[0]), false, false);
+                elem.getForeignKey(clss[0]), clss[0], 
+                elem.getSelectSubclasses(), false, false);
+        return joins.joinRelation(field.getName(), elem.getForeignKey(clss[0]),
+            clss[0], elem.getSelectSubclasses(), false, false);
     }
 }

@@ -113,8 +113,8 @@ public abstract class InValueDiscriminatorStrategy
         return getClass(cls, store);
     }
 
-    public SQLBuffer getClassConditions(JDBCStore store, Select sel,
-        Joins joins, ClassMapping base, boolean subclasses) {
+    public SQLBuffer getClassConditions(Select sel, Joins joins, 
+        ClassMapping base, boolean subclasses) {
         // if selecting the first mapped class and all subclasses, no need
         // to limit the query
         if (isFinal || (base.getJoinablePCSuperclassMapping() == null
@@ -128,7 +128,8 @@ public abstract class InValueDiscriminatorStrategy
 
         // if not selecting subclasses, limit to just the given class
         Column col = disc.getColumns()[0];
-        SQLBuffer sql = new SQLBuffer(store.getDBDictionary());
+        SQLBuffer sql = new SQLBuffer(sel.getConfiguration().
+            getDBDictionaryInstance());
         sql.append(sel.getColumnAlias(col, joins));
         if (!subclasses || subs.length == 0)
             return sql.append(" = ").appendValue(getDiscriminatorValue(base),
