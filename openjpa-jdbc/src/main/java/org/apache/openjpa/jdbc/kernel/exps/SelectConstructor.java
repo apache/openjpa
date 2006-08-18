@@ -233,7 +233,6 @@ class SelectConstructor {
             // this ensures that we have all our joins cached
             if (resultVal instanceof PCPath)
                 ((PCPath) resultVal).joinRelation();
-
             joins = sel.and(joins, resultVal.getJoins());
         }
 
@@ -242,6 +241,11 @@ class SelectConstructor {
         for (int i = 0; i < exps.grouping.length; i++) {
             groupVal = (Val) exps.grouping[i];
             groupVal.initialize(sel, store, false);
+
+            // have to join through to related type for pc object groupings;
+            // this ensures that we have all our joins cached
+            if (groupVal instanceof PCPath)
+                ((PCPath) groupVal).joinRelation();
             joins = sel.and(joins, groupVal.getJoins());
         }
 
@@ -313,21 +317,15 @@ class SelectConstructor {
                 val.select(sel, store, params, pks, fetch);
             }
 
-            // make sure grouping and having columns are selected since it
-            // is required by most DBs.  put them last so they don't affect
-            // result processing
+            // make sure having columns are selected since it is required by 
+            // some DBs.  put them last so they don't affect result processing
             if (exps.having != null && inner != null)
                 ((Exp) exps.having).selectColumns(inner, store, params, true,
                     fetch);
-            for (int i = 0; i < exps.grouping.length; i++) {
-                val = (Val) exps.grouping[i];
-                if (inner != null)
-                    val.selectColumns(inner, store, params, true, fetch);
-                val.select(sel, store, params, true, fetch);
-            }
         }
 
-        // select order data last so it doesn't affect result processing
+        // select ordering columns, since it is required by some DBs.  put them
+        // last so they don't affect result processing
         for (int i = 0; i < exps.ordering.length; i++) {
             val = (Val) exps.ordering[i];
             if (inner != null)

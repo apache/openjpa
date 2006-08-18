@@ -37,6 +37,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.collections.iterators.EmptyIterator;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCLockManager;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -79,6 +80,7 @@ public class SelectImpl
     private static final int EAGER_TO_ONE = 2 << 9;
     private static final int EAGER_TO_MANY = 2 << 10;
     private static final int RECORD_ORDERED = 2 << 11;
+    private static final int GROUPING = 2 << 12;
 
     private static final String[] TABLE_ALIASES = new String[16];
     private static final String[] ORDER_ALIASES = new String[16];
@@ -588,7 +590,10 @@ public class SelectImpl
     }
 
     public boolean select(SQLBuffer sql, Object id, Joins joins) {
-        return select((Object) sql, id, joins);
+        if (!isGrouping())
+            return select((Object) sql, id, joins);
+        groupBy(sql, joins);
+        return false;
     }
 
     /**
@@ -627,7 +632,10 @@ public class SelectImpl
     }
 
     public boolean select(String sql, Object id, Joins joins) {
-        return select((Object) sql, id, joins);
+        if (!isGrouping())
+            return select((Object) sql, id, joins);
+        groupBy(sql, joins);
+        return true;
     }
 
     public void selectPlaceholder(String sql) {
@@ -658,7 +666,10 @@ public class SelectImpl
     }
 
     public boolean select(Column col, Joins joins) {
-        return select(col, getJoins(joins, true), false);
+        if (!isGrouping())
+            return select(col, getJoins(joins, true), false);
+        groupBy(col, joins);
+        return false;
     }
 
     public int select(Column[] cols) {
@@ -668,6 +679,10 @@ public class SelectImpl
     public int select(Column[] cols, Joins joins) {
         if (cols == null || cols.length == 0)
             return 0;
+        if (isGrouping()) {
+            groupBy(cols, joins);
+            return 0;
+        }
         PathJoins pj = getJoins(joins, true);
         int seld = 0;
         for (int i = 0; i < cols.length; i++)
@@ -758,7 +773,10 @@ public class SelectImpl
     }
 
     public boolean selectIdentifier(Column col, Joins joins) {
-        return select(col, getJoins(joins, true), true);
+        if (!isGrouping())
+            return select(col, getJoins(joins, true), true);
+        groupBy(col, joins);
+        return false;
     }
 
     public int selectIdentifier(Column[] cols) {
@@ -768,6 +786,10 @@ public class SelectImpl
     public int selectIdentifier(Column[] cols, Joins joins) {
         if (cols == null || cols.length == 0)
             return 0;
+        if (isGrouping()) {
+            groupBy(cols, joins);
+            return 0;
+        }
         PathJoins pj = getJoins(joins, true);
         int seld = 0;
         for (int i = 0; i < cols.length; i++)
@@ -814,8 +836,13 @@ public class SelectImpl
             return primaryKeyOperation(sup, sel, asc, joins, aliasOrder);
         }
 
-        PathJoins pj = getJoins(joins, false);
         Column[] cols = mapping.getPrimaryKeyColumns();
+        if (isGrouping()) {
+            groupBy(cols, joins);
+            return 0;
+        }
+
+        PathJoins pj = getJoins(joins, false);
         int seld = 0;
         for (int i = 0; i < cols.length; i++)
             if (columnOperation(cols[i], sel, asc, pj, aliasOrder))
@@ -1285,53 +1312,37 @@ public class SelectImpl
         _having.append(sql);
     }
 
-    public boolean groupBy(SQLBuffer sql, boolean sel) {
-        return groupBy(sql, (Joins) null, sel);
+    public void groupBy(SQLBuffer sql) {
+        groupBy(sql, (Joins) null);
     }
 
-    public boolean groupBy(SQLBuffer sql, Joins joins, boolean sel) {
+    public void groupBy(SQLBuffer sql, Joins joins) {
         getJoins(joins, true);
         if (_grouping == null)
             _grouping = new SQLBuffer(_dict);
         else
             _grouping.append(", ");
         _grouping.append(sql);
-
-        if (!sel)
-            return false;
-        int idx = _selects.indexOfAlias(sql);
-        if (idx != -1)
-            return false;
-        _selects.setAlias(nullId(), sql, false);
-        return true;
     }
 
-    public boolean groupBy(String sql, boolean sel) {
-        return groupBy(sql, (Joins) null, sel);
+    public void groupBy(String sql) {
+        groupBy(sql, (Joins) null);
     }
 
-    public boolean groupBy(String sql, Joins joins, boolean sel) {
+    public void groupBy(String sql, Joins joins) {
         getJoins(joins, true);
         if (_grouping == null)
             _grouping = new SQLBuffer(_dict);
         else
             _grouping.append(", ");
         _grouping.append(sql);
-
-        if (!sel)
-            return false;
-        int idx = _selects.indexOfAlias(sql);
-        if (idx != -1)
-            return false;
-        _selects.setAlias(nullId(), sql, false);
-        return true;
     }
 
-    public boolean groupBy(Column col, boolean sel) {
-        return groupBy(col, null, sel);
+    public void groupBy(Column col) {
+        groupBy(col, null);
     }
 
-    public boolean groupBy(Column col, Joins joins, boolean sel) {
+    public void groupBy(Column col, Joins joins) {
         if (_grouping == null)
             _grouping = new SQLBuffer(_dict);
         else
@@ -1339,30 +1350,55 @@ public class SelectImpl
 
         PathJoins pj = getJoins(joins, true);
         _grouping.append(getColumnAlias(col, pj));
-        return sel && select(col, pj, false);
     }
 
-    public int groupBy(Column[] cols, boolean sel) {
-        return groupBy(cols, null, sel);
+    public void groupBy(Column[] cols) {
+        groupBy(cols, null);
     }
 
-    public int groupBy(Column[] cols, Joins joins, boolean sel) {
+    public void groupBy(Column[] cols, Joins joins) {
         if (_grouping == null)
             _grouping = new SQLBuffer(_dict);
         else
             _grouping.append(", ");
 
         PathJoins pj = getJoins(joins, true);
-        int seld = 0;
         for (int i = 0; i < cols.length; i++) {
             if (i > 0)
                 _grouping.append(", ");
             _grouping.append(getColumnAlias(cols[i], pj));
-
-            if (sel && select(cols[i], pj, false))
-                seld |= 2 << i;
         }
-        return seld;
+    }
+
+    public void groupBy(ClassMapping mapping, int subclasses, JDBCStore store,
+        JDBCFetchConfiguration fetch) {
+        groupBy(mapping, subclasses, store, fetch, null);
+    }
+
+    public void groupBy(ClassMapping mapping, int subclasses, JDBCStore store,
+        JDBCFetchConfiguration fetch, Joins joins) {
+        // we implement this by putting ourselves into grouping mode, where
+        // all select invocations are re-routed to group-by invocations instead.
+        // this allows us to utilize the same select APIs of the store manager
+        // and all the mapping strategies, rather than having to create 
+        // equivalent APIs and duplicate logic for grouping
+        boolean wasGrouping = isGrouping();
+        _flags |= GROUPING;
+        try {
+            select(mapping, subclasses, store, fetch, 
+                EagerFetchModes.EAGER_NONE, joins);
+        } finally {
+            if (!wasGrouping)
+                _flags &= ~GROUPING;
+        }
+    }
+
+    /**
+     * Whether we're in group mode, where any select is changed to a group-by
+     * call.
+     */
+    boolean isGrouping() {
+        return (_flags & GROUPING) != 0;
     }
 
     /**

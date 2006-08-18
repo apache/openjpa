@@ -95,7 +95,7 @@ class Substring
 
     public void groupBy(Select sel, JDBCStore store, Object[] params,
         JDBCFetchConfiguration fetch) {
-        sel.groupBy(newSQLBuffer(sel, store, params, fetch), false);
+        sel.groupBy(newSQLBuffer(sel, store, params, fetch));
     }
 
     public void orderBy(Select sel, JDBCStore store, Object[] params,

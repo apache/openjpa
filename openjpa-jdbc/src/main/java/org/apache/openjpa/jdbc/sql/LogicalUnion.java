@@ -745,36 +745,46 @@ public class LogicalUnion
             sel.having(sql, joins);
         }
 
-        public boolean groupBy(SQLBuffer sql, boolean select) {
-            return sel.groupBy(sql, null, select);
+        public void groupBy(SQLBuffer sql) {
+            sel.groupBy(sql);
         }
 
-        public boolean groupBy(SQLBuffer sql, Joins joins, boolean select) {
-            return sel.groupBy(sql, joins, select);
+        public void groupBy(SQLBuffer sql, Joins joins) {
+            sel.groupBy(sql, joins);
         }
 
-        public boolean groupBy(String sql, boolean select) {
-            return sel.groupBy(sql, null, select);
+        public void groupBy(String sql) {
+            sel.groupBy(sql);
         }
 
-        public boolean groupBy(String sql, Joins joins, boolean select) {
-            return sel.groupBy(sql, joins, select);
+        public void groupBy(String sql, Joins joins) {
+            sel.groupBy(sql, joins);
         }
 
-        public boolean groupBy(Column col, boolean select) {
-            return sel.groupBy(col, null, select);
+        public void groupBy(Column col) {
+            sel.groupBy(col);
         }
 
-        public boolean groupBy(Column col, Joins joins, boolean select) {
-            return sel.groupBy(col, joins, select);
+        public void groupBy(Column col, Joins joins) {
+            sel.groupBy(col, joins);
         }
 
-        public int groupBy(Column[] cols, boolean select) {
-            return sel.groupBy(cols, null, select);
+        public void groupBy(Column[] cols) {
+            sel.groupBy(cols);
         }
 
-        public int groupBy(Column[] cols, Joins joins, boolean select) {
-            return sel.groupBy(cols, joins, select);
+        public void groupBy(Column[] cols, Joins joins) {
+            sel.groupBy(cols, joins);
+        }
+
+        public void groupBy(ClassMapping mapping, int subclasses, 
+            JDBCStore store, JDBCFetchConfiguration fetch) {
+            sel.groupBy(mapping, subclasses, store, fetch);
+        }
+
+        public void groupBy(ClassMapping mapping, int subclasses, 
+            JDBCStore store, JDBCFetchConfiguration fetch, Joins joins) {
+            sel.groupBy(mapping, subclasses, store, fetch, joins);
         }
 
         public SelectExecutor whereClone(int sels) {
