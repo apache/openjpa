@@ -1397,7 +1397,7 @@ public class SelectImpl
      * Whether we're in group mode, where any select is changed to a group-by
      * call.
      */
-    boolean isGrouping() {
+    private boolean isGrouping() {
         return (_flags & GROUPING) != 0;
     }
 
