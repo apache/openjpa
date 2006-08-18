@@ -561,51 +561,57 @@ public interface Select
 
     /**
      * Group by the given column.
-     * Optionally selects grouping data if not already selected.
      */
-    public boolean groupBy(Column col, boolean sel);
+    public void groupBy(Column col);
 
     /**
      * Group by the given column.
-     * Optionally selects grouping data if not already selected.
      */
-    public boolean groupBy(Column col, Joins joins, boolean sel);
+    public void groupBy(Column col, Joins joins);
 
     /**
      * Group by the given columns.
-     * Optionally selects grouping data if not already selected.
      */
-    public int groupBy(Column[] cols, boolean sel);
+    public void groupBy(Column[] cols);
 
     /**
      * Group by the given columns.
-     * Optionally selects grouping data if not already selected.
      */
-    public int groupBy(Column[] cols, Joins joins, boolean sel);
+    public void groupBy(Column[] cols, Joins joins);
 
     /**
      * Add a GROUP BY clause.
-     * Optionally selects grouping data if not already selected.
      */
-    public boolean groupBy(SQLBuffer sql, boolean sel);
+    public void groupBy(SQLBuffer sql);
 
     /**
      * Add a GROUP BY clause.
-     * Optionally selects grouping data if not already selected.
      */
-    public boolean groupBy(SQLBuffer sql, Joins joins, boolean sel);
+    public void groupBy(SQLBuffer sql, Joins joins);
 
     /**
      * Add a GROUP BY clause.
-     * Optionally selects grouping data if not already selected.
      */
-    public boolean groupBy(String sql, boolean sel);
+    public void groupBy(String sql);
 
     /**
      * Add a GROUP BY clause.
-     * Optionally selects grouping data if not already selected.
      */
-    public boolean groupBy(String sql, Joins joins, boolean sel);
+    public void groupBy(String sql, Joins joins);
+
+    /**
+     * Group by the columns of the given mapping, possibly including subclasses.
+     * Assumes EAGER_NONE.
+     */
+    public void groupBy(ClassMapping mapping, int subclasses, JDBCStore store, 
+        JDBCFetchConfiguration fetch);
+
+    /**
+     * Group by the columns of the given mapping, possibly including subclasses.
+     * Assumes EAGER_NONE.
+     */
+    public void groupBy(ClassMapping mapping, int subclasses, JDBCStore store, 
+        JDBCFetchConfiguration fetch, Joins joins);
 
     /**
      * Return a SELECT with the same joins and where conditions as this one.

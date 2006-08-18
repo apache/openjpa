@@ -83,8 +83,8 @@ import org.apache.openjpa.util.UserException;
 public class JDBCStoreManager 
     implements StoreManager, JDBCStore {
 
-    private static final Localizer _loc = Localizer
-        .forPackage(JDBCStoreManager.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (JDBCStoreManager.class);
 
     private StoreContext _ctx = null;
     private JDBCConfiguration _conf = null;
@@ -922,8 +922,8 @@ public class JDBCStoreManager
                 continue;
 
             // try to select with join first
-            jtype = (fms[i].getNullValue() == fms[i].NULL_EXCEPTION) ? sel.EAGER_INNER
-                : sel.EAGER_OUTER;
+            jtype = (fms[i].getNullValue() == fms[i].NULL_EXCEPTION) 
+                ? sel.EAGER_INNER : sel.EAGER_OUTER;
             if (mode != fetch.EAGER_PARALLEL && !fms[i].isEagerSelectToMany()
                 && fms[i].supportsSelect(sel, jtype, sm, this, fetch) > 0
                 && sel.eagerClone(fms[i], jtype, false, 1) != null)
@@ -936,12 +936,14 @@ public class JDBCStoreManager
             // to use a to-many join also.  currently we limit eager
             // outer joins to non-LRS, non-ranged selects that don't already
             // have an eager to-many join
-            if ((hasJoin || mode == fetch.EAGER_JOIN || (mode == fetch.DEFAULT && sm != null))
+            if ((hasJoin || mode == fetch.EAGER_JOIN 
+                || (mode == fetch.DEFAULT && sm != null))
                 && fms[i].isEagerSelectToMany()
                 && !inEagerJoin
                 && !sel.hasEagerJoin(true)
                 && (!sel.getAutoDistinct() || (!sel.isLRS()
-                    && sel.getStartIndex() == 0 && sel.getEndIndex() == Long.MAX_VALUE))
+                && sel.getStartIndex() == 0 
+                && sel.getEndIndex() == Long.MAX_VALUE))
                 && fms[i].supportsSelect(sel, jtype, sm, this, fetch) > 0) {
                 if (sel.eagerClone(fms[i], jtype, true, 1) != null)
                     eagerToMany = fms[i];
@@ -952,9 +954,9 @@ public class JDBCStoreManager
             // finally, try parallel
             if (eager == fetch.EAGER_PARALLEL
                 && (sels = fms[i].supportsSelect(sel, sel.EAGER_PARALLEL, sm,
-                    this, fetch)) != 0)
-                sel.eagerClone(fms[i], Select.EAGER_PARALLEL, fms[i]
-                    .isEagerSelectToMany(), sels);
+                this, fetch)) != 0)
+                sel.eagerClone(fms[i], Select.EAGER_PARALLEL, 
+                    fms[i].isEagerSelectToMany(), sels);
         }
         return eagerToMany;
     }
@@ -993,8 +995,8 @@ public class JDBCStoreManager
         boolean ident, boolean joined) {
         ClassMapping parent = mapping.getJoinablePCSuperclassMapping();
         if (parent == null && !mapping.isMapped())
-            throw new InvalidStateException(_loc.get("virtual-mapping", mapping
-                .getDescribedType()));
+            throw new InvalidStateException(_loc.get("virtual-mapping", mapping.
+                getDescribedType()));
 
         int seld = -1;
         int pseld = -1;
@@ -1011,9 +1013,9 @@ public class JDBCStoreManager
             }
 
             // if no instance or not initialized and not exact oid, select type
-            if ((sm == null || (sm.getPCState() == PCState.TRANSIENT && (!(sm
-                .getObjectId() instanceof OpenJPAId) || ((OpenJPAId) sm
-                .getObjectId()).hasSubclasses())))
+            if ((sm == null || (sm.getPCState() == PCState.TRANSIENT 
+                && (!(sm.getObjectId() instanceof OpenJPAId) 
+                || ((OpenJPAId) sm.getObjectId()).hasSubclasses())))
                 && mapping.getDiscriminator().select(sel, orig))
                 seld = 1;
 
@@ -1346,7 +1348,8 @@ public class JDBCStoreManager
      */
     private class CancelPreparedStatement extends DelegatingPreparedStatement {
 
-        public CancelPreparedStatement(PreparedStatement stmnt, Connection conn) {
+        public CancelPreparedStatement(PreparedStatement stmnt, 
+            Connection conn) {
             super(stmnt, conn);
         }
 

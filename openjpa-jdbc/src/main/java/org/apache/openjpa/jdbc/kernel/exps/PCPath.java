@@ -502,7 +502,14 @@ class PCPath
 
     public void groupBy(Select sel, JDBCStore store, Object[] params,
         JDBCFetchConfiguration fetch) {
-        sel.groupBy(getColumns(), sel.outer(_joins), false);
+        ClassMapping mapping = getClassMapping();
+        if (mapping == null || !_joinedRel)
+            sel.groupBy(getColumns(), sel.outer(_joins));
+        else {
+            int subs = (_type == UNBOUND_VAR) ? sel.SUBS_JOINABLE
+                : sel.SUBS_ANY_JOINABLE;
+            sel.groupBy(mapping, subs, store, fetch, sel.outer(_joins));
+        }
     }
 
     public void orderBy(Select sel, JDBCStore store, Object[] params,
