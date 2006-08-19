@@ -72,4 +72,11 @@ abstract class CompareExpression
      * Compare the two values.
      */
     protected abstract boolean compare(Object o1, Object o2);
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val1.acceptVisit(visitor);
+        _val2.acceptVisit(visitor);
+        visitor.exit(this);
+    }
 }

@@ -19,17 +19,22 @@ import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 
 /**
- * Aggregate listener that evaluates to a value.
+ * Abstract value for easy extension.
  *
  * @author Marc Prud'hommeaux
  */
 abstract class AbstractVal
     implements Val {
 
-    private static final String TRUE = "1 = 1";
-    private static final String FALSE = "1 <> 1";
+    protected static final String TRUE = "1 = 1";
+    protected static final String FALSE = "1 <> 1";
+
+    public boolean isVariable() {
+        return false;
+    }
 
     public void appendIsEmpty(SQLBuffer sql, Select sel, JDBCStore store,
         Object[] params, JDBCFetchConfiguration fetch) {
@@ -56,6 +61,11 @@ abstract class AbstractVal
     public void appendSize(SQLBuffer sql, Select sel, JDBCStore store,
         Object[] params, JDBCFetchConfiguration fetch) {
         sql.append("1");
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        visitor.exit(this);
     }
 }
 

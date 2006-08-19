@@ -42,19 +42,11 @@ abstract class AggregateVal
         _val = val;
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         return getType(_val.getType());
     }
 
     public void setImplicitType(Class type) {
-    }
-
-    public boolean hasVariables() {
-        return _val.hasVariables();
     }
 
     protected Object eval(Object candidate, Object orig,
@@ -85,4 +77,10 @@ abstract class AggregateVal
      * Aggregate the given values.
      */
     protected abstract Object operate(Collection os, Class c);
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        visitor.exit(this);
+    }
 }

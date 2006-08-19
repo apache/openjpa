@@ -19,6 +19,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 
 /**
  * A path represents a traversal into fields of a candidate object.
+ * Equivalent paths should compare equal.
  *
  * @author Abe White
  */

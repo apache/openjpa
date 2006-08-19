@@ -36,10 +36,6 @@ class StringLength
         _val = val;
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         if (_cast != null)
             return _cast;
@@ -50,10 +46,6 @@ class StringLength
         _cast = type;
     }
 
-    public boolean hasVariables() {
-        return _val.hasVariables();
-    }
-
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         Object eval = _val.eval(candidate, orig, ctx, params);
@@ -61,6 +53,12 @@ class StringLength
             return Numbers.valueOf(0);
 
         return Numbers.valueOf(eval.toString().length());
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }
 

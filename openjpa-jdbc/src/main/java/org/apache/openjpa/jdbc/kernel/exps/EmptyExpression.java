@@ -22,6 +22,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 
 /**
  * An empty expression.
@@ -47,11 +48,8 @@ class EmptyExpression
         return null;
     }
 
-    public boolean hasContainsExpression() {
-        return false;
-    }
-
-    public boolean hasVariable(Variable var) {
-        return false;
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        visitor.exit(this);
     }
 }

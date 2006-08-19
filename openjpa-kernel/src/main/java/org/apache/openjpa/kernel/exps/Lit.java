@@ -38,10 +38,6 @@ class Lit
         _ptype = ptype;
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Object getValue() {
         return _val;
     }
@@ -64,10 +60,6 @@ class Lit
 
     public void setImplicitType(Class type) {
         _val = Filters.convert(_val, type);
-    }
-
-    public boolean hasVariables() {
-        return false;
     }
 
     protected Object eval(Object candidate, Object orig,

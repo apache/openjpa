@@ -71,4 +71,9 @@ class Exp
         Object[] params) {
         return true;
 	}
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        visitor.exit(this);
+    }
 }

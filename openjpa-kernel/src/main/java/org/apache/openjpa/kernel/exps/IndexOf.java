@@ -38,19 +38,11 @@ class IndexOf
         _args = args;
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         return int.class;
     }
 
     public void setImplicitType(Class type) {
-    }
-
-    public boolean hasVariables() {
-        return _val.hasVariables() || _args.hasVariables();
     }
 
     protected Object eval(Object candidate, Object orig,
@@ -65,5 +57,12 @@ class IndexOf
         } else
             idx = str.toString().indexOf(arg.toString());
         return Numbers.valueOf(idx);
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        _args.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

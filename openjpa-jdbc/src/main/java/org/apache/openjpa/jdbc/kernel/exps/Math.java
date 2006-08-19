@@ -25,6 +25,7 @@ import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
@@ -33,8 +34,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  * @author Abe White
  */
 class Math
-    extends AbstractVal
-    implements Val {
+    extends AbstractVal {
 
     public static final String ADD = "+";
     public static final String SUBTRACT = "-";
@@ -134,10 +134,6 @@ class Math
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
-    public boolean hasVariable(Variable var) {
-        return _val1.hasVariable(var) || _val2.hasVariable(var);
-    }
-
     public void calculateValue(Select sel, JDBCStore store,
         Object[] params, Val other, JDBCFetchConfiguration fetch) {
         _val1.calculateValue(sel, store, params, _val2, fetch);
@@ -158,6 +154,13 @@ class Math
         store.getDBDictionary().mathFunction(sql, _op,
             new FilterValueImpl(_val1, sel, store, params, fetch),
             new FilterValueImpl(_val2, sel, store, params, fetch));
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val1.acceptVisit(visitor);
+        _val2.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }
 

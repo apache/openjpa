@@ -24,6 +24,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 
 /**
  * Combines two expressions.
@@ -97,11 +98,10 @@ class OrExpression
         return _joins;
     }
 
-    public boolean hasContainsExpression() {
-        return _exp1.hasContainsExpression() || _exp2.hasContainsExpression();
-    }
-
-    public boolean hasVariable(Variable var) {
-        return _exp1.hasVariable(var) || _exp2.hasVariable(var);
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _exp1.acceptVisit(visitor);
+        _exp2.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

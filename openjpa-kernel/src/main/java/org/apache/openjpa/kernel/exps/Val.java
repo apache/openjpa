@@ -67,11 +67,6 @@ public abstract class Val
     }
 
     /**
-     * Return true if this value involves the use of variables.
-     */
-    public abstract boolean hasVariables();
-
-    /**
      * Return this value for the given candidate.
      */
     protected abstract Object eval(Object candidate, Object orig,
@@ -103,4 +98,13 @@ public abstract class Val
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
 	}
+
+    public boolean isVariable() {
+        return false;
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        visitor.exit(this);
+    }
 }

@@ -79,5 +79,12 @@ class BindVariableExpression
         Object obj = candidates.iterator().next();
         return eval(obj, obj, ctx, params);
 	}
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _var.acceptVisit(visitor);
+        _val.acceptVisit(visitor);
+        visitor.exit(this);
+    }
 }
 

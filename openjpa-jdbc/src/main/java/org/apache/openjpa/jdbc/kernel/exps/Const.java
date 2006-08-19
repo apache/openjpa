@@ -38,7 +38,8 @@ import org.apache.openjpa.meta.JavaTypes;
  * @author Abe White
  */
 abstract class Const
-    implements Val, Constant {
+    extends AbstractVal
+    implements Constant {
 
     private ClassMetaData _meta = null;
     private Column[] _cols = null;
@@ -49,10 +50,6 @@ abstract class Const
 
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
-    }
-
-    public boolean isVariable() {
-        return false;
     }
 
     /**
@@ -152,10 +149,6 @@ abstract class Const
         return Filters.convert(res.getObject(this, code, null), getType());
     }
 
-    public boolean hasVariable(Variable var) {
-        return false;
-    }
-
     public int length() {
         return 1;
     }
@@ -164,22 +157,22 @@ abstract class Const
         JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         Object obj = getValue();
         if (obj instanceof Collection && ((Collection) obj).isEmpty())
-            sql.append("1 = 1");
+            sql.append(TRUE);
         else if (obj instanceof Map && ((Map) obj).isEmpty())
-            sql.append("1 = 1");
+            sql.append(TRUE);
         else
-            sql.append("1 <> 1");
+            sql.append(FALSE);
     }
 
     public void appendIsNotEmpty(SQLBuffer sql, Select sel,
         JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         Object obj = getValue();
         if (obj instanceof Collection && ((Collection) obj).isEmpty())
-            sql.append("1 <> 1");
+            sql.append(FALSE);
         else if (obj instanceof Map && ((Map) obj).isEmpty())
-            sql.append("1 <> 1");
+            sql.append(FALSE);
         else
-            sql.append("1 = 1");
+            sql.append(TRUE);
     }
 
     public void appendSize(SQLBuffer sql, Select sel, JDBCStore store,
@@ -196,16 +189,16 @@ abstract class Const
     public void appendIsNull(SQLBuffer sql, Select sel,
         JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         if (getSQLValue() == null)
-            sql.append("1 = 1");
+            sql.append(TRUE);
         else
-            sql.append("1 <> 1");
+            sql.append(FALSE);
     }
 
     public void appendIsNotNull(SQLBuffer sql, Select sel,
         JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         if (getSQLValue() != null)
-            sql.append("1 = 1");
+            sql.append(TRUE);
         else
-            sql.append("1 <> 1");
+            sql.append(FALSE);
     }
 }

@@ -38,10 +38,6 @@ class Trim
         _where = where;
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         return String.class;
     }
@@ -49,20 +45,14 @@ class Trim
     public void setImplicitType(Class type) {
     }
 
-    public boolean hasVariables() {
-        return _val.hasVariables();
-    }
-
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         Object eval = _val.eval(candidate, orig, ctx, params);
-
         if (eval == null)
             return null;
 
         String toTrim = _trimChar.eval(candidate, orig, ctx, params).
             toString();
-
         String str = eval.toString();
 
         // null indicates both, TRUE indicates leading
@@ -76,8 +66,14 @@ class Trim
             while (str.endsWith(toTrim))
                 str = str.substring(0, str.length() - toTrim.length());
         }
-
         return str;
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        _trimChar.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }
 

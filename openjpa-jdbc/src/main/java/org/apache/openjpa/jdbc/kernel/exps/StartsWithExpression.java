@@ -27,6 +27,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import serp.util.Numbers;
 
 /**
@@ -117,12 +118,11 @@ class StartsWithExpression
         return _joins;
     }
 
-    public boolean hasContainsExpression() {
-        return false;
-    }
-
-    public boolean hasVariable(Variable var) {
-        return _val1.hasVariable(var) || _val2.hasVariable(var);
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val1.acceptVisit(visitor);
+        _val2.acceptVisit(visitor);
+        visitor.exit(this);
     }
 
     /**

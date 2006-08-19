@@ -63,10 +63,6 @@ class BoundVariable
         _type = type;
     }
 
-    public boolean hasVariables() {
-        return true;
-    }
-
     /**
      * Cast this value to the given type.
      */

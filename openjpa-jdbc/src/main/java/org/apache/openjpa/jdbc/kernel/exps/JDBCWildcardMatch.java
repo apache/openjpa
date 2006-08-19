@@ -27,8 +27,7 @@ import org.apache.openjpa.util.UserException;
  * argument. The wildcard '?' is used to represent any single character,
  * while '*' is used to represent any series of 0 or more characters.
  *  Examples:<br />
- * <code> "address.street.ext:wildcardMatch (\"?ain*reet\")"
- * </code>
+ * <code>"address.street.ext:wildcardMatch (\"?ain*reet\")"</code>
  *
  * @nojavadoc
  * @deprecated Use <code>matches()</code> instead.

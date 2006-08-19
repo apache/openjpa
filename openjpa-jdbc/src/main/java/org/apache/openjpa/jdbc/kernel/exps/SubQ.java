@@ -26,6 +26,7 @@ import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -36,7 +37,8 @@ import org.apache.openjpa.meta.ClassMetaData;
  * @author Abe White
  */
 class SubQ
-    implements Val, Subquery {
+    extends AbstractVal
+    implements Subquery {
 
     private final ClassMapping _candidate;
     private final boolean _subs;
@@ -155,25 +157,6 @@ class SubQ
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
-    public boolean hasVariable(Variable var) {
-        for (int i = 0; i < _exps.projections.length; i++)
-            if (((Val) _exps.projections[i]).hasVariable(var))
-                return true;
-        if (_exps.filter != null)
-            if (((Exp) _exps.filter).hasVariable(var))
-                return true;
-        for (int i = 0; i < _exps.grouping.length; i++)
-            if (((Val) _exps.grouping[i]).hasVariable(var))
-                return true;
-        if (_exps.having != null)
-            if (((Exp) _exps.having).hasVariable(var))
-                return true;
-        for (int i = 0; i < _exps.ordering.length; i++)
-            if (((Val) _exps.ordering[i]).hasVariable(var))
-                return true;
-        return false;
-    }
-
     public void calculateValue(Select sel, JDBCStore store,
         Object[] params, Val other, JDBCFetchConfiguration fetch) {
     }
@@ -222,15 +205,18 @@ class SubQ
         appendTo(sql, 0, sel, store, params, fetch, true);
     }
 
-    public void appendIsNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        appendTo(sql, 0, sel, store, params, fetch);
-        sql.append(" IS NULL");
-    }
-
-    public void appendIsNotNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        appendTo(sql, 0, sel, store, params, fetch);
-        sql.append(" IS NOT NULL");
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        for (int i = 0; i < _exps.projections.length; i++)
+            _exps.projections[i].acceptVisit(visitor);
+        if (_exps.filter != null)
+            _exps.filter.acceptVisit(visitor);
+        for (int i = 0; i < _exps.grouping.length; i++)
+            _exps.grouping[i].acceptVisit(visitor);
+        if (_exps.having != null)
+            _exps.having.acceptVisit(visitor);
+        for (int i = 0; i < _exps.ordering.length; i++)
+            _exps.ordering[i].acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

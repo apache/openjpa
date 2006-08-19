@@ -26,6 +26,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 
 /**
  * Tests whether a value is IN a collection.
@@ -158,18 +159,17 @@ class InExpression
         return _val.getJoins();
     }
 
-    public boolean hasContainsExpression() {
-        return false;
-    }
-
-    public boolean hasVariable(Variable var) {
-        return _const.hasVariable(var) || _val.hasVariable(var);
-    }
-
     /**
      * Return the collection to test for containment with.
      */
     protected Collection getCollection() {
         return (Collection) _const.getValue();
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        _const.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

@@ -49,10 +49,6 @@ class Args
         return (Value[]) _args.toArray(new Value[_args.size()]);
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         return Object[].class;
     }
@@ -67,18 +63,18 @@ class Args
     public void setImplicitType(Class type) {
     }
 
-    public boolean hasVariables() {
-        for (int i = 0; i < _args.size(); i++)
-            if (((Val) _args.get(i)).hasVariables())
-                return true;
-        return false;
-    }
-
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         Object[] vals = new Object[_args.size()];
         for (int i = 0; i < _args.size(); i++)
             vals[i] = ((Val) _args.get(i)).eval(candidate, orig, ctx, params);
         return vals;
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        for (int i = 0; i < _args.size(); i++)
+            ((Val) _args.get(i)).acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

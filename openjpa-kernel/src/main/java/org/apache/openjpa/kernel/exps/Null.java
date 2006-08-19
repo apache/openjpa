@@ -25,14 +25,6 @@ import org.apache.openjpa.kernel.StoreContext;
 class Null
     extends Val {
 
-    public boolean hasVariables() {
-        return false;
-    }
-
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         return Object.class;
     }

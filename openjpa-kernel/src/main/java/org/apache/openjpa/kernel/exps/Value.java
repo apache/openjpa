@@ -52,4 +52,9 @@ public interface Value {
      * Associate a persistent type with this value.
      */
     public void setMetaData(ClassMetaData meta);
+
+    /**
+     * Accept a visit from a tree visitor.
+     */
+    public void acceptVisit(ExpressionVisitor visitor);
 }

@@ -35,7 +35,6 @@ class Count
 
     public void initialize(Select sel, JDBCStore store, boolean nullTest) {
         super.initialize(sel, store, nullTest);
-
         // join into related object if present
         if (getVal()instanceof PCPath)
             ((PCPath) getVal()).joinRelation();

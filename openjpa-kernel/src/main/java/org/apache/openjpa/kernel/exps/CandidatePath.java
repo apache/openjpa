@@ -48,10 +48,6 @@ class CandidatePath
         _actions.add(new Traversal(field, nullTraversal));
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         if (_actions == null)
             return getCandidateType();
@@ -71,10 +67,6 @@ class CandidatePath
     }
 
     public void setImplicitType(Class type) {
-    }
-
-    public boolean hasVariables() {
-        return false;
     }
 
     public FieldMetaData last() {

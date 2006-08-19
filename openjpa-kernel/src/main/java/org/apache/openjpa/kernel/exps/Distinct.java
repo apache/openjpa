@@ -38,10 +38,6 @@ class Distinct
         _val = val;
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         return Collection.class;
     }
@@ -49,18 +45,12 @@ class Distinct
     public void setImplicitType(Class type) {
     }
 
-    public boolean hasVariables() {
-        return _val.hasVariables();
-    }
-
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         if (candidate == null)
             candidate = Collections.EMPTY_LIST;
-        
         Collection arg = candidate instanceof Collection
             ? (Collection) candidate : Collections.singleton(candidate);
-
         return eval(arg, orig, ctx, params).iterator().next();
     }
 
@@ -68,6 +58,12 @@ class Distinct
         StoreContext ctx, Object[] params) {
         Collection args = _val.eval(candidates, orig, ctx, params);
         return new HashSet(args);
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }
 

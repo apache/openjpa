@@ -214,7 +214,10 @@ public class JDBCExpressionFactory
 
     public Expression not(Expression exp) {
         Exp e = (Exp) exp;
-        if (e.hasContainsExpression())
+        HasContainsExpressionVisitor visitor = 
+            new HasContainsExpressionVisitor();
+        e.acceptVisit(visitor);
+        if (visitor.foundContainsExpression())
             return new NotContainsExpression(e);
         return new NotExpression(e);
     }

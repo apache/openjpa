@@ -16,11 +16,15 @@
 package org.apache.openjpa.kernel.exps;
 
 /**
- * Marker interface for a set of conditions that must be met for the query
+ * Interface for a set of conditions that must be met for the query
  * to be true.
  *
  * @author Abe White
  */
 public interface Expression {
 
+    /**
+     * Accept a visit from a tree visitor.
+     */
+    public void acceptVisit(ExpressionVisitor visitor);
 }

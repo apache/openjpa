@@ -97,11 +97,6 @@ public interface Val
         throws SQLException;
 
     /**
-     * Return true if this value uses the given variable.
-     */
-    public boolean hasVariable(Variable var);
-
-    /**
      * Calculate and cache the SQL for this value. This method is called
      * before <code>length</code> or any <code>append</code> methods.
      *

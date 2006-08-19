@@ -45,5 +45,11 @@ class NotExpression
         Object[] params) {
         return !_exp.evaluate(candidates, ctx, params);
     }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _exp.acceptVisit(visitor);
+        visitor.exit(this);
+    }
 }
 

@@ -27,6 +27,7 @@ import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
@@ -159,11 +160,6 @@ class Extension
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
-    public boolean hasVariable(Variable var) {
-        return (_target != null && _target.hasVariable(var))
-            || (_arg != null && _arg.hasVariable(var));
-    }
-
     public void calculateValue(Select sel, JDBCStore store,
         Object[] params, Val other, JDBCFetchConfiguration fetch) {
         if (_target != null)
@@ -209,6 +205,15 @@ class Extension
         };
     }
 
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter((Exp) this);
+        if (_target != null)
+            _target.acceptVisit(visitor);
+        if (_arg != null)
+            _arg.acceptVisit(visitor);
+        visitor.exit((Exp) this);
+    }
+
     //////////////////////
     // Exp implementation
     //////////////////////
@@ -224,9 +229,5 @@ class Extension
         appendTo(sql, 0, sel, store, params, fetch);
         sel.append(sql, getJoins());
         clearParameters();
-    }
-
-    public boolean hasContainsExpression() {
-        return false;
     }
 }

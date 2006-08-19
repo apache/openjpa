@@ -38,15 +38,17 @@ class ValuePath
         return _val.getType();
     }
 
-    public boolean hasVariables() {
-        return _val.hasVariables();
-    }
-
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         // evaluate with the value's value
         return super.eval(_val.eval(candidate, orig, ctx, params), orig,
             ctx, params);
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }
 

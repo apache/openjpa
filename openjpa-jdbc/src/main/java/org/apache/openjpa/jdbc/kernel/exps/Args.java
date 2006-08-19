@@ -22,6 +22,7 @@ import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.Arguments;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
 
@@ -31,7 +32,8 @@ import org.apache.openjpa.meta.ClassMetaData;
  * @author Abe White
  */
 public class Args
-    implements Val, Arguments {
+    extends AbstractVal
+    implements Arguments {
 
     private final Val[] _args;
     private Joins _joins = null;
@@ -130,13 +132,6 @@ public class Args
         return null;
     }
 
-    public boolean hasVariable(Variable var) {
-        for (int i = 0; i < _args.length; i++)
-            if (_args[i].hasVariable(var))
-                return true;
-        return false;
-    }
-
     public void calculateValue(Select sel, JDBCStore store,
         Object[] params, Val other, JDBCFetchConfiguration fetch) {
         for (int i = 0; i < _args.length; i++)
@@ -174,5 +169,12 @@ public class Args
 
     public void appendIsNotNull(SQLBuffer sql, Select sel,
         JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        for (int i = 0; i < _args.length; i++)
+            _args[i].acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

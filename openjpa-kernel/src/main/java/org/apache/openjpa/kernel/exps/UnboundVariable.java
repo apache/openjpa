@@ -58,10 +58,6 @@ class UnboundVariable
         _val = value;
     }
 
-    public boolean hasVariables() {
-        return true;
-    }
-
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         return _val;

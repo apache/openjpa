@@ -63,5 +63,11 @@ class IsEmptyExpression
             return ((Map) obj).isEmpty();
         return false;
     }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        visitor.exit(this);
+    }
 }
 

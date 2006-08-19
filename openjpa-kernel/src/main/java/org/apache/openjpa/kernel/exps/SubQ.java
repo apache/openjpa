@@ -46,20 +46,12 @@ class SubQ
         long endIdx) {
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         return _type;
     }
 
     public void setImplicitType(Class type) {
         _type = type;
-    }
-
-    public boolean hasVariables() {
-        return false;
     }
 
     protected Object eval(Object candidate, Object orig,

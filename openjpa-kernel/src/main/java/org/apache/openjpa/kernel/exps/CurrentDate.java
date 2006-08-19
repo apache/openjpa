@@ -27,14 +27,6 @@ import org.apache.openjpa.kernel.StoreContext;
 class CurrentDate
     extends Val {
 
-    public boolean hasVariables() {
-        return false;
-    }
-
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         return Date.class;
     }

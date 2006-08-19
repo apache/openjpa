@@ -69,15 +69,4 @@ interface Exp
      * that common joins are moved up the expression tree.
      */
     public Joins getJoins();
-
-    /**
-     * Return true if this expression is or is made up of a contains expression.
-     */
-    public boolean hasContainsExpression();
-
-    /**
-     * Return true if the expression or any subexpression uses the given
-     * variable.
-     */
-    public boolean hasVariable(Variable var);
 }
