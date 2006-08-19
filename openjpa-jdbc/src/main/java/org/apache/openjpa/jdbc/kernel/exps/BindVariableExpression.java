@@ -22,6 +22,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 
 /**
  * Binds a variable to a value. Typically, the {@link #initialize} and
@@ -71,11 +72,9 @@ class BindVariableExpression
         return _var.getJoins();
     }
 
-    public boolean hasContainsExpression() {
-        return false;
-    }
-
-    public boolean hasVariable(Variable var) {
-        return _var == var;
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _var.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

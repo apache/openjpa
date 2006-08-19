@@ -23,6 +23,7 @@ import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 
 /**
  * Tests whether a value is an instance of a class.
@@ -67,11 +68,9 @@ class ConstInstanceofExpression
         return _const.getJoins();
     }
 
-    public boolean hasContainsExpression() {
-        return false;
-    }
-
-    public boolean hasVariable(Variable var) {
-        return _const.hasVariable(var);
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _const.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

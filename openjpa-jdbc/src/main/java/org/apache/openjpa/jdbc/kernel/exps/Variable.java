@@ -23,6 +23,7 @@ import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
@@ -37,7 +38,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  * @author Abe White
  */
 class Variable
-    implements Val {
+    extends AbstractVal {
 
     private final String _name;
     private final Class _type;
@@ -143,10 +144,6 @@ class Variable
         return null;
     }
 
-    public boolean hasVariable(Variable var) {
-        return this == var;
-    }
-
     public void calculateValue(Select sel, JDBCStore store,
         Object[] params, Val other, JDBCFetchConfiguration fetch) {
         if (_path != null)
@@ -184,5 +181,12 @@ class Variable
 
     public void appendIsNotNull(SQLBuffer sql, Select sel,
         JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        if (_path != null)
+            _path.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

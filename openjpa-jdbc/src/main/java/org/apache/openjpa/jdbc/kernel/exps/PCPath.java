@@ -44,6 +44,7 @@ import org.apache.openjpa.util.UserException;
  * @author Abe White
  */
 class PCPath
+    extends AbstractVal
     implements JDBCPath {
 
     private static final int PATH = 0;
@@ -543,6 +544,9 @@ class PCPath
         return ret;
     }
 
+    /**
+     * Whether the given variable appears in this path.
+     */
     public boolean hasVariable(Variable var) {
         if (_actions == null)
             return false;
@@ -585,7 +589,7 @@ class PCPath
     public void appendIsEmpty(SQLBuffer sql, Select sel,
         JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         if (_field == null)
-            sql.append("1 <> 1");
+            sql.append(FALSE);
         else
             _field.appendIsEmpty(sql, sel, _joins);
     }
@@ -593,7 +597,7 @@ class PCPath
     public void appendIsNotEmpty(SQLBuffer sql, Select sel,
         JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         if (_field == null)
-            sql.append("1 <> 1");
+            sql.append(FALSE);
         else
             _field.appendIsNotEmpty(sql, sel, _joins);
     }
@@ -609,7 +613,7 @@ class PCPath
     public void appendIsNull(SQLBuffer sql, Select sel,
         JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         if (_field == null)
-            sql.append("1 <> 1");
+            sql.append(FALSE);
         else
             _field.appendIsNull(sql, sel, _joins);
     }
@@ -617,7 +621,7 @@ class PCPath
     public void appendIsNotNull(SQLBuffer sql, Select sel,
         JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         if (_field == null)
-            sql.append("1 = 1");
+            sql.append(TRUE);
         else
             _field.appendIsNotNull(sql, sel, _joins);
     }

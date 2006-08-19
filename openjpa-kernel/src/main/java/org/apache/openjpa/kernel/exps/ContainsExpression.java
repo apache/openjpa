@@ -70,5 +70,12 @@ class ContainsExpression
     protected Collection getCollection(Object obj) {
         return (Collection) obj;
     }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val1.acceptVisit(visitor);
+        _val2.acceptVisit(visitor);
+        visitor.exit(this);
+    }
 }
 

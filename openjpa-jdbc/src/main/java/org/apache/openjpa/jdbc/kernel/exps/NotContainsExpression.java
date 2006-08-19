@@ -23,6 +23,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 
 /**
  * Negates a contains expression using a subselect to make sure no
@@ -76,11 +77,9 @@ class NotContainsExpression
         return null;
     }
 
-    public boolean hasContainsExpression() {
-        return false;
-    }
-
-    public boolean hasVariable(Variable var) {
-        return _exp.hasVariable(var);
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _exp.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

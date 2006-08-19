@@ -49,5 +49,12 @@ class OrExpression
         return _exp1.evaluate(candidates, ctx, params)
             || _exp2.evaluate(candidates, ctx, params);
     }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _exp1.acceptVisit(visitor);
+        _exp2.acceptVisit(visitor);
+        visitor.exit(this);
+    }
 }
 

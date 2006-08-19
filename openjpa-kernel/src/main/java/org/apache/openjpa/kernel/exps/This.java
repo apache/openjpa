@@ -25,14 +25,6 @@ import org.apache.openjpa.kernel.StoreContext;
 class This
     extends Val {
 
-    public boolean hasVariables() {
-        return false;
-    }
-
-    public boolean isVariable() {
-        return false;
-    }
-
     public void setImplicitType(Class type) {
     }
 

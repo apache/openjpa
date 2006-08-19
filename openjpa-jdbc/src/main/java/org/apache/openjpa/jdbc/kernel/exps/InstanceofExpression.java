@@ -26,6 +26,7 @@ import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.meta.JavaTypes;
 
 /**
@@ -143,12 +144,10 @@ class InstanceofExpression
         return _joins;
     }
 
-    public boolean hasContainsExpression() {
-        return false;
-    }
-
-    public boolean hasVariable(Variable var) {
-        return _path.hasVariable(var);
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _path.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }
 

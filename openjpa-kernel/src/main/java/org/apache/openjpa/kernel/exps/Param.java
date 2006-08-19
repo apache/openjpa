@@ -42,20 +42,12 @@ class Param
         return _name;
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         return _type;
     }
 
     public void setImplicitType(Class type) {
         _type = type;
-    }
-
-    public boolean hasVariables() {
-        return false;
     }
 
     public void setIndex(int index) {

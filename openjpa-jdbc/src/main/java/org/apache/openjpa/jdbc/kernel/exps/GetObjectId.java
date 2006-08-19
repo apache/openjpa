@@ -27,6 +27,7 @@ import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.ApplicationIds;
@@ -41,8 +42,7 @@ import serp.util.Numbers;
  * @author Abe White
  */
 class GetObjectId
-    extends AbstractVal
-    implements Val {
+    extends AbstractVal {
 
     private static final Localizer _loc = Localizer.forPackage
         (GetObjectId.class);
@@ -67,10 +67,6 @@ class GetObjectId
 
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
-    }
-
-    public boolean isVariable() {
-        return false;
     }
 
     public Class getType() {
@@ -159,10 +155,6 @@ class GetObjectId
         return _path.load(res, store, true, fetch);
     }
 
-    public boolean hasVariable(Variable var) {
-        return _path.hasVariable(var);
-    }
-
     public void calculateValue(Select sel, JDBCStore store,
         Object[] params, Val other, JDBCFetchConfiguration fetch) {
         _path.calculateValue(sel, store, params, null, fetch);
@@ -179,6 +171,12 @@ class GetObjectId
     public void appendTo(SQLBuffer sql, int index, Select sel,
         JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
         _path.appendTo(sql, index, sel, store, params, fetch);
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _path.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }
 

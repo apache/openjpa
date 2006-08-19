@@ -48,4 +48,10 @@ class ValExpression
         Object o = (c == null || c.isEmpty()) ? null : c.iterator().next();
         return o != null && ((Boolean) o).booleanValue();
     }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        visitor.exit(this);
+    }
 }

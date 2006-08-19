@@ -59,8 +59,4 @@ class ContainsExpression
     protected boolean isDirectComparison() {
         return false;
     }
-
-    public boolean hasContainsExpression() {
-        return true;
-    }
 }

@@ -90,8 +90,8 @@ class SingleFieldManager
                 if (proxy == null) {
                     proxy = (Proxy) _sm.newFieldProxy(field);
                     if (objval != null)
-                        ((Calendar) proxy)
-                            .setTime(((Calendar) objval).getTime());
+                        ((Calendar) proxy).setTime(((Calendar) objval).
+                            getTime());
                     ret = true;
                 }
                 break;

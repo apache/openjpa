@@ -26,8 +26,7 @@ import org.apache.openjpa.util.UserException;
  * Tests if the target contains the given argument. The argument must be
  * a constant.
  *  Examples:<br />
- * <code> "address.street.ext:stringContains (\"main\")"
- * </code>
+ * <code>"address.street.ext:stringContains (\"main\")"</code>
  *
  * @nojavadoc
  * @deprecated Use <code>matches()</code> instead.

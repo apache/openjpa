@@ -22,6 +22,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 
 /**
  * Negates an expression.
@@ -63,11 +64,9 @@ class NotExpression
         return _joins;
     }
 
-    public boolean hasContainsExpression() {
-        return _exp.hasContainsExpression();
-    }
-
-    public boolean hasVariable(Variable var) {
-        return _exp.hasVariable(var);
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _exp.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

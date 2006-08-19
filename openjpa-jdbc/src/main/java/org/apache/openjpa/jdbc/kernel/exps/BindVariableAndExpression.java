@@ -22,6 +22,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 
 /**
  * Combines a bind variable expression with another.
@@ -69,11 +70,10 @@ class BindVariableAndExpression
         return _joins;
     }
 
-    public boolean hasContainsExpression() {
-        return true;
-    }
-
-    public boolean hasVariable(Variable var) {
-        return _exp.hasVariable(var);
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _bind.acceptVisit(visitor);
+        _exp.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

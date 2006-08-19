@@ -27,8 +27,7 @@ import org.apache.openjpa.util.UserException;
  * Simple listener which embeds its SQL argument into the query. Listens
  * on <code>sql</code>.
  *  Example:<br />
- * <code> "price &lt; sql(\"(SELECT AVG (PRICE) FROM PRODUCT_TABLE)\")"
- * </code>
+ * <code>"price &lt; sql(\"(SELECT AVG (PRICE) FROM PRODUCT_TABLE)\")"</code>
  *
  * @nojavadoc
  */

@@ -34,10 +34,6 @@ class ToUpperCase
         _val = val;
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         return String.class;
     }
@@ -45,13 +41,15 @@ class ToUpperCase
     public void setImplicitType(Class type) {
     }
 
-    public boolean hasVariables() {
-        return _val.hasVariables();
-    }
-
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         return _val.eval(candidate, orig, ctx, params).toString().
             toUpperCase();
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

@@ -57,4 +57,10 @@ class InstanceofExpression
         Object o = (c == null || c.isEmpty()) ? null : c.iterator().next();
         return _cls.isInstance(o);
 	}
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        visitor.exit(this);
+    }
 }

@@ -41,19 +41,11 @@ class Cast
         _cast = cast;
     }
 
-    public boolean isVariable() {
-        return _val.isVariable();
-    }
-
     public Class getType() {
         return _cast;
     }
 
     public void setImplicitType(Class type) {
-    }
-
-    public boolean hasVariables() {
-        return _val.hasVariables();
     }
 
     protected Object eval(Object candidate, Object orig,
@@ -71,5 +63,11 @@ class Cast
         for (Iterator itr = res.iterator(); itr.hasNext();)
             casts.add(Filters.convert(itr.next(), _cast));
         return casts;
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

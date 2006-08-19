@@ -26,6 +26,7 @@ import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
@@ -34,8 +35,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  * @author Abe White
  */
 class Aggregate
-    extends AbstractVal
-    implements Val {
+    extends AbstractVal {
 
     private final JDBCAggregateListener _listener;
     private final Val _arg;
@@ -145,12 +145,6 @@ class Aggregate
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
-    public boolean hasVariable(Variable var) {
-        if (_arg != null)
-            return _arg.hasVariable(var);
-        return false;
-    }
-
     public void calculateValue(Select sel, JDBCStore store,
         Object[] params, Val other, JDBCFetchConfiguration fetch) {
         if (_arg != null)
@@ -188,5 +182,12 @@ class Aggregate
         return new FilterValue[]{
             new FilterValueImpl(_arg, sel, store, params, fetch)
         };
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        if (_arg != null)
+            _arg.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

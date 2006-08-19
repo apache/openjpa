@@ -27,6 +27,7 @@ import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.meta.ClassMetaData;
 
@@ -36,8 +37,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  * @author Marc Prud'hommeaux
  */
 class Trim
-    extends AbstractVal
-    implements Val {
+    extends AbstractVal {
 
     private final Val _val;
     private final Val _trimChar;
@@ -133,10 +133,6 @@ class Trim
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
-    public boolean hasVariable(Variable var) {
-        return _val.hasVariable(var);
-    }
-
     public void calculateValue(Select sel, JDBCStore store,
         Object[] params, Val other, JDBCFetchConfiguration fetch) {
         _val.calculateValue(sel, store, params, null, fetch);
@@ -191,6 +187,13 @@ class Trim
                     "TrimNonWhitespaceCharacters");
             }
         }
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        _trimChar.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }
 

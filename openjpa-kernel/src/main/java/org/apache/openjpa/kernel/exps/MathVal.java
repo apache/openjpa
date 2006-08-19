@@ -37,10 +37,6 @@ abstract class MathVal
         _val2 = val2;
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         Class c1 = _val1.getType();
         Class c2 = _val2.getType();
@@ -48,10 +44,6 @@ abstract class MathVal
     }
 
     public void setImplicitType(Class type) {
-    }
-
-    public boolean hasVariables() {
-        return _val1.hasVariables() || _val2.hasVariables();
     }
 
     protected Object eval(Object candidate, Object orig,
@@ -66,4 +58,11 @@ abstract class MathVal
      */
     protected abstract Object operate(Object o1, Class c1, Object o2,
         Class c2);
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val1.acceptVisit(visitor);
+        _val2.acceptVisit(visitor);
+        visitor.exit(this);
+    }
 }

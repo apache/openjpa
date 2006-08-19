@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.kernel.exps.AbstractExpressionVisitor;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
@@ -396,32 +397,21 @@ public class ExpressionStoreQuery
             if (_exps[0].projections.length == 0)
                 _projTypes = StoreQuery.EMPTY_CLASSES;
             else {
+                AssertNoVariablesExpressionVisitor novars = new
+                    AssertNoVariablesExpressionVisitor(q.getContext());
                 _projTypes = new Class[_exps[0].projections.length];
                 for (int i = 0; i < _exps[0].projections.length; i++) {
                     _projTypes[i] = _exps[0].projections[i].getType();
                     assertNotContainer(_exps[0].projections[i], q);
-                    assertNotVariable((Val) _exps[0].projections[i],
-                        q.getContext());
+                    _exps[0].projections[i].acceptVisit(novars);
                 }
                 for (int i = 0; i < _exps[0].grouping.length; i++)
-                    assertNotVariable((Val) _exps[0].grouping[i],
-                        q.getContext());
+                    _exps[0].grouping[i].acceptVisit(novars);
             }
         }
 
         QueryExpressions[] getQueryExpressions() {
             return _exps;
-        }
-
-        /**
-         * We can't handle in-memory projections or grouping that uses
-         * variables.
-         */
-        private static void assertNotVariable(Val val, QueryContext ctx) {
-            // we can't handle in-mem results that use variables
-            if (val.hasVariables())
-                throw new UnsupportedException(_loc.get("inmem-agg-proj-var",
-                    ctx.getCandidateType(), ctx.getQueryString()));
         }
 
         public ResultObjectProvider executeQuery(StoreQuery q,
@@ -516,6 +506,26 @@ public class ExpressionStoreQuery
 
         public Class[] getProjectionTypes(StoreQuery q) {
             return _projTypes;
+        }
+
+        /**
+         * Throws an exception if a variable is found.
+         */
+        private static class AssertNoVariablesExpressionVisitor 
+            extends AbstractExpressionVisitor {
+
+            private final QueryContext _ctx;
+
+            public AssertNoVariablesExpressionVisitor(QueryContext ctx) {
+                _ctx = ctx;
+            }
+
+            public void enter(Value val) {
+                if (!val.isVariable())
+                    return;
+                throw new UnsupportedException(_loc.get("inmem-agg-proj-var", 
+                    _ctx.getCandidateType(), _ctx.getQueryString()));
+            }
         }
     }
 

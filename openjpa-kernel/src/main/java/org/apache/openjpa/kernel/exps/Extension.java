@@ -39,21 +39,12 @@ class Extension
         _arg = arg;
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         Class targetClass = (_target == null) ? null : _target.getType();
         return _listener.getType(targetClass, getArgTypes());
     }
 
     public void setImplicitType(Class type) {
-    }
-
-    public boolean hasVariables() {
-        return _target != null && _target.hasVariables()
-            || _arg != null && _arg.hasVariables();
     }
 
     protected Object eval(Object candidate, Object orig,
@@ -85,6 +76,15 @@ class Extension
         if (_arg instanceof Args)
             return (Object[]) arg;
         return new Object[]{ arg };
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        if (_target != null)
+            _target.acceptVisit(visitor);
+        if (_arg != null)
+            _arg.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }
 

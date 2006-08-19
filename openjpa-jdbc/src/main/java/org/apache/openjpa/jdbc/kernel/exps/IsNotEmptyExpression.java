@@ -22,6 +22,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 
 /**
  * Tests whether the given value is not empty.
@@ -62,11 +63,9 @@ class IsNotEmptyExpression
         return _val.getJoins();
     }
 
-    public boolean hasContainsExpression() {
-        return false;
-    }
-
-    public boolean hasVariable(Variable var) {
-        return _val.hasVariable(var);
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }

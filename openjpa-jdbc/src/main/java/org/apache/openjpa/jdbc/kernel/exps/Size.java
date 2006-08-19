@@ -27,8 +27,7 @@ import org.apache.openjpa.util.InternalException;
  * @author Marc Prud'hommeaux
  */
 class Size
-    extends UnaryOp
-    implements Val {
+    extends UnaryOp {
 
     public Size(Val val) {
         super(val);

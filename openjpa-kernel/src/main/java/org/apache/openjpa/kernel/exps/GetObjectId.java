@@ -34,10 +34,6 @@ class GetObjectId
         _val = val;
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         return Object.class;
     }
@@ -45,12 +41,14 @@ class GetObjectId
     public void setImplicitType(Class type) {
     }
 
-    public boolean hasVariables() {
-        return _val.hasVariables();
-    }
-
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         return ctx.getObjectId(_val.eval(candidate, orig, ctx, params));
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        visitor.exit(this);
     }
 }
