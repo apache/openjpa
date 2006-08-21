@@ -131,7 +131,7 @@ public class JDBCStoreQuery
         ClassMetaData base, ClassMetaData[] metas, boolean subclasses,
         ExpressionFactory[] facts, QueryExpressions[] exps, Object[] params,
         boolean lrs, long startIdx, long endIdx) {
-        if (metas.length > 1 && exps[0].aggregate)
+        if (metas.length > 1 && exps[0].isAggregate())
             throw new UserException(Localizer.forPackage(JDBCStoreQuery.class)
                 .get("mult-mapping-aggregate", Arrays.asList(metas)));
 

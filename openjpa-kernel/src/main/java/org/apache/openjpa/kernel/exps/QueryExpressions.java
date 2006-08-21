@@ -37,7 +37,11 @@ public class QueryExpressions {
     public static final int DISTINCT_FALSE = 2 << 2;
     public static final Value[] EMPTY_VALUES = new Value[0];
 
-    public boolean aggregate = false;
+    /**
+     * Map of {@link FieldMetaData},{@link Value} for update statements.
+     */
+    public Map updates = null;
+
     public int distinct = DISTINCT_AUTO;
     public String alias = null;
     public Value[] projections = EMPTY_VALUES;
@@ -55,9 +59,51 @@ public class QueryExpressions {
     public int operation = QueryOperations.OP_SELECT;
     public ClassMetaData[] accessPath = StoreQuery.EMPTY_METAS;
     public String[] fetchPaths = StoreQuery.EMPTY_STRINGS;
+    private Boolean _aggregate = null;
+
+    public boolean isAggregate() {
+        if (projections.length == 0)
+            return false; 
+        if (_aggregate == null)
+            _aggregate = (AggregateExpressionVisitor.isAggregate(projections))
+                ? Boolean.TRUE : Boolean.FALSE;
+        return _aggregate.booleanValue();    
+    }
 
     /**
-     * Map of {@link FieldMetaData},{@link Value} for update statements.
+     * Visitor to determine whether our projections are aggregates.
      */
-    public Map updates = null;
+    private static class AggregateExpressionVisitor
+        extends AbstractExpressionVisitor {
+        
+        private Value _sub = null;
+        private boolean _agg = false;
+
+        /**
+         * Return whether the given values include projections.
+         */
+        public static boolean isAggregate(Value[] vals) {
+            if (vals.length == 0)
+                return false;
+            AggregateExpressionVisitor v = new AggregateExpressionVisitor();
+            for (int i = 0; i < vals.length && !v._agg; i++)
+                vals[i].acceptVisit(v);
+            return v._agg;
+        }
+
+        public void enter(Value val) {
+            if (_agg)
+                return;
+            if (_sub == null) {
+                if (val.isAggregate())
+                    _agg = true;
+            } else if (val instanceof Subquery)
+                _sub = val;
+        }
+
+        public void exit(Value val) {
+            if (val == _sub)
+                _sub = null;
+        }
+    }
 }

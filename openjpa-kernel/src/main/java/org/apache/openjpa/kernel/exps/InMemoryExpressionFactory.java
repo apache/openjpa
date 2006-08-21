@@ -221,7 +221,7 @@ public class InMemoryExpressionFactory
             return matches;
 
         // if an ungrouped aggregate, evaluate the whole matches list
-        if (exps.grouping.length == 0 && exps.aggregate) {
+        if (exps.grouping.length == 0 && exps.isAggregate()) {
             Object[] projection = project(matches, exps, true, ctx, params);
             return Arrays.asList(new Object[]{ projection });
         }
