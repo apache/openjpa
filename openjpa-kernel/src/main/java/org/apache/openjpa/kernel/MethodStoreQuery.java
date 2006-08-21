@@ -206,47 +206,50 @@ public class MethodStoreQuery
          * result.
          */
         private Object invoke(StoreQuery q, Object[] args) {
-            Method meth = _meth;
-            if (meth == null) {
-                String methName = q.getContext().getQueryString();
-                if (methName == null || methName.length() == 0)
-                    throw new UserException(_loc.get("no-method"));
-
-                int dotIdx = methName.lastIndexOf('.');
-                Class cls;
-                if (dotIdx == -1)
-                    cls = _meta.getDescribedType();
-                else {
-                    cls = q.getContext().classForName(methName.substring(0,
-                        dotIdx), null);
-                    if (cls == null)
-                        throw new UserException(_loc.get("bad-method-class",
-                            methName.substring(0, dotIdx), methName));
-                    methName = methName.substring(dotIdx + 1);
-                }
-
-                Class[] types = (_inMem) ? ARGS_INMEM : ARGS_DATASTORE;
-                try {
-                    meth = cls.getMethod(methName, types);
-                } catch (Exception e) {
-                    String msg = (_inMem) ? "bad-inmem-method"
-                        : "bad-datastore-method";
-                    throw new UserException(_loc.get(msg, methName, cls));
-                }
-                if (!Modifier.isStatic(meth.getModifiers()))
-                    throw new UserException(_loc.get("method-not-static",
-                        meth));
-                _meth = meth;
-            }
-
+            validate(q);
             try {
-                return meth.invoke(null, args);
+                return _meth.invoke(null, args);
             } catch (OpenJPAException ke) {
                 throw ke;
             } catch (Exception e) {
                 throw new UserException(_loc.get("method-error", _meth,
                     Exceptions.toString(Arrays.asList(args))), e);
             }
+        }
+
+        public void validate(StoreQuery q) {
+            if (_meth != null)
+                return;
+
+            String methName = q.getContext().getQueryString();
+            if (methName == null || methName.length() == 0)
+                throw new UserException(_loc.get("no-method"));
+
+            int dotIdx = methName.lastIndexOf('.');
+            Class cls;
+            if (dotIdx == -1)
+                cls = _meta.getDescribedType();
+            else {
+                cls = q.getContext().classForName(methName.substring(0, dotIdx),
+                    null);
+                if (cls == null)
+                    throw new UserException(_loc.get("bad-method-class",
+                        methName.substring(0, dotIdx), methName));
+                methName = methName.substring(dotIdx + 1);
+            }
+
+            Method meth;
+            Class[] types = (_inMem) ? ARGS_INMEM : ARGS_DATASTORE;
+            try {
+                meth = cls.getMethod(methName, types);
+            } catch (Exception e) {
+                String msg = (_inMem) ? "bad-inmem-method"
+                    : "bad-datastore-method";
+                throw new UserException(_loc.get(msg, methName, cls));
+            }
+            if (!Modifier.isStatic(meth.getModifiers()))
+                throw new UserException(_loc.get("method-not-static", meth));
+            _meth = meth;
         }
 
         public LinkedMap getParameterTypes(StoreQuery q) {

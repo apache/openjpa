@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -626,6 +627,22 @@ class PCPath
             _field.appendIsNotNull(sql, sel, _joins);
     }
 
+    public int hashCode() {
+        if (_actions == null)
+            return _candidate.hashCode();
+        return _candidate.hashCode() ^ _actions.hashCode();
+    }
+
+    public boolean equals(Object other) {
+        if (other == this)
+            return true;
+        if (!(other instanceof PCPath))
+            return false;
+        PCPath path = (PCPath) other;
+        return ObjectUtils.equals(_candidate, path._candidate)
+            && ObjectUtils.equals(_actions, path._actions);
+    }
+
     /**
      * Helper class representing an action.
      */
@@ -644,6 +661,20 @@ class PCPath
 
         public String toString() {
             return op + "|" + data;
+        }
+
+        public int hashCode() {
+            if (data == null)
+                return op;
+            return op ^ data.hashCode();
+        }
+
+        public boolean equals(Object other) {
+            if (other == this)
+                return true;
+            Action a = (Action) other;
+            return op == a.op
+                && ObjectUtils.equals(data, a.data);
         }
     }
 }

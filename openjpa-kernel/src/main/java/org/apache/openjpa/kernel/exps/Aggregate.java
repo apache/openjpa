@@ -43,6 +43,10 @@ class Aggregate
         _arg = arg;
     }
 
+    public boolean isAggregate() {
+        return true;
+    }
+
     public Class getType() {
         return _listener.getType(getArgTypes());
     }

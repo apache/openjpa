@@ -205,12 +205,8 @@ class SelectConstructor {
     private void initializeJoins(Select sel, JDBCStore store,
         QueryExpressions exps, Object[] params) {
         Map contains = null;
-        HasContainsExpressionVisitor visitor = 
-            new HasContainsExpressionVisitor();
-        exps.filter.acceptVisit(visitor);
-        if (!visitor.foundContainsExpression() && exps.having != null)
-            exps.having.acceptVisit(visitor);
-        if (visitor.foundContainsExpression())
+        if (HasContainsExpressionVisitor.hasContains(exps.filter)
+            || HasContainsExpressionVisitor.hasContains(exps.having))
             contains = new HashMap(7);
 
         // initialize filter and having expressions

@@ -235,14 +235,8 @@ public class SQLStoreQuery
                         res, q.getContext().getResultType());
             } catch (SQLException se) {
                 if (stmnt != null)
-                    try {
-                        stmnt.close();
-                    } catch (SQLException se2) {
-                    }
-                try {
-                    conn.close();
-                } catch (SQLException se2) {
-                }
+                    try { stmnt.close(); } catch (SQLException se2) {}
+                try { conn.close(); } catch (SQLException se2) {}
                 throw SQLExceptions.getStore(se, dict);
             }
 

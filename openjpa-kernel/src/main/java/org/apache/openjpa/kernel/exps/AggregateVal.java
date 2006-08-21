@@ -42,6 +42,10 @@ abstract class AggregateVal
         _val = val;
     }
 
+    public boolean isAggregate() {
+        return true;
+    }
+
     public Class getType() {
         return getType(_val.getType());
     }

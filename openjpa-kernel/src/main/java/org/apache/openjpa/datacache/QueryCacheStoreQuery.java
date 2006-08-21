@@ -380,6 +380,10 @@ public class QueryCacheStoreQuery
             return EMPTY_STRINGS;
         }
 
+        public void validate(StoreQuery q) {
+            _ex.validate(unwrap(q));
+        }
+
         public Object getOrderingValue(StoreQuery q, Object[] params,
             Object resultObject, int orderIndex) {
             return _ex.getOrderingValue(unwrap(q), params, resultObject,

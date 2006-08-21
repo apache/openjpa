@@ -34,7 +34,7 @@ class Min
         return "MIN";
     }
 
-    protected boolean isAggregate() {
+    public boolean isAggregate() {
         return true;
     }
 }

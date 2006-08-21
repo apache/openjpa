@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.Filters;
@@ -145,6 +146,18 @@ class CandidatePath
         return candidate;
     }
 
+    public int hashCode() {
+        return (_actions == null) ? 0 : _actions.hashCode();
+    }
+
+    public boolean equals(Object other) {
+        if (other == this)
+            return true;
+        if (!(other instanceof CandidatePath))
+            return false;
+        return ObjectUtils.equals(_actions, ((CandidatePath) other)._actions);
+    }
+
     /**
      * Represents a traversal through a field.
      */
@@ -156,6 +169,16 @@ class CandidatePath
         private Traversal(FieldMetaData field, boolean nullTraversal) {
             this.field = field;
             this.nullTraversal = nullTraversal;
+        }
+
+        public int hashCode() {
+            return field.hashCode();
+        }
+
+        public boolean equals(Object other) {
+            if (other == this)
+                return true;
+            return ((Traversal) other).field.equals(field);
         }
 	}
 }

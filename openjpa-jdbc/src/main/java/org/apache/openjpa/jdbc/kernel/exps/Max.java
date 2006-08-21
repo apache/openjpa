@@ -34,7 +34,7 @@ class Max
         return "MAX";
     }
 
-    protected boolean isAggregate() {
+    public boolean isAggregate() {
         return true;
     }
 }

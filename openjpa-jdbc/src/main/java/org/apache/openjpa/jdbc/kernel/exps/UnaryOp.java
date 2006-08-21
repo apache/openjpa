@@ -145,13 +145,6 @@ abstract class UnaryOp
     }
 
     /**
-     * Return whether this operator is an aggregate.
-     */
-    protected boolean isAggregate() {
-        return false;
-    }
-
-    /**
      * Return the type of this value based on the argument type. Returns
      * the argument type by default.
      */

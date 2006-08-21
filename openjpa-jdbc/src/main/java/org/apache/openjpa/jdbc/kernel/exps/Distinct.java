@@ -41,9 +41,5 @@ class Distinct
     protected String getOperator() {
         return "DISTINCT";
     }
-
-    protected boolean isAggregate() {
-        return false;
-    }
 }
 

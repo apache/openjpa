@@ -34,7 +34,7 @@ class Avg
         return "AVG";
     }
 
-    protected boolean isAggregate() {
+    public boolean isAggregate() {
         return true;
     }
 }
