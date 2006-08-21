@@ -44,6 +44,11 @@ public interface Value {
     public boolean isVariable();
 
     /**
+     * Return true if this value is an aggregate.
+     */
+    public boolean isAggregate();
+
+    /**
      * Return any associated persistent type.
      */
     public ClassMetaData getMetaData();

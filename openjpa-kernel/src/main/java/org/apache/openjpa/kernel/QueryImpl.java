@@ -576,7 +576,9 @@ public class QueryImpl
         lock();
         try {
             assertOpen();
-            getResultPacker(compileForExecutor());
+            StoreQuery.Executor ex = compileForExecutor();
+            getResultPacker(ex);
+            ex.validate(_storeQuery);
         } finally {
             unlock();
         }
@@ -1875,6 +1877,10 @@ public class QueryImpl
                     results.addAll(Arrays.asList(actions));
             }
             return (String[]) results.toArray(new String[results.size()]);
+        }
+
+        public void validate(StoreQuery q) {
+            _executors[0].validate(q);
         }
 
         public Object getOrderingValue(StoreQuery q, Object[] params,

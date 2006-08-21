@@ -62,8 +62,8 @@ class Aggregate
         _meta = meta;
     }
 
-    public boolean isVariable() {
-        return false;
+    public boolean isAggregate() {
+        return true;
     }
 
     public Class getType() {

@@ -213,13 +213,9 @@ public class JDBCExpressionFactory
     }
 
     public Expression not(Expression exp) {
-        Exp e = (Exp) exp;
-        HasContainsExpressionVisitor visitor = 
-            new HasContainsExpressionVisitor();
-        e.acceptVisit(visitor);
-        if (visitor.foundContainsExpression())
-            return new NotContainsExpression(e);
-        return new NotExpression(e);
+        if (HasContainsExpressionVisitor.hasContains(exp))
+            return new NotContainsExpression((Exp) exp);
+        return new NotExpression((Exp) exp);
     }
 
     public Expression bindVariable(Value var, Value val) {

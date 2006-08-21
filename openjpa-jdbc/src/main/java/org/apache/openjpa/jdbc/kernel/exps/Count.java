@@ -48,7 +48,7 @@ class Count
         return "COUNT";
     }
 
-    protected boolean isAggregate() {
+    public boolean isAggregate() {
         return true;
     }
 }

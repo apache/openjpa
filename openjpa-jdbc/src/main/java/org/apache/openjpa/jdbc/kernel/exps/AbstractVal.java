@@ -36,6 +36,10 @@ abstract class AbstractVal
         return false;
     }
 
+    public boolean isAggregate() {
+        return false;
+    }
+
     public void appendIsEmpty(SQLBuffer sql, Select sel, JDBCStore store,
         Object[] params, JDBCFetchConfiguration fetch) {
         sql.append(FALSE);

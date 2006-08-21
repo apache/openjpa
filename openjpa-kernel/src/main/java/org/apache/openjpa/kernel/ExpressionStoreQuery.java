@@ -17,9 +17,11 @@ package org.apache.openjpa.kernel;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -285,8 +287,14 @@ public class ExpressionStoreQuery
         extends AbstractExecutor
         implements Executor {
 
-        abstract QueryExpressions[] getQueryExpressions();
+        /**
+         * Return the parsed query expressions for our candidate types.
+         */
+        protected abstract QueryExpressions[] getQueryExpressions();
 
+        /**
+         * Return the query expressions for one candidate type, or die if none.
+         */
         private QueryExpressions assertQueryExpression() {
             QueryExpressions[] exp = getQueryExpressions();
             if (exp == null || exp.length < 1)
@@ -313,6 +321,11 @@ public class ExpressionStoreQuery
                     throw new UserException(_loc.get("container-projection",
                         q.getContext().getQueryString()));
             }
+        }
+
+        public final void validate(StoreQuery q) {
+            QueryExpressions exps = assertQueryExpression();    
+            ValidateGroupingExpressionVisitor.validate(q.getContext(), exps); 
         }
 
         public final Class getResultClass(StoreQuery q) {
@@ -369,6 +382,66 @@ public class ExpressionStoreQuery
         public boolean isPacking(StoreQuery q) {
             return false;
         }
+
+        /**
+         * Throws an exception if select or having clauses contain 
+         * non-aggregate, non-grouped paths.
+         */
+        private static class ValidateGroupingExpressionVisitor 
+            extends AbstractExpressionVisitor {
+
+            private final QueryContext _ctx;
+            private boolean _grouping = false;
+            private Set _grouped = null;
+            private Value _agg = null;
+
+            /**
+             * Throw proper exception if query does not meet validation.
+             */
+            public static void validate(QueryContext ctx, 
+                QueryExpressions exps) {
+                if (exps.grouping.length == 0)
+                    return;
+
+                ValidateGroupingExpressionVisitor visitor = 
+                    new ValidateGroupingExpressionVisitor(ctx);
+                visitor._grouping = true;
+                for (int i = 0; i < exps.grouping.length; i++)
+                    exps.grouping[i].acceptVisit(visitor);
+                visitor._grouping = false;
+                if (exps.having != null)
+                    exps.having.acceptVisit(visitor);
+                for (int i = 0; i < exps.projections.length; i++)
+                    exps.projections[i].acceptVisit(visitor);
+            }
+
+            public ValidateGroupingExpressionVisitor(QueryContext ctx) {
+                _ctx = ctx;
+            }
+
+            public void enter(Value val) {
+                if (_grouping) {
+                    if (val instanceof Path) {
+                        if (_grouped == null)
+                            _grouped = new HashSet();
+                        _grouped.add(val);
+                    }
+                } else if (_agg == null) {
+                    if (val.isAggregate()) 
+                        _agg = val;
+                    else if (val instanceof Path 
+                        && (_grouped == null || !_grouped.contains(val))) {
+                        throw new UserException(_loc.get("bad-grouping",
+                            _ctx.getCandidateType(), _ctx.getQueryString())); 
+                    }
+                }
+            }
+
+            public void exit(Value val) {
+                if (val == _agg)
+                    _agg = null;
+            }
+        }
     }
 
     /**
@@ -410,7 +483,7 @@ public class ExpressionStoreQuery
             }
         }
 
-        QueryExpressions[] getQueryExpressions() {
+        protected QueryExpressions[] getQueryExpressions() {
             return _exps;
         }
 
@@ -568,7 +641,7 @@ public class ExpressionStoreQuery
             }
         }
 
-        QueryExpressions[] getQueryExpressions() {
+        protected QueryExpressions[] getQueryExpressions() {
             return _exps;
         }
 

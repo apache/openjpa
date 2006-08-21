@@ -137,6 +137,9 @@ public abstract class AbstractStoreQuery
             return EMPTY_STRINGS;
         }
 
+        public void validate(StoreQuery q) {
+        }
+
         public Object getOrderingValue(StoreQuery q, Object[] params,
             Object resultObject, int orderIndex) {
             return null;

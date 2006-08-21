@@ -103,6 +103,10 @@ public abstract class Val
         return false;
     }
 
+    public boolean isAggregate() {
+        return false;
+    }
+
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         visitor.exit(this);

@@ -14,13 +14,14 @@ class HasContainsExpressionVisitor
 
     private boolean _found = false;
 
-    /**
-     * Whether a contains expression has been found.
-     */
-    public boolean foundContainsExpression() {
-        return _found;
+    public static boolean hasContains(Expression exp) {
+        if (exp == null)
+            return false;
+        HasContainsExpressionVisitor v = new HasContainsExpressionVisitor();
+        exp.acceptVisit(v);
+        return v._found;
     }
-    
+
     public void enter(Expression exp) {
         if (!_found)
             _found = exp instanceof ContainsExpression 

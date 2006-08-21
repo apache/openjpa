@@ -70,6 +70,10 @@ class Extension
         return false;
     }
 
+    public boolean isAggregate() {
+        return false;
+    }
+
     public Class getType() {
         if (_cast != null)
             return _cast;

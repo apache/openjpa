@@ -223,6 +223,11 @@ public interface StoreQuery
             long startIdx, long endIdx);
 
         /**
+         * Validate components of query.
+         */
+        public void validate(StoreQuery q);
+
+        /**
          * Extract the value of the <code>orderIndex</code>th ordering
          * expression in {@link Query#getOrderingClauses} from the
          * given result object. The result object will be an object from
