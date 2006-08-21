@@ -349,7 +349,7 @@ public class ExpressionStoreQuery
         }
 
         public final boolean isAggregate(StoreQuery q) {
-            return assertQueryExpression().aggregate;
+            return assertQueryExpression().isAggregate();
         }
 
         public final boolean hasGrouping(StoreQuery q) {

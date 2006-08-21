@@ -177,8 +177,8 @@ class SelectConstructor {
                 // get unique candidate values) and needed field values and
                 // applies the where conditions; the outer select applies
                 // ordering, grouping, etc
-                if (exps.aggregate || (exps.distinct & exps.DISTINCT_TRUE) == 0)
-                {
+                if (exps.isAggregate() 
+                    || (exps.distinct & exps.DISTINCT_TRUE) == 0) {
                     DBDictionary dict = store.getDBDictionary();
                     dict.assertSupport(dict.supportsSubselect,
                         "SupportsSubselect");
@@ -186,7 +186,7 @@ class SelectConstructor {
                     Select inner = sel;
                     sel = store.getSQLFactory().newSelect();
                     sel.setParent(parent, alias);
-                    sel.setDistinct(exps.aggregate
+                    sel.setDistinct(exps.isAggregate()
                         && (exps.distinct & exps.DISTINCT_TRUE) != 0);
                     sel.setFromSelect(inner);
                 }

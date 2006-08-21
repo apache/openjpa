@@ -286,7 +286,6 @@ class JPQLExpressionBuilder
             JPQLNode parent = parametersNode.getChild(i);
             JPQLNode node = onlyChild(parent);
             Value proj = getValue(node);
-            exps.aggregate = exps.aggregate || node.id == JJTAGGREGATE;
             exps.projections[i] = proj;
             exps.projectionAliases[i] = nextAlias();
 
