@@ -1285,8 +1285,12 @@ public class MetaDataRepository
     }
 
     public void endConfiguration() {
-        if (_factory == null)
-            setMetaDataFactory(_conf.newMetaDataFactoryInstance());
+        if (_factory == null) {
+            MetaDataFactory mdf = _conf.newMetaDataFactoryInstance();
+            if (mdf == null)
+                throw new MetaDataException(_loc.get("no-metadatafactory"));
+            setMetaDataFactory(mdf);
+        }
     }
 
     //////////////////
