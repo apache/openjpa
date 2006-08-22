@@ -1,0 +1,61 @@
+
+    <chapter id="openjpa_intro">
+      <title>OpenJPA <phrase>JPA</phrase></title>
+      <indexterm zone="openjpa_intro">
+        <primary>OpenJPA <phrase>JPA</phrase></primary>
+      </indexterm>
+      <para>
+  OpenJPA is Apache's implementation of Sun's
+  <phrase>Java Persistence API (JPA) specification</phrase>
+  
+  
+  for the transparent persistence of Java objects.
+  This document provides an overview of
+  <phrase>the JPA standard</phrase>
+  
+  
+  and technical details on the use of OpenJPA <phrase>JPA</phrase>.
+  </para>
+      <para>
+  To quickly get started with JPA, you may want to begin at
+  <xref linkend="jpa_tutorial"/>.
+  If you would prefer to start with an introduction to the concepts of JPA,
+  begin with <xref linkend="jpa_overview_intro"/>.
+  </para>
+      <section id="openjpa_intro_about">
+        <title>About This Document</title>
+        <para>
+    This document is intended for OpenJPA users.  It is divided into several 
+    parts:
+    </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+        The <link linkend="jpa_overview_intro">JPA Overview</link> 
+        describes the fundamentals of JPA.
+        </para>
+          </listitem>
+          <listitem>
+            <para>
+        In the <link linkend="tutorials">OpenJPA <phrase>JPA</phrase> 
+        Tutorials</link> you will develop simple persistent applications
+        using OpenJPA.  Through the tutorials' hands-on approach, you
+        will become comfortable with the core tools and development
+        processes under OpenJPA <phrase>JPA</phrase>.
+        </para>
+          </listitem>
+          <listitem>
+            <para>
+        The <link linkend="ref_guide_intro">OpenJPA <phrase>JPA</phrase> 
+        Reference Guide</link> contains detailed documentation on all 
+        aspects of OpenJPA <phrase>JPA</phrase>.  Browse through this guide to 
+        familiarize yourself with the many advanced features and 
+        customization opportunities OpenJPA provides.  Later, you can use 
+        the guide when you need details on a specific aspect of OpenJPA 
+        <phrase>JPA</phrase>.
+        </para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+    </chapter>

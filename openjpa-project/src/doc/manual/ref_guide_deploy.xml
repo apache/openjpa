@@ -1,0 +1,224 @@
+
+    <chapter id="ref_guide_deploy">
+      <title>Deployment</title>
+      <para>
+  OpenJPA deployment includes choosing a factory deployment strategy,
+  and in a managed environment, optionally integrating with your application
+  server's managed and XA transactions.  This chapter examines each aspect
+  of deployment in turn.
+  </para>
+      <section id="ref_guide_deploy_factory">
+        <title>Factory Deployment</title>
+        <para>
+    OpenJPA offers several 
+    <phrase><classname>EntityManagerFactory</classname></phrase>
+    
+    
+    deployment options.
+    </para>
+        <section id="ref_guide_deploy_factory_standalone">
+          <title>Standalone Deployment</title>
+          <indexterm zone="ref_guide_deploy_factory_standalone">
+            <primary>deployment</primary>
+            <secondary>standalone</secondary>
+            <seealso>Persistence</seealso>
+          </indexterm>
+          <para>
+      The JPA Overview describes the 
+      <classname>javax.persistence.Persistence</classname> class.  You 
+      can use <classname>Persistence</classname> to obtain 
+      <classname>EntityManagerFactory</classname> instances, as 
+      demonstrated in <xref linkend="jpa_overview_persistence"/>.
+      OpenJPA also extends <classname>Persistence</classname> to add
+      additional <classname>EntityManagerFactory</classname> 
+      creation methods.  The
+      <classname>org.apache.openjpa.persistence.OpenJPAPersistence</classname> class
+      <ulink url="../../api/openjpa/persistence/OpenJPAPersistence.html">
+      Javadoc</ulink> details these extensions.
+      </para>
+          <para>
+      After obtaining the factory, you can cache it for all 
+      <phrase><classname>EntityManager</classname></phrase>
+       
+      
+      creation duties.
+      </para>
+        </section>
+        <section id="ref_guide_deploy_inject">
+          <title>EntityManager Injection</title>
+<!-- ### EJBDOC -->
+          <para>
+      To be decided.
+      </para>
+        </section>
+        <section id="ref_guide_deploy_jca_ejb">
+          <title>OpenJPA JCA Deployment</title>
+          <indexterm zone="ref_guide_deploy_jca_ejb">
+            <primary>deployment</primary>
+            <secondary>JCA</secondary>
+            <seealso>JCA</seealso>
+          </indexterm>
+          <indexterm zone="ref_guide_deploy_jca_ejb">
+            <primary>JCA</primary>
+            <secondary>deployment</secondary>
+          </indexterm>
+          <para>
+      OpenJPA can deploy OpenJPA through the Java Connector Architecture
+      (JCA) in any JCA-compliant application server that supports
+      JDK 1.5 (all EJB 3 implementations require JDK 1.5).  We present
+      the deployment steps for the most common servers below.
+      </para>
+          <section id="ref_guide_deploy_jca_jpa_weblogic9">
+            <title>WebLogic 9</title>
+            <indexterm zone="ref_guide_deploy_jca_jpa_weblogic9">
+              <primary>Weblogic</primary>
+            </indexterm>
+            <indexterm zone="ref_guide_deploy_jca_jpa_weblogic9">
+              <primary>JCA</primary>
+              <secondary>Weblogic 9</secondary>
+            </indexterm>
+            <para><!-- ### JDO2MIG : everything in system path for now -->
+        First, ensure that your JDBC driver is in your system classpath.
+        In addition, you will be adding the OpenJPA and specification API
+        jars to the system classpath.  You can accomplish this by
+        editing <filename>startWebLogic.sh/.cmd</filename>.
+        </para>
+            <warning>
+              <para>Currently WebLogic ships with an old version
+          of the EJB 3 libraries.  Be sure to put 
+          <filename>org.apache.openjpa.jar</filename> in the <emphasis>beginning
+          </emphasis> of the <literal>CLASSPATH</literal>.</para>
+            </warning>
+            <para>
+        The next step is to deploy 
+        <filename>openjpa-persistence.rar</filename> from the 
+        <filename>jca/persistence</filename> directory of your OpenJPA
+        installation.  Copy this file to the <filename>autodeploy
+        </filename> directory of your domain.  
+        </para>
+            <para>
+        We will now extract <filename>META-INF/ra.xml</filename>
+        and <filename>META-INF/weblogic-ra.xml</filename>
+        to edit our configuration:
+        </para>
+            <programlisting format="linespecific">
+jar xvf openjpa-ejb.rar META-INF/ra.xml META-INF/weblogic-ra.xml
+</programlisting>
+            <para>
+        Now you should configure OpenJPA JCA by editing
+        <filename>META-INF/ra.xml</filename> substituting
+        <literal>config-property-value</literal> stanzas
+        with your own values.  You can comment out
+        properties (config-property stanzas) which you are
+        not using or you can leave them at their default settings.
+        Edit <filename>META-INF/weblogic-ra.xml</filename>
+        to configure the JNDI location to which you
+        want OpenJPA to be bound.
+        </para>
+            <para>
+        Now we can re-jar the manifest files back into the 
+        <filename>RAR</filename> file.
+        </para>
+            <programlisting format="linespecific">
+jar uvf openjpa-ejb.rar META-INF/ra.xml META-INF/weblogic-ra.xml
+rm META-INF/ra.xml META-IN/weblogic-ra.xml
+rmdir META-INF
+</programlisting>
+            <para>
+        Now you can start WebLogic and WebLogic should
+        deploy OpenJPA for you.  If you have installed OpenJPA correctly, 
+        at this point, one should be able to see OpenJPA bound to the 
+        JNDI location which you specified earlier.
+        </para>
+          </section>
+        </section>
+      </section>
+      <section id="ref_guide_enterprise_xa">
+        <title>XA Transactions</title>
+        <indexterm zone="ref_guide_enterprise_xa">
+          <primary>transactions</primary>
+          <secondary>XA</secondary>
+        </indexterm>
+        <indexterm>
+          <primary>XA transactions</primary>
+          <see>transactions</see>
+        </indexterm>
+        <para>
+    The X/Open Distributed Transaction Processing (X/Open DTP)
+    model, designed by <ulink url="http://www.xopen.org">Open Group</ulink>
+    (a vendor consortium), defines a standard communication architecture
+    that provides the following:
+    </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+        Concurrent execution of applications on shared resources.
+        </para>
+          </listitem>
+          <listitem>
+            <para>
+        Coordination of transactions across applications.
+        </para>
+          </listitem>
+          <listitem>
+            <para>
+        Components, interfaces, and protocols that define the 
+        architecture and provide portability of applications.
+        </para>
+          </listitem>
+          <listitem>
+            <para>Atomicity of transaction systems.</para>
+          </listitem>
+          <listitem>
+            <para>
+        Single-thread control and sequential function-calling.
+        </para>
+          </listitem>
+        </itemizedlist>
+        <para>
+    The X/Open DTP XA standard defines the application programming
+    interfaces that a resource manager uses to communicate
+    with a transaction manager. The XA interfaces enable resource
+    managers to join transactions, to perform two-phase commit,
+    and to recover in-doubt transactions following a failure.
+    </para>
+        <section id="ref_guide_enterprise_xa_req">
+          <title>Using OpenJPA with XA Transactions</title>
+          <para>
+      OpenJPA supports XA-compliant transactions when used in a properly
+      configured managed environment. The following components are 
+      required:
+      </para>
+          <itemizedlist>
+            <listitem>
+              <para>
+          A managed environment that provides an XA compliant 
+          transaction manager. Examples of this are application 
+          servers such as JBoss and WebLogic.
+          </para>
+            </listitem>
+            <listitem>
+              <para>
+          Instances of a <classname>javax.sql.XADataSource</classname>
+          for each of the <classname>DataSource</classname>s that 
+          OpenJPA will use.
+          </para>
+            </listitem>
+          </itemizedlist>
+          <para>
+      Given these components, setting up OpenJPA to participate in 
+      distributed transactions is a simple two-step process:
+      </para>
+          <orderedlist>
+            <listitem>
+              <para>
+          Point OpenJPA at an enlisted 
+          <classname>XADataSource</classname>, and configure a 
+          second non-enlisted data source.
+          See <xref linkend="ref_guide_dbsetup_thirdparty_enlist"/>.
+          </para>
+            </listitem>
+          </orderedlist>
+        </section>
+      </section>
+    </chapter>

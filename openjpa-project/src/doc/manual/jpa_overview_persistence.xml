@@ -1,0 +1,219 @@
+
+    <chapter id="jpa_overview_persistence">
+      <title>Persistence</title>
+      <indexterm zone="jpa_overview_persistence">
+        <primary>Persistence</primary>
+      </indexterm>
+      <indexterm zone="jpa_overview_persistence">
+        <primary>EntityManagerFactory</primary>
+        <secondary>construction</secondary>
+      </indexterm>
+      <indexterm zone="jpa_overview_persistence">
+        <primary>Persistence</primary>
+        <secondary>getEntityManagerFactory</secondary>
+      </indexterm>
+      <indexterm zone="jpa_overview_persistence">
+        <primary>getEntityManagerFactory</primary>
+        <seealso>Persistence</seealso>
+      </indexterm>
+      <mediaobject>
+        <imageobject>
+<!-- PNG image data, 427 x 121 (see README) -->
+          <imagedata fileref="img/persistence.png" width="285px"/>
+        </imageobject>
+      </mediaobject>
+      <note>
+        <para>
+    OpenJPA also includes the 
+    <ulink url="../../api/openjpa/persistence/OpenJPAPersistence.html"><classname>OpenJPAPersistence</classname></ulink> helper class to provide 
+    additional utility methods.
+    </para>
+      </note>
+      <para>
+  Within a container, you will typically use <emphasis>injection
+  </emphasis> to access an <classname>EntityManagerFactory</classname>.
+  Applications operating of a container, however,  can use the
+  <ulink url="http://java.sun.com/javaee/5/docs/api/javax/persistence/Persistence.html"><classname>Persistence</classname></ulink> class to obtain
+  <classname>EntityManagerFactory</classname> objects in a vendor-neutral
+  fashion.
+  </para>
+      <programlisting format="linespecific">
+public static EntityManagerFactory createEntityManagerFactory (String name);
+public static EntityManagerFactory createEntityManagerFactory (String name, Map props);
+</programlisting>
+      <para>
+  Each <methodname>createEntityManagerFactory</methodname> method searches
+  the system for an <classname>EntityManagerFactory</classname> definition 
+  with the given name.  Use <literal>null</literal> for an unnamed factory.
+  The optional map contains vendor-specific property settings used to further
+  configure the factory.
+  </para>
+      <para><filename>persistence.xml</filename> files define <classname>
+  EntityManagerFactories</classname>.  The <methodname>
+  createEntityManagerFactory</methodname> methods search for <filename>
+  persistence.xml</filename> files within the <filename>META-INF</filename> 
+  directory of any <literal>CLASSPATH</literal> element.  For example, if 
+  your <literal>CLASSPATH</literal> contains the <filename>conf</filename>
+  directory, you could place an <classname>EntityManagerFactory</classname> 
+  definition in <filename>conf/META-INF/persistence.xml</filename>.
+  </para>
+      <section id="jpa_overview_persistence_xml">
+        <title>persistence.xml</title>
+        <para>
+    The <filename>persistence.xml</filename> file format obeys the following
+    Document Type Descriptor (DTD):
+    </para>
+        <programlisting format="linespecific">
+&lt;!ELEMENT persistence (persistence-unit*)&gt;
+&lt;!ELEMENT persistence-unit (description?,provider?,jta-datasource?,
+  non-jta-datasource?,(class|jar-file|mapping-file)*,
+  exclude-unlisted-classes?,properties?)&gt;
+&lt;!ATTLIST persistence-unit name CDATA #REQUIRED&gt;
+&lt;!ATTLIST persistence-unit transaction-type (JTA|RESOURCE_LOCAL) "JTA"&gt;
+&lt;!ELEMENT description (#PCDATA)&gt;
+&lt;!ELEMENT provider (#PCDATA)&gt;
+&lt;!ELEMENT jta-datasource (#PCDATA)&gt;
+&lt;!ELEMENT non-jta-datasource (#PCDATA)&gt;
+&lt;!ELEMENT mapping-file (#PCDATA)&gt;
+&lt;!ELEMENT jar-file (#PCDATA)&gt;
+&lt;!ELEMENT class (#PCDATA)&gt;
+&lt;!ELEMENT exclude-unlisted-classes EMPTY&gt;
+&lt;!ELEMENT properties (property*)&gt;
+&lt;!ELEMENT property EMPTY&gt;
+&lt;!ATTLIST property name CDATA #REQUIRED&gt;
+&lt;!ATTLIST property value CDATA #REQUIRED&gt;
+</programlisting>
+        <para>
+    The root element of a <filename>persistence.xml</filename> file is
+    <literal>persistence</literal>, which then contains one or more
+    <literal>persistence-unit</literal> definitions. 
+    Each persistence unit describes the configuration for the entity
+    managers created by the persistence unit's entity manager factory. 
+    The persistence unit can specify these elements and attribtues.
+    </para>
+        <itemizedlist>
+          <listitem>
+            <para><literal>name</literal>: This is the name you pass to the
+        <methodname>Persistence.createEntityManagerFactory</methodname>
+        methods described above. The name attribute is required.
+        </para>
+          </listitem>
+          <listitem>
+            <para><literal>transaction-type</literal>: Whether to use managed
+        (<literal>JTA</literal>) or local 
+        (<literal>RESOURCE_LOCAL</literal>) transaction management.
+        Defaults to <literal>JTA</literal>.
+        </para>
+          </listitem>
+          <listitem>
+            <para><literal>provider</literal>: If you are using a third-party
+        JPA vendor, this element names its implementation of the 
+        <ulink url="http://java.sun.com/javaee/5/docs/api/javax/persistence/spi/PersistenceProvider.html"><classname>PersistenceProvider</classname></ulink> bootstrapping
+        interface. 
+        </para>
+            <note>
+              <para>
+          Set the <literal>provider</literal> to <classname>
+          org.apache.openjpa.persistence.PersistenceProviderImpl</classname>
+          to use OpenJPA. 
+          </para>
+            </note>
+          </listitem>
+          <listitem>
+            <para><literal>jta-data-source</literal>: The JNDI name of a JDBC
+        <classname>DataSource</classname> that is automatically enlisted
+        in JTA transactions.  This may be an XA <classname>
+        DataSource</classname>.
+        </para>
+          </listitem>
+          <listitem>
+            <para><literal>non-jta-data-source</literal>: The JNDI name of a JDBC
+        <classname>DataSource</classname> that is not enlisted
+        in JTA transactions.
+        </para>
+          </listitem>
+          <listitem>
+            <para><literal>mapping-file</literal>*: The resource names of
+        XML mapping files for entities and embeddable classes.
+        You can also specify mapping information in an <filename>
+        orm.xml</filename> file in your <filename>META-INF</filename>
+        directory. If present, the <filename>orm.xml</filename>
+        mapping file will be read automatically.
+        </para>
+          </listitem>
+          <listitem>
+            <para><literal>jar-file</literal>*: The names of jar files containing
+        entities and embeddable classes.  The implementation will scan
+        the jar for annotated classes.
+        </para>
+          </listitem>
+          <listitem>
+            <para><literal>class</literal>*: The class names of entities and
+        embeddable classes.
+        </para>
+          </listitem>
+          <listitem>
+            <para><literal>properties</literal>: This element contains nested
+        <literal>property</literal> elements used to specify 
+        vendor-specific settings.  Each <literal>property</literal>
+        has a name attribute and a value attribute.
+        </para>
+            <note>
+              <para>
+          The Reference Guide's <xref linkend="ref_guide_conf"/>
+          describes OpenJPA's configuration properties.
+          </para>
+            </note>
+          </listitem>
+        </itemizedlist>
+        <para>
+    Here is a typical <filename>persistence.xml</filename> file for a
+    non-EE environment:
+    </para>
+        <example id="jpa_overview_persistence_xmlex">
+          <title>persistence.xml</title>
+          <programlisting format="linespecific">
+&lt;?xml version="1.0"?&gt;
+&lt;persistence&gt;
+  &lt;persistence-unit name="openjpa"&gt;
+    &lt;provider&gt;org.apache.openjpa.persistence.PersistenceProviderImpl&lt;/provider&gt;
+    &lt;class&gt;tutorial.Animal&lt;/class&gt;
+    &lt;class&gt;tutorial.Dog&lt;/class&gt;
+    &lt;class&gt;tutorial.Rabbit&lt;/class&gt;
+    &lt;class&gt;tutorial.Snake&lt;/class&gt;
+    &lt;properties&gt;
+      &lt;property name="openjpa.ConnectionURL" value="jdbc:hsqldb:tutorial_database"/&gt;
+      &lt;property name="openjpa.ConnectionDriverName" value="org.hsqldb.jdbcDriver"/&gt;
+      &lt;property name="openjpa.ConnectionUserName" value="sa"/&gt;
+      &lt;property name="openjpa.ConnectionPassword" value=""/&gt;
+      &lt;property name="openjpa.Log" value="DefaultLevel=WARN, Tool=INFO"/&gt;
+    &lt;/properties&gt;
+  &lt;/persistence-unit&gt;
+&lt;/persistence&gt;
+</programlisting>
+        </example>
+      </section>
+      <section id="jpa_overview_persistence_use">
+        <title>Non-EE Use</title>
+        <para>
+    The example below demonstrates the <classname>Persistence</classname>
+    class in action.  You will typically execute code like this on 
+    application startup, then cache the resulting factory for future use.
+    This bootstrapping code is only necessary in non-EE environments; in 
+    an EE environment <classname>EntityManagerFactories</classname> are 
+    typically injected.  
+    </para>
+        <example id="jpa_overview_persistence_getemfactory">
+          <title>Obtaining an EntityManagerFactory</title>
+          <programlisting format="linespecific">
+// if your persistence.xml file does not contain all settings already, you
+// can add vendor settings to a map 
+Properties props = new Properties ();
+...
+
+// create the factory defined by the "openjpa" entity-manager entry
+EntityManagerFactory emf = Persistence.createEntityManagerFactory ("openjpa", props);
+</programlisting>
+        </example>
+      </section>
+    </chapter>
