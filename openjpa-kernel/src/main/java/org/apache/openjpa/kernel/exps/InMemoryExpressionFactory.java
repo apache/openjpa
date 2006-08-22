@@ -405,6 +405,10 @@ public class InMemoryExpressionFactory
         return new ContainsValueExpression((Val) v1, (Val) v2);
     }
 
+    public Value getMapValue(Value map, Value arg) {
+        return new GetMapValue((Val) map, (Val) arg);
+    }
+
     public Expression isInstance(Value v1, Class c) {
         return new InstanceofExpression((Val) v1, c);
     }

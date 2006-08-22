@@ -93,6 +93,13 @@ public abstract class ContainerFieldStrategy
         String fullTable = dict.getFullName(fk.getTable(), false);
         sql.append("(SELECT COUNT(*) FROM ").append(fullTable).
             append(" WHERE ");
+        appendUnaliasedJoin(sql, sel, joins, dict, field, fk);
+        sql.append(")");
+    }
+
+    public static void appendUnaliasedJoin(SQLBuffer sql, Select sel,
+        Joins joins, DBDictionary dict, FieldMapping field, ForeignKey fk) {
+        String fullTable = dict.getFullName(fk.getTable(), false);
 
         Column[] cols = fk.getColumns();
         Column[] pks = fk.getPrimaryKeyColumns();
@@ -119,6 +126,5 @@ public abstract class ContainerFieldStrategy
             sql.append(sel.getColumnAlias(pks[i], joins)).append(" = ").
                 appendValue(fk.getPrimaryKeyConstant(pks[i]), pks[i]);
         }
-        sql.append(")");
     }
 }

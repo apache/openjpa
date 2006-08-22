@@ -172,24 +172,24 @@ public class JDBCExpressionFactory
         return new IsNotEmptyExpression((Val) val);
     }
 
-    public Expression contains(Value v1, Value v2) {
-        if (v1 instanceof Const)
-            return new InExpression((Val) v2, (Const) v1);
-        if (v1 instanceof SubQ)
-            return new InSubQExpression((Val) v2, (SubQ) v1);
-        return new ContainsExpression((Val) v1, (Val) v2);
+    public Expression contains(Value map, Value arg) {
+        if (map instanceof Const)
+            return new InExpression((Val) arg, (Const) map);
+        if (map instanceof SubQ)
+            return new InSubQExpression((Val) arg, (SubQ) map);
+        return new ContainsExpression((Val) map, (Val) arg);
     }
 
-    public Expression containsKey(Value v1, Value v2) {
-        if (v1 instanceof Const)
-            return new InKeyExpression((Val) v2, (Const) v1);
-        return new ContainsKeyExpression((Val) v1, (Val) v2);
+    public Expression containsKey(Value map, Value arg) {
+        if (map instanceof Const)
+            return new InKeyExpression((Val) arg, (Const) map);
+        return new ContainsKeyExpression((Val) map, (Val) arg);
     }
 
-    public Expression containsValue(Value v1, Value v2) {
-        if (v1 instanceof Const)
-            return new InValueExpression((Val) v2, (Const) v1);
-        return new ContainsExpression((Val) v1, (Val) v2);
+    public Expression containsValue(Value map, Value arg) {
+        if (map instanceof Const)
+            return new InValueExpression((Val) arg, (Const) map);
+        return new ContainsExpression((Val) map, (Val) arg);
     }
 
     public Expression isInstance(Value val, Class c) {
@@ -441,5 +441,9 @@ public class JDBCExpressionFactory
         if (val instanceof Const)
             return new ConstGetObjectId((Const) val);
         return new GetObjectId((PCPath) val);
+    }
+
+    public Value getMapValue(Value map, Value arg) {
+        return new GetMapValue((Val) map, (Val) arg);
     }
 }
