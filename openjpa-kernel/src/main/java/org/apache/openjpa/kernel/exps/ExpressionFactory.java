@@ -92,6 +92,11 @@ public interface ExpressionFactory {
     public Expression containsValue(Value map, Value arg);
 
     /**
+     * Return an expression representing the given condition.
+     */
+    public Value getMapValue(Value map, Value arg);
+
+    /**
      * Return whether the first value is an instance of the given class.
      */
     public Expression isInstance(Value obj, Class c);
