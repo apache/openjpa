@@ -1,0 +1,2587 @@
+
+    <chapter id="jpa_overview_query">
+      <title>JPA Query</title>
+      <indexterm zone="jpa_overview_query">
+        <primary>JP Query</primary>
+        <seealso>JPQL</seealso>
+      </indexterm>
+      <indexterm>
+        <primary>queries</primary>
+        <see>Query</see>
+      </indexterm>
+      <mediaobject>
+        <imageobject>
+<!-- PNG image data, 292 x 265 (see README) -->
+          <imagedata fileref="img/jpa-query.png" width="195px"/>
+        </imageobject>
+      </mediaobject>
+      <para>
+  The <classname>javax.persistence.Query</classname> interface is the 
+  mechanism for issuing queries in JPA. The primary query language used is
+  the Java Persistence Query Language, or <literal>JPQL</literal>.  JPQL is 
+  syntactically very similar to SQL, but is object-oriented rather than 
+  table-oriented.
+  </para>
+      <para>
+  The API for executing JPQL queries will be discussed in
+  <xref linkend="jpa_query_api"/>, and a full language
+  reference will be covered in <xref linkend="jpa_langref"/>.
+  </para>
+      <section id="jpa_query_api">
+        <title>JPQL API</title>
+        <section id="jpa_overview_query_basic">
+          <title>Query Basics</title>
+          <programlisting format="linespecific">SELECT x FROM Magazine x</programlisting>
+          <para>
+      The preceding is a simple JPQL query for all <classname>Magazine
+      </classname> entities.
+      </para>
+          <programlisting format="linespecific">
+public Query createQuery (String jpql);
+</programlisting>
+          <para>
+      The <ulink url="http://java.sun.com/javaee/5/docs/api/javax/persistence/EntityManager.html"><methodname>EntityManager.createQuery</methodname></ulink>
+      method creates a <classname>Query</classname> instance from a given
+      JPQL string.
+      </para>
+          <programlisting format="linespecific">
+public List getResultList ();
+</programlisting>
+          <para>
+      Invoking
+      <ulink url="http://java.sun.com/javaee/5/docs/api/javax/persistence/Query.html#getResultList()"><methodname>Query.getResultList</methodname></ulink> executes the query
+      and returns a <classname>List</classname> containing the matching 
+      objects.  The following example executes our <classname>Magazine
+      </classname> query above:
+      </para>
+          <programlisting format="linespecific">
+EntityManager em = ...
+Query q = em.createQuery ("SELECT x FROM Magazine x");
+List&lt;Magazine&gt; results = q.getResultList ();
+</programlisting>
+          <para>
+      A JPQL query has an internal namespace declared in
+      the <literal>from</literal> clause of the query. Arbitrary identifiers 
+      are assigned to entities so that they can be referenced elsewhere in the
+      query. In the query example above, the identifier 
+      <literal>x</literal> is assigned to the entity <classname>
+      Magazine</classname>.
+      </para>
+          <note>
+            <para>
+        The <literal>as</literal> keyword can optionally be used when 
+        declaring identifiers in the <literal>from</literal> clause. 
+        <literal>SELECT x FROM Magazine x</literal> and
+        <literal>SELECT x FROM Magazine AS x</literal> are synonymous.
+        </para>
+          </note>
+          <para>
+      Following the <literal>select</literal> clause of the query is the 
+      object or objects that the query returns. In the case of the query 
+      above, the query's result list will contain instances of the 
+      <classname>Magazine</classname> class.
+      </para>
+          <note>
+            <para>
+        When selecting entities, you can optional use the keyword 
+        <literal>object</literal>. The clauses <literal>select x</literal> 
+        and <literal>SELECT OBJECT(x)</literal> are synonymous.
+        </para>
+          </note>
+          <para>
+      The optional <literal>where</literal> clause places criteria on 
+      matching results.  For example:
+      </para>
+          <programlisting format="linespecific">SELECT x FROM Magazine x WHERE x.title = 'JDJ'</programlisting>
+          <para>
+      Keywords in JPQL expressions are case-insensitive, but
+      entity, identifier, and member names are not. For example,
+      the expression above could also be expressed as:
+      </para>
+          <programlisting format="linespecific">SELECT x FROM Magazine x WHERE x.title = 'JDJ'</programlisting>
+          <para>
+      But it could not be expressed as:
+      </para>
+          <programlisting format="linespecific">SELECT x FROM Magazine x WHERE x.TITLE = 'JDJ'</programlisting>
+          <para>
+      As with the <literal>select</literal> clause, alias names in the
+      <literal>where</literal> clause are resolved 
+      to the entity declared in the <literal>from</literal> clause. The query
+      above could be described in English as "for all <classname>Magazine
+      </classname> instances <literal>x</literal>, return a list of every 
+      <literal>x</literal> such that <literal>x</literal>'s <literal>title
+      </literal> field is equal to 'JDJ'".
+      </para>
+          <para>
+      JPQL uses SQL-like syntax for query criteria.  The <literal>and
+      </literal> and <literal>or</literal> logical operators chain
+      multiple criteria together:
+      </para>
+          <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE x.title = 'JDJ' OR x.title = 'JavaPro'
+</programlisting>
+          <para>
+      The <literal>=</literal> operator tests for equality.  <literal>&lt;&gt;
+      </literal> tests for inequality.  JPQL also
+      supports the following arithmetic operators for numeric comparisons:  
+      <literal>&gt;, &gt;=, &lt;, &lt;=</literal>.  For example:
+      </para>
+          <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE x.price &gt; 3.00 AND x.price &lt;= 5.00
+</programlisting>
+          <para>
+      This query returns all magazines whose price is greater than 3.00
+      and less than or equal to 5.00.
+      </para>
+          <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE x.price &lt;&gt; 3.00
+</programlisting>
+          <para>
+      This query returns all Magazines whose price is not equals to 3.00.
+      </para>
+          <para>
+      You can group expressions together using parentheses in order to
+      specify how they are evaluated. This is similar to how parentheses are
+      used in Java. For example:
+      </para>
+          <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE (x.price &gt; 3.00 AND x.price &lt;= 5.00) OR x.price = 7.00
+</programlisting>
+          <para>
+      This expression would match magazines whose price
+      is 4.00, 5.00, or 7.00, but not 6.00. Alternately:
+      </para>
+          <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE x.price &gt; 3.00 AND (x.price &lt;= 5.00 OR x.price = 7.00)
+</programlisting>
+          <para>
+      This expression will magazines whose price is 5.00 or 7.00, but 
+      not 4.00 or 6.00.
+      </para>
+          <para>
+      JPQL also includes the following conditionals:
+      </para>
+          <itemizedlist>
+            <listitem>
+              <para><indexterm><primary>BETWEEN expressions</primary></indexterm><literal>[NOT] BETWEEN</literal>: Shorthand for expressing 
+          that a value falls between two other values.
+          The following two statements are synonymous:
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE x.price &gt;= 3.00 AND x.price &lt;= 5.00
+</programlisting>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE x.price BETWEEN 3.00 AND 5.00
+</programlisting>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>LIKE expressions</primary></indexterm><literal>[NOT] LIKE</literal>: Performs a string comparison 
+          with wildcard support. The special character '_' in the 
+          parameter means to match any single character, and the special 
+          character '%' means to match any sequence of characters.
+          The following statement matches title fields "JDJ" and 
+          "JavaPro", but not "IT Insider":
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE x.title LIKE 'J%'
+</programlisting>
+              <para>
+          The following statement matches the title field "JDJ" 
+          but not "JavaPro":
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE x.title LIKE 'J__'
+</programlisting>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>IN expressions</primary></indexterm><literal>[NOT] IN</literal>: Specifies that the member must be 
+          equal to one element of the provided list.
+          The following two statements are synonymous:
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE x.title IN ('JDJ', 'JavaPro', 'IT Insider')
+</programlisting>
+              <programlisting format="linespecific">SELECT x FROM Magazine x WHERE x.title = 'JDJ' OR x.title = 'JavaPro' OR x.title = 'IT Insider'
+</programlisting>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>IS EMPTY expressions</primary></indexterm><literal>IS [NOT] EMPTY</literal>: Specifies that the 
+          collection field holds no elements. For example:
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE x.articles is empty
+</programlisting>
+              <para>
+          This statement will return all magazines whose <literal>
+          articles</literal> member contains no elements.
+          </para>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>IS NULL expressions</primary></indexterm><literal>IS [NOT] NULL</literal>: Specifies that the field is 
+          equal to null. For example:
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE x.publisher is null
+</programlisting>
+              <para>
+          This statement will return all Magazine instances whose
+          "publisher" field is set to <literal>null</literal>.
+          </para>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>NOT expressions</primary></indexterm><literal>NOT</literal>: Negates the contained expression. For 
+          example, the following two statements are synonymous:
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE NOT(x.price = 10.0)
+</programlisting>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE x.price &lt;&gt; 10.0
+</programlisting>
+            </listitem>
+          </itemizedlist>
+        </section>
+        <section id="jpa_overview_query_relations">
+          <title>Relation Traversal</title>
+          <para>
+      Relations between objects can be traversed using Java-like syntax.
+      For example, if the Magazine class has a field named "publisher" or
+      type Company, that relation can be queried as follows:
+      </para>
+          <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE x.publisher.name = 'Random House'
+</programlisting>
+          <para>
+      This query returns all <classname>Magazine</classname> instances whose 
+      <literal>publisher</literal> field is set to a <classname>Company 
+      </classname> instance whose name is "Random House".
+      </para>
+          <para>
+      Single-valued relation traversal implies that the relation is not null.
+      In SQL terms, this is known as an <emphasis>inner join</emphasis>. If 
+      you want to also include relations that are null, you can specify:
+      </para>
+          <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE x.publisher.name = 'Random House' or x.publisher is null
+</programlisting>
+          <para>
+      You can also traverse collection fields in queries, but you must declare
+      each traversal in the <literal>from</literal> clause.
+      Consider:
+      </para>
+          <programlisting format="linespecific">
+SELECT x FROM Magazine x, IN(x.articles) y WHERE y.authorName = 'John Doe'
+</programlisting>
+          <para>
+      This query says that for each <classname>Magazine</classname> <literal>
+      x</literal>, traverse the <literal>articles</literal> relation and 
+      check each <classname>Article</classname> <literal>y</literal>, and 
+      pass the filter if <literal>y</literal>'s <literal>authorName</literal>
+      field is equal to "John Doe". In short, this query will return all 
+      magazines that have any articles written by John Doe.
+      </para>
+          <note>
+            <para>
+        The <literal>IN()</literal> syntax can also be expressed with the 
+        keywords <literal>inner join</literal>.  The statements
+        <literal>SELECT x FROM Magazine x, IN(x.articles) y WHERE 
+        y.authorName = 'John Doe'</literal> and
+        <literal>SELECT x FROM Magazine x inner join x.articles y
+        WHERE y.authorName = 'John Doe'</literal> are synonymous.
+        </para>
+          </note>
+        </section>
+        <section id="jpa_overview_join_fetch">
+          <title>Fetch Joins</title>
+          <para>
+      JPQL queries may specify one or more <literal>join fetch</literal> 
+      declarations, which allow the query to specify which fields
+      in the returned instances will be pre-fetched.
+      </para>
+          <programlisting format="linespecific">
+SELECT x FROM Magazine x join fetch x.articles WHERE x.title = 'JDJ'
+</programlisting>
+          <para>
+      The query above returns <classname>Magazine</classname> instances 
+      and guarantees that the <literal>articles</literal> field will
+      already be fetched in the returned instances.
+      </para>
+          <para>
+      Multiple fields may be specified in separate
+      <literal>join fetch</literal> declarations:
+<programlisting format="linespecific">
+SELECT x FROM Magazine x join fetch x.articles join fetch x.authors WHERE x.title = 'JDJ'
+</programlisting>
+      </para>
+          <para>
+            <note>
+              <para>
+        Specifying the <literal>join fetch</literal> declaration
+        is functionally equivalent to adding the fields to
+        the Query's <classname>FetchConfiguration</classname>.
+        See <xref linkend="ref_guide_fetch"/>.
+        </para>
+            </note>
+          </para>
+        </section>
+        <section id="jpa_overview_query_functions">
+          <title>JPQL Functions</title>
+          <para>
+      As well as supporting direct field and relation comparisons,
+      JPQL supports a pre-defined set of functions that you can apply.
+      </para>
+          <itemizedlist>
+            <listitem>
+              <para><indexterm><primary>CONCAT function</primary></indexterm><literal>CONCAT(string1, string2)</literal>: Concatenates two 
+          string fields or literals. For example:
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE CONCAT(x.title, 's') = 'JDJs'
+</programlisting>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>SUBSTRING function</primary></indexterm><literal>SUBSTRING(string, startIndex, length)</literal>: 
+          Returns the part of the <literal>string</literal> argument 
+          starting at <literal>startIndex</literal> (1-based) and ending 
+          at <literal>length</literal> characters past <literal>
+          startIndex</literal>.
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE SUBSTRING(x.title, 1, 1) = 'J'
+</programlisting>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>TRIM function</primary></indexterm><literal>TRIM([LEADING | TRAILING | BOTH] [character FROM] 
+          string</literal>: Trims the specified character from 
+          either the beginning (<literal>LEADING</literal>)
+          end (<literal>TRAILING</literal>) or both (<literal>
+          BOTH</literal>) of the string argument. If no trim character is
+          specified, the space character will be trimmed.
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE TRIM(BOTH 'J' FROM x.title) = 'D'
+</programlisting>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>LOWER function</primary></indexterm><literal>LOWER(string)</literal>: Returns the lower-case of the
+          specified string argument.
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE LOWER(x.title) = 'jdj'
+</programlisting>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>UPPER function</primary></indexterm><literal>UPPER(string)</literal>: Returns the upper-case of the
+          specified string argument.
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE UPPER(x.title) = 'JAVAPRO'
+</programlisting>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>LENGTH function</primary></indexterm><literal>LENGTH(string)</literal>: Returns the number of 
+          characters in the specified string argument.
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE LENGTH(x.title) = 3
+</programlisting>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>LOCATE function</primary></indexterm><literal>LOCATE(searchString, candidateString [, 
+          startIndex])</literal>: Returns the first index of
+          <literal>searchString</literal> in <literal>
+          candidateString</literal>. Positions are 1-based.
+          If the string is not found, returns 0.
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE LOCATE('D', x.title) = 2
+</programlisting>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>ABS function</primary></indexterm><literal>ABS(number)</literal>: Returns the absolute value of 
+          the argument.
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE ABS(x.price) &gt;= 5.00
+</programlisting>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>SQRT function</primary></indexterm><literal>SQRT(number)</literal>: Returns the square root of 
+          the argument.
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE SQRT(x.price) &gt;= 1.00
+</programlisting>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>MOD function</primary></indexterm><literal>MOD(number, divisor)</literal>: Returns the modulo of 
+          <literal>number</literal> and <literal>divisor</literal>.
+          </para>
+              <programlisting format="linespecific">
+SELECT x FROM Magazine x WHERE MOD(x.price, 10) = 0
+</programlisting>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>CURRENT_DATE function</primary></indexterm><literal>CURRENT_DATE</literal>: Returns the current date.
+          </para>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>CURRENT_TIME function</primary></indexterm><literal>CURRENT_TIME</literal>: Returns the current time.
+          </para>
+            </listitem>
+            <listitem>
+              <para><indexterm><primary>CURRENT_TIMESTAMP function</primary></indexterm><literal>CURRENT_TIMESTAMP</literal>: Returns the current 
+          timestamp.
+          </para>
+            </listitem>
+          </itemizedlist>
+        </section>
+        <section id="jpa_overview_query_inheritance">
+          <title>Polymorphic Queries</title>
+          <para>
+      All JPQL queries are polymorphic, which means the <literal>from
+      </literal> clause of a query includes not only instances of the 
+      specific entity class to which it refers, but all subclasses of that 
+      class as well. The instances returned by a query include instances
+      of the subclasses that satisfy the query conditions.
+      For example, the following query may return instances of <classname>
+      Magazine</classname>, as well as <classname>Tabloid</classname> and
+      <classname>Digest</classname> instances, where <classname>Tabloid
+      </classname> and <classname>Digest</classname> are <classname>Magazine
+      </classname> subclasses.
+      </para>
+          <programlisting format="linespecific">SELECT x FROM Magazine x WHERE x.price &lt; 5</programlisting>
+        </section>
+        <section id="jpa_overview_query_params">
+          <title>Query Parameters</title>
+          <para>
+      JPQL provides support for parameterized queries. Either
+      named parameters or positional parameters may be specified in
+      the query string.  Parameters allow you to re-use query templates where
+      only the input parameters vary. A single query can
+      declare either named parameters or positional parameters, but
+      is not allowed to declare both named and positional parameters.
+      </para>
+          <programlisting format="linespecific">
+public Query setParameter (int pos, Object value);
+</programlisting>
+          <para>
+      Specify positional parameters in your JPQL string using an integer
+      prefixed by a question mark.  You can then populate the 
+      <classname>Query</classname> object with positional parameter values 
+      via calls to the <methodname>setParameter</methodname> method above.  
+      The method returns the <classname>Query</classname> instance for 
+      optional method chaining.
+      </para>
+          <programlisting format="linespecific">
+EntityManager em = ...
+Query q = em.createQuery ("SELECT x FROM Magazine x WHERE x.title = ?1 and x.price &gt; ?2");
+q.setParameter (1, "JDJ").setParameter (2, 5.0);
+List&lt;Magazine&gt; results = q.getResultList ();
+</programlisting>
+          <para>  
+      This code will substitute <literal>JDJ</literal> for the <literal>?1
+      </literal> parameter and <literal>5.0</literal> for the <literal>?2
+      </literal> parameter, then execute the query with those values.
+      </para>
+          <programlisting format="linespecific">
+public Query setParameter (String name, Object value);
+</programlisting>
+          <para>
+      Named parameter are denoted by prefixing an arbitrary name with
+      a colon in your JPQL string.  You can then populate the <classname>
+      Query</classname> object with parameter values using the method above.
+      Like the positional parameter method, this method returns the
+      <classname>Query</classname> instance for optional method chaining.
+      </para>
+          <programlisting format="linespecific">
+EntityManager em = ...
+Query q = em.createQuery ("SELECT x FROM Magazine x WHERE x.title = :titleParam and x.price &gt; :priceParam");
+q.setParameter ("titleParam", "JDJ").setParameter ("priceParam", 5.0);
+List&lt;Magazine&gt; results = q.getResultList ();
+</programlisting>
+          <para>
+      This code substitutes <literal>JDJ</literal> for the <literal>
+      :titleParam</literal> parameter and <literal>5.0</literal> for the 
+      <literal>:priceParam</literal> parameter, then executes the
+      query with those values.
+      </para>
+        </section>
+        <section id="jpa_overview_query_ordering">
+          <title>Ordering</title>
+          <para>
+      JPQL queries may optionally contain an <literal>order by</literal> 
+      clause which specifies one or more fields to order by when returning
+      query results.  You may follow the <literal>order by field</literal> 
+      clause with the <literal>asc</literal> or <literal>desc</literal> 
+      keywords, which indicate that ordering should be ascending or 
+      descending, respectively. If the direction is omitted, ordering is 
+      ascending by default.  
+      </para>
+          <programlisting format="linespecific">
+SELECT x FROM Magazine x order by x.title asc, x.price desc
+</programlisting>
+          <para>
+      The query above returns <classname>Magazine</classname> instances 
+      sorted by their title in ascending order. In cases where the 
+      titles of two or more magazines are the same, those instances will be 
+      sorted by price in descending order.
+      </para>
+        </section>
+        <section id="jpa_overview_query_aggregates">
+          <title>Aggregates</title>
+          <para>
+      JPQL queries can select aggregate data as well as objects.
+      JPQL includes the 
+      <literal>min</literal>, <literal>max</literal>,
+      <literal>avg</literal>, and <literal>count</literal> aggregates. These
+      functions can be used for reporting and summary queries.
+      </para>
+          <para>
+      The following query will return the average of all the
+      prices of all the magazines:
+      </para>
+          <programlisting format="linespecific">
+EntityManager em = ...
+Query q = em.createQuery ("SELECT AVG(x.price) FROM Magazine x");
+Number result = (Number) q.getSingleResult ();
+</programlisting>
+          <para>
+      The following query will return the highest price of all
+      the magazines titled "JDJ":
+      </para>
+          <programlisting format="linespecific">
+EntityManager em = ...
+Query q = em.createQuery ("SELECT MAX(x.price) FROM Magazine x WHERE x.title = 'JDJ'");
+Number result = (Number) q.getSingleResult ();
+</programlisting>
+        </section>
+        <section id="jpa_overview_query_named">
+          <title>Named Queries</title>
+          <para>
+      Query templates can be statically declared using the <literal>
+      NamedQuery</literal> and <literal>NamedQueries</literal> annotations.
+      For example:
+      </para>
+          <programlisting format="linespecific">
+@Entity
+@NamedQueries({
+    @NamedQuery(name="magsOverPrice",
+        query="SELECT x FROM Magazine x WHERE x.price &gt; ?1"),
+    @NamedQuery(name="magsByTitle",
+        query="SELECT x FROM Magazine x WHERE x.title = :titleParam")
+})
+public class Magazine
+{
+    ...
+}
+</programlisting>
+          <para>
+    These declarations will define two named queries called 
+    <literal>magsOverPrice</literal> and <literal>magsByTitle</literal>.
+    </para>
+          <programlisting format="linespecific">
+public Query createNamedQuery (String name);
+</programlisting>
+          <para>
+    You retrieve named queries with the above <classname>EntityManager
+    </classname> method.  For example:
+    </para>
+          <programlisting format="linespecific">
+EntityManager em = ...
+Query q = em.createNamedQuery ("magsOverPrice");
+q.setParameter (1, 5.0f);
+List&lt;Magazine&gt; results = q.getResultList ();
+</programlisting>
+          <programlisting format="linespecific">
+EntityManager em = ...
+Query q = em.createNamedQuery ("magsByTitle");
+q.setParameter ("titleParam", "JDJ");
+List&lt;Magazine&gt; results = q.getResultList ();
+</programlisting>
+        </section>
+        <section id="jpa_overview_query_delete">
+          <title>Delete By Query</title>
+          <para>
+      Queries are useful not only for finding objects, but for efficiently
+      deleting them as well.  For example, you might delete all records 
+      created before a certain date.  Rather than bring these objects into
+      memory and delete them individually, JPA allows you to perform a single
+      bulk delete based on JPQL criteria.
+      </para>
+          <para>
+      Delete by query uses the same JPQL syntax as normal queries, with one
+      exception: begin your query string with the <literal>delete</literal> 
+      keyword instead of the <literal>select</literal> keyword.  To then 
+      execute the delete, you call the following <classname>Query</classname>
+      method:
+      </para>
+          <programlisting format="linespecific">
+public int executeUpdate ();
+</programlisting>
+          <para>
+      This method returns the number of objects deleted.
+      The following example deletes all subscriptions whose
+      expiration date has passed.
+      </para>
+          <example id="jpa_overview_query_deleteex">
+            <title>Delete by Query</title>
+            <programlisting format="linespecific">
+Query q = em.createQuery ("DELETE s FROM Subscription s WHERE s.subscriptionDate &lt; :today");
+q.setParameter ("today", new Date ());
+int deleted = q.executeUpdate ();
+</programlisting>
+          </example>
+        </section>
+        <section id="jpa_overview_query_update">
+          <title>Update By Query</title>
+          <para>
+      Similar to bulk deletes, it is sometimes necessary to perform
+      updates against a large number of queries in a single operation,
+      without having to bring all the instances down to the client.
+      Rather than bring these objects into memory and modifying
+      them individually, JPA allows you to perform a single
+      bulk update based on JPQL criteria.
+      </para>
+          <para>
+      Update by query uses the same JPQL syntax as normal queries, except
+      that the query string begins with the <literal>update</literal> 
+      keyword instead of <literal>select</literal>.  To 
+      execute the update, you call the following <classname>Query</classname>
+      method:
+      </para>
+          <programlisting format="linespecific">
+public int executeUpdate ();
+</programlisting>
+          <para>
+      This method returns the number of objects updated.
+      The following example updates all subscriptions whose
+      expiration date has passed to have the "paid" field set to true..
+      </para>
+          <example id="jpa_overview_query_updateex">
+            <title>Update by Query</title>
+            <programlisting format="linespecific">
+Query q = em.createQuery ("UPDATE Subscription s SET s.paid = :paid WHERE s.subscriptionDate &lt; :today");
+q.setParameter ("today", new Date ());
+q.setParameter ("paid", true);
+int updated = q.executeUpdate ();
+</programlisting>
+          </example>
+        </section>
+      </section>
+      <section id="jpa_langref">
+        <title>JPQL Language Reference</title>
+        <para>
+    The Java Persistence query language (JPQL) is used to define searches
+    against persistent entities independent of the mechanism used to
+    store those entities. As such, JPQL is "portable", and not constrained to
+    any particular data store.  The Java
+    Persistence query language is an extension of the Enterprise JavaBeans
+    query language, <literal>EJB QL</literal>, adding operations such
+    as bulk deletes and updates, join operations, aggregates, projections,
+    and subqueries. Furthermore, JPQL queries can be declared statically in
+    metadata, or can be dynamically built in code. This chapter provides the full
+    definition of the language.
+
+    <note><para>
+      Much of this section is paraphrased or taken directly
+      from Chapter 4 of the JSR 220 specification.
+    </para></note>
+
+    </para>
+        <section id="jpa_langref_stmnttypes">
+          <title>JPQL Statement Types</title>
+          <para>
+    A JPQL statement
+    may be either a <literal>SELECT</literal> statement, an <literal>UPDATE</literal>
+    statement, or a <literal>DELETE</literal> statement. This chapter refers to all
+    such statements as "queries". Where
+    it is important to distinguish among statement types, the specific
+    statement type is referenced. In BNF syntax, a query language statement
+    is defined as:
+
+<itemizedlist><listitem><para>QL_statement ::= select_statement | update_statement | delete_statement</para></listitem></itemizedlist>
+
+    The complete BNF for JPQL is defined in <xref linkend="jpa_langref_bnf"/>.
+
+    Any JPQL statement may be constructed
+    dynamically or may be statically defined in a metadata annotation or
+    XML descriptor element. All statement types may have parameters, as
+    discussed in <xref linkend="jpa_langref_input_params"/>.
+
+    </para>
+          <section id="jpa_langref_select">
+            <title>JPQL Select Statement</title>
+            <para>
+      A select statement is a string which consists of the following clauses:
+
+      <itemizedlist><listitem><para>
+      a <literal>SELECT</literal> clause, which determines the type of the objects or values
+      to be selected.
+        </para></listitem><listitem><para>
+      a <literal>FROM</literal> clause, which provides declarations that designate the domain to
+      which the expressions specified in the other clauses of the query apply.
+        </para></listitem><listitem><para>
+      an optional <literal>WHERE</literal> clause, which may be used to restrict the results
+      that are returned by the query.
+        </para></listitem><listitem><para>
+      an optional <literal>GROUP BY</literal> clause, which allows query results to be aggregated
+      in terms of groups.
+        </para></listitem><listitem><para>
+      an optional <literal>HAVING</literal> clause, which allows filtering over aggregated
+      groups.
+        </para></listitem><listitem><para>
+      an optional <literal>ORDER BY</literal> clause, which may be used to order the
+      results that are returned by the query.
+        </para></listitem></itemizedlist>
+
+      In BNF syntax, a select statement is defined as:
+
+<itemizedlist><listitem><para>select_statement ::= select_clause from_clause [where_clause] [groupby_clause] [having_clause] [orderby_clause]</para></listitem></itemizedlist>
+
+
+      A select statement
+      must always have a <literal>SELECT</literal>
+      and a <literal>FROM</literal> clause. The square brackets []
+      indicate that the other clauses are optional.
+
+      </para>
+          </section>
+          <section id="jpa_langref_bulk">
+            <title>JPQL Update and Delete Statements</title>
+            <para>
+      Update and delete statements provide bulk operations over sets of entities.
+      In BNF syntax, these operations are defined as:
+
+<itemizedlist><listitem><para>update_statement ::= update_clause [where_clause]</para></listitem><listitem><para>delete_statement ::= delete_clause [where_clause]</para></listitem></itemizedlist>
+
+      The update and delete clauses determine
+      the type of the entities to be updated or deleted.
+      The <literal>WHERE</literal> clause may
+      be used to restrict the scope of the update or delete operation. Update
+      and delete statements are described further in
+      <xref linkend="jpa_langref_bulk_ops"/>.
+      </para>
+          </section>
+        </section>
+        <section id="jpa_langref_schematypes">
+          <title>JPQL Abstract Schema Types and Query Domains</title>
+          <para>
+    The Java Persistence query
+    language is a typed language, and every expression has a type. The
+    type of an expression is derived from the structure of the expression,
+    the abstract schema types of the identification variable declarations,
+    the types to which the persistent fields and relationships evaluate,
+    and the types of literals. The abstract schema type of an entity is
+    derived from the entity class and the metadata information provided by
+    Java language annotations or in the XML descriptor.
+    </para>
+          <para> 
+    Informally, the abstract schema type of an entity can be characterized
+    as follows:
+
+      <itemizedlist><listitem><para>
+    For every persistent field or get accessor method (for a persistent
+    property) of the entity class, there is a field ("state-field") whose
+    abstract schema type corresponds to that of the field or the result type
+    of the accessor method.
+        </para></listitem><listitem><para> 
+    For every persistent relationship field or get accessor method (for a
+    persistent relationship property) of the entity class, there is a field
+    ("association-field") whose type is the abstract schema type of the
+    related entity (or, if the relationship is a one-to-many or many-to-many,
+    a collection of such). Abstract schema types are specific to the query
+    language data model. The persistence provider is not required to implement
+    or otherwise materialize an abstract schema type. The domain of a query
+    consists of the abstract schema types of all entities that are defined
+    in the same persistence unit. The domain of a query may be restricted
+    by the navigability of the relationships of the entity on which it
+    is based. The association-fields of an entity's abstract schema type
+    determine navigability. Using the association-fields and their values,
+    a query can select related entities and use their abstract schema types
+    in the query.
+        </para></listitem></itemizedlist>
+
+    </para>
+          <section id="jpa_langref_schemanaming">
+            <title>JPQL Entity Naming</title>
+            <para>
+      Entities are designated in query strings by their entity
+      names. The entity name is defined by the name element of the Entity
+      annotation (or the entity-name XML descriptor element), and defaults to
+      the unqualified name of the entity class. Entity names are scoped within
+      the persistence unit and must be unique within the persistence unit.
+
+      </para>
+          </section>
+          <section id="jpa_langref_schemaexample">
+            <title>JPQL Schema Example</title>
+            <para>
+      This example assumes that the application developer
+      provides several entity classes, representing magazines, publishers,
+      authors, and articles.
+      The abstract schema
+      types for these entities are <literal>Magazine</literal>,
+      <literal>Publisher</literal>, <literal>Author</literal>,
+      and <literal>Article</literal>.
+      </para>
+            <para> 
+      Several Entities with Abstract Persistence Schemas Defined in the Same
+      Persistence Unit. The entity <literal>Publisher</literal> has a
+      one-to-many relationships with <literal>Magazine</literal>.
+      There is also a one-to-many
+      relationship between <literal>Magazine</literal> and 
+      <literal>Article</literal>. The entity <literal>Article</literal>
+      is related to <literal>Author</literal> in a one-to-one relationship.
+
+      </para>
+            <para> 
+      Queries to select magazines can be defined by navigating over the
+      association-fields and state-fields defined by Magazine and Author. A query
+      to find all magazines that have unpublished articles is as follows:
+
+<programlisting format="linespecific">SELECT DISTINCT mag FROM Magazine AS mag JOIN mag.articles AS art WHERE art.published = FALSE</programlisting>
+
+      This query navigates over the association-field authors of the
+      abstract schema type <literal>Magazine</literal> to find articles,
+      and uses the state-field
+      <literal>published</literal> of <literal>Article</literal> to select those 
+      magazines that have at least one article that is published.
+      Although predefined reserved identifiers,
+      such as <literal>DISTINCT</literal>, <literal>FROM</literal>, <literal>AS</literal>,
+      <literal>JOIN</literal>, <literal>WHERE</literal>, and <literal>FALSE</literal> appear in upper case
+      in this example, predefined reserved identifiers are case insensitive. The
+      <literal>SELECT</literal> clause of this example designates the return type of this query to
+      be of type Magazine. Because the same persistence unit defines the abstract
+      persistence schemas of the related entities, the developer can also
+      specify a query over <literal>articles</literal> that utilizes the abstract
+      schema type for
+      products, and hence the state-fields and association-fields of both the
+      abstract schema types Magazine and Author. For example, if the abstract
+      schema type Author has a state-field named firstName, a query over
+      articles can be specified using this state-field. Such a query might be
+      to find all magazines that have articles authored by someone with the
+      first name "John".
+
+<programlisting format="linespecific">SELECT DISTINCT mag FROM Magazine mag
+    JOIN mag.articles art JOIN art.author auth WHERE auth.firstName = 'John'</programlisting>
+
+      Because Magazine is related to Author by means of the relationships between
+      Magazine and Article and between Article and Author, navigation using
+      the association-fields authors and product is used to express the
+      query. This query is specified by using the abstract schema name Magazine,
+      which designates the abstract schema type over which the query ranges. The
+      basis for the navigation is provided by the association-fields authors
+      and product of the abstract schema types Magazine and Article respectively.
+
+
+      </para>
+          </section>
+        </section>
+        <section id="jpa_langref_fromclause">
+          <title>JPQL FROM Clause and Navigational Declarations</title>
+          <para>
+    The <literal>FROM</literal> clause of
+    a query defines the domain of the query by declaring identification
+    variables. An identification variable is an identifier declared in the
+    <literal>FROM</literal> clause of a query. The domain of the query may be constrained by
+    path expressions. Identification variables designate instances of a
+    particular entity abstract schema type. The <literal>FROM</literal> clause can contain
+    multiple identification variable declarations separated by a comma (,).
+    </para>
+          <para>
+            <itemizedlist>
+              <listitem>
+                <para>from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}*</para>
+              </listitem>
+              <listitem>
+                <para>identification_variable_declaration ::= range_variable_declaration { join | fetch_join }*  </para>
+              </listitem>
+              <listitem>
+                <para>range_variable_declaration ::= abstract_schema_name [AS] identification_variable</para>
+              </listitem>
+              <listitem>
+                <para>join ::= join_spec join_association_path_expression [AS] identification_variable</para>
+              </listitem>
+              <listitem>
+                <para>fetch_join ::= join_spec FETCH join_association_path_expression </para>
+              </listitem>
+              <listitem>
+                <para>join_association_path_expression ::= join_collection_valued_path_expression | join_single_valued_association_path_expression </para>
+              </listitem>
+              <listitem>
+                <para>join_spec ::= [ LEFT [OUTER] | INNER ] JOIN </para>
+              </listitem>
+              <listitem>
+                <para>collection_member_declaration ::= IN (collection_valued_path_expression) [AS] identification_variable</para>
+              </listitem>
+            </itemizedlist>
+          </para>
+          <section id="jpa_langref_from_identifiers">
+            <title>JPQL FROM Identifiers</title>
+            <para>
+      An identifier is a character sequence of unlimited
+      length. The character sequence must begin with a Java identifier
+      start character, and all other characters must be Java identifier
+      part characters. An identifier start character is any character for
+      which the method <methodname>Character.isJavaIdentifierStart</methodname>
+      returns <literal>true</literal>. This
+      includes the underscore (_) character and the dollar sign ($)
+      character. An identifier part character is any character for which
+      the method <methodname>Character.isJavaIdentifierPart</methodname>
+      returns <literal>true</literal>. The question
+      mark (?) character is reserved for use by the Java Persistence query
+      language. The following are reserved identifiers: 
+
+      <itemizedlist><listitem><para><literal>SELECT</literal></para></listitem><listitem><para><literal>FROM</literal></para></listitem><listitem><para><literal>WHERE</literal></para></listitem><listitem><para><literal>UPDATE</literal></para></listitem><listitem><para><literal>DELETE</literal></para></listitem><listitem><para><literal>JOIN</literal></para></listitem><listitem><para><literal>OUTER</literal></para></listitem><listitem><para><literal>INNER</literal></para></listitem><listitem><para><literal>LEFT</literal></para></listitem><listitem><para><literal>GROUP</literal></para></listitem><listitem><para><literal>BY</literal></para></listitem><listitem><para><literal>HAVING</literal></para></listitem><listitem><para><literal>FETCH</literal></para></listitem><listitem><para><literal>DISTINCT</literal></para></listitem><listitem><para><literal>OBJECT</literal></para></listitem><listitem><para><literal>NULL</literal></para></listitem><listitem><para><literal>TRUE</literal></para></listitem><listitem><para><literal>FALSE</literal></para></listitem><listitem><para><literal>NOT</literal></para></listitem><listitem><para><literal>AND</literal></para></listitem><listitem><para><literal>OR</literal></para></listitem><listitem><para><literal>BETWEEN</literal></para></listitem><listitem><para><literal>LIKE</literal></para></listitem><listitem><para><literal>IN</literal></para></listitem><listitem><para><literal>AS</literal></para></listitem><listitem><para><literal>UNKNOWN</literal></para></listitem><listitem><para><literal>EMPTY</literal></para></listitem><listitem><para><literal>MEMBER</literal></para></listitem><listitem><para><literal>OF</literal></para></listitem><listitem><para><literal>IS</literal></para></listitem><listitem><para><literal>AVG</literal></para></listitem><listitem><para><literal>MAX</literal></para></listitem><listitem><para><literal>MIN</literal></para></listitem><listitem><para><literal>SUM</literal></para></listitem><listitem><para><literal>COUNT</literal></para></listitem><listitem><para><literal>ORDER</literal></para></listitem><listitem><para><literal>BY</literal></para></listitem><listitem><para><literal>ASC</literal></para></listitem><listitem><para><literal>DESC</literal></para></listitem><listitem><para><literal>MOD</literal></para></listitem><listitem><para><literal>UPPER</literal></para></listitem><listitem><para><literal>LOWER</literal></para></listitem><listitem><para><literal>TRIM</literal></para></listitem><listitem><para><literal>POSITION</literal></para></listitem><listitem><para><literal>CHARACTER_LENGTH</literal></para></listitem><listitem><para><literal>CHAR_LENGTH</literal></para></listitem><listitem><para><literal>BIT_LENGTH</literal></para></listitem><listitem><para><literal>CURRENT_TIME</literal></para></listitem><listitem><para><literal>CURRENT_DATE</literal></para></listitem><listitem><para><literal>CURRENT_TIMESTAMP</literal></para></listitem><listitem><para><literal>NEW</literal></para></listitem><listitem><para><literal>EXISTS</literal></para></listitem><listitem><para><literal>ALL</literal></para></listitem><listitem><para><literal>ANY</literal></para></listitem><listitem><para><literal>SOME</literal></para></listitem></itemizedlist>
+
+      Reserved identifiers are
+      case insensitive. Reserved identifiers must not be used as identification
+      variables. It is recommended that other SQL reserved words also not
+      be as identification variables in queries because they may be used as
+      reserved identifiers in future releases of the specification.  
+
+      </para>
+          </section>
+          <section id="jpa_langref_from_vars">
+            <title>JPQL Identification Variables</title>
+            <para>
+      An identification variable is a valid
+      identifier declared in the <literal>FROM</literal> clause of a query. All identification
+      variables must be declared in the <literal>FROM</literal> clause. Identification variables
+      cannot be declared in other clauses. An identification variable must not
+      be a reserved identifier or have the same name as any entity in the same
+      persistence unit: Identification variables are case insensitive. An
+      identification variable evaluates to a value of the type of the
+      expression used in declaring the variable. For example, consider the
+      previous query:
+
+<programlisting format="linespecific">SELECT DISTINCT mag FROM Magazine mag JOIN mag.articles art JOIN art.author auth WHERE auth.firstName = 'John'</programlisting>
+
+      In the <literal>FROM</literal> clause
+      declaration <literal>mag.articles</literal> <literal>art</literal>,
+      the identification variable <literal>art</literal> evaluates to
+      any <literal>Article</literal> value directly reachable from
+      <literal>Magazine</literal>. The association-field
+      <literal>articles</literal> is a collection of instances
+      of the abstract schema type <literal>Article</literal>
+      and the identification variable <literal>art</literal>
+      refers to an element of this
+      collection. The type of <literal>auth</literal> is the abstract
+      schema type of <literal>Author</literal>. An
+      identification variable ranges over the abstract schema type of an
+      entity. An identification variable designates an instance of an entity
+      abstract schema type or an element of a collection of entity abstract
+      schema type instances. Identification variables are existentially
+      quantified in a query. An identification variable always designates a
+      reference to a single value. It is declared in one of three ways: in a
+      range variable declaration, in a join clause, or in a collection member
+      declaration. The identification variable declarations are evaluated
+      from left to right in the <literal>FROM</literal> clause, and an identification variable
+      declaration can use the result of a preceding identification variable
+      declaration of the query string.
+
+      </para>
+          </section>
+          <section id="jpa_langref_range">
+            <title>JPQL Range Declarations</title>
+            <para>
+      The syntax for declaring an
+      identification variable as a range variable is similar to that of SQL;
+      optionally, it uses the AS keyword.
+<itemizedlist><listitem><para>range_variable_declaration ::= abstract_schema_name [AS] identification_variable</para></listitem></itemizedlist>
+      </para>
+            <para> 
+      Range variable declarations allow the developer
+      to designate a "root" for objects which may not be reachable by
+      navigation. In order to select values by comparing more than one instance
+      of an entity abstract schema type, more than one identification variable
+      ranging over the abstract schema type is needed in the <literal>FROM</literal> clause.
+
+      </para>
+            <para> 
+      The following query returns magazines whose price is greater than the
+      price of magazines published by "Adventure" publishers. This example illustrates the use of
+      two different identification variables in the <literal>FROM</literal> clause, both of the
+      abstract schema type Magazine. The <literal>SELECT</literal> clause of this query determines
+      that it is the magazines with prices greater than those of "Adventure" publisher's that are
+      returned.
+
+<programlisting format="linespecific">SELECT DISTINCT mag1 FROM Magazine mag1, Magazine mag2
+WHERE mag1.price &gt; mag2.price AND mag2.publisher.name = 'Adventure'</programlisting>
+
+      </para>
+          </section>
+          <section id="jpa_langref_path">
+            <title>JPQL Path Expressions</title>
+            <para>
+      An identification variable followed by the
+      navigation operator (.) and a state-field or association-field is a
+      path expression. The type of the path expression is the type computed
+      as the result of navigation; that is, the type of the state-field
+      or association-field to which the expression navigates. Depending on
+      navigability, a path expression that leads to a association-field may
+      be further composed. Path expressions can be composed from other path
+      expressions if the original path expression evaluates to a single-valued
+      type (not a collection) corresponding to a association-field. Path
+      expression navigability is composed using "inner join" semantics. That is,
+      if the value of a non-terminal association-field in the path expression is
+      null, the path is considered to have no value, and does not participate
+      in the determination of the result. The syntax for single-valued path
+      expressions and collection valued path expressions is as follows:
+      </para>
+            <para>
+              <itemizedlist>
+                <listitem>
+                  <para>single_valued_path_expression ::= state_field_path_expression | single_valued_association_path_expression</para>
+                </listitem>
+                <listitem>
+                  <para>state_field_path_expression ::= {identification_variable | single_valued_association_path_expression}.state_field</para>
+                </listitem>
+                <listitem>
+                  <para>single_valued_association_path_expression ::= identification_variable.{single_valued_association_field.}*single_valued_association_field</para>
+                </listitem>
+                <listitem>
+                  <para>collection_valued_path_expression ::= identification_variable.{single_valued_association_field.}*collection_valued_association_field</para>
+                </listitem>
+                <listitem>
+                  <para>state_field ::= {embedded_class_state_field.}*simple_state_field</para>
+                </listitem>
+              </itemizedlist>
+            </para>
+            <para> 
+      A single_valued_association_field is designated by the
+      name of an association-field in a one-to-one or many-to-one
+      relationship. The type of a single_valued_association_field and thus a
+      single_valued_association_path_expression is the abstract schema type of
+      the related entity. A collection_valued_association_field is designated
+      by the name of an association-field in a one-to-many or a many-to-many
+      relationship. The type of a collection_valued_association_field is a
+      collection of values of the abstract schema type of the related entity. An
+      embedded_class_state _field is designated by the name of an entity state
+      field that corresponds to an embedded class. Navigation to a related
+      entity results in a value of the related entity's abstract schema type.
+
+      </para>
+            <para> 
+      The evaluation of a path expression terminating in a state-field results
+      in the abstract schema type corresponding to the Java type designated by
+      the state-field. It is syntactically illegal to compose a path expression
+      from a path expression that evaluates to a collection. For example, if
+      <literal>mag</literal>
+      designates
+      <literal>Magazine</literal>,
+      the path expression <literal>mag.articles.author</literal> is illegal since
+      navigation to authors results in a collection. This case should produce
+      an error when the query string is verified. To handle such a navigation,
+      an identification variable must be declared in the <literal>FROM</literal> clause to range
+      over the elements of the <literal>articles</literal> collection. Another path expression
+      must be used to navigate over each such element in the <literal>WHERE</literal> clause of
+      the query, as in the following query which returns all authors that have
+      any articles in any magazines:
+
+<programlisting format="linespecific">SELECT DISTINCT art.author FROM Magazine AS mag, IN(mag.articles) art</programlisting>
+
+      </para>
+          </section>
+          <section id="jpa_langref_Joins">
+            <title>JPQL Joins</title>
+            <para>
+      An inner join may be implicitly specified by the use of a
+      cartesian product in the <literal>FROM</literal> clause and a join
+      condition in the <literal>WHERE</literal>
+      clause.
+      </para>
+            <para> 
+      The syntax for explicit join operations is as follows:
+      </para>
+            <para>
+              <itemizedlist>
+                <listitem>
+                  <para>join ::= join_spec join_association_path_expression [AS] identification_variable </para>
+                </listitem>
+                <listitem>
+                  <para>fetch_join ::= join_spec FETCH join_association_path_expression </para>
+                </listitem>
+                <listitem>
+                  <para>join_association_path_expression ::= join_collection_valued_path_expression | join_single_valued_association_path_expression</para>
+                </listitem>
+                <listitem>
+                  <para>join_spec ::= [ LEFT [OUTER] | INNER ] JOIN</para>
+                </listitem>
+              </itemizedlist>
+            </para>
+            <para> 
+      The following inner and outer join operation types are supported.
+
+      </para>
+            <section id="jpa_langref_inner_joins">
+              <title>JPQL Inner Joins (Relationship Joins)</title>
+              <para>
+        The syntax for the inner join operation is
+
+<programlisting format="linespecific">
+[ INNER ] JOIN join_association_path_expression [AS] identification_variable
+</programlisting>
+
+        For example, the query below joins over the
+        relationship between publishers and magazines. This type of join typically
+        equates to a join over a foreign key relationship in the database.
+
+<programlisting format="linespecific">SELECT pub FROM Publisher pub JOIN pub.magazines mag WHERE pub.revenue &gt; 1000000</programlisting>
+
+        </para>
+              <para> 
+        The keyword <literal>INNER</literal> may optionally be used:
+
+<programlisting format="linespecific">SELECT pub FROM Publisher pub INNER JOIN pub.magazines mag WHERE pub.revenue &gt; 1000000</programlisting>
+
+        This is equivalent to the following
+        query using the earlier <literal>IN</literal> construct. It selects those
+        publishers with revenue of over 1 million for which at least one magazine exists:
+
+<programlisting format="linespecific">SELECT OBJECT(pub) FROM Publisher pub, IN(pub.magazines) mag WHERE pub.revenue &gt; 1000000</programlisting>
+
+        </para>
+            </section>
+            <section id="jpa_langref_outer_joins">
+              <title>JPQL Outer Joins</title>
+              <para><literal>LEFT JOIN</literal> and <literal>LEFT OUTER JOIN</literal> are
+        synonymous. They enable the retrieval of a set of entities where
+        matching values in the join condition may be absent. The syntax for a
+        left outer join is:
+
+<programlisting format="linespecific">LEFT [OUTER] JOIN join_association_path_expression [AS] identification_variable</programlisting></para>
+              <para> 
+        For example:
+
+<programlisting format="linespecific">SELECT pub FROM Publisher pub LEFT JOIN pub.magazines mag WHERE pub.revenue &gt; 1000000</programlisting>
+
+        The keyword <literal>OUTER</literal> may optionally be used:
+
+<programlisting format="linespecific">SELECT pub FROM Publisher pub LEFT OUTER JOIN pub.magazines mags WHERE pub.revenue &gt; 1000000</programlisting>
+
+        An important use case
+        for <literal>LEFT JOIN</literal> is in enabling the prefetching of related data items as
+        a side effect of a query. This is accomplished by specifying the
+        <literal>LEFT JOIN</literal> as a <literal>FETCH JOIN</literal>.
+
+        </para>
+            </section>
+            <section id="jpa_langref_fetch_joins">
+              <title>JPQL Fetch Joins</title>
+              <para>
+        A <literal>FETCH JOIN</literal> enables the fetching of an association
+        as a side effect of the execution of a query.
+        A <literal>FETCH JOIN</literal> is specified
+        over an entity and its related entities. The syntax for a fetch join is
+
+<itemizedlist><listitem><para>fetch_join ::= [ LEFT [OUTER] | INNER ] JOIN FETCH join_association_path_expression </para></listitem></itemizedlist>
+        </para>
+              <para> 
+        The association referenced by the right
+        side of the <literal>FETCH JOIN</literal> clause must be
+        an association that belongs to an
+        entity that is returned as a result of the query. It is not permitted
+        to specify an identification variable for the entities referenced by
+        the right side of the <literal>FETCH JOIN</literal> clause, and
+        hence references to the
+        implicitly fetched entities cannot appear elsewhere in the query. The
+        following query returns a set of magazines. As a side effect, the
+        associated articles for those magazines are also retrieved, even
+        though they are not part of the explicit query result. The persistent
+        fields or properties of the articles that are eagerly fetched are
+        fully initialized. The initialization of the relationship properties
+        of the <literal>articles</literal> that are retrieved is determined
+        by the metadata for the <literal>Article</literal> entity class.
+
+<programlisting format="linespecific">SELECT mag FROM Magazine mag LEFT JOIN FETCH mag.articles WHERE mag.id = 1</programlisting>
+
+
+        </para>
+              <para>
+
+        A fetch join has the same join semantics as the corresponding inner or
+        outer join, except that the related objects specified on the right-hand
+        side of the join operation are not returned in the query result or
+        otherwise referenced in the query. Hence, for example, if magazine
+        id 1 has five articles, the above query returns five references to the
+        magazine 1 entity.
+
+        </para>
+            </section>
+          </section>
+          <section id="jpa_langref_collection_dec">
+            <title>JPQL Collection Member Declarations</title>
+            <para>
+      An identification variable declared
+      by a collection_member_declaration ranges over values of a collection
+      obtained by navigation using a path expression. Such a path expression
+      represents a navigation involving the association-fields of an entity
+      abstract schema type. Because a path expression can be based on another
+      path expression, the navigation can use the association-fields of related
+      entities. An identification variable of a collection member declaration
+      is declared using a special operator, the reserved
+      identifier <literal>IN</literal>. The
+      argument to the <literal>IN</literal> operator is a
+      collection-valued path expression. The
+      path expression evaluates to a collection type specified as a result of
+      navigation to a collection-valued association-field of an entity abstract
+      schema type. The syntax for declaring a collection member identification
+      variable is as follows:
+      </para>
+            <para>
+              <itemizedlist>
+                <listitem>
+                  <para>collection_member_declaration ::= IN (collection_valued_path_expression) [AS] identification_variable</para>
+                </listitem>
+              </itemizedlist>
+            </para>
+            <para>
+
+      For example, the query
+
+<programlisting format="linespecific">SELECT DISTINCT mag FROM Magazine mag
+    JOIN mag.articles art
+    JOIN art.author auth
+    WHERE auth.lastName = 'Grisham'</programlisting>
+
+      may equivalently
+      be expressed as follows, using the <literal>IN</literal> operator:
+
+<programlisting format="linespecific">SELECT DISTINCT mag FROM Magazine mag,
+    IN(mag.articles) art
+    WHERE art.author.lastName = 'Grisham'</programlisting>
+
+      In this example, <literal>articles</literal> is the name of
+      an association-field whose value
+      is a collection of instances of the abstract schema
+      type <literal>Article</literal>. The
+      identification variable <literal>art</literal> designates a member
+      of this collection, a
+      single <literal>Article</literal> abstract schema type instance.
+      In this example, <literal>mag</literal> is an
+      identification variable of the abstract schema type
+      <literal>Magazine</literal>.
+
+      </para>
+          </section>
+          <section id="jpa_langref_polymorph">
+            <title>JPQL Polymorphism</title>
+            <para>
+      Java Persistence queries are automatically
+      polymorphic. The <literal>FROM</literal> clause of a query designates not only instances
+      of the specific entity classes to which explicitly refers but of
+      subclasses as well. The instances returned by a query include instances
+      of the subclasses that satisfy the query criteria.
+
+      </para>
+          </section>
+        </section>
+        <section id="jpa_langref_where">
+          <title>JPQL WHERE Clause</title>
+          <para>
+    The <literal>WHERE</literal> clause of a query consists of a conditional
+    expression used to select objects or values that satisfy the
+    expression. The <literal>WHERE</literal> clause restricts the result of a select statement
+    or the scope of an update or delete operation. A <literal>WHERE</literal> clause is defined
+    as follows:
+
+<itemizedlist><listitem><para>where_clause ::= WHERE conditional_expression</para></listitem></itemizedlist>
+    </para>
+          <para>
+
+    The <literal>GROUP BY</literal> construct
+    enables the aggregation of values according to the properties of an entity
+    class. The <literal>HAVING</literal> construct enables conditions to be specified that
+    further restrict the query result as restrictions upon the groups. The
+    syntax of the <literal>HAVING</literal> clause is as follows:
+
+<itemizedlist><listitem><para>having_clause ::= HAVING conditional_expression</para></listitem></itemizedlist>
+    </para>
+          <para>
+
+    The <literal>GROUP BY</literal> and <literal>HAVING</literal>
+    constructs are further discussed in <xref linkend="jpa_langref_group"/>.
+
+    </para>
+        </section>
+        <section id="jpa_langref_cond">
+          <title>JPQL Conditional Expressions</title>
+          <para>
+    The following sections describe the language
+    constructs that can be used in a conditional expression of the <literal>WHERE</literal>
+    clause or <literal>HAVING</literal> clause. State-fields that are mapped in serialized form
+    or as lobs may not be portably used in conditional expressions.
+
+    <note><para>
+      The implementation is not
+      expected to perform such query operations involving such fields in memory
+      rather than in the database.
+    </para></note>
+
+    </para>
+          <section id="jpa_langref_lit">
+            <title>JPQL Literals</title>
+            <para>
+      A string literal is enclosed in single quotes--for example:
+      'literal'. A string literal that includes a single quote is represented by
+      two single quotes--for example: 'literal''s'. String literals in queries,
+      like Java String literals, use unicode character encoding. The use of Java
+      escape notation is not supported in query string literals Exact numeric
+      literals support the use of Java integer literal syntax as well as SQL
+      exact numeric literal syntax. Approximate literals support the use Java
+      floating point literal syntax as well as SQL approximate numeric literal
+      syntax. Enum literals support the use of Java enum literal syntax. The
+      enum class name must be specified. Appropriate suffixes may be used
+      to indicate the specific type of a numeric literal in accordance with
+      the Java Language Specification. The boolean
+      literals are <literal>TRUE</literal> and <literal>FALSE</literal>.
+      Although predefined reserved literals appear in upper case, they are case insensitive.
+
+      </para>
+          </section>
+          <section id="jpa_langref_idvar">
+            <title>JPQL Identification Variables</title>
+            <para>
+      All identification variables used
+      in the <literal>WHERE</literal> or <literal>HAVING</literal> clause of a
+      <literal>SELECT</literal> or <literal>DELETE</literal> statement must
+      be declared in the <literal>FROM</literal> clause, as described in
+      <xref linkend="jpa_langref_from_vars"/>. The
+      identification variables used in the <literal>WHERE</literal> clause of
+      an <literal>UPDATE</literal> statement
+      must be declared in the <literal>UPDATE</literal> clause.
+      Identification variables are
+      existentially quantified in the <literal>WHERE</literal> and
+      <literal>HAVING</literal> clause. This means
+      that an identification variable represents a member of a collection
+      or an instance of an entity's abstract schema type. An identification
+      variable never designates a collection in its entirety.
+
+      </para>
+          </section>
+          <section id="jpa_langref_path_exp">
+            <title>JPQL Path Expressions</title>
+            <para>
+      It is illegal to use
+      a collection_valued_path_expression within a <literal>WHERE</literal> or
+      <literal>HAVING</literal> clause as part of a conditional expression except in an
+      empty_collection_comparison_expression, in a collection_member_expression,
+      or as an argument to the <literal>SIZE</literal> operator.
+
+      </para>
+          </section>
+          <section id="jpa_langref_input_params">
+            <title>JPQL Input Parameters</title>
+            <para>
+      Either positional or named parameters may be
+      used. Positional and named parameters may not be mixed in a single
+      query. Input parameters can only be used in the <literal>WHERE</literal>
+      clause or <literal>HAVING</literal> clause of a query.
+      </para>
+            <para>
+
+      Note that if an input parameter value is null, comparison operations
+      or arithmetic operations involving the input parameter will return an
+      unknown value. See <xref linkend="jpa_langref_null_values"/>.
+
+      </para>
+            <section id="jpa_langref_pos_params">
+              <title>JPQL Positional Parameters</title>
+              <para>
+        The following rules apply to positional
+        parameters.
+
+        <itemizedlist><listitem><para>
+        Input parameters are designated by the question mark (?) prefix followed
+        by an integer. For example: ?1.
+          </para></listitem><listitem><para>
+        Input parameters are numbered starting from 1.  Note that the same
+        parameter can be used more than once in the query string and that the
+        ordering of the use of parameters within the query string need not
+        conform to the order of the positional parameters.
+          </para></listitem></itemizedlist>
+
+        </para>
+            </section>
+            <section id="jpa_langref_named_params">
+              <title>JPQL Named Parameters</title>
+              <para>
+        A named parameter is an identifier that is
+        prefixed by the ":" symbol. It follows the rules for identifiers defined
+        in <xref linkend="jpa_langref_from_identifiers"/>. Named parameters are case sensitive.
+        </para>
+              <para>
+
+        Example:
+
+<programlisting format="linespecific">SELECT pub FROM Publisher pub WHERE pub.revenue &gt; :rev</programlisting>
+
+        </para>
+            </section>
+          </section>
+          <section id="jpa_langref_cond_comp">
+            <title>JPQL Conditional Expression Composition</title>
+            <para>
+      Conditional expressions are
+      composed of other conditional expressions, comparison operations,
+      logical operations, path expressions that evaluate to boolean values,
+      boolean literals, and boolean input parameters. Arithmetic expressions
+      can be used in comparison expressions. Arithmetic expressions are
+      composed of other arithmetic expressions, arithmetic operations, path
+      expressions that evaluate to numeric values, numeric literals, and numeric
+      input parameters. Arithmetic operations use numeric promotion. Standard
+      bracketing () for ordering expression evaluation is supported. Conditional
+      expressions are defined as follows:
+
+      </para>
+            <para>
+              <itemizedlist>
+                <listitem>
+                  <para>conditional_expression ::= conditional_term | conditional_expression OR conditional_term </para>
+                </listitem>
+                <listitem>
+                  <para>conditional_term ::= conditional_factor | conditional_term AND conditional_factor </para>
+                </listitem>
+                <listitem>
+                  <para>conditional_factor ::= [ NOT ] conditional_primary </para>
+                </listitem>
+                <listitem>
+                  <para>conditional_primary ::= simple_cond_expression | (conditional_expression) </para>
+                </listitem>
+                <listitem>
+                  <para>simple_cond_expression ::= comparison_expression | between_expression | like_expression | in_expression | null_comparison_expression | empty_collection_comparison_expression | collection_member_expression | exists_expression</para>
+                </listitem>
+              </itemizedlist>
+            </para>
+            <para>
+      Aggregate functions can only be used in conditional expressions in
+      a <literal>HAVING</literal> clause. See
+      <xref linkend="jpa_langref_group"/>.
+      </para>
+          </section>
+          <section id="jpa_langref_operators">
+            <title>JPQL Operators and Operator Precedence</title>
+            <para>
+      The operators are listed below in order of decreasing precedence.
+
+        <itemizedlist><listitem><para>
+      Navigation operator (.)
+          </para></listitem><listitem><para>
+      Arithmetic operators: +, - unary *, /
+      multiplication and division +, - addition and subtraction
+          </para></listitem><listitem><para>
+      Comparison operators : =, &gt;, &gt;=, &lt;, &lt;=, &lt;&gt; (not equal), [<literal>NOT</literal>]
+      <literal>BETWEEN</literal>, [<literal>NOT</literal>] <literal>LIKE</literal>,
+      [<literal>NOT</literal>] <literal>IN</literal>, <literal>IS</literal> [<literal>NOT</literal>]
+      <literal>NULL</literal>, <literal>IS</literal> [<literal>NOT</literal>] <literal>EMPTY</literal>,
+      [<literal>NOT</literal>] <literal>MEMBER</literal> [<literal>OF</literal>]
+          </para></listitem><listitem><para>
+      Logical operators: <literal>NOT</literal> <literal>AND</literal> <literal>OR</literal>
+          </para></listitem></itemizedlist>
+
+      The following sections describe other operators used in specific expressions.
+      </para>
+          </section>
+          <section id="jpa_langref_between">
+            <title>JPQL Between Expressions</title>
+            <para>
+      The syntax for the use of the comparison
+      operator [<literal>NOT</literal>] <literal>BETWEEN</literal> in a
+      conditional expression is as follows:
+      </para>
+            <para>
+
+      arithmetic_expression [NOT] BETWEEN arithmetic_expression
+      AND arithmetic_expression | string_expression [NOT] BETWEEN
+      string_expression AND string_expression | datetime_expression [NOT]
+      BETWEEN datetime_expression AND datetime_expression
+      </para>
+            <para>The BETWEEN expression
+
+<programlisting format="linespecific">x BETWEEN y AND z</programlisting>
+
+      is semantically equivalent to:
+
+<programlisting format="linespecific">y &lt;= x AND x &lt;= z</programlisting>
+
+      The rules for unknown and
+      <literal>NULL</literal> values in comparison operations apply. See
+      <xref linkend="jpa_langref_null_values"/>. Examples
+      are:
+
+<programlisting format="linespecific">p.age BETWEEN 15 and 19</programlisting>
+
+      is equivalent to
+
+<programlisting format="linespecific">p.age &gt;= 15 AND p.age &lt;= 19</programlisting>
+      </para>
+            <para><programlisting format="linespecific">p.age NOT BETWEEN 15 and 19</programlisting>
+
+      is equivalent to
+
+<programlisting format="linespecific">p.age &lt; 15 OR p.age &gt; 19</programlisting></para>
+          </section>
+          <section id="jpa_langref_in">
+            <title>JPQL In Expressions</title>
+            <para>
+      The syntax for the use of the comparison operator
+      [<literal>NOT</literal>] <literal>IN</literal> in a conditional expression is as follows:
+
+
+      </para>
+            <para>
+              <itemizedlist>
+                <listitem>
+                  <para>in_expression ::= state_field_path_expression [NOT] IN ( in_item {, in_item}* | subquery) </para>
+                </listitem>
+                <listitem>
+                  <para>in_item ::= literal | input_parameter</para>
+                </listitem>
+              </itemizedlist>
+            </para>
+            <para>
+
+      The state_field_path_expression must have a string, numeric, or enum
+      value. The literal and/or input_parameter values must be like the same
+      abstract schema type of the state_field_path_expression in type. (See
+      <xref linkend="jpa_langref_equality"/>).
+      </para>
+            <para>
+
+      The results of the subquery must be like the same abstract schema type
+      of the state_field_path_expression in type. Subqueries are discussed in
+      <xref linkend="jpa_langref_subqueries"/>. Examples are:
+
+<programlisting format="linespecific">o.country IN ('UK', 'US', 'France')</programlisting>
+
+      is true for UK and false for Peru, and is equivalent to the
+      expression:
+
+<programlisting format="linespecific">(o.country = 'UK') OR (o.country = 'US') OR (o.country = ' France')</programlisting> 
+
+      In the following expression:
+
+<programlisting format="linespecific">o.country NOT IN ('UK', 'US', 'France')</programlisting>
+
+      is false for UK and true for Peru, and is equivalent to the expression:
+
+<programlisting format="linespecific">NOT ((o.country = 'UK') OR (o.country = 'US') OR (o.country = 'France'))</programlisting>
+
+       There must be at least one
+      element in the comma separated list that defines the set of values for
+      the <literal>IN</literal> expression. If the value of a state_field_path_expression in an
+      <literal>IN</literal> or <literal>NOT IN</literal> expression is
+      <literal>NULL</literal> or unknown, the value of the expression is unknown.
+
+      </para>
+          </section>
+          <section id="jpa_langref_like">
+            <title>JPQL Like Expressions</title>
+            <para>
+      The syntax for the use of the comparison operator
+      [<literal>NOT</literal>] <literal>LIKE</literal> in a
+      conditional expression is as follows:
+      </para>
+            <para>
+      string_expression [NOT] LIKE pattern_value [ESCAPE escape_character]
+      </para>
+            <para>
+      The string_expression must have a string value. The pattern_value is a
+      string literal or a string-valued input parameter in which an underscore
+      (_) stands for any single character, a percent (%) character stands
+      for any sequence of characters (including the empty sequence), and all
+      other characters stand for themselves. The optional escape_character is
+      a single-character string literal or a character-valued input parameter
+      (i.e., char or Character) and is used to escape the special meaning of
+      the underscore and percent characters in pattern_value. Examples are:
+
+      </para>
+            <para>
+              <itemizedlist>
+                <listitem>
+                  <para><programlisting format="linespecific">address.phone LIKE '12%3'</programlisting>
+          is true for '123' '12993' and false for '1234' 
+          </para>
+                </listitem>
+                <listitem>
+                  <para><programlisting format="linespecific">asentence.word LIKE 'l_se'</programlisting>
+          is true for 'lose' and false for 'loose' 
+          </para>
+                </listitem>
+                <listitem>
+                  <para><programlisting format="linespecific">aword.underscored LIKE '\_%' ESCAPE '\'</programlisting>
+          is true for '_foo' and false for 'bar' 
+          </para>
+                </listitem>
+                <listitem>
+                  <para><programlisting format="linespecific">address.phone NOT LIKE '12%3'</programlisting>
+
+      is false for '123'
+      and '12993' and true for '1234' If the value of the string_expression
+      or pattern_value is <literal>NULL</literal> or unknown, the value of the
+      <literal>LIKE</literal> expression
+      is unknown. If the escape_character is specified and is <literal>NULL</literal>, the value
+      of the <literal>LIKE</literal> expression is unknown.
+          </para>
+                </listitem>
+              </itemizedlist>
+            </para>
+          </section>
+          <section id="jpa_langref_null">
+            <title>JPQL Null Comparison Expressions</title>
+            <para>
+      The syntax for the use of the
+      comparison operator <literal>IS NULL</literal> in a conditional expression is as follows:
+
+      </para>
+            <para>
+      {single_valued_path_expression | input_parameter } IS [NOT] NULL
+      </para>
+            <para>A null comparison expression tests whether or not the single-valued path
+      expression or input parameter is a <literal>NULL</literal> value.
+
+      </para>
+          </section>
+          <section id="jpa_langref_empty_comp">
+            <title>JPQL Empty Collection Comparison Expressions</title>
+            <para>
+      The syntax
+      for the use of the comparison operator <literal>IS EMPTY</literal> in an
+      empty_collection_comparison_expression is as follows:
+      </para>
+            <para>
+
+      collection_valued_path_expression IS [NOT] EMPTY
+
+      </para>
+            <para>
+
+      This expression tests whether or not the collection designated
+      by the collection-valued path expression is empty (i.e, has no
+      elements).
+
+      </para>
+            <para>
+      For example, the following query will return all magazines that
+      don't have any articles at all:
+
+<programlisting format="linespecific">SELECT mag FROM Magazine mag WHERE mag.articles IS EMPTY</programlisting>
+
+      If the value of the collection-valued path expression in an empty collection
+      comparison expression is unknown, the value of the empty comparison
+      expression is unknown.
+
+      </para>
+          </section>
+          <section id="jpa_langref_collection_member">
+            <title>JPQL Collection Member Expressions</title>
+            <para>
+      The use of the comparison
+      collection_member_expression is as follows: syntax for the operator
+      <literal>MEMBER OF</literal> in an
+
+<itemizedlist><listitem><para>collection_member_expression ::= entity_expression [NOT] MEMBER [OF] collection_valued_path_expression</para></listitem><listitem><para>entity_expression ::= single_valued_association_path_expression | simple_entity_expression </para></listitem><listitem><para>simple_entity_expression ::= identification_variable | input_parameter</para></listitem></itemizedlist>
+
+      </para>
+            <para>
+
+      This expression tests whether
+      the designated value is a member of the collection specified by the
+      collection-valued path expression. If the collection valued path
+      expression designates an empty collection, the value of the
+      <literal>MEMBER OF</literal> expression is <literal>FALSE</literal> and
+      the value of the <literal>NOT MEMBER OF</literal> expression is
+      <literal>TRUE</literal>. Otherwise, if the value of the collection-valued path expression
+      or single-valued association-field path expression in the collection
+      member expression is <literal>NULL</literal> or unknown, the value of the collection member
+      expression is unknown.
+
+      </para>
+          </section>
+          <section id="jpa_langref_exists">
+            <title>JPQL Exists Expressions</title>
+            <para>
+      An <literal>EXISTS</literal> expression is a predicate that is
+      true only if the result of the subquery consists of one or more values
+      and that is false otherwise. The syntax of an exists expression is
+
+<itemizedlist><listitem><para>exists_expression ::= [NOT] EXISTS (subquery)</para></listitem></itemizedlist>
+
+      </para>
+            <para>
+      The use of the reserved word OF is optional in this expression.
+
+      </para>
+            <para>
+      Example:
+
+<programlisting format="linespecific">SELECT DISTINCT auth FROM Author auth
+    WHERE EXISTS
+        (SELECT spouseAuthor FROM Author spouseAuthor WHERE spouseAuthor = auth.spouse)</programlisting>
+
+      The result of this query consists of all authors whose spouse is also an author.
+
+      </para>
+          </section>
+          <section id="jpa_langref_all_any">
+            <title>JPQL All or Any Expressions</title>
+            <para>
+      An <literal>ALL</literal> conditional expression is a predicate
+      that is true if the comparison operation is true for all values in the
+      result of the subquery or the result of the subquery is empty. An
+      <literal>ALL</literal> conditional expression is false
+      if the result of the comparison is false
+      for at least one row, and is unknown if neither true nor false. An
+      <literal>ANY</literal> conditional expression is a
+      predicate that is true if the comparison
+      operation is true for some value in the result of the subquery. An
+      <literal>ANY</literal> conditional expression is false if the
+      result of the subquery is empty
+      or if the comparison operation is false for every value in the result
+      of the subquery, and is unknown if neither true nor false. The keyword
+      <literal>SOME</literal> is synonymous with <literal>ANY</literal>.
+      The comparison operators used with <literal>ALL</literal>
+      or <literal>ANY</literal> conditional expressions are =, &lt;, &lt;=, &gt;, &gt;=, &lt;&gt;. The result of
+      the subquery must be like that of the other argument to the comparison
+      operator in type. See <xref linkend="jpa_langref_equality"/>.
+      The syntax of an <literal>ALL</literal> or <literal>ANY</literal>
+      expression is specified as follows:
+
+<itemizedlist><listitem><para>all_or_any_expression ::= { ALL | ANY | SOME} (subquery)</para></listitem></itemizedlist>
+
+      </para>
+            <para>
+
+      The following example select the authors who make the highest salary for
+      their magazine:
+
+<programlisting format="linespecific">SELECT auth FROM Author auth
+    WHERE auth.salary &gt;= ALL(SELECT a.salary FROM Author a WHERE a.magazine = auth.magazine)</programlisting>
+
+      </para>
+          </section>
+          <section id="jpa_langref_subqueries">
+            <title>JPQL Subqueries</title>
+            <para>
+      Subqueries may be used in the <literal>WHERE</literal> or
+      <literal>HAVING</literal> clause. The syntax for subqueries is as follows:
+
+<itemizedlist><listitem><para>subquery ::= simple_select_clause subquery_from_clause [where_clause] [groupby_clause] [having_clause] </para></listitem></itemizedlist>
+
+      </para>
+            <para>
+
+      Subqueries are restricted to the <literal>WHERE</literal> and
+      <literal>HAVING</literal> clauses in this
+      release. Support for subqueries in the <literal>FROM</literal>
+      clause will be considered in a later release of the specification.
+
+
+<itemizedlist><listitem><para>simple_select_clause ::= SELECT [DISTINCT] simple_select_expression </para></listitem><listitem><para>subquery_from_clause ::= FROM subselect_identification_variable_declaration {, subselect_identification_variable_declaration}*</para></listitem><listitem><para>subselect_identification_variable_declaration ::= identification_variable_declaration | association_path_expression [AS] identification_variable | collection_member_declaration</para></listitem><listitem><para>simple_select_expression ::= single_valued_path_expression | aggregate_expression | identification_variable</para></listitem></itemizedlist>
+
+      </para>
+            <para>
+
+      Examples:
+
+<programlisting format="linespecific">SELECT DISTINCT auth FROM Author auth
+    WHERE EXISTS (SELECT spouseAuth FROM Author spouseAuth WHERE spouseAuth = auth.spouse)</programlisting>
+
+<programlisting format="linespecific">SELECT mag FROM Magazine mag
+    WHERE (SELECT COUNT(art) FROM mag.articles art) &gt; 10</programlisting>
+
+      Note that some contexts in which
+      a subquery can be used require that the subquery be a scalar subquery
+      (i.e., produce a single result). This is illustrated in the following
+      example involving a numeric comparison operation.
+
+<programlisting format="linespecific">SELECT goodPublisher FROM Publisher goodPublisher
+    WHERE goodPublisher.revenue &lt; (SELECT AVG(p.revenue) FROM Publisher p)</programlisting>
+
+      </para>
+          </section>
+          <section id="jpa_langref_functional">
+            <title>JPQL Functional Expressions</title>
+            <para>
+      The JPQL includes
+      the following built-in functions, which may be used in the <literal>WHERE</literal>
+      or <literal>HAVING</literal> clause of a query. If the
+      value of any argument to a functional expression
+      is null or unknown, the value of the functional expression is unknown.
+
+      </para>
+            <section id="jpa_langref_string_fun">
+              <title>JPQL String Functions</title>
+              <para>
+                <itemizedlist>
+                  <listitem>
+                    <para>functions_returning_strings ::= CONCAT(string_primar y, string_primary) | SUBSTRING(string_primar y, simple_arithmetic_expression, simple_arithmetic_expression) | TRIM([[trim_specification] [trim_character] FROM] string_primary) | LOWER(string_primar y) | UPPER(string_primar y) </para>
+                  </listitem>
+                  <listitem>
+                    <para>trim_specification ::= LEADING | TRAILING | BOTH</para>
+                  </listitem>
+                  <listitem>
+                    <para>functions_returning_numerics ::= LENGTH(string_primar y) | LOCATE(string_primar y, string_primar y[, simple_arithmetic_expression])</para>
+                  </listitem>
+                </itemizedlist>
+              </para>
+              <para>
+
+        The <literal>CONCAT</literal> function returns a string that is a concatenation of its
+        arguments. The second and third arguments of the
+        <literal>SUBSTRING</literal> function denote
+        the starting position and length of the substring to be returned. These
+        arguments are integers. The first position of a string is denoted by
+        1. The <literal>SUBSTRING</literal> function returns a string.
+        The <literal>TRIM</literal> function trims
+        the specified character from a string. If the character to be trimmed
+        is not specified, it is assumed to be space (or blank). The optional
+        trim_character is a single-character string literal or a character-valued
+        input parameter (i.e., char or Character). If a trim specification
+        is not provided, <literal>BOTH</literal> is assumed.
+        The <literal>TRIM</literal> function returns the trimmed
+        string. The <literal>LOWER</literal> and <literal>UPPER</literal>
+        functions convert a string to lower and upper
+        case, respectively. They return a string. The <literal>LOCATE</literal> function returns
+        the position of a given string within a string, starting the search at
+        a specified position. It returns the first position at which the string
+        was found as an integer. The first argument is the string to be located;
+        the second argument is the string to be searched; the optional third
+        argument is an integer that represents the string position at which
+        the search is started (by default, the beginning of the string to be
+        searched). The first position in a string is denoted by 1. If the string
+        is not found, 0 is returned. The <literal>LENGTH</literal> function
+        returns the length of the string in characters as an integer.
+
+        </para>
+            </section>
+            <section id="jpa_langref_arithmetic">
+              <title>JPQL Arithmetic Functions</title>
+              <para>
+                <itemizedlist>
+                  <listitem>
+                    <para>functions_returning_numerics ::= ABS(simple_arithmetic_expression) | SQRT(simple_arithmetic_expression) | MOD(simple_arithmetic_expression, simple_arithmetic_expression) | SIZE(collection_valued_path_expression)</para>
+                  </listitem>
+                </itemizedlist>
+              </para>
+              <para>
+        The <literal>ABS</literal> function takes a numeric
+        argument and returns a number (integer, float, or double) of the same
+        type as the argument to the function. The
+        <literal>SQRT</literal> function takes a numeric
+        argument and returns a double.
+
+        </para>
+              <para>
+        Note that not all databases support the use of a trim character
+        other than the space character; use of this argument may result in
+        queries that are not portable. Note that not all databases support
+        the use of the third argument to <literal>LOCATE</literal>;
+        use of this argument may result
+        in queries that are not portable.
+
+        </para>
+              <para>
+
+        The <literal>MOD</literal> function takes two integer
+        arguments and returns an integer. The
+        <literal>SIZE</literal> function returns an integer value,
+        the number of elements of the
+        collection. If the collection is empty, the
+        <literal>SIZE</literal> function evaluates to
+        zero. Numeric arguments to these functions may correspond to the numeric
+        Java object types as well as the primitive numeric types.
+
+        </para>
+            </section>
+            <section id="jpa_langref_datetime">
+              <title>JPQL Datetime Functions</title>
+              <para>
+        functions_returning_datetime:= CURRENT_DATE |
+        CURRENT_TIME | CURRENT_TIMESTAMP
+        </para>
+              <para>
+
+        The datetime functions return the value of current date, time, and
+        timestamp on the database server.
+
+        </para>
+            </section>
+          </section>
+        </section>
+        <section id="jpa_langref_group">
+          <title>JPQL GROUP BY, HAVING</title>
+          <para>
+    The <literal>GROUP BY</literal> construct enables the aggregation of
+    values according to a set of properties. The <literal>HAVING</literal> construct enables
+    conditions to be specified that further restrict the query result. Such
+    conditions are restrictions upon the groups. The syntax of the
+    <literal>GROUP BY</literal> and <literal>HAVING</literal> clauses is as follows:
+
+    </para>
+          <para>
+            <itemizedlist>
+              <listitem>
+                <para>groupby_clause ::= GROUP BY groupby_item {, groupby_item}* </para>
+              </listitem>
+              <listitem>
+                <para>groupby_item ::= single_valued_path_expression | identification_variable </para>
+              </listitem>
+              <listitem>
+                <para>having_clause ::= HAVING conditional_expression</para>
+              </listitem>
+            </itemizedlist>
+          </para>
+          <para>
+
+    If a query contains both a <literal>WHERE</literal> clause
+    and a <literal>GROUP BY</literal> clause, the effect is that of first applying the where
+    clause, and then forming the groups and filtering them according to
+    the <literal>HAVING</literal> clause. The <literal>HAVING</literal>
+    clause causes those groups to be retained that satisfy the condition of
+    the <literal>HAVING</literal> clause. The requirements for
+    the <literal>SELECT</literal> clause when <literal>GROUP BY</literal>
+    is used follow those of SQL: namely, any item that appears in the
+    <literal>SELECT</literal> clause (other than as an argument
+    to an aggregate function) must also appear in the <literal>GROUP BY</literal>
+    clause. In forming the groups, null values are treated as the same for grouping
+    purposes. Grouping by an entity is permitted. In this case, the entity
+    must contain no serialized state fields or lob-valued state fields. The
+    <literal>HAVING</literal> clause must specify search conditions over the grouping items or
+    aggregate functions that apply to grouping items.
+
+
+    </para>
+          <para>
+
+    If there is no <literal>GROUP BY</literal> clause and the
+    <literal>HAVING</literal> clause is used, the
+    result is treated as a single group, and the select list can only
+    consist of aggregate functions.
+    When a query declares a <literal>HAVING</literal> clause, it must
+    always also declare a <literal>GROUP BY</literal> clause.
+    </para>
+        </section>
+        <section id="jpa_langref_select_clause">
+          <title>JPQL SELECT Clause</title>
+          <para>
+    The <literal>SELECT</literal> clause denotes the query result. More than
+    one value may be returned from the <literal>SELECT</literal> clause of a query.
+    The <literal>SELECT</literal> clause may contain one or more of the following elements: a single
+    range variable or identification variable that ranges over an entity
+    abstract schema type, a single-valued path expression, an aggregate
+    select expression, a constructor expression. The <literal>SELECT</literal> clause has the
+    following syntax:
+
+
+    </para>
+          <para>
+            <itemizedlist>
+              <listitem>
+                <para>select_clause ::= SELECT [DISTINCT] select_expression {, select_expression}* </para>
+              </listitem>
+              <listitem>
+                <para>select_expression ::= single_valued_path_expression | aggregate_expression | identification_variable | OBJECT(identification_variable) | constructor_expression</para>
+              </listitem>
+              <listitem>
+                <para>constructor_expression ::= NEW constructor_name ( constructor_item {, constructor_item}* ) </para>
+              </listitem>
+              <listitem>
+                <para>constructor_item ::= single_valued_path_expression | aggregate_expression </para>
+              </listitem>
+              <listitem>
+                <para>aggregate_expression ::= { AVG | MAX | MIN | SUM } ([DISTINCT] state_field_path_expression) | COUNT ([DISTINCT] identification_variable | state_field_path_expression | single_valued_association_path_expression)</para>
+              </listitem>
+            </itemizedlist>
+          </para>
+          <para>
+
+    For example:
+
+<programlisting format="linespecific">SELECT pub.id, pub.revenue
+    FROM Publisher pub JOIN pub.magazines mag WHERE mag.price &gt; 5.00</programlisting>
+
+    </para>
+          <para>
+
+    Note that the <literal>SELECT</literal> clause must be specified to return
+    only single-valued expressions. The query below is therefore not valid:
+
+<programlisting format="linespecific">SELECT mag.authors FROM Magazine AS mag</programlisting>
+
+    The <literal>DISTINCT</literal> keyword is used to specify that duplicate
+    values must be eliminated from the query result. If <literal>DISTINCT</literal> is not
+    specified, duplicate values are not eliminated. Standalone identification
+    variables in the <literal>SELECT</literal> clause may optionally be qualified by the
+    <literal>OBJECT</literal> operator. The <literal>SELECT</literal> clause must not
+    use the OBJECT operator to qualify path expressions.
+
+    </para>
+          <section id="jpa_langref_resulttype">
+            <title>JPQL Result Type of the SELECT Clause</title>
+            <para>
+      The type of the query result
+      specified by the <literal>SELECT</literal> clause of a query is an entity abstract schema
+      type, a state-field type, the result of an aggregate function, the result
+      of a construction operation, or some sequence of these. The result
+      type of the <literal>SELECT</literal> clause is defined by the the result types of the
+      select_expressions contained in it. When multiple select_expressions are
+      used in the <literal>SELECT</literal> clause, the result of the query is of type Object[],
+      and the elements in this result correspond in order to the order of
+      their specification in the <literal>SELECT</literal> clause and in type to the result
+      types of each of the select_expressions. The type of the result of a
+      select_expression is as follows:
+
+        <itemizedlist><listitem><para>
+      A single_valued_path_expression that is a state_field_path_expression
+      results in an object of the same type as the corresponding state field
+      of the entity. If the state field of the entity is a primitive type,
+      the corresponding object type is returned.
+          </para></listitem><listitem><para>
+      single_valued_path_expression that is a
+      single_valued_association_path_expression results in an entity object
+      of the type of the relationship field or the subtype of the relationship
+      field of the entity object as determined by the object/relational mapping.
+          </para></listitem><listitem><para>
+      The result type of an identification_variable is the type of the
+      entity to which that identification variable corresponds or a subtype
+      as determined by the object/relational mapping.
+          </para></listitem><listitem><para>
+      The result type of aggregate_expression is defined in section
+      <xref linkend="jpa_langref_aggregates"/>.
+          </para></listitem><listitem><para>
+      The result type of a constructor_expression is the type of the class
+      for which the constructor is defined. The types of the arguments to the
+      constructor are defined by the above rules.
+          </para></listitem></itemizedlist>
+
+      </para>
+          </section>
+          <section id="jpa_langref_constructor">
+            <title>JPQL Constructor Expressions</title>
+            <para>
+      in the <literal>SELECT</literal> Clause A constructor may
+      be used in the <literal>SELECT</literal> list to return one or more Java instances. The
+      specified class is not required to be an entity or to be mapped to the
+      database. The constructor name must be fully qualified.
+
+
+      </para>
+            <para>
+      If an entity class name is specified in the <literal>SELECT NEW</literal> clause,
+      the resulting entity instances are in the new state.
+
+<programlisting format="linespecific">SELECT NEW com.company.PublisherInfo(pub.id, pub.revenue, mag.price)
+    FROM Publisher pub JOIN pub.magazines mag WHERE mag.price &gt; 5.00</programlisting>
+
+      </para>
+          </section>
+          <section id="jpa_langref_null_select">
+            <title>JPQL Null Values in the Query Result</title>
+            <para>
+      If the result of a query corresponds
+      to a association-field or state-field whose value is null, that null
+      value is returned in the result of the query method.
+      The <literal>IS NOT NULL</literal>
+      construct can be used to eliminate such null values from the result set
+      of the query. Note, however, that state-field types defined in terms of
+      Java numeric primitive types cannot produce <literal>NULL</literal>
+      values in the query
+      result. A query that returns such a state-field type as a result type
+      must not return a null value.
+
+      </para>
+          </section>
+          <section id="jpa_langref_aggregates">
+            <title>JPQL Aggregate Functions</title>
+            <para>
+      in the <literal>SELECT</literal> Clause The result of a query may
+      be the result of an aggregate function applied to a path expression. The
+      following aggregate functions can be used in the <literal>SELECT</literal> clause of a query:
+      <literal>AVG</literal>, <literal>COUNT</literal>, <literal>MAX</literal>,
+      <literal>MIN</literal>, <literal>SUM</literal>.
+      For all aggregate functions except <literal>COUNT</literal>,
+      the path expression that is the argument to the aggregate function must
+      terminate in a state-field. The path expression argument to <literal>COUNT</literal> may
+      terminate in either a state-field or a association-field, or the argument
+      to <literal>COUNT</literal> may be an identification variable. Arguments to the functions
+      <literal>SUM</literal> and <literal>AVG</literal> must be numeric. Arguments
+      to the functions <literal>MAX</literal> and <literal>MIN</literal> must
+      correspond to orderable state-field types (i.e., numeric types, string
+      types, character types, or date types). The Java type that is contained
+      in the result of a query using an aggregate function is as follows:
+
+        <itemizedlist><listitem><para><literal>COUNT</literal> returns Long.
+          </para></listitem><listitem><para><literal>MAX</literal>, <literal>MIN</literal> return the type of the state-field to
+      which they are applied.
+          </para></listitem><listitem><para><literal>AVG</literal> returns Double.
+          </para></listitem><listitem><para><literal>SUM</literal> returns Long when
+      applied to state-fields of integral types (other than BigInteger); Double
+      when applied to state-fields of floating point types; BigInteger when
+      applied to state-fields of type BigInteger; and BigDecimal when applied
+      to state-fields of type BigDecimal. If <literal>SUM</literal>, <literal>AVG</literal>,
+      <literal>MAX</literal>, or <literal>MIN</literal> is used,
+      and there are no values to which the aggregate function can be applied,
+      the result of the aggregate function is <literal>NULL</literal>.
+      If <literal>COUNT</literal> is used, and
+      there are no values to which <literal>COUNT</literal> can be applied, the result of the
+      aggregate function is 0.
+          </para></listitem></itemizedlist>
+
+      </para>
+            <para>
+
+      The argument to an aggregate function may be preceded by the keyword
+      <literal>DISTINCT</literal> to specify that duplicate values are to be eliminated before
+      the aggregate function is applied. Null values are eliminated before
+      the aggregate function is applied, regardless of whether the keyword
+      <literal>DISTINCT</literal> is specified.
+
+      </para>
+            <section id="jpa_langref_agg_examples">
+              <title>JPQL Aggregate Examples</title>
+              <para>
+        Examples The following query returns the average price of all magazines:
+
+<programlisting format="linespecific">SELECT AVG(mag.price) FROM Magazine mag</programlisting>
+
+        The following query returns the sum total cost of all the prices from 
+        all the magazines published by 'Larry':
+
+<programlisting format="linespecific">SELECT SUM(mag.price) FROM Publisher pub JOIN pub.magazines mag pub.firstName = 'Larry'</programlisting>
+
+        The following query returns the total number of magazines:
+
+<programlisting format="linespecific">SELECT COUNT(mag) FROM Magazine mag</programlisting>
+
+        </para>
+            </section>
+          </section>
+        </section>
+        <section id="jpa_langref_orderby">
+          <title>JPQL ORDER BY Clause</title>
+          <para>
+    The <literal>ORDER BY</literal> clause allows the objects or values
+    that are returned by the query to be ordered.
+    The syntax of the <literal>ORDER BY</literal> clause is
+    </para>
+          <para>
+            <itemizedlist>
+              <listitem>
+                <para>orderby_clause ::= ORDER BY orderby_item {, orderby_item}*</para>
+              </listitem>
+              <listitem>
+                <para>orderby_item ::= state_field_path_expression [ASC | DESC]</para>
+              </listitem>
+            </itemizedlist>
+          </para>
+          <para>
+    It is legal to specify <literal>DISTINCT</literal> with <literal>MAX</literal>
+    or <literal>MIN</literal>, but it does not affect the result.
+
+    </para>
+          <para>
+
+    When the <literal>ORDER BY</literal> clause is used in a query, each element of the
+    <literal>SELECT</literal> clause of the query must be one of the following: an
+    identification variable x, optionally denoted as <literal>OBJECT(x)</literal>,
+     a single_valued_association_path_expression,
+    or a state_field_path_expression. For example:
+
+<programlisting format="linespecific">
+SELECT pub FROM Publisher pub JOIN pub.magazines mag ORDER BY o.revenue, o.name
+</programlisting>
+
+    If more
+    than one orderby_item is specified, the left-to-right sequence of the
+    orderby_item elements determines the precedence, whereby the leftmost
+    orderby_item has highest precedence.
+    The keyword <literal>ASC</literal> specifies that
+    ascending ordering be used; the keyword
+    <literal>DESC</literal> specifies that descending
+    ordering be used. Ascending ordering is the default. SQL rules for the
+    ordering of null values apply: that is, all null values must appear before
+    all non-null values in the ordering or all null values must appear after
+    all non-null values in the ordering, but it is not specified which. The
+    ordering of the query result is preserved in the result of the query
+    method if the <literal>ORDER BY</literal> clause is used.
+
+
+    </para>
+        </section>
+        <section id="jpa_langref_bulk_ops">
+          <title>JPQL Bulk Update and Delete</title>
+          <para>
+    Operations Bulk update and delete operations
+    apply to entities of a single entity class (together with its subclasses,
+    if any). Only one entity abstract schema type may be specified in the
+    <literal>FROM</literal> or <literal>UPDATE</literal> clause.
+    The syntax of these operations is as follows:
+
+    </para>
+          <para>
+            <itemizedlist>
+              <listitem>
+                <para>update_statement ::= update_clause [where_clause] </para>
+              </listitem>
+              <listitem>
+                <para>update_clause ::= UPDATE abstract_schema_name [[AS] identification_variable] SET update_item {, update_item}* </para>
+              </listitem>
+              <listitem>
+                <para>update_item ::= [identification_variable.]{state_field | single_valued_association_field} = new_value </para>
+              </listitem>
+              <listitem>
+                <para>new_value ::= simple_arithmetic_expression | string_primary | datetime_primary | boolean_primary | enum_primary simple_entity_expression | NULL</para>
+              </listitem>
+              <listitem>
+                <para>delete_statement ::= delete_clause [where_clause] </para>
+              </listitem>
+              <listitem>
+                <para>delete_clause ::= DELETE FROM abstract_schema_name [[AS] identification_variable]</para>
+              </listitem>
+            </itemizedlist>
+          </para>
+          <para>
+
+    The syntax of
+    the <literal>WHERE</literal> clause is
+    described in <xref linkend="jpa_langref_where"/>.
+    A delete operation only
+    applies to entities of the specified class and its subclasses. It does
+    not cascade to related entities. The new_value specified for an update
+    operation must be compatible in type with the state-field to which it
+    is assigned. Bulk update maps directly to a database update operation,
+    bypassing optimistic locking checks. Portable applications must manually
+    update the value of the version column, if desired, and/or manually
+    validate the value of the version column. The persistence context is
+    not synchronized with the result of the bulk update or delete. Caution
+    should be used when executing bulk update or delete operations because
+    they may result in inconsistencies between the database and the entities
+    in the active persistence context. In general, bulk update and delete
+    operations should only be performed within a separate transaction or
+    at the beginning of a transaction (before entities have been accessed
+    whose state might be affected by such operations).
+
+
+    </para>
+          <para>
+
+    Examples:
+
+<programlisting format="linespecific">DELETE FROM Publisher pub WHERE pub.revenue &gt; 1000000.0</programlisting> 
+<programlisting format="linespecific">DELETE FROM Publisher pub WHERE pub.revenue = 0 AND pub.magazines IS EMPTY</programlisting> 
+<programlisting format="linespecific">UPDATE Publisher pub SET pub.status = 'outstanding'
+    WHERE pub.revenue &lt; 1000000 AND 20 &gt; (SELECT COUNT(mag) FROM pub.magazines mag)</programlisting>
+
+    </para>
+        </section>
+        <section id="jpa_langref_null_values">
+          <title>JPQL Null Values</title>
+          <para>
+    When the target of a reference does not exist in
+    the database, its value is regarded as <literal>NULL</literal>.
+    SQL 92 <literal>NULL</literal> semantics
+    defines the evaluation of conditional expressions containing <literal>NULL</literal>
+    values. The following is a brief description of these semantics:
+
+    </para>
+          <para>
+            <itemizedlist>
+              <listitem>
+                <para>
+    Comparison or arithmetic operations with a <literal>NULL</literal> value always yield
+    an unknown value. 
+          </para>
+              </listitem>
+              <listitem>
+                <para>
+    Two <literal>NULL</literal> values are not considered to be equal,
+    the comparison yields an unknown value.
+          </para>
+              </listitem>
+              <listitem>
+                <para>
+    Comparison or arithmetic
+    operations with an unknown value always yield an unknown value.
+          </para>
+              </listitem>
+              <listitem>
+                <para>
+    The <literal>IS NULL</literal> and <literal>IS NOT NULL</literal>
+    operators convert a <literal>NULL</literal> state-field or single-valued
+    association-field value into the respective
+    <literal>TRUE</literal> or <literal>FALSE</literal> value.
+          </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+          <para>
+    Note: The JPQL defines the empty string, "",
+    as a string with 0 length, which is not equal to a <literal>NULL</literal> value. However,
+    <literal>NULL</literal> values and empty strings may not always be distinguished when
+    queries are mapped to some databases. Application developers should
+    therefore not rely on the semantics of query comparisons involving the
+    empty string and <literal>NULL</literal> value.
+
+    </para>
+        </section>
+        <section id="jpa_langref_equality">
+          <title>JPQL Equality and Comparison Semantics</title>
+          <para>
+
+    Only the values of like types are
+    permitted to be compared. A type is like another type if they correspond
+    to the same Java language type, or if one is a primitive Java language
+    type and the other is the wrappered Java class type equivalent (e.g.,
+    int and Integer are like types in this sense). There is one exception to
+    this rule: it is valid to compare numeric values for which the rules of
+    numeric promotion apply. Conditional expressions attempting to compare
+    non-like type values are disallowed except for this numeric case. Note
+    that the arithmetic operators and comparison operators are permitted to
+    be applied to state-fields and input parameters of the wrappered Java
+    class equivalents to the primitive numeric Java types. Two entities of
+    the same abstract schema type are equal if and only if they have the
+    same primary key value. Only equality/inequality comparisons over enums
+    are required to be supported.
+
+
+    </para>
+        </section>
+        <section id="jpa_langref_bnf">
+          <title>JPQL BNF</title>
+          <para>
+      The following is the BNF for the Java Persistence query language,
+      from section 4.14 of the JSR 220 specification.
+    </para>
+          <itemizedlist>
+            <listitem>
+              <para>QL_statement ::= select_statement | update_statement | delete_statement </para>
+            </listitem>
+            <listitem>
+              <para>select_statement ::= select_clause from_clause [where_clause] [groupby_clause] [having_clause] [orderby_clause] </para>
+            </listitem>
+            <listitem>
+              <para>update_statement ::= update_clause [where_clause] </para>
+            </listitem>
+            <listitem>
+              <para>delete_statement ::= delete_clause [where_clause] </para>
+            </listitem>
+            <listitem>
+              <para>from_clause ::= <literal>FROM</literal> identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}* </para>
+            </listitem>
+            <listitem>
+              <para>identification_variable_declaration ::= range_variable_declaration { join | fetch_join }* </para>
+            </listitem>
+            <listitem>
+              <para>range_variable_declaration ::= abstract_schema_name [<literal>AS</literal>] identification_variable</para>
+            </listitem>
+            <listitem>
+              <para>join ::= join_spec join_association_path_expression [<literal>AS</literal>] identification_variable</para>
+            </listitem>
+            <listitem>
+              <para>fetch_join ::= join_spec <literal>FETCH</literal> join_association_path_expression </para>
+            </listitem>
+            <listitem>
+              <para>association_path_expression ::= collection_valued_path_expression | single_valued_association_path_expression </para>
+            </listitem>
+            <listitem>
+              <para>join_spec ::= [<literal>LEFT</literal> [<literal>OUTER</literal>]|<literal>INNER</literal>] <literal>JOIN</literal> </para>
+            </listitem>
+            <listitem>
+              <para>join_association_path_expression ::= join_collection_valued_path_expression | join_single_valued_association_path_expression </para>
+            </listitem>
+            <listitem>
+              <para>join_collection_valued_path_expression ::= identification_variable.collection_valued_association_field </para>
+            </listitem>
+            <listitem>
+              <para>join_single_valued_association_path_expression ::= identification_variable.single_valued_association_field </para>
+            </listitem>
+            <listitem>
+              <para>collection_member_declaration ::= <literal>IN</literal> (collection_valued_path_expression) [<literal>AS</literal>] identification_variable </para>
+            </listitem>
+            <listitem>
+              <para>single_valued_path_expression ::= state_field_path_expression | single_valued_association_path_expression </para>
+            </listitem>
+            <listitem>
+              <para>state_field_path_expression ::= {identification_variable | single_valued_association_path_expression}.state_field </para>
+            </listitem>
+            <listitem>
+              <para>single_valued_association_path_expression ::= identification_variable.{single_valued_association_field.}* single_valued_association_field </para>
+            </listitem>
+            <listitem>
+              <para>collection_valued_path_expression ::= identification_variable.{single_valued_association_field.}*collection_valued_association_field </para>
+            </listitem>
+            <listitem>
+              <para>state_field ::= {embedded_class_state_field.}*simple_state_field </para>
+            </listitem>
+            <listitem>
+              <para>update_clause ::= <literal>UPDATE</literal> abstract_schema_name [[<literal>AS</literal>] identification_variable] <literal>SET</literal> update_item {, update_item}* </para>
+            </listitem>
+            <listitem>
+              <para>update_item ::= [identification_variable.]{state_field | single_valued_association_field}= new_value </para>
+            </listitem>
+            <listitem>
+              <para>new_value ::= simple_arithmetic_expression | string_primary | datetime_primary | boolean_primary | enum_primary simple_entity_expression | <literal>NULL</literal> </para>
+            </listitem>
+            <listitem>
+              <para>delete_clause ::= <literal>DELETE</literal> <literal>FROM</literal> abstract_schema_name [[<literal>AS</literal>] identification_variable] </para>
+            </listitem>
+            <listitem>
+              <para>select_clause ::= <literal>SELECT</literal> [<literal>DISTINCT</literal>] select_expression {, select_expression}* </para>
+            </listitem>
+            <listitem>
+              <para>select_expression ::= single_valued_path_expression | aggregate_expression | identification_variable | <literal>OBJECT</literal>(identification_variable)| constructor_expression </para>
+            </listitem>
+            <listitem>
+              <para>constructor_expression ::= <literal>NEW</literal> constructor_name( constructor_item {, constructor_item}*) </para>
+            </listitem>
+            <listitem>
+              <para>constructor_item ::= single_valued_path_expression | aggregate_expression </para>
+            </listitem>
+            <listitem>
+              <para>aggregate_expression ::= {<literal>AVG</literal> |<literal>MAX</literal> |<literal>MIN</literal> |<literal>SUM</literal>}([<literal>DISTINCT</literal>] state_field_path_expression) | <literal>COUNT</literal> ([<literal>DISTINCT</literal>] identification_variable | state_field_path_expression | single_valued_association_path_expression) </para>
+            </listitem>
+            <listitem>
+              <para>where_clause ::= <literal>WHERE</literal> conditional_expression </para>
+            </listitem>
+            <listitem>
+              <para>groupby_clause ::= <literal>GROUP</literal> <literal>BY</literal> groupby_item {, groupby_item}* </para>
+            </listitem>
+            <listitem>
+              <para>groupby_item ::= single_valued_path_expression | identification_variable </para>
+            </listitem>
+            <listitem>
+              <para>having_clause ::= <literal>HAVING</literal> conditional_expression </para>
+            </listitem>
+            <listitem>
+              <para>orderby_clause ::= <literal>ORDER</literal> <literal>BY</literal> orderby_item {, orderby_item}* </para>
+            </listitem>
+            <listitem>
+              <para>orderby_item ::= state_field_path_expression [<literal>ASC</literal> |<literal>DESC</literal> ] </para>
+            </listitem>
+            <listitem>
+              <para>subquery ::= simple_select_clause subquery_from_clause [where_clause] [groupby_clause] [having_clause] </para>
+            </listitem>
+            <listitem>
+              <para>subquery_from_clause ::= <literal>FROM</literal> subselect_identification_variable_declaration {, subselect_identification_variable_declaration}* </para>
+            </listitem>
+            <listitem>
+              <para>subselect_identification_variable_declaration ::= identification_variable_declaration | association_path_expression [<literal>AS</literal>] identification_variable | collection_member_declaration </para>
+            </listitem>
+            <listitem>
+              <para>simple_select_clause ::= <literal>SELECT</literal> [<literal>DISTINCT</literal>] simple_select_expression </para>
+            </listitem>
+            <listitem>
+              <para>simple_select_expression ::= single_valued_path_expression | aggregate_expression | identification_variable </para>
+            </listitem>
+            <listitem>
+              <para>conditional_expression ::= conditional_term | conditional_expression <literal>OR</literal> conditional_term </para>
+            </listitem>
+            <listitem>
+              <para>conditional_term ::= conditional_factor | conditional_term <literal>AND</literal> conditional_factor </para>
+            </listitem>
+            <listitem>
+              <para>conditional_factor ::= [<literal>NOT</literal> ] conditional_primary </para>
+            </listitem>
+            <listitem>
+              <para>conditional_primary ::= simple_cond_expression |(conditional_expression) </para>
+            </listitem>
+            <listitem>
+              <para>simple_cond_expression ::= comparison_expression | between_expression | like_expression | in_expression | null_comparison_expression | empty_collection_comparison_expression | collection_member_expression | exists_expression </para>
+            </listitem>
+            <listitem>
+              <para>between_expression ::= arithmetic_expression [<literal>NOT</literal>] <literal>BETWEEN</literal> arithmetic_expression <literal>AND</literal> arithmetic_expression | string_expression [<literal>NOT</literal>] <literal>BETWEEN</literal> string_expression <literal>AND</literal> string_expression | datetime_expression [<literal>NOT</literal>] <literal>BETWEEN</literal> datetime_expression <literal>AND</literal> datetime_expression </para>
+            </listitem>
+            <listitem>
+              <para>in_expression ::= state_field_path_expression [<literal>NOT</literal>] <literal>IN</literal>( in_item {, in_item}* | subquery) </para>
+            </listitem>
+            <listitem>
+              <para>in_item ::= literal | input_parameter </para>
+            </listitem>
+            <listitem>
+              <para>like_expression ::= string_expression [<literal>NOT</literal>] <literal>LIKE</literal> pattern_value [<literal>ESCAPE</literal> escape_character] </para>
+            </listitem>
+            <listitem>
+              <para>null_comparison_expression ::= {single_valued_path_expression | input_parameter}<literal>IS</literal> [<literal>NOT</literal>] <literal>NULL</literal> </para>
+            </listitem>
+            <listitem>
+              <para>empty_collection_comparison_expression ::= collection_valued_path_expression <literal>IS</literal> [<literal>NOT</literal>] <literal>EMPTY</literal> </para>
+            </listitem>
+            <listitem>
+              <para>collection_member_expression ::= entity_expression [<literal>NOT</literal>] <literal>MEMBER</literal> [<literal>OF</literal>] collection_valued_path_expression </para>
+            </listitem>
+            <listitem>
+              <para>exists_expression ::= [<literal>NOT</literal>] <literal>EXISTS</literal>(subquery) </para>
+            </listitem>
+            <listitem>
+              <para>all_or_any_expression ::= {<literal>ALL</literal> |<literal>ANY</literal> |<literal>SOME</literal>}(subquery) </para>
+            </listitem>
+            <listitem>
+              <para>comparison_expression ::= string_expressioncomparison_operator{string_expression|all_or_any_expression}| boolean_expression {=|&lt;&gt;} {boolean_expression | all_or_any_expression} | enum_expression {=|&lt;&gt;} {enum_expression | all_or_any_expression} | datetime_expression comparison_operator {datetime_expression | all_or_any_expression} | entity_expression {= |&lt;&gt; } {entity_expression | all_or_any_expression} | arithmetic_expression comparison_operator {arithmetic_expression | all_or_any_expression} </para>
+            </listitem>
+            <listitem>
+              <para>comparison_operator ::== |&gt; |&gt;= |&lt; |&lt;= |&lt;&gt; </para>
+            </listitem>
+            <listitem>
+              <para>arithmetic_expression ::= simple_arithmetic_expression |(subquery) </para>
+            </listitem>
+            <listitem>
+              <para>simple_arithmetic_expression ::= arithmetic_term | simple_arithmetic_expression {+ |- } arithmetic_term </para>
+            </listitem>
+            <listitem>
+              <para>arithmetic_term ::= arithmetic_factor | arithmetic_term {* |/ } arithmetic_factor </para>
+            </listitem>
+            <listitem>
+              <para>arithmetic_factor ::= [{+ |-}] arithmetic_primary </para>
+            </listitem>
+            <listitem>
+              <para>arithmetic_primary ::= state_field_path_expression | numeric_literal | (simple_arithmetic_expression) | input_parameter | functions_returning_numerics | aggregate_expression </para>
+            </listitem>
+            <listitem>
+              <para>string_expression ::= string_primary |(subquery) </para>
+            </listitem>
+            <listitem>
+              <para>string_primary ::= state_field_path_expression | string_literal | input_parameter | functions_returning_strings | aggregate_expression </para>
+            </listitem>
+            <listitem>
+              <para>datetime_expression ::= datetime_primary |(subquery) </para>
+            </listitem>
+            <listitem>
+              <para>datetime_primary ::= state_field_path_expression | input_parameter | functions_returning_datetime | aggregate_expression </para>
+            </listitem>
+            <listitem>
+              <para>boolean_expression ::= boolean_primary |(subquery) </para>
+            </listitem>
+            <listitem>
+              <para>boolean_primary ::= state_field_path_expression | boolean_literal | input_parameter | </para>
+            </listitem>
+            <listitem>
+              <para>enum_expression ::= enum_primary |(subquery) </para>
+            </listitem>
+            <listitem>
+              <para>enum_primary ::= state_field_path_expression | enum_literal | input_parameter | </para>
+            </listitem>
+            <listitem>
+              <para>entity_expression ::= single_valued_association_path_expression | simple_entity_expression </para>
+            </listitem>
+            <listitem>
+              <para>simple_entity_expression ::= identification_variable | input_parameter </para>
+            </listitem>
+            <listitem>
+              <para>functions_returning_numerics ::= <literal>LENGTH</literal>(string_primary)| <literal>LOCATE</literal>(string_primary,string_primary [, simple_arithmetic_expression]) | <literal>ABS</literal>(simple_arithmetic_expression) | <literal>SQRT</literal>(simple_arithmetic_expression) | <literal>MOD</literal>(simple_arithmetic_expression, simple_arithmetic_expression) | <literal>SIZE</literal>(collection_valued_path_expression) </para>
+            </listitem>
+            <listitem>
+              <para>functions_returning_datetime ::= <literal>CURRENT_DATE</literal>| <literal>CURRENT_TIME</literal> | <literal>CURRENT_TIMESTAMP</literal> </para>
+            </listitem>
+            <listitem>
+              <para>functions_returning_strings ::= <literal>CONCAT</literal>(string_primary, string_primary) | <literal>SUBSTRING</literal>(string_primary, simple_arithmetic_expression,simple_arithmetic_expression)| <literal>TRIM</literal>([[trim_specification] [trim_character] <literal>FROM</literal>] string_primary) | <literal>LOWER</literal>(string_primary) | <literal>UPPER</literal>(string_primary) </para>
+            </listitem>
+            <listitem>
+              <para>trim_specification ::= <literal>LEADING</literal> | <literal>TRAILING</literal> | <literal>BOTH</literal> </para>
+            </listitem>
+          </itemizedlist>
+        </section>
+      </section>
+    </chapter>

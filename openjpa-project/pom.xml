@@ -47,13 +47,21 @@
                                 basedir="${project.basedir}/src/doc/manual"
                                 destdir="${project.basedir}/target/filtered-site/resources/manual"
                                 style="manual-xhtml.xsl"
-                                classpathref="maven.runtime.classpath"/>
+                                classpathref="maven.runtime.classpath">
+                                <factory name="org.apache.xalan.processor.TransformerFactoryImpl">
+                                    <attribute name="http://xml.apache.org/xalan/features/optimize" value="true"/>
+                                </factory>
+                            </style>
                             <style includes="**/manual.xml"
                                 force="true"
                                 basedir="${project.basedir}/src/doc/manual"
                                 destdir="${project.basedir}/target/filtered-site/resources/manual"
                                 style="manual-xhtml-chunk.xsl"
-                                classpathref="maven.runtime.classpath"/>
+                                classpathref="maven.runtime.classpath">
+                                <factory name="org.apache.xalan.processor.TransformerFactoryImpl">
+                                    <attribute name="http://xml.apache.org/xalan/features/optimize" value="true"/>
+                                </factory>
+                            </style>
                             </tasks>
                         </configuration>
                         <goals>
