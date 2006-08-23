@@ -161,23 +161,35 @@
             </plugin>
             <!--
                 get the svn revision number and set it in the
-                project.revision setting - disabled for now
+                subversion.revision setting - disabled for now
                 since we need to be able to build from sources
                 zip (when there is no .svn/ metadata)
             -->
-            <!--
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>compile</phase>
+                        <id>set subversion revision</id>
+                        <phase>package</phase>
                         <configuration>
                             <tasks>
+                                <property name="tmpdir"
+                                    value="${java.io.tmpdir}/openjpamvntmp"/>
+                                <condition property="outdir"
+                                    value="${project.build.outputDirectory}">
+                                    <available type="dir"
+                                    file="${project.build.outputDirectory}"/>
+                                </condition>
+
+                                <property name="outdir" value="${tmpdir}"/>
+
                                 <xmlproperty file="${basedir}/.svn/entries"
                                     collapseAttributes="true"/>
-                                <property name="project.revision"
+                                <property name="subversion.revision"
                                     value="${wc-entries.entry.revision}"/>
-                                <echo>Revision: ${project.revision}</echo>
+                                <mkdir dir="${outdir}/META-INF"/>
+                                <echo file="${outdir}/META-INF/revision.properties">revision.number=${subversion.revision}</echo>
+                                <delete dir="${tmpdir}"/>
                             </tasks>
                         </configuration>
                         <goals>
@@ -186,7 +198,6 @@
                     </execution>
                 </executions>
             </plugin>
-            -->
         </plugins>
     </build>
     <reporting>
