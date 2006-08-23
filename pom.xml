@@ -16,7 +16,7 @@
         Changing this version needs to also be done in all children poms
         See: http://jira.codehaus.org/browse/MNG-624
     -->
-    <version>0.9.0</version>
+    <version>0.9.0-SNAPSHOT</version>
     <url>http://incubator.apache.org/projects/openjpa</url>
     <issueManagement>
         <system>jira</system>
@@ -248,11 +248,12 @@
     <distributionManagement>
       <repository>
         <id>people.apache.org</id>
-        <url>scp://people.apache.org/home/mprudhom/public_html/openjpa/m2repo</url>
+        <url>scp://people.apache.org/www/people.apache.org/repo/m2-incubating-repository/</url>
       </repository>
       <snapshotRepository>
-        <id>openjpa</id>
-        <url>scp://people.apache.org/home/mprudhom/public_html/openjpa/m2snapshot</url>
+        <id>people.apache.org</id>
+        <url>scp://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository/</url>
+        <uniqueVersion>false</uniqueVersion>
       </snapshotRepository>
       <site>
         <id>people.apache.org</id>
