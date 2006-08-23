@@ -44,4 +44,9 @@ public @interface FetchGroup {
      * Included attributes.
      */
     FetchAttribute[] attributes() default {};
+
+    /**
+     * Included fetch groups.
+     */
+    String[] fetchGroups() default {};
 }
