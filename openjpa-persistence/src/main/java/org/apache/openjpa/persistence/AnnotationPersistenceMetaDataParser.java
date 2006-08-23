@@ -869,6 +869,8 @@ public class AnnotationPersistenceMetaDataParser
             fg = meta.addDeclaredFetchGroup(group.name());
             if (group.postLoad())
                 fg.setPostLoad(true); 
+            for (String s : group.fetchGroups())
+                fg.addDeclaredInclude(s);
             for (FetchAttribute attr : group.attributes())
                 parseFetchAttribute(meta, fg, attr);
         }
