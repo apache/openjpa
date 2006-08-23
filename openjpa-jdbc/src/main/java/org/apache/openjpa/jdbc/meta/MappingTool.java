@@ -51,14 +51,7 @@ import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.Services;
-import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.meta.MetaDataFactory;
-import org.apache.openjpa.meta.MetaDataModes;
-import org.apache.openjpa.meta.QueryMetaData;
-import org.apache.openjpa.meta.SequenceMetaData;
-import org.apache.openjpa.meta.ValueStrategies;
+import org.apache.openjpa.meta.*;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
@@ -643,9 +636,7 @@ public class MappingTool
 
         _flush = true;
         _flushSchema = true;
-        MappingRepository repos = getRepository();
-        repos.setStrategyInstaller(new MappingStrategyInstaller(repos));
-        repos.getMapping(cls, null, true);
+        getMapping(cls);
     }
 
     /**
@@ -682,9 +673,7 @@ public class MappingTool
 
         _flush = true;
         _flushSchema = true;
-        MappingRepository repos = getRepository();
-        repos.setStrategyInstaller(new RefreshStrategyInstaller(repos));
-        repos.getMapping(cls, null, true);
+        getMapping(cls);
     }
 
     /**
@@ -696,9 +685,7 @@ public class MappingTool
 
         _flushSchema = !SCHEMA_ACTION_NONE.equals(_schemaAction)
             && !SchemaTool.ACTION_ADD.equals(_schemaAction);
-        MappingRepository repos = getRepository();
-        repos.setStrategyInstaller(new RuntimeStrategyInstaller(repos));
-        repos.getMapping(cls, null, true);
+        getMapping(cls);
     }
 
     /**
@@ -709,9 +696,8 @@ public class MappingTool
             return;
 
         _flushSchema = true;
-        MappingRepository repos = getRepository();
-        repos.setStrategyInstaller(new RuntimeStrategyInstaller(repos));
-        repos.getMapping(cls, null, true);
+        if (!getMapping(cls))
+        	return;
 
         // set any logical pks to non-logical so they get flushed
         Schema[] schemas = _schema.getSchemas();
@@ -731,6 +717,33 @@ public class MappingTool
         }
     }
 
+    /**
+     * Gets mapping for the given class. 
+     * If the repository does not contain metadata for the class and raises
+     * a non-fatal exception on lookup, the exception is swallowed with a
+     * warning message, as the class is likely to be a persistence-aware class.
+     * 
+     * @param cls a class to be mapped
+     * 
+     * @return true if the mapping of the class is found, false otherwise.
+     */
+    boolean getMapping(Class cls) {
+    	MappingRepository repos = getRepository();
+    	repos.setStrategyInstaller(new RuntimeStrategyInstaller(repos));
+    	try {
+    		repos.getMapping(cls, null, true);
+    	} catch (MetaDataException mex) {
+    		if (!mex.isFatal()) {
+    			if (_log != null && _log.isWarnEnabled()) {
+    				_log.warn(_loc.get("no-mapping-aware",cls));
+    			}
+    			return false;
+    		} else {
+    			throw mex;
+    		}
+    	}
+    	return true;
+    }
     /**
      * Drop mapping for given class.
      */
@@ -980,6 +993,9 @@ public class MappingTool
                 parsed = classParser.parseTypes(args[i]);
                 classes.addAll(Arrays.asList(parsed));
             }
+            PersistenceAwareClass[] pawares = conf.getMappingRepositoryInstance().getPersistenceAwareClasses();
+            for (int i=0; i<pawares.length; i++)
+            	classes.remove(pawares[i].getDescribedType());
         }
 
         Class[] act = (Class[]) classes.toArray(new Class[classes.size()]);
