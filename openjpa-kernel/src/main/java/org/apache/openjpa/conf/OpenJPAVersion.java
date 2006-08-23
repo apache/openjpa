@@ -16,7 +16,9 @@
 package org.apache.openjpa.conf;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Date;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 /**
@@ -39,6 +41,7 @@ public class OpenJPAVersion {
     public static final int MINOR_RELEASE;
     public static final int PATCH_RELEASE;
     public static final String RELEASE_STATUS;
+    public static final int REVISION_NUMBER;
 
     static {
         Package pack = OpenJPAVersion.class.getPackage();
@@ -47,7 +50,6 @@ public class OpenJPAVersion {
             vers = "0.0.0";
 
         VERSION_NUMBER = vers;
-        VERSION_ID = VERSION_NUMBER;
 
         StringTokenizer tok = new StringTokenizer(VERSION_NUMBER, ".-");
 
@@ -71,10 +73,29 @@ public class OpenJPAVersion {
             patch = 0;
         }
 
+        int revision = 0;
+        try {
+            InputStream in = OpenJPAVersion.class.
+                getResourceAsStream("/META-INF/revision.properties");
+            if (in != null) {
+                try {
+                    Properties props = new Properties();
+                    props.load(in);
+                    revision = Integer.parseInt
+                        (props.getProperty("revision.number"));
+                } finally {
+                    in.close();
+                }
+            }
+        } catch (Exception e) {
+        }
+
         MAJOR_RELEASE = major;
         MINOR_RELEASE = minor;
         PATCH_RELEASE = patch;
         RELEASE_STATUS = tok.hasMoreTokens() ? tok.nextToken("!") : "";
+        REVISION_NUMBER = revision;
+        VERSION_ID = VERSION_NUMBER + "-r" + REVISION_NUMBER;
     }
 
     public static void main(String [] args) {
@@ -83,10 +104,12 @@ public class OpenJPAVersion {
 
     public String toString() {
         StringBuffer buf = new StringBuffer(80 * 30);
-        buf.append("OpenJPA");
+        buf.append("OpenJPA ");
         buf.append(VERSION_NUMBER);
         buf.append("\n");
         buf.append("version id: ").append(VERSION_ID);
+        buf.append("\n");
+        buf.append("revision: ").append(REVISION_NUMBER);
         buf.append("\n\n");
 
         getProperty("os.name", buf).append("\n");
