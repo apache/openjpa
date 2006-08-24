@@ -641,11 +641,28 @@ public class MappingTool
         if (cls == null)
             return;
 
-        _flush = true;
-        _flushSchema = true;
         MappingRepository repos = getRepository();
         repos.setStrategyInstaller(new MappingStrategyInstaller(repos));
-        getMapping(repos, cls);
+        if (getMapping(repos, cls, true) != null) {
+            _flush = true;
+            _flushSchema = true;
+        }
+    }
+
+    /**
+     * Return the mapping for the given type, or null if the type is
+     * persistence-aware.
+     */
+    private static ClassMapping getMapping(MappingRepository repos, Class cls,
+        boolean validate) {
+        // this will parse all possible metadata rsrcs looking for cls, so
+        // will detect if p-aware
+        ClassMapping mapping = repos.getMapping(cls, null, false);
+        if (mapping != null)
+            return mapping;
+        if (!validate || repos.getPersistenceAware(cls) != null)
+            return null;
+        throw new MetaDataException(_loc.get("no-meta", cls));
     }
 
     /**
@@ -680,11 +697,12 @@ public class MappingTool
         if (cls == null)
             return;
 
-        _flush = true;
-        _flushSchema = true;
         MappingRepository repos = getRepository();
         repos.setStrategyInstaller(new RefreshStrategyInstaller(repos));
-        getMapping(repos, cls);
+        if (getMapping(repos, cls, true) != null) {
+            _flush = true;
+            _flushSchema = true;
+        }
     }
 
     /**
@@ -694,11 +712,11 @@ public class MappingTool
         if (cls == null)
             return;
 
-        _flushSchema = !SCHEMA_ACTION_NONE.equals(_schemaAction)
-            && !SchemaTool.ACTION_ADD.equals(_schemaAction);
         MappingRepository repos = getRepository();
         repos.setStrategyInstaller(new RuntimeStrategyInstaller(repos));
-        getMapping(repos, cls);
+        if (getMapping(repos, cls, true) != null)
+            _flushSchema = !SCHEMA_ACTION_NONE.equals(_schemaAction)
+                && !SchemaTool.ACTION_ADD.equals(_schemaAction);
     }
 
     /**
@@ -708,13 +726,13 @@ public class MappingTool
         if (cls == null)
             return;
 
-        _flushSchema = true;
         MappingRepository repos = getRepository();
         repos.setStrategyInstaller(new RuntimeStrategyInstaller(repos));
-        if (!getMapping(repos, cls))
-        	return;
+        if (getMapping(repos, cls, true) == null)
+            return;
 
         // set any logical pks to non-logical so they get flushed
+        _flushSchema = true;
         Schema[] schemas = _schema.getSchemas();
         Table[] tables;
         Column[] cols;
@@ -732,31 +750,6 @@ public class MappingTool
         }
     }
 
-    /**
-     * Gets mapping for the given class. 
-     * If the repository does not contain metadata for the class and raises
-     * a non-fatal exception on lookup, the exception is swallowed with a
-     * warning message, as the class is likely to be a persistence-aware class.
-     * 
-     * @param cls a class to be mapped
-     * 
-     * @return true if the mapping of the class is found, false otherwise.
-     */
-    boolean getMapping(MappingRepository repos, Class cls) {
-    	try {
-    		repos.getMapping(cls, null, true);
-    	} catch (MetaDataException mex) {
-    		if (!mex.isFatal()) {
-				if (_log != null && _log.isWarnEnabled()) {
-					_log.warn(_loc.get("no-mapping-aware",cls));
-				}
-				return false;
-    		} else {
-    			throw mex;
-    		}
-	    }
-    	return true;
-    }
     /**
      * Drop mapping for given class.
      */
@@ -792,10 +785,10 @@ public class MappingTool
     ////////
 
     /**
-     * Usage: java org.apache.openjpa.jdbc.meta.MappingTool [option]* [-action/-a
-     * &lt;refresh | add | buildSchema | drop | validate | import | export&gt;]
-     * &lt;class name | .java file | .class file | .jdo file&gt;*
-     *  Where the following options are recognized.
+     * Usage: java org.apache.openjpa.jdbc.meta.MappingTool [option]* 
+     * [-action/-a &lt;refresh | add | buildSchema | drop | validate | import 
+     * | export&gt;] &lt;class name | .java file | .class file | .jdo file&gt;*
+     * Where the following options are recognized.
      * <ul>
      * <li><i>-properties/-p &lt;properties file or resource&gt;</i>: The
      * path or resource name of a OpenJPA properties file containing
@@ -828,8 +821,8 @@ public class MappingTool
      * same-named option in the {@link SchemaTool}.</li>
      * <li><i>-dropSequences/-dsq &lt;true/t | false/f&gt;</i>: Corresponds
      * to the same-named option in the {@link SchemaTool}.</li>
-     * <li><i>-openjpaTables/-kt &lt;true/t | false/f&gt;</i>: Corresponds to the
-     * same-named option in the {@link SchemaTool}.</li>
+     * <li><i>-openjpaTables/-kt &lt;true/t | false/f&gt;</i>: Corresponds to
+     * the same-named option in the {@link SchemaTool}.</li>
      * <li><i>-ignoreErrors/-i &lt;true/t | false/f&gt;</i>: Corresponds to the
      * same-named option in the {@link SchemaTool}.</li>
      * <li><i>-readSchema/-rs &lt;true/t | false/f&gt;</i>: Set this to true
