@@ -1,57 +1,80 @@
-
-    <chapter id="jpa_overview_intro">
-      <title>Introduction</title>
-      <para><indexterm><primary>EJB3 Persistence</primary><see>EJB</see></indexterm><indexterm><primary>EJB</primary></indexterm>
-  Enterprise Java Beans 3.0 Persistence (EJB persistence) is a specification 
-  from Sun Microsystems for the persistence of Java objects to any relational
-  datastore.  EJB persistence requires J2SE 1.5 (also referred to as "Java 5")
-  or higher, as it makes heavy use of new Java language features such as
-  annotations and generics.  This document provides an overview of EJB 
-  persistence.  Unless otherwise noted, the information presented
-  applies to all EJB persistence implementations.
-  </para>
-      <note>
-        <para>
-    This document describes the Public Draft of the EJB 3.0
-    persistence specification.
+<chapter id="jpa_overview_intro">
+    <title>
+        Introduction
+    </title>
+    <para>
+    <indexterm>
+        <primary>
+            EJB3 Persistence
+        </primary>
+        <see>
+            JPA
+        </see>
+    </indexterm>
+    <indexterm>
+        <primary>
+            JPA
+        </primary>
+    </indexterm>
+The Java Persistence API (JPA) is a specification from
+Sun Microsystems for the persistence of Java objects to any relational
+datastore. JPA requires J2SE 1.5 (also referred to as "Java 5") or
+higher, as it makes heavy use of new Java language features such as annotations
+and generics. This document provides an overview of JPA. Unless
+otherwise noted, the information presented applies to all JPA implementations.
     </para>
+    <note>
         <para>
-    For coverage of OpenJPA's many extensions to the EJB persistence 
-    specification, see the <link linkend="ref_guide_intro">Reference
-    Guide</link>.
-    </para>
-      </note>
-      <section id="jpa_overview_intro_audience">
-        <title>Intended Audience</title>
+For coverage of OpenJPA's many extensions to the JPA specification,
+see the <link linkend="ref_guide_intro">Reference Guide</link>.
+        </para>
+    </note>
+    <section id="jpa_overview_intro_audience">
+        <title>
+            Intended Audience
+        </title>
         <para>
-    This document is intended for developers who want to learn about
-    EJB persistence in order to use it in their applications.
-    It assumes that you have a strong knowledge of object-oriented concepts
-    and Java, including Java 5 annotations and generics.  It also assumes
-    some experience with relational databases and the 
-    Structured Query Language (SQL).
-    </para>
-      </section>
-      <section id="jpa_overview_intro_transpers">
-        <title>Lightweight Persistence</title>
+This document is intended for developers who want to learn about JPA
+in order to use it in their applications. It assumes that you have a strong
+knowledge of object-oriented concepts and Java, including Java 5 annotations and
+generics. It also assumes some experience with relational databases and the
+Structured Query Language (SQL).
+        </para>
+    </section>
+    <section id="jpa_overview_intro_transpers">
+        <title>
+            Lightweight Persistence
+        </title>
         <indexterm zone="jpa_overview_intro_transpers">
-          <primary>lightweight persistence</primary>
+            <primary>
+                lightweight persistence
+            </primary>
         </indexterm>
-        <para><indexterm><primary>persistent data</primary></indexterm><emphasis>Persistent data</emphasis> is information that can
-    outlive the program that creates it.  The majority of complex
-    programs use persistent data: GUI applications need to store user 
-    preferences across program invocations, web applications track 
-    user movements and orders over long periods of time, etc.
-    </para>
-        <para><emphasis>Lightweight persistence</emphasis> is the storage and 
-    retrieval of persistent data with little or no work from you, the 
-    developer.  For example, Java serialization<indexterm><primary>serialization</primary></indexterm> is a form of 
-    lightweight persistence because it can be used to persist Java 
-    objects directly to a file with very little effort.  Serialization's
-    capabilities as a lightweight persistence mechanism pale in 
-    comparison to those provided by EJB, however.  The next
-    chapter compares EJB to serialization and other available
-    persistence mechanisms.
-    </para>
-      </section>
-    </chapter>
+        <para>
+        <indexterm>
+            <primary>
+                persistent data
+            </primary>
+        </indexterm>
+<emphasis>Persistent data</emphasis> is information that can outlive the program
+that creates it. The majority of complex programs use persistent data: GUI
+applications need to store user preferences across program invocations, web
+applications track user movements and orders over long periods of time, etc.
+        </para>
+        <para>
+<emphasis>Lightweight persistence</emphasis> is the storage and retrieval of
+persistent data with little or no work from you, the developer. For example,
+Java serialization
+        <indexterm>
+            <primary>
+                serialization
+            </primary>
+        </indexterm>
+is a form of lightweight persistence because it can be used to persist Java
+objects directly to a file with very little effort. Serialization's capabilities
+as a lightweight persistence mechanism pale in comparison to those provided by
+JPA, however. The next chapter compares JPA to serialization and other available
+persistence mechanisms.
+        </para>
+    </section>
+</chapter>

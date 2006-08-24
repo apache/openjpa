@@ -83,11 +83,11 @@ public class MetaDataRepository
     public static final int VALIDATE_RUNTIME = 8;
 
     protected static final Class[] EMPTY_CLASSES = new Class[0];
+    protected static final PersistenceAwareClass[] EMPTY_PAWARE_CLASSES = 
+    	new PersistenceAwareClass[0];
     protected final ClassMetaData[] EMPTY_METAS;
     protected final FieldMetaData[] EMPTY_FIELDS;
     protected final Order[] EMPTY_ORDERS;
-    protected static final PersistenceAwareClass[] EMPTY_PAWARE_CLASSES = 
-    	new PersistenceAwareClass[0];
 
     private static final Localizer _loc = Localizer.forPackage
         (MetaDataRepository.class);
@@ -699,19 +699,6 @@ public class MetaDataRepository
     public ClassMetaData getCachedMetaData(Class cls) {
         return (ClassMetaData) _metas.get(cls);
     }
-
-    /**
-     * Gets all the registered persistence-aware classes.
-     * 
-     * @return empty array if no class has been registered.
-     * 
-     */
-    public PersistenceAwareClass[] getPersistenceAwareClasses() {
-    	if (_pawares.isEmpty())
-    		return EMPTY_PAWARE_CLASSES;
-    	return (PersistenceAwareClass[])_pawares.values().toArray
-    		(new PersistenceAwareClass[_pawares.size()]);
-    }
     
     /**
      * Create a new metadata, populate it with default information, add it to
@@ -737,31 +724,12 @@ public class MetaDataRepository
         // synchronize on this rather than the map, because all other methods
         // that access _metas are synchronized on this
         synchronized (this) {
+            if (_pawares.containsKey(cls))
+                throw new MetaDataException(_loc.get("pc-and-aware", cls));
             _metas.put(cls, meta);
             _count++;
         }
         return meta;
-    }
-
-    /**
-     * Add the given class as persitence-aware.
-     * 
-     * @param cls non-null and must not alreaddy be added as persitence-capable.
-     */
-    public PersistenceAwareClass addPersistenceAware(Class cls) {
-    	if (cls == null)
-    		return null;
-    	if (_pawares.containsKey(cls))
-    		return (PersistenceAwareClass)_pawares.get(cls);
-    	if (getCachedMetaData(cls) == null) {
-    		synchronized(this) {
-	    		PersistenceAwareClass result = newPersistenceAwareClass(cls); 
-	    		_pawares.put(cls,result);
-	    		return result;
-    		}
-    	}
-    	else
-    		throw new MetaDataException(_loc.get("pc-and-aware", cls));
     }
     
     /**
@@ -769,10 +737,6 @@ public class MetaDataRepository
      */
     protected ClassMetaData newClassMetaData(Class type) {
         return new ClassMetaData(type, this);
-    }
-    
-    protected PersistenceAwareClass newPersistenceAwareClass(Class type) {
-    	return new PersistenceAwareClass(type, this);
     }
 
     /**
@@ -885,25 +849,6 @@ public class MetaDataRepository
             return true;
         }
         return false;
-    }
-    
-    /**
-     * Remove a persitence-aware class from this receiver.
-     * 
-     * @param cls a class possibly added earlier as persitence-aware.
-     * 
-     * @return true if removed, false if not contained in this receiver
-     */
-    public synchronized boolean removePersistenceAware(Class cls) {
-    	return _pawares.remove(cls) != null;
-    }
-
-    /**
-     * Removes all persitence-aware classes from this receiver.
-     *
-     */
-    public synchronized void removeAllPersistenceAware() {
-    	_pawares.clear();
     }
     
     /**
@@ -1044,6 +989,57 @@ public class MetaDataRepository
         return (ClassMetaData[]) mapped.toArray(newClassMetaDataArray
             (mapped.size()));
     }
+     
+    /**
+     * Gets the persistence-aware class corresponding to the given class. Can
+     * be null, if the given class is not registered as persistence-aware with
+     * this receiver.
+     */
+    public PersistenceAwareClass getPersistenceAware(Class cls) {
+    	return (PersistenceAwareClass)_pawares.get(cls);
+    }
+    
+    /**
+     * Gets all the registered persistence-aware classes.
+     * 
+     * @return empty array if no class has been registered
+     */
+    public PersistenceAwareClass[] getPersistenceAwares() {
+        synchronized (_pawares) {
+            if (_pawares.isEmpty())
+                return EMPTY_PAWARE_CLASSES;
+            return (PersistenceAwareClass[])_pawares.values().toArray
+                (new PersistenceAwareClass[_pawares.size()]);
+        }
+    }
+
+    /**
+     * Add the given class as persitence-aware.
+     * 
+     * @param cls non-null and must not alreaddy be added as persitence-capable
+     */
+    public PersistenceAwareClass addPersistenceAware(Class cls) {
+    	if (cls == null)
+    		return null;
+        synchronized(this) {
+            if (_pawares.containsKey(cls))
+                return (PersistenceAwareClass)_pawares.get(cls);
+            if (getCachedMetaData(cls) != null)
+                throw new MetaDataException(_loc.get("pc-and-aware", cls));
+            PersistenceAwareClass result = new PersistenceAwareClass(cls, this);
+            _pawares.put(cls, result);
+            return result;
+    	}
+    }
+
+    /**
+     * Remove a persitence-aware class from this receiver.
+     * 
+     * @return true if removed, false if not contained in this receiver
+     */
+    public boolean removePersistenceAware(Class cls) {
+    	return _pawares.remove(cls) != null;
+    }
 
     /**
      * Clear the cache of parsed metadata. This method also clears the
@@ -1062,6 +1058,7 @@ public class MetaDataRepository
         _registered.clear();
         _factory.clear();
         _aliases.clear();
+        _pawares.clear();
     }
 
     /**
@@ -1560,18 +1557,6 @@ public class MetaDataRepository
             (new SequenceMetaData[_seqs.size()]);
     }
 
-    /**
-     * Gets the persistence-aware class corresponding to the given class. Can
-     * be null, if the given class is not registered as persistence-aware with
-     * this receiver.
-     * 
-     * @param cls a Java class possibly registered as persistence-aware earlier
-     * with this receiver.
-     */
-    public synchronized PersistenceAwareClass getPersistenceAware(Class cls) {
-    	return (PersistenceAwareClass)_pawares.get(cls);
-    }
-    
     /**
      * Return the cached a sequence metadata for the given name.
      */

@@ -36,17 +36,17 @@
     <!ENTITY supported_databases.xml SYSTEM "supported_databases.xml">
 ]>
 <book id="manual">
-  <bookinfo>
-    <title>OpenJPA Developers Guide</title>
-  </bookinfo>
+    <bookinfo>
+        <title>OpenJPA Developers Guide</title>
+    </bookinfo>
 
-  <part id="introduction">
-    <title>Introduction</title>
+    <part id="introduction">
+        <title>Introduction</title>
         &openjpa_intro.xml;
-  </part>
+    </part>
 
-  <part id="jpa_overview">
-    <title>Java Persistence API</title>
+    <part id="jpa_overview">
+        <title>Java Persistence API</title>
         &jpa_overview_intro.xml;
         &jpa_overview_why.xml;
         &jpa_overview_arch.xml;
@@ -60,15 +60,15 @@
         &jpa_overview_sqlquery.xml;
         &jpa_overview_mapping.xml;
         &jpa_overview_conclusion.xml;
-  </part>
+    </part>
 
-  <part id="tutorials">
-    <title>Tutorials</title>
+    <part id="tutorials">
+        <title>Tutorials</title>
         &jpa_tutorials.xml;
-  </part>
+    </part>
 
-  <part id="ref_guide">
-    <title>OpenJPA <phrase>JPA</phrase> Reference Guide</title>
+    <part id="ref_guide">
+        <title>OpenJPA <phrase>JPA</phrase> Reference Guide</title>
         &ref_guide_intro.xml;
         &ref_guide_conf.xml;
         &ref_guide_logging.xml;
@@ -82,13 +82,13 @@
         &ref_guide_remote.xml;
         &ref_guide_integration.xml;
         &ref_guide_optimization.xml;
-  </part>
+    </part>
 
-  <part id="samples_guide_part">
-    <title>OpenJPA <phrase>JPA</phrase> Samples</title>
+    <part id="samples_guide_part">
+        <title>OpenJPA <phrase>JPA</phrase> Samples</title>
         &samples_guide.xml;
-  </part>
+    </part>
 
-        &jpa_resources.xml;
-        &supported_databases.xml;
+    &jpa_resources.xml;
+    &supported_databases.xml;
 </book>

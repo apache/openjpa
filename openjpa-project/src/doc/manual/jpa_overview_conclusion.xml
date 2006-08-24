@@ -1,18 +1,13 @@
-
-    <chapter id="jpa_overview_conclusion">
-      <title>Conclusion</title>
-      <para>
-  This concludes our overview of the EJB persistence specification.  The
-  <link linkend="jpa_tutorials_intro">OpenJPA EJB Tutorials</link>
-  continue your EJB education with step-by-step instructions for 
-  building simple EJB persistence applications.  The 
-  <link linkend="ref_guide_intro">OpenJPA Reference Guide</link> contains 
-  detailed documentation on all aspects of the OpenJPA EJB persistence
-  implementation and core development tools.  
-<!-- ### JDO2MIG
-  Finally,
-  the <link linkend="gui_intro">Workbench Guide</link> teaches you how to
-  use the OpenJPA Development Workbench for GUI-driven development.
--->
-  </para>
-    </chapter>
+<chapter id="jpa_overview_conclusion">
+    <title>
+        Conclusion
+    </title>
+    <para>
+This concludes our overview of the JPA specification. The
+<link linkend="jpa_tutorials_intro">OpenJPA Tutorials</link> continue your
+JPA education with step-by-step instructions for building simple JPA
+applications. The <link linkend="ref_guide_intro">OpenJPA Reference Guide</link>
+contains detailed documentation on all aspects of the OpenJPA implementation 
+and core development tools.
+    </para>
+</chapter>

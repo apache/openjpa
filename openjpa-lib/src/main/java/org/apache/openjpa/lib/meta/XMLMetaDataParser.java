@@ -338,9 +338,8 @@ public abstract class XMLMetaDataParser extends DefaultHandler
                 _log.info(_loc.get("parser-schema-bug"));
             schemaSource = null;
         }
-
-        boolean validating = _validating &&
-            (getDocType() != null || schemaSource != null);
+        boolean validating = _validating && (getDocType() != null 
+            || schemaSource != null);
 
         // parse the metadata with a SAX parser
         try {
