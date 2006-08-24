@@ -135,11 +135,6 @@
             <url>https://maven-repository.dev.java.net/nonav/repository</url>
             <layout>legacy</layout>
         </repository>
-        <repository>
-            <id>serp</id>
-            <name>Serp Project Repository</name>
-            <url>http://serp.sourceforge.net/m2repo</url>
-        </repository>
     </repositories>
     <dependencies>
         <dependency>
