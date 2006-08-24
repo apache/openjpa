@@ -1,50 +1,57 @@
-
-    <chapter id="ref_guide_optimization">
-      <title>Optimization Guidelines</title>
-      <indexterm zone="ref_guide_optimization">
-        <primary>optimization guidelines</primary>
-      </indexterm>
-      <para>
-  There are numerous techniques you can use in order to ensure that OpenJPA 
-  operates in the fastest and most efficient manner. Following are some 
-  guidelines. Each describes what impact it will have on performance and
-  scalability. Note that general guidelines regarding performance or
-  scalability issues are just that - guidelines. Depending on the
-  particular characteristics of your application, the optimal settings
-  may be considerably different than what is outlined below.
-  </para>
-      <para>
-  In the following table, each row is labeled with a list of
-  italicized keywords. These keywords identify what characteristics
-  the row in question may improve upon.  Many of the rows are marked with 
-  one or both of the <emphasis>performance</emphasis> and 
-  <emphasis>scalability</emphasis> labels. It is important to bear
-  in mind the differences between performance and scalability (for the
-  most part, we are referring to system-wide scalability, and not
-  necessarily only scalability within a single JVM). The
-  performance-related hints will probably improve the performance of
-  your application for a given user load, whereas the
-  scalability-related hints will probably increase the total number of
-  users that your application can service. Sometimes, increasing
-  performance will decrease scalability, and vice versa. Typically,
-  options that reduce the amount of work done on the database server
-  will improve scalability, whereas those that push more work onto the
-  server will have a negative impact on scalability.
-  </para>
-      <table>
-        <title>Optimization Guidelines</title>
+<chapter id="ref_guide_optimization">
+    <title>
+        Optimization Guidelines
+    </title>
+    <indexterm zone="ref_guide_optimization">
+        <primary>
+            optimization guidelines
+        </primary>
+    </indexterm>
+    <para>
+There are numerous techniques you can use in order to ensure that OpenJPA
+operates in the fastest and most efficient manner. Following are some
+guidelines. Each describes what impact it will have on performance and
+scalability. Note that general guidelines regarding performance or scalability
+issues are just that - guidelines. Depending on the particular characteristics
+of your application, the optimal settings may be considerably different than
+what is outlined below.
+    </para>
+    <para>
+In the following table, each row is labeled with a list of italicized keywords.
+These keywords identify what characteristics the row in question may improve
+upon. Many of the rows are marked with one or both of the <emphasis>performance
+</emphasis> and <emphasis>scalability</emphasis> labels. It is important to bear
+in mind the differences between performance and scalability (for the most part,
+we are referring to system-wide scalability, and not necessarily only
+scalability within a single JVM). The performance-related hints will probably
+improve the performance of your application for a given user load, whereas the
+scalability-related hints will probably increase the total number of users that
+your application can service. Sometimes, increasing performance will decrease
+scalability, and vice versa. Typically, options that reduce the amount of work
+done on the database server will improve scalability, whereas those that push
+more work onto the server will have a negative impact on scalability.
+    </para>
+    <table>
+        <title>
+            Optimization Guidelines
+        </title>
         <tgroup cols="2" align="left" colsep="1" rowsep="1">
-          <colspec colname="name"/>
-          <colspec colname="desc" colwidth="4*"/>
-          <tbody valign="top">
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Optimize database indexes</emphasis>
-                <para>
-                  <emphasis>performance, scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc"> 
+            <colspec colname="name">
+            </colspec>
+            <colspec colname="desc" colwidth="4*">
+            </colspec>
+            <tbody valign="top">
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Optimize database indexes
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                         
           The default set of indexes created by OpenJPA's mapping 
           tool may not always be the most appropriate for your 
           application. Manually setting indexes in your mapping
@@ -52,258 +59,355 @@
           include frequently-queried fields (as well as dropping 
           indexes on rarely-queried fields) can yield significant 
           performance benefits.
-          <para>
-          A database must do extra work on insert, update, and
-          delete to maintain an index. This extra work will benefit
-          selects with WHERE clauses, which will execute much faster
-          when the terms in the WHERE clause are appropriately
-          indexed. So, for a read-mostly application, appropriate
-          indexing will slow down updates (which are rare) but greatly
-          accelerate reads. This means that the system as a whole will
-          be faster, and also that the database will experience less
-          load, meaning that the system will be more scalable.
-          </para>
-          <para>
-          Bear in mind that over-indexing is a bad thing, both
-          for scalability and performance, especially for applications
-          that perform lots of inserts, updates, or deletes.
-          </para>
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Use the best JDBC driver</emphasis>
-                <para>
-                  <emphasis>performance, scalability, reliability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc"> 
+          
+                        <para>
+A database must do extra work on insert, update, and delete to maintain an
+index. This extra work will benefit selects with WHERE clauses, which will
+execute much faster when the terms in the WHERE clause are appropriately
+indexed. So, for a read-mostly application, appropriate indexing will slow down
+updates (which are rare) but greatly accelerate reads. This means that the
+system as a whole will be faster, and also that the database will experience
+less load, meaning that the system will be more scalable.
+                        </para>
+                        <para>
+Bear in mind that over-indexing is a bad thing, both for scalability and
+performance, especially for applications that perform lots of inserts, updates,
+or deletes.
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Use the best JDBC driver
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability, reliability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                         
           The JDBC driver provided by the database vendor is not 
           always the fastest and most efficient. Some JDBC drivers 
           do not support features like batched statements, the lack 
           of which can significantly slow down OpenJPA's data access
           and increase load on the database, reducing system 
           performance and scalability.
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">JVM optimizations</emphasis>
-                <para>
-                  <emphasis>performance, reliability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc"> 
+          
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            JVM optimizations
+                        </emphasis>
+                        <para>
+<emphasis>performance, reliability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                         
           Manipulating various parameters of the Java Virtual Machine
           (such as hotspot compilation modes and the maximum memory)
           can result in performance improvements. For more details
           about optimizing the JVM execution environment, please see 
-          <ulink url="http://java.sun.com/docs/hotspot/PerformanceFAQ.html"/>.
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Use the data cache</emphasis>
-                <para>
-                  <emphasis>performance, scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc"> 
-          Using OpenJPA's <link linkend="ref_guide_cache">data and 
-          query caching</link> features can often result 
+          
+                        <ulink url="http://java.sun.com/docs/hotspot/PerformanceFAQ.html">
+                        </ulink>
+                        .
+          
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Use the data cache
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                         
+          Using OpenJPA's 
+                        <link linkend="ref_guide_cache">
+                            data and 
+          query caching
+                        </link>
+                         features can often result 
           in a dramatic improvement in performance. Additionally, 
           these caches can significantly reduce the amount of load on
           the database, increasing the scalability characteristics of
           your application.  Also, be sure to read about the 
-          <link linkend="ref_guide_cache_concurrent">concurrent cache
-          </link> option to see if it fits your needs.
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Set <literal>LargeTransaction
-          </literal> to true, or set <literal>PopulateDataCache
-          </literal> to false</emphasis>
-                <para>
-                  <emphasis>performance vs. scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc"> 
-          When using OpenJPA's <link linkend="ref_guide_cache">data 
-          caching</link> features (available in OpenJPA JDO 
+          
+                        <link linkend="ref_guide_cache_concurrent">
+                            concurrent cache
+          
+                        </link>
+                         option to see if it fits your needs.
+          
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Set 
+                            <literal>
+                                LargeTransaction
+          
+                            </literal>
+                             to true, or set 
+                            <literal>
+                                PopulateDataCache
+          
+                            </literal>
+                             to false
+                        </emphasis>
+                        <para>
+<emphasis>performance vs. scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                         
+          When using OpenJPA's 
+                        <link linkend="ref_guide_cache">
+                            data 
+          caching
+                        </link>
+                         features (available in OpenJPA JDO 
           Performance Pack and Enterprise Edition) 
           in a transaction that will delete, modify, or create 
-          a very large number of objects you can set <literal>
-          LargeTransaction</literal> to true and perform periodic 
+          a very large number of objects you can set 
+                        <literal>
+                            
+          LargeTransaction
+                        </literal>
+                         to true and perform periodic 
           flushes during your transaction to reduce its memory 
           requirements.  See the Javadoc:
-          <phrase><ulink url="javadoc/openjpa/persistence/OpenJPAEntityManager.html">
-          OpenJPAEntityManager.setLargeTransaction</ulink></phrase>
+          
+                        <phrase>
+                            <ulink url="javadoc/openjpa/persistence/OpenJPAEntityManager.html">
+                                
+          OpenJPAEntityManager.setLargeTransaction
+                            </ulink>
+                        </phrase>
+                        
           
           
           Note that transactions in large mode have to
           more aggressively flush items from the data cache.
-          <para>
-          If your transaction will visit objects that you know
-          are very unlikely to be accessed by other transactions,
-          for example an exhaustive report run only once a month,
-          you can turn off population of the data cache so that
-          the transaction doesn't fill the entire data cache with
-          objects that won't be accessed again.
-          Again, see the Javadoc: 
-          <phrase><ulink url="javadoc/openjpa/persistence/OpenJPAEntityManager.html">
-          OpenJPAEntityManager.setPopulateDataCache</ulink></phrase>
           
-          
-          </para>
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Disable logging, performance 
-          tracking</emphasis>
-                <para>
-                  <emphasis>performance</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc"> 
+                        <para>
+If your transaction will visit objects that you know are very unlikely to be
+accessed by other transactions, for example an exhaustive report run only once a
+month, you can turn off population of the data cache so that the transaction
+doesn't fill the entire data cache with objects that won't be accessed again.
+Again, see the Javadoc: <phrase>
+<ulink url="javadoc/openjpa/persistence/OpenJPAEntityManager.html">
+OpenJPAEntityManager.setPopulateDataCache</ulink></phrase>
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Disable logging, performance 
+          tracking
+                        </emphasis>
+                        <para>
+<emphasis>performance</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                         
           Developer options such as verbose logging and the 
           JDBC performance tracker can result in serious performance 
           hits for your application. Before evaluating OpenJPA's
           performance, these options should all be disabled.
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Set <literal>IgnoreChanges</literal> 
-          to true, or set <literal>FlushBeforeQueries</literal> to 
-          true</emphasis>
-                <para>
-                  <emphasis>performance vs. scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc">
-          When both the <link linkend="openjpa.IgnoreChanges"><literal>openjpa.IgnoreChanges</literal></link> and 
-          <link linkend="openjpa.FlushBeforeQueries"><literal>
-          openjpa.FlushBeforeQueries</literal></link> properties are set
+          
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Set 
+                            <literal>
+                                IgnoreChanges
+                            </literal>
+                             
+          to true, or set 
+                            <literal>
+                                FlushBeforeQueries
+                            </literal>
+                             to 
+          true
+                        </emphasis>
+                        <para>
+<emphasis>performance vs. scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        
+          When both the 
+                        <link linkend="openjpa.IgnoreChanges">
+                            <literal>
+                                openjpa.IgnoreChanges
+                            </literal>
+                        </link>
+                         and 
+          
+                        <link linkend="openjpa.FlushBeforeQueries">
+                            <literal>
+                                
+          openjpa.FlushBeforeQueries
+                            </literal>
+                        </link>
+                         properties are set
           to false, OpenJPA needs to consider in-memory dirty instances 
           during queries.  This can sometimes result in OpenJPA needing 
           to evaluate the entire extent objects in order to 
           return the correct query results, which can have drastic 
           performance consequences.  If it is appropriate for your 
           application, configuring 
-          <literal>FlushBeforeQueries</literal>
+          
+                        <literal>
+                            FlushBeforeQueries
+                        </literal>
+                        
           to automatically flush before queries involving dirty
           objects will ensure that this never
-          happens. Setting <literal>IgnoreChanges</literal> to 
+          happens. Setting 
+                        <literal>
+                            IgnoreChanges
+                        </literal>
+                         to 
           false will result in a small performance hit even if 
-          <literal>FlushBeforeQueries</literal> is true, as 
+          
+                        <literal>
+                            FlushBeforeQueries
+                        </literal>
+                         is true, as 
           incremental flushing is not as efficient overall as 
           delaying all flushing to a single operation during commit. 
           This is because incrementally flushing decreases OpenJPA's 
           ability to maximize statement batching, and increases 
           resource utilization.
-          <para>
-          Note that the default setting of 
-          <literal>FlushBeforeQueries</literal> is 
-          <literal>with-connection</literal>, which means that data 
-          will be flushed only if a dedicated connection is already 
-          in use by the <classname>EntityManager</classname>. 
-          So, the default value may not be appropriate for you.
-          </para>
           
-          
-          <para>
-          Setting <literal>IgnoreChanges</literal> to 
-          <literal>true</literal> will help performance, since dirty
-          objects can be ignored for queries, meaning that 
-          incremental flushing or client-side processing
-          is not necessary. It will also improve scalability, since 
-          overall database server usage is diminished.  On the other 
-          hand, setting <literal>IgnoreChanges</literal> to 
-          <literal>false</literal> will have a negative impact on
-          scalability, even when using automatic flushing before
-          queries, since more operations will be performed on the
-          database server.
-          </para>
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Configure <literal>
-          openjpa.ConnectionRetainMode</literal> appropriately</emphasis>
-                <para>
-                  <emphasis>performance vs. scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc">
-          The <link linkend="openjpa.ConnectionRetainMode"><literal>
-          ConnectionRetainMode</literal></link> configuration option 
+                        <para>
+Note that the default setting of <literal>FlushBeforeQueries</literal> is
+<literal>with-connection</literal>, which means that data will be flushed only
+if a dedicated connection is already in use by the <classname>EntityManager
+</classname>. So, the default value may not be appropriate for you.
+                        </para>
+                        <para>
+Setting <literal>IgnoreChanges</literal> to <literal>true</literal> will help
+performance, since dirty objects can be ignored for queries, meaning that
+incremental flushing or client-side processing is not necessary. It will also
+improve scalability, since overall database server usage is diminished. On the
+other hand, setting <literal>IgnoreChanges</literal> to <literal>false</literal>
+will have a negative impact on scalability, even when using automatic flushing
+before queries, since more operations will be performed on the database server.
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Configure 
+                            <literal>
+                                
+          openjpa.ConnectionRetainMode
+                            </literal>
+                             appropriately
+                        </emphasis>
+                        <para>
+<emphasis>performance vs. scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        
+          The 
+                        <link linkend="openjpa.ConnectionRetainMode">
+                            <literal>
+                                
+          ConnectionRetainMode
+                            </literal>
+                        </link>
+                         configuration option 
           controls when OpenJPA will obtain a connection, and how long 
           it will hold that connection. The optimal settings for this
           option will vary considerably depending on the particular 
           behavior of your application. You may even benefit from 
           using different retain modes for different parts of your
           application.
-          <para>
-          The default setting of <literal>on-demand</literal> 
-          minimizes the amount of time that OpenJPA holds onto a 
-          datastore connection. This is generally the best option 
-          from a scalability standpoind, as database resources are 
-          held for a minimal amount of time. However, if your 
-          connection pool is overly small relative to the number of 
-          concurrent sessions that need access to the 
-          database, or if your <classname>DataSource</classname> is 
-          not efficient at managing its pool, then this default value 
-          could cause undesirable pool contention.
-          </para>
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Ensure that batch updates are 
-          available</emphasis>
-                <para>
-                  <emphasis>performance, scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc"> 
+          
+                        <para>
+The default setting of <literal>on-demand</literal> minimizes the amount of time
+that OpenJPA holds onto a datastore connection. This is generally the best
+option from a scalability standpoind, as database resources are held for a
+minimal amount of time. However, if your connection pool is overly small
+relative to the number of concurrent sessions that need access to the database,
+or if your <classname>DataSource</classname> is not efficient at managing its
+pool, then this default value could cause undesirable pool contention.
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Ensure that batch updates are 
+          available
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                         
           When performing bulk inserts, updates, or deletes, OpenJPA 
           will use batched statements. If this feature is not 
           available in your JDBC driver, then OpenJPA will need to 
           issue multiple SQL statements instead of a single batch 
           statement.
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Use 
-          flat inheritance</emphasis>
-                <para>
-                  <emphasis>performance, scalability vs. disk space</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc"> 
+          
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Use 
+          flat inheritance
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability vs. disk space</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                         
           Mapping inheritance hierarchies to a single database table
           is faster for most operations than other strategies
           employing multiple tables. If it is appropriate for your 
           application, you should use this strategy whenever possible.
-          <para>
-          However, this strategy will require more disk 
-          space on the database side. Disk space is relatively 
-          inexpensive, but if your object model is particularly 
-          large, it can become a factor.
-          </para>
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">High sequence increment</emphasis>
-                <para>
-                  <emphasis>performance, scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc"> 
+          
+                        <para>
+However, this strategy will require more disk space on the database side. Disk
+space is relatively inexpensive, but if your object model is particularly large,
+it can become a factor.
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            High sequence increment
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                         
           For applications that perform large bulk inserts, the 
           retrieval of sequence numbers can be a bottleneck. 
           Increasing sequence increments and using table-based rather
@@ -311,214 +415,278 @@
           this bottleneck. In some cases,
           implementing your own sequence factory can further optimize
           sequence number retrieval.
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Use optimistic transactions</emphasis>
-                <para>
-                  <emphasis>performance, scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc"> 
+          
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Use optimistic transactions
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                         
           Using datastore transactions translates into pessimistic 
           database row locking, which can be a performance hit 
           (depending on the database). If appropriate for your 
           application, optimistic transactions are typically faster 
           than datastore transactions.
-          <para>
-          Optimistic transactions provide the same transactional
-          guarantees as datastore transactions, except that you must
-          handle a potential optimistic verification exception at the
-          end of a transaction instead of assuming that a transaction
-          will successfully complete. In many applications, it is
-          unlikely that different concurrent transactions will operate
-          on the same set of data at the same time, so optimistic
-          verification increases the concurrency, and therefore both
-          the performance and scalability characteristics, of the
-          application. A common approach to handling optimistic
-          verification exceptions is to simply present the end user
-          with the fact that concurrent modifications happened, and
-          require that the user redo any work.
-          </para>
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Use query aggregates and projections
-          </emphasis>
-                <para>
-                  <emphasis>performance, scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc">
+          
+                        <para>
+Optimistic transactions provide the same transactional guarantees as datastore
+transactions, except that you must handle a potential optimistic verification
+exception at the end of a transaction instead of assuming that a transaction
+will successfully complete. In many applications, it is unlikely that different
+concurrent transactions will operate on the same set of data at the same time,
+so optimistic verification increases the concurrency, and therefore both the
+performance and scalability characteristics, of the application. A common
+approach to handling optimistic verification exceptions is to simply present the
+end user with the fact that concurrent modifications happened, and require that
+the user redo any work.
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Use query aggregates and projections
+          
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        
           Using aggregates to compute reporting data on the database
           server can drastically speed up queries.  Similarly, using
           projections when you are interested in specific
           object fields or relations rather than the entire object
           state can reduce the amount of data OpenJPA must transfer
           from the database to your application.
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Always close resources</emphasis>
-                <para>
-                  <emphasis>scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc">
-                <para>  
-          Under certain settings, <classname>
-          EntityManager</classname>s, OpenJPA <classname>Extent
-          </classname> iterators, and <classname>Query</classname> 
-          results may be backed by resources in the database.  
-          </para>
-                <para>
-          For example, if you have
-          configured OpenJPA to use scrollable cursors and lazy object
-          instantiation by default, each query result will hold open 
-          a <classname>ResultSet</classname> object, which, in turn, 
-          will hold open a <classname>Statement</classname> object 
-          (preventing it from being re-used).  Garbage collection 
-          will clean up these resources, so it is never necessary to 
-          explicitly close them, but it is always faster if it is 
-          done at the application level.
-          </para>
-              </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Optimize connection pool 
-          settings</emphasis>
-                <para>
-                  <emphasis>performance, scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc">
-                <para>
-            OpenJPA's built-in connection pool's default settings may
-          not be optimal for all applications. For applications that
-          instantiate and close many <classname>
-          EntityManager</classname>s (such as a
-          web application), increasing the size of the connection
-          pool will reduce the overhead of waiting on free connections
-          or opening new connections.  
-          </para>
-                <para>
-          You may want to tune the 
-          prepared statement pool size with the connection pool size.
-          </para>
-              </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Use detached state managers</emphasis>
-                <para>
-                  <emphasis>performance</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc">
-                <para>
-          Attaching and even persisting instances can be more 
-          efficient when your detached objects use detached state 
-          managers.  By default, OpenJPA does not use detached state 
-          managers when serializing an instance across tiers.  See 
-          <xref linkend="ref_guide_detach_graph"/> for how to force
-          OpenJPA to use detached state managers across tiers, and for
-          other options for more efficient attachment.
-          </para>
-                <para>
-          The downside of using a detached state manager
-          across tiers is that your enhanced persistent classes and
-          the OpenJPA libraries must be available on the client tier.
-          </para>
-              </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Utilize the <classname>
-          EntityManager</classname> cache</emphasis>
-                <para>
-                  <emphasis>performance, scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc"> 
-          When possible and appropriate, re-using <classname>
-          EntityManager</classname>s and setting the 
-          <link linkend="openjpa.RetainState"><literal>
-          RetainState</literal></link> configuration option to 
-          <literal>true</literal> may result in significant 
-          performance gains, since the <classname>
-          EntityManager</classname>'s built-in
+          
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Always close resources
+                        </emphasis>
+                        <para>
+<emphasis>scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        <para>
+Under certain settings, <classname> EntityManager</classname> s, OpenJPA
+<classname>Extent</classname> iterators, and <classname>Query</classname>
+results may be backed by resources in the database.
+                        </para>
+                        <para>
+For example, if you have configured OpenJPA to use scrollable cursors and lazy
+object instantiation by default, each query result will hold open a <classname>
+ResultSet</classname> object, which, in turn, will hold open a <classname>
+Statement</classname> object (preventing it from being re-used). Garbage
+collection will clean up these resources, so it is never necessary to explicitly
+close them, but it is always faster if it is done at the application level.
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Optimize connection pool 
+          settings
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        <para>
+OpenJPA's built-in connection pool's default settings may not be optimal for all
+applications. For applications that instantiate and close many <classname>
+EntityManager</classname>s (such as a web application), increasing the size of
+the connection pool will reduce the overhead of waiting on free connections or
+opening new connections.
+                        </para>
+                        <para>
+You may want to tune the prepared statement pool size with the connection pool
+size.
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Use detached state managers
+                        </emphasis>
+                        <para>
+<emphasis>performance</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        <para>
+Attaching and even persisting instances can be more efficient when your detached
+objects use detached state managers. By default, OpenJPA does not use detached
+state managers when serializing an instance across tiers. See
+<xref linkend="ref_guide_detach_graph"></xref> for how to force OpenJPA to use
+detached state managers across tiers, and for other options for more efficient
+attachment.
+                        </para>
+                        <para>
+The downside of using a detached state manager across tiers is that your
+enhanced persistent classes and the OpenJPA libraries must be available on the
+client tier.
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Utilize the 
+                            <classname>
+                                
+          EntityManager
+                            </classname>
+                             cache
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                         
+          When possible and appropriate, re-using 
+                        <classname>
+                            
+          EntityManager
+                        </classname>
+                        s and setting the 
+          
+                        <link linkend="openjpa.RetainState">
+                            <literal>
+                                
+          RetainState
+                            </literal>
+                        </link>
+                         configuration option to 
+          
+                        <literal>
+                            true
+                        </literal>
+                         may result in significant 
+          performance gains, since the 
+                        <classname>
+                            
+          EntityManager
+                        </classname>
+                        's built-in
           object cache will be used.
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Enable multithreaded operation only 
-          when necessary</emphasis>
-                <para>
-                  <emphasis>performance</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc">
-          OpenJPA respects the <link linkend="openjpa.Multithreaded"><literal>openjpa.Multithreaded</literal></link> option in
+          
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Enable multithreaded operation only 
+          when necessary
+                        </emphasis>
+                        <para>
+<emphasis>performance</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        
+          OpenJPA respects the 
+                        <link linkend="openjpa.Multithreaded">
+                            <literal>
+                                openjpa.Multithreaded
+                            </literal>
+                        </link>
+                         option in
           that it does not impose synchronization overhead for
           applications that set this value to 
-          <literal>false</literal>. If your application is 
+          
+                        <literal>
+                            false
+                        </literal>
+                        . If your application is 
           guaranteed to only use single-threaded access to OpenJPA
           resources and persistent objects, setting this option to 
-          <literal>false</literal> will result
+          
+                        <literal>
+                            false
+                        </literal>
+                         will result
           in the elimination of synchronization overhead, and may 
           result in a modest performance increase.
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Enable large data set 
-          handling</emphasis>
-                <para>
-                  <emphasis>performance, scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc">
+          
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Enable large data set 
+          handling
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        
           If you execute queries that return large numbers of objects
           or have relations (collections or maps) that are large, and
           if you often only access parts of these data sets, enabling
-          <link linkend="ref_guide_dbsetup_lrs">large result set 
-          handling</link> where appropriate can
+          
+                        <link linkend="ref_guide_dbsetup_lrs">
+                            large result set 
+          handling
+                        </link>
+                         where appropriate can
           dramatically speed up your application, since OpenJPA will
           bring the data sets into memory from the database only as
           necessary.
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Disable large data set handling
-          </emphasis>
-                <para>
-                  <emphasis>performance, scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc">
+          
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Disable large data set handling
+          
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        
           If you have enabled scrollable result sets and on-demand 
           loading but do you not require it, consider disabling it 
           again.  Some JDBC drivers and databases (SQLServer for 
           example) are much slower when used with scrolling result 
           sets.
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Use short discriminator values, or
+          
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Use short discriminator values, or
           turn off the discriminator
-          </emphasis>
-                <para>
-                  <emphasis>performance, scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc">
+          
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        
           The default discriminator strategy of storing the class
           name in the discriminator column is quite robust, in that 
           it can handle any class and needs no configuration, but 
@@ -531,82 +699,133 @@
           since the subclass indicator data can become a significant 
           proportion of the data transferred between the JVM and 
           the database.
-          <para>
-          Alternately, if certain persistent classes in your 
-          application do not make use of inheritance, then you can 
-          disable the discriminator for these classes altogether.
-          </para>
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Use the <classname>
-          DynamicSchemaFactory</classname></emphasis>
-                <para>
-                  <emphasis>performance, validation</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc">
-          If you are using a <link linkend="openjpa.jdbc.SchemaFactory"><literal>openjpa.jdbc.SchemaFactory</literal></link> setting
-          of something other than the default of <literal>
-          dynamic</literal>, consider switching back.  While other
+          
+                        <para>
+Alternately, if certain persistent classes in your application do not make use
+of inheritance, then you can disable the discriminator for these classes
+altogether.
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Use the 
+                            <classname>
+                                
+          DynamicSchemaFactory
+                            </classname>
+                        </emphasis>
+                        <para>
+<emphasis>performance, validation</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        
+          If you are using a 
+                        <link linkend="openjpa.jdbc.SchemaFactory">
+                            <literal>
+                                openjpa.jdbc.SchemaFactory
+                            </literal>
+                        </link>
+                         setting
+          of something other than the default of 
+                        <literal>
+                            
+          dynamic
+                        </literal>
+                        , consider switching back.  While other
           factories can ensure that object-relational mapping 
           information is valid when a persistent class is first used,
           this can be a slow process.  Though the validation is only 
           performed once for each class, switching back to the
-          <classname>DynamicSchemaFactory</classname> 
+          
+                        <classname>
+                            DynamicSchemaFactory
+                        </classname>
+                         
           can reduce the warm-up time for your application.
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Do not use XA transactions</emphasis>
-                <para>
-                  <emphasis>performance, scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc"><link linkend="ref_guide_enterprise_xa">XA transactions
-          </link> can be orders of magnitude slower than standard 
+          
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Do not use XA transactions
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        <link linkend="ref_guide_enterprise_xa">
+                            XA transactions
+          
+                        </link>
+                         can be orders of magnitude slower than standard 
           transactions. Unless distributed transaction functionality 
           is required by your application, use standard transactions.
-          <para>
-          Recall that XA transactions are distinct from
-          managed transactions - managed transaction services
-          such as that provided by EJB declarative transactions
-          can be used both with XA and non-XA transactions. XA
-          transactions should only be used when a given business
-          transaction involves multiple different transactional
-          resources (an Oracle database and an IBM transactional
-          message queue, for example).
-          </para></entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Use <classname>Set</classname>s 
-          instead of <classname>List/Collection</classname>s
-          </emphasis>
-                <para>
-                  <emphasis>performance, scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc">
+          
+                        <para>
+Recall that XA transactions are distinct from managed transactions - managed
+transaction services such as that provided by EJB declarative transactions can
+be used both with XA and non-XA transactions. XA transactions should only be
+used when a given business transaction involves multiple different transactional
+resources (an Oracle database and an IBM transactional message queue, for
+example).
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Use 
+                            <classname>
+                                Set
+                            </classname>
+                            s 
+          instead of 
+                            <classname>
+                                List/Collection
+                            </classname>
+                            s
+          
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        
           There is a small amount of extra overhead for OpenJPA to 
           maintain collections where each element is not guaranteed 
           to be unique.  If your application does not require 
           duplicates for a collection, you should always declare your
-          fields to be of type <classname>Set, SortedSet, 
-          HashSet,</classname> or <classname>TreeSet</classname>.
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Use query parameters instead of
-          encoding search data in filter strings</emphasis>
-                <para>
-                  <emphasis>performance</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc">
+          fields to be of type 
+                        <classname>
+                            Set, SortedSet, 
+          HashSet,
+                        </classname>
+                         or 
+                        <classname>
+                            TreeSet
+                        </classname>
+                        .
+          
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Use query parameters instead of
+          encoding search data in filter strings
+                        </emphasis>
+                        <para>
+<emphasis>performance</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        
           If your queries depend on parameter data only known at
           runtime, you should use query parameters rather than
           dynamically building different query strings. OpenJPA
@@ -614,18 +833,26 @@
           data, and the effectiveness of this cache is diminished if
           multiple query filters are used where a single one could
           have sufficed.
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Tune your fetch groups
-          appropriately</emphasis>
-                <para>
-                  <emphasis>performance, scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc">
-          The <link linkend="ref_guide_fetch">fetch groups</link>
+          
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Tune your fetch groups
+          appropriately
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        
+          The 
+                        <link linkend="ref_guide_fetch">
+                            fetch groups
+                        </link>
+                        
           used when loading an object control how much data is
           eagerly loaded, and by extension, which fields must be
           lazily loaded at a future time. The ideal fetch group
@@ -633,34 +860,40 @@
           fetch, and no extra fields - this minimizes both the
           amount of data transferred from the database, and the
           number of trips to the database.
-          <para>
-          If extra fields are specified in the fetch groups
-          (in particular, large fields such as binary data, or
-          relations to other persistence-capable objects), then
-          network overhead (for the extra data) and database
-          processing (for any necessary additional joins) will
-          hurt your application's performance. If too few fields
-          are specified in the fetch groups, then OpenJPA will have
-          to make additional trips to the database to load
-          additional fields as necessary.
-          </para>
-          </entry>
-            </row>
-            <row>
-              <entry colname="name">
-                <emphasis role="bold">Use eager fetching</emphasis>
-                <para>
-                  <emphasis>performance, scalability</emphasis>
-                </para>
-              </entry>
-              <entry colname="desc">
-          Using <link linkend="ref_guide_perfpack_eager">eager 
-          fetching</link> when loading subclass data or traversing 
+          
+                        <para>
+If extra fields are specified in the fetch groups (in particular, large fields
+such as binary data, or relations to other persistence-capable objects), then
+network overhead (for the extra data) and database processing (for any necessary
+additional joins) will hurt your application's performance. If too few fields
+are specified in the fetch groups, then OpenJPA will have to make additional
+trips to the database to load additional fields as necessary.
+                        </para>
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Use eager fetching
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+                        
+          Using 
+                        <link linkend="ref_guide_perfpack_eager">
+                            eager 
+          fetching
+                        </link>
+                         when loading subclass data or traversing 
           relations for each instance in a large collection of 
           results can speed up data loading by orders of magnitude.
-          </entry>
-            </row>
-          </tbody>
+          
+                    </entry>
+                </row>
+            </tbody>
         </tgroup>
-      </table>
-    </chapter>
+    </table>
+</chapter>

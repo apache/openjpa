@@ -1,39 +1,39 @@
-
-  <appendix id="jpa_resources">
-    <title>JPA Resources</title>
+<appendix id="jpa_resources">
+    <title>
+        JPA Resources
+    </title>
     <itemizedlist>
-      <listitem>
-        <para>
-          <ulink url="http://java.sun.com/aboutJava/communityprocess/jsr/jsr_220_dataobj.html">
-      EJB 3 JSR page</ulink>
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-          <ulink url="http://java.sun.com/products/ejb">Sun EJB page</ulink>
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-          <ulink url="http://java.sun.com/javaee/5/docs/api/index.html">Locally mirrored 
-      javax.persistence Javadoc</ulink>
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-          <ulink url="../../api/index.html">OpenJPA API Javadoc</ulink>
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-          <ulink url="../apidocs/index.html">Full OpenJPA Javadoc</ulink>
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-          <ulink url="Persistence.pdf">Locally mirrored JPA
-      specification</ulink>
-        </para>
-      </listitem>
+        <listitem>
+            <para>
+<ulink url="http://java.sun.com/aboutJava/communityprocess/jsr/jsr_220_dataobj.html">
+EJB 3 JSR page</ulink>
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+<ulink url="http://java.sun.com/products/ejb">Sun EJB page</ulink>
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+<ulink url="http://java.sun.com/javaee/5/docs/api/index.html">Locally mirrored
+javax.persistence Javadoc</ulink>
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+<ulink url="../../api/index.html">OpenJPA API Javadoc</ulink>
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+<ulink url="../apidocs/index.html">Full OpenJPA Javadoc</ulink>
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+<ulink url="Persistence.pdf">Locally mirrored JPA specification</ulink>
+            </para>
+        </listitem>
     </itemizedlist>
-  </appendix>
+</appendix>

@@ -1,267 +1,371 @@
-
-    <chapter id="ref_guide_logging">
-      <title>Logging</title>
-      <indexterm zone="ref_guide_logging">
-        <primary>logging</primary>
-      </indexterm>
-      <indexterm zone="ref_guide_logging">
-        <primary>Log</primary>
-      </indexterm>
-      <para>
-  Logging is an important means of gaining insight into your application's
-  runtime behavior.  OpenJPA
-  provides a flexible logging system that integrates with many
-  existing runtime systems, such as application servers and servlet
-  runners.
-  </para>
-      <para>
-  There are four built-in logging plugins: a 
-  <link linkend="ref_guide_logging_openjpa">default logging framework</link>
-  that covers most needs, a <link linkend="ref_guide_logging_log4j">
-  Log4J</link> delegate, an <link linkend="ref_guide_logging_commons">
-  Apache Commons Logging</link> delegate, and a 
-  <link linkend="ref_guide_logging_noop">no-op</link> implementation for
-  disabling logging.
-  </para>
-      <warning>
-        <para>
-    Logging can have a negative impact on performance. Disable
-    verbose logging (such as logging of SQL statements) before
-    running any performance tests. It is advisable to limit or
-    disable logging for a production system. You can
-    disable logging altogether by setting
-    the <literal>openjpa.Log</literal> property
-    to <literal>none</literal>.
+<chapter id="ref_guide_logging">
+    <title>
+        Logging
+    </title>
+    <indexterm zone="ref_guide_logging">
+        <primary>
+            logging
+        </primary>
+    </indexterm>
+    <indexterm zone="ref_guide_logging">
+        <primary>
+            Log
+        </primary>
+    </indexterm>
+    <para>
+Logging is an important means of gaining insight into your application's runtime
+behavior. OpenJPA provides a flexible logging system that integrates with many
+existing runtime systems, such as application servers and servlet runners.
     </para>
-      </warning>
-      <section id="ref_guide_logging_channels">
-        <title>Logging Channels</title>
+    <para>
+There are four built-in logging plugins: a
+<link linkend="ref_guide_logging_openjpa">default logging framework</link> that
+covers most needs, a <link linkend="ref_guide_logging_log4j"> Log4J</link>
+delegate, an <link linkend="ref_guide_logging_commons"> Apache Commons Logging
+</link> delegate, and a <link linkend="ref_guide_logging_noop">no-op</link>
+implementation for disabling logging.
+    </para>
+    <warning>
+        <para>
+Logging can have a negative impact on performance. Disable verbose logging (such
+as logging of SQL statements) before running any performance tests. It is
+advisable to limit or disable logging for a production system. You can disable
+logging altogether by setting the <literal>openjpa.Log</literal> property to
+<literal>none</literal>.
+        </para>
+    </warning>
+    <section id="ref_guide_logging_channels">
+        <title>
+            Logging Channels
+        </title>
         <indexterm zone="ref_guide_logging_channels">
-          <primary>logging</primary>
-          <secondary>channels</secondary>
+            <primary>
+                logging
+            </primary>
+            <secondary>
+                channels
+            </secondary>
         </indexterm>
         <para>
-    Logging is done over a number of <emphasis>logging channels</emphasis>,
-    each of which has a <emphasis>logging level</emphasis> which controls
-    the verbosity of log messages recorded for the channel.  OpenJPA uses
-    the following logging channels:
-    </para>
+Logging is done over a number of <emphasis>logging channels</emphasis>, each of
+which has a <emphasis>logging level</emphasis> which controls the verbosity of
+log messages recorded for the channel. OpenJPA uses the following logging
+channels:
+        </para>
         <itemizedlist>
-          <listitem>
-            <para><literal>openjpa.Tool</literal>: Messages issued by the OpenJPA
-        command line and Ant tools.  Most messages
-        are basic statements detailing which classes or files the 
-        tools are running on.  Detailed output is only available via
-        the logging category the tool belongs to, such as 
-        <literal>openjpa.Enhance</literal> for the enhancer
-        (see <xref linkend="ref_guide_pc_enhance"/>) or
-        <literal>openjpa.MetaData</literal> for the mapping tool
-        (see <xref linkend="ref_guide_mapping_mappingtool"/>).
-        This logging category is provided so that you can
-        get a general idea of what a tool is doing without having to
-        manipulate logging settings that might also affect runtime
-        behavior.
-        </para>
-          </listitem>
-          <listitem>
-            <para><indexterm><primary>configuration</primary><secondary>log messages</secondary></indexterm><literal>openjpa.Configuration</literal>: Messages issued
-        by the configuration framework.
-        </para>
-          </listitem>
-          <listitem>
-            <para><indexterm><primary>enhancement</primary><secondary>log messages</secondary></indexterm><literal>openjpa.Enhance</literal>: Messages pertaining to
-        enhancement and runtime class generation.
-        </para>
-          </listitem>
-          <listitem>
-            <para><indexterm><primary>metadata</primary><secondary>log messages</secondary></indexterm><literal>openjpa.MetaData</literal>: Details about the generation 
-        of metadata and object-relational mappings.
-        </para>
-          </listitem>
-          <listitem>
-            <para><literal>openjpa.Runtime</literal>: General OpenJPA runtime messages.
-        </para>
-          </listitem>
-          <listitem>
-            <para><indexterm><primary>Query</primary><secondary>log messages</secondary></indexterm><literal>openjpa.Query</literal>: Messages about queries.
-        Query strings and any parameter values, if applicable, will be 
-        logged to the <literal>TRACE</literal> level at execution
-        time. Information about possible performance concerns
-        will be logged to the <literal>INFO</literal> level.
-        </para>
-          </listitem>
-          <listitem>
-            <para><indexterm><primary>remote</primary><secondary>log messages</secondary></indexterm><literal>openjpa.Remote</literal>: Remote connection and execution
-        messages.
-        </para>
-          </listitem>
-          <listitem>
-            <para><indexterm><primary>caching</primary><secondary>log messages</secondary></indexterm><literal>openjpa.DataCache</literal>: Messages from the L2 data 
-        cache plugins.
-        </para>
-          </listitem>
-          <listitem>
-            <para><indexterm><primary>JDBC</primary><secondary>log messages</secondary></indexterm><literal>openjpa.jdbc.JDBC</literal>: JDBC connection information.
-        General JDBC information will be logged to the <literal>TRACE
-        </literal> level.  Information about possible performance 
-        concerns will be logged to the <literal>INFO</literal> level.
-        </para>
-          </listitem>
-          <listitem>
-            <para><indexterm><primary>SQL</primary><secondary>log messages</secondary></indexterm><literal>openjpa.jdbc.SQL</literal>: This is the most common 
-        logging channel to use.  Detailed information about the 
-        execution of SQL statements will be sent to the 
-        <literal>TRACE</literal> level.  It is useful to enable this 
-        channel if you are curious about the exact SQL that OpenJPA 
-        issues to the datastore.
-        </para>
-            <para>
-        When using the built-in OpenJPA logging facilities, you can 
-        enable SQL logging by adding <literal>SQL=TRACE</literal> to
-        your <literal>openjpa.Log</literal> property.
-        </para>
-            <para>
-        OpenJPA can optionally reformat the logged SQL to
-        make it easier to read. To enable pretty-printing,
-        add <literal>PrettyPrint=true</literal> to the
-        <link linkend="openjpa.ConnectionFactoryProperties"><literal>
-        openjpa.ConnectionFactoryProperties</literal></link>
-        property. You can control how many columns wide the
-        pretty-printed SQL will be with the 
-        <literal>PrettyPrintLineLength</literal> property. The default 
-        line length is 60 columns.</para>
-            <para>
-        While pretty printing makes things easier to read, it can make 
-        output harder to process with tools like grep.
-        </para>
-            <para>
-        Pretty-printing properties configuration might look like so:
-        </para>
-            <programlisting format="linespecific">
+            <listitem>
+                <para>
+<literal>openjpa.Tool</literal>: Messages issued by the OpenJPA command line
+and Ant tools. Most messages are basic statements detailing which classes or
+files the tools are running on. Detailed output is only available via the
+logging category the tool belongs to, such as <literal>openjpa.Enhance</literal>
+for the enhancer (see <xref linkend="ref_guide_pc_enhance"></xref>) or <literal>
+openjpa.MetaData</literal> for the mapping tool (see
+<xref linkend="ref_guide_mapping_mappingtool"></xref> ). This logging category
+is provided so that you can get a general idea of what a tool is doing without
+having to manipulate logging settings that might also affect runtime behavior.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                <indexterm>
+                    <primary>
+                        configuration
+                    </primary>
+                    <secondary>
+                        log messages
+                    </secondary>
+                </indexterm>
+<literal>openjpa.Configuration</literal>: Messages issued by the configuration
+framework.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                <indexterm>
+                    <primary>
+                        enhancement
+                    </primary>
+                    <secondary>
+                        log messages
+                    </secondary>
+                </indexterm>
+<literal>openjpa.Enhance</literal>: Messages pertaining to enhancement and
+runtime class generation.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                <indexterm>
+                    <primary>
+                        metadata
+                    </primary>
+                    <secondary>
+                        log messages
+                    </secondary>
+                </indexterm>
+<literal>openjpa.MetaData</literal>: Details about the generation of metadata
+and object-relational mappings.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+<literal>openjpa.Runtime</literal>: General OpenJPA runtime messages.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                <indexterm>
+                    <primary>
+                        Query
+                    </primary>
+                    <secondary>
+                        log messages
+                    </secondary>
+                </indexterm>
+<literal>openjpa.Query</literal>: Messages about queries. Query strings and any
+parameter values, if applicable, will be logged to the <literal>TRACE</literal>
+level at execution time. Information about possible performance concerns will be
+logged to the <literal>INFO</literal> level.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                <indexterm>
+                    <primary>
+                        remote
+                    </primary>
+                    <secondary>
+                        log messages
+                    </secondary>
+                </indexterm>
+<literal>openjpa.Remote</literal>: Remote connection and execution messages.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                <indexterm>
+                    <primary>
+                        caching
+                    </primary>
+                    <secondary>
+                        log messages
+                    </secondary>
+                </indexterm>
+<literal>openjpa.DataCache</literal>: Messages from the L2 data cache plugins.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                <indexterm>
+                    <primary>
+                        JDBC
+                    </primary>
+                    <secondary>
+                        log messages
+                    </secondary>
+                </indexterm>
+<literal>openjpa.jdbc.JDBC</literal>: JDBC connection information. General JDBC
+information will be logged to the <literal>TRACE</literal> level. Information
+about possible performance concerns will be logged to the <literal>INFO
+</literal> level.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                <indexterm>
+                    <primary>
+                        SQL
+                    </primary>
+                    <secondary>
+                        log messages
+                    </secondary>
+                </indexterm>
+<literal>openjpa.jdbc.SQL</literal>: This is the most common logging channel to
+use. Detailed information about the execution of SQL statements will be sent to
+the <literal>TRACE</literal> level. It is useful to enable this channel if you
+are curious about the exact SQL that OpenJPA issues to the datastore.
+                </para>
+                <para>
+When using the built-in OpenJPA logging facilities, you can enable SQL logging
+by adding <literal>SQL=TRACE</literal> to your <literal>openjpa.Log</literal>
+property.
+                </para>
+                <para>
+OpenJPA can optionally reformat the logged SQL to make it easier to read. To
+enable pretty-printing, add <literal>PrettyPrint=true</literal> to the
+<link linkend="openjpa.ConnectionFactoryProperties"><literal>
+openjpa.ConnectionFactoryProperties</literal></link> property. You can control
+how many columns wide the pretty-printed SQL will be with the <literal>
+PrettyPrintLineLength</literal> property. The default line length is 60 columns.
+                </para>
+                <para>
+While pretty printing makes things easier to read, it can make output harder to
+process with tools like grep.
+                </para>
+                <para>
+Pretty-printing properties configuration might look like so:
+                </para>
+<programlisting>
 &lt;property name="openjpa.Log" value="SQL=TRACE"/&gt;
 &lt;property name="openjpa.ConnectionFactoryProperties" 
     value="MaxActive=100, PrettyPrint=true, PrettyPrintLineLength=72"/&gt;
 </programlisting>
-          </listitem>
-          <listitem>
-            <para><indexterm><primary>schema</primary><secondary>log messages</secondary></indexterm><literal>openjpa.jdbc.Schema</literal>: Details about operations 
-        on the database schema.
-        </para>
-          </listitem>
+            </listitem>
+            <listitem>
+                <para>
+                <indexterm>
+                    <primary>
+                        schema
+                    </primary>
+                    <secondary>
+                        log messages
+                    </secondary>
+                </indexterm>
+<literal>openjpa.jdbc.Schema</literal>: Details about operations on the
+database schema.
+                </para>
+            </listitem>
         </itemizedlist>
-      </section>
-      <section id="ref_guide_logging_openjpa">
-        <title>OpenJPA Logging</title>
+    </section>
+    <section id="ref_guide_logging_openjpa">
+        <title>
+            OpenJPA Logging
+        </title>
         <indexterm zone="ref_guide_logging_openjpa">
-          <primary>logging</primary>
-          <secondary>default</secondary>
+            <primary>
+                logging
+            </primary>
+            <secondary>
+                default
+            </secondary>
         </indexterm>
         <para>
-    By default, OpenJPA uses a basic logging framework with the following
-    output format:
-    </para>
-        <para><literal>millis</literal><literal>level</literal>  [<literal>thread name</literal>] <literal>channel</literal> - <literal>message</literal></para>
+By default, OpenJPA uses a basic logging framework with the following output
+format:
+        </para>
         <para>
-    For example, when loading an application that uses OpenJPA, a message 
-    like the following will be sent to the <literal>openjpa.Runtime</literal>
-    channel:
-    </para>
-        <programlisting format="linespecific">
+<literal>millis</literal><literal>level</literal> [ <literal>thread name
+</literal> ] <literal>channel</literal> - <literal>message</literal>
+        </para>
+        <para>
+For example, when loading an application that uses OpenJPA, a message like the
+following will be sent to the <literal>openjpa.Runtime</literal> channel:
+        </para>
+<programlisting>
 2107  INFO   [main] openjpa.Runtime - Starting OpenJPA 4.0.0
 </programlisting>
         <para>
-    The default logging system accepts the following parameters:
-    </para>
+The default logging system accepts the following parameters:
+        </para>
         <itemizedlist>
-          <listitem>
-            <para><literal>File</literal>: The name of the file to log to, or
-        <literal>stdout</literal> or <literal>stderr</literal> to send
-        messages to standard out and standard error, respectively.
-        By default, OpenJPA sends log messages to standard error.
-        </para>
-          </listitem>
-          <listitem>
-            <para><literal>DefaultLevel</literal>: The default logging level of
-        unconfigured channels.  Recognized values are <literal>
-        TRACE, DEBUG, INFO, WARN,</literal> and <literal>ERROR
-        </literal>.  Defaults to <literal>INFO</literal>.
-        </para>
-          </listitem>
-          <listitem>
-            <para><literal>DiagnosticContext</literal>: A string that will 
-        be prepended to all log messages.
-        </para>
-          </listitem>
-          <listitem>
-            <para><literal>&lt;channel&gt;</literal>: Using the last token of
-        the <link linkend="ref_guide_logging_channels">logging channel 
-        </link> name, you can configure the log level to
-        use for that channel.  See the examples below.
-        </para>
-          </listitem>
+            <listitem>
+                <para>
+<literal>File</literal>: The name of the file to log to, or <literal>stdout
+</literal> or <literal>stderr</literal> to send messages to standard out and
+standard error, respectively. By default, OpenJPA sends log messages to standard
+error.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+<literal>DefaultLevel</literal>: The default logging level of unconfigured
+channels. Recognized values are <literal> TRACE, DEBUG, INFO, WARN,</literal>
+and <literal>ERROR</literal>. Defaults to <literal>INFO</literal>.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+<literal>DiagnosticContext</literal>: A string that will be prepended to all
+log messages.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+<literal>&lt;channel&gt;</literal>: Using the last token of the
+<link linkend="ref_guide_logging_channels">logging channel</link> name, you can
+configure the log level to use for that channel. See the examples below.
+                </para>
+            </listitem>
         </itemizedlist>
         <example id="ref_guide_logging_openjpa_std_ex">
-          <title>Standard OpenJPA Log Configuration</title>
-          <programlisting format="linespecific">
+            <title>
+                Standard OpenJPA Log Configuration
+            </title>
+<programlisting>
 &lt;property name="openjpa.Log" value="DefaultLevel=WARN, Runtime=INFO, Tool=INFO"/&gt;
 </programlisting>
         </example>
         <example id="ref_guide_logging_openjpa_sql_ex">
-          <title>Standard OpenJPA Log Configuration + All SQL Statements</title>
-          <programlisting format="linespecific">
+            <title>
+                Standard OpenJPA Log Configuration + All SQL Statements
+            </title>
+<programlisting>
 &lt;property name="openjpa.Log" value="DefaultLevel=WARN, Runtime=INFO, Tool=INFO, SQL=TRACE"/&gt;
 </programlisting>
         </example>
         <example id="ref_guide_logging_openjpa_file">
-          <title>Logging to a File</title>
-          <programlisting format="linespecific">
+            <title>
+                Logging to a File
+            </title>
+<programlisting>
 &lt;property name="openjpa.Log" value="File=/tmp/org.apache.openjpa.log, DefaultLevel=WARN, Runtime=INFO, Tool=INFO"/&gt;
 </programlisting>
         </example>
-      </section>
-      <section id="ref_guide_logging_noop">
-        <title>Disabling Logging</title>
+    </section>
+    <section id="ref_guide_logging_noop">
+        <title>
+            Disabling Logging
+        </title>
         <indexterm zone="ref_guide_logging_noop">
-          <primary>logging</primary>
-          <secondary>disabling</secondary>
+            <primary>
+                logging
+            </primary>
+            <secondary>
+                disabling
+            </secondary>
         </indexterm>
         <para>
-    Disabling logging can be useful to analyze performance without
-    any I/O overhead or to reduce verbosity at the console. To do
-    this, set the <literal>openjpa.Log</literal> property
-    to <literal>none</literal>.
-    </para>
+Disabling logging can be useful to analyze performance without any I/O overhead
+or to reduce verbosity at the console. To do this, set the <literal>openjpa.Log
+</literal> property to <literal>none</literal>.
+        </para>
         <para>
-    Disabling logging permanently, however, will cause all warnings
-    to be consumed.  We recommend using one of the
-    more sophisticated mechanisms described in this chapter.
-    </para>
-      </section>
-      <section id="ref_guide_logging_log4j">
-        <title>Log4J</title>
+Disabling logging permanently, however, will cause all warnings to be consumed.
+We recommend using one of the more sophisticated mechanisms described in this
+chapter.
+        </para>
+    </section>
+    <section id="ref_guide_logging_log4j">
+        <title>
+            Log4J
+        </title>
         <indexterm zone="ref_guide_logging_log4j">
-          <primary>logging</primary>
-          <secondary>Log4j</secondary>
+            <primary>
+                logging
+            </primary>
+            <secondary>
+                Log4j
+            </secondary>
         </indexterm>
         <para>
-    When <literal>openjpa.Log</literal> is set
-    to <literal>log4j</literal>, OpenJPA will delegate to Log4J for logging.
-    In a standalone application, Log4J logging levels are
-    controlled by a resource named <filename>log4j.properties</filename>, 
-    which should be available as a top-level resource (either at the top 
-    level of a jar file, or in the root of one of
-    the <literal>CLASSPATH</literal> directories). When deploying to
-    a web or EJB application server, Log4J configuration is often
-    performed in a <filename>log4j.xml</filename> file instead of a
-    properties file. For further details on configuring Log4J,
-    please see the 
-    <ulink url="http://jakarta.apache.org/log4j/docs/manual.html">Log4J
-    Manual</ulink>. We present an example 
-    <filename>log4j.properties</filename> file below.
-    </para>
+When <literal>openjpa.Log</literal> is set to <literal>log4j</literal>, OpenJPA
+will delegate to Log4J for logging. In a standalone application, Log4J logging
+levels are controlled by a resource named <filename>log4j.properties</filename>
+, which should be available as a top-level resource (either at the top level of
+a jar file, or in the root of one of the <literal>CLASSPATH</literal>
+directories). When deploying to a web or EJB application server, Log4J
+configuration is often performed in a <filename>log4j.xml</filename> file
+instead of a properties file. For further details on configuring Log4J, please
+see the <ulink url="http://jakarta.apache.org/log4j/docs/manual.html">Log4J
+Manual</ulink>. We present an example <filename>log4j.properties</filename> file
+below.
+        </para>
         <example id="ref_guide_logging_log4j_ex">
-          <title>Standard Log4J Logging</title>
-          <programlisting format="linespecific">
+            <title>
+                Standard Log4J Logging
+            </title>
+<programlisting>
 log4j.rootCategory=WARN, console
 log4j.category.openjpa.Tool=INFO
 log4j.category.openjpa.Runtime=INFO
@@ -277,61 +381,70 @@ log4j.category.openjpa.jdbc.Schema=WARN
 log4j.appender.console=org.apache.log4j.ConsoleAppender
 </programlisting>
         </example>
-      </section>
-      <section id="ref_guide_logging_commons">
-        <title>Apache Commons Logging</title>
+    </section>
+    <section id="ref_guide_logging_commons">
+        <title>
+            Apache Commons Logging
+        </title>
         <indexterm zone="ref_guide_logging_commons">
-          <primary>logging</primary>
-          <secondary>Apache Commons</secondary>
+            <primary>
+                logging
+            </primary>
+            <secondary>
+                Apache Commons
+            </secondary>
         </indexterm>
         <para>
-    Set the <literal>openjpa.Log</literal> property to <literal>commons
-    </literal> to use the
-    <ulink url="http://jakarta.apache.org/commons/logging.html">
-    Apache Jakarta Commons Logging</ulink> thin library for issuing
-    log messages. The Commons Logging libraries act as a wrapper
-    around a number of popular logging APIs, including the
-    <ulink url="http://jakarta.apache.org/log4j/docs/index.html">
-    Jakarta Log4J</ulink> project, and the native
-    <ulink url="http://java.sun.com/j2se/1.4/docs/api/java/util/logging/package-summary.html">
-    java.util.logging</ulink> package in JDK 1.4.  If neither of these
-    libraries are available, then logging will fall back to using simple 
-    console logging.
-    </para>
+Set the <literal>openjpa.Log</literal> property to <literal>commons</literal> to
+use the <ulink url="http://jakarta.apache.org/commons/logging.html"> Apache
+Jakarta Commons Logging</ulink> thin library for issuing log messages. The
+Commons Logging libraries act as a wrapper around a number of popular logging
+APIs, including the
+<ulink url="http://jakarta.apache.org/log4j/docs/index.html"> Jakarta Log4J
+</ulink> project, and the native
+<ulink url="http://java.sun.com/j2se/1.4/docs/api/java/util/logging/package-summary.html">
+java.util.logging</ulink> package in JDK 1.4. If neither of these libraries are
+available, then logging will fall back to using simple console logging.
+        </para>
         <para>
-    When using the Commons Logging framework in conjunction with
-    Log4J, configuration will be the same as was discussed in the
-    Log4J section above.
-    </para>
+When using the Commons Logging framework in conjunction with Log4J,
+configuration will be the same as was discussed in the Log4J section above.
+        </para>
         <section id="ref_guide_logging_jdk14">
-          <title>JDK 1.4 java.util.logging</title>
-          <indexterm zone="ref_guide_logging_jdk14">
-            <primary>logging</primary>
-            <secondary>JDK 1.4</secondary>
-          </indexterm>
-          <para>
-      When using JDK 1.4 or higher in conjunction with OpenJPA's
-      Commons Logging support, logging will proceed through Java's
-      built-in logging provided by the
-      <ulink url="http://java.sun.com/j2se/1.4/docs/api/java/util/logging/package-summary.html">
-      java.util.logging</ulink> package. For details on
-      configuring the built-in logging system, please see the
-      <ulink url="http://java.sun.com/j2se/1.4/docs/guide/util/logging/overview.html">
-      Java Logging Overview</ulink>.
-      </para>
-          <para>
-      By default, JDK 1.4's logging package looks in
-      the <filename> JAVA_HOME/lib/logging.properties</filename>
-      file for logging configuration. This can be overridden with
-      the <literal> java.util.logging.config.file</literal> system
-      property. For example:
-      </para>
-          <programlisting format="linespecific">
+            <title>
+                JDK 1.4 java.util.logging
+            </title>
+            <indexterm zone="ref_guide_logging_jdk14">
+                <primary>
+                    logging
+                </primary>
+                <secondary>
+                    JDK 1.4
+                </secondary>
+            </indexterm>
+            <para>
+When using JDK 1.4 or higher in conjunction with OpenJPA's Commons Logging
+support, logging will proceed through Java's built-in logging provided by the
+<ulink url="http://java.sun.com/j2se/1.4/docs/api/java/util/logging/package-summary.html">
+java.util.logging</ulink> package. For details on configuring the built-in
+logging system, please see the
+<ulink url="http://java.sun.com/j2se/1.4/docs/guide/util/logging/overview.html">
+Java Logging Overview</ulink>.
+            </para>
+            <para>
+By default, JDK 1.4's logging package looks in the <filename>
+JAVA_HOME/lib/logging.properties</filename> file for logging configuration. This
+can be overridden with the <literal> java.util.logging.config.file</literal>
+system property. For example:
+            </para>
+<programlisting>
 java -Djava.util.logging.config.file=mylogging.properties com.company.MyClass
 </programlisting>
-          <example id="ref_guide_logging_jdk14_propfile">
-            <title>JDK 1.4 Log Properties</title>
-            <programlisting format="linespecific">
+            <example id="ref_guide_logging_jdk14_propfile">
+                <title>
+                    JDK 1.4 Log Properties
+                </title>
+<programlisting>
 # specify the handlers to create in the root logger
 # (all loggers are children of the root logger)
 # the following creates two handlers
@@ -361,30 +474,38 @@ openjpa.jdbc.SQL.level=INFO
 openjpa.jdbc.JDBC.level=INFO
 openjpa.jdbc.Schema.level=INFO
 </programlisting>
-          </example>
+            </example>
         </section>
-      </section>
-      <section id="ref_guide_logging_custom">
-        <title>Custom Log</title>
+    </section>
+    <section id="ref_guide_logging_custom">
+        <title>
+            Custom Log
+        </title>
         <indexterm zone="ref_guide_logging_custom">
-          <primary>logging</primary>
-          <secondary>custom</secondary>
+            <primary>
+                logging
+            </primary>
+            <secondary>
+                custom
+            </secondary>
         </indexterm>
         <para>
-    If none of available logging systems meet your needs, you can configure
-    the logging system with a custom logger.  You might use
-    custom logging to integrate with a proprietary logging framework used 
-    by some applications servers, or for logging to a graphical component 
-    for GUI applications.
-    </para>
+If none of available logging systems meet your needs, you can configure the
+logging system with a custom logger. You might use custom logging to integrate
+with a proprietary logging framework used by some applications servers, or for
+logging to a graphical component for GUI applications.
+        </para>
         <para>
-    A custom logging framework must include an implementation of the
-    <ulink url="../apidocs/org/apache/openjpa/lib/log/LogFactory.html"><classname>org.apache.openjpa.lib.log.LogFactory</classname></ulink> interface.
-    We present a custom <classname>LogFactory</classname> below.
-    </para>
+A custom logging framework must include an implementation of the
+<ulink url="../apidocs/org/apache/openjpa/lib/log/LogFactory.html"><classname>
+org.apache.openjpa.lib.log.LogFactory</classname></ulink> interface. We present
+a custom <classname>LogFactory</classname> below.
+        </para>
         <example id="ref_guide_logging_custom_ex">
-          <title>Custom Logging Class</title>
-          <programlisting format="linespecific">
+            <title>
+                Custom Logging Class
+            </title>
+<programlisting>
 package com.xyz;
 
 import org.apache.openjpa.lib.log.*;
@@ -420,20 +541,20 @@ public class CustomLogFactory
             }
         };
     }
-}</programlisting>
+}
+</programlisting>
         </example>
         <para>
-    To make OpenJPA use your custom log factory, set the 
-    <link linkend="openjpa.Log"><literal>openjpa.Log</literal></link> 
-    configuration property to your factory's full class name.  Because
-    this property is a plugin property (see 
-    <xref linkend="ref_guide_conf_plugins"/>), you can also pass parameters
-    to your factory.  For example, to use the example factory above and
-    set its prefix to "LOG MSG", you would set the 
-    <literal>openjpa.Log</literal> property to the following string:
-    </para>
-        <programlisting format="linespecific">
+To make OpenJPA use your custom log factory, set the
+<link linkend="openjpa.Log"><literal>openjpa.Log</literal></link> configuration
+property to your factory's full class name. Because this property is a plugin
+property (see <xref linkend="ref_guide_conf_plugins"></xref> ), you can also
+pass parameters to your factory. For example, to use the example factory above
+and set its prefix to "LOG MSG", you would set the <literal>openjpa.Log
+</literal> property to the following string:
+        </para>
+<programlisting>
 com.xyz.CustomLogFactory(Prefix="LOG MSG")
 </programlisting>
-      </section>
-    </chapter>
+    </section>
+</chapter>
