@@ -83,7 +83,7 @@
                         <configuration>
                             <descriptor>assembly.xml</descriptor>
                             <finalName>openjpa-${version}</finalName>
-                            <outputDirectory>${project.basedir}/target/filtered-site/resources/downloads</outputDirectory>
+                            <outputDirectory>${project.basedir}/target/assembly</outputDirectory>
                             <workDirectory>target/work</workDirectory>
                         </configuration>
                     </execution>
@@ -96,7 +96,7 @@
                         <configuration>
                             <descriptor>source-assembly.xml</descriptor>
                             <finalName>openjpa-${version}</finalName>
-                            <outputDirectory>${project.basedir}/target/filtered-site/resources/downloads</outputDirectory>
+                            <outputDirectory>${project.basedir}/target/assembly</outputDirectory>
                             <workDirectory>target/work</workDirectory>
                         </configuration>
                     </execution>
