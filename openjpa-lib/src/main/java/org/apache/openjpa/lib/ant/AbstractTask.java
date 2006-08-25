@@ -42,7 +42,7 @@ import org.apache.openjpa.lib.util.Localizer;
  * &lt;/mytask&rt;
  * </code> 
  *
- * The defailt configuration for the system will be used if the
+ * The default configuration for the system will be used if the
  * <code>&lt;config&rt;</code> subtask is excluded.
  *
  * @nojavadoc

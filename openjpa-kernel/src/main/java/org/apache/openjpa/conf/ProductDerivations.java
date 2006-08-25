@@ -36,7 +36,8 @@ public class ProductDerivations {
     private static final ProductDerivation[] _derivations;
 
     static {
-        Class[] pdcls = Services.getImplementorClasses(ProductDerivation.class);
+        Class[] pdcls = Services.getImplementorClasses(ProductDerivation.class,
+          ProductDerivations.class.getClassLoader());
         List derivations = new ArrayList(pdcls.length);
         for (int i = 0; i < pdcls.length; i++) {
             try {
