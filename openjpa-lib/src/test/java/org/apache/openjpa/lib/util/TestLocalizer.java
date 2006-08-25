@@ -44,7 +44,7 @@ public class TestLocalizer extends TestCase {
      * Test getting a string for a class.
      */
     public void testForClass() {
-        assertEquals(Locale.getDefault() == Locale.GERMANY
+        assertEquals(Locale.getDefault().equals(Locale.GERMANY)
             ? "value1_de" : "value1", _locals.get("test.local1"));
     }
 
@@ -63,7 +63,7 @@ public class TestLocalizer extends TestCase {
     public void testFallbackLocale() {
         Localizer locl = Localizer.forPackage(LocalizerTestHelper.class,
             Locale.FRANCE);
-        assertEquals(Locale.getDefault() == Locale.GERMANY
+        assertEquals(Locale.getDefault().equals(Locale.GERMANY)
             ? "value1_de" : "value1", locl.get("test.local1"));
     }
 
@@ -80,7 +80,7 @@ public class TestLocalizer extends TestCase {
      * Test that the message formatting works correctly.
      */
     public void testMessageFormat() {
-        String suffix = Locale.getDefault() == Locale.GERMANY ? "_de" : "";
+        String suffix = Locale.getDefault().equals(Locale.GERMANY) ? "_de" : "";
 
         assertEquals("value2" + suffix + " x sep y", _locals.get("test.local2",
             new String[]{ "x", "y" }));
