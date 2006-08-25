@@ -1,10 +1,10 @@
 /*
  * Copyright 2006 The Apache Software Foundation.
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  http://www.apache.org/licenses/LICENSE-2.0
- *  Unless required by applicable law or agreed to in writing, software
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -37,14 +37,16 @@ public class TestLocalizer extends TestCase {
     }
 
     public void setUp() {
-        _locals = Localizer.forPackage(LocalizerTestHelper.class);
+        _locals = Localizer.forPackage(LocalizerTestHelper.class,
+            Locale.GERMANY);
     }
 
     /**
      * Test getting a string for a class.
      */
     public void testForClass() {
-        assertEquals("value1", _locals.get("test.local1"));
+        assertEquals(Locale.getDefault() == Locale.GERMANY
+            ? "value1_de" : "value1", _locals.get("test.local1"));
     }
 
     /**
@@ -62,7 +64,8 @@ public class TestLocalizer extends TestCase {
     public void testFallbackLocale() {
         Localizer locl = Localizer.forPackage(LocalizerTestHelper.class,
             Locale.FRANCE);
-        assertEquals("value1", locl.get("test.local1"));
+        assertEquals(Locale.getDefault() == Locale.GERMANY
+            ? "value1_de" : "value1", locl.get("test.local1"));
     }
 
     /**
@@ -78,11 +81,14 @@ public class TestLocalizer extends TestCase {
      * Test that the message formatting works correctly.
      */
     public void testMessageFormat() {
-        assertEquals("value2 x sep y", _locals.get("test.local2",
+        String suffix = Locale.getDefault() == Locale.GERMANY ? "_de" : "";
+
+        assertEquals("value2" + suffix + " x sep y", _locals.get("test.local2",
             new String[]{ "x", "y" }));
 
         // test that it treates single objects as single-element arrays
-        assertEquals("value2 x sep {1}", _locals.get("test.local2", "x"));
+        assertEquals("value2" + suffix + " x sep {1}",
+            _locals.get("test.local2", "x"));
     }
 
     /**
