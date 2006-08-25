@@ -2616,8 +2616,9 @@ public class PCEnhancer {
     public AuxiliaryEnhancer[] getAuxiliaryEnhancers() {
 		if (_auxEnhancers == null) {
 		    try {
-                Class[] classes = Services.getImplementorClasses
-                    (AuxiliaryEnhancer.class, getClass().getClassLoader());
+                Class[] classes = Services.getImplementorClasses(
+                    AuxiliaryEnhancer.class, 
+                    AuxiliaryEnhancer.class.getClassLoader());
                 _auxEnhancers = new AuxiliaryEnhancer[classes.length];
                 for (int i = 0; i < _auxEnhancers.length; i++)
                     _auxEnhancers[i] = (AuxiliaryEnhancer) classes[i].

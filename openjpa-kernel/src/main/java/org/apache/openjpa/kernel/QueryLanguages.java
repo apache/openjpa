@@ -34,7 +34,7 @@ public class QueryLanguages {
     static {
         // Load and cache all the query languages available in the system.
         Class[] classes = Services.getImplementorClasses(
-            ExpressionParser.class, QueryLanguages.class.getClassLoader());
+            ExpressionParser.class, ExpressionParser.class.getClassLoader());
         for (int i = 0; i < classes.length; i++) {
             ExpressionParser ep;
             try {

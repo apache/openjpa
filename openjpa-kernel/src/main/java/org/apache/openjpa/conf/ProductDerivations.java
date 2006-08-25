@@ -37,13 +37,14 @@ public class ProductDerivations {
 
     static {
         Class[] pdcls = Services.getImplementorClasses(ProductDerivation.class,
-          ProductDerivations.class.getClassLoader());
+          ProductDerivation.class.getClassLoader());
         List derivations = new ArrayList(pdcls.length);
         for (int i = 0; i < pdcls.length; i++) {
             try {
                 derivations.add(pdcls[i].newInstance());
             } catch (Throwable t) {
                 // invalid service
+                t.printStackTrace();
             }
         }
 
