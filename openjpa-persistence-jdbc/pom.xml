@@ -5,8 +5,8 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-persistence-jdbc</artifactId>
     <packaging>jar</packaging>
-    <name>JPA JDBC</name>
-    <description>JPA JDBC</description>
+    <name>OpenJPA JPA JDBC</name>
+    <description>OpenJPA JPA JDBC</description>
     <url>http://incubator.apache.org/projects/openjpa</url>
     <parent>
         <groupId>org.apache.openjpa</groupId>

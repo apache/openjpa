@@ -5,8 +5,8 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-kernel-4</artifactId>
     <packaging>jar</packaging>
-    <name>Kernel 1.4</name>
-    <description>Kernel 1.4</description>
+    <name>OpenJPA Kernel 1.4</name>
+    <description>OpenJPA Kernel 1.4</description>
     <url>http://incubator.apache.org/projects/openjpa</url>
     <parent>
         <groupId>org.apache.openjpa</groupId>

@@ -5,8 +5,8 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-xmlstore</artifactId>
     <packaging>jar</packaging>
-    <name>XML Store</name>
-    <description>XML Store for OpenJPA</description>
+    <name>OpenJPA XML Store</name>
+    <description>OpenJPA XML Store</description>
     <url>http://incubator.apache.org/projects/openjpa</url>
     <parent>
         <groupId>org.apache.openjpa</groupId>
