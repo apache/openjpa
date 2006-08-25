@@ -5,8 +5,8 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-jdbc-5</artifactId>
     <packaging>jar</packaging>
-    <name>JDBC 1.5</name>
-    <description>JDBC 1.5</description>
+    <name>OpenJPA JDBC 1.5</name>
+    <description>OpenJPA JDBC 1.5</description>
     <url>http://incubator.apache.org/projects/openjpa</url>
     <parent>
         <groupId>org.apache.openjpa</groupId>

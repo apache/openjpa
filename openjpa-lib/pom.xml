@@ -5,8 +5,8 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-lib</artifactId>
     <packaging>jar</packaging>
-    <name>Utilities</name>
-    <description>Utilities</description>
+    <name>OpenJPA Utilities</name>
+    <description>OpenJPA Utilities</description>
     <url>http://incubator.apache.org/projects/openjpa</url>
     <parent>
         <groupId>org.apache.openjpa</groupId>
