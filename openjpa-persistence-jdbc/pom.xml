@@ -62,22 +62,24 @@
                         <phase>test-compile</phase>
                         <configuration>
                             <tasks>
-                                <path id="enhance.path.ref">
-                                    <fileset dir="${project.build.testOutputDirectory}">
-                                        <include name="**/*.class"/>
-                                    </fileset>
-                                </path>
-                                <pathconvert property="enhance.files"
-                                             refid="enhance.path.ref"
-                                             pathsep=" "/>
-                                <java classname="org.apache.openjpa.enhance.PCEnhancer">
-                                    <arg line="${enhance.files}"/>
-                                    <classpath>
+								<taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask">
+									<classpath>
+	                                    <path refid="maven.dependency.classpath"/>
+    	                                <path refid="maven.compile.classpath"/>
+        	                            <path refid="maven.test.classpath"/>
+									</classpath>
+								</taskdef>
+                                <fileset id="enhance.path.ref" dir="${project.build.testOutputDirectory}">
+                                    <include name="**/*.class"/>
+                                </fileset>
+								<openjpac>
+									<classpath>
                                         <path refid="maven.dependency.classpath"/>
                                         <path refid="maven.compile.classpath"/>
                                         <path refid="maven.test.classpath"/>
-                                    </classpath>
-                                </java>
+									</classpath>
+									<fileset refid="enhance.path.ref"/>
+								</openjpac>
                             </tasks>
                         </configuration>
                         <goals>
