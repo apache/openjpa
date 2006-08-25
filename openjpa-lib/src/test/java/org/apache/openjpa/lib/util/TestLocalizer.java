@@ -37,8 +37,7 @@ public class TestLocalizer extends TestCase {
     }
 
     public void setUp() {
-        _locals = Localizer.forPackage(LocalizerTestHelper.class,
-            Locale.GERMANY);
+        _locals = Localizer.forPackage(LocalizerTestHelper.class);
     }
 
     /**
