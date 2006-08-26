@@ -16,7 +16,7 @@
         Changing this version needs to also be done in all children poms
         See: http://jira.codehaus.org/browse/MNG-624
     -->
-    <version>0.9.0-SNAPSHOT</version>
+    <version>0.9.0-incubating-SNAPSHOT</version>
     <url>http://incubator.apache.org/projects/openjpa</url>
     <issueManagement>
         <system>jira</system>
