@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa</artifactId>
-        <version>0.9.0-SNAPSHOT</version>
+        <version>0.9.0-incubating-SNAPSHOT</version>
     </parent>
     <build>
         <!-- needed to let maven pass the "compile" phase -->
