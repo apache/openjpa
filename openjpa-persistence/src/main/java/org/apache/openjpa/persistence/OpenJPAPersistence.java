@@ -144,7 +144,10 @@ public class OpenJPAPersistence
      * Return the OpenJPA facade to the given entity manager.
      */
     public static OpenJPAEntityManager cast(EntityManager em) {
-        return (OpenJPAEntityManager) em;
+        if (em instanceof OpenJPAEntityManager)
+            return (OpenJPAEntityManager) em;
+        else
+            return (OpenJPAEntityManager) em.getDelegate();
     }
 
     /**
