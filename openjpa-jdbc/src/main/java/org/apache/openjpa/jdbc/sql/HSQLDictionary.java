@@ -213,16 +213,6 @@ public class HSQLDictionary
         return cols;
     }
 
-    public void setLong(PreparedStatement stmnt, int idx, long val, Column col)
-        throws SQLException {
-        if (val == Long.MIN_VALUE) {
-            val = Long.MIN_VALUE + 1;
-            storageWarning(Numbers.valueOf(Long.MIN_VALUE),
-                Numbers.valueOf(val));
-        }
-        super.setLong(stmnt, idx, val, col);
-    }
-
     public void setBigDecimal(PreparedStatement stmnt, int idx, BigDecimal val,
         Column col)
         throws SQLException {
