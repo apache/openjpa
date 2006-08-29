@@ -185,7 +185,7 @@ public class EntityManagerFactoryImpl
             prop = (String) entry.getKey();
             if (!prop.startsWith("openjpa."))
                 continue;
-            prop = prop.substring(5);
+            prop = prop.substring("openjpa.".length());
             try {
                 setter = ImplHelper.getSetter(em.getClass(), prop);
             } catch (OpenJPAException ke) {
