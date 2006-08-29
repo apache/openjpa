@@ -62,22 +62,21 @@
                         <phase>test-compile</phase>
                         <configuration>
                             <tasks>
-								<taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask">
-									<classpath>
-	                                    <path refid="maven.dependency.classpath"/>
-    	                                <path refid="maven.compile.classpath"/>
-        	                            <path refid="maven.test.classpath"/>
-									</classpath>
+                                <path id="cp">
+                                    <path refid="maven.test.classpath"/>
+                                    <path refid="maven.compile.classpath"/>
+                                    <path refid="maven.dependency.classpath"/>
+                                </path>
+								<taskdef name="openjpac" classname=
+                                    "org.apache.openjpa.ant.PCEnhancerTask">
+									<classpath refid="cp"/>
 								</taskdef>
-                                <fileset id="enhance.path.ref" dir="${project.build.testOutputDirectory}">
+                                <fileset id="enhance.path.ref"
+                                    dir="${project.build.testOutputDirectory}">
                                     <include name="**/*.class"/>
                                 </fileset>
 								<openjpac>
-									<classpath>
-                                        <path refid="maven.dependency.classpath"/>
-                                        <path refid="maven.compile.classpath"/>
-                                        <path refid="maven.test.classpath"/>
-									</classpath>
+									<classpath refid="cp"/>
 									<fileset refid="enhance.path.ref"/>
 								</openjpac>
                             </tasks>
