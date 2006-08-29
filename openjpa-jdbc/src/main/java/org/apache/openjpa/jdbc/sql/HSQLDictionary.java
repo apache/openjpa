@@ -77,6 +77,7 @@ public class HSQLDictionary
 
         useGetObjectForBlobs = true;
         blobTypeName = "VARBINARY";
+        doubleTypeName = "NUMERIC";
 
         supportsNullTableForGetPrimaryKeys = true;
         supportsNullTableForGetIndexInfo = true;
