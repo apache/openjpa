@@ -25,7 +25,7 @@ import java.util.Map;
  * configurations compare equal.
  *
  * @nojavadoc
- * @since 4.0.0
+ * @since 0.4.0.0
  */
 public interface ConfigurationProvider {
 

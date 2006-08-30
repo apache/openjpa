@@ -39,7 +39,7 @@ import org.apache.openjpa.util.MetaDataException;
  * Standalone {@link ValueMapping} implementation.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public class ValueMappingImpl
     extends ValueMetaDataImpl

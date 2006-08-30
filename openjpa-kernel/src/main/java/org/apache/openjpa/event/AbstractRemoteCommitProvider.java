@@ -28,7 +28,7 @@ import org.apache.openjpa.lib.util.Localizer;
  * to the event manager and log.
  *
  * @author Patrick Linskey
- * @since 2.5.0
+ * @since 0.2.5.0
  */
 public abstract class AbstractRemoteCommitProvider
     implements RemoteCommitProvider, Configurable {

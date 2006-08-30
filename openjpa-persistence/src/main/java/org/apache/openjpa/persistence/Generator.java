@@ -24,7 +24,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  * Represents a store sequence.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  * @published
  */
 public class Generator {

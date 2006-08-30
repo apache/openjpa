@@ -1783,7 +1783,7 @@ public class BrokerImpl
      *
      * @param reason one of {@link #FLUSH_INC}, {@link #FLUSH_COMMIT},
      * {@link #FLUSH_ROLLBACK}, or {@link #FLUSH_LOGICAL}
-     * @since 2.5
+     * @since 0.2.5
      */
     protected void flush(int reason) {
         // this will enlist proxied states as necessary so we know whether we

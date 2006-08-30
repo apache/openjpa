@@ -29,7 +29,7 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  * Delegating broker factory that can also perform exception translation
  * for use in facades.
  *
- * @since 4.0
+ * @since 0.4.0
  * @author Abe White
  * @nojavadoc
  */

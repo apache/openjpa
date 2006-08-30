@@ -21,7 +21,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
  * Constants for determining when to flush before queries.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public interface QueryFlushModes {
 

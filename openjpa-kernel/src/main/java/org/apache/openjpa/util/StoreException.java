@@ -21,7 +21,7 @@ import org.apache.openjpa.lib.util.Localizer.Message;
  * Base exception for data store errors.
  *
  * @author Marc Prud'hommeaux
- * @since 2.5
+ * @since 0.2.5
  */
 public class StoreException
     extends OpenJPAException {

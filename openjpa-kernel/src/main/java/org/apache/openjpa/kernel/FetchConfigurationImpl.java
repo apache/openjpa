@@ -47,7 +47,7 @@ import org.apache.openjpa.util.UserException;
  * Allows configuration and optimization of how objects are loaded from
  * the data store.
  *
- * @since 3.0
+ * @since 0.3.0
  * @author Abe White
  * @author Pinaki Poddar
  * @nojavadoc

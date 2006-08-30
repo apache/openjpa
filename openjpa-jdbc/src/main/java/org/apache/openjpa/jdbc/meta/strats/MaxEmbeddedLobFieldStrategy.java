@@ -39,7 +39,7 @@ import org.apache.openjpa.meta.JavaTypes;
  * Base class for LOBs on databases that limit the max embedded LOB size.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 abstract class MaxEmbeddedLobFieldStrategy
     extends AbstractFieldStrategy {

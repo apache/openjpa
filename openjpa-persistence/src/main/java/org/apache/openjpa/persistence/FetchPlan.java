@@ -30,7 +30,7 @@ import org.apache.openjpa.meta.FetchGroup;
  * configuration and other aspects of data loading.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  * @published
  */
 public class FetchPlan {

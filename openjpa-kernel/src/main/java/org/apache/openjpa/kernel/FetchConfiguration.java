@@ -27,7 +27,7 @@ import org.apache.openjpa.meta.FieldMetaData;
  * Allows configuration and optimization of how objects are loaded from
  * the data store.
  *
- * @since 3.0
+ * @since 0.3.0
  * @author Abe White
  * @author Pinaki Poddar
  */
@@ -213,7 +213,7 @@ public interface FetchConfiguration
      * The number of milliseconds to wait for an object lock, or -1 for no
      * limit.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public int getLockTimeout();
 
@@ -221,35 +221,35 @@ public interface FetchConfiguration
      * The number of milliseconds to wait for an object lock, or -1 for no
      * limit.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public FetchConfiguration setLockTimeout(int timeout);
 
     /**
      * The lock level to use for locking loaded objects.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public int getReadLockLevel();
 
     /**
      * The lock level to use for locking loaded objects.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public FetchConfiguration setReadLockLevel(int level);
 
     /**
      * The lock level to use for locking dirtied objects.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public int getWriteLockLevel();
 
     /**
      * The lock level to use for locking dirtied objects.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public FetchConfiguration setWriteLockLevel(int level);
 
@@ -264,7 +264,7 @@ public interface FetchConfiguration
      *
      * @param name the name of the hint
      * @param value the value of the hint
-     * @since 4.0
+     * @since 0.4.0
      */
     public void setHint(String name, Object value);
 
@@ -273,7 +273,7 @@ public interface FetchConfiguration
      * is not specified.
      *
 	 * @param name the hint name
-	 * @since 4.0
+	 * @since 0.4.0
 	 */
 	public Object getHint (String name);
 
@@ -311,7 +311,7 @@ public interface FetchConfiguration
      * Affirms if the given field requires to be fetched in the context
      * of current fetch operation.
      *
-     * @since 4.1
+     * @since 0.4.1
      */
     public boolean requiresFetch(FieldMetaData fm);
     
@@ -320,7 +320,7 @@ public interface FetchConfiguration
      * state.
      * 
      * @return a new configuration state resulting out of traversal
-     * @since 4.1
+     * @since 0.4.1
      */
     public FetchConfiguration traverse(FieldMetaData fm);
 }

@@ -26,7 +26,7 @@ import serp.util.Numbers;
  * Strategies for persistent value generation.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public class ValueStrategies {
 

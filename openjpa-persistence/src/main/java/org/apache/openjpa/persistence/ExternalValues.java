@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * <code>&lt;field value&gt;=&lt;datastore value&gt;</code>
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 @Target({ METHOD, FIELD })
 @Retention(RUNTIME)

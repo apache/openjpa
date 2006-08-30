@@ -67,7 +67,7 @@ public interface OpenJPAStateManager
      *
      * @param forType the type for which to create a new instance
      * @param state the initial state to which to set the instance
-     * @since 3.1.2
+     * @since 0.3.1.2
      */
     public void initialize(Class forType, PCState state);
 
@@ -390,7 +390,7 @@ public interface OpenJPAStateManager
      * Return the value of the field at the specified index as of the
      * beginning of the transaction.
      *
-     * @since 3.1.1
+     * @since 0.3.1.1
      */
     public Object fetchInitialField(int field);
 
@@ -482,11 +482,11 @@ public interface OpenJPAStateManager
      * current value. This method is invoked by the remote package to
      * synch a server-side state manager with remote changes. We do not
      * need to delete dependent instances because they will have been
-	 * deleted when the field changed on the client side, and those
-	 * client-side deletes will be transmitted independently.
-	 *
-	 * @since	3.1
-	 */
-	public void setRemote (int field, Object value);
+     * deleted when the field changed on the client side, and those
+     * client-side deletes will be transmitted independently.
+     *
+     * @since 0.3.1
+     */
+    public void setRemote (int field, Object value);
 }
 

@@ -26,7 +26,7 @@ import org.apache.openjpa.util.CacheMap;
  * return a cached instance if that instance is being transferred between
  * internal datastructures.
  *
- * @since 4.0
+ * @since 0.4.0
  */
 public class ConcurrentDataCache
     extends AbstractDataCache

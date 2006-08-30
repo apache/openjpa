@@ -32,7 +32,7 @@ import org.apache.openjpa.util.InternalException;
  *
  * @author Abe White
  * @nojavadoc
- * @since 4.0
+ * @since 0.4.0
  */
 public class ObjectIdValueHandler
     extends EmbedValueHandler {

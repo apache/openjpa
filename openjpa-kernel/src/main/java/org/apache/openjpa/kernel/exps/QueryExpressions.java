@@ -29,7 +29,7 @@ import org.apache.openjpa.meta.FieldMetaData;
  * Struct to hold the state of a parsed expression query.
  *
  * @author Abe White
- * @since 3.2
+ * @since 0.3.2
  * @nojavadoc
  */
 public class QueryExpressions {

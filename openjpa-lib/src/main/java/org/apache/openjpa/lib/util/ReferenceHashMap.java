@@ -25,7 +25,7 @@ import java.lang.ref.Reference;
  *
  * @author Abe White
  * @nojavadoc
- * @since 4.0
+ * @since 0.4.0
  */
 public class ReferenceHashMap
     extends org.apache.commons.collections.map.ReferenceMap

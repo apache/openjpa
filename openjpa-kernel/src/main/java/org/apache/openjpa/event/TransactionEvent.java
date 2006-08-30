@@ -25,7 +25,7 @@ import org.apache.openjpa.kernel.Broker;
  * A transactional event. The event source is the {@link Broker} whose
  * transaction state changed.
  *
- * @since 3.0
+ * @since 0.3.0
  * @author Abe White
  */
 public class TransactionEvent

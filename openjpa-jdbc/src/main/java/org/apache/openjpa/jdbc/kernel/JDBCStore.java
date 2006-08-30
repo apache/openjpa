@@ -31,7 +31,7 @@ import org.apache.openjpa.util.Id;
  * Represents the JDBC store.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public interface JDBCStore {
 

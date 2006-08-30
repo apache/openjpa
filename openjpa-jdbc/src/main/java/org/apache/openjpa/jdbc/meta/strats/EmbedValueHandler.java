@@ -33,7 +33,7 @@ import org.apache.openjpa.util.MetaDataException;
  * Base class for embedded value handlers.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public abstract class EmbedValueHandler
     extends AbstractValueHandler {

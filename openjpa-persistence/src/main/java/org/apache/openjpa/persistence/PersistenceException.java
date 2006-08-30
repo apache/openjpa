@@ -29,7 +29,7 @@ import org.apache.openjpa.util.Exceptions;
  * General persistence exception.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  * @nojavadoc
  */
 public class PersistenceException

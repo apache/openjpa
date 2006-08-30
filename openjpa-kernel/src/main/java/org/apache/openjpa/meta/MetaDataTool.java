@@ -38,7 +38,7 @@ import org.apache.openjpa.util.MetaDataException;
 /**
  * Tool for generating default metadata.
  *
- * @since 3.0
+ * @since 0.3.0
  * @author Abe White
  */
 public class MetaDataTool

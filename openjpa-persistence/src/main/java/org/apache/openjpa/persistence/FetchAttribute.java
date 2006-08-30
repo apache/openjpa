@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
  * Includes a persistent attribute in a {@link FetchGroup}.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 @Target({})
 @Retention(RUNTIME)

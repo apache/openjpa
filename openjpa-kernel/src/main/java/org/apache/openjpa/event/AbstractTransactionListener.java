@@ -20,7 +20,7 @@ package org.apache.openjpa.event;
  * that provides no-op implementations of all methods.
  *
  * @author Abe White
- * @since 3.0
+ * @since 0.3.0
  */
 public abstract class AbstractTransactionListener
     implements TransactionListener {

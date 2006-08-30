@@ -52,7 +52,7 @@ import org.xml.sax.SAXException;
  * a named one).
  *
  * @nojavadoc
- * @since 4.0.0
+ * @since 0.4.0.0
  */
 public class ConfigurationProviderImpl
     extends MapConfigurationProvider {

@@ -52,7 +52,7 @@ import serp.bytecode.LookupSwitchInstruction;
  *
  * @author Steve Kim
  * @nojavadoc
- * @since 3.2
+ * @since 0.3.2
  */
 public class PCDataGenerator
     extends DynamicStorageGenerator {

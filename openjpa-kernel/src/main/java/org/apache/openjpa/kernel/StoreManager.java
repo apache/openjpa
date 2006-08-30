@@ -77,7 +77,7 @@ public interface StoreManager
      * On commit, an exception must be thrown on any attempt to overwrite
      * data for an instance with an older version.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public void begin();
 
@@ -218,7 +218,7 @@ public interface StoreManager
      * lifecycle state. The store manager is not required to do anything in
      * this method, but some back ends may need to.
      *
-     * @since 3.0
+     * @since 0.3.0
      */
     public void beforeStateChange(OpenJPAStateManager sm, PCState fromState,
         PCState toState);
@@ -259,7 +259,7 @@ public interface StoreManager
      * @see org.apache.openjpa.util.ImplHelper#generateFieldValue
      * @see org.apache.openjpa.util.ImplHelper#generateIdentityValue
      * @see org.apache.openjpa.util.ApplicationIds#assign()
-     * @since 3.3
+     * @since 0.3.3
      */
     public boolean assignObjectId(OpenJPAStateManager sm, boolean preFlush);
 
@@ -274,7 +274,7 @@ public interface StoreManager
      * system as part of pre-flush activities, and can
      * be ignored if it is more efficient to assign within {@link #flush}
      * @see org.apache.openjpa.util.ImplHelper#generateFieldValue
-     * @since 4.0
+     * @since 0.4.0
      */
     public boolean assignField(OpenJPAStateManager sm, int field,
         boolean preFlush);
@@ -283,7 +283,7 @@ public interface StoreManager
      * Return the persistent class for the given data store identity value.
      * If the given value is not a datastore identity object, return null.
      *
-     * @since 3.0
+     * @since 0.3.0
      */
     public Class getManagedType(Object oid);
 
@@ -333,7 +333,7 @@ public interface StoreManager
      * Cancel all pending data store statements.
      *
      * @return true if any statements cancelled, false otherwise
-     * @since 3.1
+     * @since 0.3.1
      */
     public boolean cancelAll();
 
@@ -395,7 +395,7 @@ public interface StoreManager
      * If the identity strategy cannot be represented as a sequence, return
      * null.
      *
-     * @since 4.0
+     * @since 0.4.0
      */
     public Seq getDataStoreIdSequence(ClassMetaData forClass);
 
@@ -410,14 +410,14 @@ public interface StoreManager
      * </ul> If the value strategy cannot be represented as a sequence, return
      * null.
      *
-     * @since 4.0
+     * @since 0.4.0
      */
     public Seq getValueSequence(FieldMetaData forField);
 
     /**
      * Free any resources this store manager is using.
-	 *
-	 * @since	2.5
-	 */
-	public void close ();
+     *
+     * @since 0.2.5
+     */
+    public void close ();
 }

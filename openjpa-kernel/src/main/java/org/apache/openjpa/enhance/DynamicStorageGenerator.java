@@ -38,7 +38,7 @@ import serp.bytecode.TableSwitchInstruction;
  *
  * @author Steve Kim
  * @nojavadoc
- * @since 3.2.0
+ * @since 0.3.2.0
  */
 public class DynamicStorageGenerator {
 

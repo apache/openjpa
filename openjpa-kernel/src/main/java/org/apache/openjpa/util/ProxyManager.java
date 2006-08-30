@@ -79,7 +79,7 @@ public interface ProxyManager {
      * If the given owner is non-null, the returned value should be a proxy
      * for the given owner, otherwise it should not be a proxy.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public Object copyCustom(Object orig);
 
@@ -113,7 +113,7 @@ public interface ProxyManager {
      * Return a proxy for the given object, or null if this manager cannot
      * proxy the object.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public Proxy newCustomProxy (Object obj);
 }

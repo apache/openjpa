@@ -26,7 +26,7 @@ import org.apache.openjpa.meta.ValueMetaData;
  * Log a message when an orphaned key is discovered.
  *
  * @author Abe White
- * @since 3.2.2
+ * @since 0.3.2.2
  */
 public class LogOrphanedKeyAction
     implements OrphanedKeyAction {

@@ -33,7 +33,7 @@ import org.apache.openjpa.util.OpenJPAException;
  * Metadata about a named sequence.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public class SequenceMetaData
     implements SourceTracker, MetaDataContext, Closeable, Commentable {

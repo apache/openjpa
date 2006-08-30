@@ -20,7 +20,7 @@ package org.apache.openjpa.event;
  *
  * @author Patrick Linskey
  * @author Abe White
- * @since 2.5.0
+ * @since 0.2.5.0
  */
 public interface FlushTransactionListener {
 

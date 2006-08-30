@@ -19,7 +19,7 @@ package org.apache.openjpa.persistence.jdbc;
  * Type of fetching to employ.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public enum EagerFetchType {
 

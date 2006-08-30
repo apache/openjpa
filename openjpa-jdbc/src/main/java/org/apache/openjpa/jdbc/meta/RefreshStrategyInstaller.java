@@ -24,7 +24,7 @@ import org.apache.openjpa.util.MetaDataException;
  *
  * @author Abe White
  * @nojavadoc
- * @since 4.0
+ * @since 0.4.0
  */
 public class RefreshStrategyInstaller
     extends StrategyInstaller {

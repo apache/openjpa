@@ -43,7 +43,7 @@ import org.apache.openjpa.util.MetaDataException;
  * Direct mapping from a primitive value to a column.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public class PrimitiveFieldStrategy
     extends AbstractFieldStrategy

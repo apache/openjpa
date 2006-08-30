@@ -19,7 +19,7 @@ package org.apache.openjpa.persistence;
  * Action to take when a field's value is changed.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public enum UpdateAction {
 

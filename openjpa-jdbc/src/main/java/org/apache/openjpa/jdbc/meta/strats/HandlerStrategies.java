@@ -37,7 +37,7 @@ import org.apache.openjpa.util.InvalidStateException;
  * Utility methods for strategies using value handlers.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public class HandlerStrategies {
 

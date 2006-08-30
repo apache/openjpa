@@ -19,7 +19,7 @@ package org.apache.openjpa.event;
  * Callback handling constants.
  *
  * @author Steve Kim
- * @since 4.0
+ * @since 0.4.0
  */
 public interface CallbackModes {
 

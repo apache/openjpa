@@ -25,7 +25,7 @@ import org.apache.openjpa.meta.ValueMetaData;
 /**
  * Represents a set of managed objects and their environment.
  *
- * @since 4.0
+ * @since 0.4.0
  * @author Abe White
  */
 public interface StoreContext {
@@ -209,7 +209,7 @@ public interface StoreContext {
      * Return the set of classes that have been made persistent in the current
      * transaction.
      *
-     * @since 3.4
+     * @since 0.3.4
      */
     public Collection getPersistedTypes();
 
@@ -217,7 +217,7 @@ public interface StoreContext {
      * Return the set of classes that have been deleted in the current
      * transaction.
      *
-     * @since 3.4
+     * @since 0.3.4
      */
     public Collection getDeletedTypes();
 
@@ -225,7 +225,7 @@ public interface StoreContext {
      * Return the set of classes for objects that have been modified
      * in the current transaction.
      *
-     * @since 3.4
+     * @since 0.3.4
      */
     public Collection getUpdatedTypes();
 
@@ -356,7 +356,7 @@ public interface StoreContext {
      * Whether objects accessed during this transaction will be added to the
      * store cache. Defaults to true.
      *
-     * @since 3.4
+     * @since 0.3.4
      */
     public boolean getPopulateDataCache();
 
@@ -364,7 +364,7 @@ public interface StoreContext {
      * Whether to populate the store cache with objects used by this
      * transaction. Defaults to true.
      *
-     * @since 3.4
+     * @since 0.3.4
      */
     public void setPopulateDataCache(boolean cache);
 
@@ -372,7 +372,7 @@ public interface StoreContext {
      * Whether memory usage is reduced during this transaction at the expense
      * of possibly more aggressive data cache evictions.
      *
-     * @since 3.4
+     * @since 0.3.4
      */
     public boolean isLargeTransaction();
 
@@ -386,7 +386,7 @@ public interface StoreContext {
      * mode is that smaller update messages can be used for
      * {@link org.apache.openjpa.event.RemoteCommitEvent}s. Defaults to false.
      *
-     * @since 3.4
+     * @since 0.3.4
      */
     public void setLargeTransaction(boolean largeTransaction);
 

@@ -25,7 +25,7 @@ import org.apache.openjpa.jdbc.meta.strats.NoneVersionStrategy;
  *
  * @author Abe White
  * @nojavadoc
- * @since 4.0
+ * @since 0.4.0
  */
 public class NoneStrategyInstaller
     extends StrategyInstaller {

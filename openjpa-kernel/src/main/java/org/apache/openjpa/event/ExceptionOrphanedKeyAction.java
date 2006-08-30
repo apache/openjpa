@@ -24,7 +24,7 @@ import org.apache.openjpa.util.ObjectNotFoundException;
  * Throw a {@link ObjectNotFoundException} when an orphaned key is discovered.
  *
  * @author Abe White
- * @since 3.2.2
+ * @since 0.3.2.2
  */
 public class ExceptionOrphanedKeyAction
     implements OrphanedKeyAction {

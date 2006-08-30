@@ -27,7 +27,7 @@ import javax.persistence.FetchType;
  * Metadata annotation for a persistent collection field.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 @Target({ METHOD, FIELD })
 @Retention(RUNTIME)

@@ -30,7 +30,7 @@ import org.apache.openjpa.lib.util.Localizer.Message;
  * define their own exception types.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public abstract class OpenJPAException
     extends RuntimeException

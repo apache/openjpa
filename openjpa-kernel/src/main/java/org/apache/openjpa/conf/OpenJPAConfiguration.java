@@ -294,49 +294,49 @@ public interface OpenJPAConfiguration
      * manager has been set/created, all changes to caching configuration
      * must proceed through the cache manager.
      *
-     * @since 3.0
+     * @since 0.3.0
      */
     public DataCacheManager getDataCacheManagerInstance();
 
     /**
      * The data cache manager manages this configuration's cache instances.
      *
-     * @since 3.0
+     * @since 0.3.0
      */
     public void setDataCacheManager(DataCacheManager manager);
 
     /**
      * Default data cache timeout.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public int getDataCacheTimeout();
 
     /**
      * Default data cache timeout.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public void setDataCacheTimeout(int timeout);
 
     /**
      * Wrapper for JCA usage of {@link #setDataCacheTimeout(int)}.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public void setDataCacheTimeout(Integer timeout);
 
     /**
      * The plugin to use for level-2 data store query caching.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public String getQueryCache();
 
     /**
      * The plugin to use for level-2 data store query caching.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public void setQueryCache(String queryCache);
 
@@ -344,7 +344,7 @@ public interface OpenJPAConfiguration
      * Return whether to generate dynamic data structures
      * where possible for cache and runtime usage.
      *
-     * @since 3.3
+     * @since 0.3.3
      */
     public boolean getDynamicDataStructs();
 
@@ -352,7 +352,7 @@ public interface OpenJPAConfiguration
      * Set whether to generate dynamic data structures
      * where possible for cache and runtime usage.
      *
-     * @since 3.3
+     * @since 0.3.3
      */
     public void setDynamicDataStructs(boolean dynamic);
 
@@ -364,14 +364,14 @@ public interface OpenJPAConfiguration
     /**
      * The plugin to use for datastore lock management.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public String getLockManager();
 
     /**
      * The plugin to use for datastore lock management.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public void setLockManager(String lockManager);
 
@@ -383,14 +383,14 @@ public interface OpenJPAConfiguration
     /**
      * The plugin to use for managing inverse relations.
      *
-     * @since 3.2
+     * @since 0.3.2
      */
     public String getInverseManager();
 
     /**
      * The plugin to use for managing inverse relations.
      *
-     * @since 3.2
+     * @since 0.3.2
      */
     public void setInverseManager(String inverse);
 
@@ -398,21 +398,21 @@ public interface OpenJPAConfiguration
      * Return a new inverse manager instance using the configured plugin
      * settings.
      *
-     * @since 3.2
+     * @since 0.3.2
      */
     public InverseManager newInverseManagerInstance();
 
     /**
      * The plugin to use for savepoint management.
      *
-     * @since 3.4
+     * @since 0.3.4
      */
     public String getSavepointManager();
 
     /**
      * The plugin to use for savepoint management.
      *
-     * @since 3.4
+     * @since 0.3.4
      */
     public void setSavepointManager(String savepointManager);
 
@@ -424,49 +424,49 @@ public interface OpenJPAConfiguration
     /**
      * The action to take when an orphaned key is detected.
      *
-     * @since 3.2.2
+     * @since 0.3.2.2
      */
     public String getOrphanedKeyAction();
 
     /**
      * The action to take when an orphaned key is detected.
      *
-     * @since 3.2.2
+     * @since 0.3.2.2
      */
     public void setOrphanedKeyAction(String action);
 
     /**
      * The action to take when an orphaned key is detected.
      *
-     * @since 3.2.2
+     * @since 0.3.2.2
      */
     public OrphanedKeyAction getOrphanedKeyActionInstance();
 
     /**
      * The action to take when an orphaned key is detected.
      *
-     * @since 3.2.2
+     * @since 0.3.2.2
      */
     public void setOrphanedKeyAction(OrphanedKeyAction action);
 
     /**
      * The plugin to use for remote commit notification.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public String getRemoteCommitProvider();
 
     /**
      * The plugin to use for remote commit notification.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public void setRemoteCommitProvider(String remoteCommitProvider);
 
     /**
      * Create a remote commit provider from the configured plugin.
      *
-     * @since 3.0
+     * @since 0.3.0
      */
     public RemoteCommitProvider newRemoteCommitProviderInstance();
 
@@ -474,7 +474,7 @@ public interface OpenJPAConfiguration
      * The remote event manager that manages this configuration's remote
      * event listeners.
      *
-     * @since 3.0
+     * @since 0.3.0
      */
     public RemoteCommitEventManager getRemoteCommitEventManager();
 
@@ -482,7 +482,7 @@ public interface OpenJPAConfiguration
      * The remote event manager that manages this configuration's remote
      * event listeners.
      *
-     * @since 3.0
+     * @since 0.3.0
      */
     public void setRemoteCommitEventManager(RemoteCommitEventManager manager);
 
@@ -494,7 +494,7 @@ public interface OpenJPAConfiguration
      * transactions.</li>
      * </ul>
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public String getTransactionMode();
 
@@ -506,7 +506,7 @@ public interface OpenJPAConfiguration
      * transactions.</li>
      * </ul>
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public void setTransactionMode(String mode);
 
@@ -603,7 +603,7 @@ public interface OpenJPAConfiguration
      * The metadata repository of managed class information. If no
      * repository has been set, creates one.
      *
-     * @since 3.0
+     * @since 0.3.0
      */
     public MetaDataRepository getMetaDataRepositoryInstance();
 
@@ -615,7 +615,7 @@ public interface OpenJPAConfiguration
     /**
      * The metadata repository of managed class information.
      *
-     * @since 3.0
+     * @since 0.3.0
      */
     public void setMetaDataRepository(MetaDataRepository mdRepos);
 
@@ -795,7 +795,7 @@ public interface OpenJPAConfiguration
      * These properties provide any additional information needed to
      * establish non-XA connections.
      *
-     * @since 3.0
+     * @since 0.3.0
      */
     public String getConnection2Properties();
 
@@ -803,21 +803,21 @@ public interface OpenJPAConfiguration
      * These properties provide any additional information needed to
      * establish non-XA connections.
      *
-     * @since 3.0
+     * @since 0.3.0
      */
     public void setConnection2Properties(String props);
 
     /**
      * Configuration properties for the non-XA connection factory.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public String getConnectionFactory2Properties();
 
     /**
      * Configuration properties for the non-XA connection factory.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public void setConnectionFactory2Properties(String props);
 
@@ -1044,7 +1044,7 @@ public interface OpenJPAConfiguration
      * Comma-separated list of fetch group names that will be pre-set for
      * all new {@link FetchConfiguration}s.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public String getFetchGroups();
 
@@ -1052,7 +1052,7 @@ public interface OpenJPAConfiguration
      * Comma-separated list of fetch group names that will be pre-set for
      * all new {@link FetchConfiguration}s.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public void setFetchGroups(String groups);
 
@@ -1072,7 +1072,7 @@ public interface OpenJPAConfiguration
      * Returns whether or not OpenJPA should automatically flush
      * modifications to the data store before executing queries.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public String getFlushBeforeQueries();
 
@@ -1080,7 +1080,7 @@ public interface OpenJPAConfiguration
      * Sets whether or not OpenJPA should automatically flush
      * modifications to the data store before executing queries.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public void setFlushBeforeQueries(String flush);
 
@@ -1090,7 +1090,7 @@ public interface OpenJPAConfiguration
      * {@link QueryFlushModes#FLUSH_WITH_CONNECTION}, as determined
      * by parsing the string returned by {@link #getFlushBeforeQueries}.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public int getFlushBeforeQueriesConstant();
 
@@ -1099,7 +1099,7 @@ public interface OpenJPAConfiguration
      * {@link QueryFlushModes#FLUSH_FALSE}, or
      * {@link QueryFlushModes#FLUSH_WITH_CONNECTION}.
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public void setFlushBeforeQueries(int flushBeforeQueries);
 
@@ -1107,7 +1107,7 @@ public interface OpenJPAConfiguration
      * The time to wait for an object lock in milliseconds, or -1 for no
      * timeout.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public int getLockTimeout();
 
@@ -1115,14 +1115,14 @@ public interface OpenJPAConfiguration
      * The time to wait for an object lock in milliseconds, or -1 for no
      * timeout.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public void setLockTimeout(int timeout);
 
     /**
      * Wrapper for JCA usage of {@link #setLockTimeout(int)}.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public void setLockTimeout(Integer timeout);
 
@@ -1130,7 +1130,7 @@ public interface OpenJPAConfiguration
      * The default read lock level to use during non-optimistic transactions.
      * Defaults to <code>read</code>.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public String getReadLockLevel();
 
@@ -1138,21 +1138,21 @@ public interface OpenJPAConfiguration
      * The default read lock level to use during non-optimistic transactions.
      * Defaults to <code>read</code>.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public void setReadLockLevel(String level);
 
     /**
      * The numeric read lock level.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public int getReadLockLevelConstant();
 
     /**
      * The numeric read lock level.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public void setReadLockLevel(int level);
 
@@ -1160,7 +1160,7 @@ public interface OpenJPAConfiguration
      * The default write lock level to use during non-optimistic transactions.
      * Defaults to <code>write</code>.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public String getWriteLockLevel();
 
@@ -1168,21 +1168,21 @@ public interface OpenJPAConfiguration
      * The default write lock level to use during non-optimistic transactions.
      * Defaults to <code>write</code>.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public void setWriteLockLevel(String level);
 
     /**
      * The numeric write lock level.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public int getWriteLockLevelConstant();
 
     /**
      * The numeric write lock level.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public void setWriteLockLevel(int level);
 
@@ -1222,7 +1222,7 @@ public interface OpenJPAConfiguration
      * the duration of the data store commit process.</li>
      * </ul>
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public String getConnectionRetainMode();
 
@@ -1242,7 +1242,7 @@ public interface OpenJPAConfiguration
      * the duration of the data store commit process.</li>
      * </ul>
      *
-     * @since 2.5
+     * @since 0.2.5
      */
     public void setConnectionRetainMode(String mode);
 
@@ -1320,7 +1320,7 @@ public interface OpenJPAConfiguration
      * Should only be set to true in complex classloader topologies.
      * Defaults to <code>false</code>.
      *
-     * @since 3.2.3
+     * @since 0.3.2.3
      */
     public boolean getRetryClassRegistration();
 
@@ -1330,14 +1330,14 @@ public interface OpenJPAConfiguration
      * Should only be set to true in complex classloader topologies.
 	 * Defaults to <code>false</code>.
 	 *
-	 * @since 3.2.3
+	 * @since 0.3.2.3
 	 */
 	public void setRetryClassRegistration (boolean warn);
 
 	/**
 	 * Wrapper for JCA usage of {@link #setRetryClassRegistration(boolean)}.
 	 *
-	 * @since 3.2.3
+	 * @since 0.3.2.3
 	 */
 	public void setRetryClassRegistration (Boolean warn);
 

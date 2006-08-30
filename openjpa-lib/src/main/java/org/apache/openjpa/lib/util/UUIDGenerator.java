@@ -36,7 +36,7 @@ import org.apache.commons.lang.exception.NestableRuntimeException;
  *
  * @author Abe White
  * @nojavadoc
- * @since 3.3
+ * @since 0.3.3
  */
 public class UUIDGenerator {
 

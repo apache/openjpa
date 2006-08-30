@@ -39,7 +39,7 @@ import org.apache.openjpa.lib.util.Closeable;
  * 
  *
  * @author Patrick Linskey
- * @since 2.5.0
+ * @since 0.2.5.0
  */
 public interface RemoteCommitListener
     extends Closeable {

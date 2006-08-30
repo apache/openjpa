@@ -21,7 +21,7 @@ package org.apache.openjpa.jdbc.meta;
  *
  * @author Abe White
  * @nojavadoc
- * @since 4.0
+ * @since 0.4.0
  */
 public class MappingStrategyInstaller
     extends StrategyInstaller {

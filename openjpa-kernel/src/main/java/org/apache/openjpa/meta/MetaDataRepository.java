@@ -48,7 +48,7 @@ import serp.util.Strings;
 /**
  * Repository of and factory for persistent metadata.
  *
- * @since 3.0
+ * @since 0.3.0
  * @author Abe White
  * @author Steve Kim (query metadata)
  */

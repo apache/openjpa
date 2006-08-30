@@ -373,21 +373,21 @@ public interface ExpressionFactory {
     /**
      * Return an expression representing the given condition.
      *
-     * @since 4.0.0
+     * @since 0.4.0.0
      */
     public Value any(Value target);
 
     /**
      * Return an expression representing the given condition.
      *
-     * @since 4.0.0
+     * @since 0.4.0.0
      */
     public Value all(Value target);
 
     /**
      * Return an expression representing the given condition.
      *
-     * @since 4.0.0
+     * @since 0.4.0.0
      */
     public Value size(Value target);
 
@@ -395,7 +395,7 @@ public interface ExpressionFactory {
      * Return distinct values of the given value. This is typically used
      * within aggregates, for example: max(distinct(path))
 	 *
-	 * @since 4.0.0
+	 * @since 0.4.0.0
 	 */
 	public Value distinct (Value obj);
 

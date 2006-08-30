@@ -19,7 +19,7 @@ package org.apache.openjpa.kernel;
  * A {@link SavepointManager} implementation which stores all data in memory.
  *
  * @author Steve Kim
- * @since 3.4
+ * @since 0.3.4
  */
 public class InMemorySavepointManager
     implements SavepointManager {

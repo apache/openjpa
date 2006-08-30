@@ -22,7 +22,7 @@ import org.apache.openjpa.meta.ValueMetaData;
  * Does nothing when an orphaned key is discovered.
  *
  * @author Abe White
- * @since 3.2.2
+ * @since 0.3.2.2
  */
 public class NoneOrphanedKeyAction
     implements OrphanedKeyAction {

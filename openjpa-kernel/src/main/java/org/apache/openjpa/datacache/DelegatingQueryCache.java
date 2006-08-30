@@ -24,7 +24,7 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  * it returns default values or all methods.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  * @nojavadoc
  */
 public class DelegatingQueryCache

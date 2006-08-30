@@ -19,7 +19,7 @@ package org.apache.openjpa.kernel.exps;
  * Query value representing a subquery.
  *
  * @author Abe White
- * @since 3.2
+ * @since 0.3.2
  */
 public interface Subquery
     extends Value {

@@ -20,7 +20,7 @@ import org.apache.openjpa.lib.util.MultiClassLoader;
 /**
  * Default class resolver implementation.
  *
- * @since 3.0
+ * @since 0.3.0
  * @author Abe White
  */
 public class ClassResolverImpl

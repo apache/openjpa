@@ -53,7 +53,7 @@ import org.apache.openjpa.util.StringId;
  *
  * @author Abe White
  * @published
- * @since 4.0
+ * @since 0.4.0
  */
 public class OpenJPAPersistence
     extends Persistence {

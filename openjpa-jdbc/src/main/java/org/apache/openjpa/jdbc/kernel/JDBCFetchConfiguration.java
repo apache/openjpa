@@ -28,7 +28,7 @@ import org.apache.openjpa.meta.FieldMetaData;
  * JDBC extensions to OpenJPA's {@link FetchConfiguration}.
  *
  * @author Abe White
- * @since 3.0
+ * @since 0.3.0
  */
 public interface JDBCFetchConfiguration
     extends FetchConfiguration, EagerFetchModes, LRSSizes, JoinSyntaxes {
@@ -113,14 +113,14 @@ public interface JDBCFetchConfiguration
      * when loading objects. Defaults to the empty set.  This set is not
      * thread safe.
      *
-     * @since 4.0.0
+     * @since 0.4.0.0
      */
     public Set getJoins();
 
     /**
      * Return true if the given fully-qualified join has been added.
      *
-     * @since 4.0.0
+     * @since 0.4.0.0
      */
     public boolean hasJoin(String field);
 
@@ -129,7 +129,7 @@ public interface JDBCFetchConfiguration
      * eagerly join when loading objects. Each class can have at most
      * one to-many eagerly joined fields.
      *
-     * @since 4.0.0
+     * @since 0.4.0.0
      */
     public JDBCFetchConfiguration addJoin(String field);
 
@@ -138,7 +138,7 @@ public interface JDBCFetchConfiguration
      * eagerly join when loading objects. Each class can have at most
      * one to-many eagerly joined fields.
      *
-     * @since 4.0.0
+     * @since 0.4.0.0
      */
     public JDBCFetchConfiguration addJoins(Collection fields);
 
@@ -146,7 +146,7 @@ public interface JDBCFetchConfiguration
      * Removes <code>field</code> to the set of fully-qualified field names to
      * eagerly join when loading objects.
      *
-     * @since 4.0.0
+     * @since 0.4.0.0
      */
     public JDBCFetchConfiguration removeJoin(String field);
 
@@ -154,14 +154,14 @@ public interface JDBCFetchConfiguration
      * Removes <code>fields</code> from the set of fully-qualified
      * field names to eagerly join when loading objects.
      *
-     * @since 4.0.0
+     * @since 0.4.0.0
      */
     public JDBCFetchConfiguration removeJoins(Collection fields);
 
     /**
      * Clears the set of field names to join when loading data.
      *
-     * @since 4.0.0
+     * @since 0.4.0.0
      */
     public JDBCFetchConfiguration clearJoins();
 

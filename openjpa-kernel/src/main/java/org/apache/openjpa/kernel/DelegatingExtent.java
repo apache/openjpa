@@ -29,7 +29,7 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  * Delegating extent that also can perform exception translation for use
  * in facades.
  *
- * @since 4.0
+ * @since 0.4.0
  * @author Abe White
  * @nojavadoc
  */
