@@ -194,8 +194,15 @@ class JPQLExpressionBuilder
         // ### this should actually be the primary SELECT instance
         // resolved against the from variable declarations
         JPQLNode from = node.findChildByID(JJTFROMITEM, true);
-        if (from == null)
-            throw parseException(EX_USER, "no-from-clause", null, null);
+        if (from == null) {
+            // OPENJPA-15 allow subquery without a FROMITEM
+            if (node.id == JJTSUBSELECT) { 
+                from = node.findChildByID(JJTFROM, true);
+            }
+            else {
+                throw parseException(EX_USER, "no-from-clause", null, null);
+            }
+        }
 
         for (int i = 0; i < from.children.length; i++) {
             JPQLNode n = from.children[i];
@@ -216,6 +223,24 @@ class JPQLExpressionBuilder
 
                 return getClassMetaData(cls, true);
             }
+            // OPENJPA-15 support subquery's from clause do not start with 
+            // identification_variable_declaration()
+            if (node.id == JJTSUBSELECT) {
+                if (n.id == JJTINNERJOIN) {
+                    n = n.getChild(0);
+                }
+                if (n.id == JJTPATH) {
+                    Path path = getPath(n);
+                    ClassMetaData cmd = getFieldType(path.last());
+                    if (cmd != null) {
+                        return cmd;
+                    }
+                    else {
+                        throw parseException(EX_USER, "no-alias", 
+                                new Object[]{ n }, null);
+                    }
+                }
+            }           
         }
 
         return null;
@@ -501,6 +526,15 @@ class JPQLExpressionBuilder
         Path path = getPath(firstChild(node), false, inner);
 
         JPQLNode alias = node.getChildCount() >= 2 ? right(node) : null;
+        // OPENJPA-15 support subquery's from clause do not start with 
+        // identification_variable_declaration()
+        if (inner && ctx().subquery != null && ctx().schemaAlias == null) {
+            setCandidate(getFieldType(path.last()), alias.text);
+
+            Path subpath = factory.newPath(ctx().subquery);
+            subpath.setMetaData(ctx().subquery.getMetaData());
+            exp =  and(exp, factory.equal(path, subpath));
+        }
 
         return addJoin(path, alias, inner, exp);
     }
