@@ -293,30 +293,17 @@ public class QueryCacheStoreQuery
         }
 
         public ResultObjectProvider executeQuery(StoreQuery q, Object[] params,
-            boolean lrs, long startIdx, long endIdx) {
+            Range range) {
             QueryCacheStoreQuery cq = (QueryCacheStoreQuery) q;
             QueryKey key = QueryKey.newInstance(cq.getContext(),
-                _ex.isPacking(q), params, _candidate, _subs, startIdx, endIdx);
+                _ex.isPacking(q), params, _candidate, _subs, range.start, 
+                range.end);
             List cached = cq.checkCache(key);
             if (cached != null)
                 return new ListResultObjectProvider(cached);
 
             ResultObjectProvider rop = _ex.executeQuery(cq.getDelegate(),
-                params, lrs, startIdx, endIdx);
-            return cq.wrapResult(rop, key);
-        }
-
-        public ResultObjectProvider executeQuery(StoreQuery q, Map params,
-            boolean lrs, long startIdx, long endIdx) {
-            QueryCacheStoreQuery cq = (QueryCacheStoreQuery) q;
-            QueryKey key = QueryKey.newInstance(cq.getContext(),
-                _ex.isPacking(q), params, _candidate, _subs, startIdx, endIdx);
-            List cached = cq.checkCache(key);
-            if (cached != null)
-                return new ListResultObjectProvider(cached);
-
-            ResultObjectProvider rop = _ex.executeQuery(cq.getDelegate(),
-                params, lrs, startIdx, endIdx);
+                params, range);
             return cq.wrapResult(rop, key);
         }
 
@@ -351,14 +338,6 @@ public class QueryCacheStoreQuery
             }
         }
 
-        public Number executeDelete(StoreQuery q, Map params) {
-            try {
-                return _ex.executeDelete(unwrap(q), params);
-            } finally {
-                clearAccesssPath(q);
-            }
-        }
-
         public Number executeUpdate(StoreQuery q, Object[] params) {
             try {
                 return _ex.executeUpdate(unwrap(q), params);
@@ -367,21 +346,17 @@ public class QueryCacheStoreQuery
             }
         }
 
-        public Number executeUpdate(StoreQuery q, Map params) {
-            try {
-                return _ex.executeUpdate(unwrap(q), params);
-            } finally {
-                clearAccesssPath(q);
-            }
-        }
-
         public String[] getDataStoreActions(StoreQuery q, Object[] params,
-            long startIdx, long endIdx) {
+            Range range) {
             return EMPTY_STRINGS;
         }
 
         public void validate(StoreQuery q) {
             _ex.validate(unwrap(q));
+        }
+        
+        public void getRange(StoreQuery q, Object[] params, Range range) {
+            _ex.getRange(q, params, range); 
         }
 
         public Object getOrderingValue(StoreQuery q, Object[] params,

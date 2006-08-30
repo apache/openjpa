@@ -107,37 +107,23 @@ public abstract class AbstractStoreQuery
     public static abstract class AbstractExecutor
         implements Executor {
 
-        public ResultObjectProvider executeQuery(StoreQuery q, Map params,
-            boolean lrs, long startIdx, long endIdx) {
-            Object[] arr = q.getContext().toParameterArray
-                (q.getContext().getParameterTypes(), params);
-            return executeQuery(q, arr, lrs, startIdx, endIdx);
-        }
-
         public Number executeDelete(StoreQuery q, Object[] params) {
             return q.getContext().deleteInMemory(this, params);
-        }
-
-        public Number executeDelete(StoreQuery q, Map params) {
-            return executeDelete(q, q.getContext().toParameterArray
-                (q.getContext().getParameterTypes(), params));
         }
 
         public Number executeUpdate(StoreQuery q, Object[] params) {
             return q.getContext().updateInMemory(this, params);
         }
 
-        public Number executeUpdate(StoreQuery q, Map params) {
-            return executeUpdate(q, q.getContext().toParameterArray
-                (q.getContext().getParameterTypes(), params));
-        }
-
         public String[] getDataStoreActions(StoreQuery q, Object[] params,
-            long startIdx, long endIdx) {
+            Range range) {
             return EMPTY_STRINGS;
         }
 
         public void validate(StoreQuery q) {
+        }
+
+        public void getRange(StoreQuery q, Object[] params, Range range) {
         }
 
         public Object getOrderingValue(StoreQuery q, Object[] params,

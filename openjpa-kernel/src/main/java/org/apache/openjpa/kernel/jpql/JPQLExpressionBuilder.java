@@ -444,30 +444,18 @@ class JPQLExpressionBuilder
     protected void evalSetClause(QueryExpressions exps) {
         // handle SET field = value
         JPQLNode[] nodes = root().findChildrenByID(JJTUPDATEITEM);
-
-        Map updates = null;
-
         for (int i = 0; nodes != null && i < nodes.length; i++) {
-            if (updates == null)
-                updates = new HashMap();
-
             FieldMetaData field = getPath(firstChild(nodes[i])).last();
             Value val = getValue(onlyChild(lastChild(nodes[i])));
-
-            updates.put(field, val);
+            exps.putUpdate(field, val);
         }
-
-        if (updates != null)
-            exps.updates = updates;
     }
 
     private Expression evalWhereClause(QueryExpressions exps) {
         // evaluate the WHERE clause
         JPQLNode whereNode = root().findChildByID(JJTWHERE, false);
-
         if (whereNode == null)
             return null;
-
         return (Expression) eval(whereNode);
     }
 
@@ -1110,7 +1098,7 @@ class JPQLExpressionBuilder
 
         try {
             QueryExpressions subexp = getQueryExpressions();
-            subq.setQueryExpressions(subexp, 0, Long.MAX_VALUE);
+            subq.setQueryExpressions(subexp);
             return subq;
         } finally {
             // remove the subquery parse context

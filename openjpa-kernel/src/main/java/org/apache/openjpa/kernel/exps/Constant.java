@@ -16,12 +16,11 @@
 package org.apache.openjpa.kernel.exps;
 
 /**
- * Interface for any constant value.
+ * Interface for any query constant value.
  *
  * @author Marc Prud'hommeaux
  */
-public interface Constant
-    extends Value {
+public interface Constant {
 
     /**
      * Return the value for this constant given the specified parameters.

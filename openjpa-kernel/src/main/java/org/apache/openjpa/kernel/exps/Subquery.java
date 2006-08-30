@@ -32,6 +32,5 @@ public interface Subquery
     /**
      * Set the parsed subquery.
      */
-    public void setQueryExpressions(QueryExpressions query, long startIdx,
-        long endIdx);
+    public void setQueryExpressions(QueryExpressions query);
 }

@@ -403,14 +403,6 @@ public class DelegatingQuery
         }
     }
 
-    public Object[] toParameterArray(LinkedMap paramTypes, Map params) {
-        try {
-            return _query.toParameterArray(paramTypes, params);
-        } catch (RuntimeException re) {
-            throw translate(re);
-        }
-    }
-
     public Number deleteInMemory(StoreQuery.Executor ex, Object[] params) {
         try {
             return _query.deleteInMemory(ex, params);
