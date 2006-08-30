@@ -26,7 +26,7 @@ import org.apache.openjpa.lib.conf.ConfigurationProvider;
  * derivations are evaluated is determined by the specificity of the
  * derivation type.
  *
- * @since 4.1
+ * @since 0.4.1
  */
 public interface ProductDerivation {
 

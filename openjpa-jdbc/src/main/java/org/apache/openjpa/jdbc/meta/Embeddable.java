@@ -30,7 +30,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
  * directly embedded objects do not have to implement this interface.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public interface Embeddable {
 

@@ -30,7 +30,7 @@ import org.apache.openjpa.util.UserException;
 /**
  * Helper methods for acquiring {@link BrokerFactory} objects
  *
- * @since 4.0.0
+ * @since 0.4.0.0
  */
 public class Bootstrap {
 

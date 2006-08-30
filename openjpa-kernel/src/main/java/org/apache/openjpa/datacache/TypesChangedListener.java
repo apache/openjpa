@@ -19,7 +19,7 @@ package org.apache.openjpa.datacache;
  * An entity that wishes to be notified when types change.
  *
  * @author Abe White
- * @since 3.0
+ * @since 0.3.0
  */
 public interface TypesChangedListener {
 

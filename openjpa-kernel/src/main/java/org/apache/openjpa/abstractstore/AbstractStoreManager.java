@@ -112,7 +112,7 @@ import org.apache.openjpa.util.ImplHelper;
  * </ul></li>
  * </ul>
  *
- * @since 3.1
+ * @since 0.3.1
  */
 public abstract class AbstractStoreManager
     implements StoreManager {

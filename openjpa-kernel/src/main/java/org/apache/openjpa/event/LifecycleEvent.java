@@ -23,7 +23,7 @@ import java.util.EventObject;
  *
  * @author Steve Kim
  * @author Abe White
- * @since 3.3
+ * @since 0.3.3
  */
 public class LifecycleEvent
     extends EventObject {

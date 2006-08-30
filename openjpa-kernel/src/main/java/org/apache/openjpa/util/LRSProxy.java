@@ -19,7 +19,7 @@ package org.apache.openjpa.util;
  * Marker interface for large result set proxies.
  *
  * @author Abe White
- * @since 3.0.3
+ * @since 0.3.0.3
  */
 public interface LRSProxy
     extends Proxy {

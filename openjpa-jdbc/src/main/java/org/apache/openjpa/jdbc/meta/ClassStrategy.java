@@ -30,7 +30,7 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
  * Mapping from a class to a relational schema.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public interface ClassStrategy
     extends Strategy {

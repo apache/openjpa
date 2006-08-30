@@ -37,7 +37,7 @@ import serp.util.Strings;
  *
  * @author Abe White
  * @author Stephen Kim
- * @since 3.0
+ * @since 0.3.0
  * @nojavadoc
  */
 public class CodeGenerator {

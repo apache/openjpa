@@ -28,7 +28,7 @@ import org.apache.openjpa.util.InternalException;
  * Abstract {@link StoreQuery} that implements most methods as no-ops.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public abstract class AbstractStoreQuery
     implements StoreQuery {

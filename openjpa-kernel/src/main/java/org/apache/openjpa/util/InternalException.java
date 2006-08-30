@@ -21,7 +21,7 @@ import org.apache.openjpa.lib.util.Localizer.Message;
  * Exception type for internal errors.
  *
  * @author Abe White
- * @since 3.2
+ * @since 0.3.2
  */
 public class InternalException
     extends OpenJPAException {

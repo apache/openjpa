@@ -49,7 +49,7 @@ import serp.util.Numbers;
  * the query, and can determine whether or not the query has been dirtied.
  *
  * @author Patrick Linskey
- * @since 2.5.0
+ * @since 0.2.5.0
  */
 public class QueryCacheStoreQuery
     implements StoreQuery {

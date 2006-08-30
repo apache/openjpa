@@ -33,7 +33,7 @@ import org.apache.openjpa.lib.conf.Configuration;
  * on the driver/db to restore back to the flushed state.
  *
  * @author Steve Kim
- * @since 3.4
+ * @since 0.3.4
  */
 public abstract class AbstractJDBCSavepointManager
     implements SavepointManager, Configurable {

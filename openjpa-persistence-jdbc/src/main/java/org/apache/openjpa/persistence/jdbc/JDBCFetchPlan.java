@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.PersistenceExceptions;
 /**
  * JDBC extensions to the fetch plan.
  *
- * @since 4.0
+ * @since 0.4.0
  * @author Abe White
  * @published
  */

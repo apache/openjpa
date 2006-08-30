@@ -29,7 +29,7 @@ import org.apache.openjpa.util.UserException;
  * Event type to hold the IDs of additions, updates, and
  * deletes. This event type is also fully serializable for remote communication.
  *
- * @since 3.0
+ * @since 0.3.0
  * @author Patrick Linskey
  * @author Abe White
  */

@@ -26,7 +26,7 @@ import org.apache.openjpa.lib.util.Closeable;
  * {@link org.apache.openjpa.lib.conf.Configurable} to receive a handle to the
  * system configuration on construction.
  *
- * @since 2.5
+ * @since 0.2.5
  * @author Patrick Linskey
  */
 public interface QueryCache
@@ -36,7 +36,7 @@ public interface QueryCache
      * Initialize any resources associated with the given
      * {@link DataCacheManager}.
      *
-     * @since 4.1
+     * @since 0.4.1
      */
     public void initialize(DataCacheManager manager);
 
@@ -117,14 +117,14 @@ public interface QueryCache
     /**
      * Add a new types event listener to this cache.
      *
-     * @since 3.3
+     * @since 0.3.3
      */
     public void addTypesChangedListener(TypesChangedListener listen);
 
     /**
      * Remove an types event listener from this cache.
      *
-     * @since 3.3
+     * @since 0.3.3
      */
     public boolean removeTypesChangedListener(TypesChangedListener listen);
 

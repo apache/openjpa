@@ -20,7 +20,7 @@ import org.apache.openjpa.lib.util.MultiClassLoader;
 /**
  * Interface to customize the loading of classes under OpenJPA.
  *
- * @since 3.0
+ * @since 0.3.0
  * @author Marc Prud'hommeaux
  * @author Abe White
  */

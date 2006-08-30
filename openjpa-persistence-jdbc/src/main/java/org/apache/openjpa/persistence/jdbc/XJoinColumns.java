@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  * Allows the specification of multiple columns for compound joins.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 @Target({ METHOD, FIELD })
 @Retention(RUNTIME)

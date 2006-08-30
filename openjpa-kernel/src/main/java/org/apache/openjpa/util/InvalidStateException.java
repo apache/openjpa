@@ -21,7 +21,7 @@ import org.apache.openjpa.lib.util.Localizer.Message;
  * Exception type thrown when attempting to execute an operation that
  * is not allowed by the current state.
  *
- * @since 4.0
+ * @since 0.4.0
  * @author Abe White
  */
 public class InvalidStateException

@@ -25,7 +25,7 @@ import java.util.Map;
  * back and restored to this point
  *
  * @author Steve Kim
- * @since 3.4
+ * @since 0.3.4
  */
 public class OpenJPASavepoint {
 

@@ -19,7 +19,7 @@ package org.apache.openjpa.meta;
  * Holds metadata on a value; this could be a field value, key value, or
  * element value.
  *
- * @since 4.0
+ * @since 0.4.0
  * @author Abe White
  */
 public interface ValueMetaData

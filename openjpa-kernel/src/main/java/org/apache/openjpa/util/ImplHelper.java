@@ -41,7 +41,7 @@ import org.apache.openjpa.meta.ValueStrategies;
 /**
  * Helper for OpenJPA back-ends.
  *
- * @since 3.0
+ * @since 0.3.0
  * @author Abe White
  * @nojavadoc
  */
@@ -87,7 +87,7 @@ public class ImplHelper {
      * to the proper singular method for each state manager.
      *
      * @see StoreManager#loadAll
-     * @since 4.0
+     * @since 0.4.0
      */
     public static Collection loadAll(Collection sms, StoreManager store,
         PCState state, int load, FetchConfiguration fetch, Object context) {

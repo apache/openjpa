@@ -22,7 +22,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
  * Callback to store a relation after the object id has been assigned.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public interface RelationId {
 

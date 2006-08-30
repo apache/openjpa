@@ -31,7 +31,7 @@ import org.apache.openjpa.lib.util.JavaVersions;
  * Utility methods for externalizing and handling exceptions.
  *
  * @author Marc Prud'hommeaux
- * @since 2.5
+ * @since 0.2.5
  * @nojavadoc
  */
 public class Exceptions {

@@ -28,7 +28,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
  * Maps a value to a relational schema. Value handler are stateless.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public interface ValueHandler {
 

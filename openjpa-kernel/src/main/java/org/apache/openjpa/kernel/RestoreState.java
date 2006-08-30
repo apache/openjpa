@@ -19,7 +19,7 @@ package org.apache.openjpa.kernel;
  * State restore constants.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public interface RestoreState {
 

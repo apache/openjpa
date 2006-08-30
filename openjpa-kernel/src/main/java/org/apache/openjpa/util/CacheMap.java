@@ -320,7 +320,7 @@ public class CacheMap
      *
      * @param value may be null if the value was a soft reference that has
      * been GCd
-     * @since 2.5.0
+     * @since 0.2.5.0
      */
     protected void entryRemoved(Object key, Object value, boolean expired) {
     }

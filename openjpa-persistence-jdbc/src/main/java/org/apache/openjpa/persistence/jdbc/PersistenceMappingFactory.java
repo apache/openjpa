@@ -26,7 +26,7 @@ import org.apache.openjpa.persistence.XMLPersistenceMetaDataParser;
  * {@link MetaDataFactory} for JPA mapping information.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public class PersistenceMappingFactory
     extends PersistenceMetaDataFactory {

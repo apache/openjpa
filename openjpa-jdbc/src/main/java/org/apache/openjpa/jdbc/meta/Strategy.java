@@ -26,7 +26,7 @@ import org.apache.openjpa.util.MetaDataException;
  * Interface implemented by all mapping strategies.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public interface Strategy {
 

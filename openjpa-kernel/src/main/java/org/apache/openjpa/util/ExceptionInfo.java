@@ -20,7 +20,7 @@ package org.apache.openjpa.util;
  * exceptions implement this interface.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public interface ExceptionInfo {
 

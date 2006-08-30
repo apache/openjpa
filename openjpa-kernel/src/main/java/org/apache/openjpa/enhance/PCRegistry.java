@@ -27,7 +27,7 @@ import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 /**
  * Tracks registered persistence-capable classes.
  *
- * @since 4.0
+ * @since 0.4.0
  * @author Abe White
  */
 public class PCRegistry {

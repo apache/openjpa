@@ -27,7 +27,7 @@ import org.apache.openjpa.datacache.TypesChangedEvent;
  * Query result cache.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  * @published
  */
 public class QueryResultCache {

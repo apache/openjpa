@@ -31,7 +31,7 @@ import org.apache.openjpa.lib.util.Localizer.Message;
  * Extended {@link IllegalStateException}.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  * @nojavadoc
  */
 public class InvalidStateException

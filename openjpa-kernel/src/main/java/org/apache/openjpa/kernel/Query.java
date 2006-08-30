@@ -25,7 +25,7 @@ import org.apache.openjpa.kernel.exps.FilterListener;
 /**
  * OpenJPA query interface.
  *
- * @since 3.0
+ * @since 0.3.0
  * @author Patrick Linskey
  * @author Abe White
  */
@@ -167,7 +167,7 @@ public interface Query
      * typically be in the native query language of the database (e.g., SQL).
      *
      * @param params the named parameter map for the query invocation
-     * @since 3.2
+     * @since 0.3.2
      */
     public String[] getDataStoreActions(Map params);
 

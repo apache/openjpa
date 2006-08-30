@@ -28,7 +28,7 @@ import org.apache.openjpa.meta.MetaDataRepository;
  * Represents the L2 cache over the data store.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  * @published
  */
 public class StoreCache {

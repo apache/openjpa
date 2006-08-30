@@ -31,7 +31,7 @@ import org.apache.openjpa.util.UserException;
  * supports JDBC 3 savepoints</b>
  *
  * @author Steve Kim
- * @since 3.4
+ * @since 0.3.4
  */
 public class JDBC3SavepointManager
     extends AbstractJDBCSavepointManager {

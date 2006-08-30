@@ -21,7 +21,7 @@ import org.apache.openjpa.lib.util.Localizer.Message;
  * Exception type thrown when attempting a transactional operation without
  * an active transaction.
  *
- * @since 4.0
+ * @since 0.4.0
  * @author Abe White
  */
 public class NoTransactionException

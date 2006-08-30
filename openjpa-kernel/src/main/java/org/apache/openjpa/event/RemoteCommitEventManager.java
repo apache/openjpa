@@ -37,7 +37,7 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Patrick Linskey
  * @author Abe White
- * @since 3.0
+ * @since 0.3.0
  */
 public class RemoteCommitEventManager
     extends AbstractConcurrentEventManager
@@ -69,7 +69,7 @@ public class RemoteCommitEventManager
     /**
      * Return the {@link RemoteCommitProvider} that this manager uses.
      *
-     * @since 3.1
+     * @since 0.3.1
      */
     public RemoteCommitProvider getRemoteCommitProvider() {
         return _provider;

@@ -29,7 +29,7 @@ import org.apache.openjpa.lib.util.concurrent.ConcurrentHashSet;
  * circumstance.
  *
  * @author Patrick Linskey
- * @since 2.5.0
+ * @since 0.2.5.0
  */
 public class SingleJVMRemoteCommitProvider
     extends AbstractRemoteCommitProvider {

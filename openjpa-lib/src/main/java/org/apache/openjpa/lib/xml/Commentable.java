@@ -19,7 +19,7 @@ package org.apache.openjpa.lib.xml;
  * Implementations of this interface can be adorned with comments.
  *
  * @nojavadoc
- * @since 3.3
+ * @since 0.3.3
  */
 public interface Commentable {
 

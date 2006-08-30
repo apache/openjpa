@@ -45,7 +45,7 @@ import org.apache.openjpa.util.UserException;
  * other RemoteCommitProviders over a JMS topic.
  *
  * @author Patrick Linskey
- * @since 2.5.0
+ * @since 0.2.5.0
  */
 public class JMSRemoteCommitProvider
     extends AbstractRemoteCommitProvider

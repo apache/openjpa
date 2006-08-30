@@ -29,7 +29,7 @@ import org.apache.openjpa.meta.FieldMetaData;
  * A query execution context.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public interface QueryContext {
 
@@ -54,7 +54,7 @@ public interface QueryContext {
      * Returns the operation that this query will be expected to perform.
      *
      * @see QueryOperations
-     * @since 4.0
+     * @since 0.4.0
      */
     public int getOperation();
 
@@ -110,7 +110,7 @@ public interface QueryContext {
      * result, rather than a collection. The execute method will return null
      * if the query result size is 0.
      *
-     * @since 3.0
+     * @since 0.3.0
      */
     public void setUnique(boolean unique);
 
@@ -139,7 +139,7 @@ public interface QueryContext {
     /**
      * Specify the type of object in which the result of evaluating this query.
      *
-     * @since 3.0
+     * @since 0.3.0
      */
     public void setResultType(Class cls);
 
@@ -160,7 +160,7 @@ public interface QueryContext {
      * @param start 0-based inclusive start index
      * @param end 0-based exclusive end index, or
      * {@link Long#MAX_VALUE} for no limit
-     * @since 3.2
+     * @since 0.3.2
      */
     public void setRange(long start, long end);
 

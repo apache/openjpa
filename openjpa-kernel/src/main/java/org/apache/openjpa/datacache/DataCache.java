@@ -45,14 +45,14 @@ public interface DataCache
      * Returns a string name that can be used by end-user-visible
      * code to identify this cache.
      *
-     * @since 2.5.0
+     * @since 0.2.5.0
      */
     public String getName();
 
     /**
      * Sets a string name to be used to identify this cache to end-user needs.
      *
-     * @since 2.5.0
+     * @since 0.2.5.0
      */
     public void setName(String name);
 
@@ -240,14 +240,14 @@ public interface DataCache
     /**
      * Add a new expiration event listener to this cache.
      *
-     * @since 2.5.0
+     * @since 0.2.5.0
      */
     public void addExpirationListener(ExpirationListener listen);
 
     /**
      * Remove an expiration event listener from this cache.
      *
-     * @since 2.5.0
+     * @since 0.2.5.0
      */
     public boolean removeExpirationListener(ExpirationListener listen);
 

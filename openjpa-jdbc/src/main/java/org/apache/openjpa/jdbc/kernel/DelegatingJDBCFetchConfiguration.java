@@ -34,7 +34,7 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  *
  * @author Abe White
  * @nojavadoc
- * @since 4.0
+ * @since 0.4.0
  */
 public class DelegatingJDBCFetchConfiguration
     extends DelegatingFetchConfiguration

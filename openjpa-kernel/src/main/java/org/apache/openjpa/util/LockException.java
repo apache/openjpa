@@ -25,7 +25,7 @@ import org.apache.openjpa.lib.util.Localizer;
  * Exception indicating that locks on one or more objects could not be acquired.
  *
  * @author Marc Prud'hommeaux
- * @since 3.1
+ * @since 0.3.1
  */
 public class LockException
     extends StoreException {

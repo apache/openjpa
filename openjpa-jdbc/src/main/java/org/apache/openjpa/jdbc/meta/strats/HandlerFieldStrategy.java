@@ -43,7 +43,7 @@ import org.apache.openjpa.util.MetaDataException;
  * Mapping for a single-valued field that delegates to a {@link ValueHandler}.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public class HandlerFieldStrategy
     extends AbstractFieldStrategy

@@ -20,7 +20,7 @@ package org.apache.openjpa.meta;
  * These constants can be used as bit flags.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public interface MetaDataModes {
 

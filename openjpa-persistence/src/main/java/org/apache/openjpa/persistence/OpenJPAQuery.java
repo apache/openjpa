@@ -31,7 +31,7 @@ import org.apache.openjpa.kernel.exps.FilterListener;
 /**
  * Interface implemented by OpenJPA queries.
  *
- * @since 4.0
+ * @since 0.4.0
  * @author Abe White
  * @published
  */

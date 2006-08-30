@@ -56,7 +56,7 @@ import serp.util.Strings;
  * tags to be serialized both at &lt;entity-mappings&gt; and
  * &lt;entity&gt; level.
  *
- * @since 4.0
+ * @since 0.4.0
  * @author Steve Kim
  * @nojavadoc
  */

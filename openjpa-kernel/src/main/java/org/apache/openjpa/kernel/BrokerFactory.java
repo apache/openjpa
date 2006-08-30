@@ -25,7 +25,7 @@ import org.apache.openjpa.lib.util.Closeable;
  * Factory for {@link Broker} instances.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public interface BrokerFactory
     extends Serializable, Closeable {
@@ -68,14 +68,14 @@ public interface BrokerFactory
      * classes. If the classes are null, all events will be propagated to
      * the listener. The listener will be passed on to all new brokers.
      *
-     * @since 3.3
+     * @since 0.3.3
      */
     public void addLifecycleListener(Object listener, Class[] classes);
 
     /**
      * Remove a listener for lifecycle-related events.
      *
-     * @since 3.3
+     * @since 0.3.3
      */
     public void removeLifecycleListener(Object listener);
 

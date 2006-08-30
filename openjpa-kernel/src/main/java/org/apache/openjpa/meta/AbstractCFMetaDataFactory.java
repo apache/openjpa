@@ -53,7 +53,7 @@ import serp.util.Strings;
  * in the common fomat.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public abstract class AbstractCFMetaDataFactory
     extends AbstractMetaDataFactory {

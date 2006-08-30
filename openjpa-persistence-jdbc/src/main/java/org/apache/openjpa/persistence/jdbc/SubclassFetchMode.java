@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  * Determines how to eager-fetch subclass data.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 @Target({ TYPE })
 @Retention(RUNTIME)

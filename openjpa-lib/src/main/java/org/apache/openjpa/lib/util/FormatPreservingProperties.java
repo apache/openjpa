@@ -72,7 +72,7 @@ import org.apache.commons.collections.set.ListOrderedSet;
  * This implementation does not permit escaped ' ', '=', ':'
  * characters in key names.
  *
- * @since 3.3
+ * @since 0.3.3
  */
 public class FormatPreservingProperties extends Properties {
 

@@ -39,7 +39,7 @@ import serp.util.Numbers;
  *
  * @author Marc Prud'hommeaux
  * @author Abe White
- * @since 2.4
+ * @since 0.2.4
  */
 public final class SQLBuffer
     implements Serializable, Cloneable {

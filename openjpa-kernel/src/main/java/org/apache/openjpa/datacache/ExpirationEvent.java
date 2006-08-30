@@ -22,7 +22,7 @@ import java.util.EventObject;
  * or an expiration of a result list from the query cache.
  * The source of the event will be the cache.
  *
- * @since 3.0
+ * @since 0.3.0
  * @author Abe White
  */
 public class ExpirationEvent

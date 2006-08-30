@@ -31,7 +31,7 @@ import org.apache.openjpa.util.ProxyManager;
  * FieldManager type used to store information for savepoint rollback.
  *
  * @author Steve Kim
- * @since 3.4
+ * @since 0.3.4
  */
 class SavepointFieldManager
     extends ClearFieldManager {

@@ -19,7 +19,7 @@ package org.apache.openjpa.kernel;
  * Constants for which fields to include in the detach graph.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public interface DetachState {
 

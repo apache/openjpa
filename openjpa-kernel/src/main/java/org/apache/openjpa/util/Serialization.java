@@ -35,7 +35,7 @@ import org.apache.openjpa.lib.util.Localizer;
  * objects back during deserialization.
  *
  * @author Abe White
- * @since 3.3
+ * @since 0.3.3
  * @nojavadoc
  */
 public class Serialization {

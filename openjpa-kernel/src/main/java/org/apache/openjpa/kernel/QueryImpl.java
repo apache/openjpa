@@ -697,7 +697,7 @@ public class QueryImpl
      * state changes that would cause the underlying query
      * representation to change.
      *
-     * @since 3.0
+     * @since 0.3.0
      */
     private boolean invalidateCompilation() {
         if (_compiling)

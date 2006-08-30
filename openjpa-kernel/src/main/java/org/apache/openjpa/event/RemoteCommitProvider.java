@@ -34,7 +34,7 @@ import org.apache.openjpa.lib.util.Closeable;
  * commits that originated with a local broker.
  *
  * @author Patrick Linskey
- * @since 2.5.0
+ * @since 0.2.5.0
  */
 public interface RemoteCommitProvider
     extends Closeable {

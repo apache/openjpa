@@ -25,7 +25,7 @@ import javax.persistence.PrimaryKeyJoinColumn;
  * Extended secondary table.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 @Target({ TYPE })
 @Retention(RUNTIME)

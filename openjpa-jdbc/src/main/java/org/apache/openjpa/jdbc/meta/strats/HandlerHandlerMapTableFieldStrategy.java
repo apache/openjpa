@@ -44,7 +44,7 @@ import org.apache.openjpa.util.Proxy;
  * {@link ValueHandler}s.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public class HandlerHandlerMapTableFieldStrategy
     extends MapTableFieldStrategy {

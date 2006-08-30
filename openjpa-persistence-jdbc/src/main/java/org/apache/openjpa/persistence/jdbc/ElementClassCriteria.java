@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
  * collection, or map element relation as criteria in the join.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 @Target({ METHOD, FIELD })
 @Retention(RUNTIME)

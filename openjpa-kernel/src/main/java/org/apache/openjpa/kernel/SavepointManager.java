@@ -19,7 +19,7 @@ package org.apache.openjpa.kernel;
  * A manager for handling savepoints.
  *
  * @author Steve Kim
- * @since 3.4
+ * @since 0.3.4
  */
 public interface SavepointManager {
 

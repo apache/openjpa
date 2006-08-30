@@ -19,7 +19,7 @@ package org.apache.openjpa.kernel;
  * Standard object lock levels.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 public interface LockLevels {
 

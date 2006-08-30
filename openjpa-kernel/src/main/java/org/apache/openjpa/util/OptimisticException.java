@@ -24,7 +24,7 @@ import org.apache.openjpa.lib.util.Localizer.Message;
  * Exception type for optimistic concurrency violations.
  *
  * @author Marc Prud'hommeaux
- * @since 2.5
+ * @since 0.2.5
  * @nojavadoc
  */
 public class OptimisticException

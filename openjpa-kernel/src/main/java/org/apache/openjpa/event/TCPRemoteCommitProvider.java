@@ -56,7 +56,7 @@ import serp.util.Strings;
  *
  * @author Brian Leair
  * @author Patrick Linskey
- * @since 2.5.0
+ * @since 0.2.5.0
  */
 public class TCPRemoteCommitProvider
     extends AbstractRemoteCommitProvider

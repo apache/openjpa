@@ -37,7 +37,7 @@ import org.apache.openjpa.meta.MetaDataDefaults;
  *
  * @author Steve Kim
  * @author Abe White
- * @since 3.3
+ * @since 0.3.3
  * @nojavadoc
  */
 public class LifecycleEventManager

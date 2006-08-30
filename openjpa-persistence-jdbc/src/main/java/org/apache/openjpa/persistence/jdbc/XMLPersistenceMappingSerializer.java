@@ -56,7 +56,7 @@ import serp.util.Strings;
 /**
  * Serializes persistence mapping to XML.
  *
- * @since 4.0
+ * @since 0.4.0
  * @author Steve Kim
  * @nojavadoc
  */

@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  * Surrogate datastore identity column.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  */
 @Target({ TYPE })
 @Retention(RUNTIME)

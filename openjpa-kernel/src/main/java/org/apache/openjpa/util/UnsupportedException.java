@@ -21,7 +21,7 @@ import org.apache.openjpa.lib.util.Localizer.Message;
  * Exception type for attempts to perform unsupported operations.
  *
  * @author Marc Prud'hommeaux
- * @since 2.5
+ * @since 0.2.5
  */
 public class UnsupportedException
     extends OpenJPAException {

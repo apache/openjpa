@@ -30,7 +30,7 @@ import org.apache.openjpa.util.StoreException;
  * Missing entity.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  * @nojavadoc
  */
 public class EntityNotFoundException

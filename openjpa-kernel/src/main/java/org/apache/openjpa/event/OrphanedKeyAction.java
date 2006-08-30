@@ -22,7 +22,7 @@ import org.apache.openjpa.meta.ValueMetaData;
  * Perform an action when OpenJPA detects an orphaned key in the database.
  *
  * @author Abe White
- * @since 3.2.2
+ * @since 0.3.2.2
  */
 public interface OrphanedKeyAction {
 

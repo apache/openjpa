@@ -28,7 +28,7 @@ import org.apache.openjpa.lib.util.Closeable;
  * Interface implemented by OpenJPA entity manager factories.
  *
  * @author Abe White
- * @since 4.0
+ * @since 0.4.0
  * @published
  */
 public interface OpenJPAEntityManagerFactory
@@ -92,14 +92,14 @@ public interface OpenJPAEntityManagerFactory
      * the listener. The listener will be passed on to all new entity
      * managers. See the <code>org.apache.openjpa.event</code> package for listener types.
      *
-     * @since 3.3
+     * @since 0.3.3
      */
     public void addLifecycleListener(Object listener, Class... classes);
 
     /**
      * Remove a listener for lifecycle-related events.
      *
-     * @since 3.3
+     * @since 0.3.3
      */
     public void removeLifecycleListener (Object listener);
 }

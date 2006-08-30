@@ -301,7 +301,7 @@ public abstract class Extensions {
      * Helper method to issue warnings for any extensions that we
      * recognize but do not use.
      *
-     * @since 3.1.3
+     * @since 0.3.1.3
      */
     public void validateExtensionKeys() {
         if (_exts == null || _exts.isEmpty())
@@ -365,7 +365,7 @@ public abstract class Extensions {
      * method to include both the known extensions of its superclass as well
      * as its own extension keys.
      *
-     * @since 3.1.3
+     * @since 0.3.1.3
      */
     protected void addExtensionKeys(Collection exts) {
         // no extensions by default
