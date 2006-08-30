@@ -104,6 +104,7 @@ public class QueryImpl
     private Class _resultClass = null;
     private transient long _startIdx = 0;
     private transient long _endIdx = Long.MAX_VALUE;
+    private transient boolean _rangeSet = false;
 
     // remember the list of all the results we have returned so we
     // can free their resources when close or closeAll is called
@@ -486,35 +487,13 @@ public class QueryImpl
     }
 
     public long getStartRange() {
-        lock();
-        try {
-            assertOpen();
-            if (_startIdx != 0 || _endIdx != Long.MAX_VALUE
-                || _compiled != null || _query == null || _broker == null)
-                return _startIdx;
-
-            // check again after compilation; maybe encoded in string
-            compileForCompilation();
-            return _startIdx;
-        } finally {
-            unlock();
-        }
+        assertOpen();
+        return _startIdx;
     }
 
     public long getEndRange() {
-        lock();
-        try {
-            assertOpen();
-            if (_startIdx != 0 || _endIdx != Long.MAX_VALUE
-                || _compiled != null || _query == null || _broker == null)
-                return _endIdx;
-
-            // check again after compilation; maybe encoded in string
-            compileForCompilation();
-            return _endIdx;
-        } finally {
-            unlock();
-        }
+        assertOpen();
+        return _endIdx;
     }
 
     public void setRange(long start, long end) {
@@ -532,6 +511,7 @@ public class QueryImpl
             // allowed modification: no read-only check
             _startIdx = start;
             _endIdx = end;
+            _rangeSet = true;
         } finally {
             unlock();
         }
@@ -703,7 +683,7 @@ public class QueryImpl
                 else
                     es[i] = _storeQuery.newDataStoreExecutor(metas[i], true);
             }
-            return new MergedExecutor(es, this);
+            return new MergedExecutor(es);
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (RuntimeException re) {
@@ -799,16 +779,18 @@ public class QueryImpl
                 StoreQuery.Executor ex = (isInMemory(operation))
                     ? compileForInMemory(comp) : compileForDataStore(comp);
 
-                assertParameters(ex, params);
+                Object[] arr = (params.isEmpty()) ? StoreQuery.EMPTY_OBJECTS :
+                    toParameterArray(ex.getParameterTypes(_storeQuery), params);
+                assertParameters(ex, arr);
                 if (_log.isTraceEnabled())
                     logExecution(operation, params);
 
                 if (operation == OP_SELECT)
-                    return execute(ex, params);
+                    return execute(ex, arr);
                 if (operation == OP_DELETE)
-                    return delete(ex, params);
+                    return delete(ex, arr);
                 if (operation == OP_UPDATE)
-                    return update(ex, params);
+                    return update(ex, arr);
                 throw new UnsupportedException();
             } catch (OpenJPAException ke) {
                 throw ke;
@@ -847,7 +829,7 @@ public class QueryImpl
         return ((Number) execute(OP_UPDATE, params)).longValue();
     }
 
-    public Object[] toParameterArray(LinkedMap paramTypes, Map params) {
+    private Object[] toParameterArray(LinkedMap paramTypes, Map params) {
         if (params == null || params.isEmpty())
             return StoreQuery.EMPTY_OBJECTS;
 
@@ -940,63 +922,23 @@ public class QueryImpl
     private Object execute(StoreQuery.Executor ex, Object[] params)
         throws Exception {
         // if this is an impossible result range, return null / empty list
-        if (_startIdx >= _endIdx)
+        StoreQuery.Range range = new StoreQuery.Range(_startIdx, _endIdx);
+        if (!_rangeSet)
+            ex.getRange(_storeQuery, params, range);
+        if (range.start >= range.end)
             return emptyResult(ex);
 
         // execute; if we have a result class or we have only one result
         // and so need to remove it from its array, wrap in a packing rop
-        boolean lrs = isLRS();
-        ResultObjectProvider rop = ex.executeQuery(_storeQuery, params, lrs,
-            _startIdx, _endIdx);
+        range.lrs = isLRS(range.start, range.end);
+        ResultObjectProvider rop = ex.executeQuery(_storeQuery, params, range);
         try {
-            return toResult(ex, rop, lrs);
+            return toResult(ex, rop, range);
         } catch (Exception e) {
             if (rop != null)
                 try { rop.close(); } catch (Exception e2) {}
             throw e;
         }
-    }
-
-    /**
-     * Execute the query using the given compilation, executor, and parameter
-     * values. All other execute methods delegate to this one or to
-     * {@link #execute(StoreQuery.Executor,Object[])} after validation and
-     * locking.
-     */
-    private Object execute(StoreQuery.Executor ex, Map params)
-        throws Exception {
-        // if this is an impossible result range, return null / empty list
-        if (_startIdx >= _endIdx)
-            return emptyResult(ex);
-
-        // execute; if we have a result class or we have only one result
-        // and so need to remove it from its array, wrap in a packing rop
-        boolean lrs = isLRS();
-        ResultObjectProvider rop = ex.executeQuery(_storeQuery, params, lrs,
-            _startIdx, _endIdx);
-        try {
-            return toResult(ex, rop, lrs);
-        } catch (Exception e) {
-            if (rop != null)
-                try {
-                    rop.close();
-                } catch (Exception e2) {
-                }
-            throw e;
-        }
-    }
-
-    /**
-     * Delete the query using the given executor, and parameter
-     * values. All other execute methods delegate to this one or to
-     * {@link #delete(StoreQuery.Executor,Object[])} after validation and
-     * locking. The return value will be a Number indicating the number of
-     * instances deleted.
-     */
-    private Number delete(StoreQuery.Executor ex, Map params)
-        throws Exception {
-        assertBulkModify();
-        return ex.executeDelete(_storeQuery, params);
     }
 
     /**
@@ -1008,7 +950,7 @@ public class QueryImpl
      */
     private Number delete(StoreQuery.Executor ex, Object[] params)
         throws Exception {
-        assertBulkModify();
+        assertBulkModify(ex, params);
         return ex.executeDelete(_storeQuery, params);
     }
 
@@ -1031,19 +973,6 @@ public class QueryImpl
     }
 
     /**
-     * Update the query using the given executor and parameter
-     * values. All other execute methods delegate to this one or to
-     * {@link #update(StoreQuery.Executor,Object[])} after validation and
-     * locking. The return value will be a Number indicating the number of
-     * instances updated.
-     */
-    private Number update(StoreQuery.Executor ex, Map params)
-        throws Exception {
-        assertBulkModify();
-        return ex.executeUpdate(_storeQuery, params);
-    }
-
-    /**
      * Update the query using the given compilation, executor, and parameter
      * values. All other execute methods delegate to this one or to
      * {@link #update(StoreQuery.Executor,Map)} after validation and locking.
@@ -1052,7 +981,7 @@ public class QueryImpl
      */
     private Number update(StoreQuery.Executor ex, Object[] params)
         throws Exception {
-        assertBulkModify();
+        assertBulkModify(ex, params);
         return ex.executeUpdate(_storeQuery, params);
     }
 
@@ -1086,7 +1015,7 @@ public class QueryImpl
             Map.Entry e = (Map.Entry) it.next();
             FieldMetaData fmd = (FieldMetaData) e.getKey();
             if (!(e.getValue() instanceof Constant))
-                throw new UserException(_loc.get("only-update-primitives"));
+                throw new UserException(_loc.get("only-update-constants"));
             Constant value = (Constant) e.getValue();
             Object val = value.getValue(params);
 
@@ -1195,8 +1124,8 @@ public class QueryImpl
     /**
      * Return whether this should be treated as a potential large result set.
      */
-    private boolean isLRS() {
-        long range = _endIdx - _startIdx;
+    private boolean isLRS(long start, long end) {
+        long range = end - start;
         return _fc.getFetchBatchSize() >= 0
             && !(range <= _fc.getFetchBatchSize()
             || (_fc.getFetchBatchSize() == 0 && range <= 50));
@@ -1206,7 +1135,7 @@ public class QueryImpl
      * Return the query result for the given result object provider.
      */
     protected Object toResult(StoreQuery.Executor ex, ResultObjectProvider rop,
-        boolean lrs)
+        StoreQuery.Range range)
         throws Exception {
         // pack projections if necessary
         String[] aliases = ex.getProjectionAliases(_storeQuery);
@@ -1220,13 +1149,13 @@ public class QueryImpl
         // if single result, extract it
         if (_unique == Boolean.TRUE || (aliases.length > 0
             && !ex.hasGrouping(_storeQuery) && ex.isAggregate(_storeQuery)))
-            return singleResult(rop);
+            return singleResult(rop, range);
 
         // now that we've executed the query, we can call isAggregate and
         // hasGrouping efficiently
         boolean detach = (_broker.getAutoDetach() &
             AutoDetach.DETACH_NONTXREAD) > 0 && !_broker.isActive();
-        lrs = lrs && !ex.isAggregate(_storeQuery)
+        boolean lrs = range.lrs && !ex.isAggregate(_storeQuery)
             && !ex.hasGrouping(_storeQuery);
         ResultList res = (!detach && lrs) ? _fc.newResultList(rop)
             : new EagerResultList(rop);
@@ -1281,7 +1210,8 @@ public class QueryImpl
      * Extract an expected single result from the given provider. Used when
      * the result is an ungrouped aggregate or the unique flag is set to true.
      */
-    private Object singleResult(ResultObjectProvider rop)
+    private Object singleResult(ResultObjectProvider rop, 
+        StoreQuery.Range range)
         throws Exception {
         rop.open();
         try {
@@ -1293,7 +1223,7 @@ public class QueryImpl
             Object single = null;
             if (next) {
                 single = rop.getResultObject();
-                if (_endIdx != _startIdx + 1 && rop.next())
+                if (range.end != range.start + 1 && rop.next())
                     throw new InvalidStateException(_loc.get("not-unique",
                         _class, _query));
             }
@@ -1397,10 +1327,13 @@ public class QueryImpl
             assertOpen();
 
             StoreQuery.Executor ex = compileForExecutor();
-            assertParameters(ex, params);
             Object[] arr = toParameterArray(ex.getParameterTypes(_storeQuery),
                 params);
-            return ex.getDataStoreActions(_storeQuery, arr, _startIdx, _endIdx);
+            assertParameters(ex, arr);
+            StoreQuery.Range range = new StoreQuery.Range(_startIdx, _endIdx);
+            if (!_rangeSet)
+                ex.getRange(_storeQuery, arr, range);
+            return ex.getDataStoreActions(_storeQuery, arr, range);
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (Exception e) {
@@ -1654,44 +1587,16 @@ public class QueryImpl
      * Check that we are in a state to be able to perform a bulk operation;
      * also flush the current modfications if any elements are currently dirty.
      */
-    private void assertBulkModify() {
+    private void assertBulkModify(StoreQuery.Executor ex, Object[] params) {
         _broker.assertActiveTransaction();
         if (_startIdx != 0 || _endIdx != Long.MAX_VALUE)
             throw new UserException(_loc.get("no-modify-range"));
         if (_resultClass != null)
             throw new UserException(_loc.get("no-modify-resultclass"));
-    }
-
-    /**
-     * Checks that the passed parameters match the declarations.
-     */
-    private void assertParameters(StoreQuery.Executor ex, Map params) {
-        if (!_storeQuery.requiresParameterDeclarations())
-            return;
-
-        // check that all declared parameters are given compatible values
-        LinkedMap paramTypes = ex.getParameterTypes(_storeQuery);
-        if (paramTypes != null && !paramTypes.isEmpty()) {
-            Map.Entry entry;
-            for (Iterator itr = paramTypes.entrySet().iterator();
-                itr.hasNext();) {
-                entry = (Map.Entry) itr.next();
-                if (!params.containsKey(entry.getKey()))
-                    throw new UserException(_loc.get("unbound-param",
-                        entry.getKey()));
-                if (((Class) entry.getValue()).isPrimitive()
-                    && params.get(entry.getKey()) == null)
-                    throw new UserException(_loc.get("null-primitive-param",
-                        entry.getKey()));
-            }
-        }
-
-        // check that there are no extra params
-        int typeCount = (paramTypes == null) ? 0 : paramTypes.size();
-        int paramCount = (params == null) ? 0 : params.size();
-        if (paramCount > typeCount)
-            throw new UserException(_loc.get("extra-params", new Object[]
-                { new Integer(typeCount), new Integer(paramCount) }));
+        StoreQuery.Range range = new StoreQuery.Range();
+        ex.getRange(_storeQuery, params, range);
+        if (range.start != 0 || range.end != Long.MAX_VALUE)
+            throw new UserException(_loc.get("no-modify-range"));
     }
 
     /**
@@ -1708,7 +1613,7 @@ public class QueryImpl
                 paramTypes.keySet()));
         if (typeCount < params.length)
             throw new UserException(_loc.get("extra-params", new Object[]
-                { new Integer(typeCount), new Integer(params.length) }));
+                { String.valueOf(typeCount), String.valueOf(params.length) }));
 
         Iterator itr = paramTypes.entrySet().iterator();
         Map.Entry entry;
@@ -1761,31 +1666,28 @@ public class QueryImpl
         implements StoreQuery.Executor {
 
         private final StoreQuery.Executor[] _executors;
-        private final QueryContext _ctx;
 
-        public MergedExecutor(StoreQuery.Executor[] executors,
-            QueryContext ctx) {
+        public MergedExecutor(StoreQuery.Executor[] executors) {
             _executors = executors;
-            _ctx = ctx;
         }
 
         public ResultObjectProvider executeQuery(StoreQuery q,
-            Object[] params, boolean lrs, long startIdx, long endIdx) {
+            Object[] params, StoreQuery.Range range) {
             if (_executors.length == 1)
-                return _executors[0].executeQuery(q, params, lrs, startIdx,
-                    endIdx);
+                return _executors[0].executeQuery(q, params, range);
 
             // use lrs settings if we couldn't take advantage of the start index
             // so that hopefully the skip to the start will be efficient
-            lrs = lrs || (startIdx > 0
-                && _ctx.getFetchConfiguration().getFetchBatchSize() >= 0);
+            StoreQuery.Range ropRange = new StoreQuery.Range(0, range.end);
+            ropRange.lrs = range.lrs || (range.start > 0 && q.getContext().
+                getFetchConfiguration().getFetchBatchSize() >= 0);
 
             // execute the query; we cannot use the lower bound of the result
             // range, but we can take advantage of the upper bound
             ResultObjectProvider[] rops =
                 new ResultObjectProvider[_executors.length];
             for (int i = 0; i < _executors.length; i++)
-                rops[i] = _executors[i].executeQuery(q, params, lrs, 0, endIdx);
+                rops[i] = _executors[i].executeQuery(q, params, ropRange);
 
             boolean[] asc = _executors[0].getAscending(q);
             ResultObjectProvider rop;
@@ -1796,52 +1698,13 @@ public class QueryImpl
                     _executors, q, params);
 
             // if there is a lower bound, wrap in range rop
-            if (startIdx != 0)
-                rop = new RangeResultObjectProvider(rop, startIdx, endIdx);
-            return rop;
-        }
-
-        public ResultObjectProvider executeQuery(StoreQuery q, Map params,
-            boolean lrs, long startIdx, long endIdx) {
-            if (_executors.length == 1)
-                return _executors[0].executeQuery(q, params, lrs, startIdx,
-                    endIdx);
-
-            // use lrs settings if we couldn't take advantage of the start index
-            // so that hopefully the skip to the start will be efficient
-            lrs = lrs || (startIdx > 0
-                && _ctx.getFetchConfiguration().getFetchBatchSize() >= 0);
-
-            // execute the query; we cannot use the lower bound of the result
-            // range, but we can take advantage of the upper bound
-            ResultObjectProvider[] rops =
-                new ResultObjectProvider[_executors.length];
-            for (int i = 0; i < _executors.length; i++)
-                rops[i] = _executors[i].executeQuery(q, params, lrs, 0, endIdx);
-
-            boolean[] asc = _executors[0].getAscending(q);
-            ResultObjectProvider rop;
-            if (asc.length == 0)
-                rop = new MergedResultObjectProvider(rops);
-            else
-                rop = new OrderingMergedResultObjectProvider(rops, asc,
-                    _executors, q, _ctx.toParameterArray
-                    (_executors[0].getParameterTypes(q), params));
-
-            // if there is a lower bound, wrap in range rop
-            if (startIdx != 0)
-                rop = new RangeResultObjectProvider(rop, startIdx, endIdx);
+            if (range.start != 0)
+                rop = new RangeResultObjectProvider(rop, range.start, 
+                    range.end);
             return rop;
         }
 
         public Number executeDelete(StoreQuery q, Object[] params) {
-            long num = 0;
-            for (int i = 0; i < _executors.length; i++)
-                num += _executors[i].executeDelete(q, params).longValue();
-            return Numbers.valueOf(num);
-        }
-
-        public Number executeDelete(StoreQuery q, Map params) {
             long num = 0;
             for (int i = 0; i < _executors.length; i++)
                 num += _executors[i].executeDelete(q, params).longValue();
@@ -1855,24 +1718,16 @@ public class QueryImpl
             return Numbers.valueOf(num);
         }
 
-        public Number executeUpdate(StoreQuery q, Map params) {
-            long num = 0;
-            for (int i = 0; i < _executors.length; i++)
-                num += _executors[i].executeUpdate(q, params).longValue();
-            return Numbers.valueOf(num);
-        }
-
         public String[] getDataStoreActions(StoreQuery q, Object[] params,
-            long startIdx, long endIdx) {
+            StoreQuery.Range range) {
             if (_executors.length == 1)
-                return _executors[0].getDataStoreActions(q, params,
-                    startIdx, endIdx);
+                return _executors[0].getDataStoreActions(q, params, range);
 
             List results = new ArrayList(_executors.length);
+            StoreQuery.Range ropRange = new StoreQuery.Range(0L, range.end);
             String[] actions;
             for (int i = 0; i < _executors.length; i++) {
-                actions = _executors[i].getDataStoreActions(q, params, 0,
-                    endIdx);
+                actions = _executors[i].getDataStoreActions(q, params,ropRange);
                 if (actions != null && actions.length > 0)
                     results.addAll(Arrays.asList(actions));
             }
@@ -1881,6 +1736,11 @@ public class QueryImpl
 
         public void validate(StoreQuery q) {
             _executors[0].validate(q);
+        }
+
+        public void getRange(StoreQuery q, Object[] params, 
+            StoreQuery.Range range) {
+            _executors[0].getRange(q, params, range);
         }
 
         public Object getOrderingValue(StoreQuery q, Object[] params,

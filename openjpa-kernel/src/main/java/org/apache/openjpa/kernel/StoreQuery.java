@@ -159,6 +159,23 @@ public interface StoreQuery
     public boolean supportsParameterDeclarations();
 
     /**
+     * A query result range.
+     */
+    public static class Range {
+        public long start = 0L;
+        public long end = Long.MAX_VALUE;
+        public boolean lrs = false;
+
+        public Range() {
+        }
+
+        public Range(long start, long end) {
+            this.start = start;
+            this.end = end;
+        }
+    }
+
+    /**
      * An executor provides a uniform interface to the mechanism for executing
      * either an in-memory or datastore query. In the common case, the
      * {@link #executeQuery} method will be called before other methods,
@@ -179,17 +196,8 @@ public interface StoreQuery
          * aggregate and does not have grouping
          * @see #isPacking
          */
-        public ResultObjectProvider executeQuery(StoreQuery q,
-            Object[] params, boolean lrs, long startIdx, long endIdx);
-
-        /**
-         * Return the result of executing this query with the given parameter
-         * values. Most implementation will use
-         * {@link QueryContext#toParameterArray} to transform the parameters
-         * into an array and invoke the array version of this method.
-         */
-        public ResultObjectProvider executeQuery(StoreQuery q, Map params,
-            boolean lrs, long startIdx, long endIdx);
+        public ResultObjectProvider executeQuery(StoreQuery q, Object[] params,
+            Range range);
 
         /**
          * Deleted the objects that result from the execution of the
@@ -198,34 +206,28 @@ public interface StoreQuery
         public Number executeDelete(StoreQuery q, Object[] params);
 
         /**
-         * Deleted the objects that result from the execution of the
-         * query, retuning the number of objects that were deleted.
-         */
-        public Number executeDelete(StoreQuery q, Map params);
-
-        /**
          * Updates the objects that result from the execution of the
          * query, retuning the number of objects that were updated.
          */
         public Number executeUpdate(StoreQuery q, Object[] params);
 
         /**
-         * Updates the objects that result from the execution of the
-         * query, retuning the number of objects that were updated.
-         */
-        public Number executeUpdate(StoreQuery q, Map params);
-
-        /**
          * Return a description of the commands that will be sent to
          * the datastore in order to execute the query.
          */
         public String[] getDataStoreActions(StoreQuery q, Object[] params,
-            long startIdx, long endIdx);
+            Range range);
 
         /**
          * Validate components of query.
          */
         public void validate(StoreQuery q);
+
+        /**
+         * Mutate the given range to set any range information stored in 
+         * the query string and/or parameters.
+         */
+        public void getRange(StoreQuery q, Object[] params, Range range);
 
         /**
          * Extract the value of the <code>orderIndex</code>th ordering

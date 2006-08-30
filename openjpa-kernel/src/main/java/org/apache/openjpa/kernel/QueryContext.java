@@ -249,11 +249,6 @@ public interface QueryContext {
     public Collection getAggregateListeners();
 
     /**
-     * Helper method to transform the given parameters into an array.
-     */
-    public Object[] toParameterArray(LinkedMap paramTypes, Map params);
-
-    /**
      * Helper method to delete the objects found by executing a query on
      * the given executor.
      */

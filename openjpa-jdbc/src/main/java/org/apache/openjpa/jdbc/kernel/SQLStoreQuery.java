@@ -184,7 +184,7 @@ public class SQLStoreQuery
         }
 
         public ResultObjectProvider executeQuery(StoreQuery q,
-            Object[] params, boolean lrs, long startIdx, long endIdx) {
+            Object[] params, Range range) {
             JDBCStore store = ((SQLStoreQuery) q).getStore();
             DBDictionary dict = store.getDBDictionary();
             String sql = q.getContext().getQueryString();
@@ -209,11 +209,11 @@ public class SQLStoreQuery
             PreparedStatement stmnt = null;
             try {
                 // use the right method depending on sel vs. proc, lrs setting
-                if (_select && !lrs)
+                if (_select && !range.lrs)
                     stmnt = buf.prepareStatement(conn);
                 else if (_select)
                     stmnt = buf.prepareStatement(conn, fetch, -1, -1);
-                else if (!lrs)
+                else if (!range.lrs)
                     stmnt = buf.prepareCall(conn);
                 else
                     stmnt = buf.prepareCall(conn, fetch, -1, -1);
@@ -240,13 +240,13 @@ public class SQLStoreQuery
                 throw SQLExceptions.getStore(se, dict);
             }
 
-            if (startIdx != 0 || endIdx != Long.MAX_VALUE)
-                rop = new RangeResultObjectProvider(rop, startIdx, endIdx);
+            if (range.start != 0 || range.end != Long.MAX_VALUE)
+                rop = new RangeResultObjectProvider(rop, range.start,range.end);
             return rop;
         }
 
         public String[] getDataStoreActions(StoreQuery q, Object[] params,
-            long startIdx, long endIdx) {
+            Range range) {
             return new String[]{ q.getContext().getQueryString() };
         }
 

@@ -22,7 +22,7 @@ package org.apache.openjpa.kernel.exps;
  * @nojavadoc
  */
 public interface Literal
-    extends Constant {
+    extends Value, Constant {
 
     public static final int TYPE_UNKNOWN = 0;
     public static final int TYPE_NUMBER = 1;

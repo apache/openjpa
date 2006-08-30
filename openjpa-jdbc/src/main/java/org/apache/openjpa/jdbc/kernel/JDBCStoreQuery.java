@@ -130,10 +130,10 @@ public class JDBCStoreQuery
     protected ResultObjectProvider executeQuery(Executor ex,
         ClassMetaData base, ClassMetaData[] metas, boolean subclasses,
         ExpressionFactory[] facts, QueryExpressions[] exps, Object[] params,
-        boolean lrs, long startIdx, long endIdx) {
+        Range range) {
         if (metas.length > 1 && exps[0].isAggregate())
-            throw new UserException(Localizer.forPackage(JDBCStoreQuery.class)
-                .get("mult-mapping-aggregate", Arrays.asList(metas)));
+            throw new UserException(Localizer.forPackage(JDBCStoreQuery.class).
+                get("mult-mapping-aggregate", Arrays.asList(metas)));
 
         ClassMapping[] mappings = (ClassMapping[]) metas;
         JDBCFetchConfiguration fetch = (JDBCFetchConfiguration) 
@@ -143,12 +143,12 @@ public class JDBCStoreQuery
             fetch.addJoins(Arrays.asList(exps[0].fetchPaths));
         }
 
-        int eager = calculateEagerMode(exps[0], startIdx, endIdx);
+        int eager = calculateEagerMode(exps[0], range.start, range.end);
         int subclassMode = fetch.getSubclassFetchMode((ClassMapping) base);
         DBDictionary dict = _store.getDBDictionary();
         long start = (mappings.length == 1 && dict.supportsSelectStartIndex) 
-            ? startIdx : 0L;
-        long end = (dict.supportsSelectEndIndex) ? endIdx : Long.MAX_VALUE;
+            ? range.start : 0L;
+        long end = (dict.supportsSelectEndIndex) ? range.end : Long.MAX_VALUE;
 
         // add selects with populate WHERE conditions to list
         List sels = new ArrayList(mappings.length);
@@ -165,8 +165,8 @@ public class JDBCStoreQuery
         // we might want to use lrs settings if we can't use the range
         if (sels.size() > 1)
             start = 0L;
-        lrs = lrs || (fetch.getFetchBatchSize() >= 0 && (start != startIdx 
-            || end != endIdx));
+        boolean lrs = range.lrs || (fetch.getFetchBatchSize() >= 0 
+            && (start != range.start || end != range.end));
 
         ResultObjectProvider[] rops = null;
         ResultObjectProvider rop = null;
@@ -209,9 +209,9 @@ public class JDBCStoreQuery
         }
 
         // need to fake result range?
-        if ((rops != null && endIdx != Long.MAX_VALUE) || start != startIdx
-            || end != endIdx)
-            rop = new RangeResultObjectProvider(rop, startIdx, endIdx);
+        if ((rops != null && range.end != Long.MAX_VALUE) 
+            || start != range.start || end != range.end)
+            rop = new RangeResultObjectProvider(rop, range.start, range.end);
         return rop;
     }
 
@@ -226,7 +226,6 @@ public class JDBCStoreQuery
         final BitSet[] paged = (exps[0].projections.length > 0) ? null
             : new BitSet[mappings.length];
         union.select(new Union.Selector() {
-
             public void select(Select sel, int idx) {
                 BitSet bits = populateSelect(sel, mappings[idx], subclasses,
                     (JDBCExpressionFactory) facts[idx], exps[idx], params,
@@ -392,11 +391,11 @@ public class JDBCStoreQuery
      * or the query is unique, use an eager setting of single. Otherwise use
      * an eager mode of multiple.
      */
-    private int calculateEagerMode(QueryExpressions exps, long startIdx,
-        long endIdx) {
-        if (exps.projections.length > 0 || startIdx >= endIdx)
+    private int calculateEagerMode(QueryExpressions exps, long start,
+        long end) {
+        if (exps.projections.length > 0 || start >= end)
             return EagerFetchModes.EAGER_NONE;
-        if (endIdx - startIdx == 1 || ctx.isUnique())
+        if (end - start == 1 || ctx.isUnique())
             return EagerFetchModes.EAGER_JOIN;
         return EagerFetchModes.EAGER_PARALLEL;
     }
@@ -479,19 +478,13 @@ public class JDBCStoreQuery
                     count += stmnt.executeUpdate();
                 } finally {
                     if (stmnt != null)
-                        try {
-                            stmnt.close();
-                        } catch (SQLException se) {
-                        }
+                        try { stmnt.close(); } catch (SQLException se) {}
                 }
             }
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se, ctx, _store.getDBDictionary());
         } finally {
-            try {
-                conn.close();
-            } catch (SQLException se) {
-            }
+            try { conn.close(); } catch (SQLException se) {}
         }
         return Numbers.valueOf(count);
     }
@@ -572,22 +565,22 @@ public class JDBCStoreQuery
 
     protected String[] getDataStoreActions(ClassMetaData base,
         ClassMetaData[] metas, boolean subclasses, ExpressionFactory[] facts,
-        QueryExpressions[] exps, Object[] params, long startIdx, long endIdx) {
+        QueryExpressions[] exps, Object[] params, Range range) {
         ClassMapping[] mappings = (ClassMapping[]) metas;
-        JDBCFetchConfiguration fetch = (JDBCFetchConfiguration) ctx
-            .getFetchConfiguration();
+        JDBCFetchConfiguration fetch = (JDBCFetchConfiguration) ctx.
+            getFetchConfiguration();
         if (exps[0].fetchPaths != null) {
             fetch.addFields(Arrays.asList(exps[0].fetchPaths));
             fetch.addJoins(Arrays.asList(exps[0].fetchPaths));
         }
 
-        int eager = calculateEagerMode(exps[0], startIdx, endIdx);
+        int eager = calculateEagerMode(exps[0], range.start, range.end);
         eager = Math.min(eager, JDBCFetchConfiguration.EAGER_JOIN);
         int subclassMode = fetch.getSubclassFetchMode((ClassMapping) base);
         DBDictionary dict = _store.getDBDictionary();
         long start = (mappings.length == 1 && dict.supportsSelectStartIndex) 
-            ? startIdx : 0L;
-        long end = (dict.supportsSelectEndIndex) ? endIdx : Long.MAX_VALUE;
+            ? range.start : 0L;
+        long end = (dict.supportsSelectEndIndex) ? range.end : Long.MAX_VALUE;
 
         // add selects with populate WHERE conditions to list
         List sels = new ArrayList(mappings.length);

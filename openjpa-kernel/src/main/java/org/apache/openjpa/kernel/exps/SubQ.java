@@ -42,8 +42,7 @@ class SubQ
         return _alias;
     }
 
-    public void setQueryExpressions(QueryExpressions q, long startIdx,
-        long endIdx) {
+    public void setQueryExpressions(QueryExpressions q) {
     }
 
     public Class getType() {

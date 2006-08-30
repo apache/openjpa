@@ -48,8 +48,6 @@ class SubQ
     private Class _type = null;
     private ClassMetaData _meta = null;
     private QueryExpressions _exps = null;
-    private long _startIdx = 0;
-    private long _endIdx = Long.MAX_VALUE;
 
     /**
      * Constructor. Supply candidate, whether subclasses are included in
@@ -100,11 +98,8 @@ class SubQ
         return _alias;
     }
 
-    public void setQueryExpressions(QueryExpressions query, long startIdx,
-        long endIdx) {
+    public void setQueryExpressions(QueryExpressions query) {
         _exps = query;
-        _startIdx = startIdx;
-        _endIdx = endIdx;
     }
 
     public void initialize(Select sel, JDBCStore store, boolean nullTest) {
@@ -180,7 +175,6 @@ class SubQ
             _cons.CACHE_NULL, fetch);
         _cons.select(store, _candidate, _subs, sel, _exps, params,
             fetch, fetch.EAGER_NONE);
-        sel.setRange(_startIdx, _endIdx);
 
         if (size)
             sql.appendCount(sel, fetch);

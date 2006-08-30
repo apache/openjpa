@@ -89,9 +89,12 @@ class SingleFieldManager
                 proxy = checkProxy();
                 if (proxy == null) {
                     proxy = (Proxy) _sm.newFieldProxy(field);
-                    if (objval != null)
-                        ((Calendar) proxy).setTime(((Calendar) objval).
-                            getTime());
+                    if (objval != null) {
+                        Calendar pcal = (Calendar) proxy;
+                        Calendar ocal = (Calendar) objval;
+                        pcal.setTime(ocal.getTime());
+                        pcal.setTimeZone(ocal.getTimeZone());
+                    }
                     ret = true;
                 }
                 break;

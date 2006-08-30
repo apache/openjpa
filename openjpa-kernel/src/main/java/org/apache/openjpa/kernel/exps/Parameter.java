@@ -22,7 +22,7 @@ package org.apache.openjpa.kernel.exps;
  * @nojavadoc
  */
 public interface Parameter
-    extends Constant {
+    extends Value, Constant {
 
     /**
      * Set the index of this parameter.

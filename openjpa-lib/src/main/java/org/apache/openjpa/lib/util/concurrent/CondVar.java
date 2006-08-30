@@ -31,7 +31,7 @@ class CondVar implements Condition, java.io.Serializable {
      */
     protected final ExclusiveLock lock;
 
-    /* *
+    /**
      * Create a new CondVar that relies on the given mutual exclusion lock.
      * @param lock A non-reentrant mutual exclusion lock.
      */
