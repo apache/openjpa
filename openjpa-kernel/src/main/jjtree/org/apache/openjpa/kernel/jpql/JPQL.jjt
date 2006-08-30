@@ -233,7 +233,7 @@ TOKEN : /* literals */
 		| ((["0"-"9"])+) (<EXPONENT>) (["f","F","d","D"])?
 		| ((["0"-"9"])+) (<EXPONENT>)? (["f","F","d","D"])?) >
 	| < BOOLEAN_LITERAL: "TRUE" | "FALSE" | "true" | "false" >
-	| < EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+	| < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
 	| < STRING_LITERAL: "'"
 	  (("''" | ~["'"])
 		/*
@@ -341,7 +341,7 @@ void delete_statement() #DELETE : { }
 void from_clause() #FROM : { }
 {
 	<FROM> identification_variable_declaration()
-	(<COMMA> (LOOKAHEAD(collection_member_declaration()) collection_member_declaration() | identification_variable_declaration()))*
+	(LOOKAHEAD(1) <COMMA> (LOOKAHEAD(collection_member_declaration()) collection_member_declaration() | LOOKAHEAD(identification_variable_declaration())identification_variable_declaration()))*
 }
 
 
@@ -353,9 +353,21 @@ void identification_variable_declaration(): { }
 
 void from_item() #FROMITEM : { }
 {
-	abstract_schema_name() [<AS>] [identification_variable()]
+	abstract_schema_name() [LOOKAHEAD(1)<AS>] [LOOKAHEAD(identification_variable())identification_variable()]
 }
 
+
+void subquery_from_clause() #FROM : { }
+{
+	<FROM> subquery_from_item()
+		( LOOKAHEAD(1) <COMMA> subquery_from_item() )*
+}
+
+void subquery_from_item() : { }
+{
+        LOOKAHEAD(collection_member_declaration()) collection_member_declaration()
+	| LOOKAHEAD(identification_variable_declaration()) identification_variable_declaration()
+}
 
 void inner_join() #INNERJOIN : { }
 {
@@ -366,13 +378,12 @@ void inner_join() #INNERJOIN : { }
 void collection_member_declaration() #INNERJOIN : { }
 {
 	// synonymous with "INNER JOIN path AS identifier" (InnerJoin)
-	<IN> "(" path() ")" [<AS>] identification_variable()
+	<IN> "(" path() ")" [ LOOKAHEAD(1)<AS>] identification_variable()
 }
-
 
 void outer_join() #OUTERJOIN : { }
 {
-	<LEFT> [<OUTER>] <JOIN> path() [<AS>] identification_variable()
+	<LEFT> [ <OUTER>] <JOIN> path() [ LOOKAHEAD(1)<AS>] identification_variable()
 }
 
 
@@ -423,7 +434,7 @@ void update_item() #UPDATEITEM : { }
 void update_field() #UPDATEFIELD : { }
 {
 	// identification_variable() (<DOT> path_component())+
-	[identification_variable() <DOT>] path_component()
+	[LOOKAHEAD(1) identification_variable() <DOT>] path_component()
 }
 
 
@@ -453,7 +464,7 @@ void select_clause() #SELECTCLAUSE : { }
 
 void simple_select_clause() #SELECTCLAUSE : { }
 {
-	<SELECT> [distinct()] select_expressions() 
+	<SELECT> [distinct()] subselect_expressions() 
 }
 
 
@@ -470,6 +481,20 @@ void select_expression() #SELECTEXPRESSION : { }
 		| identification_variable()
 		| (<OBJECT> "(" identification_variable() ")")
 		| constructor_expression()
+}
+
+
+void subselect_expressions() #SELECTEXPRESSIONS : { }
+{
+	subselect_expression() (<COMMA> subselect_expression())*
+}
+
+void subselect_expression() #SELECTEXPRESSION : { }
+{
+	LOOKAHEAD(path()) path() 
+		| aggregate_select_expression()
+		| LOOKAHEAD(1) identification_variable()
+
 }
 
 
@@ -573,7 +598,7 @@ void groupby_clause() #GROUPBY : { }
 
 void groupby_item() : { }
 {
-	path() 
+	LOOKAHEAD(path()) path() | identification_variable()
 }
 
 
@@ -586,7 +611,7 @@ void having_clause() #HAVING : { }
 void subquery() #SUBSELECT : { }
 {
 	simple_select_clause()
-		from_clause() 
+		subquery_from_clause() 
 		[LOOKAHEAD(where_clause()) where_clause()] 
 		[LOOKAHEAD(groupby_clause()) groupby_clause()] 
 		[LOOKAHEAD(having_clause()) having_clause()] 
@@ -623,7 +648,7 @@ void conditional_primary() : { }
 
 void simple_cond_expression() : { }
 {
-	LOOKAHEAD(all_or_any_expression()) all_or_any_expression() |
+	//LOOKAHEAD(all_or_any_expression()) all_or_any_expression() |
 	LOOKAHEAD(exists_expression()) exists_expression() |
 	LOOKAHEAD(comparison_expression()) comparison_expression() | 
 	LOOKAHEAD(between_expression()) between_expression() | 
@@ -637,19 +662,19 @@ void simple_cond_expression() : { }
 
 void between_expression() #BETWEEN : { }
 {
-	LOOKAHEAD(3) arithmetic_expression()
+	LOOKAHEAD(6) arithmetic_expression()
 		[<NOT> { jjtThis.not = true; }] <BETWEEN> arithmetic_expression()
 		<AND> arithmetic_expression()
-	| LOOKAHEAD(3) string_expression()
+	| LOOKAHEAD(6) string_expression()
 		[<NOT> { jjtThis.not = true; }] <BETWEEN> string_expression() <AND> string_expression()
-	| datetime_expression()
-		[<NOT> { jjtThis.not = true; }] <BETWEEN> datetime_expression() <AND> datetime_expression() 
+	| LOOKAHEAD(6) datetime_expression()
+		[<NOT> { jjtThis.not = true; }] <BETWEEN> datetime_expression() <AND> datetime_expression()
 }
 
 
 void in_expression() #IN : { }
 {
-	path() [<NOT> { jjtThis.not = true; }] <IN>
+	path() [ LOOKAHEAD(1) <NOT> { jjtThis.not = true; }] <IN>
 		"(" (literal_or_param()
 			(<COMMA> (literal_or_param()))* | subquery())
 		")" 
@@ -667,7 +692,7 @@ void literal_or_param() : { }
 
 void like_expression() #LIKE : { }
 {
-	string_value() [<NOT> { jjtThis.not = true; }] <LIKE> pattern_value() 
+	string_expression() [<NOT> { jjtThis.not = true; }] <LIKE> pattern_value() 
 }
 
 
@@ -729,6 +754,7 @@ void comparison_expression() : { }
 	LOOKAHEAD(arithmetic_comp()) arithmetic_comp() |
 	LOOKAHEAD(string_comp()) string_comp() |
 	LOOKAHEAD(boolean_comp()) boolean_comp() | 
+	LOOKAHEAD(enum_comp()) enum_comp() | 
 	LOOKAHEAD(datetime_comp()) datetime_comp() |
 	LOOKAHEAD(entity_comp()) entity_comp()
 }
@@ -736,25 +762,36 @@ void comparison_expression() : { }
 
 void string_comp() : { }
 {
-	string_value() (
+	string_expression() (
 		(<EQ> (string_expression()|all_or_any_expression()) #EQUALS(2))
 		| (<NE> (string_expression()|all_or_any_expression()) #NOTEQUALS(2))
+		| (<GT> (string_expression() | all_or_any_expression()) #GREATERTHAN(2))
+		| (<GE> (string_expression() | all_or_any_expression()) #GREATEROREQUAL(2))
+		| (<LT> (string_expression() | all_or_any_expression()) #LESSTHAN(2))
+		| (<LE> (string_expression() | all_or_any_expression()) #LESSOREQUAL(2))
 		)
 }
 
 
 void boolean_comp() : { }
 {
-	boolean_value() (
+	boolean_expression() (
 	(<EQ> (boolean_expression() | all_or_any_expression()) #EQUALS(2))
 	| (<NE> (boolean_expression() | all_or_any_expression()) #NOTEQUALS(2))
 	)
 }
 
+void enum_comp() : { }
+{
+	enum_expression() (
+	(<EQ> (enum_expression() | all_or_any_expression()) #EQUALS(2))
+	| (<NE> (enum_expression() | all_or_any_expression()) #NOTEQUALS(2))
+	)
+}
 
 void entity_comp() : { }
 {
-	entity_bean_value() (
+	entity_bean_expression() (
 	(<EQ> ((LOOKAHEAD(all_or_any_expression()) all_or_any_expression() | entity_bean_expression()) #EQUALS(2)))
 	| (<NE> ((LOOKAHEAD(all_or_any_expression()) all_or_any_expression() | entity_bean_expression()) #NOTEQUALS(2)))
 	)
@@ -764,7 +801,7 @@ void entity_comp() : { }
 void arithmetic_comp() : { }
 {
 	// arithmetic_value() (
-	arithmetic_factor() (
+	arithmetic_expression() (
 	(<EQ> (arithmetic_expression() | all_or_any_expression()) #EQUALS(2))
 	| (<GT> (arithmetic_expression() | all_or_any_expression()) #GREATERTHAN(2))
 	| (<GE> (arithmetic_expression() | all_or_any_expression()) #GREATEROREQUAL(2))
@@ -777,7 +814,7 @@ void arithmetic_comp() : { }
 
 void datetime_comp() : { }
 {
-	datetime_primary() (
+	datetime_expression() (
 	(<EQ> (datetime_expression() | all_or_any_expression()) #EQUALS(2))
 	| (<GT> (datetime_expression() | all_or_any_expression()) #GREATERTHAN(2))
 	| (<GE> (datetime_expression() | all_or_any_expression()) #GREATEROREQUAL(2))
@@ -790,7 +827,7 @@ void datetime_comp() : { }
 
 void arithmetic_value() : { }
 {
-	path() | functions_returning_numerics() | subquery() 
+	path() | functions_returning_numerics() | "(" subquery() ")"
 }
 
 
@@ -817,9 +854,10 @@ void arithmetic_factor() : { }
 	numeric_literal() | 
 	input_parameter() | 
 	path() |
-	"(" arithmetic_expression() ")"  | 
+	LOOKAHEAD(2) "(" arithmetic_expression() ")" | 
 	functions_returning_numerics() | 
-	subquery() 
+	aggregate_select_expression() |	
+	subquery()
 }
 
 
@@ -831,7 +869,7 @@ void negative() #NEGATIVE : { }
 
 void string_value() : { }
 {
-	path() | functions_returning_strings() | subquery() 
+	path() | functions_returning_strings() | "(" subquery() ")"
 }
 
 
@@ -843,8 +881,8 @@ void string_expression() : { }
 
 void string_primary() : { }
 {
-	path() | string_literal() | "(" string_expression() ")" | 
-	functions_returning_strings() | subquery() 
+	string_literal() | path() | LOOKAHEAD(2) "(" string_expression() ")" | 
+	functions_returning_strings() | LOOKAHEAD(2)  "(" subquery() ")"
 }
 
 
@@ -862,7 +900,7 @@ void datetime_primary() : { }
 
 void boolean_value() : { }
 {
-	path() | subquery() 
+	path() | "(" subquery() ")"
 }
 
 
@@ -874,7 +912,7 @@ void boolean_expression() : { }
 
 void boolean_primary() : { }
 {
-	path() | boolean_literal() | input_parameter()
+	LOOKAHEAD(2) path() | boolean_literal() | input_parameter()
 }
 
 
@@ -886,7 +924,7 @@ void enum_expression() : { }
 
 void enum_primary() : { }
 {
-	path()
+	LOOKAHEAD(2) path()
 	| LOOKAHEAD(enum_literal()) enum_literal()
 	| LOOKAHEAD(input_parameter()) input_parameter()
 }
@@ -930,7 +968,7 @@ void substring() #SUBSTRING : { }
 
 void trim() #TRIM : { }
 {
-	<TRIM> "(" [[trim_specification()] [trim_character()] <FROM>]
+	<TRIM> "(" [LOOKAHEAD(2)[trim_specification()] [trim_character()] <FROM>]
 		string_expression() ")"
 }
 
@@ -950,7 +988,7 @@ void upper() #UPPER : { }
 
 void trim_specification() : { }
 {
-	(<LEADING> #TRIMLEADING) | (<TRAILING> #TRIMTRAILING) | (<BOTH> #TRIMBOTH)
+	LOOKAHEAD(2) (<LEADING> #TRIMLEADING) | (<TRAILING> #TRIMTRAILING) | (<BOTH> #TRIMBOTH)
 }
 
 
