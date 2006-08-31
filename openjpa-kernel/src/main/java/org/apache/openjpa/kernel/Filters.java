@@ -225,7 +225,7 @@ public class Filters {
         if (c1 == String.class && c2 == Character.class)
             return true;
         if (c2 == String.class)
-            return true;
+            return !strict;
         return false;
     }
 
