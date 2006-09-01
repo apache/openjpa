@@ -41,6 +41,7 @@ public abstract class AbstractMetaDataDefaults
 
     private int _access = ClassMetaData.ACCESS_FIELD;
     private boolean _ignore = true;
+    private boolean _interface = true;
     private boolean _pcRegistry = true;
     private int _callback = CALLBACK_RETHROW;
 
@@ -170,7 +171,8 @@ public abstract class AbstractMetaDataDefaults
      */
     private void populateFromReflection(ClassMetaData meta) {
         Member[] members;
-        if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
+        boolean iface = meta.getDescribedType().isInterface();
+        if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD && !iface)
             members = meta.getDescribedType().getDeclaredFields();
         else
             members = meta.getDescribedType().getDeclaredMethods();
@@ -263,6 +265,14 @@ public abstract class AbstractMetaDataDefaults
     protected abstract boolean isDefaultPersistent(ClassMetaData meta,
         Member member, String name);
 
+    public void setDeclaredInterfacePersistent(boolean pers) {
+        _interface = pers;
+    }
+
+    public boolean isDeclaredInterfacePersistent() {
+        return _interface;
+    }
+
     public Member getBackingMember(FieldMetaData fmd) {
         if (fmd == null)
             return null;
@@ -319,6 +329,10 @@ public abstract class AbstractMetaDataDefaults
                 name, clsName, "get" + capName));
         throw new UserException(_loc.get("pc-registry-no-boolean-method",
             new String[]{ name, clsName, "get" + capName, "is" + capName }));
+    }
+
+    public Class getUnimplementedExceptionType() {
+        return UnsupportedOperationException.class;
     }
 
     /**

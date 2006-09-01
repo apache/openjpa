@@ -104,10 +104,18 @@ public class NoneMetaDataFactory
     public void setIgnoreNonPersistent(boolean ignore) {
     }
 
+    public boolean isDeclaredInterfacePersistent() {
+        return false;
+    }
+
     public void populate(ClassMetaData meta, int access) {
     }
 
     public Member getBackingMember(FieldMetaData fmd) {
+        return null;
+    }
+
+    public Class getUnimplementedExceptionType() {
         return null;
     }
 }

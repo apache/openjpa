@@ -62,8 +62,14 @@ class InheritanceComparator
 
         int i1 = levels(c1);
         int i2 = levels(c2);
-        if (i1 == i2)
+        if (i1 == i2) {
+            // sort simple interfaces as well as simple order test will fail.
+            if (c1.isAssignableFrom(o2.getClass()))
+                return -1;
+            if (c2.isAssignableFrom(o1.getClass()))
+                return 1;
             return c1.getName().compareTo(c2.getName());
+        }
         return i1 - i2;
     }
 

@@ -51,6 +51,12 @@ public interface MetaDataDefaults
     public void setIgnoreNonPersistent(boolean ignore);
 
     /**
+     * Whether declared interfaces of a class are treated as persistent
+     * types. Defaults to true.
+     */
+    public boolean isDeclaredInterfacePersistent();
+
+    /**
      * Populate the given metadata with default settings.
      *
      * @param access access type constant from {@link ClassMetaData}
@@ -61,4 +67,10 @@ public interface MetaDataDefaults
      * Return the backing member for the given field metadata.
      */
     public Member getBackingMember(FieldMetaData field);
+
+    /**
+     * Return a runtime exception class to throw for un-implemented
+     * managed interface methods.
+     */
+    public Class getUnimplementedExceptionType();
 }

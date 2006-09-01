@@ -90,8 +90,9 @@ public class PCEnhancer {
 
     public static final int ENHANCE_NONE = 0;
     public static final int ENHANCE_AWARE = 2 << 0;
-    public static final int ENHANCE_PC = 2 << 1;
-    public static final int ENHANCE_OID = 2 << 2;
+    public static final int ENHANCE_INTERFACE = 2 << 1;
+    public static final int ENHANCE_PC = 2 << 2;
+    public static final int ENHANCE_OID = 2 << 3;
 
     private static final String PRE = "pc";
     private static final Class PCTYPE = PersistenceCapable.class;
@@ -127,7 +128,7 @@ public class PCEnhancer {
      * Constructor. Supply configuration and type to enhance.
      */
     public PCEnhancer(OpenJPAConfiguration conf, Class type) {
-        this(conf, new Project().loadClass(type), null);
+        this(conf, new Project().loadClass(type), (MetaDataRepository) null);
     }
 
     /**
@@ -161,6 +162,17 @@ public class PCEnhancer {
         } else
             _repos = repos;
         _meta = _repos.getMetaData(type.getType(), null, false);
+    }
+
+    /**
+     * Constructor. Supply configuration, type, and metadata.
+     */
+    public PCEnhancer(OpenJPAConfiguration conf, BCClass type,
+        ClassMetaData meta) {
+        _pc = type;
+        _log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
+        _repos = meta.getRepository();
+        _meta = meta;
     }
 
     /**
@@ -266,6 +278,10 @@ public class PCEnhancer {
             _log.trace(_loc.get("enhance-start", _pc.getType()));
 
         try {
+            // if managed interface, skip
+            if (_pc.isInterface())
+                return ENHANCE_INTERFACE;
+
             // check if already enhanced
             Class[] interfaces = _pc.getDeclaredInterfaceTypes();
             for (int i = 0; i < interfaces.length; i++) {
@@ -612,13 +628,13 @@ public class PCEnhancer {
             String prefix = (get) ? PRE + "Get" : PRE + "Set";
             methodName = prefix + name;
             if (get) {
-                mi.setMethod(owner.getDescribedType().getName(),
+                mi.setMethod(getType(owner).getName(),
                     methodName, typeName, new String[]
-                    { owner.getDescribedType().getName() });
+                    { getType(owner).getName() });
             } else {
-                mi.setMethod(owner.getDescribedType().getName(),
+                mi.setMethod(getType(owner).getName(),
                     methodName, "void", new String[]
-                    { owner.getDescribedType().getName(), typeName });
+                    { getType(owner).getName(), typeName });
             }
         }
     }
@@ -658,6 +674,10 @@ public class PCEnhancer {
         }
         if (owner.getName().equals(Object.class.getName()))
             return null;
+
+        // managed interface
+        if (_meta != null && _meta.getDescribedType().isInterface())
+            return _meta;
 
         return _repos.getMetaData(owner, null, false);
     }
@@ -722,8 +742,9 @@ public class PCEnhancer {
         // super.pcClearFields ()
         if (_meta.getPCSuperclass() != null) {
             code.aload().setThis();
-            code.invokespecial().setMethod(_meta.getPCSuperclass(),
-                PRE + "ClearFields", void.class, null);
+            code.invokespecial().setMethod(getType(_meta.
+                getPCSuperclassMetaData()), PRE + "ClearFields", void.class, 
+                null);
         }
 
         FieldMetaData[] fmds = _meta.getDeclaredFields();
@@ -849,7 +870,8 @@ public class PCEnhancer {
         // return <fields> + <superclass>.pcGetManagedFieldCount ()
         code.constant().setValue(_meta.getDeclaredFields().length);
         if (_meta.getPCSuperclass() != null) {
-            code.invokestatic().setMethod(_meta.getPCSuperclass().getName(),
+            code.invokestatic().setMethod(getType(_meta.
+                getPCSuperclassMetaData()).getName(),
                 PRE + "GetManagedFieldCount", int.class.getName(), null);
             code.iadd();
         }
@@ -1039,14 +1061,15 @@ public class PCEnhancer {
             loadManagedInstance(code, false);
             String[] args;
             if (copy) {
-                args = new String[]{ _meta.getPCSuperclass().getName(),
-                    int.class.getName() };
+                args = new String[]{ getType(_meta.getPCSuperclassMetaData()).
+                    getName(), int.class.getName() };
                 code.aload().setParam(0);
             } else
                 args = new String[]{ int.class.getName() };
             code.iload().setParam(fieldNumber);
-            code.invokespecial().setMethod(_meta.getPCSuperclass().
-                getName(), name, void.class.getName(), args);
+            code.invokespecial().setMethod(getType(_meta.
+                getPCSuperclassMetaData()).getName(), name, 
+                void.class.getName(), args);
             code.vreturn();
         } else
             throwException(code, IllegalArgumentException.class);
@@ -1442,7 +1465,8 @@ public class PCEnhancer {
             loadManagedInstance(code, false);
             for (int i = 0; i < args.length; i++)
                 code.aload().setParam(i);
-            code.invokespecial().setMethod(_meta.getPCSuperclass().getName(),
+            code.invokespecial().setMethod(getType(_meta.
+                getPCSuperclassMetaData()).getName(),
                 PRE + "CopyKeyFieldsToObjectId", void.class.getName(), args);
         }
 
@@ -1535,7 +1559,8 @@ public class PCEnhancer {
             loadManagedInstance(code, false);
             for (int i = 0; i < args.length; i++)
                 code.aload().setParam(i);
-            code.invokespecial().setMethod(_meta.getPCSuperclass().getName(),
+            code.invokespecial().setMethod(getType(_meta.
+                getPCSuperclassMetaData()).getName(),
                 PRE + "CopyKeyFieldsFromObjectId", void.class.getName(), args);
         }
 
@@ -1729,14 +1754,14 @@ public class PCEnhancer {
             // new ObjectId (cls, oid)
             code.anew().setType(ObjectId.class);
             code.dup();
-            code.classconstant().setClass(_meta.getDescribedType());
+            code.classconstant().setClass(getType(_meta));
         }
 
         // new <oid class> ();
         code.anew().setType(oidType);
         code.dup();
         if (_meta.isOpenJPAIdentity() || (obj && usesClsString == Boolean.TRUE))
-            code.classconstant().setClass(_meta.getDescribedType());
+            code.classconstant().setClass(getType(_meta));
         if (obj) {
             code.aload().setParam(0);
             code.checkcast().setType(String.class);
@@ -1926,12 +1951,14 @@ public class PCEnhancer {
         Code code = getOrCreateClassInitCode(true);
         if (_meta.getPCSuperclass() != null) {
             // pcInheritedFieldCount = <superClass>.pcGetManagedFieldCount()
-            code.invokestatic().setMethod(_meta.getPCSuperclass().getName(),
+            code.invokestatic().setMethod(getType(_meta.
+                getPCSuperclassMetaData()).getName(), 
                 PRE + "GetManagedFieldCount", int.class.getName(), null);
             code.putstatic().setField(INHERIT, int.class);
 
             // pcPCSuperclass = <superClass>;
-            code.classconstant().setClass(_meta.getPCSuperclass());
+            code.classconstant().setClass(getType(_meta.
+                getPCSuperclassMetaData()));
             code.putstatic().setField(SUPER, Class.class);
         }
 
@@ -2961,7 +2988,7 @@ public class PCEnhancer {
         // readUnmanaged (in);
         loadManagedInstance(code, false);
         code.aload().setParam(0);
-        code.invokevirtual().setMethod(_meta.getDescribedType(),
+        code.invokevirtual().setMethod(getType(_meta),
             PRE + "ReadUnmanaged", void.class, inargs);
 
         if (detachedState) {
@@ -3013,8 +3040,9 @@ public class PCEnhancer {
         if (parentDetachable) {
             loadManagedInstance(code, false);
             code.aload().setParam(0);
-            code.invokespecial().setMethod(_meta.getPCSuperclass(),
-                PRE + "ReadUnmanaged", void.class, inargs);
+            code.invokespecial().setMethod(getType(_meta.
+                getPCSuperclassMetaData()), PRE + "ReadUnmanaged", void.class, 
+                inargs);
         }
 
         // read declared unmanaged serializable fields
@@ -3091,7 +3119,7 @@ public class PCEnhancer {
         Code code = meth.getCode(true);
 
         // super.writeExternal (out);
-        Class sup = _meta.getDescribedType().getSuperclass();
+        Class sup = getType(_meta).getSuperclass();
         if (!parentDetachable && Externalizable.class.isAssignableFrom(sup)) {
             loadManagedInstance(code, false);
             code.aload().setParam(0);
@@ -3102,7 +3130,7 @@ public class PCEnhancer {
         // writeUnmanaged (out);
         loadManagedInstance(code, false);
         code.aload().setParam(0);
-        code.invokevirtual().setMethod(_meta.getDescribedType(),
+        code.invokevirtual().setMethod(getType(_meta),
             PRE + "WriteUnmanaged", void.class, outargs);
 
         JumpInstruction go2 = null;
@@ -3169,8 +3197,9 @@ public class PCEnhancer {
         if (parentDetachable) {
             loadManagedInstance(code, false);
             code.aload().setParam(0);
-            code.invokespecial().setMethod(_meta.getPCSuperclass(),
-                PRE + "WriteUnmanaged", void.class, outargs);
+            code.invokespecial().setMethod(getType(_meta.
+                getPCSuperclassMetaData()), PRE + "WriteUnmanaged", void.class, 
+                outargs);
         }
 
         // write declared unmanaged serializable fields
@@ -3316,7 +3345,7 @@ public class PCEnhancer {
             // static void pcSet<field> (XXX inst, <fieldtype> value)
             BCField field = _pc.getDeclaredField(fmd.getName());
             setter = _pc.declareMethod(PRE + "Set" + fmd.getName(), void.class,
-                new Class[]{ _meta.getDescribedType(), fmd.getDeclaredType() });
+                new Class[]{ getType(_meta), fmd.getDeclaredType() });
             setter.setAccessFlags(field.getAccessFlags()
                 & ~Constants.ACCESS_TRANSIENT & ~Constants.ACCESS_VOLATILE);
             setter.setStatic(true);
@@ -3336,6 +3365,17 @@ public class PCEnhancer {
         transferCodeAttributes(setter, newsetter);
         return setter;
     }
+
+    /**
+     * Return the concrete type for the given class, i.e. impl for managed
+     * interfaces
+     */
+    public Class getType(ClassMetaData meta) {
+        if (meta.getInterfaceImpl() != null)
+            return meta.getInterfaceImpl();
+        return meta.getDescribedType();
+    }
+
 
     /**
      * Move code-related attributes from one method to another.
@@ -3479,6 +3519,8 @@ public class PCEnhancer {
             status = enhancer.run();
             if (status == ENHANCE_NONE)
                 log.info(_loc.get("enhance-norun"));
+            else if (status == ENHANCE_INTERFACE)
+                log.info(_loc.get("enhance-interface"));
             else if (status == ENHANCE_AWARE) {
                 log.info(_loc.get("enhance-aware"));
                 enhancer.record();

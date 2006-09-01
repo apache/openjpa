@@ -241,6 +241,8 @@ public class StateManagerImpl
             }
             _meta = sub;
         }
+        if (cls.isInterface())
+            cls = _meta.getInterfaceImpl();
 
         PersistenceCapable inst = PCRegistry.newInstance(cls, this, _oid, true);
         if (inst == null) {

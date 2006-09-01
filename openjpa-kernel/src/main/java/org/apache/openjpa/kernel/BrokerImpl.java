@@ -2494,6 +2494,9 @@ public class BrokerImpl
 
             PersistenceCapable copy;
             PCState state;
+            Class type = meta.getDescribedType();
+            if (type.isInterface())
+                type = meta.getInterfaceImpl();
             if (obj != null) {
                 // give copy and the original instance the same state manager
                 // so that we can copy fields from one to the other
@@ -2512,8 +2515,7 @@ public class BrokerImpl
                     // copy the instance.  we do this even if it doesn't already
                     // have a state manager in case it is later assigned to a
                     // PC field; at that point it's too late to copy
-                    copy = PCRegistry.newInstance(meta.getDescribedType(),
-                        copySM, false);
+                    copy = PCRegistry.newInstance(type, copySM, false);
                     int[] fields = new int[meta.getFields().length];
                     for (int i = 0; i < fields.length; i++)
                         fields[i] = i;
@@ -2527,8 +2529,7 @@ public class BrokerImpl
                         pc.pcReplaceStateManager(null);
                 }
             } else {
-                copy = PCRegistry.newInstance(meta.getDescribedType(), sm,
-                    false);
+                copy = PCRegistry.newInstance(type, sm, false);
                 if ((_flags & FLAG_ACTIVE) != 0 && !_optimistic)
                     state = PCState.ECLEAN;
                 else
@@ -3986,8 +3987,11 @@ public class BrokerImpl
     public Object newInstance(Class cls) {
         assertOpen();
 
-        //### JDO2
-        if (cls.isInterface() || Modifier.isAbstract(cls.getModifiers()))
+        if (cls.isInterface()) {
+            ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
+                getMetaData(cls, _loader, true);
+            cls = meta.getInterfaceImpl();
+        } else if (Modifier.isAbstract(cls.getModifiers()))
             throw new UnsupportedOperationException(_loc.get
                 ("new-abstract", cls).getMessage());
 

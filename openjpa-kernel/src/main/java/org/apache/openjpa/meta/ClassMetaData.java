@@ -140,6 +140,8 @@ public class ClassMetaData
     private Boolean _openjpaId = null;
     private Boolean _extent = null;
     private Boolean _embedded = null;
+    private Boolean _interface = null;
+    private Class _impl = null;
     private int _identity = -1;
     private int _idStrategy = ValueStrategies.NONE;
     private int _accessType = ACCESS_UNKNOWN;
@@ -215,9 +217,8 @@ public class ClassMetaData
      * an embedded value changes its declared type.
      */
     protected void setDescribedType(Class type) {
-        if (type.isInterface())
-            throw new MetaDataException(_loc.get("interface", type));
-        if ("java.lang.Enum".equals(type.getSuperclass().getName()))
+        if (type.getSuperclass() != null && "java.lang.Enum".equals
+            (type.getSuperclass().getName()))
             throw new MetaDataException(_loc.get("enum", type));
         _type = type;
     }
@@ -669,6 +670,38 @@ public class ClassMetaData
         _embedded = (embed) ? Boolean.TRUE : Boolean.FALSE;
     }
 
+    /**
+     * Whether the type is a managed interface.
+     */
+    public boolean isManagedInterface() {
+        if (!_type.isInterface())
+            return false;
+        return _interface == null ? false : _interface.booleanValue();
+    }
+
+    /**
+     * Whether the type is a managed interface
+     */
+    public void setManagedInterface(boolean managedInterface) {
+        if (!_type.isInterface())
+            throw new MetaDataException(_loc.get("not-interface", _type));
+        _interface = managedInterface ? Boolean.TRUE : Boolean.FALSE;
+    }
+
+    /**
+     * Return the managed interface implementor if any.
+     */
+    public Class getInterfaceImpl() {
+        return _impl;
+    }
+
+    /**
+     * Set the managed interface implementor class.
+     */
+    public void setInterfaceImpl(Class impl) {
+        _impl = impl;
+    }
+    
     /**
      * Return the number of fields that use impl or intermediate data, in
      * order to create a compacted array for storage of said data.
@@ -1481,7 +1514,19 @@ public class ClassMetaData
             log.trace(_loc.get((embed) ? "resolve-embed-meta" : "resolve-meta",
                 this + "@" + System.identityHashCode(this)));
 
-        if (runtime && !PersistenceCapable.class.isAssignableFrom(_type))
+        if (_type.isInterface()) {
+            if (!embed && _interface != Boolean.TRUE)
+                throw new MetaDataException(_loc.get("interface", _type));
+
+            if (runtime) {
+                _impl = _repos.getImplGenerator().createImpl(this);
+                if (!embed)
+                    _repos.setInterfaceImpl(this, _impl);
+            }
+        }
+
+        if (runtime && !_type.isInterface() && 
+            !PersistenceCapable.class.isAssignableFrom(_type))
             throw new MetaDataException(_loc.get("not-enhanced", _type));
 
         // are we the target of an embedded value?
@@ -2113,6 +2158,8 @@ public class ClassMetaData
         _objectId = meta.getObjectIdType();
         _extent = (meta.getRequiresExtent()) ? Boolean.TRUE : Boolean.FALSE;
         _embedded = (meta.isEmbeddedOnly()) ? Boolean.TRUE : Boolean.FALSE;
+        _interface = (meta.isManagedInterface()) ? Boolean.TRUE : Boolean.FALSE;
+        _impl = meta.getInterfaceImpl();
         _identity = meta.getIdentityType();
         _idStrategy = meta.getIdentityStrategy();
         _seqName = meta.getIdentitySequenceName();
