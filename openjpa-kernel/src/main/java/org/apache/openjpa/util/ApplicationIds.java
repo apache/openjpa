@@ -257,8 +257,11 @@ public class ApplicationIds {
         // to the original oid values, then copy its key fields to a new
         // oid instance
         if (!Modifier.isAbstract(meta.getDescribedType().getModifiers())) {
-            PersistenceCapable pc = PCRegistry.newInstance
-                (meta.getDescribedType(), null, oid, false);
+            Class type = meta.getDescribedType();
+            if (meta.getInterfaceImpl() != null)
+                type = meta.getInterfaceImpl();
+            PersistenceCapable pc = PCRegistry.newInstance(type, null, oid, 
+                 false);
             Object copy = pc.pcNewObjectIdInstance();
             pc.pcCopyKeyFieldsToObjectId(copy);
             return copy;

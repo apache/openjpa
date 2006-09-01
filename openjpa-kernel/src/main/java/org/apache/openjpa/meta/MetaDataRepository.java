@@ -105,6 +105,7 @@ public class MetaDataRepository
     private final Map _metas = new HashMap();
     private final Map _oids = Collections.synchronizedMap(new HashMap());
     private final Map _impls = Collections.synchronizedMap(new HashMap());
+    private final Map _ifaces = Collections.synchronizedMap(new HashMap());
     private final Map _queries = new HashMap();
     private final Map _seqs = new HashMap();
     private final Map _aliases = Collections.synchronizedMap(new HashMap());
@@ -116,6 +117,7 @@ public class MetaDataRepository
     private OpenJPAConfiguration _conf = null;
     private Log _log = null;
     private MetaDataFactory _factory = null;
+    private InterfaceImplGenerator _implGen = null;
     private int _resMode = MODE_META | MODE_MAPPING;
     private int _sourceMode = MODE_META | MODE_MAPPING | MODE_QUERY;
     private int _validate = VALIDATE_META | VALIDATE_UNENHANCED;
@@ -541,6 +543,18 @@ public class MetaDataRepository
                 } else
                     sup = sup.getSuperclass();
             }
+            if (meta.getDescribedType().isInterface()) {
+                Class[] sups = meta.getDescribedType().getInterfaces();
+                for (int i = 0; i < sups.length; i++) {
+                    supMeta = getMetaData(sups[i], meta.getEnvClassLoader(), 
+                        false);
+                    if (supMeta != null) {
+                        meta.setPCSuperclass(sup);
+                        meta.setPCSuperclassMetaData(supMeta);
+                        break;
+                    }
+                }
+            }
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("assigned-sup", meta,
                     meta.getPCSuperclass()));
@@ -845,12 +859,41 @@ public class MetaDataRepository
         if (cls == null)
             return false;
         if (_metas.remove(cls) != null) {
+            Class impl = (Class) _ifaces.remove(cls);
+            if (impl != null)
+                _metas.remove(impl);
             _count--;
             return true;
         }
         return false;
     }
+
+    /**
+     * Add the given metadata as declared interface implementation.
+     */
+    public void addDeclaredInterfaceImpl(ClassMetaData meta, Class iface) {
+        synchronized (_impls) {
+            addToCollection(_impls, iface, meta.getDescribedType(), false);
+        }
+    }
+
+    /**
+     * Set the implementation for the given managed interface.
+     */
+    synchronized void setInterfaceImpl(ClassMetaData meta, Class impl) {
+        if (!meta.isManagedInterface())
+            throw new MetaDataException(_loc.get("not-managed-interface", 
+                meta, impl));
+        _ifaces.put(meta.getDescribedType(), impl);
+        _metas.put(impl, meta);
+    }
     
+    synchronized InterfaceImplGenerator getImplGenerator() {
+        if (_implGen == null)
+            _implGen = new InterfaceImplGenerator(this);
+        return _implGen;
+    }
+
     /**
      * Return the least-derived class metadata for the given application
      * identity object.
@@ -1274,6 +1317,8 @@ public class MetaDataRepository
      * Update the list of implementations of base classes and interfaces.
      */
     private void updateImpls(Class cls, Class leastDerived, Class check) {
+        if (_factory.getDefaults().isDeclaredInterfacePersistent())
+            return;
         // allow users to query on common non-pc superclasses
         Class sup = check.getSuperclass();
         if (leastDerived == cls && sup != null && sup != Object.class) {

@@ -25,7 +25,11 @@ public class MetaDataInheritanceComparator
     extends InheritanceComparator {
 
     protected Class toClass(Object elem) {
-        return (elem == null) ? null
-            : ((ClassMetaData) elem).getDescribedType();
+        if (elem == null)
+            return null;
+        ClassMetaData meta = (ClassMetaData) elem;
+        if (meta.getInterfaceImpl() != null)
+            return meta.getInterfaceImpl();
+        return meta.getDescribedType();
     }
 }
