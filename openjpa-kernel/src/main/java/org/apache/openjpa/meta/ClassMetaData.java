@@ -1514,17 +1514,6 @@ public class ClassMetaData
             log.trace(_loc.get((embed) ? "resolve-embed-meta" : "resolve-meta",
                 this + "@" + System.identityHashCode(this)));
 
-        if (_type.isInterface()) {
-            if (!embed && _interface != Boolean.TRUE)
-                throw new MetaDataException(_loc.get("interface", _type));
-
-            if (runtime) {
-                _impl = _repos.getImplGenerator().createImpl(this);
-                if (!embed)
-                    _repos.setInterfaceImpl(this, _impl);
-            }
-        }
-
         if (runtime && !_type.isInterface() && 
             !PersistenceCapable.class.isAssignableFrom(_type))
             throw new MetaDataException(_loc.get("not-enhanced", _type));
@@ -1599,6 +1588,16 @@ public class ClassMetaData
         if (_fgMap != null)
             for (Iterator itr = _fgMap.values().iterator(); itr.hasNext();)
                 ((FetchGroup) itr.next()).resolve();
+
+        if (!embed && _type.isInterface()) {
+            if (_interface != Boolean.TRUE)
+                throw new MetaDataException(_loc.get("interface", _type));
+
+            if (runtime) {
+                _impl = _repos.getImplGenerator().createImpl(this);
+                _repos.setInterfaceImpl(this, _impl);
+            }
+        }
 
         // if this is runtime, create a pc instance and scan it for comparators
         if (runtime && !Modifier.isAbstract(_type.getModifiers())) {
