@@ -77,6 +77,8 @@ public class InheritanceComparator
      * Count the levels of inheritance between this class and our base class.
      */
     private int levels(Class to) {
+        if (to.isInterface())
+            return to.getInterfaces().length;
         for (int i = 0; to != null; i++, to = to.getSuperclass())
             if (to == _base)
                 return i;
