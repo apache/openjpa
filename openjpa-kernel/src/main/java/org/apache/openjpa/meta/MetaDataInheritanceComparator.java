@@ -27,9 +27,6 @@ public class MetaDataInheritanceComparator
     protected Class toClass(Object elem) {
         if (elem == null)
             return null;
-        ClassMetaData meta = (ClassMetaData) elem;
-        if (meta.getInterfaceImpl() != null)
-            return meta.getInterfaceImpl();
-        return meta.getDescribedType();
+        return ((ClassMetaData) elem).getDescribedType();
     }
 }
