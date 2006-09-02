@@ -22,7 +22,7 @@ import java.util.Comparator;
  *
  * @author Abe White
  */
-class InheritanceComparator
+public class InheritanceComparator
     implements Comparator {
 
     private Class _base = Object.class;
@@ -64,9 +64,9 @@ class InheritanceComparator
         int i2 = levels(c2);
         if (i1 == i2) {
             // sort simple interfaces as well as simple order test will fail.
-            if (c1.isAssignableFrom(o2.getClass()))
+            if (c1.isAssignableFrom(c2))
                 return -1;
-            if (c2.isAssignableFrom(o1.getClass()))
+            if (c2.isAssignableFrom(c1))
                 return 1;
             return c1.getName().compareTo(c2.getName());
         }
