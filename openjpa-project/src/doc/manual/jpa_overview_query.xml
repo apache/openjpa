@@ -21,8 +21,8 @@
     <mediaobject>
         <imageobject>
             <!-- PNG image data, 292 x 265 (see README) -->
-            <imagedata fileref="img/jpa-query.png" width="195px">
-            </imagedata>
+            <imagedata fileref="img/jpa-query.png" width="195px"/>
+            
         </imageobject>
     </mediaobject>
     <para>
@@ -33,8 +33,8 @@ very similar to SQL, but is object-oriented rather than table-oriented.
     </para>
     <para>
 The API for executing JPQL queries will be discussed in
-<xref linkend="jpa_query_api"></xref>, and a full language reference will be
-covered in <xref linkend="jpa_langref"></xref>.
+<xref linkend="jpa_query_api"/>, and a full language reference will be
+covered in <xref linkend="jpa_langref"/>.
     </para>
     <section id="jpa_query_api">
         <title>
@@ -363,7 +363,7 @@ SELECT x FROM Magazine x join fetch x.articles join fetch x.authors WHERE x.titl
             <para>
 <note><para> Specifying the <literal>join fetch</literal> declaration is
 functionally equivalent to adding the fields to the Query's <classname>
-FetchConfiguration</classname>. See <xref linkend="ref_guide_fetch"></xref>.
+FetchConfiguration</classname>. See <xref linkend="ref_guide_fetch"/>.
                     </para>
                 </note>
             </para>
@@ -829,16 +829,16 @@ delete_statement
                 
 
     The complete BNF for JPQL is defined in 
-                <xref linkend="jpa_langref_bnf">
-                </xref>
+                <xref linkend="jpa_langref_bnf"/>
+                
                 .
 
     Any JPQL statement may be constructed
     dynamically or may be statically defined in a metadata annotation or
     XML descriptor element. All statement types may have parameters, as
     discussed in 
-                <xref linkend="jpa_langref_input_params">
-                </xref>
+                <xref linkend="jpa_langref_input_params"/>
+                
                 .
 
     
@@ -944,8 +944,8 @@ delete_statement ::= delete_clause [where_clause]
       be used to restrict the scope of the update or delete operation. Update
       and delete statements are described further in
       
-                    <xref linkend="jpa_langref_bulk_ops">
-                    </xref>
+                    <xref linkend="jpa_langref_bulk_ops"/>
+                    
                     .
       
                 </para>
@@ -1757,7 +1757,7 @@ result as restrictions upon the groups. The syntax of the <literal>HAVING
             </para>
             <para>
 The <literal>GROUP BY</literal> and <literal>HAVING</literal> constructs are
-further discussed in <xref linkend="jpa_langref_group"></xref>.
+further discussed in <xref linkend="jpa_langref_group"/>.
             </para>
         </section>
         <section id="jpa_langref_cond">
@@ -1802,7 +1802,7 @@ case, they are case insensitive.
 All identification variables used in the <literal>WHERE</literal> or <literal>
 HAVING</literal> clause of a <literal>SELECT</literal> or <literal>DELETE
 </literal> statement must be declared in the <literal>FROM</literal> clause, as
-described in <xref linkend="jpa_langref_from_vars"></xref>. The identification
+described in <xref linkend="jpa_langref_from_vars"/>. The identification
 variables used in the <literal>WHERE</literal> clause of an <literal>UPDATE
 </literal> statement must be declared in the <literal>UPDATE</literal> clause.
 Identification variables are existentially quantified in the <literal>WHERE
@@ -1837,7 +1837,7 @@ query.
                 <para>
 Note that if an input parameter value is null, comparison operations or
 arithmetic operations involving the input parameter will return an unknown
-value. See <xref linkend="jpa_langref_null_values"></xref>.
+value. See <xref linkend="jpa_langref_null_values"/>.
                 </para>
                 <section id="jpa_langref_pos_params">
                     <title>
@@ -1867,7 +1867,7 @@ positional parameters.
                     <para>
 A named parameter is an identifier that is prefixed by the ":" symbol. It
 follows the rules for identifiers defined in
-<xref linkend="jpa_langref_from_identifiers"></xref>. Named parameters are case
+<xref linkend="jpa_langref_from_identifiers"/>. Named parameters are case
 sensitive.
                     </para>
                     <para>
@@ -1924,7 +1924,7 @@ exists_expression
                 </para>
                 <para>
 Aggregate functions can only be used in conditional expressions in a <literal>
-HAVING</literal> clause. See <xref linkend="jpa_langref_group"></xref>.
+HAVING</literal> clause. See <xref linkend="jpa_langref_group"/>.
                 </para>
             </section>
             <section id="jpa_langref_operators">
@@ -1983,7 +1983,7 @@ datetime_expression
 The BETWEEN expression <programlisting>x BETWEEN y AND z</programlisting> is
 semantically equivalent to: <programlisting>y &lt;= x AND x &lt;= z
 </programlisting> The rules for unknown and <literal>NULL</literal> values in
-comparison operations apply. See <xref linkend="jpa_langref_null_values"></xref>
+comparison operations apply. See <xref linkend="jpa_langref_null_values"/>
 . Examples are: <programlisting>p.age BETWEEN 15 and 19</programlisting> is
 equivalent to <programlisting>p.age &gt;= 15 AND p.age &lt;= 19</programlisting>
                 </para>
@@ -2016,12 +2016,12 @@ in_item ::= literal | input_parameter
 The state_field_path_expression must have a string, numeric, or enum value. The
 literal and/or input_parameter values must be like the same abstract schema type
 of the state_field_path_expression in type. (See
-<xref linkend="jpa_langref_equality"></xref> ).
+<xref linkend="jpa_langref_equality"/> ).
                 </para>
                 <para>
 The results of the subquery must be like the same abstract schema type of the
 state_field_path_expression in type. Subqueries are discussed in
-<xref linkend="jpa_langref_subqueries"></xref>. Examples are: <programlisting>o.country IN ('UK', 'US', 'France')
+<xref linkend="jpa_langref_subqueries"/>. Examples are: <programlisting>o.country IN ('UK', 'US', 'France')
 </programlisting> is true for UK and false for Peru, and is equivalent to the
 expression: <programlisting>(o.country = 'UK') OR (o.country = 'US') OR (o.country = ' France')
 </programlisting> In the following expression: <programlisting>o.country NOT IN ('UK', 'US', 'France')
@@ -2203,7 +2203,7 @@ synonymous with <literal>ANY</literal>. The comparison operators used with
 <literal>ALL</literal> or <literal>ANY</literal> conditional expressions are =,
 &lt;, &lt;=, &gt;, &gt;=, &lt;&gt;. The result of the subquery must be like that
 of the other argument to the comparison operator in type. See
-<xref linkend="jpa_langref_equality"></xref>. The syntax of an <literal>ALL
+<xref linkend="jpa_langref_equality"/>. The syntax of an <literal>ALL
 </literal> or <literal>ANY</literal> expression is specified as follows:
 <itemizedlist><listitem><para>all_or_any_expression ::= { ALL | ANY | SOME}
 (subquery)
@@ -2534,7 +2534,7 @@ object/relational mapping.
                         <listitem>
                             <para>
 The result type of aggregate_expression is defined in section
-<xref linkend="jpa_langref_aggregates"></xref>.
+<xref linkend="jpa_langref_aggregates"/>.
                             </para>
                         </listitem>
                         <listitem>
@@ -2740,7 +2740,7 @@ identification_variable]
             </para>
             <para>
 The syntax of the <literal>WHERE</literal> clause is described in
-<xref linkend="jpa_langref_where"></xref>. A delete operation only applies to
+<xref linkend="jpa_langref_where"/>. A delete operation only applies to
 entities of the specified class and its subclasses. It does not cascade to
 related entities. The new_value specified for an update operation must be
 compatible in type with the state-field to which it is assigned. Bulk update

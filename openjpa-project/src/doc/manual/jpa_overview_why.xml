@@ -24,22 +24,14 @@ by the table below.
             Persistence Mechanisms
         </title>
         <tgroup cols="8" align="left" colsep="1" rowsep="1">
-            <colspec colname="sup">
-            </colspec>
-            <colspec colname="ser">
-            </colspec>
-            <colspec colname="jdbc">
-            </colspec>
-            <colspec colname="or">
-            </colspec>
-            <colspec colname="objdb">
-            </colspec>
-            <colspec colname="ejb2">
-            </colspec>
-            <colspec colname="jdo">
-            </colspec>
-            <colspec colname="jpa">
-            </colspec>
+            <colspec colname="sup"/> 
+            <colspec colname="ser"/> 
+            <colspec colname="jdbc"/> 
+            <colspec colname="or"/> 
+            <colspec colname="objdb"/> 
+            <colspec colname="ejb2"/> 
+            <colspec colname="jdo"/> 
+            <colspec colname="jpa"/> 
             <thead>
                 <row>
                     <entry colname="sup">

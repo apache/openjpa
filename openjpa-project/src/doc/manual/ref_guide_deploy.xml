@@ -35,7 +35,7 @@ OpenJPA offers several <phrase><classname>EntityManagerFactory</classname>
 The JPA Overview describes the <classname>javax.persistence.Persistence
 </classname> class. You can use <classname>Persistence</classname> to obtain
 <classname>EntityManagerFactory</classname> instances, as demonstrated in
-<xref linkend="jpa_overview_persistence"></xref>. OpenJPA also extends
+<xref linkend="jpa_overview_persistence"/>. OpenJPA also extends
 <classname>Persistence</classname> to add additional <classname>
 EntityManagerFactory</classname> creation methods. The <classname>
 org.apache.openjpa.persistence.OpenJPAPersistence</classname> class
@@ -147,7 +147,7 @@ transactions is a simple two-step process:
                     <para>
 Point OpenJPA at an enlisted <classname>XADataSource</classname>, and configure
 a second non-enlisted data source. See
-<xref linkend="ref_guide_dbsetup_thirdparty_enlist"></xref>.
+<xref linkend="ref_guide_dbsetup_thirdparty_enlist"/>.
                     </para>
                 </listitem>
             </orderedlist>

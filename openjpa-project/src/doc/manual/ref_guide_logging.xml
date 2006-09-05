@@ -59,9 +59,9 @@ channels:
 and Ant tools. Most messages are basic statements detailing which classes or
 files the tools are running on. Detailed output is only available via the
 logging category the tool belongs to, such as <literal>openjpa.Enhance</literal>
-for the enhancer (see <xref linkend="ref_guide_pc_enhance"></xref>) or <literal>
+for the enhancer (see <xref linkend="ref_guide_pc_enhance"/>) or <literal>
 openjpa.MetaData</literal> for the mapping tool (see
-<xref linkend="ref_guide_mapping_mappingtool"></xref> ). This logging category
+<xref linkend="ref_guide_mapping_mappingtool"/> ). This logging category
 is provided so that you can get a general idea of what a tool is doing without
 having to manipulate logging settings that might also affect runtime behavior.
                 </para>
@@ -548,7 +548,7 @@ public class CustomLogFactory
 To make OpenJPA use your custom log factory, set the
 <link linkend="openjpa.Log"><literal>openjpa.Log</literal></link> configuration
 property to your factory's full class name. Because this property is a plugin
-property (see <xref linkend="ref_guide_conf_plugins"></xref> ), you can also
+property (see <xref linkend="ref_guide_conf_plugins"/> ), you can also
 pass parameters to your factory. For example, to use the example factory above
 and set its prefix to "LOG MSG", you would set the <literal>openjpa.Log
 </literal> property to the following string:

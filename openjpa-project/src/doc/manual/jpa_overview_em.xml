@@ -10,8 +10,8 @@
     <mediaobject>
         <imageobject>
             <!-- PNG image data, 283 x 391 (see README) -->
-            <imagedata fileref="img/entitymanager.png" width="189px">
-            </imagedata>
+            <imagedata fileref="img/entitymanager.png" width="189px"/>
+            
         </imageobject>
     </mediaobject>
     <para>
@@ -401,7 +401,7 @@ objects without incurring the overhead of multiple remote method invocations.
         <para>
 JPA provides support for this pattern by automatically detaching
 entities when they are serialized or when a persistence context ends (see
-<xref linkend="jpa_overview_emfactory_perscontext"></xref> for an exploration of
+<xref linkend="jpa_overview_emfactory_perscontext"/> for an exploration of
 persistence contexts). The JPA <emphasis>merge</emphasis> API
 re-attaches detached entities. This allows you to detach a persistent instance,
 modify the detached instance offline, and merge the instance back into an
@@ -432,7 +432,7 @@ normal optimistic conflict were detected.
             <para>
 OpenJPA offers enhancements to JPA detachment functionality,
 including additional options to control which fields are detached. See
-<xref linkend="ref_guide_detach"></xref> in the Reference Guide for details.
+<xref linkend="ref_guide_detach"/> in the Reference Guide for details.
             </para>
         </note>
         <para>
@@ -518,7 +518,7 @@ themselves did not change in the transaction.
         <note>
             <para>
 OpenJPA has additional APIs for controlling object locking. See
-<xref linkend="ref_guide_locking"></xref> in the Reference Guide for details.
+<xref linkend="ref_guide_locking"/> in the Reference Guide for details.
             </para>
         </note>
         <para>
@@ -528,8 +528,8 @@ APIs presented in this section.
         <mediaobject>
             <imageobject>
                 <!-- PNG image data, 445 x 337 (see README) -->
-                <imagedata fileref="img/jpa-state-transitions.png" width="297px">
-                </imagedata>
+                <imagedata fileref="img/jpa-state-transitions.png" width="297px"/>
+                
             </imageobject>
         </mediaobject>
     </section>
@@ -709,7 +709,7 @@ persistent identities of the managed objects in the persistence context. The
 following methods allow you to interact with the management of persistent
 identities. The behavior of these methods is deeply affected by the persistence
 context type of the <classname>EntityManager</classname>; see
-<xref linkend="jpa_overview_emfactory_perscontext"></xref> for an explanation of
+<xref linkend="jpa_overview_emfactory_perscontext"/> for an explanation of
 persistence contexts.
         </para>
 <programlisting>
@@ -867,7 +867,7 @@ in the current transaction to the datastore. If the <classname>EntityManager
 </classname> does not already have a connection to the datastore, it obtains one
 for the flush and retains it for the duration of the transaction. Any exceptions
 during flush cause the transaction to be marked for rollback. See
-<xref linkend="jpa_overview_trans"></xref>.
+<xref linkend="jpa_overview_trans"/>.
         </para>
         <para>
 Flushing requires an active transaction. If there isn't a transaction in
@@ -924,7 +924,7 @@ instances.
 OpenJPA only flushes before a query if the query might be affected by data
 changed in the current transaction. Additionally, OpenJPA allows fine-grained
 control over flushing behavior. See the Reference Guide's
-<xref linkend="ref_guide_dbsetup_retain"></xref>.
+<xref linkend="ref_guide_dbsetup_retain"/>.
             </para>
         </note>
 <programlisting>
@@ -982,7 +982,7 @@ public Query createQuery (String query);
 <classname>Query</classname> objects are used to find entities matching certain
 criteria. The <methodname>createQuery</methodname> method creates a query using
 the given Java Persistence Query Language (JPQL) string. See
-<xref linkend="jpa_overview_query"></xref> for details.
+<xref linkend="jpa_overview_query"/> for details.
         </para>
 <programlisting>
 public Query createNamedQuery (String name);
@@ -991,7 +991,7 @@ public Query createNamedQuery (String name);
 This method retrieves a query defined in metadata by name. The returned
 <classname>Query</classname> instance is initialized with the information
 declared in metadata. For more information on named queries, read
-<xref linkend="jpa_overview_query_named"></xref>.
+<xref linkend="jpa_overview_query_named"/>.
         </para>
 <programlisting>
 public Query createNativeQuery (String sql);
@@ -1001,7 +1001,7 @@ public Query createNativeQuery (String sql, String resultMapping);
         <para>
 <emphasis>Native</emphasis> queries are queries in the datastore's native
 language. For relational databases, this the Structured Query Language (SQL).
-<xref linkend="jpa_overview_sqlquery"></xref> elaborates on JPA's
+<xref linkend="jpa_overview_sqlquery"/> elaborates on JPA's
 native query support.
         </para>
     </section>

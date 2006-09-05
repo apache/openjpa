@@ -8,7 +8,7 @@
         </primary>
     </indexterm>
     <para>
-Persistent class basics are covered in <xref linkend="jpa_overview_pc"></xref>
+Persistent class basics are covered in <xref linkend="jpa_overview_pc"/>
 of the JPA Overview. This chapter details the persistent class features OpenJPA
 offers beyond the core JPA specification.
     </para>
@@ -57,7 +57,7 @@ may return incorrect results.
             <listitem>
                 <para>
 If you configure OpenJPA to create the needed database schema on startup (see
-<xref linkend="ref_guide_mapping_synch"></xref> ), OpenJPA must know all of your
+<xref linkend="ref_guide_mapping_synch"/> ), OpenJPA must know all of your
 persistent classes up-front.
                 </para>
             </listitem>
@@ -66,7 +66,7 @@ persistent classes up-front.
 When any of these conditions are a factor in your JPA application, use the
 <literal>class</literal>, <literal> mapping-file</literal>, and <literal>
 jar-file</literal> elements of JPA's standard XML format to list your persistent
-classes. See <xref linkend="jpa_overview_persistence_xml"></xref> for details.
+classes. See <xref linkend="jpa_overview_persistence_xml"/> for details.
         </para>
         <note>
             <para>
@@ -113,8 +113,8 @@ the <methodname>getId</methodname> method in your source file.</phrase>
         <mediaobject>
             <imageobject>
                 <!-- PNG image data, 509 x 133 (see README) -->
-                <imagedata fileref="img/enhancement.png" width="339px">
-                </imagedata>
+                <imagedata fileref="img/enhancement.png" width="339px"/>
+                
             </imageobject>
         </mediaobject>
         <para>
@@ -144,8 +144,8 @@ org.apache.openjpa.enhance.PCEnhancer</classname>.
             </para>
             <note>
                 <para>
-You can also enhance via Ant; see <xref linkend="ref_guide_integration_enhance">
-</xref>.
+You can also enhance via Ant; see <xref linkend="ref_guide_integration_enhance"/>
+.
                 </para>
             </note>
             <example id="ref_guide_pc_enhance_enhancer">
@@ -158,7 +158,7 @@ openjpac Magazine.java
             </example>
             <para>
 The enhancer accepts the standard set of command-line arguments defined by the
-configuration framework (see <xref linkend="ref_guide_conf_devtools"></xref> ),
+configuration framework (see <xref linkend="ref_guide_conf_devtools"/> ),
 along with the following flags:
             </para>
             <itemizedlist>
@@ -218,8 +218,8 @@ The <filename>.class</filename> file of a class.
             </itemizedlist>
             <para>
 If you do not supply any arguments to the enhancer, it will run on the classes
-in your persistent class list (see <xref linkend="ref_guide_pc_pcclasses">
-</xref> ).
+in your persistent class list (see <xref linkend="ref_guide_pc_pcclasses"/>
+ ).
             </para>
             <para>
 You can run the enhancer over classes that have already been enhanced, in which
@@ -296,8 +296,8 @@ enhancement</link> option.
             <para>
 Searching for metadata for every class loaded by the JVM can slow application
 initialization. One way to speed things up is to take advantage of the optional
-persistent class list described in <xref linkend="ref_guide_pc_pcclasses">
-</xref>. If you declare a persistent class list, OpenJPA will only search for
+persistent class list described in <xref linkend="ref_guide_pc_pcclasses"/>
+. If you declare a persistent class list, OpenJPA will only search for
 metadata for classes in that list.
             </para>
             <para>
@@ -315,12 +315,12 @@ java -javaagent:/home/dev/openjpa/lib/org.apache.openjpa.jar com.xyz.Main
             </example>
             <para>
 You can pass settings to the agent using OpenJPA's plugin syntax (see
-<xref linkend="ref_guide_conf_plugins"></xref> ). The agent accepts the long
+<xref linkend="ref_guide_conf_plugins"/> ). The agent accepts the long
 form of any of the standard configuration options (
-<xref linkend="ref_guide_conf_devtools"></xref> ). It also accepts the following
+<xref linkend="ref_guide_conf_devtools"/> ). It also accepts the following
 options, the first three of which correspond exactly to to the same-named
 options of the enhancer tool described in
-<xref linkend="ref_guide_pc_enhance_build"></xref>:
+<xref linkend="ref_guide_pc_enhance_build"/>:
             </para>
             <itemizedlist>
                 <listitem>
@@ -386,7 +386,7 @@ and unenhanced versions of a class. This allows you to serialize instances
 between a server using OpenJPA and a client that does not have access to
 enhanced classes or OpenJPA libraries. In some cases, however, you can make the
 persist and attach processes more robust and efficient by allowing breaks in
-serialization compatibility. See <xref linkend="ref_guide_detach_graph"></xref>
+serialization compatibility. See <xref linkend="ref_guide_detach_graph"/>
 for details.
             </para>
         </section>
@@ -416,12 +416,12 @@ OpenJPA's
 annotation. This annotation has <literal>strategy</literal> and <literal>
 generator</literal> properties that mirror the same-named properties on the
 standard <classname>javax.persistence.GeneratedValue</classname> annotation
-described in <xref linkend="jpa_overview_meta_id"></xref> of the JPA Overview.
+described in <xref linkend="jpa_overview_meta_id"/> of the JPA Overview.
         </para>
         <para>
 To retrieve the identity value of a datastore identity entity, use the
 <methodname>OpenJPAEntityManager.getObjectId (Object entity)</methodname>
-method. See <xref linkend="ref_guide_runtime_em"></xref> for more information on
+method. See <xref linkend="ref_guide_runtime_em"/> for more information on
 the <classname>OpenJPAEntityManager</classname>.
         </para>
         <example id="ref_guide_pc_oid_datastoreentityex">
@@ -520,7 +520,7 @@ appidtool</literal> shell/bat script or via its Java class,
             </para>
             <note>
                 <para>
-<xref linkend="ref_guide_integration_appidtool"></xref> describes the
+<xref linkend="ref_guide_integration_appidtool"/> describes the
 application identity tool's Ant task.
                 </para>
             </note>
@@ -535,8 +535,8 @@ appidtool -s Id Magazine.java
             <para>
 The application identity tool accepts the standard set of command-line arguments
 defined by the configuration framework (see
-<xref linkend="ref_guide_conf_devtools"></xref> ), including code formatting
-flags described in <xref linkend="ref_guide_conf_devtools_format"></xref>. It
+<xref linkend="ref_guide_conf_devtools"/> ), including code formatting
+flags described in <xref linkend="ref_guide_conf_devtools_format"/>. It
 also accepts the following arguments:
             </para>
             <itemizedlist>
@@ -606,7 +606,7 @@ The <filename>.class</filename> file of a persistent class.
             </itemizedlist>
             <para>
 If you do not supply any arguments to the tool, it will act on the classes in
-your persistent classes list (see <xref linkend="ref_guide_pc_pcclasses"></xref>
+your persistent classes list (see <xref linkend="ref_guide_pc_pcclasses"/>
 ).
             </para>
         </section>
@@ -639,7 +639,7 @@ your persistent classes list (see <xref linkend="ref_guide_pc_pcclasses"></xref>
                 </secondary>
             </indexterm>
             <para>
-<xref linkend="jpa_overview_meta_gen"></xref> explains how to use JPA's
+<xref linkend="jpa_overview_meta_gen"/> explains how to use JPA's
 <literal>IDENTITY</literal> generation type to automatically assign field
 values. However, here are some additional caveats you should be aware of when
 using <literal>IDENTITY</literal> generation:
@@ -648,7 +648,7 @@ using <literal>IDENTITY</literal> generation:
                 <listitem>
                     <para>
 Your database must support auto-increment / identity columns, or some equivalent
-(see <xref linkend="ref_guide_dbsetup_dbsupport_oracle"></xref> for how to
+(see <xref linkend="ref_guide_dbsetup_dbsupport_oracle"/> for how to
 configure a combination of triggers and sequences to fake auto-increment support
 in Oracle).
                     </para>
@@ -692,7 +692,7 @@ This can have a negative impact on performance.
         </indexterm>
         <para>
 Bidirectional relations are an essential part of data modeling.
-<xref linkend="jpa_overview_mapping"></xref> in the JPA Overview explains how to
+<xref linkend="jpa_overview_mapping"/> in the JPA Overview explains how to
 use the <literal>mappedBy</literal> annotation attribute to form bidirectional
 relations that also share datastore storage in JPA.
         </para>
@@ -1072,8 +1072,8 @@ concrete collection or map class.
                     </listitem>
                     <listitem>
                         <para>
-The field cannot have an externalizer (see <xref linkend="ref_guide_pc_extern">
-</xref> ).
+The field cannot have an externalizer (see <xref linkend="ref_guide_pc_extern"/>
+ ).
                         </para>
                     </listitem>
                     <listitem>
@@ -1229,10 +1229,10 @@ their corresponding metadata extensions.
                     Externalizer Options
                 </title>
                 <tgroup cols="2" align="left" colsep="1" rowsep="1">
-                    <colspec colname="method">
-                    </colspec>
-                    <colspec colname="extension">
-                    </colspec>
+                    <colspec colname="method"/>
+                    
+                    <colspec colname="extension"/>
+                    
                     <thead>
                         <row>
                             <entry colname="method">
@@ -1335,10 +1335,10 @@ corresponding metadata extensions.
                     Factory Options
                 </title>
                 <tgroup cols="2" align="left" colsep="1" rowsep="1">
-                    <colspec colname="method">
-                    </colspec>
-                    <colspec colname="extension">
-                    </colspec>
+                    <colspec colname="method"/>
+                    
+                    <colspec colname="extension"/>
+                    
                     <thead>
                         <row>
                             <entry colname="method">
@@ -1451,7 +1451,7 @@ mark the field dirty manully, or create a custom field proxy.
 field dirty manually in JPA.</phrase>
                 </para>
                 <para>
-See <xref linkend="ref_guide_pc_scos_proxy"></xref> for a discussion of proxies.
+See <xref linkend="ref_guide_pc_scos_proxy"/> for a discussion of proxies.
                 </para>
             </note>
             <para>
@@ -1462,7 +1462,7 @@ that a field can externalize to something as simple as a primitive, something as
 complex as a collection or map of persistence-capable objects, or anything in
 between. If you do choose to externalize to a collection or map, OpenJPA
 recognizes a family of metadata extensions for specying type information for the
-externalized form of your fields - see <xref linkend="type"></xref>. If the
+externalized form of your fields - see <xref linkend="type"/>. If the
 external form of your field is a persistence-capable object, or contains
 persistence-capable objects, OpenJPA will correctly include the objects in its
 persistence-by-reachability algorithms and its delete-dependent algorithms.
@@ -1637,7 +1637,7 @@ standard data fetching. Specifying fetch groups allows for tuning of lazy
 loading and eager fetching behavior.
         </para>
         <para>
-The JPA Overview's <xref linkend="jpa_overview_meta_fetch"></xref> describes how
+The JPA Overview's <xref linkend="jpa_overview_meta_fetch"/> describes how
 to use JPA metadata annotations to control whether a field is fetched eagerly or
 lazily. Fetch groups add a dynamic aspect to this standard ability. As you will
 see, OpenJPA's JPA extensions allow you can add and remove fetch groups at
@@ -1831,7 +1831,7 @@ public Collection&lt;String&gt; getFetchGroups ();
 public void clearFetchGroups ();
 </programlisting>
             <para>
-<xref linkend="ref_guide_runtime"></xref> details the <classname>
+<xref linkend="ref_guide_runtime"/> details the <classname>
 OpenJPAEntityManager</classname>, <classname>OpenJPAQuery</classname>, and
 <classname>FetchPlan</classname> interfaces.
             </para>
@@ -2002,7 +2002,7 @@ a single query.
         </para>
         <para>
 Eager fetching only affects relations in the fetch groups being loaded (see
-<xref linkend="ref_guide_fetch"></xref> ). In other words, relations that would
+<xref linkend="ref_guide_fetch"/> ). In other words, relations that would
 not normally be loaded immediately when retrieving an object or accessing a
 field are not affected by eager fetching. In our example above, the address of
 each person would only be eagerly fetched if the query were configured to
@@ -2042,7 +2042,7 @@ When loading data for multiple instances, though, (such as when executing a
 Instead, OpenJPA defaults to <literal>parallel</literal> mode for collections,
 as described below. You can force OpenJPA use a join rather than parallel mode
 for a collection field using the metadata extension described in
-<xref linkend="eager-fetch-mode"></xref>.
+<xref linkend="eager-fetch-mode"/>.
                 </para>
                 <para>
                 <indexterm>
@@ -2072,8 +2072,8 @@ from relation fetching, and can be disabled for specific classes.
 Some databases may not support UNIONs or outer joins. Also, OpenJPA can not use
 outer joins if you have set the <link linkend="openjpa.jdbc.DBDictionary">
 <literal> DBDictionary</literal></link>'s <literal>JoinSyntax</literal> to
-<literal>traditional</literal>. See <xref linkend="ref_guide_dbsetup_sql92">
-</xref>.
+<literal>traditional</literal>. See <xref linkend="ref_guide_dbsetup_sql92"/>
+.
                     </para>
                 </note>
             </listitem>
@@ -2116,7 +2116,7 @@ dangerously, to the point that you could easily overwhelm the network.
 Polymorphic to-one relations to table-per-class mappings use parallel eager
 fetching because proper joins are impossible. You can force other to-one
 relations to use parallel rather than join mode eager fetching using the
-metadata extension described in <xref linkend="eager-fetch-mode"></xref>.
+metadata extension described in <xref linkend="eager-fetch-mode"/>.
                 </para>
                 <para>
 Setting your subclass fetch mode to <literal>parallel</literal> affects
@@ -2196,7 +2196,7 @@ performant strategies.
             <para>
 You can easily override the default fetch modes at runtime for any lookup or
 query through OpenJPA's fetch configuration APIs. See
-<xref linkend="ref_guide_runtime"></xref> for details.
+<xref linkend="ref_guide_runtime"/> for details.
             </para>
             <example id="ref_guide_perfpack_eager_def">
                 <title>
@@ -2227,14 +2227,14 @@ List results = q.getResultList ();
             </example>
             <para>
 You can specify a default subclass fetch mode for an individual class with the
-metadata extension described in <xref linkend="subclass-fetch-mode"></xref>.
+metadata extension described in <xref linkend="subclass-fetch-mode"/>.
 Note, however, that you cannot "upgrade" the runtime fetch mode with your class
 setting. If the runtime fetch mode is <literal>none</literal>, no eager
 subclass data fetching will take place, regardless of your metadata setting.
             </para>
             <para>
 This applies to the eager fetch mode metadata extension as well (see
-<xref linkend="eager-fetch-mode"></xref> ). You can use this extension to
+<xref linkend="eager-fetch-mode"/> ). You can use this extension to
 disable eager fetching on a field or to declare that a collection would rather
 use joins than parallel selects or vice versa. But an extension value of
 <literal>join</literal> won't cause any eager joining if the fetch
@@ -2269,7 +2269,7 @@ fetching:
                         </secondary>
                     </indexterm>
 When you are using <literal>parallel</literal> eager fetch mode and you have
-large result sets enabled (see <xref linkend="ref_guide_dbsetup_lrs"></xref>)
+large result sets enabled (see <xref linkend="ref_guide_dbsetup_lrs"/>)
 or you place a range on a query, OpenJPA performs the needed parallel selects on
 one page of results at a time. For example, suppose your <literal>
 FetchBatchSize</literal> is set to 20, and you perform a large result set query
@@ -2316,7 +2316,7 @@ turn off eager to-many joining.
                     <para>
 OpenJPA cannot eagerly join to polymorphic relations to non-leaf classes in a
 table-per-class inheritance hierarchy. You can work around this restriction
-using the mapping extensions described in <xref linkend="nonpolymorphic"></xref>
+using the mapping extensions described in <xref linkend="nonpolymorphic"/>
 .
                     </para>
                 </listitem>
@@ -2374,7 +2374,7 @@ phoneNumber</literal> into one lock group, <literal>salary</literal> and
 <phrase> You specify a field's lock group in JPA metadata with the
 <ulink url="../apidocs/org/apache/openjpa/persistence/LockGroup.html">
 <classname>org.apache.openjpa.persistence.LockGroup</classname></ulink>
-annotation.</phrase> See <xref linkend="lock-group"></xref> for details on lock
+annotation.</phrase> See <xref linkend="lock-group"/> for details on lock
 group metadata.
         </para>
         <example id="ref_guide_lock_groups_metadata">

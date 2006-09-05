@@ -44,10 +44,10 @@ id, and iteration over an <classname>Extent</classname>. OpenJPA's cache plugin
 accelerates three of these mechanisms. It does not provide any caching of large
 result set relations or <classname>Extent</classname> iterators. If you find
 yourself in need of higher-performance <classname>Extent</classname> iteration,
-see <xref linkend="ref_guide_cache_limits_extent"></xref>. <table><title>Data
+see <xref linkend="ref_guide_cache_limits_extent"/>. <table><title>Data
 access methods</title><tgroup cols="2" align="left" colsep="1" rowsep="1">
-<colspec colname="access-method"></colspec><colspec colname="cacheable">
-</colspec><thead><row><entry colname="access-method">Access method</entry>
+<colspec colname="access-method"/><colspec colname="cacheable"/>
+<thead><row><entry colname="access-method">Access method</entry>
 <entry colname="cacheable">Uses cache</entry></row></thead><tbody><row>
 <entry colname="access-method"> Standard relation traversal</entry>
 <entry colname="cacheable">Yes</entry></row><row>
@@ -67,9 +67,9 @@ are loaded from the datastore.
         <para>
 OpenJPA's data cache can in both single-JVM and multi-JVM environments.
 Multi-JVM caching is achieved through the use of the distributed event
-notification framework described in <xref linkend="ref_guide_event"></xref>, or
+notification framework described in <xref linkend="ref_guide_event"/>, or
 through one of OpenJPA's integrations with third-party distributed caches (see
-<xref linkend="ref_guide_datacacheintegrations"></xref> ).
+<xref linkend="ref_guide_datacacheintegrations"/> ).
         </para>
         <para>
 The single JVM mode of operation maintains and shares a data cache across all
@@ -104,8 +104,8 @@ To configure the data cache to remain up-to-date in a distributed environment,
 set the <link linkend="openjpa.RemoteCommitProvider"><literal>
 openjpa.RemoteCommitProvider</literal></link> property appropriately, or
 integrate OpenJPA with a third-party caching solution. Remote commit providers
-are described in <xref linkend="ref_guide_event"></xref>.
-<xref linkend="ref_guide_datacacheintegrations"></xref> enumerates supported
+are described in <xref linkend="ref_guide_event"/>.
+<xref linkend="ref_guide_datacacheintegrations"/> enumerates supported
 third-party caching solutions.
             </para>
             <para>
@@ -283,7 +283,7 @@ The <literal>org.apache.openjpa.datacache</literal> package defines OpenJPA's
 data caching framework. While you may use this framework directly (see its
 <ulink url="../apidocs/org/apache/openjpa/datacache/package-summary.html">
 Javadoc</ulink> for details), its APIs are meant primarily for service
-providers. In fact, <xref linkend="ref_guide_cache_extension"></xref> below has
+providers. In fact, <xref linkend="ref_guide_cache_extension"/> below has
 tips on how to use this package to extend OpenJPA's caching service yourself.
             </para>
             <para>
@@ -383,7 +383,7 @@ cache.evict (Magazine.class, changedMag.getId ());
 See the <classname>StoreCache</classname>
 <ulink url="../../api/openjpa/persistence/StoreCache.html">Javadoc</ulink> for
 information on additional functionality it provides. Also,
-<xref linkend="ref_guide_runtime"></xref> discusses OpenJPA's other extensions
+<xref linkend="ref_guide_runtime"/> discusses OpenJPA's other extensions
 to the standard set of JPA runtime interfaces.
             </para>
             <para>
@@ -964,8 +964,8 @@ mechanism, extend <classname>org.apache.openjpa.datacache.AbstractDataCache
 </classname> directly. If you want to implement a distributed cache that uses an
 unsupported method for communications, create an implementation of <classname>
 org.apache.openjpa.event.RemoteCommitProvider</classname>. This process is
-described in greater detail in <xref linkend="ref_guide_event_customization">
-</xref>.
+described in greater detail in <xref linkend="ref_guide_event_customization"/>
+.
             </para>
             <para>
 The query cache is just as easy to extend. Add functionality by extending the
@@ -994,7 +994,7 @@ specification.
 Invoking <methodname>OpenJPAEntityManager.evict</methodname><emphasis>does not
 </emphasis> result in the corresponding data being dropped from the data cache,
 unless you have set the proper configuration options as explained above (see
-<xref linkend="ref_guide_cache_pmevict"></xref> ). Other methods related to the
+<xref linkend="ref_guide_cache_pmevict"/> ). Other methods related to the
 <classname>EntityManager</classname> cache also do not effect the data cache.
                     </para>
                     <para>
@@ -1106,8 +1106,8 @@ query strings. As a result, most queries are only parsed once in OpenJPA, and
 cached thereafter. You can control the compilation cache through the
 <link linkend="openjpa.QueryCompilationCache"><literal>
 openjpa.QueryCompilationCache</literal></link> configuration property. This
-property accepts a plugin string (see <xref linkend="ref_guide_conf_plugins">
-</xref>) describing the <classname>Map</classname> used to associate query
+property accepts a plugin string (see <xref linkend="ref_guide_conf_plugins"/>
+) describing the <classname>Map</classname> used to associate query
 strings and their parsed form. This property accepts the following aliases:
         </para>
         <table>
@@ -1115,12 +1115,12 @@ strings and their parsed form. This property accepts the following aliases:
                 Pre-defined aliases
             </title>
             <tgroup cols="2" align="left" colsep="1" rowsep="1">
-                <colspec colname="alias">
-                </colspec>
-                <colspec colname="value">
-                </colspec>
-                <colspec colname="notes">
-                </colspec>
+                <colspec colname="alias"/>
+                
+                <colspec colname="value"/>
+                
+                <colspec colname="notes"/>
+                
                 <thead>
                     <row>
                         <entry colname="alias">

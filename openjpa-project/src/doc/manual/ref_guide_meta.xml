@@ -3,8 +3,8 @@
         Metadata
     </title>
     <para>
-The JPA Overview covers JPA metadata in <xref linkend="jpa_overview_meta">
-</xref>. This chapter discusses OpenJPA's extensions to standard JPA metadata.
+The JPA Overview covers JPA metadata in <xref linkend="jpa_overview_meta"/>
+. This chapter discusses OpenJPA's extensions to standard JPA metadata.
     </para>
     <section id="ref_guide_meta_factory">
         <title>
@@ -24,14 +24,14 @@ The JPA Overview covers JPA metadata in <xref linkend="jpa_overview_meta">
         <para>
 The <link linkend="openjpa.MetaDataFactory"><literal>openjpa.MetaDataFactory
 </literal></link> configuration property controls metadata loading and storing.
-This property takes a plugin string (see <xref linkend="ref_guide_conf_plugins">
-</xref>) describing a concrete
+This property takes a plugin string (see <xref linkend="ref_guide_conf_plugins"/>
+) describing a concrete
 <ulink url="../apidocs/org/apache/openjpa/meta/MetaDataFactory.html">
 <classname>org.apache.openjpa.meta.MetaDataFactory</classname></ulink>
 implementation. A metadata factory can load mapping information as well as
 persistence metadata, or it can leave mapping information to a separate
 <emphasis>mapping factory</emphasis> (see
-<xref linkend="ref_guide_mapping_factory"></xref> ). OpenJPA recognizes the
+<xref linkend="ref_guide_mapping_factory"/> ). OpenJPA recognizes the
 following built-in metadata factories:
         </para>
         <itemizedlist>
@@ -48,7 +48,7 @@ following built-in metadata factories:
 The standard metadata factories all accept the following properties for locating
 persistent classes. Each property represents a different mechanism for locating
 persistent types; you can choose the mechanism or combination of mechanisms that
-are most convenient. See <xref linkend="ref_guide_pc_pcclasses"></xref> for a
+are most convenient. See <xref linkend="ref_guide_pc_pcclasses"/> for a
 discussion of when it is necessary to list your persistent classes.
         </para>
         <itemizedlist>
@@ -112,8 +112,8 @@ scanned for <phrase>annotated JPA entities</phrase>.
         <para>
 This section describes OpenJPA's core additions to standard entity metadata. We
 present the object-relational mapping syntax to support these additions in
-<xref linkend="ref_guide_mapping_jpa"></xref>. Finally,
-<xref linkend="ref_guide_meta_ext"></xref> covers additional extensions to JPA
+<xref linkend="ref_guide_mapping_jpa"/>. Finally,
+<xref linkend="ref_guide_meta_ext"/> covers additional extensions to JPA
 metadata that allow you to access auxiliary OpenJPA features.
         </para>
         <section id="ref_guide_meta_jpa_datastoreid">
@@ -133,9 +133,9 @@ JPA typically requires you to declare one or more <literal>Id</literal> fields
 to act as primary keys. OpenJPA, however, can create and maintain a surrogate
 primary key value when you do not declare any <literal>Id</literal> fields. This
 form of persistent identity is called <emphasis>datastore identity</emphasis>.
-<xref linkend="ref_guide_pc_oid"></xref> discusses OpenJPA's support for
+<xref linkend="ref_guide_pc_oid"/> discusses OpenJPA's support for
 datastore identity in JPA. We cover how to map your datastore identity primary
-key column in <xref linkend="ref_guide_mapping_jpa_datastoreid"></xref>
+key column in <xref linkend="ref_guide_mapping_jpa_datastoreid"/>
             </para>
         </section>
         <section id="ref_guide_meta_jpa_version">
@@ -154,7 +154,7 @@ key column in <xref linkend="ref_guide_mapping_jpa_datastoreid"></xref>
 Just as OpenJPA can maintain your entity's identity without any <literal>Id
 </literal> fields, OpenJPA can maintain your entity's optimistic version without
 any <literal>Version</literal> fields.
-<xref linkend="ref_guide_mapping_jpa_version"></xref> shows you how to map
+<xref linkend="ref_guide_mapping_jpa_version"/> shows you how to map
 surrogate version columns.
             </para>
         </section>
@@ -222,8 +222,8 @@ to the same-named property of standard JPA annotations such as
 Though you can use the <classname>Persistent</classname> annotation in place of
 most of the standard direct field annotations mentioned above, we recommend
 primarily using it for non-standard and custom types for which no standard JPA
-annotation exists. For example, <xref linkend="ref_guide_mapping_jpa_columns">
-</xref> demonstrates the use of the <classname>Persistent</classname> annotation
+annotation exists. For example, <xref linkend="ref_guide_mapping_jpa_columns"/>
+ demonstrates the use of the <classname>Persistent</classname> annotation
 to denote a persistent <classname>java.awt.Point</classname> field.
             </para>
         </section>
@@ -295,7 +295,7 @@ cascade behavior for the collection elements. Corresponds exactly to the
                 </listitem>
             </itemizedlist>
             <para>
-<xref linkend="ref_guide_mapping_jpa_coll"></xref> contains several examples of
+<xref linkend="ref_guide_mapping_jpa_coll"/> contains several examples of
 using <classname>PersistentCollection</classname> to mark non-standard
 collection fields persistent.
             </para>
@@ -376,7 +376,7 @@ cascade</literal> property of standard JPA annotations such as
             <para>
 Map keys and values in OpenJPA can be entities, simple types (primitive
 wrappers, <classname>String</classname> s, etc), custom types, or embedded
-objects. <xref linkend="ref_guide_mapping_jpa_map"></xref> contains several
+objects. <xref linkend="ref_guide_mapping_jpa_map"/> contains several
 examples of using <classname>PersistentMap</classname> to annotate persistent
 map fields.
             </para>
@@ -397,7 +397,7 @@ map fields.
         <para>
 OpenJPA extends standard metadata to allow you to access advanced OpenJPA
 functionality. This section covers persistence metadata extensions; we discuss
-mapping metadata extensions in <xref linkend="ref_guide_mapping_ext"></xref>.
+mapping metadata extensions in <xref linkend="ref_guide_mapping_ext"/>.
 All metadata extensions are optional; OpenJPA will rely on its defaults when no
 explicit data is provided.
         </para>
@@ -432,8 +432,8 @@ The <ulink url="../apidocs/org/apache/openjpa/persistence/FetchGroups.html">
 <ulink url="../apidocs/org/apache/openjpa/persistence/FetchGroup.html">
 <classname>org.apache.openjpa.persistence.FetchGroup</classname></ulink>
 annotations allow you to define fetch groups in your JPA entities.
-<xref linkend="ref_guide_fetch"></xref> discusses OpenJPA's support for fetch
-groups in general; see <xref linkend="ref_guide_fetch_custom"></xref> for how to
+<xref linkend="ref_guide_fetch"/> discusses OpenJPA's support for fetch
+groups in general; see <xref linkend="ref_guide_fetch_custom"/> for how to
 use these annotations in particular.
                 </para>
             </section>
@@ -456,7 +456,7 @@ use these annotations in particular.
                     </seealso>
                 </indexterm>
                 <para>
-<xref linkend="ref_guide_cache"></xref> examines caching in OpenJPA. Metadata
+<xref linkend="ref_guide_cache"/> examines caching in OpenJPA. Metadata
 extensions allow individual classes to override system caching defaults.
                 </para>
                 <para>
@@ -540,7 +540,7 @@ into the cache with name <literal>&lt;cache-name&gt;</literal>.
                 <para>
 The OpenJPA <link linkend="ref_guide_pc_enhance">enhancer</link> may add a
 synthetic field to detachable classes to hold detached state (see
-<xref linkend="ref_guide_detach_graph"></xref> for details). You can instead
+<xref linkend="ref_guide_detach_graph"/> for details). You can instead
 declare your own detached state field or supress the creation of a detached
 state field altogether. In the latter case, your class must not use
 <link linkend="ref_guide_pc_oid">datastore identity</link>, and should declare
@@ -590,7 +590,7 @@ mapped class. <phrase> The JPA
 <ulink url="../apidocs/org/apache/openjpa/persistence/LockGroups.html">
 <classname>org.apache.openjpa.persistence.LockGroups</classname></ulink>
 annotation accepts an array of lock group names.</phrase> For details on lock
-groups, see <xref linkend="ref_guide_lock_groups_and_subclasses"></xref>.
+groups, see <xref linkend="ref_guide_lock_groups_and_subclasses"/>.
                 </para>
             </section>
             <section id="auditable">
@@ -688,7 +688,7 @@ This boolean extension, denoted by <phrase> the JPA
 org.apache.openjpa.persistence.LRS</classname></ulink> annotation,</phrase>
 indicates that a field should use OpenJPA's special large result set collection
 or map proxies. A complete description of large result set proxies is available
-in <xref linkend="ref_guide_pc_scos_proxy_lrs"></xref>.
+in <xref linkend="ref_guide_pc_scos_proxy_lrs"/>.
                 </para>
             </section>
             <section id="order-by">
@@ -707,7 +707,7 @@ in <xref linkend="ref_guide_pc_scos_proxy_lrs"></xref>.
                     </tertiary>
                 </indexterm>
                 <para>
-<phrase> The JPA Overview's <xref linkend="jpa_overview_meta_orderby"></xref>
+<phrase> The JPA Overview's <xref linkend="jpa_overview_meta_orderby"/>
 describes JPA's <literal>OrderBy</literal> annotation for loading the elements
 of collection fields in a prescribed order.</phrase> Ordering syntax is as
 follows:
@@ -775,7 +775,7 @@ This extension names the inverse field in a logical bidirectional relation.
 <ulink url="../apidocs/org/apache/openjpa/persistence/InverseLogical.html">
 <classname>org.apache.openjpa.persistence.InverseLogical</classname></ulink>
 annotation.</phrase> We discuss logical bidirectional relations and this
-extension in detail in <xref linkend="ref_guide_inverses"></xref>.
+extension in detail in <xref linkend="ref_guide_inverses"/>.
                 </para>
             </section>
             <section id="lock-group">
@@ -802,8 +802,8 @@ OpenJPA's <ulink url="../apidocs/org/apache/openjpa/persistence/LockGroup.html">
 <classname>org.apache.openjpa.persistence.LockGroup</classname></ulink>
 annotation</phrase> to name the lock group for a field. You can exclude a field
 from optimistic locking with a value of <literal>none</literal>. We discuss
-lock groups and this extension further in <xref linkend="ref_guide_lock_groups">
-</xref>.
+lock groups and this extension further in <xref linkend="ref_guide_lock_groups"/>
+.
                 </para>
             </section>
             <section id="read-only">
@@ -930,7 +930,7 @@ hold persistent instances by default).
                 </para>
                 <para>
 This extension is also used with OpenJPA's externalization feature, described in
-<xref linkend="ref_guide_pc_extern"></xref>.
+<xref linkend="ref_guide_pc_extern"/>.
                 </para>
                 <para>
 OpenJPA defines the following type annotations for field values, collection,
@@ -980,7 +980,7 @@ The <phrase> JPA
 <ulink url="../apidocs/org/apache/openjpa/persistence/Externalizer.html">
 <classname>org.apache.openjpa.persistence.Externalizer</classname></ulink>
 annotation</phrase> names a method to transform a field value into a value of
-another type. See <xref linkend="ref_guide_pc_extern"></xref> for details.
+another type. See <xref linkend="ref_guide_pc_extern"/> for details.
                 </para>
             </section>
             <section id="factory">
@@ -1006,7 +1006,7 @@ The <phrase> JPA
 <ulink url="../apidocs/org/apache/openjpa/persistence/Factory.html"><classname>
 org.apache.openjpa.persistence.Factory</classname></ulink> annotation</phrase>
 names a method to re-create a field value from its externalized form. See
-<xref linkend="ref_guide_pc_extern"></xref> for details.
+<xref linkend="ref_guide_pc_extern"/> for details.
                 </para>
             </section>
             <section id="external-values">
@@ -1033,7 +1033,7 @@ The <phrase> JPA
 <classname>org.apache.openjpa.persistence.ExternalValues</classname></ulink>
 annotation</phrase> declares values for transformation of simple fields to
 different constant values in the datastore. See
-<xref linkend="ref_guide_pc_extern_values"></xref> for details.
+<xref linkend="ref_guide_pc_extern_values"/> for details.
                 </para>
             </section>
         </section>

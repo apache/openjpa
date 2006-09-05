@@ -34,8 +34,8 @@
     <mediaobject>
         <imageobject>
             <!-- PNG image data, 427 x 121 (see README) -->
-            <imagedata fileref="img/persistence.png" width="285px">
-            </imagedata>
+            <imagedata fileref="img/persistence.png" width="285px"/>
+            
         </imageobject>
     </mediaobject>
     <note>
@@ -181,7 +181,7 @@ property</literal> has a name attribute and a value attribute.
                 </para>
                 <note>
                     <para>
-The Reference Guide's <xref linkend="ref_guide_conf"></xref> describes OpenJPA's
+The Reference Guide's <xref linkend="ref_guide_conf"/> describes OpenJPA's
 configuration properties.
                     </para>
                 </note>

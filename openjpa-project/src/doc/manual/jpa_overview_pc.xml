@@ -163,7 +163,7 @@ constructor.
                 <para>
 OpenJPA's <emphasis>enhancer</emphasis> will automatically add a protected
 no-arg constructor to your class when required. Therefore, this restriction does
-not apply when using OpenJPA. See <xref linkend="ref_guide_pc_enhance"></xref>
+not apply when using OpenJPA. See <xref linkend="ref_guide_pc_enhance"/>
 of the Reference Guide for details.
                 </para>
             </note>
@@ -208,14 +208,14 @@ persistent identity of an instance. These are called <emphasis>identity
 Magazine</classname> class, <literal>isbn</literal> and <literal>title</literal>
 are identity fields, because no two magazine records in the datastore can have
 the same <literal>isbn</literal> and <literal>title</literal> values.
-<xref linkend="jpa_overview_meta_id"></xref> will show you how to denote your
-identity fields in JPA metadata. <xref linkend="jpa_overview_pc_identity">
-</xref> below examines persistent identity.
+<xref linkend="jpa_overview_meta_id"/> will show you how to denote your
+identity fields in JPA metadata. <xref linkend="jpa_overview_pc_identity"/>
+ below examines persistent identity.
             </para>
             <note>
                 <para>
 OpenJPA fully supports identity fields, but does not require them. See
-<xref linkend="ref_guide_pc_oid"></xref> of the Reference Guide for details.
+<xref linkend="ref_guide_pc_oid"/> of the Reference Guide for details.
                 </para>
             </note>
         </section>
@@ -251,7 +251,7 @@ overwriting the previous commit with stale data.
 The version field is not required, but without one concurrent threads or
 processes might succeed in making conflicting changes to the same record at the
 same time. This is unacceptable to most applications.
-<xref linkend="jpa_overview_meta_version"></xref> shows you how to designate a
+<xref linkend="jpa_overview_meta_version"/> shows you how to designate a
 version field in JPA metadata.
             </para>
             <para>
@@ -265,7 +265,7 @@ undefined results.
 OpenJPA fully supports version fields, but does not require them for concurrency
 detection. OpenJPA can maintain surrogate version values or use state
 comparisons to detect concurrent modifications. See
-<xref linkend="ref_guide_mapping_jpa"></xref> in the Reference Guide.
+<xref linkend="ref_guide_mapping_jpa"/> in the Reference Guide.
                 </para>
             </note>
         </section>
@@ -316,7 +316,7 @@ non-persistent superclass cannot be persisted.
                 <listitem>
                     <para>
 All classes in an inheritance tree must use the same identity type. We cover
-entity identity in <xref linkend="jpa_overview_pc_identity"></xref>.
+entity identity in <xref linkend="jpa_overview_pc_identity"/>.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -555,7 +555,7 @@ Collection and map types may be parameterized.
                 </seealso>
             </indexterm>
 Most JPA implementations also have support for persisting serializable values as
-binary data in the datastore. <xref linkend="jpa_overview_meta"></xref> has more
+binary data in the datastore. <xref linkend="jpa_overview_meta"/> has more
 information on persisting serializable types.
             </para>
             <note>
@@ -726,7 +726,7 @@ as immutable objects in your applications.
             </seealso>
         </indexterm>
 If you are dealing with a single persistence context (see
-<xref linkend="jpa_overview_emfactory_perscontext"></xref> ), then you do not
+<xref linkend="jpa_overview_emfactory_perscontext"/> ), then you do not
 have to compare identity fields to test whether two entity references represent
 the same state in the datastore. There is a much easier way: the <literal>==
 </literal> operator. JPA requires that each persistence context maintain only
@@ -811,7 +811,7 @@ If the class is an inner class, it must be <literal>static</literal>.
 All entity classes related by inheritance must use the same identity class, or
 else each entity class must have its own identity class whose inheritance
 hierarchy mirrors the inheritance hierarchy of the owning entity classes (see
-<xref linkend="jpa_overview_pc_identity_hierarchy"></xref> ).
+<xref linkend="jpa_overview_pc_identity_hierarchy"/> ).
                     </para>
                 </listitem>
             </itemizedlist>
@@ -820,7 +820,7 @@ hierarchy mirrors the inheritance hierarchy of the owning entity classes (see
 Though you may still create identity classes by hand, OpenJPA provides the
 <classname>appidtool</classname> to automatically generate proper identity
 classes based on your identity fields. See
-<xref linkend="ref_guide_pc_oid_application"></xref> of the Reference Guide.
+<xref linkend="ref_guide_pc_oid_application"/> of the Reference Guide.
                 </para>
             </note>
             <example id="jpa_overview_pc_identity_appidcode">
@@ -905,8 +905,8 @@ public class Magazine
                 <mediaobject>
                     <imageobject>
                         <!-- PNG image data, 320 x 267 (see README) -->
-                        <imagedata fileref="img/appid-hierarchy.png" width="213px">
-                        </imagedata>
+                        <imagedata fileref="img/appid-hierarchy.png" width="213px"/>
+                        
                     </imageobject>
                 </mediaobject>
                 <para>
@@ -1226,7 +1226,7 @@ In an XML mapping file, we can define the same methods without annotations:
             <note>
                 <para>
 We fully explore persistence metadata annotations and XML in
-<xref linkend="jpa_overview_meta"></xref>.
+<xref linkend="jpa_overview_meta"/>.
                 </para>
             </note>
         </section>
