@@ -1686,9 +1686,6 @@ this with the
 <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/Columns.html">
 <classname>org.apache.openjpa.persistence.jdbc.Columns</classname></ulink>
 annotation, which contains an array of <classname>Column</classname> values.
-<xref linkend="ref_guide_mapping_custom_field_conf_extex"/> uses OpenJPA's
-<classname>Columns</classname> annotation to map a <classname>java.awt.Point
-</classname> to separate X and Y columns.
             </para>
             <para>
 Remember to annotate custom field types with <classname> Persistent</classname>
@@ -1828,30 +1825,9 @@ or map field mapping. We cover collection mappings in
                 </listitem>
                 <listitem>
                     <para>
-<literal>ElementColumn[] elementColumns</literal>: Element columns for the new
-collection or map field mapping. You will see how to use element columns in
-<xref linkend="ref_guide_mapping_jpa_coll_cols"/>.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
 <literal>ElementJoinColumn[] elementJoinColumns</literal>: Element join columns
 for the new collection or map field mapping. You will see how to use element
 join columns in <xref linkend="ref_guide_mapping_jpa_coll_joincols"/>.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>KeyColumn[] keyColumns</literal>: Map key columns for the new map
-field mapping. You will see how to use key columns in
-<xref linkend="ref_guide_mapping_jpa_map_keycols"/>.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>KeyJoinColumn[] keyJoinColumns</literal>: Key join columns for the new
-map field mapping. You will see how to use key join columns in
-<xref linkend="ref_guide_mapping_jpa_map_keyjoincols"/>.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -1919,10 +1895,9 @@ In <xref linkend="ref_guide_meta_jpa_persistent_coll"/>, we explored the
 <classname>PersistentCollection</classname> annotation for persistent collection
 fields that aren't a standard <literal>OneToMany</literal> or <literal>
 ManyToMany</literal> relation. To map these non-standard collections, combine
-OpenJPA's <classname>ContainerTable</classname> annotation with <classname>
-ElementColumn</classname> s, <classname> ElementJoinColumn</classname> s, or an
-<classname> ElementEmbeddedMapping</classname>. We explore the annotations
-below.
+OpenJPA's <classname>ContainerTable</classname> annotation with
+<classname>ElementJoinColumn</classname>s.
+We explore the annotations below.
             </para>
             <section id="ref_guide_mapping_jpa_coll_table">
                 <title>
@@ -1991,39 +1966,6 @@ columns. We explore foreign keys and indexes later in this chapter.
 You may notice that the container table does not define how to store the
 collection elements. That is left to separate annotations, which are the subject
 of the next sections.
-                </para>
-            </section>
-            <section id="ref_guide_mapping_jpa_coll_cols">
-                <title>
-                    Element Columns
-                </title>
-                <indexterm zone="ref_guide_mapping_jpa_coll_cols">
-                    <primary>
-                        ElementColumn
-                    </primary>
-                    <seealso>
-                        mapping metadata
-                    </seealso>
-                </indexterm>
-                <para>
-Just as the JPA <classname>Column</classname> annotation maps a simple value
-(primitive wrapper, <classname> String</classname>, etc), OpenJPA's
-<ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/ElementColumn.html">
-<classname>org.apache.openjpa.persistence.jdbc.ElementColumn</classname></ulink>
-annotation maps a simple element value. To map custom multi-column elements, use
-the
-<ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/ElementColumns.html">
-<classname>org.apache.openjpa.persistence.jdbc.ElementColumns</classname>
-</ulink> annotation, whose value is an array of <classname> ElementColumn
-</classname> s.
-                </para>
-                <para>
-An <classname>ElementColumn</classname> always resides in a container table, so
-it does not have the <literal> table</literal> property of a standard
-<classname> Column</classname>. Otherwise, the <classname>ElementColumn
-</classname> and standard <classname>Column</classname> annotations are
-equivalent. See <xref linkend="jpa_overview_mapping_column"/> in the JPA
-Overview for a review of the <classname>Column</classname> annotation.
                 </para>
             </section>
             <section id="ref_guide_mapping_jpa_coll_joincols">
@@ -2147,94 +2089,6 @@ properties correspond exactly to the same-named properties on the standard
 <xref linkend="jpa_overview_mapping_column"/>.
                 </para>
             </section>
-            <section id="ref_guide_mapping_jpa_coll_ex">
-                <title>
-                    Examples
-                </title>
-                <mediaobject>
-                    <imageobject>
-                        <!-- PNG image data, 383 x 176 (see README) -->
-                        <imagedata fileref="img/basic-coll.png" width="255px"/>
-                        
-                    </imageobject>
-                </mediaobject>
-                <para>
-Our first example maps the <literal>Article.subtitles</literal> field to the
-<literal>ART_SUBS</literal> container table, as shown in the diagram above.
-Notice the use of <classname> ContainerTable</classname> in combination with
-<classname>ElementColumn</classname> and <classname>OrderColumn</classname> to
-map this ordered list of strings.
-                </para>
-                <example id="ref_guide_mapping_jpa_coll_simpleex">
-                    <title>
-                        String List Mapping
-                    </title>
-<programlisting>
-package org.mag;
-
-import org.apache.openjpa.persistence.*;
-import org.apache.openjpa.persistence.jdbc.*;
-
-@Entity
-@Table(name="ART")
-public class Article
-{
-    @Id private long id;
-
-    @PersistentCollection
-    @ContainerTable(name="ART_SUBS", joinColumns=@XJoinColumn(name="ART_ID"))
-    @ElementColumn(name="SUBTITLE")
-    @OrderColumn(name="ORD")
-    private List&lt;String&gt; subtitles;
-
-    ...
-}
-</programlisting>
-                </example>
-                <para>
-Now we map a collection of embedded <classname>Address</classname> objects for a
-<classname>Company</classname>, according to the following diagram:
-                </para>
-                <mediaobject>
-                    <imageobject>
-                        <!-- PNG image data, 545 x 239 (see README) -->
-                        <imagedata fileref="img/embedded-coll.png" width="363px"/>
-                        
-                    </imageobject>
-                </mediaobject>
-                <example id="ref_guide_mapping_jpa_coll_embedex">
-                    <title>
-                        Embedded Element Mapping
-                    </title>
-<programlisting>
-package org.mag.pub;
-
-import org.apache.openjpa.persistence.*;
-import org.apache.openjpa.persistence.jdbc.*;
-
-@Embeddable
-public class Address
-{
-    ...
-}
-
-@Entity
-@Table(name="COMP")
-public class Company
-{
-    @Id private long id;
-  
-    @PersistentCollection(elementEmbedded=true)
-    @ContainerTable(name="COMP_ADDRS", joinColumns=@XJoinColumn(name="COMP_ID"))
-    @ElementEmbeddedMapping(overrides=@MappingOverride(name="state", 
-        columns=@Column(columnDefinition="CHAR(2)")))
-    private Collection&lt;Address&gt; addresses;
-
-    ...
-}
-</programlisting>
-                </example>
-            </section>
         </section>
         <section id="ref_guide_mapping_jpa_onemany">
             <title>
@@ -2253,7 +2107,7 @@ public class Company
             </indexterm>
             <para>
 The previous section covered the use of <classname>ElementJoinColumn</classname>
-annotations in conjunction with a <classname> ContainerTable</classname> for
+annotations in conjunction with a <classname>ContainerTable</classname> for
 mapping collections to dedicate tables. <classname>ElementJoinColumn</classname>
 s, however, have one additional use: to create a one-sided one-many mapping.
 Standard JPA supports <classname>OneToMany</classname> fields without a
@@ -2272,9 +2126,9 @@ foreign key (logical or actual) in the table of the related type.
             </mediaobject>
             <para>
 Consider the model above. <classname>Subscription</classname> has a collection
-of <classname>LineItem</classname> s, but <classname> LineItem</classname> has
-no inverse relation to <classname> Subscription</classname>. To retrieve all of
-the <classname> LineItem</classname> records for a <classname> Subscription
+of <classname>LineItem</classname> s, but <classname>LineItem</classname> has
+no inverse relation to <classname>Subscription</classname>. To retrieve all of
+the <classname>LineItem</classname> records for a <classname>Subscription
 </classname>, we join the <literal>SUB_ID</literal> inverse foreign key column
 in the <literal>LINE_ITEM</literal> table to the primary key column of the
 <literal>SUB</literal> table. The example below shows how to represent this
@@ -2326,166 +2180,13 @@ public class Subscription
                 </secondary>
             </indexterm>
             <para>
-<xref linkend="ref_guide_meta_jpa_persistent_map"/> discussed the
-<classname>PersistentMap</classname> annotation for persistent map fields. To
-map these non-standard fields to the database, combine OpenJPA's <classname>
-ContainerTable</classname> annotation with <classname>KeyColumn</classname> s,
-<classname> KeyJoinColumn</classname> s, or an <classname> KeyEmbeddedMapping
-</classname> and <classname>ElementColumn</classname> s, <classname>
-ElementJoinColumn</classname> s, or an <classname> ElementEmbeddedMapping
-</classname>.
-            </para>
-            <para>
 We detailed the <literal>ContainerTable</literal> annotation in
 <xref linkend="ref_guide_mapping_jpa_coll_table"/>. We also discussed
-element columns, join columns, and embedded mappings in
-<xref linkend="ref_guide_mapping_jpa_coll_cols"/>,
-<xref linkend="ref_guide_mapping_jpa_coll_joincols"/>, and
+join columns embedded mappings in
+<xref linkend="ref_guide_mapping_jpa_coll_joincols"/> and
 <xref linkend="ref_guide_mapping_jpa_coll_embed"/>. Key columns, join
 columns, and embedded mappings are new, however; we tackle them below.
             </para>
-            <section id="ref_guide_mapping_jpa_map_keycols">
-                <title>
-                    Key Columns
-                </title>
-                <indexterm zone="ref_guide_mapping_jpa_map_keycols">
-                    <primary>
-                        KeyColumn
-                    </primary>
-                    <seealso>
-                        mapping metadata
-                    </seealso>
-                </indexterm>
-                <para>
-Key columns serve the same role for map keys as the element columns described in
-<xref linkend="ref_guide_mapping_jpa_coll_cols"/> serve for collection
-elements. OpenJPA's
-<ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/KeyColumn.html">
-<classname>org.apache.openjpa.persistence.jdbc.KeyColumn</classname></ulink>
-annotation represents a map key. To map custom multi-column keys, use the
-<ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/KeyColumns.html">
-<classname>org.apache.openjpa.persistence.jdbc.KeyColumns</classname></ulink>
-annotation, whose value is an array of <classname> KeyColumn</classname> s.
-                </para>
-                <para>
-A <classname>KeyColumn</classname> always resides in a container table, so it
-does not have the <literal> table</literal> property of a standard <classname>
-Column</classname>. Otherwise, the <classname>KeyColumn</classname> and standard
-<classname>Column</classname> annotations are equivalent. See
-<xref linkend="jpa_overview_mapping_column"/> in the JPA Overview for a
-review of the <classname>Column</classname> annotation.
-                </para>
-            </section>
-            <section id="ref_guide_mapping_jpa_map_keyjoincols">
-                <title>
-                    Key Join Columns
-                </title>
-                <indexterm zone="ref_guide_mapping_jpa_map_keyjoincols">
-                    <primary>
-                        KeyJoinColumn
-                    </primary>
-                    <seealso>
-                        mapping metadata
-                    </seealso>
-                </indexterm>
-                <para>
-Key join columns are equivalent to standard JPA join columns, except that they
-represent a join to a map key entity rather than a direct relation. You
-represent a key join column with OpenJPA's
-<ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/KeyJoinColumn.html">
-<classname>org.apache.openjpa.persistence.jdbc.KeyJoinColumn</classname></ulink>
-annotation. To declare a compound join, enclose an array of <classname>
-KeyJoinColumn</classname>s in the
-<ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/KeyJoinColumns.html">
-<classname>org.apache.openjpa.persistence.jdbc.KeyJoinColumns</classname>
-</ulink> annotation.
-                </para>
-                <para>
-A <classname>KeyJoinColumn</classname> always resides in a container table, so
-it does not have the <literal> table</literal> property of a standard
-<classname> JoinColumn</classname>. Like <classname> XJoinColumn</classname>s
-above, <classname> KeyJoinColumn</classname>s can reference a linked field
-rather than a static linked column. Otherwise, the <classname> KeyJoinColumn
-</classname> and standard <classname>JoinColumn</classname> annotations are
-equivalent. See <xref linkend="jpa_overview_mapping_rel"/> in the JPA
-Overview for a review of the <classname>JoinColumn</classname> annotation.
-                </para>
-            </section>
-            <section id="ref_guide_mapping_jpa_map_embedkey">
-                <title>
-                    Key Embedded Mapping
-                </title>
-                <indexterm zone="ref_guide_mapping_jpa_map_embedkey">
-                    <primary>
-                        KeyEmbeddedMapping
-                    </primary>
-                    <seealso>
-                        mapping metadata
-                    </seealso>
-                </indexterm>
-                <para>
-The
-<ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/KeyEmbeddedMapping.html">
-<classname>org.apache.openjpa.persistence.jdbc.KeyEmbeddedMapping</classname>
-</ulink> annotation allows you to map your map field's embedded key type to your
-container table. This annotation has exactly the same properties as the
-<classname>EmbeddedMapping</classname> annotation described
-<link linkend="ref_guide_mapping_jpa_embed">above</link>.
-                </para>
-            </section>
-            <section id="ref_guide_mapping_jpa_map_ex">
-                <title>
-                    Examples
-                </title>
-                <mediaobject>
-                    <imageobject>
-                        <!-- PNG image data, 410 x 266 (see README) -->
-                        <imagedata fileref="img/string-rel-map.png" width="273px"/>
-                        
-                    </imageobject>
-                </mediaobject>
-                <para>
-Map mapping in OpenJPA uses the same principles you saw in collection mapping.
-The example below maps the <literal> Article.authors</literal> map according to
-the diagram above.
-                </para>
-                <example id="ref_guide_mapping_jpa_map_stringrelmap">
-                    <title>
-                        String Key, Entity Value Map Mapping
-                    </title>
-<programlisting>
-package org.mag.pub;
-
-import org.apache.openjpa.persistence.*;
-import org.apache.openjpa.persistence.jdbc.*;
-
-@Entity
-@Table(name="AUTH")
-@DataStoreIdColumn(name="AID" columnDefinition="INTEGER64")
-public class Author
-{
-    ...
-}
-
-package org.mag;
-
-@Entity
-@Table(name="ART")
-public class Article
-{
-    @Id private long id;
- 
-    @PersistentMap
-    @ContainerTable(name="ART_AUTHS", joinColumns=@XJoinColumn(name="ART_ID"))
-    @KeyColumn(name="LNAME")
-    @ElementJoinColumn(name="AUTH_ID")
-    private Map&lt;String,Author&gt; authors;
-
-    ...
-}
-</programlisting>
-                </example>
-            </section>
         </section>
         <section id="ref_guide_mapping_jpa_constraints">
             <title>
@@ -2526,7 +2227,7 @@ presented in the following sections.
 The <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/Index.html">
 <classname>org.apache.openjpa.persistence.jdbc.Index</classname></ulink>
 annotation represents an index on the columns of a field. It is also used within
-the <link linkend="ref_guide_mapping_jpa_coll_table"><classname> ConterainTable
+the <link linkend="ref_guide_mapping_jpa_coll_table"><classname>ContainerTable
 </classname></link> annotation to index join columns.
                 </para>
                 <para>
@@ -2706,45 +2407,6 @@ Here again is our map example from <xref linkend="ref_guide_mapping_jpa_map"/>
                         
                     </imageobject>
                 </mediaobject>
-                <example id="ref_guide_mapping_jpa_constraintex_map">
-                    <title>
-                        Constraint Mapping
-                    </title>
-<programlisting>
-package org.mag.pub;
-
-import org.apache.openjpa.persistence.*;
-import org.apache.openjpa.persistence.jdbc.*;
-
-@Entity
-@Table(name="AUTH")
-@DataStoreIdColumn(name="AID" columnDefinition="INTEGER64")
-public class Author
-{
-    ...
-}
-
-package org.mag;
-
-@Entity
-@Table(name="ART")
-public class Article
-{
-    @Id private long id;
- 
-    @PersistentMap
-    @ContainerTable(name="ART_AUTHS", joinColumns=@XJoinColumn(name="ART_ID")
-        joinForeignKey=@ForeignKey(deleteAction=ForeignKeyAction.CASCADE))
-    @KeyColumn(name="LNAME")
-    @KeyIndex(name="I_AUTH_LNAME")
-    @ElementJoinColumn(name="AUTH_ID")
-    @ElementForeignKey(deleteAction=ForeignKeyAction.RESTRICT)
-    private Map&lt;String,Author&gt; authors;
-
-    ...
-}
-</programlisting>
-                </example>
             </section>
         </section>
     </section>
@@ -2976,7 +2638,7 @@ OpenJPA recognizes the following field extensions.
                 <para>
 This extension specifies how to eagerly fetch related objects. It overrides the
 global <link linkend="openjpa.jdbc.EagerFetchMode"><literal>
-openjpa.jdbc.EagerFetchMode</literal></link> property. <phrase> Set the JPA
+openjpa.jdbc.EagerFetchMode</literal></link> property. <phrase>Set the JPA
 <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/EagerFetchMode.html">
 <classname>org.apache.openjpa.persistence.jdbc.EagerFetchMode</classname>
 </ulink> annotation to a value from the
@@ -3047,9 +2709,9 @@ OpenJPA defines the following extensions for nonpolymorphic values:
 The value of these extensions is a constant from the
 <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/NonpolymorphicType.html">
 <classname>org.apache.openjpa.persistence.jdbc.NonpolymorphicType</classname>
-</ulink> enumeration. The default value, <literal> EXACT</literal>, indicates
+</ulink> enumeration. The default value, <literal>EXACT</literal>, indicates
 that the relation will always be of the exact declared type. A value of
-<literal> JOINABLE</literal>, on the other hand, means that the relation might
+<literal>JOINABLE</literal>, on the other hand, means that the relation might
 be to any joinable subclass of the declared type. This value only excludes
 table-per-class subclasses.
                 </para>
@@ -3156,13 +2818,6 @@ Field strategy or value handler plugin string.
                     </listitem>
                     <listitem>
                         <para>
-<ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/ElementStrategy.html">
-<classname>org.apache.openjpa.persistence.jdbc.ElementStrategy</classname>
-</ulink>: Array, collection, or map element value handler plugin string.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
 <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/KeyStrategy.html">
 <classname>org.apache.openjpa.persistence.jdbc.KeyStrategy</classname></ulink>:
 Map key value handler plugin string.
@@ -3235,7 +2890,7 @@ concrete strategies in the <literal>org.apache.openjpa.jdbc.meta.strats
 </literal> package.
             </para>
             <para>
-<phrase> The
+<phrase>The
 <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/Strategy.html">
 <classname>org.apache.openjpa.persistence.jdbc.Strategy</classname></ulink>
 annotation allows you to declare a custom class mapping strategy in JPA mapping
@@ -3386,63 +3041,13 @@ defaults in detail.
                 <para>
 Your other option is to explicitly install a custom value handler or strategy on
 a particular field. To do so, specify the full name of your implementation class
-in the proper mapping metadata extension. <phrase> OpenJPA includes the
+in the proper mapping metadata extension. <phrase>OpenJPA includes the
 <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/Strategy.html">
-<classname>org.apache.openjpa.persistence.jdbc.Strategy</classname></ulink>,
-<ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/ElementStrategy.html">
-<classname>org.apache.openjpa.persistence.jdbc.ElementStrategy</classname>
-</ulink>, and
-<ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/KeyStrategy.html">
-<classname>org.apache.openjpa.persistence.jdbc.KeyStrategy</classname></ulink>
-annotations.</phrase> You can configure the named strategy or handler's bean
+<classname>org.apache.openjpa.persistence.jdbc.Strategy</classname></ulink>
+annotation.</phrase> You can configure the named strategy or handler's bean
 properties in these extensions using OpenJPA's plugin format (see
 <xref linkend="ref_guide_conf_plugins"/> ).
                 </para>
-                <para>
-The example below installs a custom strategy on the <literal>coverImage
-</literal> field, uses a custom value handler for the <literal>
-primaryInfoStruct</literal> field, and uses the same value handler for the
-elements of the <literal>secondaryInfoStructs</literal> collection.
-                </para>
-                <example id="ref_guide_mapping_custom_field_conf_extex">
-                    <title>
-                        Custom Mappings via Extensions
-                    </title>
-<programlisting>
-import org.apache.openjpa.persistence.*;
-import org.apache.openjpa.persistence.jdbc.*;
-
-@Entity
-public class Magazine
-{
-    @Persistent
-    @Strategy("org.mag.mapping.ImageStrategy")
-    @Column(name="IMG")
-    private Image coverImage;
- 
-    @Persistent
-    @Strategy("org.mag.mapping.InfoStructHandler")
-    @Columns({
-        @Column(name="DATA1"),
-        @Column(name="DATA2"),
-        @Column(name="DATA3")
-    })
-    private InfoStruct primaryInfoStruct;
-
-    @PersistentCollection
-    @ContainerTable(name="SEC_STRUCTS", joinColumns=@XJoinColumn(name="MAG_ID"))
-    @ElementStrategy("org.mag.mapping.InfoStructHandler")
-    @ElementColumns({
-        @ElementColumn(name="DATA1"),
-        @ElementColumn(name="DATA2"),
-        @ElementColumn(name="DATA3")
-    })
-    private Collection&lt;InfoStruct&gt; secondaryInfoStructs;
-
-    ...
-}
-</programlisting>
-                </example>
             </section>
         </section>
     </section>
