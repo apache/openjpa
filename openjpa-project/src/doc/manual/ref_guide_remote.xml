@@ -53,7 +53,7 @@ sections explain these capabilities in detail.
         </indexterm>
         <para>
 The JPA Overview describes the specification's standard detach and attach APIs
-in <xref linkend="jpa_overview_em_lifecycle"></xref>. This section enumerates 
+in <xref linkend="jpa_overview_em_lifecycle"/>. This section enumerates 
 OpenJPA's enhancements to the standard behavior.
         </para>
         <section id="ref_guide_detach_behavior">
@@ -223,7 +223,7 @@ default.
 <literal>fgs</literal>: Detach all fields and relations in the default fetch
 group, and any other fetch groups that you have added to the current
 <link linkend="ref_guide_runtime">fetch configuration</link>. For more
-information on custom fetch groups, see <xref linkend="ref_guide_fetch"></xref>
+information on custom fetch groups, see <xref linkend="ref_guide_fetch"/>
 .
                     </para>
                 </listitem>
@@ -241,14 +241,14 @@ to its Java default value in the detached instance.
             </para>
             <para>
 The <literal>openjpa.DetachState</literal> option is actually a plugin string
-(see <xref linkend="ref_guide_conf_plugins"></xref>) that allows you to also
+(see <xref linkend="ref_guide_conf_plugins"/>) that allows you to also
 configure the following options related to detached state:
             </para>
             <itemizedlist>
                 <listitem>
                     <para>
 <literal>DetachedStateField</literal>: As described in
-<xref linkend="ref_guide_attach_behavior"></xref> above, OpenJPA can take
+<xref linkend="ref_guide_attach_behavior"/> above, OpenJPA can take
 advantage of a <emphasis>detached state field</emphasis> to make the attach
 process more efficient. This field is added by the enhancer and is not visible
 to your application. Set this property to one of the following values:
@@ -279,7 +279,7 @@ classes and the OpenJPA libraries.
                     <para>
 You can override the setting of this property or declare your own detached state
 field on individual classes using OpenJPA's metadata extensions. See
-<xref linkend="ref_guide_detach_field"></xref> below.
+<xref linkend="ref_guide_detach_field"/> below.
                     </para>
                 </listitem>
                 <listitem>
@@ -357,7 +357,7 @@ It is possible to define this detached state field yourself. Declaring this
 field in your class metadata prevents the enhancer from adding any extra fields
 to the class, and keeps the enhanced class serialization-compatible with the
 unenhanced version. The detached state field must not be persistent. See
-<xref linkend="detached-state-field"></xref> for details on how to declare a
+<xref linkend="detached-state-field"/> for details on how to declare a
 detached state field.
                 </para>
 <programlisting>
@@ -423,7 +423,7 @@ public class Magazine
         </indexterm>
 The remote event notification framework allows a subset of the information
 available through OpenJPA's transaction events (see
-<xref linkend="ref_guide_runtime_pm_event"></xref>) to be broadcast to remote
+<xref linkend="ref_guide_runtime_pm_event"/>) to be broadcast to remote
 listeners. OpenJPA's <link linkend="ref_guide_cache">data cache</link>, for
 example, uses remote events to remain synchronized when deployed in multiple
 JVMs.
@@ -586,7 +586,7 @@ number of concurrent transactions increases. The maximum number of concurrent
 transactions is a function of the size of the connection pool. See the the
 <literal>MaxActive</literal> property of <literal>
 openjpa.ConnectionFactoryProperties</literal> in
-<xref linkend="ref_guide_dbsetup_builtin"></xref>. Setting a value of 0 will
+<xref linkend="ref_guide_dbsetup_builtin"/>. Setting a value of 0 will
 result in behavior where the thread invoking <methodname>commit</methodname>
 will perform the broadcast directly. Defaults to 2.
                         </para>

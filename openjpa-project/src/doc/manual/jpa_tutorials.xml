@@ -84,7 +84,7 @@ closer look at these classes.
 tutorial.persistence.AnimalMaintenance</classname></ulink>: Provides some
 utility methods for examining and manipulating the animals stored in the
 database. We will fill in method definitions in
-<xref linkend="jpa_tutorial_chapter3"></xref>.
+<xref linkend="jpa_tutorial_chapter3"/>.
                         </para>
                     </listitem>
                     <listitem>
@@ -105,16 +105,16 @@ specific to dogs.
                         <para>
 <ulink url="../../../tutorial/persistence/Rabbit.java"><classname>
 tutorial.persistence.Rabbit</classname></ulink>: Contains data and methods
-specific to rabbits. It will be used in <xref linkend="jpa_tutorial_chapter4">
-</xref>.
+specific to rabbits. It will be used in <xref linkend="jpa_tutorial_chapter4"/>
+.
                         </para>
                     </listitem>
                     <listitem>
                         <para>
 <ulink url="../../../tutorial/persistence/Snake.java"><classname>
 tutorial.persistence.Snake</classname></ulink>: Contains data and methods
-specific to snakes. It will be used in <xref linkend="jpa_tutorial_chapter5">
-</xref>.
+specific to snakes. It will be used in <xref linkend="jpa_tutorial_chapter5"/>
+.
                         </para>
                     </listitem>
                     <listitem>
@@ -172,8 +172,8 @@ files listed above.
                             </primary>
                         </indexterm>
 <command>openjpac</command>: Runs the OpenJPA enhancer against the specified
-classes. More information is available in <xref linkend="ref_guide_pc_enhance">
-</xref> of the Reference Guide.
+classes. More information is available in <xref linkend="ref_guide_pc_enhance"/>
+ of the Reference Guide.
                         </para>
                     </listitem>
                     <listitem>
@@ -187,7 +187,7 @@ classes. More information is available in <xref linkend="ref_guide_pc_enhance">
 maintain the object-relational mappings and schema of all persistent classes in
 a JDBC-compliant datastore. This functionality allows the underlying mappings
 and schema to be easily kept up-to-date with the Java classes in the system. See
-<xref linkend="ref_guide_mapping"></xref> of the Reference Guide for more
+<xref linkend="ref_guide_mapping"/> of the Reference Guide for more
 information.
                         </para>
                     </listitem>
@@ -257,8 +257,8 @@ public abstract class Animal
 </programlisting>
                     <para>
 The annotations serve to map the class into the database. For more information
-on these and other annotations, see <xref linkend="jpa_overview_meta"></xref>
-and <xref linkend="jpa_overview_mapping"></xref>.
+on these and other annotations, see <xref linkend="jpa_overview_meta"/>
+and <xref linkend="jpa_overview_mapping"/>.
                     </para>
                     <orderedlist>
                         <listitem>
@@ -322,7 +322,7 @@ private float price = 0f;
 </programlisting>
                     <para>
 The annotations serve to map the fields into the database. For more information
-on these and other annotations, see <xref linkend="jpa_overview_meta"></xref>.
+on these and other annotations, see <xref linkend="jpa_overview_meta"/>.
                     </para>
                     <orderedlist>
                         <listitem>
@@ -374,7 +374,7 @@ openjpac -p persistence.xml Animal.java Dog.java
                     <para>
 This step runs the OpenJPA enhancer on the <filename>Animal.java</filename> and
 <filename>Dog.java</filename> files mentioned above. See
-<xref linkend="ref_guide_pc_enhance"></xref> of the Reference Guide for more
+<xref linkend="ref_guide_pc_enhance"/> of the Reference Guide for more
 information on the enhancer, including how to use automatic runtime enhancement.
                     </para>
                     <note>
@@ -385,7 +385,7 @@ default configuration in a resource called <filename>openjpa.xml</filename> or
 <filename>META-INF/openjpa.xml</filename>. Thus you can avoid passing the
 <literal>-p</literal> argument to tools by using this configuration file name in
 place of <filename>persistence.xml</filename>. See
-<xref linkend="ref_guide_conf"></xref> in the Reference Guide for details on
+<xref linkend="ref_guide_conf"/> in the Reference Guide for details on
 OpenJPA configuration.
                         </para>
                     </note>
@@ -405,7 +405,7 @@ of the relational databases that we support. You can also write your own plugin
 for any database that we do not support. For the sake of simplicity, this
 tutorial only describes how to set up connectivity to a Hypersonic SQL database.
 For more information on how to connect to a different database or how to add
-support for other databases, see <xref linkend="ref_guide_dbsetup"></xref> of
+support for other databases, see <xref linkend="ref_guide_dbsetup"/> of
 the Reference Guide.
                 </para>
                 <orderedlist>
@@ -431,9 +431,9 @@ directory. To delete the database, just delete these files.
                         </para>
                         <para>
 By default, JPA uses object-relational mapping information stored in annotations
-in your source files. <xref linkend="jpa_overview_mapping"></xref> of the JPA
+in your source files. <xref linkend="jpa_overview_mapping"/> of the JPA
 Overview will help you understand mapping annotations. Additionally,
-<xref linkend="ref_guide_mapping"></xref> of the Reference Guide describes your
+<xref linkend="ref_guide_mapping"/> of the Reference Guide describes your
 other mapping options in detail.
                         </para>
                         <para>
@@ -448,7 +448,7 @@ schematool -p persistence.xml -a reflect -f tmp.schema
                         <para>
 This will create a <filename>tmp.schema</filename> file with an XML
 representation of the database schema. The XML should be self explanatory; see
-<xref linkend="ref_guide_schema_xml"></xref> of the Reference Guide for details.
+<xref linkend="ref_guide_schema_xml"/> of the Reference Guide for details.
 You may delete the <filename>tmp.schema</filename> file before proceeding.
                         </para>
                     </listitem>
@@ -541,8 +541,8 @@ The Java Persistence Query Language (JPQL) is designed to look and behave much
 like an object oriented SQL dialect. The <literal>name</literal> and <literal>
 price</literal> fields identified in the above queries map to the member fields
 of those names in <classname> tutorial.persistence.Animal</classname>. More
-details on JPQL syntax is available in <xref linkend="jpa_overview_query">
-</xref> of the JPA Overview.
+details on JPQL syntax is available in <xref linkend="jpa_overview_query"/>
+ of the JPA Overview.
                     </para>
                 </listitem>
             </orderedlist>
@@ -774,7 +774,7 @@ RABBIT_CHILDREN.PARENT_ID</literal> is a foreign key to the parent's <literal>
 ID</literal> primary key column. Similarly, the <literal>inverseJoinColumns
 </literal> attribute denotes the foreign key columns linking to the collection
 elements (the children). For more details on the <literal>@JoinTable</literal>
-annotation, see <xref linkend="jpa_overview_mapping"></xref> of the JPA
+annotation, see <xref linkend="jpa_overview_mapping"/> of the JPA
 Overview.
                     </para>
                     <para>
@@ -957,7 +957,7 @@ bidirectional many-to-one relation, the many side must always be the owner.
                     </para>
                     <para>
 For more information on types of relations, see
-<xref linkend="jpa_overview_mapping_field"></xref> of the JPA Overview.
+<xref linkend="jpa_overview_mapping_field"/> of the JPA Overview.
                     </para>
                     <para>
 Modify the <literal>toString (boolean)</literal> method to output the giTract

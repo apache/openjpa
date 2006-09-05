@@ -58,20 +58,20 @@ your relational model.
     <note>
         <para>
 OpenJPA offers tools to automate mapping and schema creation. See
-<xref linkend="ref_guide_mapping"></xref> in the Reference Guide.
+<xref linkend="ref_guide_mapping"/> in the Reference Guide.
         </para>
     </note>
     <para>
 Throughout this chapter, we will draw on the object model introduced in
-<xref linkend="jpa_overview_meta"></xref>. We present that model again below.
+<xref linkend="jpa_overview_meta"/>. We present that model again below.
 As we discuss various aspects of mapping metadata, we will zoom in on specific
 areas of the model and show how we map the object layer to the relational layer.
     </para>
     <mediaobject>
         <imageobject>
             <!-- PNG image data, 553 x 580 (see README) -->
-            <imagedata fileref="img/jpa-meta-model.png" width="369px">
-            </imagedata>
+            <imagedata fileref="img/jpa-meta-model.png" width="369px"/>
+            
         </imageobject>
     </mediaobject>
     <para>
@@ -100,7 +100,7 @@ The <classname>Table</classname> annotation specifies the table for an entity
 class. If you omit the <classname>Table</classname> annotation, base entity
 classes default to a table with their unqualified class name. The default table
 of an entity subclass depends on the inheritance strategy, as you will see in
-<xref linkend="jpa_overview_mapping_inher"></xref>.
+<xref linkend="jpa_overview_mapping_inher"/>.
         </para>
         <para>
 <classname>Table</classname>s have the following properties:
@@ -173,8 +173,8 @@ are in the default schema.
         <mediaobject>
             <imageobject>
                 <!-- PNG image data, 513 x 410 (see README) -->
-                <imagedata fileref="img/mapping-tables.png" width="341px">
-                </imagedata>
+                <imagedata fileref="img/mapping-tables.png" width="341px"/>
+                
             </imageobject>
         </mediaobject>
         <para>
@@ -703,8 +703,8 @@ diagram includes this data in its encoding of our mappings.
         <mediaobject>
             <imageobject>
                 <!-- PNG image data, 513 x 410 (see README) -->
-                <imagedata fileref="img/jpa-mapping-identity.png" width="341px">
-                </imagedata>
+                <imagedata fileref="img/jpa-mapping-identity.png" width="341px"/>
+                
             </imageobject>
         </mediaobject>
         <para>
@@ -883,7 +883,7 @@ expressed in XML form:
 One aspect of identity mapping not covered in the previous section is JPA's
 ability to automatically assign a value to your numeric identity fields using
 <emphasis>generators</emphasis>. We discussed the available generator types in
-<xref linkend="jpa_overview_meta_id"></xref>. Now we show you how to define
+<xref linkend="jpa_overview_meta_id"/>. Now we show you how to define
 named generators.
         </para>
         <section id="jpa_overview_mapping_sequence_seqgen">
@@ -978,7 +978,7 @@ implementations in the <literal>sequenceName</literal> property. You can also
 set the <literal>sequenceName</literal> to <literal>system</literal> to use the
 system sequence defined by the <link linkend="openjpa.Sequence"><literal>
 openjpa.Sequence</literal></link> configuration property. See the Reference
-Guide's <xref linkend="ref_guide_sequence"></xref> for details.
+Guide's <xref linkend="ref_guide_sequence"/> for details.
                 </para>
             </note>
             <para>
@@ -1493,7 +1493,7 @@ The following sections describe JPA's standard inheritance strategies.
             <para>
 OpenJPA allows you to vary your inheritance strategy for each class, rather than
 forcing a single strategy per inheritance hierarchy. See
-<xref linkend="ref_guide_mapping_jpa"></xref> in the Reference Guide for
+<xref linkend="ref_guide_mapping_jpa"/> in the Reference Guide for
 details.
             </para>
         </note>
@@ -1527,8 +1527,8 @@ the hierarchy to the base class' table.
             <mediaobject>
                 <imageobject>
                     <!-- PNG image data, 266 x 203 (see README) -->
-                    <imagedata fileref="img/inher-superclass-table.png" width="177px">
-                    </imagedata>
+                    <imagedata fileref="img/inher-superclass-table.png" width="177px"/>
+                    
                 </imageobject>
             </mediaobject>
             <para>
@@ -1701,8 +1701,8 @@ inheritance mapping.
             <mediaobject>
                 <imageobject>
                     <!-- PNG image data, 256 x 229 (see README) -->
-                    <imagedata fileref="img/jpa-inher-joined.png" width="171px">
-                    </imagedata>
+                    <imagedata fileref="img/jpa-inher-joined.png" width="171px"/>
+                    
                 </imageobject>
             </mediaobject>
             <para>
@@ -1732,7 +1732,7 @@ identity field, defaults to that field's column name.
 <literal>String columnDefinition</literal>: This property has the same meaning
 as the <literal>columnDefinition</literal> property on the <classname>Column
 </classname> annotation, described in
-<xref linkend="jpa_overview_mapping_column"></xref>.
+<xref linkend="jpa_overview_mapping_column"/>.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -1907,7 +1907,7 @@ this mapping is very fast.
                     <para>
 When executing a select against a hierarchy that uses joined subclass table
 inheritance, you must consider how to load subclass state.
-<xref linkend="ref_guide_perfpack_eager"></xref> in the Reference Guide
+<xref linkend="ref_guide_perfpack_eager"/> in the Reference Guide
 describes OpenJPA's options for efficient data loading.
                     </para>
                 </note>
@@ -1948,8 +1948,8 @@ tables.
             <mediaobject>
                 <imageobject>
                     <!-- PNG image data, 283 x 247 (see README) -->
-                    <imagedata fileref="img/inher-tpc.png" width="189px">
-                    </imagedata>
+                    <imagedata fileref="img/inher-tpc.png" width="189px"/>
+                    
                 </imageobject>
             </mediaobject>
             <para>
@@ -1965,7 +1965,7 @@ well. Thus the <literal>TABLOID</literal> table would contain columns for
 <literal>isbn</literal>, <literal>title</literal>, and other <classname>
 Magazine</classname> fields. These columns would default to the names used in
 <classname>Magazine</classname>'s mapping metadata.
-<xref linkend="jpa_overview_mapping_embed"></xref> will show you how to use
+<xref linkend="jpa_overview_mapping_embed"/> will show you how to use
 <literal>AttributeOverride</literal>s and <literal>AssociationOverride</literal>
 s to override superclass field mappings.
             </para>
@@ -2054,7 +2054,7 @@ possible subclass), or a complex <literal>UNION</literal>.
                 </para>
                 <note>
                     <para>
-<xref linkend="ref_guide_mapping_limits_tpc"></xref> in the Reference Guide
+<xref linkend="ref_guide_mapping_limits_tpc"/> in the Reference Guide
 describes the limitations OpenJPA places on table-per-class mapping.
                     </para>
                 </note>
@@ -2071,8 +2071,8 @@ document with inheritance information. Here is the complete model:
             <mediaobject>
                 <imageobject>
                     <!-- PNG image data, 513 x 410 (see README) -->
-                    <imagedata fileref="img/jpa-inher-all.png" width="341px">
-                    </imagedata>
+                    <imagedata fileref="img/jpa-inher-all.png" width="341px"/>
+                    
                 </imageobject>
             </mediaobject>
             <para>
@@ -2368,7 +2368,7 @@ column. Defaults to 31.
 <literal>String columnDefinition</literal>: This property has the same meaning
 as the <literal>columnDefinition</literal> property on the <classname>Column
 </classname> annotation, described in
-<xref linkend="jpa_overview_mapping_column"></xref>.
+<xref linkend="jpa_overview_mapping_column"/>.
                 </para>
             </listitem>
             <listitem>
@@ -2451,7 +2451,7 @@ a discriminator to make some operations more efficient, but do not require one.
             </para>
             <para>
 OpenJPA defines additional discriminator strategies; see
-<xref linkend="ref_guide_mapping_jpa"></xref> in the Reference Guide for
+<xref linkend="ref_guide_mapping_jpa"/> in the Reference Guide for
 details. OpenJPA also supports final entity classes. OpenJPA does not use a
 discriminator on final classes.
             </para>
@@ -2463,8 +2463,8 @@ JPA mappings. We first extend our diagram with discriminator columns:
         <mediaobject>
             <imageobject>
                 <!-- PNG image data, 513 x 410 (see README) -->
-                <imagedata fileref="img/jpa-discrim-all.png" width="341px">
-                </imagedata>
+                <imagedata fileref="img/jpa-discrim-all.png" width="341px"/>
+                
             </imageobject>
         </mediaobject>
         <para>
@@ -2730,7 +2730,7 @@ The same metadata expressed in XML:
         <para>
 The following sections enumerate the myriad of field mappings JPA
 supports. JPA augments the persistence metadata covered in
-<xref linkend="jpa_overview_meta"></xref> with many new object-relational
+<xref linkend="jpa_overview_meta"/> with many new object-relational
 annotations. As we explore the library of standard mappings, we introduce each
 of these enhancements in context.
         </para>
@@ -2738,7 +2738,7 @@ of these enhancements in context.
             <para>
 OpenJPA supports many additional field types, and allows you to create custom
 mappings for unsupported field types or database schemas. See the Reference
-Guide's <xref linkend="ref_guide_mapping"></xref> for complete coverage of
+Guide's <xref linkend="ref_guide_mapping"/> for complete coverage of
 OpenJPA's mapping capabilities.
             </para>
         </note>
@@ -2768,7 +2768,7 @@ OpenJPA's mapping capabilities.
             <para>
 A <emphasis>basic</emphasis> field mapping stores the field value directly into
 a database column. The following field metadata types use basic mapping. These
-types were defined in <xref linkend="jpa_overview_meta_field"></xref>.
+types were defined in <xref linkend="jpa_overview_meta_field"/>.
             </para>
             <itemizedlist>
                 <listitem>
@@ -2792,11 +2792,11 @@ fields.
             <para>
 In fact, you have already seen examples of basic field mappings in this chapter
 - the mapping of all identity fields in
-<xref linkend="jpa_overview_mapping_identityex"></xref>. As you saw in that
+<xref linkend="jpa_overview_mapping_identityex"/>. As you saw in that
 section, to write a basic field mapping you use the <classname>Column
 </classname> annotation to describe the column the field value is stored in. We
 discussed the <classname>Column</classname> annotation in
-<xref linkend="jpa_overview_mapping_column"></xref>. Recall that the name of
+<xref linkend="jpa_overview_mapping_column"/>. Recall that the name of
 the column defaults to the field name, and the type of the column defaults to an
 appropriate type for the field type. These defaults allow you to sometimes omit
 the annotation altogether.
@@ -2962,14 +2962,14 @@ schema, followed by the corresponding mapping metadata. Note that the mapping
 metadata relies on defaults where possible. Also note that as a mapped
 superclass, <classname>Document</classname> can define mappings that will
 automatically transfer to its subclass' tables. In
-<xref linkend="jpa_overview_mapping_embed"></xref>, you will see how a subclass
+<xref linkend="jpa_overview_mapping_embed"/>, you will see how a subclass
 can override its mapped superclass' mappings.
                 </para>
                 <mediaobject>
                     <imageobject>
                         <!-- PNG image data, 580 x 553 (see README) -->
-                        <imagedata fileref="img/jpa-basic-field.png" width="387px">
-                        </imagedata>
+                        <imagedata fileref="img/jpa-basic-field.png" width="387px"/>
+                        
                     </imageobject>
                 </mediaobject>
                 <example id="jpa_overview_mapping_basicex">
@@ -3366,15 +3366,15 @@ Define the secondary table on the entity class declaration.
             <para>
 You define secondary tables with the <classname>SecondaryTable</classname>
 annotation. This annotation has all the properties of the <classname>Table
-</classname> annotation covered in <xref linkend="jpa_overview_mapping_table">
-</xref>, plus a <literal> pkJoinColumns</literal> property.
+</classname> annotation covered in <xref linkend="jpa_overview_mapping_table"/>
+, plus a <literal> pkJoinColumns</literal> property.
             </para>
             <para>
 The <literal>pkJoinColumns</literal> property is an array of <classname>
 PrimaryKeyJoinColumn</classname>s dictating how to join secondary table records
 to their owning primary table records. Each <classname>PrimaryKeyJoinColumn
 </classname> joins a secondary table column to a primary key column in the
-primary table. See <xref linkend="jpa_overview_mapping_inher_joined"></xref>
+primary table. See <xref linkend="jpa_overview_mapping_inher_joined"/>
 above for coverage of <classname>PrimaryKeyJoinColumn</classname>'s properties.
             </para>
             <para>
@@ -3384,14 +3384,14 @@ accepts nested <literal>primary-key-join-column</literal> elements.
             </para>
             <para>
 In the following example, we move the <literal>Article.content</literal> field
-we mapped in <xref linkend="jpa_overview_mapping_basic"></xref> into a joined
+we mapped in <xref linkend="jpa_overview_mapping_basic"/> into a joined
 secondary table, like so:
             </para>
             <mediaobject>
                 <imageobject>
                     <!-- PNG image data, 284 x 167 (see README) -->
-                    <imagedata fileref="img/secondary-table.png" width="189px">
-                    </imagedata>
+                    <imagedata fileref="img/secondary-table.png" width="189px"/>
+                    
                 </imageobject>
             </mediaobject>
             <example id="jpa_overview_mapping_secondaryex">
@@ -3459,7 +3459,7 @@ And in XML:
                 </secondary>
             </indexterm>
             <para>
-<xref linkend="jpa_overview_meta"></xref> describes JPA's concept of <emphasis>
+<xref linkend="jpa_overview_meta"/> describes JPA's concept of <emphasis>
 embeddable</emphasis> objects. The field values of embedded objects are stored
 as part of the owning record, rather than as a separate database record. Thus,
 instead of mapping a relation to an embeddable object as a foreign key, you map
@@ -3469,8 +3469,8 @@ table.
             <mediaobject>
                 <imageobject>
                     <!-- PNG image data, 464 x 203 (see README) -->
-                    <imagedata fileref="img/jpa-embedded.png" width="309px">
-                    </imagedata>
+                    <imagedata fileref="img/jpa-embedded.png" width="309px"/>
+                    
                 </imageobject>
             </mediaobject>
             <para>
@@ -3731,8 +3731,8 @@ represented in the database by foreign key columns:
             <mediaobject>
                 <imageobject>
                     <!-- PNG image data, 374 x 386 (see README) -->
-                    <imagedata fileref="img/jpa-direct-relation.png" width="249px">
-                    </imagedata>
+                    <imagedata fileref="img/jpa-direct-relation.png" width="249px"/>
+                    
                 </imageobject>
             </mediaobject>
             <para>
@@ -3769,7 +3769,7 @@ unique values for all rows. Defaults to false.
 , <literal>insertable</literal>, <literal> updatable</literal>, <literal>
 columnDefinition</literal>, and <literal>table</literal> properties as the
 <classname> Column</classname> annotation. See
-<xref linkend="jpa_overview_mapping_column"></xref> for details on these
+<xref linkend="jpa_overview_mapping_column"/> for details on these
 properties.
             </para>
             <para>
@@ -3828,7 +3828,7 @@ of <classname>JoinColumn</classname> values. In XML, simply list multiple
             <note>
                 <para>
 OpenJPA supports many non-standard joins. See
-<xref linkend="ref_guide_mapping_notes_nonstdjoins"></xref> in the Reference
+<xref linkend="ref_guide_mapping_notes_nonstdjoins"/> in the Reference
 Guide for details.
                 </para>
             </note>
@@ -4017,8 +4017,8 @@ Article.authors</literal>.
             <mediaobject>
                 <imageobject>
                     <!-- PNG image data, 391 x 407 (see README) -->
-                    <imagedata fileref="img/jpa-assoc-table.png" width="261px">
-                    </imagedata>
+                    <imagedata fileref="img/jpa-assoc-table.png" width="261px"/>
+                    
                 </imageobject>
             </mediaobject>
             <para>
@@ -4049,12 +4049,12 @@ name of the related entity's table.
 </classname> sshowing how to associate join table records with the owning row in
 the primary table. This property mirrors the <literal>pkJoinColumns</literal>
 property of the <classname> SecondaryTable</classname> annotation in
-functionality. See <xref linkend="jpa_overview_mapping_secondary"></xref> to
+functionality. See <xref linkend="jpa_overview_mapping_secondary"/> to
 refresh your memory on secondary tables.
                     </para>
                     <para>
 If this is a bidirectional relation (see
-<xref linkend="jpa_overview_meta_mappedby"></xref> ), the name of a join column
+<xref linkend="jpa_overview_meta_mappedby"/> ), the name of a join column
 defaults to the inverse field name, plus an underscore, plus the referenced
 primary key column name. Otherwise, the join column name defaults to the field's
 owning entity name, plus an underscore, plus the referenced primary key column
@@ -4067,7 +4067,7 @@ name.
 JoinColumns</classname> showing how to associate join table records with the
 records that form the elements of the collection. These join columns are used
 just like the join columns for direct relations, and they have the same naming
-defaults. Read <xref linkend="jpa_overview_mapping_rel"></xref> for a review of
+defaults. Read <xref linkend="jpa_overview_mapping_rel"/> for a review of
 direct relation mapping.
                     </para>
                 </listitem>
@@ -4200,7 +4200,7 @@ The same metadata expressed in XML:
                 </secondary>
             </indexterm>
             <para>
-<xref linkend="jpa_overview_meta_mappedby"></xref> introduced bidirectional
+<xref linkend="jpa_overview_meta_mappedby"/> introduced bidirectional
 relations. To map a bidirectional relation, you map one field normally using the
 annotations we have covered throughout this chapter. Then you use the <literal>
 mappedBy</literal> property of the other field's metadata annotation or the
@@ -4249,13 +4249,13 @@ fields, namely dedicated <link linkend="jpa_overview_mapping_assoccoll">join
 tables</link> or <link linkend="jpa_overview_mapping_bidi">bidirectional
 relations</link>. The only additions are the <classname>MapKey</classname>
 annotation and <literal>map-key</literal> element to declare the key field. We
-covered these additions in in <xref linkend="jpa_overview_meta_mapkey"></xref>.
+covered these additions in in <xref linkend="jpa_overview_meta_mapkey"/>.
             </para>
             <mediaobject>
                 <imageobject>
                     <!-- PNG image data, 382 x 274 (see README) -->
-                    <imagedata fileref="img/jpa-map.png" width="255px">
-                    </imagedata>
+                    <imagedata fileref="img/jpa-map.png" width="255px"/>
+                    
                 </imageobject>
             </mediaobject>
             <para>
@@ -4339,8 +4339,8 @@ We began this chapter with the goal of mapping the following object model:
         <mediaobject>
             <imageobject>
                 <!-- PNG image data, 553 x 580 (see README) -->
-                <imagedata fileref="img/jpa-meta-model.png" width="369px">
-                </imagedata>
+                <imagedata fileref="img/jpa-meta-model.png" width="369px"/>
+                
             </imageobject>
         </mediaobject>
         <para>
@@ -4351,8 +4351,8 @@ complete model. First, the database schema:
         <mediaobject>
             <imageobject>
                 <!-- PNG image data, 490 x 662 (see README) -->
-                <imagedata fileref="img/jpa-data-model.png" width="326px">
-                </imagedata>
+                <imagedata fileref="img/jpa-data-model.png" width="326px"/>
+                
             </imageobject>
         </mediaobject>
         <para>

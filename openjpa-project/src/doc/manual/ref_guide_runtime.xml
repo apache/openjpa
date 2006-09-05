@@ -253,11 +253,11 @@ org.apache.openjpa.persistence.OpenJPAQuery</classname> interface. See its
 details on the convenience methods it provides.
             </para>
         </section>
-        <section id="ref_guide_runtime_jpaquery">
+        <section id="ref_guide_runtime_jpaextent">
             <title>
                 Extent
             </title>
-            <indexterm zone="ref_guide_runtime_jpaquery">
+            <indexterm zone="ref_guide_runtime_jpaextent">
                 <primary>
                     Extent
                 </primary>
@@ -312,7 +312,7 @@ the JPA specification, OpenJPA includes a flexible datastore-level cache. You
 can access this cache from your JPA code using the
 <ulink url="../../api/openjpa/persistence/StoreCache.html"><classname>
 org.apache.openjpa.persistence.StoreCache</classname></ulink> facade.
-<xref linkend="ref_guide_cache"></xref> has detailed information on OpenJPA's
+<xref linkend="ref_guide_cache"/> has detailed information on OpenJPA's
 data caching system, including the <classname>StoreCache</classname> facade.
             </para>
         </section>
@@ -330,7 +330,7 @@ OpenJPA can cache query results as well as persistent object data. The
 <ulink url="../../api/openjpa/persistence/QueryResultCache.html"><classname>
 org.apache.openjpa.persistence.QueryResultCache</classname></ulink> is an
 JPA-flavored facade to OpenJPA's internal query cache. See
-<xref linkend="ref_guide_cache_query"></xref> for details on query caching in
+<xref linkend="ref_guide_cache_query"/> for details on query caching in
 OpenJPA.
             </para>
         </section>
@@ -365,7 +365,7 @@ OpenJPA goes one step further, extending <classname>FetchPlan</classname> with
 org.apache.openjpa.persistence.jdbc.JDBCFetchPlan</classname></ulink> to add
 additional JDBC-specific tuning methods. Unless you have customized OpenJPA to
 use a non-relational back-end (see
-<xref linkend="ref_guide_enterprise_abstractstore"></xref> ), all <classname>
+<xref linkend="ref_guide_enterprise_abstractstore"/> ), all <classname>
 FetchPlan</classname>s in OpenJPA implement <classname>JDBCFetchPlan</classname>
 , so feel free to cast to this interface.
             </para>
@@ -383,7 +383,7 @@ configuration. Likewise, modifying an <classname>EntityManager</classname>'s
 configuration does not affect the <classname> EntityManagerFactory</classname>.
             </para>
             <para>
-<xref linkend="ref_guide_fetch"></xref> includes examples using <classname>
+<xref linkend="ref_guide_fetch"/> includes examples using <classname>
 FetchPlan</classname> s.
             </para>
         </section>
@@ -1184,7 +1184,7 @@ There are two ways to register your custom filter extensions with OpenJPA:
 extensions by setting the <link linkend="openjpa.FilterListeners"><literal>
 openjpa.FilterListeners</literal></link> configuration property to a
 comma-separated list of plugin strings (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing your extensions
+<xref linkend="ref_guide_conf_plugins"/>) describing your extensions
 classes. Extensions registered in this fashion must have a public no-arg
 constructor. They must also be thread safe, because they will be shared across
 all queries.
@@ -1252,7 +1252,7 @@ There are two ways to register your custom query aggregates with OpenJPA:
 aggregates by setting the <link linkend="openjpa.AggregateListeners"><literal>
 openjpa.AggregateListeners</literal></link> configuration property to a
 comma-separated list of plugin strings (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing your aggregate
+<xref linkend="ref_guide_conf_plugins"/>) describing your aggregate
 implementation. Aggregates registered in this fashion must have a public no-arg
 constructor. They must also be thread safe, because they will be shared across
 all queries.
@@ -1384,7 +1384,7 @@ names and values of all the parameters for the query.
             </secondary>
         </indexterm>
         <para>
-The JPA Overview's <xref linkend="jpa_overview_mapping"></xref> details using
+The JPA Overview's <xref linkend="jpa_overview_mapping"/> details using
 generators to automatically populate identity fields in JPA.
         </para>
         <para>
@@ -1608,11 +1608,11 @@ You can use JPA <literal>SequenceGenerator</literal>s to describe any built-in
 <classname>Seq</classname>s or your own <classname>Seq</classname>
 implementation. Set the <literal>sequenceName</literal> attribute to a plugin
 string describing your choice. See
-<xref linkend="jpa_overview_mapping_sequence"></xref> in the JPA Overview for
+<xref linkend="jpa_overview_mapping_sequence"/> in the JPA Overview for
 details on defining <literal>SequenceGenerator</literal> s.
         </para>
         <para>
-See <xref linkend="ref_guide_conf_plugins"></xref> for plugin string formatting.
+See <xref linkend="ref_guide_conf_plugins"/> for plugin string formatting.
         </para>
         <example id="ref_guide_sequence_named">
             <title>
@@ -1737,7 +1737,7 @@ remove listeners.
 For details on the transaction framework, see the <literal>
 org.apache.openjpa.event</literal> package
 <ulink url="../apidocs/org/apache/openjpa/event/package.html">Javadoc</ulink>.
-Also see <xref linkend="ref_guide_event"></xref> for a description of OpenJPA's
+Also see <xref linkend="ref_guide_event"/> for a description of OpenJPA's
 remote event support.
         </para>
     </section>

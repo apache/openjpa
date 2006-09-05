@@ -11,14 +11,10 @@ by OpenJPA <phrase>JPA</phrase>.
             Supported Databases and JDBC Drivers
         </title>
         <tgroup rowsep="1" colsep="1" align="left" cols="4">
-            <colspec colname="dbname">
-            </colspec>
-            <colspec colname="dbversion">
-            </colspec>
-            <colspec colname="drivname">
-            </colspec>
-            <colspec colname="drivversion">
-            </colspec>
+            <colspec colname="dbname"/>
+            <colspec colname="dbversion"/>
+            <colspec colname="drivname"/>
+            <colspec colname="drivversion"/>
             <thead>
                 <row>
                     <entry colname="dbname">

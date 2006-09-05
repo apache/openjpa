@@ -36,10 +36,10 @@ more work onto the server will have a negative impact on scalability.
             Optimization Guidelines
         </title>
         <tgroup cols="2" align="left" colsep="1" rowsep="1">
-            <colspec colname="name">
-            </colspec>
-            <colspec colname="desc" colwidth="4*">
-            </colspec>
+            <colspec colname="name"/>
+            
+            <colspec colname="desc" colwidth="4*"/>
+            
             <tbody valign="top">
                 <row>
                     <entry colname="name">
@@ -533,7 +533,7 @@ size.
 Attaching and even persisting instances can be more efficient when your detached
 objects use detached state managers. By default, OpenJPA does not use detached
 state managers when serializing an instance across tiers. See
-<xref linkend="ref_guide_detach_graph"></xref> for how to force OpenJPA to use
+<xref linkend="ref_guide_detach_graph"/> for how to force OpenJPA to use
 detached state managers across tiers, and for other options for more efficient
 attachment.
                         </para>

@@ -74,16 +74,16 @@ the class' class loader.
     <para>
 We describe the standard metadata annotations and XML equivalents throughout
 this chapter. The full schema for XML mapping files is available in
-<xref linkend="jpa_overview_meta_xml"></xref>. JPA also standardizes relational
+<xref linkend="jpa_overview_meta_xml"/>. JPA also standardizes relational
 mapping metadata and named query metadata, which we discuss in
-<xref linkend="jpa_overview_mapping"></xref> and
-<xref linkend="jpa_overview_query_named"></xref> respectively.
+<xref linkend="jpa_overview_mapping"/> and
+<xref linkend="jpa_overview_query_named"/> respectively.
     </para>
     <note>
         <para>
 OpenJPA defines many useful annotations beyond the standard set. See
-<xref linkend="ref_guide_meta_jpa"></xref> and
-<xref linkend="ref_guide_meta_ext"></xref>
+<xref linkend="ref_guide_meta_jpa"/> and
+<xref linkend="ref_guide_meta_ext"/>
 in the Reference Guide for details. There are currently no XML equivalents for
 these extension annotations.
         </para>
@@ -91,8 +91,8 @@ these extension annotations.
     <mediaobject>
         <imageobject>
             <!-- PNG image data, 553 x 580 (see README) -->
-            <imagedata fileref="img/jpa-meta-model.png" width="369">
-            </imagedata>
+            <imagedata fileref="img/jpa-meta-model.png" width="369"/>
+            
         </imageobject>
     </mediaobject>
     <para>
@@ -169,7 +169,7 @@ name property above.
                     <para>
 <literal>access</literal>: The access type to use for the class. Must either be
 <literal>FIELD</literal> or <literal>PROPERTY</literal>. For details on access
-types, see <xref linkend="jpa_overview_meta_field"></xref>.
+types, see <xref linkend="jpa_overview_meta_field"/>.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -177,7 +177,7 @@ types, see <xref linkend="jpa_overview_meta_field"></xref>.
                 <para>
 OpenJPA uses a process called <emphasis>enhancement</emphasis> to modify the
 bytecode of entities for transparent lazy loading and immediate dirty tracking.
-See <xref linkend="ref_guide_pc_enhance"></xref> in the Reference Guide for
+See <xref linkend="ref_guide_pc_enhance"/> in the Reference Guide for
 details on enhancement.
                 </para>
             </note>
@@ -208,7 +208,7 @@ details on enhancement.
                 </secondary>
             </indexterm>
             <para>
-As we discussed in <xref linkend="jpa_overview_pc_identitycls"></xref>,
+As we discussed in <xref linkend="jpa_overview_pc_identitycls"/>,
 entities with multiple identity fields must use an <emphasis> identity class
 </emphasis> to encapsulate their persistent identity. The <classname>IdClass
 </classname> annotation specifies this class. It accepts a single <classname>
@@ -275,7 +275,7 @@ the following attributes:
                     <para>
 <literal>access</literal>: The access type to use for the class. Must either be
 <literal>FIELD</literal> or <literal>PROPERTY</literal>. For details on access
-types, see <xref linkend="jpa_overview_meta_field"></xref>.
+types, see <xref linkend="jpa_overview_meta_field"/>.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -335,7 +335,7 @@ following attributes:
                     <para>
 <literal>access</literal>: The access type to use for the class. Must either be
 <literal>FIELD</literal> or <literal>PROPERTY</literal>. For details on access
-types, see <xref linkend="jpa_overview_meta_field"></xref>.
+types, see <xref linkend="jpa_overview_meta_field"/>.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -388,7 +388,7 @@ An entity may list its lifecycle event listeners in the <classname>
 EntityListeners</classname> annotation. This value of this annotation is an
 array of the listener <classname>Class</classname> es for the entity. The
 equivalent XML element is <literal>entity-listeners</literal>. For more details
-on entity listeners, see <xref linkend="jpa_overview_pc_callbacks"></xref>.
+on entity listeners, see <xref linkend="jpa_overview_pc_callbacks"/>.
             </para>
         </section>
         <section id="jpa_overview_meta_classex">
@@ -706,7 +706,7 @@ is required.
             <para>
 Annotate your simple identity fields with <classname>Id</classname>. This
 annotation has no properties. We explore entity identity and identity fields in
-<xref linkend="jpa_overview_pc_id"></xref>.
+<xref linkend="jpa_overview_pc_id"/>.
             </para>
             <para>
 The equivalent XML element is <literal>id</literal>. It has one required
@@ -791,7 +791,7 @@ field value.
                     <para>
 <literal>String generator</literal>: The name of a generator defined in mapping
 metadata. We show you how to define named generators in
-<xref linkend="jpa_overview_mapping_sequence"></xref>. If the <classname>
+<xref linkend="jpa_overview_mapping_sequence"/>. If the <classname>
 GenerationType</classname> is set but this property is unset, the JPA
 implementation uses appropriate defaults for the selected generation type.
                     </para>
@@ -821,7 +821,7 @@ above.
 OpenJPA allows you to use the <classname>GeneratedValue</classname> annotation
 on any field, not just identity fields. Before using the <literal>IDENTITY
 </literal> generation strategy, however, read
-<xref linkend="ref_guide_pc_oid_pkgen_autoinc"></xref> in the Reference Guide.
+<xref linkend="ref_guide_pc_oid_pkgen_autoinc"/> in the Reference Guide.
                 </para>
                 <para>
 OpenJPA also offers two additional generator strategies for non-numeric fields,
@@ -910,7 +910,7 @@ If your entity has multiple identity values, you may declare multiple <literal>
 field. The type of a field annotated with <classname>EmbeddedId</classname> must
 be an embeddable entity class. The fields of this embeddable class are
 considered the identity values of the owning entity. We explore entity identity
-and identity fields in <xref linkend="jpa_overview_pc_id"></xref>.
+and identity fields in <xref linkend="jpa_overview_pc_id"/>.
             </para>
             <para>
 The <classname>EmbeddedId</classname> annotation has no properties.
@@ -954,7 +954,7 @@ required attribute:
             </indexterm>
             <para>
 Use the <classname>Version</classname> annotation to designate a version field.
-<xref linkend="jpa_overview_pc_version"></xref> explained the importance of
+<xref linkend="jpa_overview_pc_version"/> explained the importance of
 version fields to JPA. This is a marker annotation; it has no properties.
             </para>
             <para>
@@ -1098,7 +1098,7 @@ types.
                 <para>
 With a mix of eager and lazily-loaded fields, you can ensure that commonly-used
 fields load efficiently, and that other state loads transparently when accessed.
-As you will see in <xref linkend="jpa_overview_emfactory_perscontext"></xref>,
+As you will see in <xref linkend="jpa_overview_emfactory_perscontext"/>,
 you can also use eager fetching to ensure that entites have all needed data
 loaded before they become <emphasis>detached</emphasis> at the end of a
 persistence context.
@@ -1107,11 +1107,11 @@ persistence context.
                     <para>
 OpenJPA can lazy-load any field type. OpenJPA also allows you to dynamically
 change which fields are eagerly or lazily loaded at runtime. See
-<xref linkend="ref_guide_fetch"></xref> in the Reference Guide for details.
+<xref linkend="ref_guide_fetch"/> in the Reference Guide for details.
                     </para>
                     <para>
 The Reference Guide details OpenJPA's eager fetching behavior in
-<xref linkend="ref_guide_perfpack_eager"></xref>.
+<xref linkend="ref_guide_perfpack_eager"/>.
                     </para>
                 </note>
             </section>
@@ -1218,7 +1218,7 @@ behavior for this field. We explore cascades below. Defaults to an empty array.
 <literal>FetchType fetch</literal>: Whether to load the field eagerly (
 <literal>FetchType.EAGER</literal>) or lazily ( <literal>FetchType.LAZY
 </literal> ). Defaults to <literal>FetchType.EAGER</literal>. See
-<xref linkend="jpa_overview_meta_fetch"></xref> above for details on fetch
+<xref linkend="jpa_overview_meta_fetch"/> above for details on fetch
 types.
                     </para>
                 </listitem>
@@ -1278,7 +1278,7 @@ null.
                 </indexterm>
                 <para>
 We introduce the JPA <classname>EntityManager</classname> in
-<xref linkend="jpa_overview_em"></xref>. The <classname>EntityManager
+<xref linkend="jpa_overview_em"/>. The <classname>EntityManager
 </classname> has APIs to persist new entities, remove (delete) existing
 entities, refresh entity state from the datastore, and merge <emphasis> detached
 </emphasis> entity state back into the persistence context. We explore all of
@@ -1424,7 +1424,7 @@ unidirectional relation.
                     <para>
 <literal>CascadeType[] cascade</literal>: Array of enum values defining cascade
 behavior for the collection elements. We explore cascades above in
-<xref linkend="jpa_overview_meta_cascade"></xref>. Defaults to an empty array.
+<xref linkend="jpa_overview_meta_cascade"/>. Defaults to an empty array.
                     </para>
                 </listitem>
                 <listitem>
@@ -1432,7 +1432,7 @@ behavior for the collection elements. We explore cascades above in
 <literal>FetchType fetch</literal>: Whether to load the field eagerly (
 <literal>FetchType.EAGER</literal>) or lazily ( <literal>FetchType.LAZY
 </literal> ). Defaults to <literal>FetchType.LAZY</literal>. See
-<xref linkend="jpa_overview_meta_fetch"></xref> above for details on fetch
+<xref linkend="jpa_overview_meta_fetch"/> above for details on fetch
 types.
                     </para>
                 </listitem>
@@ -1462,7 +1462,7 @@ required.
                 <listitem>
                     <para>
 <literal>mapped-by</literal>: The name of the field or property that owns the
-relation. See <xref linkend="jpa_overview_meta_field"></xref>.
+relation. See <xref linkend="jpa_overview_meta_field"/>.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -1519,7 +1519,7 @@ property. Marking <literal>Company.mags</literal> as <literal>mappedBy</literal>
 Magazine.publisher</literal>, but inverses it. In fact, it is illegal to
 specify any additional mapping information when you use the <literal>mappedBy
 </literal> property. All mapping information is read from the referenced field.
-We explore mapping in depth in <xref linkend="jpa_overview_mapping"></xref>.
+We explore mapping in depth in <xref linkend="jpa_overview_mapping"/>.
                         </para>
                     </listitem>
                     <listitem>
@@ -1547,7 +1547,7 @@ mapping!
                     <para>
 You can configure OpenJPA to automatically synchronize both sides of a
 bidirectional relation, or to perform various actions when it detects
-inconsistent relations. See <xref linkend="ref_guide_inverses"></xref> in the
+inconsistent relations. See <xref linkend="ref_guide_inverses"/> in the
 Reference Guide for details.
                     </para>
                 </note>
@@ -1602,7 +1602,7 @@ This information is usually taken from the field type.
                     <para>
 <literal>String mappedBy</literal>: Names the field in the related entity that
 maps this bidirectional relation. We explain bidirectional relations in
-<xref linkend="jpa_overview_meta_mappedby"></xref> above. Leaving this property
+<xref linkend="jpa_overview_meta_mappedby"/> above. Leaving this property
 unset signals that this is a standard unidirectional relation.
                     </para>
                 </listitem>
@@ -1610,7 +1610,7 @@ unset signals that this is a standard unidirectional relation.
                     <para>
 <literal>CascadeType[] cascade</literal>: Array of enum values defining cascade
 behavior for this field. We explore cascades in
-<xref linkend="jpa_overview_meta_cascade"></xref> above. Defaults to an empty
+<xref linkend="jpa_overview_meta_cascade"/> above. Defaults to an empty
 array.
                     </para>
                 </listitem>
@@ -1619,7 +1619,7 @@ array.
 <literal>FetchType fetch</literal>: Whether to load the field eagerly (
 <literal>FetchType.EAGER</literal>) or lazily ( <literal>FetchType.LAZY
 </literal> ). Defaults to <literal>FetchType.EAGER</literal>. See
-<xref linkend="jpa_overview_meta_fetch"></xref> above for details on fetch
+<xref linkend="jpa_overview_meta_fetch"/> above for details on fetch
 types.
                     </para>
                 </listitem>
@@ -1656,7 +1656,7 @@ required.
                 <listitem>
                     <para>
 <literal>mapped-by</literal>: The field that owns the relation. See
-<xref linkend="jpa_overview_meta_field"></xref>.
+<xref linkend="jpa_overview_meta_field"/>.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -1718,7 +1718,7 @@ parameterized type.
                     <para>
 <literal>String mappedBy</literal>: Names the many to many field in the related
 entity that maps this bidirectional relation. We explain bidirectional relations
-in <xref linkend="jpa_overview_meta_mappedby"></xref> above. Leaving this
+in <xref linkend="jpa_overview_meta_mappedby"/> above. Leaving this
 property unset signals that this is a standard unidirectional relation.
                     </para>
                 </listitem>
@@ -1726,7 +1726,7 @@ property unset signals that this is a standard unidirectional relation.
                     <para>
 <literal>CascadeType[] cascade</literal>: Array of enum values defining cascade
 behavior for the collection elements. We explore cascades above in
-<xref linkend="jpa_overview_meta_cascade"></xref>. Defaults to an empty array.
+<xref linkend="jpa_overview_meta_cascade"/>. Defaults to an empty array.
                     </para>
                 </listitem>
                 <listitem>
@@ -1734,7 +1734,7 @@ behavior for the collection elements. We explore cascades above in
 <literal>FetchType fetch</literal>: Whether to load the field eagerly (
 <literal>FetchType.EAGER</literal>) or lazily ( <literal>FetchType.LAZY
 </literal> ). Defaults to <literal>FetchType.LAZY</literal>. See
-<xref linkend="jpa_overview_meta_fetch"></xref> above for details on fetch
+<xref linkend="jpa_overview_meta_fetch"/> above for details on fetch
 types.
                     </para>
                 </listitem>
@@ -1764,7 +1764,7 @@ required.
                 <listitem>
                     <para>
 <literal>mapped-by</literal>: The field that owns the relation. See
-<xref linkend="jpa_overview_meta_field"></xref>.
+<xref linkend="jpa_overview_meta_field"/>.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -1825,8 +1825,8 @@ string.
             </para>
             <note>
                 <para>
-OpenJPA expands the available ordering syntax. See <xref linkend="order-by">
-</xref> in the Reference Guide for details.
+OpenJPA expands the available ordering syntax. See <xref linkend="order-by"/>
+ in the Reference Guide for details.
                 </para>
             </note>
         </section>
@@ -1966,7 +1966,7 @@ to being non-persistent if not.
         <para>
 We present the complete XML schema below. Many of the elements relate to
 object/relational mapping rather than metadata; these elements are discussed in
-<xref linkend="jpa_overview_mapping"></xref>.
+<xref linkend="jpa_overview_mapping"/>.
         </para>
 <programlisting>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
@@ -3807,7 +3807,7 @@ The same metadata declarations in XML:
 </programlisting>
         </example>
         <para>
-<xref linkend="jpa_overview_mapping"></xref> will show you how to map your
+<xref linkend="jpa_overview_mapping"/> will show you how to map your
 persistent classes to the datastore using additional annotations and XML markup.
 First, however, we turn to the JPA runtime APIs.
         </para>

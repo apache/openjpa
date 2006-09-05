@@ -17,8 +17,8 @@ of the JPA architecture.
     <mediaobject>
         <imageobject>
             <!-- PNG image data 400 x 256 (see README) -->
-            <imagedata fileref="img/jpa-arch.png" width="267px">
-            </imagedata>
+            <imagedata fileref="img/jpa-arch.png" width="267px"/>
+            
         </imageobject>
         <textobject>
             <phrase>
@@ -262,8 +262,8 @@ application.
         <mediaobject>
             <imageobject>
                 <!-- PNG image data, 427 x 355 (see README) -->
-                <imagedata fileref="img/jpa-exceptions.png" width="285px">
-                </imagedata>
+                <imagedata fileref="img/jpa-exceptions.png" width="285px"/>
+                
             </imageobject>
             <textobject>
                 <phrase>

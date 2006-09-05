@@ -60,7 +60,7 @@ obtain a <classname>ResultSet</classname>. And of course, you are free to
 continue using this low-level approach to SQL execution in your JPA
 applications. However, JPA also supports executing SQL queries through the
 <classname>javax.persistence.Query</classname> interface introduced in
-<xref linkend="jpa_overview_query"></xref>. Using a JPA SQL query, you can
+<xref linkend="jpa_overview_query"/>. Using a JPA SQL query, you can
 retrieve either persistent objects or projections of column values. The
 following sections detail each use.
     </para>
@@ -181,8 +181,8 @@ simple mapping between a class and the database:
         <mediaobject>
             <imageobject>
                 <!-- PNG image data, 320 x 149 (see README) -->
-                <imagedata fileref="img/sqlquery-model.png" width="213px">
-                </imagedata>
+                <imagedata fileref="img/sqlquery-model.png" width="213px"/>
+                
             </imageobject>
         </mediaobject>
         <example id="jpa_overview_sqlquery_objex">

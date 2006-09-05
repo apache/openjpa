@@ -87,7 +87,7 @@ user.
 To configure advanced features such as connection pooling and prepared statement
 caching, or to configure the underlying JDBC driver, use the following optional
 properties. The syntax of these property strings follows the syntax of OpenJPA
-plugin parameters described in <xref linkend="ref_guide_conf_plugins"></xref>.
+plugin parameters described in <xref linkend="ref_guide_conf_plugins"/>.
         </para>
         <itemizedlist>
             <listitem>
@@ -377,10 +377,10 @@ database is not shown, this property defaults to null.
                                 Validation SQL Defaults
                             </title>
                             <tgroup cols="2" align="left" colsep="1" rowsep="1">
-                                <colspec colname="db">
-                                </colspec>
-                                <colspec colname="sql">
-                                </colspec>
+                                <colspec colname="db"/>
+                                
+                                <colspec colname="sql"/>
+                                
                                 <thead>
                                     <row>
                                         <entry colname="db">
@@ -480,7 +480,7 @@ database is not shown, this property defaults to null.
                         </table>
                         <para>
 To disable validation SQL, set this property to an empty string, as in
-<xref linkend="ref_guide_dbsetup_builtin_ex"></xref>
+<xref linkend="ref_guide_dbsetup_builtin_ex"/>
                         </para>
                     </listitem>
                     <listitem>
@@ -802,12 +802,12 @@ unique primary key values for your datastore identity objects. Configure the
 second <classname> DataSource</classname> just as the first, but use the various
 "2" connection properties, such as <literal>openjpa.ConnectionFactory2Name
 </literal> or <literal>openjpa.Connection2DriverName</literal>. These
-properties are outlined in <xref linkend="ref_guide_conf"></xref>. <phrase> If
+properties are outlined in <xref linkend="ref_guide_conf"/>. <phrase> If
 your second <classname>DataSource</classname> is also bound to JNDI, you can use
 JPA XML's <literal>non-jta-data-source</literal> to specify its location.
 </phrase> Typically, <phrase>though,</phrase> you will use OpenJPA's built-in
 implementation for the second <classname>DataSource</classname> (see
-<xref linkend="ref_guide_dbsetup_builtin"></xref> ).
+<xref linkend="ref_guide_dbsetup_builtin"/> ).
             </para>
             <example id="ref_guide_enterprise_xa_conf_ex">
                 <title>
@@ -941,7 +941,7 @@ conn.close ();
         <para>
 OpenJPA <phrase>JPA</phrase> can take advantage of any JDBC 2.x compliant
 driver, making almost any major database a candidate for use. See our officially
-supported database list in <xref linkend="supported_databases"></xref> for more
+supported database list in <xref linkend="supported_databases"/> for more
 information. Typically, OpenJPA auto-configures its JDBC behavior and SQL
 dialect for your database, based on the values of your connection-related
 configuration properties.
@@ -1582,7 +1582,7 @@ database whenever a connection is retrieved from the <classname>DataSource
                         </secondary>
                     </indexterm>
 <literal>JoinSyntax</literal>: The SQL join syntax to use in select statements.
-See <xref linkend="ref_guide_dbsetup_sql92"></xref>.
+See <xref linkend="ref_guide_dbsetup_sql92"/>.
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.CrossJoinClause">
@@ -2959,8 +2959,8 @@ simulation of auto-increment columns by the use of Oracle triggers. OpenJPA will
 assume that the current sequence value from the sequence specified in the
 <literal>AutoAssignSequenceName</literal> parameter will hold the value of the
 new primary key for rows that have been inserted. For more details on
-auto-increment support, see <xref linkend="ref_guide_pc_oid_pkgen_autoinc">
-</xref>.
+auto-increment support, see <xref linkend="ref_guide_pc_oid_pkgen_autoinc"/>
+.
                     </para>
                 </listitem>
                 <listitem id="OracleDictionary.AutoAssignSequenceName">
@@ -3093,7 +3093,7 @@ configure the following parameters:
                 </indexterm>
 <literal>BatchLimit</literal>: The maximum number of SQL update statements to
 batch together. Set to 0 to disable statement batching, or -1 for no limit. See
-<xref linkend="ref_guide_perfpack_batch"></xref>.
+<xref linkend="ref_guide_perfpack_batch"/>.
                 </para>
             </listitem>
             <listitem id="SQLFactory.BatchParameterLimit">
@@ -3335,8 +3335,8 @@ Not all databases support this syntax.
         </itemizedlist>
         <para>
 You can change the join syntax at runtime through the OpenJPA fetch
-configuration API, which is described in <xref linkend="ref_guide_runtime">
-</xref>.
+configuration API, which is described in <xref linkend="ref_guide_runtime"/>
+.
         </para>
         <example id="ref_guide_dbsetup_sql92_conf">
             <title>
@@ -3446,7 +3446,7 @@ commit process.
 You can also specify the connection retain mode of individual <classname>
 EntityManager</classname>s when you retrieve them from the <classname>
 EntityManagerFactory</classname>. See
-<xref linkend="ref_guide_runtime_emfactory"></xref> for details.
+<xref linkend="ref_guide_runtime_emfactory"/> for details.
         </para>
         <para>
         <indexterm>
@@ -3493,7 +3493,7 @@ earlier in this section.
         </itemizedlist>
         <para>
 The flush mode can also be varied at runtime using the OpenJPA fetch
-configuration API, discussed in <xref linkend="ref_guide_runtime"></xref>.
+configuration API, discussed in <xref linkend="ref_guide_runtime"/>.
         </para>
         <para>
         <indexterm>
@@ -3514,16 +3514,16 @@ results.
                 OpenJPA Automatic Flush Behavior
             </title>
             <tgroup rowsep="1" colsep="1" align="left" cols="5">
-                <colspec colname="col1">
-                </colspec>
-                <colspec colname="col2">
-                </colspec>
-                <colspec colname="col3">
-                </colspec>
-                <colspec colname="col4">
-                </colspec>
-                <colspec colname="col5">
-                </colspec>
+                <colspec colname="col1"/>
+                
+                <colspec colname="col2"/>
+                
+                <colspec colname="col3"/>
+                
+                <colspec colname="col4"/>
+                
+                <colspec colname="col5"/>
+                
                 <thead>
                     <row>
                         <entry colname="col1">
@@ -3755,7 +3755,7 @@ amounts of data without exhausting JVM memory.
             <para>
 You can also configure on-demand loading for individual collection and map
 fields via large result set proxies. See
-<xref linkend="ref_guide_pc_scos_proxy_lrs"></xref>.
+<xref linkend="ref_guide_pc_scos_proxy_lrs"/>.
             </para>
         </note>
         <para>
@@ -3912,7 +3912,7 @@ loading.
         <para>
 Many <link linkend="ref_guide_runtime">OpenJPA runtime components</link> also
 have methods to configure these properties on a case-by-case basis through their
-fetch configuration. See <xref linkend="ref_guide_runtime"></xref>.
+fetch configuration. See <xref linkend="ref_guide_runtime"/>.
         </para>
         <example id="ref_guide_dbsetup_lrs_runtime">
             <title>
@@ -3959,7 +3959,7 @@ mapping definitions.
         <para>
 The <literal>Schema</literal> property also establishes the default schema for
 new tables created through OpenJPA tools, such as the mapping tool covered in
-<xref linkend="ref_guide_mapping_mappingtool"></xref>.
+<xref linkend="ref_guide_mapping_mappingtool"/>.
         </para>
     </section>
     <section id="ref_guide_schema_info">
@@ -4141,8 +4141,8 @@ top level of any jar in your <literal>CLASSPATH</literal>.
             </itemizedlist>
             <para>
 You can switch freely between schema factories at any time. The XML file format
-used by some factories is detailed in <xref linkend="ref_guide_schema_xml">
-</xref>. As with any OpenJPA plugin, you can can also implement your own schema
+used by some factories is detailed in <xref linkend="ref_guide_schema_xml"/>
+. As with any OpenJPA plugin, you can can also implement your own schema
 factory if you have needs not met by the existing options.
             </para>
         </section>
@@ -4250,7 +4250,7 @@ CLASSPATH</literal>, data will be written to that resource. Use <literal>stdout
 on the schema, whether to reflect on tables and sequences whose names start with
 <literal>OPENJPA_</literal>. Certain OpenJPA components may use such tables -
 for example, the <literal>table</literal> schema factory option covered in
-<xref linkend="ref_guide_schema_info_factory"></xref>. When using other
+<xref linkend="ref_guide_schema_info_factory"/>. When using other
 actions, <literal>openjpaTables</literal> controls whether these tables can be
 dropped. Defaults to <literal>false</literal>.
                 </para>

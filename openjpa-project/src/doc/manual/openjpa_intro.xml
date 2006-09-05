@@ -21,9 +21,9 @@ details on the use of OpenJPA.
     </para>
     <para>
 To quickly get started with JPA, you may want to begin at
-<xref linkend="jpa_tutorial"></xref>. If you would prefer to start with an
+<xref linkend="jpa_tutorial"/>. If you would prefer to start with an
 introduction to the concepts of JPA, begin with
-<xref linkend="jpa_overview_intro"></xref>.
+<xref linkend="jpa_overview_intro"/>.
     </para>
     <section id="openjpa_intro_about">
         <title>

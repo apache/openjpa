@@ -172,7 +172,7 @@ Following is an example of using a <literal>classpath</literal> tag:
 Finally, tasks that invoke code-generation tools like the application identity
 tool and reverse mapping tool accept a nested <literal>codeformat</literal>
 element. See the code formatting documentation in
-<xref linkend="ref_guide_conf_devtools_format"></xref> for a list of code
+<xref linkend="ref_guide_conf_devtools_format"/> for a list of code
 formatting attributes.
             </para>
             <example id="ref_guide_integration_conf_codeformat">

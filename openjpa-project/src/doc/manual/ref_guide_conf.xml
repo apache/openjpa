@@ -95,7 +95,7 @@ When using JCA deployment the <literal>config-property</literal> values in your
                 <para>
 All OpenJPA command-line tools accept flags that allow you to specify the
 configuration resource to use, and to override any property.
-<xref linkend="ref_guide_conf_devtools"></xref> describes these flags.
+<xref linkend="ref_guide_conf_devtools"/> describes these flags.
                 </para>
             </listitem>
         </itemizedlist>
@@ -389,12 +389,12 @@ AggregateListeners</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A comma-separated list of plugin
-strings (see <xref linkend="ref_guide_conf_plugins"></xref>) describing custom
+strings (see <xref linkend="ref_guide_conf_plugins"/>) describing custom
 <ulink url="../apidocs/org/apache/openjpa/jdbc/kernel/exps/JDBCAggregateListener.html">
 <classname> org.apache.openjpa.jdbc.kernel.exps.JDBCAggregateListener
 </classname></ulink>s to make available to all queries, in addition to the
-standard set of listeners. See <xref linkend="ref_guide_enterprise_queryext">
-</xref> for details on aggregate listeners.
+standard set of listeners. See <xref linkend="ref_guide_enterprise_queryext"/>
+ for details on aggregate listeners.
             </para>
         </section>
         <section id="openjpa.AutoClear">
@@ -522,7 +522,7 @@ BrokerFactory</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the
+<xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/kernel/BrokerFactory.html">
 <classname>org.apache.openjpa.kernel.BrokerFactory</classname></ulink> type to
 use.
@@ -564,10 +564,10 @@ BrokerImpl</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the
+<xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/kernel/Broker.html"><classname>
 org.apache.openjpa.kernel.Broker</classname></ulink> type to use at runtime. See
-<xref linkend="ref_guide_runtime_pmextension"></xref> on for details.
+<xref linkend="ref_guide_runtime_pmextension"/> on for details.
             </para>
         </section>
         <section id="openjpa.ClassResolver">
@@ -606,7 +606,7 @@ ClassResolver</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the
+<xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/util/ClassResolver.html"><classname>
 org.apache.openjpa.util.ClassResolver</classname></ulink> implementation to use
 for class name resolution. You may wish to plug in your own resolver if you have
@@ -688,7 +688,7 @@ ConnectionDriverName</literal>
 <emphasis role="bold">Description:</emphasis> The full class name of either the
 JDBC <classname>java.sql.Driver</classname>, or a <classname>
 javax.sql.DataSource</classname> implementation to use to connect to the
-database. See <xref linkend="ref_guide_dbsetup"></xref> for details.
+database. See <xref linkend="ref_guide_dbsetup"/> for details.
             </para>
         </section>
         <section id="openjpa.Connection2DriverName">
@@ -729,9 +729,9 @@ Connection2DriverName</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> This property is equivalent to the
 <literal>openjpa.ConnectionDriverName</literal> property described in
-<xref linkend="openjpa.ConnectionDriverName"></xref>, but applies to the
+<xref linkend="openjpa.ConnectionDriverName"/>, but applies to the
 alternate connection factory used for unmanaged connections. See
-<xref linkend="ref_guide_dbsetup_thirdparty_enlist"></xref> for details.
+<xref linkend="ref_guide_dbsetup_thirdparty_enlist"/> for details.
             </para>
         </section>
         <section id="openjpa.ConnectionFactory">
@@ -771,7 +771,7 @@ ConnectionFactory</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> A <classname>javax.sql.DataSource
 </classname> to use to connect to the database. See
-<xref linkend="ref_guide_dbsetup"></xref> for details.
+<xref linkend="ref_guide_dbsetup"/> for details.
             </para>
         </section>
         <section id="openjpa.ConnectionFactory2">
@@ -811,7 +811,7 @@ ConnectionFactory2</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> An unmanaged <classname>
 javax.sql.DataSource</classname> to use to connect to the database. See
-<xref linkend="ref_guide_dbsetup"></xref> for details.
+<xref linkend="ref_guide_dbsetup"/> for details.
             </para>
         </section>
         <section id="openjpa.ConnectionFactoryName">
@@ -852,7 +852,7 @@ ConnectionFactoryName</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> The JNDI location of a <classname>
 javax.sql.DataSource</classname> to use to connect to the database. See
-<xref linkend="ref_guide_dbsetup"></xref> for details.
+<xref linkend="ref_guide_dbsetup"/> for details.
             </para>
         </section>
         <section id="openjpa.ConnectionFactory2Name">
@@ -893,7 +893,7 @@ ConnectionFactory2Name</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> The JNDI location of an unmanaged
 <classname>javax.sql.DataSource</classname> to use to connect to the database.
-See <xref linkend="ref_guide_enterprise_xa"></xref> for details.
+See <xref linkend="ref_guide_enterprise_xa"/> for details.
             </para>
         </section>
         <section id="openjpa.ConnectionFactoryMode">
@@ -938,7 +938,7 @@ ConnectionFactoryMode</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> The connection factory mode to use
 when integrating with the application server's managed transactions. See
-<xref linkend="ref_guide_dbsetup_thirdparty_enlist"></xref> for details.
+<xref linkend="ref_guide_dbsetup_thirdparty_enlist"/> for details.
             </para>
         </section>
         <section id="openjpa.ConnectionFactoryProperties">
@@ -978,9 +978,9 @@ ConnectionFactoryProperties</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) listing properties for
+<xref linkend="ref_guide_conf_plugins"/>) listing properties for
 configuration of the <classname>javax.sql.DataSource</classname> in use. See the
-<xref linkend="ref_guide_dbsetup"></xref> for details.
+<xref linkend="ref_guide_dbsetup"/> for details.
             </para>
         </section>
         <section id="openjpa.ConnectionFactory2Properties">
@@ -1021,9 +1021,9 @@ ConnectionFactory2Properties</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> This property is equivalent to the
 <literal>openjpa.ConnectionFactoryProperties</literal> property described in
-<xref linkend="openjpa.ConnectionFactoryProperties"></xref>, but applies to the
+<xref linkend="openjpa.ConnectionFactoryProperties"/>, but applies to the
 alternate connection factory used for unmanaged connections. See
-<xref linkend="ref_guide_dbsetup_thirdparty_enlist"></xref> for details.
+<xref linkend="ref_guide_dbsetup_thirdparty_enlist"/> for details.
             </para>
         </section>
         <section id="openjpa.ConnectionPassword">
@@ -1063,7 +1063,7 @@ ConnectionPassword</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> The password for the user
 specified in the <literal>ConnectionUserName</literal> property. See
-<xref linkend="ref_guide_dbsetup"></xref> for details.
+<xref linkend="ref_guide_dbsetup"/> for details.
             </para>
         </section>
         <section id="openjpa.Connection2Password">
@@ -1103,9 +1103,9 @@ Connection2Password</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> This property is equivalent to the
 <literal>openjpa.ConnectionPassword</literal> property described in
-<xref linkend="openjpa.ConnectionPassword"></xref>, but applies to the
+<xref linkend="openjpa.ConnectionPassword"/>, but applies to the
 alternate connection factory used for unmanaged connections. See
-<xref linkend="ref_guide_dbsetup_thirdparty_enlist"></xref> for details.
+<xref linkend="ref_guide_dbsetup_thirdparty_enlist"/> for details.
             </para>
         </section>
         <section id="openjpa.ConnectionProperties">
@@ -1145,9 +1145,9 @@ ConnectionProperties</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) listing properties to configure
+<xref linkend="ref_guide_conf_plugins"/>) listing properties to configure
 the driver listed in the <literal>ConnectionDriverName</literal> property
-described below. See <xref linkend="ref_guide_dbsetup"></xref> for details.
+described below. See <xref linkend="ref_guide_dbsetup"/> for details.
             </para>
         </section>
         <section id="openjpa.Connection2Properties">
@@ -1188,9 +1188,9 @@ Connection2Properties</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> This property is equivalent to the
 <literal>openjpa.ConnectionProperties</literal> property described in
-<xref linkend="openjpa.ConnectionProperties"></xref>, but applies to the
+<xref linkend="openjpa.ConnectionProperties"/>, but applies to the
 alternate connection factory used for unmanaged connections. See
-<xref linkend="ref_guide_dbsetup_thirdparty_enlist"></xref> for details.
+<xref linkend="ref_guide_dbsetup_thirdparty_enlist"/> for details.
             </para>
         </section>
         <section id="openjpa.ConnectionURL">
@@ -1229,7 +1229,7 @@ ConnectionURL</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> The JDBC URL for the database. See
-<xref linkend="ref_guide_dbsetup"></xref> for details.
+<xref linkend="ref_guide_dbsetup"/> for details.
             </para>
         </section>
         <section id="openjpa.Connection2URL">
@@ -1269,9 +1269,9 @@ Connection2URL</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> This property is equivalent to the
 <literal>openjpa.ConnectionURL</literal> property described in
-<xref linkend="openjpa.ConnectionURL"></xref>, but applies to the alternate
+<xref linkend="openjpa.ConnectionURL"/>, but applies to the alternate
 connection factory used for unmanaged connections. See
-<xref linkend="ref_guide_dbsetup_thirdparty_enlist"></xref> for details.
+<xref linkend="ref_guide_dbsetup_thirdparty_enlist"/> for details.
             </para>
         </section>
         <section id="openjpa.ConnectionUserName">
@@ -1310,7 +1310,7 @@ ConnectionUserName</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> The user name to use when
-connecting to the database. See the <xref linkend="ref_guide_dbsetup"></xref>
+connecting to the database. See the <xref linkend="ref_guide_dbsetup"/>
 for details.
             </para>
         </section>
@@ -1351,9 +1351,9 @@ Connection2UserName</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> This property is equivalent to the
 <literal>openjpa.ConnectionUserName</literal> property described in
-<xref linkend="openjpa.ConnectionUserName"></xref>, but applies to the
+<xref linkend="openjpa.ConnectionUserName"/>, but applies to the
 alternate connection factory used for unmanaged connections. See
-<xref linkend="ref_guide_dbsetup_thirdparty_enlist"></xref> for details.
+<xref linkend="ref_guide_dbsetup_thirdparty_enlist"/> for details.
             </para>
         </section>
         <section id="openjpa.ConnectionRetainMode">
@@ -1394,7 +1394,7 @@ ConnectionRetainMode</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> Controls how OpenJPA uses
 datastore connections. This property can also be specified for individual
-sessions. See <xref linkend="ref_guide_dbsetup_retain"></xref> for details.
+sessions. See <xref linkend="ref_guide_dbsetup_retain"/> for details.
             </para>
         </section>
         <section id="openjpa.DataCache">
@@ -1433,10 +1433,10 @@ DataCache</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin list string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the
+<xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/datacache/DataCache.html"><classname>
 org.apache.openjpa.datacache.DataCache</classname></ulink>s to use for data
-caching. See <xref linkend="ref_guide_cache_conf"></xref> for details.
+caching. See <xref linkend="ref_guide_cache_conf"/> for details.
             </para>
         </section>
         <section id="openjpa.DataCacheManager">
@@ -1475,10 +1475,10 @@ DataCacheManager</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the
+<xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/datacache/DataCacheManager.html">
 <classname>openjpa.datacache.DataCacheManager</classname></ulink> that manages
-the system data caches. See <xref linkend="ref_guide_cache"></xref> for details
+the system data caches. See <xref linkend="ref_guide_cache"/> for details
 on data caching.
             </para>
         </section>
@@ -1520,7 +1520,7 @@ DataCacheTimeout</literal>
 <emphasis role="bold">Description:</emphasis> The number of milliseconds that
 data in the data cache is valid. Set this to -1 to indicate that data should not
 expire from the cache. This property can also be specified for individual
-classes. See <xref linkend="ref_guide_cache_conf"></xref> for details.
+classes. See <xref linkend="ref_guide_cache_conf"/> for details.
             </para>
         </section>
         <section id="openjpa.DetachState">
@@ -1567,7 +1567,7 @@ DetachState</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> Determines which fields are part
 of the detached graph and related options. For more details, see
-<xref linkend="ref_guide_detach_graph"></xref>.
+<xref linkend="ref_guide_detach_graph"/>.
             </para>
         </section>
         <section id="openjpa.DynamicDataStructs">
@@ -1662,7 +1662,7 @@ FetchBatchSize</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> The number of rows to fetch at
 once when scrolling through a result set. The fetch size can also be set at
-runtime. See <xref linkend="ref_guide_dbsetup_lrs"></xref> for details.
+runtime. See <xref linkend="ref_guide_dbsetup_lrs"/> for details.
             </para>
         </section>
         <section id="openjpa.FetchGroups">
@@ -1697,8 +1697,8 @@ FetchGroups</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> A comma-separated list of fetch
 group names that are to be loaded when retrieving objects from the datastore.
-Fetch groups can also be set at runtime. See <xref linkend="ref_guide_fetch">
-</xref> for details.
+Fetch groups can also be set at runtime. See <xref linkend="ref_guide_fetch"/>
+ for details.
             </para>
         </section>
         <section id="openjpa.FilterListeners">
@@ -1737,12 +1737,12 @@ FilterListeners</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A comma-separated list of full
-plugin strings (see <xref linkend="ref_guide_conf_plugins"></xref>) for custom
+plugin strings (see <xref linkend="ref_guide_conf_plugins"/>) for custom
 <ulink url="../apidocs/org/apache/openjpa/jdbc/kernel/exps/JDBCFilterListener.html">
 <classname> org.apache.openjpa.jdbc.kernel.exps.JDBCFilterListener</classname>
 </ulink>s to make available to all queries, in addition to the standard set of
 listeners. You can also add filter listeners to individual queries. See
-<xref linkend="ref_guide_enterprise_queryext"></xref> for details.
+<xref linkend="ref_guide_enterprise_queryext"/> for details.
             </para>
         </section>
         <section id="openjpa.FlushBeforeQueries">
@@ -1794,7 +1794,7 @@ FlushBeforeQueries</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> Whether or not to flush any
 changes made in the current transaction to the datastore before executing a
-query. See <xref linkend="ref_guide_dbsetup_retain"></xref> for details.
+query. See <xref linkend="ref_guide_dbsetup_retain"/> for details.
             </para>
         </section>
         <section id="openjpa.IgnoreChanges">
@@ -1873,11 +1873,11 @@ InverseManager</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing a
+<xref linkend="ref_guide_conf_plugins"/>) describing a
 <ulink url="../apidocs/org/apache/openjpa/kernel/InverseManager.html">
 <classname>org.apache.openjpa.kernel.InverseManager</classname></ulink> to use
 for managing bidirectional relations upon a flush. See
-<xref linkend="ref_guide_inverses"></xref> for usage documentation.
+<xref linkend="ref_guide_inverses"/> for usage documentation.
             </para>
         </section>
         <section id="openjpa.LockManager">
@@ -1920,7 +1920,7 @@ LockManager</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing a
+<xref linkend="ref_guide_conf_plugins"/>) describing a
 <ulink url="../apidocs/org/apache/openjpa/kernel/LockManager.html"><classname>
 org.apache.openjpa.kernel.LockManager</classname></ulink> to use for acquiring
 locks on persistent instances during transactions.
@@ -1963,7 +1963,7 @@ LockTimeout</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> The number of milliseconds to wait
 for an object lock before throwing an exception, or -1 for no limit. See
-<xref linkend="ref_guide_locking"></xref> for details.
+<xref linkend="ref_guide_locking"/> for details.
             </para>
         </section>
         <section id="openjpa.Log">
@@ -2005,10 +2005,10 @@ for an object lock before throwing an exception, or -1 for no limit. See
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing a
+<xref linkend="ref_guide_conf_plugins"/>) describing a
 <ulink url="../apidocs/org/apache/openjpa/lib/log/LogFactory.html"><classname>
 org.apache.openjpa.lib.log.LogFactory</classname></ulink> to use for logging.
-For details on logging, see <xref linkend="ref_guide_logging"></xref>.
+For details on logging, see <xref linkend="ref_guide_logging"/>.
             </para>
         </section>
         <section id="openjpa.ManagedRuntime">
@@ -2050,7 +2050,7 @@ ManagedRuntime</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the
+<xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/ee/ManagedRuntime.html"><classname>
 org.apache.openjpa.ee.ManagedRuntime</classname></ulink> implementation to use
 for obtaining a reference to the <classname>TransactionManager</classname> in an
@@ -2167,11 +2167,11 @@ MetaDataFactory</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the
+<xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/meta/MetaDataFactory.html">
 <classname>openjpa.meta.MetaDataFactory</classname></ulink> to use to store and
 retrieve metadata for your persistent classes. See
-<xref linkend="ref_guide_meta_factory"></xref> for details.
+<xref linkend="ref_guide_meta_factory"/> for details.
             </para>
         </section>
         <section id="openjpa.Multithreaded">
@@ -2292,11 +2292,11 @@ OrphanedKeyAction</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing a
+<xref linkend="ref_guide_conf_plugins"/>) describing a
 <ulink url="../apidocs/org/apache/openjpa/event/OrphanedKeyAction.html">
 <classname>org.apache.openjpa.event.OrphanedKeyAction</classname></ulink> to
 invoke when OpenJPA discovers an orphaned datastore key. See
-<xref linkend="ref_guide_orphan"></xref> for details.
+<xref linkend="ref_guide_orphan"/> for details.
             </para>
         </section>
         <section id="openjpa.NontransactionalRead">
@@ -2400,11 +2400,11 @@ ProxyManager</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing a
+<xref linkend="ref_guide_conf_plugins"/>) describing a
 <ulink url="../apidocs/org/apache/openjpa/util/ProxyManager.html"><classname>
 org.apache.openjpa.util.ProxyManager</classname></ulink> to use for proxying
 mutable second class objects. See
-<xref linkend="ref_guide_pc_scos_proxy_custom"></xref> for details.
+<xref linkend="ref_guide_pc_scos_proxy_custom"/> for details.
             </para>
         </section>
         <section id="openjpa.QueryCache">
@@ -2440,16 +2440,16 @@ QueryCache</literal>
             </para>
             <para>
 <emphasis role="bold">Default:</emphasis><literal>true</literal>, when the data
-cache (see <xref linkend="openjpa.DataCache"></xref>) is also enabled, <literal>
+cache (see <xref linkend="openjpa.DataCache"/>) is also enabled, <literal>
 false</literal> otherwise.
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the
+<xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/datacache/QueryCache.html">
 <classname>org.apache.openjpa.datacache.QueryCache</classname></ulink>
 implementation to use for caching of queries loaded from the data store. See
-<xref linkend="ref_guide_cache_query"></xref> for details.
+<xref linkend="ref_guide_cache_query"/> for details.
             </para>
         </section>
         <section id="openjpa.QueryCompilationCache">
@@ -2489,9 +2489,9 @@ QueryCompilationCache</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the <literal>
+<xref linkend="ref_guide_conf_plugins"/>) describing the <literal>
 java.util.Map</literal> to use for caching of data used during query
-compilation. See <xref linkend="ref_guide_cache_querycomp"></xref> for details.
+compilation. See <xref linkend="ref_guide_cache_querycomp"/> for details.
             </para>
         </section>
         <section id="openjpa.ReadLockLevel">
@@ -2585,11 +2585,11 @@ RemoteCommitProvider</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the
+<xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/event/RemoteCommitProvider.html">
 <classname>org.apache.openjpa.event.RemoteCommitProvider</classname></ulink>
 implementation to use for distributed event notification. See
-<xref linkend="ref_guide_event_conf"></xref> for more information.
+<xref linkend="ref_guide_event_conf"/> for more information.
             </para>
         </section>
         <section id="openjpa.RestoreState">
@@ -2728,11 +2728,11 @@ SavepointManager
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing a
+<xref linkend="ref_guide_conf_plugins"/>) describing a
 <ulink url="javadoc/openjpa/kernel/SavepointManager.html"><classname>
 org.apache.openjpa.kernel.SavepointManager</classname></ulink> to use for
-managing transaction savepoints. See <xref linkend="ref_guide_savepoints">
-</xref> for details.
+managing transaction savepoints. See <xref linkend="ref_guide_savepoints"/>
+ for details.
             </para>
         </section>
         <section id="openjpa.Sequence">
@@ -2763,10 +2763,10 @@ Sequence</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the
+<xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/kernel/Seq.html"><classname>
 org.apache.openjpa.kernel.Seq</classname></ulink> implementation to use for the
-system sequence. See <xref linkend="ref_guide_sequence"></xref> for more
+system sequence. See <xref linkend="ref_guide_sequence"/> for more
 information.
             </para>
         </section>
@@ -2912,7 +2912,7 @@ ConnectionDecorators</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A comma-separated list of plugin
-strings (see <xref linkend="ref_guide_conf_plugins"></xref>) describing
+strings (see <xref linkend="ref_guide_conf_plugins"/>) describing
 <ulink url="../apidocs/org/apache/openjpa/lib/jdbc/ConnectionDecorator.html">
 <classname>org.apache.openjpa.lib.jdbc.ConnectionDecorator</classname></ulink>
 instances to install on the connection factory. These decorators can wrap
@@ -2962,14 +2962,14 @@ openjpa.ConnectionDriverName</literal></link>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the
+<xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/jdbc/sql/DBDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.DBDictionary</classname></ulink> to use
 for database interaction. OpenJPA typically auto-configures the dictionary based
 on the JDBC URL, but you may have to set this property explicitly if you are
 using an unrecognized driver, or to plug in your own dictionary for a database
 OpenJPA <phrase>JPA</phrase> does not support out-of-the-box. See
-<xref linkend="ref_guide_dbsetup_dbsupport"></xref> for details.
+<xref linkend="ref_guide_dbsetup_dbsupport"/> for details.
             </para>
         </section>
         <section id="openjpa.jdbc.DriverDataSource">
@@ -3016,7 +3016,7 @@ instances. The provided default implementation (
 <ulink url="../apidocs/org/apache/openjpa/jdbc/schema/OpenJPAPoolingDataSource">
 <classname>org.apache.openjpa.jdbc.schema.OpenJPAPoolingDataSource</classname>
 </ulink>, will perform connection pooling as described at
-<xref linkend="ref_guide_dbsetup"></xref>.
+<xref linkend="ref_guide_dbsetup"/>.
             </para>
         </section>
         <section id="openjpa.jdbc.EagerFetchMode">
@@ -3060,7 +3060,7 @@ EagerFetchMode</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> Optimizes how OpenJPA loads
 persistent relations. This setting can also be varied at runtime. See
-<xref linkend="ref_guide_perfpack_eager"></xref> for details.
+<xref linkend="ref_guide_perfpack_eager"/> for details.
             </para>
         </section>
         <section id="openjpa.jdbc.FetchDirection">
@@ -3104,7 +3104,7 @@ FetchDirection</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> The expected order in which query
 result lists will be accessed. This property can also be varied at runtime. See
-<xref linkend="ref_guide_dbsetup_lrs"></xref> for details.
+<xref linkend="ref_guide_dbsetup_lrs"/> for details.
             </para>
         </section>
         <section id="openjpa.jdbc.JDBCListeners">
@@ -3143,7 +3143,7 @@ JDBCListeners</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A comma-separated list of plugin
-strings (see <xref linkend="ref_guide_conf_plugins"></xref>) describing
+strings (see <xref linkend="ref_guide_conf_plugins"/>) describing
 <ulink url="../apidocs/org/apache/openjpa/lib/jdbc/JDBCListener.html">
 <classname>org.apache.openjpa.lib.jdbc.JDBCListener</classname></ulink> event
 listeners to install. These listeners will be notified on various JDBC-related
@@ -3191,7 +3191,7 @@ LRSSize</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> The strategy to use to calculate
 the size of a result list. This property can also be varied at runtime. See
-<xref linkend="ref_guide_dbsetup_lrs"></xref> for details.
+<xref linkend="ref_guide_dbsetup_lrs"/> for details.
             </para>
         </section>
         <section id="openjpa.jdbc.MappingDefaults">
@@ -3234,11 +3234,11 @@ MappingDefaults</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the
+<xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/jdbc/meta/MappingDefaults.html">
 <classname>org.apache.openjpa.jdbc.meta.MappingDefaults</classname></ulink> to
 use to define default column names, table names, and constraints for your
-persistent classes. See <xref linkend="ref_guide_mapping_factory"></xref> for
+persistent classes. See <xref linkend="ref_guide_mapping_factory"/> for
 details.
             </para>
         </section>
@@ -3282,11 +3282,11 @@ MappingFactory</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the
+<xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/meta/MetaDataFactory.html">
 <classname>org.apache.openjpa.meta.MetaDataFactory</classname></ulink> to use to
 store and retrieve object-relational mapping information for your persistent
-classes. See <xref linkend="ref_guide_mapping_factory"></xref> for details.
+classes. See <xref linkend="ref_guide_mapping_factory"/> for details.
             </para>
         </section>
         <section id="openjpa.jdbc.ResultSetType">
@@ -3330,7 +3330,7 @@ ResultSetType</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> The JDBC result set type to use
 when fetching result lists. This property can also be varied at runtime. See
-<xref linkend="ref_guide_dbsetup_lrs"></xref> for details.
+<xref linkend="ref_guide_dbsetup_lrs"/> for details.
             </para>
         </section>
         <section id="openjpa.jdbc.Schema">
@@ -3365,7 +3365,7 @@ Schema</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> The default schema name to prepend
 to unqualified table names. Also, the schema in which OpenJPA will create new
-tables. See <xref linkend="ref_guide_schema_def"></xref> for details.
+tables. See <xref linkend="ref_guide_schema_def"/> for details.
             </para>
         </section>
         <section id="openjpa.jdbc.SchemaFactory">
@@ -3409,11 +3409,11 @@ others
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the
+<xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/jdbc/schema/SchemaFactory.html">
 <classname>org.apache.openjpa.jdbc.schema.SchemaFactory</classname></ulink> to
 use to store and retrieve information about the database schema. See
-<xref linkend="ref_guide_schema_info_factory"></xref> for details.
+<xref linkend="ref_guide_schema_info_factory"/> for details.
             </para>
         </section>
         <section id="openjpa.jdbc.Schemas">
@@ -3448,7 +3448,7 @@ Schemas</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> A comma-separated list of the
 schemas and/or tables used for your persistent data. See
-<xref linkend="ref_guide_schema_info_list"></xref> for details.
+<xref linkend="ref_guide_schema_info_list"/> for details.
             </para>
         </section>
         <section id="openjpa.jdbc.SQLFactory">
@@ -3487,10 +3487,10 @@ SQLFactory</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"></xref>) describing the
+<xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/jdbc/sql/SQLFactory.html"><classname>
 org.apache.openjpa.jdbc.sql.SQLFactory</classname></ulink> to use to abstract
-common SQL constructs. See <xref linkend="ref_guide_dbsetup_sqlfactory"></xref>
+common SQL constructs. See <xref linkend="ref_guide_dbsetup_sqlfactory"/>
 for details.
             </para>
         </section>
@@ -3543,7 +3543,7 @@ SubclassFetchMode</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> How to select subclass data when
 it is in other tables. This setting can also be varied at runtime. See
-<xref linkend="ref_guide_perfpack_eager"></xref>.
+<xref linkend="ref_guide_perfpack_eager"/>.
             </para>
         </section>
         <section id="openjpa.jdbc.SynchronizeMappings">
@@ -3585,7 +3585,7 @@ SynchronizeMappings</literal>
 <emphasis role="bold">Description:</emphasis> Controls whether OpenJPA will
 attempt to run the mapping tool on all persistent classes to synchronize their
 mappings and schema at runtime. Useful for rapid test/debug cycles. See
-<xref linkend="ref_guide_mapping_synch"></xref> for more information.
+<xref linkend="ref_guide_mapping_synch"/> for more information.
             </para>
         </section>
         <section id="openjpa.jdbc.TransactionIsolation">
@@ -3639,7 +3639,7 @@ serializable</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> The JDBC transaction isolation
-level to use. See <xref linkend="ref_guide_dbsetup_isolation"></xref> for
+level to use. See <xref linkend="ref_guide_dbsetup_isolation"/> for
 details.
             </para>
         </section>
