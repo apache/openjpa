@@ -21,6 +21,7 @@ import java.util.Comparator;
  * Comparator that keeps classes in inheritance order.
  *
  * @author Abe White
+ * @nojavadoc
  */
 public class InheritanceComparator
     implements Comparator {
