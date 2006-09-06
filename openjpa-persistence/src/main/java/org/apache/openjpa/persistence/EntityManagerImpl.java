@@ -614,7 +614,7 @@ public class EntityManagerImpl
                 getMetaDataRepositoryInstance().getSequenceMetaData(name,
                 _broker.getClassLoader(), true);
             Seq seq = meta.getInstance(_broker.getClassLoader());
-            return new Generator(seq, name, _broker, null);
+            return new GeneratorImpl(seq, name, _broker, null);
         } catch (RuntimeException re) {
             throw PersistenceExceptions.toPersistenceException(re);
         }
@@ -626,7 +626,7 @@ public class EntityManagerImpl
                 getMetaDataRepositoryInstance().getMetaData(forClass,
                 _broker.getClassLoader(), true);
             Seq seq = _broker.getIdentitySequence(meta);
-            return (seq == null) ? null : new Generator(seq, null, _broker,
+            return (seq == null) ? null : new GeneratorImpl(seq, null, _broker,
                 meta);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
@@ -644,7 +644,7 @@ public class EntityManagerImpl
                     forClass, fieldName), null, null, false);
 
             Seq seq = _broker.getValueSequence(fmd);
-            return (seq == null) ? null : new Generator(seq, null, _broker,
+            return (seq == null) ? null : new GeneratorImpl(seq, null, _broker,
                 meta);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
@@ -652,7 +652,7 @@ public class EntityManagerImpl
     }
 
     public <T> Extent<T> createExtent(Class<T> cls, boolean subclasses) {
-        return new Extent<T>(this, _broker.newExtent(cls, subclasses));
+        return new ExtentImpl<T>(this, _broker.newExtent(cls, subclasses));
     }
 
     public OpenJPAQuery createQuery(String query) {

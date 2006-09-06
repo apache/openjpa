@@ -28,169 +28,80 @@ import org.apache.openjpa.meta.MetaDataRepository;
  * Represents the L2 cache over the data store.
  *
  * @author Abe White
- * @since 0.4.0
+ * @author Pinaki Poddar
+ * @since 0.4.1
  * @published
  */
-public class StoreCache {
+public interface StoreCache {
 
     public static final String NAME_DEFAULT = DataCache.NAME_DEFAULT;
-
-    private final MetaDataRepository _repos;
-    private final DelegatingDataCache _cache;
-
-    /**
-     * Constructor; supply delegate.
-     */
-    public StoreCache(EntityManagerFactoryImpl emf, DataCache cache) {
-        _repos = emf.getConfiguration().getMetaDataRepositoryInstance();
-        _cache = new DelegatingDataCache(cache,
-            PersistenceExceptions.TRANSLATOR);
-    }
 
     /**
      * Delegate.
      */
-    public DataCache getDelegate() {
-        return _cache.getDelegate();
-    }
+    public DataCache getDelegate();
 
     /**
      * Whether the cache contains data for the given oid.
      */
-    public boolean contains(Class cls, Object oid) {
-        return _cache.getDelegate() != null
-            && _cache.contains(OpenJPAPersistence.toOpenJPAObjectId
-            (getMetaData(cls), oid));
-    }
+    public boolean contains(Class cls, Object oid);
 
     /**
      * Whether the cache contains data for the given oids.
      */
-    public boolean containsAll(Class cls, Object... oids) {
-        return containsAll(cls, Arrays.asList(oids));
-    }
+    public boolean containsAll(Class cls, Object... oids);
 
     /**
      * Whether the cache contains data for the given oids.
      */
-    public boolean containsAll(Class cls, Collection oids) {
-        if (_cache.getDelegate() == null)
-            return oids.isEmpty();
-
-        BitSet set = _cache.containsAll(OpenJPAPersistence.toOpenJPAObjectIds
-            (getMetaData(cls), oids));
-        for (int i = 0; i < oids.size(); i++)
-            if (!set.get(i))
-                return false;
-        return true;
-    }
+    public boolean containsAll(Class cls, Collection oids);
 
     /**
      * Pin the data for the given oid to the cache.
      */
-    public void pin(Class cls, Object oid) {
-        if (_cache.getDelegate() != null)
-            _cache.pin(
-                OpenJPAPersistence.toOpenJPAObjectId(getMetaData(cls), oid));
-    }
+    public void pin(Class cls, Object oid);
 
     /**
      * Pin the data for the given oids to the cache.
      */
-    public void pinAll(Class cls, Object... oids) {
-        pinAll(cls, Arrays.asList(oids));
-    }
+    public void pinAll(Class cls, Object... oids);
 
     /**
      * Pin the data for the given oids to the cache.
      */
-    public void pinAll(Class cls, Collection oids) {
-        if (_cache.getDelegate() != null)
-            _cache
-                .pinAll(OpenJPAPersistence.toOpenJPAObjectIds(getMetaData(cls),
-                    oids));
-    }
+    public void pinAll(Class cls, Collection oids);
 
     /**
      * Unpin the data for the given oid from the cache.
      */
-    public void unpin(Class cls, Object oid) {
-        if (_cache.getDelegate() != null)
-            _cache.unpin(OpenJPAPersistence.toOpenJPAObjectId(getMetaData(cls),
-                oid));
-    }
+    public void unpin(Class cls, Object oid);
 
     /**
      * Unpin the data for the given oids from the cache.
      */
-    public void unpinAll(Class cls, Object... oids) {
-        unpinAll(cls, Arrays.asList(oids));
-    }
+    public void unpinAll(Class cls, Object... oids);
 
     /**
      * Unpin the data for the given oids from the cache.
      */
-    public void unpinAll(Class cls, Collection oids) {
-        if (_cache.getDelegate() != null)
-            _cache.unpinAll(
-                OpenJPAPersistence.toOpenJPAObjectIds(getMetaData(cls),
-                    oids));
-    }
+    public void unpinAll(Class cls, Collection oids);
 
     /**
      * Remove data for the given oid from the cache.
      */
-    public void evict(Class cls, Object oid) {
-        if (_cache.getDelegate() != null)
-            _cache.remove(OpenJPAPersistence.toOpenJPAObjectId(getMetaData(cls),
-                oid));
-    }
+    public void evict(Class cls, Object oid);
+    /**
+     * Remove data for the given oids from the cache.
+     */
+    public void evictAll(Class cls, Object... oids);
 
     /**
      * Remove data for the given oids from the cache.
      */
-    public void evictAll(Class cls, Object... oids) {
-        evictAll(cls, Arrays.asList(oids));
-    }
-
-    /**
-     * Remove data for the given oids from the cache.
-     */
-    public void evictAll(Class cls, Collection oids) {
-        if (_cache.getDelegate() != null)
-            _cache.removeAll(
-                OpenJPAPersistence.toOpenJPAObjectIds(getMetaData(cls),
-                    oids));
-    }
+    public void evictAll(Class cls, Collection oids);
 
     /**
      * Clear the cache.
      */
-    public void evictAll() {
-        _cache.clear();
-    }
-
-    /**
-     * Return metadata for the given class, throwing the proper exception
-     * if not persistent.
-     */
-    private ClassMetaData getMetaData(Class cls) {
-        try {
-            return _repos.getMetaData(cls, null, true);
-        } catch (RuntimeException re) {
-            throw PersistenceExceptions.toPersistenceException(re);
-        }
-    }
-
-    public int hashCode() {
-        return _cache.hashCode();
-    }
-
-    public boolean equals(Object other) {
-        if (other == this)
-            return true;
-        if (!(other instanceof StoreCache))
-            return false;
-        return _cache.equals (((StoreCache) other)._cache);
-	}
+    public void evictAll();
 }

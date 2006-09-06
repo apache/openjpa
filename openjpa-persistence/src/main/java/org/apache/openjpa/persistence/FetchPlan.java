@@ -30,10 +30,11 @@ import org.apache.openjpa.meta.FetchGroup;
  * configuration and other aspects of data loading.
  *
  * @author Abe White
- * @since 0.4.0
+ * @author Pinaki Poddar
+ * @since 0.4.1
  * @published
  */
-public class FetchPlan {
+public interface FetchPlan {
 
     /**
      * Fetch group representing all fields.
@@ -55,64 +56,35 @@ public class FetchPlan {
      */
     public static final int DEFAULT = FetchConfiguration.DEFAULT;
 
-    private final DelegatingFetchConfiguration _fetch;
-
-    /**
-     * Constructor; supply delegate.
-     */
-    public FetchPlan(FetchConfiguration fetch) {
-        _fetch = newDelegatingFetchConfiguration(fetch);
-    }
-
-    /**
-     * Create a new exception-translating delegating fetch configuration.
-     */
-    protected DelegatingFetchConfiguration newDelegatingFetchConfiguration
-        (FetchConfiguration fetch) {
-        return new DelegatingFetchConfiguration(fetch,
-            PersistenceExceptions.TRANSLATOR);
-    }
 
     /**
      * Delegate.
      */
-    public FetchConfiguration getDelegate() {
-        return _fetch.getDelegate();
-    }
+    public FetchConfiguration getDelegate();
 
     /**
      * The maximum fetch depth when loading an object.
      */
-    public int getMaxFetchDepth() {
-        return _fetch.getMaxFetchDepth();
-    }
+    public int getMaxFetchDepth();
 
     /**
      * The maximum fetch depth when loading an object.
      */
-    public FetchPlan setMaxFetchDepth(int depth) {
-        _fetch.setMaxFetchDepth(depth);
-        return this;
-    }
+    public FetchPlan setMaxFetchDepth(int depth);
 
     /**
      * Return the fetch batch size for large result set support.
      * Defaults to the	<code>openjpa.FetchBatchSize</code> setting. Note
      * that this property will be ignored under some data stores.
      */
-    public int getFetchBatchSize() {
-        return _fetch.getFetchBatchSize();
-    }
+    public int getFetchBatchSize();
 
     /**
      * Set the fetch batch size for large result set support.
      * Defaults to the	<code>openjpa.FetchBatchSize</code> setting. Note
      * that this property will be ignored under some data stores.
      */
-    public FetchPlan setFetchBatchSize(int fetchBatchSize) {
-        _fetch.setFetchBatchSize(fetchBatchSize);
-        return this;
-    }
+    public FetchPlan setFetchBatchSize(int fetchBatchSize);
 
     /**
      * Return whether or not query caching is enabled. If this returns
@@ -121,79 +93,55 @@ public class FetchPlan {
      * returns <code>false</code>, query caching will not be used
      * even if the datacache plugin is installed.
      */
-    public boolean getQueryResultCache() {
-        return _fetch.getQueryCache();
-    }
+    public boolean getQueryResultCache();
 
     /**
      * Control whether or not query caching is enabled. This has no effect
      * if the datacache plugin is not installed, or if the query cache size
      * is set to zero.
      */
-    public FetchPlan setQueryResultCache(boolean cache) {
-        _fetch.setQueryCache(cache);
-        return this;
-    }
+    public FetchPlan setQueryResultCache(boolean cache);
 
     /**
      * Returns the names of the fetch groups that this component will use
      * when loading objects. Defaults to the
      * <code>org.apache.openjpa.FetchGroups</code> setting.
      */
-    public Collection<String> getFetchGroups() {
-        return _fetch.getFetchGroups();
-    }
+    public Collection<String> getFetchGroups();
 
     /**
      * Adds <code>group</code> to the set of fetch group to
      * use when loading objects.
      */
-    public FetchPlan addFetchGroup(String group) {
-        _fetch.addFetchGroup(group);
-        return this;
-    }
+    public FetchPlan addFetchGroup(String group);
 
     /**
      * Adds <code>groups</code> to the set of fetch group names to
      * use when loading objects.
      */
-    public FetchPlan addFetchGroups(String... groups) {
-        return addFetchGroups(Arrays.asList(groups));
-    }
-
+    public FetchPlan addFetchGroups(String... groups);
     /**
      * Adds <code>groups</code> to the set of fetch group names to
      * use when loading objects.
      */
-    public FetchPlan addFetchGroups(Collection groups) {
-        _fetch.addFetchGroups(groups);
-        return this;
-    }
+    public FetchPlan addFetchGroups(Collection groups);
 
     /**
      * Remove the given fetch group.
      */
-    public FetchPlan removeFetchGroup(String group) {
-        _fetch.removeFetchGroup(group);
-        return this;
-    }
+    public FetchPlan removeFetchGroup(String group);
 
     /**
      * Removes <code>groups</code> from the set of fetch group names
      * to use when loading objects.
      */
-    public FetchPlan removeFetchGroups(String... groups) {
-        return removeFetchGroups(Arrays.asList(groups));
-    }
+    public FetchPlan removeFetchGroups(String... groups);
 
     /**
      * Removes <code>groups</code> from the set of fetch group names
      * to use when loading objects.
      */
-    public FetchPlan removeFetchGroups(Collection groups) {
-        _fetch.removeFetchGroups(groups);
-        return this;
-    }
+    public FetchPlan removeFetchGroups(Collection groups);
 
     /**
      * Clears the set of fetch group names to use wen loading
@@ -201,224 +149,135 @@ public class FetchPlan {
      * the default fetch group (and any requested field) will be
      * loaded when loading an object.
      */
-    public FetchPlan clearFetchGroups() {
-        _fetch.clearFetchGroups();
-        return this;
-    }
+    public FetchPlan clearFetchGroups();
 
     /**
      * Resets the set of fetch groups to the list in the global configuration.
      */
-    public FetchPlan resetFetchGroups() {
-        _fetch.resetFetchGroups();
-        return this;
-    }
+    public FetchPlan resetFetchGroups();
 
     /**
      * Returns the fully qualified names of the fields that this component
      * will use when loading objects. Defaults to the empty set.
      */
-    public Collection<String> getFields() {
-        return (Collection<String>) _fetch.getFields();
-    }
+    public Collection<String> getFields();
 
     /**
      * Return true if the given field has been added.
      */
-    public boolean hasField(String field) {
-        return _fetch.hasField(field);
-    }
+    public boolean hasField(String field);
 
     /**
      * Return true if the given field has been added.
      */
-    public boolean hasField(Class cls, String field) {
-        return hasField(toFieldName(cls, field));
-    }
+    public boolean hasField(Class cls, String field);
 
     /**
      * Adds <code>field</code> to the set of fully-qualified field names to
      * use when loading objects.
      */
-    public FetchPlan addField(String field) {
-        _fetch.addField(field);
-        return this;
-    }
+    public FetchPlan addField(String field);
 
     /**
      * Adds <code>field</code> to the set of field names to
      * use when loading objects.
      */
-    public FetchPlan addField(Class cls, String field) {
-        return addField(toFieldName(cls, field));
-    }
+    public FetchPlan addField(Class cls, String field);
 
     /**
      * Adds <code>fields</code> to the set of fully-qualified field names to
      * use when loading objects.
      */
-    public FetchPlan addFields(String... fields) {
-        return addFields(Arrays.asList(fields));
-    }
+    public FetchPlan addFields(String... fields);
 
     /**
      * Adds <code>fields</code> to the set of field names to
      * use when loading objects.
      */
-    public FetchPlan addFields(Class cls, String... fields) {
-        return addFields(cls, Arrays.asList(fields));
-    }
+    public FetchPlan addFields(Class cls, String... fields);
 
     /**
      * Adds <code>fields</code> to the set of fully-qualified field names to
      * use when loading objects.
      */
-    public FetchPlan addFields(Collection fields) {
-        _fetch.addFields(fields);
-        return this;
-    }
+    public FetchPlan addFields(Collection fields);
 
     /**
      * Adds <code>fields</code> to the set of field names to
      * use when loading objects.
      */
-    public FetchPlan addFields(Class cls, Collection fields) {
-        return addFields(toFieldNames(cls, fields));
-    }
+    public FetchPlan addFields(Class cls, Collection fields);
 
     /**
      * Remove the given fully-qualified field.
      */
-    public FetchPlan removeField(String field) {
-        _fetch.removeField(field);
-        return this;
-    }
+    public FetchPlan removeField(String field);
 
     /**
      * Remove the given field.
      */
-    public FetchPlan removeField(Class cls, String field) {
-        return removeField(toFieldName(cls, field));
-    }
+    public FetchPlan removeField(Class cls, String field);
 
     /**
      * Removes <code>fields</code> from the set of fully-qualified field names
      * to use when loading objects.
      */
-    public FetchPlan removeFields(String... fields) {
-        return removeFields(Arrays.asList(fields));
-    }
+    public FetchPlan removeFields(String... fields);
 
     /**
      * Removes <code>fields</code> from the set of field names
      * to use when loading objects.
      */
-    public FetchPlan removeFields(Class cls, String... fields) {
-        return removeFields(cls, Arrays.asList(fields));
-    }
+    public FetchPlan removeFields(Class cls, String... fields);
 
     /**
      * Removes <code>fields</code> from the set of fully-qualified field names
      * to use when loading objects.
      */
-    public FetchPlan removeFields(Collection fields) {
-        _fetch.removeFields(fields);
-        return this;
-    }
+    public FetchPlan removeFields(Collection fields);
 
     /**
      * Removes <code>fields</code> from the set of field names
      * to use when loading objects.
      */
-    public FetchPlan removeFields(Class cls, Collection fields) {
-        return removeFields(toFieldNames(cls, fields));
-    }
+    public FetchPlan removeFields(Class cls, Collection fields);
 
     /**
      * Clears the set of field names to use wen loading
      * data. After this operation is invoked, only those fields in
      * the configured fetch groups will be loaded when loading an object.
      */
-    public FetchPlan clearFields() {
-        _fetch.clearFields();
-        return this;
-    }
-
-    /**
-     * Combine the class and field to a fully-qualified field name.
-     */
-    private static String toFieldName(Class cls, String field) {
-        return cls.getName() + "." + field;
-    }
-
-    /**
-     * Combine the class and fields to fully-qualified field names.
-     */
-    private static Collection toFieldNames(Class cls, Collection fields) {
-        if (fields.isEmpty())
-            return fields;
-        Collection names = new ArrayList(fields);
-        for (Iterator itr = fields.iterator(); itr.hasNext();)
-            names.add(toFieldName(cls, (String) itr.next()));
-        return names;
-    }
+    public FetchPlan clearFields();
 
     /**
      * The number of milliseconds to wait for an object lock, or -1 for no
      * limit.
      */
-    public int getLockTimeout() {
-        return _fetch.getLockTimeout();
-    }
+    public int getLockTimeout();
 
     /**
      * The number of milliseconds to wait for an object lock, or -1 for no
      * limit.
      */
-    public FetchPlan setLockTimeout(int timeout) {
-        _fetch.setLockTimeout(timeout);
-        return this;
-    }
+    public FetchPlan setLockTimeout(int timeout);
 
     /**
      * The lock level to use for locking loaded objects.
      */
-    public LockModeType getReadLockMode() {
-        return EntityManagerImpl.fromLockLevel(_fetch.getReadLockLevel());
-    }
+    public LockModeType getReadLockMode();
 
     /**
      * The lock level to use for locking loaded objects.
      */
-    public FetchPlan setReadLockMode(LockModeType mode) {
-        _fetch.setReadLockLevel(EntityManagerImpl.toLockLevel(mode));
-        return this;
-    }
+    public FetchPlan setReadLockMode(LockModeType mode);
 
     /**
      * The lock level to use for locking dirtied objects.
      */
-    public LockModeType getWriteLockMode() {
-        return EntityManagerImpl.fromLockLevel(_fetch.getWriteLockLevel());
-    }
+    public LockModeType getWriteLockMode();
 
     /**
      * The lock level to use for locking dirtied objects.
      */
-    public FetchPlan setWriteLockMode(LockModeType mode) {
-        _fetch.setWriteLockLevel(EntityManagerImpl.toLockLevel(mode));
-        return this;
-    }
-
-    public int hashCode() {
-        return _fetch.hashCode();
-    }
-
-    public boolean equals(Object other) {
-        if (other == this)
-            return true;
-        if (!(other instanceof FetchPlan))
-            return false;
-        return _fetch.equals(((FetchPlan) other)._fetch);
-    }
+    public FetchPlan setWriteLockMode(LockModeType mode);
 }

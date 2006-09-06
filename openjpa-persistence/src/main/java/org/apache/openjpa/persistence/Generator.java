@@ -24,76 +24,39 @@ import org.apache.openjpa.meta.ClassMetaData;
  * Represents a store sequence.
  *
  * @author Abe White
- * @since 0.4.0
+ * @author Pinaki Poddar
+ * @since 0.4.1
  * @published
  */
-public class Generator {
+public interface Generator {
 
     public static final String UUID_HEX = "uuid-hex";
     public static final String UUID_STRING = "uuid-string";
 
-    private final DelegatingSeq _seq;
-    private final String _name;
-    private final StoreContext _ctx;
-    private final ClassMetaData _meta;
-
-    /**
-     * Constructor; supply delegate.
-     */
-    public Generator(Seq seq, String name, StoreContext ctx,
-        ClassMetaData meta) {
-        _seq = new DelegatingSeq(seq, PersistenceExceptions.TRANSLATOR);
-        _name = name;
-        _ctx = ctx;
-        _meta = meta;
-    }
-
     /**
      * Delegate.
      */
-    public Seq getDelegate() {
-        return _seq.getDelegate();
-    }
+    public Seq getDelegate();
 
     /**
      * The sequence name.
      */
-    public String getName() {
-        return _name;
-    }
+    public String getName();
 
     /**
      * The next sequence value.
      */
-    public Object next() {
-        return _seq.next(_ctx, _meta);
-    }
+    public Object next();
 
     /**
      * The current sequence value, or null if the sequence does not
      * support current values.
      */
-    public Object current() {
-        return _seq.current(_ctx, _meta);
-    }
+    public Object current();
 
     /**
      * Hint to the sequence to allocate additional values up-front for
      * efficiency.
      */
-    public void allocate(int additional) {
-        _seq.allocate(additional, _ctx, _meta);
-    }
-
-    public int hashCode() {
-        return _seq.hashCode();
-    }
-
-    public boolean equals(Object other) {
-        if (other == this)
-            return true;
-        if (!(other instanceof Generator))
-            return false;
-        return _seq.equals(((Generator) other)._seq);
-	}
+    public void allocate(int additional);
 }

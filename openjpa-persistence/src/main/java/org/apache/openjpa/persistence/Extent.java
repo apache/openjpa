@@ -24,113 +24,56 @@ import org.apache.openjpa.kernel.DelegatingExtent;
  * An extent is a logical view of all instances of a class.
  *
  * @author Abe White
+ * @author Pinaki Poddar
+ * @since 0.4.0
  * @published
  */
-public class Extent<T>
-    implements Iterable {
+public interface Extent<T>
+    extends Iterable<T> {
 
-    private final EntityManagerImpl _em;
-    private final DelegatingExtent _extent;
-    private FetchPlan _fetch = null;
-
-    /**
-     * Constructor; supply delegate.
-     */
-    public Extent(EntityManagerImpl em,
-        org.apache.openjpa.kernel.Extent extent) {
-        _em = em;
-        _extent = new DelegatingExtent(extent,
-            PersistenceExceptions.getRollbackTranslator(em));
-    }
 
     /**
      * Delegate.
      */
-    public org.apache.openjpa.kernel.Extent getDelegate() {
-        return _extent.getDelegate();
-    }
+    public org.apache.openjpa.kernel.Extent getDelegate();
 
     /**
      * The extent's element type.
      */
-    public Class<T> getElementClass() {
-        return _extent.getElementType();
-    }
+    public Class<T> getElementClass();
 
     /**
      * Whether the extent includes subclasses.
      */
-    public boolean hasSubclasses() {
-        return _extent.hasSubclasses();
-    }
+    public boolean hasSubclasses();
 
     /**
      * The owning entity manager.
      */
-    public OpenJPAEntityManager getEntityManager() {
-        return _em;
-    }
+    public OpenJPAEntityManager getEntityManager();
 
     /**
      * Fetch configuration for controlling how iterated objects are loaded.
      */
-    public FetchPlan getFetchPlan() {
-        _extent.lock();
-        try {
-            if (_fetch == null)
-                _fetch = ((EntityManagerFactoryImpl) _em.
-                    getEntityManagerFactory()).toFetchPlan(_extent.getBroker(),
-                    _extent.getFetchConfiguration());
-            return _fetch;
-        } finally {
-            _extent.unlock();
-        }
-    }
+    public FetchPlan getFetchPlan();
 
     /**
      * Whether the extent sees inserts and deletes in the current transaction.
      */
-    public boolean getIgnoreChanges() {
-        return _extent.getIgnoreChanges();
-    }
+    public boolean getIgnoreChanges();
 
     /**
      * Whether the extent sees inserts and deletes in the current transaction.
      */
-    public void setIgnoreChanges(boolean ignoreChanges) {
-        _extent.setIgnoreChanges(ignoreChanges);
-    }
+    public void setIgnoreChanges(boolean ignoreChanges);
 
     /**
      * List the extent contents.
      */
-    public List<T> list() {
-        return _extent.list();
-    }
-
-    /**
-     * Iterator over contents.
-     */
-    public Iterator<T> iterator() {
-        return _extent.iterator();
-    }
+    public List<T> list();
 
     /**
      * Close all open iterators that are consuming database resources.
      */
-    public void closeAll() {
-        _extent.closeAll();
-    }
-
-    public int hashCode() {
-        return _extent.hashCode();
-    }
-
-    public boolean equals(Object other) {
-        if (other == this)
-            return true;
-        if (!(other instanceof Extent))
-            return false;
-        return _extent.equals(((Extent) other)._extent);
-	}
+    public void closeAll();
 }

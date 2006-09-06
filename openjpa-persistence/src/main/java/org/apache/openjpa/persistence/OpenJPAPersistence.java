@@ -79,7 +79,7 @@ public class OpenJPAPersistence
             OpenJPAEntityManagerFactory emf = (OpenJPAEntityManagerFactory)
                 factory.getUserObject(EMF_KEY);
             if (emf == null) {
-                emf = new EntityManagerFactoryImpl(factory);
+                emf = newEntityManagerFactory(factory);
                 factory.putUserObject(EMF_KEY, emf);
             }
             return emf;
@@ -90,6 +90,10 @@ public class OpenJPAPersistence
         }
     }
 
+    protected static OpenJPAEntityManagerFactory newEntityManagerFactory(BrokerFactory factory) {
+		return new EntityManagerFactoryImpl(factory);
+	}
+    
     /**
      * Return the underlying broker factory for the given persistence manager
      * factory facade.
@@ -125,6 +129,8 @@ public class OpenJPAPersistence
             broker.unlock();
         }
     }
+    
+     
 
     /**
      * Return the underlying broker for the given entity manager facade.
