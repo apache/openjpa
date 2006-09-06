@@ -93,9 +93,9 @@ public class ConfigurationProviderImpl
             return false;
         String providerName = pinfo.getPersistenceProviderClassName();
         if (!StringUtils.isEmpty(providerName)
-            && !PersistenceProviderImpl.class.getName().equals(providerName))
+            && !getPersistenceProviderName().equals(providerName))
             return false;
-
+        
         addProperties(PersistenceUnitInfoImpl.toOpenJPAProperties(pinfo));
         if (m != null)
             addProperties(m);
@@ -168,7 +168,7 @@ public class ConfigurationProviderImpl
      * @return {@link Boolean#TRUE} if the resource was loaded, null if it
      * does not exist, or {@link Boolean#FALSE} if it is not for OpenJPA
      */
-    private Boolean load(String rsrc, String name, Map m, ClassLoader loader,
+    protected Boolean load(String rsrc, String name, Map m, ClassLoader loader,
         boolean explicit)
         throws IOException {
         if (loader == null)
@@ -227,7 +227,7 @@ public class ConfigurationProviderImpl
             }
 
             if (StringUtils.isEmpty(pinfo.getPersistenceProviderClassName())
-                || PersistenceProviderImpl.class.getName().equals(pinfo.
+                || getPersistenceProviderName().equals(pinfo.
                     getPersistenceProviderClassName())) {
                 // if no name given and found unnamed unit, return it.  
                 // otherwise record as default unit unless we find a 
@@ -276,6 +276,21 @@ public class ConfigurationProviderImpl
             log.trace(_loc.get("conf-load", _source, getProperties()));
     }
 
+    /**
+     * Gets the concrete class used as Persistence Provider. 
+     * Used to detect whether this receiver should load the configuration.
+     * This receiver will load only if the provider name in the resource
+     * matches the provider name returned by this method. 
+     * <B>Note</B>: This is a tentative hook for backward-compatibility work
+     * and would be replaced/removed once ProductDerivation-based extension
+     * framework is available.
+     *  
+     * @return
+     */
+    protected String getPersistenceProviderName() {
+    	return PersistenceProviderImpl.class.getName();
+    }
+    
     /**
      * SAX handler capable of parsing an JPA persistence.xml file.
      * Package-protected for testing.

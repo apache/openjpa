@@ -41,7 +41,7 @@ public class JDBCPersistenceProductDerivation
 
     public void beforeConfigurationLoad(OpenJPAConfiguration c) {
         c.getStoreFacadeTypeRegistry().registerImplementation(FetchPlan.class, 
-            JDBCStoreManager.class, JDBCFetchPlan.class);
+            JDBCStoreManager.class, JDBCFetchPlanImpl.class);
         if (!(c instanceof JDBCConfigurationImpl))
             return;
 

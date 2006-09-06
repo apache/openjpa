@@ -28,82 +28,35 @@ import org.apache.openjpa.persistence.PersistenceExceptions;
 /**
  * JDBC extensions to the fetch plan.
  *
- * @since 0.4.0
+ * @since 0.4.1
  * @author Abe White
+ * @author Pinaki Poddar
  * @published
  */
-public class JDBCFetchPlan
-    extends FetchPlan
-    implements EagerFetchModes, LRSSizes, JoinSyntaxes {
+public interface JDBCFetchPlan
+    extends FetchPlan, EagerFetchModes, LRSSizes, JoinSyntaxes {
 
-    private DelegatingJDBCFetchConfiguration _fetch;
+    public int getEagerFetchMode();
 
-    /**
-     * Constructor; supply delegate.
-     */
-    public JDBCFetchPlan(FetchConfiguration fetch) {
-        super(fetch);
-    }
+    public JDBCFetchPlan setEagerFetchMode(int mode);
 
-    @Override
-    protected DelegatingFetchConfiguration newDelegatingFetchConfiguration
-        (FetchConfiguration fetch) {
-        _fetch = new DelegatingJDBCFetchConfiguration((JDBCFetchConfiguration)
-            fetch, PersistenceExceptions.TRANSLATOR);
-        return _fetch;
-    }
+    public int getSubclassFetchMode();
 
-    public int getEagerFetchMode() {
-        return _fetch.getEagerFetchMode();
-    }
+    public JDBCFetchPlan setSubclassFetchMode(int mode);
 
-    public JDBCFetchPlan setEagerFetchMode(int mode) {
-        _fetch.setEagerFetchMode(mode);
-        return this;
-    }
+    public int getResultSetType();
 
-    public int getSubclassFetchMode() {
-        return _fetch.getSubclassFetchMode();
-    }
+    public JDBCFetchPlan setResultSetType(int type);
 
-    public JDBCFetchPlan setSubclassFetchMode(int mode) {
-        _fetch.setSubclassFetchMode(mode);
-        return this;
-    }
+    public int getFetchDirection();
 
-    public int getResultSetType() {
-        return _fetch.getResultSetType();
-    }
+    public JDBCFetchPlan setFetchDirection(int direction);
 
-    public JDBCFetchPlan setResultSetType(int type) {
-        _fetch.setResultSetType(type);
-        return this;
-    }
+    public int getLRSSize();
 
-    public int getFetchDirection() {
-        return _fetch.getFetchDirection();
-    }
+    public JDBCFetchPlan setLRSSize(int lrsSize);
 
-    public JDBCFetchPlan setFetchDirection(int direction) {
-        _fetch.setFetchDirection(direction);
-        return this;
-    }
+    public int getJoinSyntax();
 
-    public int getLRSSize() {
-        return _fetch.getLRSSize();
-    }
-
-    public JDBCFetchPlan setLRSSize(int lrsSize) {
-        _fetch.setLRSSize(lrsSize);
-        return this;
-    }
-
-    public int getJoinSyntax() {
-        return _fetch.getJoinSyntax();
-    }
-
-    public JDBCFetchPlan setJoinSyntax(int syntax) {
-        _fetch.setJoinSyntax(syntax);
-        return this;
-    }
+    public JDBCFetchPlan setJoinSyntax(int syntax);
 }

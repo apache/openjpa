@@ -94,7 +94,7 @@ public class EntityManagerFactoryImpl
         try {
             if (_cache == null) {
                 OpenJPAConfiguration conf = _factory.getConfiguration();
-                _cache = new StoreCache(this,
+                _cache = new StoreCacheImpl(this,
                     conf.getDataCacheManagerInstance().getSystemDataCache());
             }
             return _cache;
@@ -104,7 +104,7 @@ public class EntityManagerFactoryImpl
     }
 
     public StoreCache getStoreCache(String cacheName) {
-        return new StoreCache(this, _factory.getConfiguration().
+        return new StoreCacheImpl(this, _factory.getConfiguration().
             getDataCacheManagerInstance().getDataCache(cacheName));
     }
 
@@ -112,7 +112,7 @@ public class EntityManagerFactoryImpl
         _factory.lock();
         try {
             if (_queryCache == null)
-                _queryCache = new QueryResultCache(_factory.getConfiguration().
+                _queryCache = new QueryResultCacheImpl(_factory.getConfiguration().
                     getDataCacheManagerInstance().getSystemQueryCache());
             return _queryCache;
         } finally {
@@ -274,9 +274,8 @@ public class EntityManagerFactoryImpl
                     getStoreManager().getInnermostDelegate().getClass();
                 Class cls = _factory.getConfiguration().
                     getStoreFacadeTypeRegistry().
-                    getImplementation(FetchPlan.class, storeType);
-                if (cls == null)
-                    cls = FetchPlan.class;
+                    getImplementation(FetchPlan.class, storeType, 
+                    		FetchPlanImpl.class);
                 _plan = cls.getConstructor(FetchConfiguration.class);
             }
             return _plan.newInstance(fetch);

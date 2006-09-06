@@ -27,88 +27,38 @@ import org.apache.openjpa.datacache.TypesChangedEvent;
  * Query result cache.
  *
  * @author Abe White
- * @since 0.4.0
+ * @since 0.4.1
  * @published
  */
-public class QueryResultCache {
-
-    private final DelegatingQueryCache _cache;
-
-    /**
-     * Constructor; supply delegate.
-     */
-    public QueryResultCache(QueryCache cache) {
-        _cache = new DelegatingQueryCache(cache,
-            PersistenceExceptions.TRANSLATOR);
-    }
+public interface QueryResultCache {
 
     /**
      * Delegate.
      */
-    public QueryCache getDelegate() {
-        return _cache.getDelegate();
-    }
+    public QueryCache getDelegate();
 
     /**
      * Pin the given query's result to the cache.
      */
-    public void pin(Query q) {
-        if (_cache.getDelegate() != null)
-            _cache.pin(toQueryKey(q));
-    }
+    public void pin(Query q);
 
     /**
      * Unpin a previously-pinned query result.
      */
-    public void unpin(Query q) {
-        if (_cache.getDelegate() != null)
-            _cache.unpin(toQueryKey(q));
-    }
+    public void unpin(Query q);
 
     /**
      * Evict a query result from the cache.
      */
-    public void evict(Query q) {
-        if (_cache.getDelegate() != null)
-            _cache.remove(toQueryKey(q));
-    }
+    public void evict(Query q);
 
     /**
      * Clear the cache.
      */
-    public void evictAll() {
-        _cache.clear();
-    }
+    public void evictAll();
 
     /**
      * Evict all result for queries involving the given class.
      */
-    public void evictAll(Class cls) {
-        _cache.onTypesChanged(new TypesChangedEvent(this,
-            Collections.singleton(cls)));
-    }
-
-    /**
-     * Return a cache key for the given query.
-     */
-    private QueryKey toQueryKey(Query q) {
-        QueryImpl impl = (QueryImpl) q;
-        if (impl.hasPositionalParameters())
-            return QueryKey.newInstance(impl.getDelegate(),
-                impl.getPositionalParameters());
-        return QueryKey.newInstance(impl.getDelegate(),
-            impl.getNamedParameters());
-    }
-
-    public int hashCode() {
-        return _cache.hashCode();
-    }
-
-    public boolean equals(Object other) {
-        if (other == this)
-            return true;
-        if (!(other instanceof QueryResultCache))
-            return false;
-        return _cache.equals(((QueryResultCache) other)._cache);
-	}
+    public void evictAll(Class cls);
 }
