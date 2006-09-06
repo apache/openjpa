@@ -53,23 +53,17 @@ public class Bootstrap {
      */
     public static BrokerFactory newBrokerFactory(ConfigurationProvider conf,
         ClassLoader loader) {
-        if (conf == null)
-            conf = new MapConfigurationProvider();
-        ProductDerivations.beforeConfigurationConstruct(conf);
-
-        Class cls = getFactoryClass(conf, loader);
         try {
-            Method meth = cls.getMethod("newInstance", FACTORY_ARGS);
-            return (BrokerFactory) meth.invoke(null, new Object[]{ conf });
+            return invokeFactory(conf, loader, "newInstance");
         } catch (InvocationTargetException ite) {
             Throwable cause = ite.getTargetException();
             if (cause instanceof OpenJPAException)
                 throw (OpenJPAException) cause;
             throw new InternalException(s_loc.get("new-brokerfactory-excep",
-                cls), cause);
+                getFactoryClass(conf, loader)), cause);
         } catch (Exception e) {
-            throw new UserException(s_loc.get("bad-new-brokerfactory", cls),
-                e).setFatal(true);
+            throw new UserException(s_loc.get("bad-new-brokerfactory",
+                getFactoryClass(conf, loader)), e).setFatal(true);
         }
     }
 
@@ -87,24 +81,40 @@ public class Bootstrap {
      */
     public static BrokerFactory getBrokerFactory(ConfigurationProvider conf,
         ClassLoader loader) {
+        try {
+            return invokeFactory(conf, loader, "getInstance");
+        } catch (InvocationTargetException ite) {
+            Throwable cause = ite.getTargetException();
+            if (cause instanceof OpenJPAException)
+                throw (OpenJPAException) cause;
+            throw new InternalException(s_loc.get("brokerfactory-excep",
+                getFactoryClass(conf, loader)), cause);
+        } catch (Exception e) {
+            throw new UserException(s_loc.get("bad-brokerfactory",
+                getFactoryClass(conf, loader)), e).setFatal(true);
+        }
+    }
+
+    private static BrokerFactory invokeFactory (ConfigurationProvider conf,
+        ClassLoader loader, String methodName)
+        throws InvocationTargetException, NoSuchMethodException,
+            IllegalAccessException {
         if (conf == null)
             conf = new MapConfigurationProvider();
         ProductDerivations.beforeConfigurationConstruct(conf);
 
         Class cls = getFactoryClass(conf, loader);
+        Method meth;
         try {
-            Method meth = cls.getMethod("getInstance", FACTORY_ARGS);
-            return (BrokerFactory) meth.invoke(null, new Object[]{ conf });
-        } catch (InvocationTargetException ite) {
-            Throwable cause = ite.getTargetException();
-            if (cause instanceof OpenJPAException)
-                throw (OpenJPAException) cause;
-            throw new InternalException(s_loc.get("brokerfactory-excep", cls),
-                cause);
-        } catch (Exception e) {
-            throw new UserException(s_loc.get("bad-brokerfactory", cls), e).
-                setFatal(true);
+            meth = cls.getMethod(methodName, FACTORY_ARGS); 
+        } catch (NoSuchMethodException nsme) {
+            // handle cases where there is a mismatch between loaders by falling
+            // back to the configuration's class loader for broker resolution
+            cls = getFactoryClass(conf, conf.getClass().getClassLoader());
+            meth = cls.getMethod(methodName, FACTORY_ARGS); 
         }
+
+        return (BrokerFactory) meth.invoke(null, new Object[]{ conf });
     }
 
     /**
