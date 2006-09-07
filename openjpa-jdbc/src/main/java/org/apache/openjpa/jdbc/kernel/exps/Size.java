@@ -33,17 +33,16 @@ class Size
         super(val);
     }
 
-    public void initialize(Select sel, JDBCStore store, boolean nullTest) {
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         // initialize the value with a null test
-        getVal().initialize(sel, store, true);
+        return initializeValue(sel, ctx, NULL_CMP);
     }
 
-    public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        getVal().calculateValue(sel, store, params, null, fetch);
-        getVal().appendSize(sql, sel, store, params, fetch);
-        sel.append(sql, getVal().getJoins());
-        getVal().clearParameters();
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
+        getValue().calculateValue(sel, ctx, state, null, null);
+        getValue().appendSize(sel, ctx, state, sql);
+        sel.append(sql, state.joins);
     }
 
     protected Class getType(Class c) {

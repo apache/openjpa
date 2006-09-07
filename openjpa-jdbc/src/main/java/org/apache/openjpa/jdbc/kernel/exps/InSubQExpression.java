@@ -17,8 +17,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -43,31 +41,44 @@ class InSubQExpression
         _sub = sub;
     }
 
-    public void initialize(Select sel, JDBCStore store,
-        Object[] params, Map contains) {
-        _val.initialize(sel, store, false);
-        _sub.initialize(sel, store, false);
+    public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
+        ExpState subqState = _sub.initialize(sel, ctx, 0);
+        ExpState valueState = _val.initialize(sel, ctx, 0);
+        return new InSubQExpState(valueState.joins, subqState, valueState);
     }
 
-    public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        _val.calculateValue(sel, store, params, null, fetch);
-        _sub.calculateValue(sel, store, params, null, fetch);
-        _val.appendTo(buf, 0, sel, store, params, fetch);
+    /**
+     * Expression state.
+     */
+    private static class InSubQExpState
+        extends ExpState {
+
+        public final ExpState subqState;
+        public final ExpState valueState;
+
+        public InSubQExpState(Joins joins, ExpState subqState, 
+            ExpState valueState) {
+            super(joins);
+            this.subqState = subqState;
+            this.valueState = valueState;
+        }
+    }
+
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf) {
+        InSubQExpState istate = (InSubQExpState) state;
+        _sub.calculateValue(sel, ctx, istate.subqState, null, null);
+        _val.calculateValue(sel, ctx, istate.valueState, null, null);
+        _val.appendTo(sel, ctx, istate.valueState, buf, 0);
         buf.append(" IN ");
-        _sub.appendTo(buf, 0, sel, store, params, fetch);
-        _val.clearParameters();
-        _sub.clearParameters();
+        _sub.appendTo(sel, ctx, istate.valueState, buf, 0);
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _val.selectColumns(sel, store, params, true, fetch);
-        _sub.selectColumns(sel, store, params, pks, fetch);
-    }
-
-    public Joins getJoins() {
-        return _val.getJoins();
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        InSubQExpState istate = (InSubQExpState) state;
+        _sub.selectColumns(sel, ctx, istate.subqState, pks);
+        _val.selectColumns(sel, ctx, istate.valueState, true);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

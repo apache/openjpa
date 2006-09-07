@@ -24,7 +24,6 @@ import org.apache.openjpa.kernel.DelegatingExtent;
  * An extent is a logical view of all instances of a class.
  *
  * @author Abe White
- * @author Pinaki Poddar
  * @since 0.4.1
  * @nojavadoc
  */
@@ -34,7 +33,6 @@ public class ExtentImpl<T>
     private final EntityManagerImpl _em;
     private final DelegatingExtent _extent;
     private FetchPlan _fetch = null;
-
 
     /**
      * Constructor; supply delegate.

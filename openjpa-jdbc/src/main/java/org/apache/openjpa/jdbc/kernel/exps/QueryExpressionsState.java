@@ -15,30 +15,19 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import java.util.Collection;
-import java.util.Map;
-
 /**
- * Tests whether a value is IN a map key set.
+ * Struct to hold the state of a query expressions instance.
  *
  * @author Abe White
+ * @nojavadoc
  */
-class InKeyExpression
-    extends InExpression {
+public class QueryExpressionsState {
 
-    /**
-     * Constructor. Supply the value to test and the constant to obtain
-     * the parameters from.
-     */
-    public InKeyExpression(Val val, Const constant) {
-        super(val, constant);
-    }
+    public static final ExpState[] EMPTY_STATES = new ExpState[0];
 
-    /**
-     * Return the collection to test for containment with.
-     */
-    protected Collection getCollection(ExpContext ctx, ExpState state) {
-        Map map = (Map) getConstant().getValue(ctx, state);
-        return (map == null) ? null : map.keySet();
-    }
+    public ExpState[] projections = EMPTY_STATES;
+    public ExpState filter = null;
+    public ExpState[] grouping = EMPTY_STATES;
+    public ExpState having = null;
+    public ExpState[] ordering = EMPTY_STATES;
 }

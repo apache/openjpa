@@ -36,16 +36,18 @@ import org.apache.openjpa.meta.ClassMetaData;
 abstract class StringFunction
     extends AbstractVal {
 
-    final Val _val;
-    ClassMetaData _meta = null;
-    String _pre = null;
-    String _post = null;
+    private final Val _val;
+    private ClassMetaData _meta = null;
 
     /**
      * Constructor. Provide the string to operate on.
      */
     public StringFunction(Val val) {
         _val = val;
+    }
+
+    public Val getValue() {
+        return _val;
     }
 
     public ClassMetaData getMetaData() {
@@ -56,10 +58,6 @@ abstract class StringFunction
         _meta = meta;
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         return String.class;
     }
@@ -67,68 +65,49 @@ abstract class StringFunction
     public void setImplicitType(Class type) {
     }
 
-    public Joins getJoins() {
-        return _val.getJoins();
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
+        return _val.initialize(sel, ctx, flags);
     }
 
-    public Object toDataStoreValue(Object val, JDBCStore store) {
-        return val;
+    public void select(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        sel.select(newSQLBuffer(sel, ctx, state), this);
     }
 
-    public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchConfiguration fetch) {
-        sel.select(newSQLBuffer(sel, store, params, fetch), this);
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        _val.selectColumns(sel, ctx, state, true);
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _val.selectColumns(sel, store, params, true, fetch);
+    public void groupBy(Select sel, ExpContext ctx, ExpState state) {
+        sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
-    public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchConfiguration fetch) {
-        sel.groupBy(newSQLBuffer(sel, store, params, fetch));
+    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+        boolean asc) {
+        sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false);
     }
 
-    public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchConfiguration fetch) {
-        sel.orderBy(newSQLBuffer(sel, store, params, fetch), asc, false);
-    }
-
-    private SQLBuffer newSQLBuffer(Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        calculateValue(sel, store, params, null, fetch);
-        SQLBuffer buf = new SQLBuffer(store.getDBDictionary());
-        appendTo(buf, 0, sel, store, params, fetch);
-        clearParameters();
+    private SQLBuffer newSQLBuffer(Select sel, ExpContext ctx, ExpState state) {
+        calculateValue(sel, ctx, state, null, null);
+        SQLBuffer buf = new SQLBuffer(ctx.store.getDBDictionary());
+        appendTo(sel, ctx, state, buf, 0);
         return buf;
     }
 
-    public Object load(Result res, JDBCStore store,
-        JDBCFetchConfiguration fetch)
+    public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
-    public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchConfiguration fetch) {
-        _val.calculateValue(sel, store, params, null, fetch);
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+        Val other, ExpState otherState) {
+        _val.calculateValue(sel, ctx, state, null, null);
     }
 
-    public void clearParameters() {
-        _val.clearParameters();
-    }
-
-    public int length() {
+    public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
-    }
-
-    public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        sql.append(_pre);
-        _val.appendTo(sql, 0, sel, store, params, fetch);
-        sql.append(_post);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

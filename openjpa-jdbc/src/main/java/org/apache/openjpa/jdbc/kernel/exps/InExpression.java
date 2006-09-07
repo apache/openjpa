@@ -20,8 +20,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
@@ -48,58 +46,79 @@ class InExpression
         _const = constant;
     }
 
-    public Const getConst() {
+    /**
+     * Constant collection.
+     */
+    public Const getConstant() {
         return _const;
     }
 
+    /**
+     * Contained value.
+     */
     public Val getValue() {
         return _val;
     }
 
-    public void initialize(Select sel, JDBCStore store,
-        Object[] params, Map contains) {
-        _val.initialize(sel, store, false);
-        _const.initialize(sel, store, false);
+    public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
+        ExpState valueState = _val.initialize(sel, ctx, 0);
+        ExpState constantState = _const.initialize(sel, ctx, 0);
+        return new InExpState(valueState.joins, constantState, valueState);
     }
 
-    public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        _val.calculateValue(sel, store, params, null, fetch);
-        _const.calculateValue(sel, store, params, null, fetch);
+    /**
+     * Expression state.
+     */
+    private static class InExpState
+        extends ExpState {
 
-        Collection coll = getCollection();
+        public final ExpState constantState;
+        public final ExpState valueState;
+
+        public InExpState(Joins joins, ExpState constantState, 
+            ExpState valueState) {
+            super(joins);
+            this.constantState = constantState;
+            this.valueState = valueState;
+        }
+    }
+
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf) {
+        InExpState istate = (InExpState) state; 
+        _const.calculateValue(sel, ctx, istate.constantState, null, null);
+        _val.calculateValue(sel, ctx, istate.valueState, null, null);
+
+        Collection coll = getCollection(ctx, istate.constantState);
         if (coll != null) {
             Collection ds = new ArrayList(coll.size());
             for (Iterator itr = coll.iterator(); itr.hasNext();)
-                ds.add(_val.toDataStoreValue(itr.next(), store));
+                ds.add(_val.toDataStoreValue(sel, ctx, istate.valueState, 
+                    itr.next()));
             coll = ds;
         }
 
         Column[] cols = null;
         if (_val instanceof PCPath)
-            cols = ((PCPath) _val).getColumns();
+            cols = ((PCPath) _val).getColumns(istate.valueState);
         else if (_val instanceof GetObjectId)
-            cols = ((GetObjectId) _val).getColumns();
+            cols = ((GetObjectId) _val).getColumns(istate.valueState);
 
         if (coll == null || coll.isEmpty())
             buf.append("1 <> 1");
-        else if (_val.length() == 1)
-            inContains(buf, sel, store, params, fetch, coll, cols);
+        else if (_val.length(sel, ctx, istate.valueState) == 1)
+            inContains(sel, ctx, istate.valueState, buf, coll, cols);
         else
-            orContains(buf, sel, store, params, fetch, coll, cols);
-        sel.append(buf, _val.getJoins());
-
-        _val.clearParameters();
-        _const.clearParameters();
+            orContains(sel, ctx, istate.valueState, buf, coll, cols);
+        sel.append(buf, state.joins);
     }
 
     /**
      * Construct an IN clause with the value of the given collection.
      */
-    private void inContains(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch,
-        Collection coll, Column[] cols) {
-        _val.appendTo(buf, 0, sel, store, params, fetch);
+    private void inContains(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf, Collection coll, Column[] cols) {
+        _val.appendTo(sel, ctx, state, buf, 0);
         buf.append(" IN (");
 
         Column col = (cols != null && cols.length == 1) ? cols[0] : null;
@@ -115,9 +134,8 @@ class InExpression
      * If the value to test is a compound key, we can't use IN,
      * so create a clause like '(a = b AND c = d) OR (e = f AND g = h) ...'
      */
-    private void orContains(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch, Collection coll,
-        Column[] cols) {
+    private void orContains(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf, Collection coll, Column[] cols) {
         if (coll.size() > 1)
             buf.append("(");
 
@@ -133,7 +151,7 @@ class InExpression
                 if (i > 0)
                     buf.append(" AND ");
 
-                _val.appendTo(buf, i, sel, store, params, fetch);
+                _val.appendTo(sel, ctx, state, buf, i);
                 if (vals[i] == null)
                     buf.append(" IS ");
                 else
@@ -149,21 +167,18 @@ class InExpression
             buf.append(")");
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _val.selectColumns(sel, store, params, true, fetch);
-        _const.selectColumns(sel, store, params, pks, fetch);
-    }
-
-    public Joins getJoins() {
-        return _val.getJoins();
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        InExpState istate = (InExpState) state; 
+        _const.selectColumns(sel, ctx, istate.constantState, true);
+        _val.selectColumns(sel, ctx, istate.valueState, true);
     }
 
     /**
      * Return the collection to test for containment with.
      */
-    protected Collection getCollection() {
-        return (Collection) _const.getValue();
+    protected Collection getCollection(ExpContext ctx, ExpState state) {
+        return (Collection) _const.getValue(ctx, state);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

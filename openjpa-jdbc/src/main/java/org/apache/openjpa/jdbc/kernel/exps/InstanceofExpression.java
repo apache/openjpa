@@ -17,8 +17,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -39,10 +37,6 @@ class InstanceofExpression
 
     private final PCPath _path;
     private final Class _cls;
-    private Joins _joins = null;
-    private Discriminator _dsc = null;
-    private Class _relCls = null;
-    private ClassMapping _mapping = null;
 
     /**
      * Constructor. Supply path and class to test for.
@@ -52,96 +46,117 @@ class InstanceofExpression
         _cls = cls;
     }
 
-    public void initialize(Select sel, JDBCStore store,
-        Object[] params, Map contains) {
+    public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         // note that we tell the path to go ahead and join to its related
         // object (if any) in order to access its class indicator
-        _path.initialize(sel, store, false);
-        _path.joinRelation();
-        _joins = _path.getJoins();
+        ExpState pathState = _path.initialize(sel, ctx, Val.JOIN_REL);
 
         // does this path represent a relation?  if not, what class
         // is the field?
-        ClassMapping rel = _path.getClassMapping();
-        if (rel == null) {
-            FieldMapping field = _path.getFieldMapping();
+        ClassMapping relMapping = _path.getClassMapping(pathState);
+        Class rel = null;
+        if (relMapping == null) {
+            FieldMapping field = _path.getFieldMapping(pathState);
             switch (field.getTypeCode()) {
                 case JavaTypes.MAP:
                     if (_path.isKey())
-                        _relCls = field.getKey().getDeclaredType();
+                        rel = field.getKey().getDeclaredType();
                     // no break
                 case JavaTypes.ARRAY:
                 case JavaTypes.COLLECTION:
-                    _relCls = field.getElement().getDeclaredType();
+                    rel = field.getElement().getDeclaredType();
                     break;
                 default:
-                    _relCls = field.getDeclaredType();
+                    rel = field.getDeclaredType();
             }
         } else
-            _relCls = rel.getDescribedType();
+            rel = relMapping.getDescribedType();
 
         // if the path represents a relation, get its class indicator and
         // make sure it's joined down to its base type
-        _dsc = (rel == null || !rel.getDescribedType().isAssignableFrom(_cls))
-            ? null : rel.getDiscriminator();
-        if (_dsc != null) {
+        Discriminator discrim = (relMapping == null 
+            || !relMapping.getDescribedType().isAssignableFrom(_cls)) 
+            ? null : relMapping.getDiscriminator();
+        ClassMapping mapping = null;
+        Joins joins = pathState.joins;
+        if (discrim != null) {
             // cache mapping for cast
-            MappingRepository repos = store.getConfiguration().
+            MappingRepository repos = ctx.store.getConfiguration().
                 getMappingRepositoryInstance();
-            _mapping = repos.getMapping(_cls, store.getContext().
+            mapping = repos.getMapping(_cls, ctx.store.getContext().
                 getClassLoader(), false);
 
             // if not looking for a PC, don't bother with indicator
-            if (_mapping == null)
-                _dsc = null;
+            if (mapping == null)
+                discrim = null;
             else {
-                ClassMapping owner = _dsc.getClassMapping();
+                ClassMapping owner = discrim.getClassMapping();
                 ClassMapping from, to;
-                if (rel.getDescribedType().isAssignableFrom
+                if (relMapping.getDescribedType().isAssignableFrom
                     (owner.getDescribedType())) {
                     from = owner;
-                    to = rel;
+                    to = relMapping;
                 } else {
-                    from = rel;
+                    from = relMapping;
                     to = owner;
                 }
 
                 for (; from != null && from != to;
                     from = from.getJoinablePCSuperclassMapping())
-                    _joins = from.joinSuperclass(_joins, false);
+                    joins = from.joinSuperclass(joins, false);
             }
+        }
+        return new InstanceofExpState(joins, pathState, mapping, discrim, rel);
+    }
+
+    /**
+     * Expression state.
+     */
+    private static class InstanceofExpState
+        extends ExpState {
+
+        public final ExpState pathState;
+        public final ClassMapping mapping;
+        public final Discriminator discrim;
+        public final Class rel;
+
+        public InstanceofExpState(Joins joins, ExpState pathState, 
+            ClassMapping mapping, Discriminator discrim, Class rel) {
+            super(joins);
+            this.pathState = pathState;
+            this.mapping = mapping;
+            this.discrim = discrim;
+            this.rel = rel;
         }
     }
 
-    public void appendTo(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
         // if no class indicator or a final class, just append true or false
         // depending on whether the cast matches the expected type
-        if (_dsc == null) {
-            if (_cls.isAssignableFrom(_relCls))
+        InstanceofExpState istate = (InstanceofExpState) state;
+        if (istate.discrim == null) {
+            if (_cls.isAssignableFrom(istate.rel))
                 sql.append("1 = 1");
             else
                 sql.append("1 <> 1");
         } else {
-            store.loadSubclasses(_dsc.getClassMapping());
-            SQLBuffer buf = _dsc.getClassConditions(sel, _joins, _mapping, 
-                true);
+            ctx.store.loadSubclasses(istate.discrim.getClassMapping());
+            SQLBuffer buf = istate.discrim.getClassConditions(sel,
+                istate.joins, istate.mapping, true);
             if (buf == null)
                 sql.append("1 = 1");
             else
                 sql.append(buf);
         }
-        sel.append(sql, _joins);
+        sel.append(sql, istate.joins);
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        if (_dsc != null)
-            sel.select(_dsc.getColumns(), _joins);
-    }
-
-    public Joins getJoins() {
-        return _joins;
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        InstanceofExpState istate = (InstanceofExpState) state;
+        if (istate.discrim != null)
+            sel.select(istate.discrim.getColumns(), istate.joins);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

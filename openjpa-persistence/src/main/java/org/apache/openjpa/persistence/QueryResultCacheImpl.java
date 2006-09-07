@@ -27,7 +27,6 @@ import org.apache.openjpa.datacache.TypesChangedEvent;
  * Implements Query result cache via delegation to QueryCache.
  *
  * @author Abe White
- * @author Pinaki Poddar
  * @since 0.4.1
  * @nojavadoc
  */
@@ -44,47 +43,29 @@ public class QueryResultCacheImpl
             PersistenceExceptions.TRANSLATOR);
     }
 
-    /**
-     * Delegate.
-     */
     public QueryCache getDelegate() {
         return _cache.getDelegate();
     }
 
-    /**
-     * Pin the given query's result to the cache.
-     */
     public void pin(Query q) {
         if (_cache.getDelegate() != null)
             _cache.pin(toQueryKey(q));
     }
 
-    /**
-     * Unpin a previously-pinned query result.
-     */
     public void unpin(Query q) {
         if (_cache.getDelegate() != null)
             _cache.unpin(toQueryKey(q));
     }
 
-    /**
-     * Evict a query result from the cache.
-     */
     public void evict(Query q) {
         if (_cache.getDelegate() != null)
             _cache.remove(toQueryKey(q));
     }
 
-    /**
-     * Clear the cache.
-     */
     public void evictAll() {
         _cache.clear();
     }
 
-    /**
-     * Evict all result for queries involving the given class.
-     */
     public void evictAll(Class cls) {
         _cache.onTypesChanged(new TypesChangedEvent(this,
             Collections.singleton(cls)));

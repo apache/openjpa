@@ -56,17 +56,13 @@ class PCPath
     private static final Localizer _loc = Localizer.forPackage(PCPath.class);
 
     private final ClassMapping _candidate;
-    private LinkedList _actions = null;
-    private Joins _joins = null;
-    private boolean _forceOuter = false;
     private ClassMapping _class = null;
-    private FieldMapping _field = null;
+    private LinkedList _actions = null;
     private boolean _key = false;
-    private boolean _joinedRel = false;
     private int _type = PATH;
     private String _varName = null;
-    private Column[] _cols = null;
     private Class _cast = null;
+    private boolean _cid = false;
 
     /**
      * Return a path starting with the 'this' ptr.
@@ -92,6 +88,7 @@ class PCPath
             // bound variable; copy path
             _type = UNACCESSED_VAR;
             _actions.addAll(other._actions);
+            _key = other._key;
 
             action.op = Action.VAR;
             action.data = var.getName();
@@ -136,7 +133,10 @@ class PCPath
      * If this path is part of a contains clause, then alias it to the
      * proper contains id before initialization.
      */
-    public void setContainsId(String id) {
+    public synchronized void setContainsId(String id) {
+        if (_cid)
+            return;
+
         // treat it just like a unique variable
         Action action = new Action();
         action.op = Action.VAR;
@@ -144,6 +144,7 @@ class PCPath
         if (_actions == null)
             _actions = new LinkedList();
         _actions.add(action);
+        _cid = true;
     }
 
     public ClassMetaData getMetaData() {
@@ -152,29 +153,6 @@ class PCPath
 
     public void setMetaData(ClassMetaData meta) {
         _class = (ClassMapping) meta;
-    }
-
-    public boolean isVariable() {
-        return false;
-    }
-
-    public ClassMapping getClassMapping() {
-        if (_field == null)
-            return _class;
-        if (_key) {
-            if (_field.getKey().getTypeCode() == JavaTypes.PC)
-                return _field.getKeyMapping().getTypeMapping();
-            return null;
-        }
-        if (_field.getElement().getTypeCode() == JavaTypes.PC)
-            return _field.getElementMapping().getTypeMapping();
-        if (_field.getTypeCode() == JavaTypes.PC)
-            return _field.getTypeMapping();
-        return null;
-    }
-
-    public FieldMapping getFieldMapping() {
-        return _field;
     }
 
     public boolean isKey() {
@@ -193,7 +171,7 @@ class PCPath
                 path.append(action.data);
             else if (action.op == Action.UNBOUND_VAR)
                 path.append(((Variable) action.data).getName());
-            else
+            else 
                 path.append(((FieldMapping) action.data).getName());
             path.append('.');
         }
@@ -202,42 +180,65 @@ class PCPath
         return path.toString();
     }
 
-    public Column[] getColumns() {
-        if (_cols == null)
-            _cols = calculateColumns();
-        return _cols;
+    public ClassMapping getClassMapping(ExpState state) {
+        PathExpState pstate = (PathExpState) state;
+        if (pstate.field == null)
+            return _class;
+        if (_key) {
+            if (pstate.field.getKey().getTypeCode() == JavaTypes.PC)
+                return pstate.field.getKeyMapping().getTypeMapping();
+            return null;
+        }
+        if (pstate.field.getElement().getTypeCode() == JavaTypes.PC)
+            return pstate.field.getElementMapping().getTypeMapping();
+        if (pstate.field.getTypeCode() == JavaTypes.PC)
+            return pstate.field.getTypeMapping();
+        return null;
+    }
+
+    public FieldMapping getFieldMapping(ExpState state) {
+        return ((PathExpState) state).field;
+    }
+
+    public Column[] getColumns(ExpState state) {
+        PathExpState pstate = (PathExpState) state;
+        if (pstate.cols == null)
+            pstate.cols = calculateColumns(pstate);
+        return pstate.cols;
     }
 
     /**
      * The columns used by this path.
      */
-    private Column[] calculateColumns() {
+    private Column[] calculateColumns(PathExpState pstate) {
         if (_key) {
-            if (!_joinedRel && _field.getKey().getValueMappedBy() != null)
-                joinRelation();
-            else if (_joinedRel
-                && _field.getKey().getTypeCode() == JavaTypes.PC)
-                return _field.getKeyMapping().getTypeMapping().
+            if (!pstate.joinedRel 
+                && pstate.field.getKey().getValueMappedBy() != null)
+                joinRelation(pstate, _key, false, false);
+            else if (pstate.joinedRel 
+                && pstate.field.getKey().getTypeCode() == JavaTypes.PC)
+                return pstate.field.getKeyMapping().getTypeMapping().
                     getPrimaryKeyColumns();
-            return _field.getKeyMapping().getColumns();
+            return pstate.field.getKeyMapping().getColumns();
         }
-        if (_field != null) {
-            switch (_field.getTypeCode()) {
+        if (pstate.field != null) {
+            switch (pstate.field.getTypeCode()) {
                 case JavaTypes.MAP:
                 case JavaTypes.ARRAY:
                 case JavaTypes.COLLECTION:
-                    ValueMapping elem = _field.getElementMapping();
-                    if (_joinedRel && elem.getTypeCode() == JavaTypes.PC)
+                    ValueMapping elem = pstate.field.getElementMapping();
+                    if (pstate.joinedRel && elem.getTypeCode() == JavaTypes.PC)
                         return elem.getTypeMapping().getPrimaryKeyColumns();
                     if (elem.getColumns().length > 0)
                         return elem.getColumns();
-                    return _field.getColumns();
+                    return pstate.field.getColumns();
                 case JavaTypes.PC:
-                    if (_joinedRel)
-                        return _field.getTypeMapping().getPrimaryKeyColumns();
-                    return _field.getColumns();
+                    if (pstate.joinedRel)
+                        return pstate.field.getTypeMapping().
+                            getPrimaryKeyColumns();
+                    return pstate.field.getColumns();
                 default:
-                    return _field.getColumns();
+                    return pstate.field.getColumns();
             }
         }
         return (_class == null) ? Schemas.EMPTY_COLUMNS
@@ -254,13 +255,18 @@ class PCPath
         if (_type == UNACCESSED_VAR)
             _type = BOUND_VAR;
         _cast = null;
+        _key = false;
     }
 
-    public void getKey() {
+    public synchronized void getKey() {
+        if (_cid)
+            return;
+
         // change the last action to a get key
         Action action = (Action) _actions.getLast();
         action.op = Action.GET_KEY;
         _cast = null;
+        _key = true;
     }
 
     public FieldMetaData last() {
@@ -295,17 +301,9 @@ class PCPath
     public Class getType() {
         if (_cast != null)
             return _cast;
-        FieldMetaData fld;
-        boolean key;
-        if (_field != null) {
-            fld = _field;
-            key = _key;
-        } else {
-            Action act = lastFieldAction();
-            fld = (act == null) ? null : (FieldMetaData) act.data;
-            key = act != null && act.op == Action.GET_KEY;
-        }
-
+        Action act = lastFieldAction();
+        FieldMetaData fld = (act == null) ? null : (FieldMetaData) act.data;
+        boolean key = act != null && act.op == Action.GET_KEY;
         if (fld != null) {
             switch (fld.getDeclaredTypeCode()) {
                 case JavaTypes.ARRAY:
@@ -334,16 +332,13 @@ class PCPath
         _cast = type;
     }
 
-    public void initialize(Select sel, JDBCStore store, boolean nullTest) {
-        // initialize can be called more than once, so reset
-        _field = null;
-        _key = false;
-        _forceOuter = false;
-        _joinedRel = false;
-        _joins = sel.newJoins();
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
+        PathExpState pstate = new PathExpState(sel.newJoins());
+        boolean key = false;
+        boolean forceOuter = false;
+        ClassMapping rel = _candidate;
 
         // iterate to the final field
-        ClassMapping rel = _candidate;
         ClassMapping owner;
         ClassMapping from, to;
         Action action;
@@ -354,32 +349,33 @@ class PCPath
 
             // treat subqueries like variables for alias generation purposes
             if (action.op == Action.VAR)
-                _joins = _joins.setVariable((String) action.data);
+                pstate.joins = pstate.joins.setVariable((String) action.data);
             else if (action.op == Action.SUBQUERY)
-                _joins = _joins.setSubselect((String) action.data);
+                pstate.joins = pstate.joins.setSubselect((String) action.data);
             else if (action.op == Action.UNBOUND_VAR) {
                 // unbound vars are cross-joined to the candidate table
                 var = (Variable) action.data;
                 rel = (ClassMapping) var.getMetaData();
-                _joins = _joins.setVariable(var.getName());
-                _joins = _joins.crossJoin(_candidate.getTable(),
+                pstate.joins = pstate.joins.setVariable(var.getName());
+                pstate.joins = pstate.joins.crossJoin(_candidate.getTable(), 
                     rel.getTable());
             } else {
                 // move past the previous field, if any
-                if (_field != null)
-                    rel = traverseField(false);
+                if (pstate.field != null)
+                    rel = traverseField(pstate, key, forceOuter, false);
 
                 // mark if the next traversal should go through
                 // the key rather than value
-                _key = action.op == Action.GET_KEY;
-                _forceOuter |= action.op == Action.GET_OUTER;
+                key = action.op == Action.GET_KEY;
+                forceOuter |= action.op == Action.GET_OUTER;
 
                 // get mapping for the current field
-                _field = (FieldMapping) action.data;
-                owner = _field.getDefiningMapping();
-                if (_field.getManagement() != FieldMapping.MANAGE_PERSISTENT)
-                    throw new UserException(_loc.get("non-pers-field",
-                        _field));
+                pstate.field = (FieldMapping) action.data;
+                owner = pstate.field.getDefiningMapping();
+                if (pstate.field.getManagement() 
+                    != FieldMapping.MANAGE_PERSISTENT)
+                    throw new UserException(_loc.get("non-pers-field", 
+                        pstate.field));
 
                 // find the most-derived type between the declared relation
                 // type and the field's owner, and join from that type to
@@ -396,22 +392,38 @@ class PCPath
 
                     for (; from != null && from != to;
                         from = from.getJoinablePCSuperclassMapping())
-                        _joins = from.joinSuperclass(_joins, false);
+                        pstate.joins = from.joinSuperclass(pstate.joins, false);
                 }
             }
         }
         if (_varName != null)
-            _joins = _joins.setVariable(_varName);
+            pstate.joins = pstate.joins.setVariable(_varName);
 
         // if we're not comparing to null or doing an isEmpty, then
         // join into the data on the final field; obviously we can't do these
         // joins when comparing to null b/c the whole purpose is to see
         // whether the joins even exist
-        if (!nullTest)
-            traverseField(true);
+        if ((flags & NULL_CMP) == 0)
+            traverseField(pstate, key, forceOuter, true);
+        pstate.joinedRel = false;
+        if ((flags & JOIN_REL) != 0)
+            joinRelation(pstate, key, forceOuter, false);
+        return pstate;
+    }
 
-        // note that we haven't yet joined to the relation of the last field yet
-        _joinedRel = false;
+    /**
+     * Expression state.
+     */
+    private static class PathExpState
+        extends ExpState {
+
+        private FieldMapping field = null;
+        private Column[] cols = null;
+        private boolean joinedRel = false;
+
+        public PathExpState(Joins joins) {
+            super(joins);
+        }
     }
 
     /**
@@ -420,211 +432,201 @@ class PCPath
      * @param last whether this is the last field in the path
      * @return the mapping of the related type, or null
      */
-    private ClassMapping traverseField(boolean last) {
-        if (_field == null)
+    private ClassMapping traverseField(PathExpState pstate, boolean key, 
+        boolean forceOuter, boolean last) {
+        if (pstate.field == null)
             return null;
 
         // traverse into field value
-        if (_key)
-            _joins = _field.joinKey(_joins, _forceOuter);
+        if (key)
+            pstate.joins = pstate.field.joinKey(pstate.joins, forceOuter);
         else
-            _joins = _field.join(_joins, _forceOuter);
+            pstate.joins = pstate.field.join(pstate.joins, forceOuter);
 
         // if this isn't the last field, traverse into the relation
         if (!last)
-            joinRelation(true);
+            joinRelation(pstate, key, forceOuter, true);
 
         // return the maping of the related type, if any
-        if (_key)
-            return _field.getKeyMapping().getTypeMapping();
-        if (_field.getElement().getTypeCode() == JavaTypes.PC)
-            return _field.getElementMapping().getTypeMapping();
-        return _field.getTypeMapping();
+        if (key)
+            return pstate.field.getKeyMapping().getTypeMapping();
+        if (pstate.field.getElement().getTypeCode() == JavaTypes.PC)
+            return pstate.field.getElementMapping().getTypeMapping();
+        return pstate.field.getTypeMapping();
     }
 
     /**
      * Join into the relation represented by the current field, if any.
      */
-    void joinRelation() {
-        joinRelation(false);
-    }
-
-    private void joinRelation(boolean traverse) {
-        if (_field == null)
+    private void joinRelation(PathExpState pstate, boolean key, 
+        boolean forceOuter, boolean traverse) {
+        if (pstate.field == null)
             return;
-        if (_key)
-            _joins = _field.joinKeyRelation(_joins, _forceOuter, traverse);
+        if (key)
+            pstate.joins = pstate.field.joinKeyRelation(pstate.joins, 
+                forceOuter, traverse);
         else
-            _joins = _field.joinRelation(_joins, _forceOuter, traverse);
-        _joinedRel = true;
+            pstate.joins = pstate.field.joinRelation(pstate.joins, forceOuter,
+                traverse);
+        pstate.joinedRel = true;
     }
 
-    public Joins getJoins() {
-        return _joins;
-    }
-
-    public Object toDataStoreValue(Object val, JDBCStore store) {
-        if (_field != null) {
+    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state, 
+        Object val) {
+        PathExpState pstate = (PathExpState) state;
+        if (pstate.field != null) {
             if (_key)
-                return _field.toKeyDataStoreValue(val, store);
-            if (_field.getElement().getDeclaredTypeCode() != JavaTypes.OBJECT)
-                return _field.toDataStoreValue(val, store);
+                return pstate.field.toKeyDataStoreValue(val, ctx.store);
+            if (pstate.field.getElement().getDeclaredTypeCode() 
+                != JavaTypes.OBJECT)
+                return pstate.field.toDataStoreValue(val, ctx.store);
 
-            val = _field.getExternalValue(val, store.getContext());
-            return _field.toDataStoreValue(val, store);
+            val = pstate.field.getExternalValue(val, ctx.store.getContext());
+            return pstate.field.toDataStoreValue(val, ctx.store);
         }
         return _class.toDataStoreValue(val, _class.getPrimaryKeyColumns(),
-            store);
+            ctx.store);
     }
 
-    public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchConfiguration fetch) {
-        selectColumns(sel, store, params, pks, fetch);
+    public void select(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        selectColumns(sel, ctx, state, pks);
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        ClassMapping mapping = getClassMapping();
-        if (mapping == null || !_joinedRel)
-            sel.select(getColumns(), _joins);
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        ClassMapping mapping = getClassMapping(state);
+        PathExpState pstate = (PathExpState) state;
+        if (mapping == null || !pstate.joinedRel)
+            sel.select(getColumns(state), pstate.joins);
         else if (pks)
-            sel.select(mapping.getPrimaryKeyColumns(), _joins);
+            sel.select(mapping.getPrimaryKeyColumns(), pstate.joins);
         else {
             // select the mapping; allow any subs because we know this must
             // be either a relation, in which case it will already be
             // constrained by the joins, or 'this', in which case the
             // JDBCExpressionFactory takes care of adding class conditions for
             // the candidate class on the select
-            int subs = (_type == UNBOUND_VAR) ? sel.SUBS_JOINABLE
-                : sel.SUBS_ANY_JOINABLE;
-            sel.select(mapping, subs, store, fetch,
-                JDBCFetchConfiguration.EAGER_NONE, sel.outer(_joins));
+            int subs = (_type == UNBOUND_VAR) ? Select.SUBS_JOINABLE
+                : Select.SUBS_ANY_JOINABLE;
+            sel.select(mapping, subs, ctx.store, ctx.fetch,
+                JDBCFetchConfiguration.EAGER_NONE, sel.outer(pstate.joins));
         }
     }
 
-    public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchConfiguration fetch) {
-        ClassMapping mapping = getClassMapping();
-        if (mapping == null || !_joinedRel)
-            sel.groupBy(getColumns(), sel.outer(_joins));
+    public void groupBy(Select sel, ExpContext ctx, ExpState state) {
+        ClassMapping mapping = getClassMapping(state);
+        PathExpState pstate = (PathExpState) state;
+        if (mapping == null || !pstate.joinedRel)
+            sel.groupBy(getColumns(state), sel.outer(pstate.joins));
         else {
-            int subs = (_type == UNBOUND_VAR) ? sel.SUBS_JOINABLE
-                : sel.SUBS_ANY_JOINABLE;
-            sel.groupBy(mapping, subs, store, fetch, sel.outer(_joins));
+            int subs = (_type == UNBOUND_VAR) ? Select.SUBS_JOINABLE
+                : Select.SUBS_ANY_JOINABLE;
+            sel.groupBy(mapping, subs, ctx.store, ctx.fetch, 
+                sel.outer(pstate.joins));
         }
     }
 
-    public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchConfiguration fetch) {
-        sel.orderBy(getColumns(), asc, sel.outer(_joins), false);
+    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+        boolean asc) {
+        sel.orderBy(getColumns(state), asc, sel.outer(state.joins), false);
     }
 
-    public Object load(Result res, JDBCStore store,
-        JDBCFetchConfiguration fetch)
+    public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
-        return load(res, store, false, fetch);
+        return load(ctx, state, res, false);
     }
 
-    Object load(Result res, JDBCStore store, boolean pks,
-        JDBCFetchConfiguration fetch)
+    Object load(ExpContext ctx, ExpState state, Result res, boolean pks)
         throws SQLException {
-        ClassMapping mapping = getClassMapping();
-        if (mapping != null && (_field == null || !_field.isEmbedded())) {
+        ClassMapping mapping = getClassMapping(state);
+        PathExpState pstate = (PathExpState) state;
+        if (mapping != null && (pstate.field == null 
+            || !pstate.field.isEmbedded())) {
             if (pks)
-                return mapping.getObjectId(store, res, null, true, _joins);
-            return res.load(mapping, store, fetch, _joins);
+                return mapping.getObjectId(ctx.store, res, null, true, 
+                    pstate.joins);
+            return res.load(mapping, ctx.store, ctx.fetch, pstate.joins);
         }
 
         Object ret;
         if (_key)
-            ret = _field.loadKeyProjection(store, fetch, res, _joins);
+            ret = pstate.field.loadKeyProjection(ctx.store, ctx.fetch, res, 
+                pstate.joins);
         else
-            ret = _field.loadProjection(store, fetch, res, _joins);
+            ret = pstate.field.loadProjection(ctx.store, ctx.fetch, res, 
+                pstate.joins);
         if (_cast != null)
             ret = Filters.convert(ret, _cast);
         return ret;
     }
 
-    /**
-     * Whether the given variable appears in this path.
-     */
-    public boolean hasVariable(Variable var) {
-        if (_actions == null)
-            return false;
-
-        Action action;
-        for (Iterator itr = _actions.iterator(); itr.hasNext();) {
-            action = (Action) itr.next();
-            if (action.op == Action.VAR && action.data.equals(var.getName()))
-                return true;
-        }
-        return false;
-    }
-
-    public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchConfiguration fetch) {
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+        Val other, ExpState otherState) {
         // we don't create the SQL b/c it forces the Select to cache aliases
         // for the tables we use, and these aliases might not ever be used if
         // we eventually call appendIsEmpty or appendIsNull rather than appendTo
     }
 
-    public void clearParameters() {
+    public int length(Select sel, ExpContext ctx, ExpState state) {
+        return getColumns(state).length;
     }
 
-    public int length() {
-        return getColumns().length;
-    }
-
-    public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        Column col = getColumns()[index];
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
+        Column col = getColumns(state)[index];
 
         // if select is null, it means we are not aliasing columns
         // (e.g., during a bulk update)
         if (sel == null)
             sql.append(col.getName());
         else
-            sql.append(sel.getColumnAlias(col, _joins));
+            sql.append(sel.getColumnAlias(col, state.joins));
     }
 
-    public void appendIsEmpty(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        if (_field == null)
+    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        PathExpState pstate = (PathExpState) state;
+        if (pstate.field == null)
             sql.append(FALSE);
         else
-            _field.appendIsEmpty(sql, sel, _joins);
+            pstate.field.appendIsEmpty(sql, sel, pstate.joins);
     }
 
-    public void appendIsNotEmpty(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        if (_field == null)
+    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        PathExpState pstate = (PathExpState) state;
+        if (pstate.field == null)
             sql.append(FALSE);
         else
-            _field.appendIsNotEmpty(sql, sel, _joins);
+            pstate.field.appendIsNotEmpty(sql, sel, pstate.joins);
     }
 
-    public void appendSize(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        if (_field == null)
+    public void appendSize(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        PathExpState pstate = (PathExpState) state;
+        if (pstate.field == null)
             sql.append("1");
         else
-            _field.appendSize(sql, sel, _joins);
+            pstate.field.appendSize(sql, sel, pstate.joins);
     }
 
-    public void appendIsNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        if (_field == null)
+    public void appendIsNull(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        PathExpState pstate = (PathExpState) state;
+        if (pstate.field == null)
             sql.append(FALSE);
         else
-            _field.appendIsNull(sql, sel, _joins);
+            pstate.field.appendIsNull(sql, sel, pstate.joins);
     }
 
-    public void appendIsNotNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        if (_field == null)
+    public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        PathExpState pstate = (PathExpState) state;
+        if (pstate.field == null)
             sql.append(TRUE);
         else
-            _field.appendIsNotNull(sql, sel, _joins);
+            pstate.field.appendIsNotNull(sql, sel, pstate.joins);
     }
 
     public int hashCode() {

@@ -17,9 +17,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
@@ -44,28 +41,22 @@ class ConstInstanceofExpression
         _cls = Filters.wrap(cls);
     }
 
-    public void initialize(Select sel, JDBCStore store,
-        Object[] params, Map contains) {
-        _const.initialize(sel, store, false);
+    public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
+        return _const.initialize(sel, ctx, 0);
     }
 
-    public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        _const.calculateValue(sel, store, params, null, fetch);
-        if (_cls.isInstance(_const.getValue()))
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf) {
+        _const.calculateValue(sel, ctx, state, null, null);
+        if (_cls.isInstance(_const.getValue(ctx, state)))
             buf.append("1 = 1");
         else
             buf.append("1 <> 1");
-        _const.clearParameters();
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _const.selectColumns(sel, store, params, pks, fetch);
-    }
-
-    public Joins getJoins() {
-        return _const.getJoins();
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        _const.selectColumns(sel, ctx, state, pks);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

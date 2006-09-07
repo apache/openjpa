@@ -19,6 +19,7 @@ import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreQuery;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.AggregateListener;
@@ -34,7 +35,6 @@ import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -48,12 +48,10 @@ public class JDBCExpressionFactory
     implements ExpressionFactory {
 
     private static final Val NULL = new Null();
-    private static final Val CURRENT_DATE =
-        new CurrentDate(CurrentDate.DATE);
-    private static final Val CURRENT_TIME =
-        new CurrentDate(CurrentDate.TIME);
+    private static final Val CURRENT_DATE = new CurrentDate(JavaSQLTypes.DATE);
+    private static final Val CURRENT_TIME = new CurrentDate(JavaSQLTypes.TIME);
     private static final Val CURRENT_TIMESTAMP =
-        new CurrentDate(CurrentDate.TIMESTAMP);
+        new CurrentDate(JavaSQLTypes.TIMESTAMP);
 
     private static final Localizer _loc = Localizer.forPackage
         (JDBCExpressionFactory.class);
@@ -69,56 +67,10 @@ public class JDBCExpressionFactory
     }
 
     /**
-     * Evaluate the expression, returning a SQL select with the proper
-     * conditions. Use {@link #select} to then select the data.
-     * This method returns null if there is no query criteria. It is
-     * synchronized because factories may be cached and used by multiple
-     * queries at the same time.
+     * Use to create SQL select.
      */
-    public synchronized Select evaluate(JDBCStoreQuery q,
-        JDBCFetchConfiguration fetch, QueryExpressions exps, Object[] params) {
-        // figure out proper cache level based on parameters
-        int level = getCacheLevel(q, params);
-        return _cons.evaluate(q.getStore(), null, null, exps, params,
-            level, fetch);
-    }
-
-    /**
-     * Return the cache level for this query. The level depends on whether
-     * the query uses any params, as well as the types and values of those
-     * params.
-     */
-    private int getCacheLevel(JDBCStoreQuery q, Object[] params) {
-        // if there are no parameters, we can cache the full SQL
-        if (params.length == 0)
-            return SelectConstructor.CACHE_FULL;
-
-        // if there is a null PC parameter, we have to cache differently
-        // since it affects joins
-        LinkedMap types = null;
-        Class type;
-        for (int i = 0; i < params.length; i++) {
-            if (params[i] != null)
-                continue;
-
-            if (types == null)
-                types = q.getContext().getParameterTypes();
-
-            type = (Class) types.getValue(i);
-            if (type != null && ImplHelper.isManagedType(type))
-                return SelectConstructor.CACHE_NULL;
-        }
-        return SelectConstructor.CACHE_JOINS;
-    }
-
-    /**
-     * Select the data for this query.
-     */
-    public void select(JDBCStoreQuery q, ClassMapping mapping,
-        boolean subclasses, Select sel, QueryExpressions exps,
-        Object[] params, JDBCFetchConfiguration fetch, int eager) {
-        _cons.select(q.getStore(), mapping, subclasses, sel, exps,
-            params, fetch, eager);
+    public SelectConstructor getSelectConstructor() {
+        return _cons;
     }
 
     public Expression emptyExpression() {

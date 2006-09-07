@@ -15,8 +15,6 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
@@ -40,30 +38,35 @@ abstract class AbstractVal
         return false;
     }
 
-    public void appendIsEmpty(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
+    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state, 
+        Object val) {
+        return val;
+    }
+
+    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
         sql.append(FALSE);
     }
 
-    public void appendIsNotEmpty(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
+    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql){
         sql.append(TRUE);
     }
 
-    public void appendIsNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        appendTo(sql, 0, sel, store, params, fetch);
+    public void appendIsNull(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        appendTo(sel, ctx, state, sql, 0);
         sql.append(" IS ").appendValue(null);
     }
 
-    public void appendIsNotNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        appendTo(sql, 0, sel, store, params, fetch);
+    public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        appendTo(sel, ctx, state, sql, 0);
         sql.append(" IS NOT ").appendValue(null);
     }
 
-    public void appendSize(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
+    public void appendSize(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
         sql.append("1");
     }
 

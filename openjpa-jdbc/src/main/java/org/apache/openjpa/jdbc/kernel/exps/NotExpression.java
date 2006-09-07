@@ -17,8 +17,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -33,7 +31,6 @@ class NotExpression
     implements Exp {
 
     private final Exp _exp;
-    private Joins _joins = null;
 
     /**
      * Constructor. Supply the expression to negate.
@@ -42,26 +39,35 @@ class NotExpression
         _exp = exp;
     }
 
-    public void initialize(Select sel, JDBCStore store,
-        Object[] params, Map contains) {
-        _exp.initialize(sel, store, params, contains);
-        _joins = sel.or(_exp.getJoins(), null);
+    public ExpState initialize(Select sel, ExpContext ctx, Map contains) { 
+        ExpState state = _exp.initialize(sel, ctx, contains);
+        return new NotExpState(sel.or(state.joins, null), state);
     }
 
-    public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
+    /**
+     * Expression state.
+     */
+    private static class NotExpState 
+        extends ExpState {
+
+        public final ExpState state;
+
+        public NotExpState(Joins joins, ExpState state) {
+            super(joins);
+            this.state = state;
+        }
+    }
+
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf) {
         buf.append("NOT (");
-        _exp.appendTo(buf, sel, store, params, fetch);
+        _exp.appendTo(sel, ctx, ((NotExpState) state).state, buf);
         buf.append(")");
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _exp.selectColumns(sel, store, params, pks, fetch);
-    }
-
-    public Joins getJoins() {
-        return _joins;
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        _exp.selectColumns(sel, ctx, ((NotExpState) state).state, pks);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

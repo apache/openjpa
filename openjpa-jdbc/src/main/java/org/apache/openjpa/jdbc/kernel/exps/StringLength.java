@@ -17,6 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 
 /**
@@ -36,18 +37,6 @@ class StringLength
         super(val);
     }
 
-    public void initialize(Select sel, JDBCStore store, boolean nullTest) {
-        _val.initialize(sel, store, false);
-
-        DBDictionary dict = store.getConfiguration().getDBDictionaryInstance();
-        String func = dict.stringLengthFunction;
-        dict.assertSupport(func != null, "StringLengthFunction");
-
-        int idx = func.indexOf("{0}");
-        _pre = func.substring(0, idx);
-        _post = func.substring(idx + 3);
-    }
-
     public Class getType() {
         if (_cast != null)
             return _cast;
@@ -56,6 +45,18 @@ class StringLength
 
     public void setImplicitType(Class type) {
         _cast = type;
+    }
+
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf, int index) {
+        DBDictionary dict = ctx.store.getDBDictionary();
+        String func = dict.stringLengthFunction;
+        dict.assertSupport(func != null, "StringLengthFunction");
+
+        int idx = func.indexOf("{0}");
+        buf.append(func.substring(0, idx));
+        getValue().appendTo(sel, ctx, state, buf, index);
+        buf.append(func.substring(idx + 3));
     }
 }
 

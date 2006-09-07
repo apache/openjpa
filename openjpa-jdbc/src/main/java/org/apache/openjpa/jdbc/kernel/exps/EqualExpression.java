@@ -15,8 +15,6 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 
@@ -35,39 +33,41 @@ class EqualExpression
         super(val1, val2);
     }
 
-    public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch,
-        boolean val1Null, boolean val2Null) {
+    public void appendTo(Select sel, ExpContext ctx, BinaryOpExpState bstate, 
+        SQLBuffer buf, boolean val1Null, boolean val2Null) {
         if (val1Null && val2Null)
             buf.appendValue(null).append(" IS ").appendValue(null);
         else if (val1Null || val2Null) {
             Val val = (val1Null) ? getValue2() : getValue1();
+            ExpState state = (val1Null) ? bstate.state2 : bstate.state1;
             if (!isDirectComparison()) {
-                int len = val.length();
+                int len = val.length(sel, ctx, state);
                 for (int i = 0; i < len; i++) {
                     if (i > 0)
                         buf.append(" AND ");
-                    val.appendTo(buf, i, sel, store, params, fetch);
+                    val.appendTo(sel, ctx, state, buf, i);
                     buf.append(" IS ").appendValue(null);
                 }
             } else
-                val.appendIsNull(buf, sel, store, params, fetch);
+                val.appendIsNull(sel, ctx, state, buf);
         } else {
             Val val1 = getValue1();
             Val val2 = getValue2();
-            if (val1.length() == 1 && val2.length() == 1) {
-                store.getDBDictionary().comparison(buf, "=",
-                    new FilterValueImpl(val1, sel, store, params, fetch),
-                    new FilterValueImpl(val2, sel, store, params, fetch));
+            if (val1.length(sel, ctx, bstate.state1) == 1 
+                && val2.length(sel, ctx, bstate.state2) == 1) {
+                ctx.store.getDBDictionary().comparison(buf, "=",
+                    new FilterValueImpl(sel, ctx, bstate.state1, val1),
+                    new FilterValueImpl(sel, ctx, bstate.state2, val2));
             } else {
-                int len = java.lang.Math.max(val1.length(), val2.length());
+                int len = java.lang.Math.max(val1.length(sel, ctx, 
+                    bstate.state1), val2.length(sel, ctx, bstate.state2));
                 for (int i = 0; i < len; i++) {
                     if (i > 0)
                         buf.append(" AND ");
 
-                    val1.appendTo(buf, i, sel, store, params, fetch);
+                    val1.appendTo(sel, ctx, bstate.state1, buf, i);
                     buf.append(" = ");
-                    val2.appendTo(buf, i, sel, store, params, fetch);
+                    val2.appendTo(sel, ctx, bstate.state2, buf, i);
                 }
             }
         }

@@ -18,8 +18,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
 import java.lang.Math;
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
@@ -43,7 +41,6 @@ class Trim
     private final Val _trimChar;
     private final Boolean _where;
     private ClassMetaData _meta = null;
-    private String _func = null;
 
     /**
      * Constructor. Provide the string to operate on.
@@ -62,10 +59,6 @@ class Trim
         _meta = meta;
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         return String.class;
     }
@@ -73,119 +66,123 @@ class Trim
     public void setImplicitType(Class type) {
     }
 
-    public void initialize(Select sel, JDBCStore store, boolean nullTest) {
-        _val.initialize(sel, store, false);
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
+        ExpState valueState =  _val.initialize(sel, ctx, 0);
+        ExpState charState = _trimChar.initialize(sel, ctx, 0);
+        return new TrimExpState(sel.and(valueState.joins, charState.joins), 
+            valueState, charState);
+    }
 
-        DBDictionary dict = store.getDBDictionary();
-        if (_where == null) {
-            _func = dict.trimBothFunction;
-            dict.assertSupport(_func != null, "TrimBothFunction");
-        } else if (_where.equals(Boolean.TRUE)) {
-            _func = dict.trimLeadingFunction;
-            dict.assertSupport(_func != null, "TrimLeadingFunction");
-        } else if (_where.equals(Boolean.FALSE)) {
-            _func = dict.trimTrailingFunction;
-            dict.assertSupport(_func != null, "TrimTrailingFunction");
+    /**
+     * Expression state.
+     */
+    private static class TrimExpState
+        extends ExpState {
+
+        public final ExpState valueState;
+        public final ExpState charState;
+
+        public TrimExpState(Joins joins, ExpState valueState, 
+            ExpState charState) {
+            super(joins);
+            this.valueState = valueState;
+            this.charState = charState;
         }
     }
 
-    public Joins getJoins() {
-        return _val.getJoins();
+    public void select(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        sel.select(newSQLBuffer(sel, ctx, state), this);
     }
 
-    public Object toDataStoreValue(Object val, JDBCStore store) {
-        return val;
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        TrimExpState tstate = (TrimExpState) state;
+        _val.selectColumns(sel, ctx, tstate.valueState, true);
+        _trimChar.selectColumns(sel, ctx, tstate.charState, true);
     }
 
-    public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchConfiguration fetch) {
-        sel.select(newSQLBuffer(sel, store, params, fetch), this);
+    public void groupBy(Select sel, ExpContext ctx, ExpState state) {
+        sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _val.selectColumns(sel, store, params, true, fetch);
+    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+        boolean asc) {
+        sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false);
     }
 
-    public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchConfiguration fetch) {
-        sel.groupBy(newSQLBuffer(sel, store, params, fetch));
-    }
-
-    public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchConfiguration fetch) {
-        sel.orderBy(newSQLBuffer(sel, store, params, fetch), asc, false);
-    }
-
-    private SQLBuffer newSQLBuffer(Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        calculateValue(sel, store, params, null, fetch);
-        SQLBuffer buf = new SQLBuffer(store.getDBDictionary());
-        appendTo(buf, 0, sel, store, params, fetch);
-        clearParameters();
+    private SQLBuffer newSQLBuffer(Select sel, ExpContext ctx, ExpState state) {
+        calculateValue(sel, ctx, state, null, null);
+        SQLBuffer buf = new SQLBuffer(ctx.store.getDBDictionary());
+        appendTo(sel, ctx, state, buf, 0);
         return buf;
     }
 
-    public Object load(Result res, JDBCStore store,
-        JDBCFetchConfiguration fetch)
+    public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
-    public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchConfiguration fetch) {
-        _val.calculateValue(sel, store, params, null, fetch);
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+        Val other, ExpState otherState) {
+        TrimExpState tstate = (TrimExpState) state;
+        _val.calculateValue(sel, ctx, tstate.valueState, null, null);
+        _trimChar.calculateValue(sel, ctx, tstate.charState, null, null);
     }
 
-    public void clearParameters() {
-        _val.clearParameters();
-    }
-
-    public int length() {
+    public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
     }
 
-    public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        _val.calculateValue(sel, store, params, _trimChar, fetch);
-        _trimChar.calculateValue(sel, store, params, _val, fetch);
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
+        DBDictionary dict = ctx.store.getDBDictionary();
+        String func;
+        if (_where == null) {
+            func = dict.trimBothFunction;
+            dict.assertSupport(func != null, "TrimBothFunction");
+        } else if (_where.booleanValue()) {
+            func = dict.trimLeadingFunction;
+            dict.assertSupport(func != null, "TrimLeadingFunction");
+        } else {
+            func = dict.trimTrailingFunction;
+            dict.assertSupport(func != null, "TrimTrailingFunction");
+        }
 
-        int fromPart = _func.indexOf("{0}");
-        int charPart = _func.indexOf("{1}");
-
+        int fromPart = func.indexOf("{0}");
+        int charPart = func.indexOf("{1}");
         if (charPart == -1)
-            charPart = _func.length();
-
-        String part1 = _func.substring(0, Math.min(fromPart, charPart));
-
-        String part2 = _func.substring(Math.min(fromPart, charPart) + 3,
+            charPart = func.length();
+        String part1 = func.substring(0, Math.min(fromPart, charPart));
+        String part2 = func.substring(Math.min(fromPart, charPart) + 3,
             Math.max(fromPart, charPart));
-
         String part3 = null;
-        if (charPart != _func.length())
-            part3 = _func.substring(Math.max(fromPart, charPart) + 3);
+        if (charPart != func.length())
+            part3 = func.substring(Math.max(fromPart, charPart) + 3);
 
+        TrimExpState tstate = (TrimExpState) state;
         sql.append(part1);
-        (fromPart < charPart ? _val : _trimChar).
-            appendTo(sql, 0, sel, store, params, fetch);
+        if (fromPart < charPart)
+            _val.appendTo(sel, ctx, tstate.valueState, sql, 0);
+        else 
+            _trimChar.appendTo(sel, ctx, tstate.charState, sql, 0);
         sql.append(part2);
 
-        if (charPart != _func.length()) {
-            (fromPart > charPart ? _val : _trimChar).
-                appendTo(sql, 0, sel, store, params, fetch);
+        if (charPart != func.length()) {
+            if (fromPart > charPart)
+                _val.appendTo(sel, ctx, tstate.valueState, sql, 0);
+            else
+                _trimChar.appendTo(sel, ctx, tstate.charState, sql, 0);
             sql.append(part3);
         } else {
             // since the trim statement did not specify the token for
             // where to specify the trim char (denoted by "{1}"),
             // we do not have the ability to trim off non-whitespace
             // characters; throw an exception when we attempt to do so
-            if (!(_trimChar instanceof Literal)
-                || String.valueOf(((Literal) _trimChar).getValue()).
-                trim().length() != 0) {
-                store.getDBDictionary().assertSupport(false,
-                    "TrimNonWhitespaceCharacters");
-            }
+            if (!(_trimChar instanceof Const) || String.valueOf(((Const) 
+                _trimChar).getValue(ctx,tstate.charState)).trim().length() != 0)
+                dict.assertSupport(false, "TrimNonWhitespaceCharacters");
         }
     }
 

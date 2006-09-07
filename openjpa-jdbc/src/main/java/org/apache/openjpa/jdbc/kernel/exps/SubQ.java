@@ -18,10 +18,8 @@ package org.apache.openjpa.jdbc.kernel.exps;
 import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
-import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -82,10 +80,6 @@ class SubQ
         _type = type;
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public ClassMetaData getMetaData() {
         return _meta;
     }
@@ -102,101 +96,95 @@ class SubQ
         _exps = query;
     }
 
-    public void initialize(Select sel, JDBCStore store, boolean nullTest) {
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
+        if (_exps.projections.length == 1)
+            return ((Val) _exps.projections[0]).initialize(sel, ctx, flags);
+        return ExpState.NULL;
     }
 
-    public Joins getJoins() {
-        return null;
-    }
-
-    public Object toDataStoreValue(Object val, JDBCStore store) {
+    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state, 
+        Object val) {
         if (_exps.projections.length == 0)
             return _candidate.toDataStoreValue(val,
-                _candidate.getPrimaryKeyColumns(), store);
+                _candidate.getPrimaryKeyColumns(), ctx.store);
         if (_exps.projections.length == 1)
-            return ((Val) _exps.projections[0]).toDataStoreValue(val, store);
+            return ((Val) _exps.projections[0]).toDataStoreValue(sel, ctx, 
+                state, val);
         return val;
     }
 
-    public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchConfiguration fetch) {
-        selectColumns(sel, store, params, pks, fetch);
+    public void select(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        selectColumns(sel, ctx, state, pks);
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        sel.select(newSQLBuffer(sel, store, params, fetch), this);
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        sel.select(newSQLBuffer(sel, ctx, state), this);
     }
 
-    public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchConfiguration fetch) {
-        sel.groupBy(newSQLBuffer(sel, store, params, fetch));
+    public void groupBy(Select sel, ExpContext ctx, ExpState state) {
+        sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
-    public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchConfiguration fetch) {
-        sel.orderBy(newSQLBuffer(sel, store, params, fetch), asc, false);
+    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+        boolean asc) {
+        sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false);
     }
 
-    private SQLBuffer newSQLBuffer(Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        SQLBuffer buf = new SQLBuffer(store.getDBDictionary());
-        appendTo(buf, 0, sel, store, params, fetch);
+    private SQLBuffer newSQLBuffer(Select sel, ExpContext ctx, ExpState state) {
+        SQLBuffer buf = new SQLBuffer(ctx.store.getDBDictionary());
+        appendTo(sel, ctx, state, buf, 0);
         return buf;
     }
 
-    public Object load(Result res, JDBCStore store,
-        JDBCFetchConfiguration fetch)
+    public Object load(ExpContext ctx, ExpState state, Result res) 
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
-    public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchConfiguration fetch) {
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+        Val other, ExpState otherState) {
     }
 
-    public void clearParameters() {
-    }
-
-    public int length() {
+    public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
     }
 
-    public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        appendTo(sql, index, sel, store, params, fetch, false);
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
+        appendTo(sel, ctx, state, sql, index, false);
     }
 
-    private void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch,
-        boolean size) {
-        sel = _cons.evaluate(store, sel, _alias, _exps, params,
-            _cons.CACHE_NULL, fetch);
-        _cons.select(store, _candidate, _subs, sel, _exps, params,
-            fetch, fetch.EAGER_NONE);
+    private void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index, boolean size) {
+        QueryExpressionsState substate = new QueryExpressionsState();
+        Select sub = _cons.evaluate(ctx, sel, _alias, _exps, substate);
+        _cons.select(sub, ctx, _candidate, _subs, _exps, substate, 
+            JDBCFetchConfiguration.EAGER_NONE);
 
         if (size)
-            sql.appendCount(sel, fetch);
+            sql.appendCount(sub, ctx.fetch);
         else
-            sql.append(sel, fetch);
+            sql.append(sub, ctx.fetch);
     }
 
-    public void appendIsEmpty(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
         sql.append("NOT EXISTS ");
-        appendTo(sql, 0, sel, store, params, fetch);
+        appendTo(sel, ctx, state, sql, 0);
     }
 
-    public void appendIsNotEmpty(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
         sql.append("EXISTS ");
-        appendTo(sql, 0, sel, store, params, fetch);
+        appendTo(sel, ctx, state, sql, 0);
     }
 
-    public void appendSize(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        appendTo(sql, 0, sel, store, params, fetch, true);
+    public void appendSize(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        appendTo(sel, ctx, state, sql, 0, true);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

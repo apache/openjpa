@@ -32,17 +32,11 @@ import org.apache.openjpa.kernel.exps.QueryExpressions;
  * Turns parsed queries into selects.
  *
  * @author Abe White
+ * @nojavadoc
  */
-class SelectConstructor {
+public class SelectConstructor {
 
-    public static final int CACHE_NULL = 0;
-    public static final int CACHE_JOINS = 1;
-    public static final int CACHE_FULL = 2;
-
-    // cache as much as we can for multiple executions of the same query
-    private Select _template = null;
     private boolean _extent = false;
-    private int _cacheLevel = -1;
 
     /**
      * Return true if we know the select to have on criteria; to be an extent.
@@ -54,109 +48,71 @@ class SelectConstructor {
     }
 
     /**
-     * Evaluate the expression, returning a SQL select with the proper
-     * conditions. Use {@link #select} to then select the data.
+     * Evaluate the expression, returning a new select and filling in any
+     * associated expression state. Use {@link #select} to then select the data.
+     * 
+     * @param ctx fill with execution context
+     * @param state will be filled with expression state
      */
-    public Select evaluate(JDBCStore store, Select parent, String alias,
-        QueryExpressions exps, Object[] params, int level,
-        JDBCFetchConfiguration fetch) {
+    public Select evaluate(ExpContext ctx, Select parent, String alias, 
+        QueryExpressions exps, QueryExpressionsState state) {
         // already know that this query is equivalent to an extent?
         Select sel;
         if (_extent) {
-            sel = store.getSQLFactory().newSelect();
+            sel = ctx.store.getSQLFactory().newSelect();
             sel.setAutoDistinct((exps.distinct & exps.DISTINCT_AUTO) != 0);
             return sel;
         }
 
-        // already cached some SQL? if we're changing our cache level, we
-        // have to abandon any already-cached data because a change means
-        // different joins
-        if (level != _cacheLevel)
-            _template = null;
-        _cacheLevel = level;
+        // create a new select and initialize it with the joins needed for
+        // the criteria of this query
+        sel = newSelect(ctx, parent, alias, exps, state);
 
-        if (_template != null && level == CACHE_FULL) {
-            sel = (Select) _template.fullClone(1);
-            sel.setParent(parent, alias);
-        } else if (_template != null) {
-            sel = (Select) _template.whereClone(1);
-            sel.setParent(parent, alias);
-        } else {
-            // create a new select and initialize it with the joins needed for
-            // the criteria of this query
-            sel = newJoinsSelect(store, parent, alias, exps, params, fetch);
+        // create where clause; if there are no where conditions and
+        // no ordering or projections, we return null to signify that this
+        // query should be treated like an extent
+        Select inner = sel.getFromSelect();
+        SQLBuffer where = buildWhere((inner != null) ? inner : sel, ctx, 
+            state.filter, exps.filter);
+        if (where == null && exps.projections.length == 0
+            && exps.ordering.length == 0
+            && (sel.getJoins() == null || sel.getJoins().isEmpty())) {
+            _extent = true;
+            sel.setAutoDistinct((exps.distinct & exps.DISTINCT_AUTO) != 0);
+            return sel;
         }
 
-        // if this select wasn't cloned from a full template,
-        // build up sql conditions
-        if (_template == null || level != CACHE_FULL) {
-            // create where clause; if there are no where conditions and
-            // no ordering or projections, we return null to signify that this
-            // query should be treated like an extent
-            Select inner = sel.getFromSelect();
-            SQLBuffer where = buildWhere((inner != null) ? inner : sel,
-                store, exps.filter, params, fetch);
-            if (where == null && exps.projections.length == 0
-                && exps.ordering.length == 0
-                && (sel.getJoins() == null || sel.getJoins().isEmpty())) {
-                _extent = true;
-                sel = store.getSQLFactory().newSelect();
-                sel.setAutoDistinct((exps.distinct & exps.DISTINCT_AUTO) != 0);
-                return sel;
-            }
+        // now set sql criteria; it goes on the inner select if present
+        if (inner != null)
+            inner.where(where);
+        else
+            sel.where(where);
 
-            // if we're caching joins, do that now before we start setting sql.
-            // we can't cache subselects because they are also held in the
-            // where buffer
-            if (_template == null && level == CACHE_JOINS
-                && (inner == null || inner.getSubselects().isEmpty())
-                && sel.getSubselects().isEmpty()) {
-                _template = sel;
-                sel = (Select) sel.whereClone(1);
-                sel.setParent(parent, alias);
-                inner = sel.getFromSelect();
-            }
-
-            // now set sql criteria; it goes on the inner select if present
-            if (inner != null)
-                inner.where(where);
-            else
-                sel.where(where);
-
-            // apply grouping and having.  this does not select the grouping
-            // columns, just builds the GROUP BY clauses.  we don't build the
-            // ORDER BY clauses yet because if we decide to add this select
-            // to a union, the ORDER BY values get aliased differently
-            if (exps.having != null) {
-                Exp havingExp = (Exp) exps.having;
-                SQLBuffer buf = new SQLBuffer(store.getDBDictionary());
-                havingExp.appendTo(buf, sel, store, params, fetch);
-                sel.having(buf);
-            }
-            for (int i = 0; i < exps.grouping.length; i++)
-                ((Val) exps.grouping[i]).groupBy(sel, store, params, fetch);
-
-            // if template is still null at this point, must be a full cache
-            if (_template == null && level == CACHE_FULL) {
-                _template = sel;
-                sel = (Select) _template.fullClone(1);
-                sel.setParent(parent, alias);
-            }
+        // apply grouping and having.  this does not select the grouping
+        // columns, just builds the GROUP BY clauses.  we don't build the
+        // ORDER BY clauses yet because if we decide to add this select
+        // to a union, the ORDER BY values get aliased differently
+        if (exps.having != null) {
+            Exp havingExp = (Exp) exps.having;
+            SQLBuffer buf = new SQLBuffer(ctx.store.getDBDictionary());
+            havingExp.appendTo(sel, ctx, state.having, buf);
+            sel.having(buf);
         }
+        for (int i = 0; i < exps.grouping.length; i++)
+            ((Val) exps.grouping[i]).groupBy(sel, ctx, state.grouping[i]);
         return sel;
     }
 
     /**
-     * Initialize the given select's joins.
+     * Return a new select with expressions initialized.
      */
-    private Select newJoinsSelect(JDBCStore store, Select parent,
-        String alias, QueryExpressions exps, Object[] params,
-        JDBCFetchConfiguration fetch) {
-        Select sel = store.getSQLFactory().newSelect();
+    private Select newSelect(ExpContext ctx, Select parent,
+        String alias, QueryExpressions exps, QueryExpressionsState state) {
+        Select sel = ctx.store.getSQLFactory().newSelect();
         sel.setAutoDistinct((exps.distinct & exps.DISTINCT_AUTO) != 0);
-        sel.setJoinSyntax(fetch.getJoinSyntax());
+        sel.setJoinSyntax(ctx.fetch.getJoinSyntax());
         sel.setParent(parent, alias);
-        initializeJoins(sel, store, exps, params);
+        initialize(sel, ctx, exps, state);
 
         if (!sel.getAutoDistinct()) {
             if ((exps.distinct & exps.DISTINCT_TRUE) != 0)
@@ -179,12 +135,12 @@ class SelectConstructor {
                 // ordering, grouping, etc
                 if (exps.isAggregate() 
                     || (exps.distinct & exps.DISTINCT_TRUE) == 0) {
-                    DBDictionary dict = store.getDBDictionary();
+                    DBDictionary dict = ctx.store.getDBDictionary();
                     dict.assertSupport(dict.supportsSubselect,
                         "SupportsSubselect");
 
                     Select inner = sel;
-                    sel = store.getSQLFactory().newSelect();
+                    sel = ctx.store.getSQLFactory().newSelect();
                     sel.setParent(parent, alias);
                     sel.setDistinct(exps.isAggregate()
                         && (exps.distinct & exps.DISTINCT_TRUE) != 0);
@@ -196,14 +152,10 @@ class SelectConstructor {
     }
 
     /**
-     * Initialize the joins for all expressions. This only has to be done
-     * once for the template select, since each factory is only used for a
-     * single filter + projections + grouping + having + ordering combination.
-     * By initializing the joins once, we speed up subsequent executions
-     * because the relation traversal logic, etc is cached.
+     * Initialize all expressions.
      */
-    private void initializeJoins(Select sel, JDBCStore store,
-        QueryExpressions exps, Object[] params) {
+    private void initialize(Select sel, ExpContext ctx, QueryExpressions exps, 
+        QueryExpressionsState state) {
         Map contains = null;
         if (HasContainsExpressionVisitor.hasContains(exps.filter)
             || HasContainsExpressionVisitor.hasContains(exps.having))
@@ -211,64 +163,67 @@ class SelectConstructor {
 
         // initialize filter and having expressions
         Exp filterExp = (Exp) exps.filter;
-        filterExp.initialize(sel, store, params, contains);
+        state.filter = filterExp.initialize(sel, ctx, contains);
         Exp havingExp = (Exp) exps.having;
         if (havingExp != null)
-            havingExp.initialize(sel, store, params, contains);
+            state.having = havingExp.initialize(sel, ctx, contains);
 
         // get the top-level joins and null the expression's joins
         // at the same time so they aren't included in the where/having SQL
-        Joins filterJoins = filterExp.getJoins();
-        Joins havingJoins = (havingExp == null) ? null : havingExp.getJoins();
+        Joins filterJoins = state.filter.joins;
+        Joins havingJoins = (state.having == null) ? null : state.having.joins;
         Joins joins = sel.and(filterJoins, havingJoins);
 
         // initialize result values
-        Val resultVal;
-        for (int i = 0; i < exps.projections.length; i++) {
-            resultVal = (Val) exps.projections[i];
-            resultVal.initialize(sel, store, false);
-
-            // have to join through to related type for pc object projections;
-            // this ensures that we have all our joins cached
-            if (resultVal instanceof PCPath)
-                ((PCPath) resultVal).joinRelation();
-            joins = sel.and(joins, resultVal.getJoins());
+        if (exps.projections.length > 0) {
+            state.projections = new ExpState[exps.projections.length];
+            Val resultVal;
+            for (int i = 0; i < exps.projections.length; i++) {
+                resultVal = (Val) exps.projections[i];
+                // have to join through to related type for pc object 
+                // projections; this ensures that we have all our joins cached
+                state.projections[i] = resultVal.initialize(sel, ctx, 
+                    Val.JOIN_REL);
+                joins = sel.and(joins, state.projections[i].joins);
+            }
         }
 
         // initialize grouping
-        Val groupVal;
-        for (int i = 0; i < exps.grouping.length; i++) {
-            groupVal = (Val) exps.grouping[i];
-            groupVal.initialize(sel, store, false);
-
-            // have to join through to related type for pc object groupings;
-            // this ensures that we have all our joins cached
-            if (groupVal instanceof PCPath)
-                ((PCPath) groupVal).joinRelation();
-            joins = sel.and(joins, groupVal.getJoins());
+        if (exps.grouping.length > 0) {
+            state.grouping = new ExpState[exps.grouping.length];
+            Val groupVal;
+            for (int i = 0; i < exps.grouping.length; i++) {
+                groupVal = (Val) exps.grouping[i];
+                // have to join through to related type for pc object groupings;
+                // this ensures that we have all our joins cached
+                state.grouping[i] = groupVal.initialize(sel, ctx, Val.JOIN_REL);
+                joins = sel.and(joins, state.grouping[i].joins);
+            }
         }
 
         // initialize ordering
-        Val orderVal;
-        for (int i = 0; i < exps.ordering.length; i++) {
-            orderVal = (Val) exps.ordering[i];
-            orderVal.initialize(sel, store, false);
-            joins = sel.and(joins, orderVal.getJoins());
+        if (exps.ordering.length > 0) {
+            state.ordering = new ExpState[exps.ordering.length];
+            Val orderVal;
+            for (int i = 0; i < exps.ordering.length; i++) {
+                orderVal = (Val) exps.ordering[i];
+                state.ordering[i] = orderVal.initialize(sel, ctx, 0);
+                joins = sel.and(joins, state.ordering[i].joins);
+            }
         }
-
         sel.where(joins);
     }
 
     /**
      * Create the where sql.
      */
-    private SQLBuffer buildWhere(Select sel, JDBCStore store,
-        Expression filter, Object[] params, JDBCFetchConfiguration fetch) {
+    private SQLBuffer buildWhere(Select sel, ExpContext ctx, ExpState state, 
+        Expression filter) {
         // create where buffer
-        SQLBuffer where = new SQLBuffer(store.getDBDictionary());
+        SQLBuffer where = new SQLBuffer(ctx.store.getDBDictionary());
         where.append("(");
         Exp filterExp = (Exp) filter;
-        filterExp.appendTo(where, sel, store, params, fetch);
+        filterExp.appendTo(sel, ctx, state, where);
 
         if (where.sqlEquals("(") || where.sqlEquals("(1 = 1"))
             return null;
@@ -278,9 +233,9 @@ class SelectConstructor {
     /**
      * Select the data for this query.
      */
-    public void select(JDBCStore store, ClassMapping mapping,
-        boolean subclasses, Select sel, QueryExpressions exps,
-        Object[] params, JDBCFetchConfiguration fetch, int eager) {
+    public void select(Select sel, ExpContext ctx, ClassMapping mapping,
+        boolean subclasses, QueryExpressions exps, QueryExpressionsState state,
+        int eager) {
         Select inner = sel.getFromSelect();
         Val val;
         Joins joins = null;
@@ -290,13 +245,13 @@ class SelectConstructor {
         // build ordering clauses before select so that any eager join
         // ordering gets applied after query ordering
         for (int i = 0; i < exps.ordering.length; i++)
-            ((Val) exps.ordering[i]).orderBy(sel, store, params,
-                exps.ascending[i], fetch);
+            ((Val) exps.ordering[i]).orderBy(sel, ctx, state.ordering[i],
+                exps.ascending[i]);
 
         // if no result string set, select matching objects like normal
         if (exps.projections.length == 0 && sel.getParent() == null) {
-            int subs = (subclasses) ? sel.SUBS_JOINABLE : sel.SUBS_NONE;
-            sel.selectIdentifier(mapping, subs, store, fetch, eager);
+            int subs = (subclasses) ? Select.SUBS_JOINABLE : Select.SUBS_NONE;
+            sel.selectIdentifier(mapping, subs, ctx.store, ctx.fetch, eager);
         } else if (exps.projections.length == 0) {
             // subselect for objects; we really just need the primary key values
             sel.select(mapping.getPrimaryKeyColumns(), joins);
@@ -312,15 +267,15 @@ class SelectConstructor {
             for (int i = 0; i < exps.projections.length; i++) {
                 val = (Val) exps.projections[i];
                 if (inner != null)
-                    val.selectColumns(inner, store, params, pks, fetch);
-                val.select(sel, store, params, pks, fetch);
+                    val.selectColumns(inner, ctx, state.projections[i], pks);
+                val.select(sel, ctx, state.projections[i], pks);
             }
 
             // make sure having columns are selected since it is required by 
             // some DBs.  put them last so they don't affect result processing
             if (exps.having != null && inner != null)
-                ((Exp) exps.having).selectColumns(inner, store, params, true,
-                    fetch);
+                ((Exp) exps.having).selectColumns(inner, ctx, state.having, 
+                    true);
         }
 
         // select ordering columns, since it is required by some DBs.  put them
@@ -328,17 +283,16 @@ class SelectConstructor {
         for (int i = 0; i < exps.ordering.length; i++) {
             val = (Val) exps.ordering[i];
             if (inner != null)
-                val.selectColumns(inner, store, params, true, fetch);
-            val.select(sel, store, params, true, fetch);
+                val.selectColumns(inner, ctx, state.ordering[i], true);
+            val.select(sel, ctx, state.ordering[i], true);
         }
 
         // add conditions limiting the projections to the proper classes; if
         // this isn't a projection then they will already be added
         if (exps.projections.length > 0) {
-            store.loadSubclasses(mapping);
-            Select indSel = (inner == null) ? sel : inner;
-            mapping.getDiscriminator().addClassConditions(indSel, subclasses, 
-                joins);
+            ctx.store.loadSubclasses(mapping);
+            mapping.getDiscriminator().addClassConditions((inner != null) 
+                ? inner : sel, subclasses, joins);
         }
     }
 }

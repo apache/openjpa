@@ -17,7 +17,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Select;
 import serp.util.Numbers;
 
@@ -36,8 +35,7 @@ class ContainsExpression
         super(val1, val2);
     }
 
-    public void initialize(Select sel, JDBCStore store,
-        Object[] params, Map contains) {
+    public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         Val val1 = getValue1();
         if (contains != null && val1 instanceof PCPath) {
             PCPath sql = (PCPath) val1;
@@ -53,7 +51,7 @@ class ContainsExpression
 
             sql.setContainsId(count.toString());
         }
-        super.initialize(sel, store, params, contains);
+        return super.initialize(sel, ctx, contains);
     }
 
     protected boolean isDirectComparison() {

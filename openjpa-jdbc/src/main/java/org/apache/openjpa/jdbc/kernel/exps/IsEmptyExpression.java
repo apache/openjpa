@@ -17,9 +17,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
@@ -41,28 +38,22 @@ class IsEmptyExpression
         _val = val;
     }
 
-    public void initialize(Select sel, JDBCStore store,
-        Object[] params, Map contains) {
-        _val.initialize(sel, store, true);
+    public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
+        return _val.initialize(sel, ctx, Val.NULL_CMP);
     }
 
-    public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        _val.calculateValue(sel, store, params, null, fetch);
-        _val.appendIsEmpty(buf, sel, store, params, fetch);
-        sel.append(buf, _val.getJoins());
-        _val.clearParameters();
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf) {
+        _val.calculateValue(sel, ctx, state, null, null);
+        _val.appendIsEmpty(sel, ctx, state, buf);
+        sel.append(buf, state.joins);
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _val.selectColumns(sel, store, params, true, fetch);
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        _val.selectColumns(sel, ctx, state, true);
     }
 
-    public Joins getJoins() {
-        return _val.getJoins();
-    }
-    
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _val.acceptVisit(visitor);

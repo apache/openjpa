@@ -17,12 +17,10 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
@@ -40,7 +38,6 @@ abstract class CompareEqualExpression
 
     private final Val _val1;
     private final Val _val2;
-    private Joins _joins = null;
 
     /**
      * Constructor. Supply values to compare.
@@ -58,63 +55,61 @@ abstract class CompareEqualExpression
         return _val2;
     }
 
-    public void initialize(Select sel, JDBCStore store,
-        Object[] params, Map contains) {
+    public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         boolean direct = isDirectComparison();
-        _val1.initialize(sel, store, direct && isNull(_val2, params));
-        _val2.initialize(sel, store, direct && isNull(_val1, params));
-        _joins = sel.and(_val1.getJoins(), _val2.getJoins());
+        int flags1 = 0;
+        int flags2 = 0;
+        ExpState s1 = null;
+        ExpState s2 = null;
+        if (_val1 instanceof Const) {
+            s1 = _val1.initialize(sel, ctx, 0);
+            if (direct && ((Const) _val1).getValue(ctx, s1) == null)
+                flags2 = Val.NULL_CMP;
+        }
+        if (_val2 instanceof Const) {
+            s2 = _val2.initialize(sel, ctx, 0);
+            if (direct && ((Const) _val2).getValue(ctx, s2) == null)
+                flags1 = Val.NULL_CMP;
+        }
+        
+        if (s1 == null)
+            s1 = _val1.initialize(sel, ctx, flags1);
+        if (s2 == null)
+            s2 = _val2.initialize(sel, ctx, flags2);
+        return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
-    /**
-     * Return whether the given value is null.
-     */
-    private boolean isNull(Val val, Object[] params) {
-        if (val instanceof Null)
-            return true;
-        if (!(val instanceof Param))
-            return false;
-
-        Param param = (Param) val;
-        return params[param.getIndex()] == null;
-    }
-
-    public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        _val1.calculateValue(sel, store, params, _val2, fetch);
-        _val2.calculateValue(sel, store, params, _val1, fetch);
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf) {
+        BinaryOpExpState bstate = (BinaryOpExpState) state;
+        _val1.calculateValue(sel, ctx, bstate.state1, _val2, bstate.state2);
+        _val2.calculateValue(sel, ctx, bstate.state2, _val1, bstate.state1);
         if (!Filters.canConvert(_val1.getType(), _val2.getType(), false)
             && !Filters.canConvert(_val2.getType(), _val1.getType(), false))
             throw new UserException(_loc.get("cant-convert", _val1.getType(),
                 _val2.getType()));
 
         boolean val1Null = _val1 instanceof Const
-            && ((Const) _val1).isSQLValueNull();
+            && ((Const) _val1).isSQLValueNull(sel, ctx, bstate.state1);
         boolean val2Null = _val2 instanceof Const
-            && ((Const) _val2).isSQLValueNull();
-        appendTo(buf, sel, store, params, fetch, val1Null, val2Null);
-        sel.append(buf, _joins);
-
-        _val1.clearParameters();
-        _val2.clearParameters();
+            && ((Const) _val2).isSQLValueNull(sel, ctx, bstate.state2);
+        appendTo(sel, ctx, bstate, buf, val1Null, val2Null);
+        sel.append(buf, state.joins);
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _val1.selectColumns(sel, store, params, true, fetch);
-        _val2.selectColumns(sel, store, params, true, fetch);
-    }
-
-    public Joins getJoins() {
-        return _joins;
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        BinaryOpExpState bstate = (BinaryOpExpState) state;
+        _val1.selectColumns(sel, ctx, bstate.state1, true);
+        _val2.selectColumns(sel, ctx, bstate.state2, true);
     }
 
     /**
      * Append the SQL for the comparison.
      */
-    protected abstract void appendTo(SQLBuffer buf, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch,
-        boolean val1Null, boolean val2Null);
+    protected abstract void appendTo(Select sel, ExpContext ctx, 
+        BinaryOpExpState state, SQLBuffer buf, boolean val1Null, 
+        boolean val2Null);
 
     /**
      * Subclasses can override this method if, when they compare to another,

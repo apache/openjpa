@@ -29,7 +29,6 @@ import org.apache.openjpa.meta.MetaDataRepository;
  * Implements the L2 cache over the data store via delegation to DataCache.
  *
  * @author Abe White
- * @author Pinaki Poddar
  * @since 0.4.1
  * @nojavadoc
  */
@@ -54,9 +53,8 @@ public class StoreCacheImpl
     }
 
     public boolean contains(Class cls, Object oid) {
-        return _cache.getDelegate() != null
-            && _cache.contains(OpenJPAPersistence.toOpenJPAObjectId
-            (getMetaData(cls), oid));
+        return _cache.getDelegate() != null && _cache.contains
+            (OpenJPAPersistence.toOpenJPAObjectId(getMetaData(cls), oid));
     }
 
     public boolean containsAll(Class cls, Object... oids) {
@@ -77,8 +75,8 @@ public class StoreCacheImpl
 
     public void pin(Class cls, Object oid) {
         if (_cache.getDelegate() != null)
-            _cache.pin(
-                OpenJPAPersistence.toOpenJPAObjectId(getMetaData(cls), oid));
+            _cache.pin(OpenJPAPersistence.toOpenJPAObjectId(getMetaData(cls), 
+                oid));
     }
 
     public void pinAll(Class cls, Object... oids) {
@@ -87,9 +85,8 @@ public class StoreCacheImpl
 
     public void pinAll(Class cls, Collection oids) {
         if (_cache.getDelegate() != null)
-            _cache
-                .pinAll(OpenJPAPersistence.toOpenJPAObjectIds(getMetaData(cls),
-                    oids));
+            _cache.pinAll(OpenJPAPersistence.toOpenJPAObjectIds
+                (getMetaData(cls), oids));
     }
 
     public void unpin(Class cls, Object oid) {
@@ -104,9 +101,8 @@ public class StoreCacheImpl
 
     public void unpinAll(Class cls, Collection oids) {
         if (_cache.getDelegate() != null)
-            _cache.unpinAll(
-                OpenJPAPersistence.toOpenJPAObjectIds(getMetaData(cls),
-                    oids));
+            _cache.unpinAll(OpenJPAPersistence.toOpenJPAObjectIds
+                (getMetaData(cls), oids));
     }
 
     public void evict(Class cls, Object oid) {
@@ -121,9 +117,8 @@ public class StoreCacheImpl
 
     public void evictAll(Class cls, Collection oids) {
         if (_cache.getDelegate() != null)
-            _cache.removeAll(
-                OpenJPAPersistence.toOpenJPAObjectIds(getMetaData(cls),
-                    oids));
+            _cache.removeAll(OpenJPAPersistence.toOpenJPAObjectIds
+                (getMetaData(cls), oids));
     }
 
     public void evictAll() {

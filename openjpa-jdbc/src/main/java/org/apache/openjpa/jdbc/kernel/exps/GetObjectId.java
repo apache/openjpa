@@ -17,12 +17,9 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Joinable;
 import org.apache.openjpa.jdbc.schema.Column;
-import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -57,8 +54,11 @@ class GetObjectId
         _path = path;
     }
 
-    public Column[] getColumns() {
-        return _path.getClassMapping().getPrimaryKeyColumns();
+    /**
+     * Return the oid columns.
+     */
+    public Column[] getColumns(ExpState state) {
+        return _path.getClassMapping(state).getPrimaryKeyColumns();
     }
 
     public ClassMetaData getMetaData() {
@@ -76,26 +76,23 @@ class GetObjectId
     public void setImplicitType(Class type) {
     }
 
-    public void initialize(Select sel, JDBCStore store, boolean nullTest) {
-        _path.initialize(sel, store, false);
-        _path.joinRelation();
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
+        ExpState state = _path.initialize(sel, ctx, JOIN_REL);
 
         // it's difficult to get calls on non-pc fields to always return null
         // without screwing up the SQL, to just don't let users call it on
         // non-pc fields at all
-        if (_path.getClassMapping() == null
-            || _path.getClassMapping().getEmbeddingMapping() != null)
+        ClassMapping cls = _path.getClassMapping(state);
+        if (cls == null || cls.getEmbeddingMapping() != null)
             throw new UserException(_loc.get("bad-getobjectid",
-                _path.getFieldMapping()));
+                _path.getFieldMapping(state)));
+        return state;
     }
 
-    public Joins getJoins() {
-        return _path.getJoins();
-    }
-
-    public Object toDataStoreValue(Object val, JDBCStore store) {
+    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state, 
+        Object val) {
         // if datastore identity, try to convert to a long value
-        ClassMapping mapping = _path.getClassMapping();
+        ClassMapping mapping = _path.getClassMapping(state);
         if (mapping.getIdentityType() == mapping.ID_DATASTORE) {
             if (val instanceof Id)
                 return Numbers.valueOf(((Id) val).getId());
@@ -129,48 +126,42 @@ class GetObjectId
         return ordered;
     }
 
-    public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchConfiguration fetch) {
-        selectColumns(sel, store, params, true, fetch);
+    public void select(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        selectColumns(sel, ctx, state, true);
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _path.selectColumns(sel, store, params, true, fetch);
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        _path.selectColumns(sel, ctx, state, true);
     }
 
-    public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchConfiguration fetch) {
-        _path.groupBy(sel, store, params, fetch);
+    public void groupBy(Select sel, ExpContext ctx, ExpState state) {
+        _path.groupBy(sel, ctx, state);
     }
 
-    public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchConfiguration fetch) {
-        _path.orderBy(sel, store, params, asc, fetch);
+    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+        boolean asc) {
+        _path.orderBy(sel, ctx, state, asc);
     }
 
-    public Object load(Result res, JDBCStore store,
-        JDBCFetchConfiguration fetch)
+    public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
-        return _path.load(res, store, true, fetch);
+        return _path.load(ctx, state, res, true);
     }
 
-    public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchConfiguration fetch) {
-        _path.calculateValue(sel, store, params, null, fetch);
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+        Val other, ExpState otherState) {
+        _path.calculateValue(sel, ctx, state, null, null);
     }
 
-    public void clearParameters() {
-        _path.clearParameters();
+    public int length(Select sel, ExpContext ctx, ExpState state) {
+        return _path.length(sel, ctx, state);
     }
 
-    public int length() {
-        return _path.length();
-    }
-
-    public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        _path.appendTo(sql, index, sel, store, params, fetch);
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
+        _path.appendTo(sel, ctx, state, sql, index);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

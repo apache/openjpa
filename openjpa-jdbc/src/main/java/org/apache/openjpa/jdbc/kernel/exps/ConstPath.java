@@ -20,8 +20,6 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Broker;
@@ -30,6 +28,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.util.InternalException;
 
 /**
  * A field traversal starting with a constant filter parameter.
@@ -42,9 +41,6 @@ class ConstPath
 
     private final Const _constant;
     private final LinkedList _actions = new LinkedList();
-    private Object _val = null;
-    private Object _sqlVal = null;
-    private int _otherLen = 0;
 
     /**
      * Constructor. Supply constant to traverse.
@@ -90,19 +86,28 @@ class ConstPath
         return null;
     }
 
-    public Object getValue() {
-        return _val;
+    public Object getValue(Object[] params) {
+        throw new InternalException();
     }
 
-    public Object getSQLValue() {
-        return _sqlVal;
+    public Object getValue(ExpContext ctx, ExpState state) {
+        return ((ConstPathExpState) state).value;
     }
 
-    public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchConfiguration fetch) {
-        super.calculateValue(sel, store, params, other, fetch);
-        _constant.calculateValue(sel, store, params, null, fetch);
-        _val = _constant.getValue();
+    public Object getSQLValue(Select sel, ExpContext ctx, ExpState state) {
+        return ((ConstPathExpState) state).sqlValue;
+    }
+
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
+        return new ConstPathExpState(_constant.initialize(sel, ctx, 0));
+    }
+
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+        Val other, ExpState otherState) {
+        super.calculateValue(sel, ctx, state, other, otherState);
+        ConstPathExpState cstate = (ConstPathExpState) state;
+        _constant.calculateValue(sel, ctx, cstate.constantState, null, null);
+        cstate.value = _constant.getValue(ctx, cstate.constantState);
         boolean failed = false;
 
         // copied from org.apache.openjpa.query.InMemoryPath
@@ -111,7 +116,7 @@ class ConstPath
         Broker tmpBroker = null;
         for (Iterator itr = _actions.iterator(); itr.hasNext();) {
             // fail on null value
-            if (_val == null) {
+            if (cstate.value == null) {
                 failed = true;
                 break;
             }
@@ -119,7 +124,7 @@ class ConstPath
             action = itr.next();
             if (action instanceof Class) {
                 try {
-                    _val = Filters.convert(_val, (Class) action);
+                    cstate.value = Filters.convert(cstate.value, (Class)action);
                     continue;
                 } catch (ClassCastException cce) {
                     failed = true;
@@ -131,19 +136,19 @@ class ConstPath
             // be proxyable
             sm = null;
             tmpBroker = null;
-            if (_val instanceof PersistenceCapable)
-                sm = (OpenJPAStateManager) ((PersistenceCapable) _val).
+            if (cstate.value instanceof PersistenceCapable)
+                sm = (OpenJPAStateManager) ((PersistenceCapable) cstate.value).
                     pcGetStateManager();
             if (sm == null) {
-                tmpBroker = store.getContext().getBroker();
-                tmpBroker.transactional(_val, false, null);
-                sm = tmpBroker.getStateManager(_val);
+                tmpBroker = ctx.store.getContext().getBroker();
+                tmpBroker.transactional(cstate.value, false, null);
+                sm = tmpBroker.getStateManager(cstate.value);
             }
 
             try {
                 // get the specified field value and switch candidate
-                _val = sm.fetchField(((FieldMetaData) action).getIndex(),
-                    true);
+                cstate.value = sm.fetchField(((FieldMetaData) action).
+                    getIndex(), true);
             } finally {
                 // setTransactional does not clear the state, which is
                 // important since tmpVal might be also managed by
@@ -154,32 +159,45 @@ class ConstPath
         }
 
         if (failed)
-            _val = null;
+            cstate.value = null;
 
         if (other != null) {
-            _sqlVal = other.toDataStoreValue(_val, store);
-            _otherLen = other.length();
+            cstate.sqlValue = other.toDataStoreValue(sel, ctx, otherState, 
+                cstate.value);
+            cstate.otherLength = other.length(sel, ctx, otherState);
         } else
-            _sqlVal = _val;
+            cstate.sqlValue = cstate.value;
     }
 
-    public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        if (_otherLen > 1)
-            sql.appendValue(((Object[]) _sqlVal)[index], getColumn(index));
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
+        ConstPathExpState cstate = (ConstPathExpState) state;
+        if (cstate.otherLength > 1)
+            sql.appendValue(((Object[]) cstate.sqlValue)[index], 
+                cstate.getColumn(index));
         else
-            sql.appendValue(_sqlVal, getColumn(index));
-    }
-
-    public void clearParameters() {
-        _constant.clearParameters();
-        _val = null;
-        _sqlVal = null;
+            sql.appendValue(cstate.sqlValue, cstate.getColumn(index));
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         _constant.acceptVisit(visitor);
         visitor.exit(this);
+    }
+
+    /**
+     * Expression state.
+     */
+    private static class ConstPathExpState 
+        extends ConstExpState {
+
+        public final ExpState constantState;
+        public Object value = null;
+        public Object sqlValue = null;
+        public int otherLength = 0;
+
+        public ConstPathExpState(ExpState constantState) {
+            this.constantState = constantState;
+        }
     }
 }

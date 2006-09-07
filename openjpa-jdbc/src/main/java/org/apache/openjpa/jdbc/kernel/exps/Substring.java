@@ -17,10 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
-import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -38,7 +35,6 @@ class Substring
 
     private final Val _val1;
     private final Val _val2;
-    private Joins _joins = null;
     private ClassMetaData _meta = null;
 
     /**
@@ -57,10 +53,6 @@ class Substring
         _meta = meta;
     }
 
-    public boolean isVariable() {
-        return false;
-    }
-
     public Class getType() {
         return String.class;
     }
@@ -68,86 +60,72 @@ class Substring
     public void setImplicitType(Class type) {
     }
 
-    public void initialize(Select sel, JDBCStore store, boolean nullTest) {
-        _val1.initialize(sel, store, false);
-        _val2.initialize(sel, store, false);
-        _joins = sel.and(_val1.getJoins(), _val2.getJoins());
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
+        ExpState s1 = _val1.initialize(sel, ctx, 0);
+        ExpState s2 = _val2.initialize(sel, ctx, 0);
+        return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
-    public Joins getJoins() {
-        return _joins;
+    public void select(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        sel.select(newSQLBuffer(sel, ctx, state), this);
     }
 
-    public Object toDataStoreValue(Object val, JDBCStore store) {
-        return val;
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        BinaryOpExpState bstate = (BinaryOpExpState) state;
+        _val1.selectColumns(sel, ctx, bstate.state1, true);
+        _val2.selectColumns(sel, ctx, bstate.state2, true);
     }
 
-    public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchConfiguration fetch) {
-        sel.select(newSQLBuffer(sel, store, params, fetch), this);
+    public void groupBy(Select sel, ExpContext ctx, ExpState state) {
+        sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _val1.selectColumns(sel, store, params, true, fetch);
-        _val2.selectColumns(sel, store, params, true, fetch);
+    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+        boolean asc) {
+        sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false);
     }
 
-    public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchConfiguration fetch) {
-        sel.groupBy(newSQLBuffer(sel, store, params, fetch));
-    }
-
-    public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchConfiguration fetch) {
-        sel.orderBy(newSQLBuffer(sel, store, params, fetch), asc, false);
-    }
-
-    private SQLBuffer newSQLBuffer(Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        calculateValue(sel, store, params, null, fetch);
-        SQLBuffer buf = new SQLBuffer(store.getDBDictionary());
-        appendTo(buf, 0, sel, store, params, fetch);
-        clearParameters();
+    private SQLBuffer newSQLBuffer(Select sel, ExpContext ctx, ExpState state) {
+        calculateValue(sel, ctx, state, null, null);
+        SQLBuffer buf = new SQLBuffer(ctx.store.getDBDictionary());
+        appendTo(sel, ctx, state, buf, 0);
         return buf;
     }
 
-    public Object load(Result res, JDBCStore store,
-        JDBCFetchConfiguration fetch)
+    public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
-    public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchConfiguration fetch) {
-        _val1.calculateValue(sel, store, params, null, fetch);
-        _val2.calculateValue(sel, store, params, null, fetch);
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+        Val other, ExpState otherState) {
+        BinaryOpExpState bstate = (BinaryOpExpState) state;
+        _val1.calculateValue(sel, ctx, bstate.state1, null, null);
+        _val2.calculateValue(sel, ctx, bstate.state2, null, null);
     }
 
-    public void clearParameters() {
-        _val1.clearParameters();
-        _val2.clearParameters();
-    }
-
-    public int length() {
+    public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
     }
 
-    public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        FilterValue str = new FilterValueImpl(_val1, sel, store, params, fetch);
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
+        BinaryOpExpState bstate = (BinaryOpExpState) state;
+        FilterValue str = new FilterValueImpl(sel, ctx, bstate.state1, _val1);
         FilterValue start;
         FilterValue end = null;
         if (_val2 instanceof Args) {
-            Val[] args = ((Args) _val2).getVals();
-            start =
-                new FilterValueImpl(args[0], sel, store, params, fetch);
-            end = new FilterValueImpl(args[1], sel, store, params, fetch);
+            FilterValue[] filts = ((Args) _val2).newFilterValues(sel, ctx, 
+                bstate.state2);
+            start = filts[0];
+            end = filts[1];
         } else
-            start = new FilterValueImpl(_val2, sel, store, params, fetch);
+            start = new FilterValueImpl(sel, ctx, bstate.state2, _val2);
 
-        store.getDBDictionary().substring(sql, str, start, end);
+        ctx.store.getDBDictionary().substring(sql, str, start, end);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

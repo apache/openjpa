@@ -15,16 +15,12 @@
  */
 package org.apache.openjpa.persistence;
 
-import org.apache.openjpa.kernel.DelegatingSeq;
 import org.apache.openjpa.kernel.Seq;
-import org.apache.openjpa.kernel.StoreContext;
-import org.apache.openjpa.meta.ClassMetaData;
 
 /**
  * Represents a store sequence.
  *
  * @author Abe White
- * @author Pinaki Poddar
  * @since 0.4.1
  * @published
  */

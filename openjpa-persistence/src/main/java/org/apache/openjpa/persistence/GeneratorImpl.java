@@ -24,7 +24,6 @@ import org.apache.openjpa.meta.ClassMetaData;
  * Represents a store sequence.
  *
  * @author Abe White
- * @author Pinaki Poddar
  * @since 0.4.1
  * @nojavadoc
  */

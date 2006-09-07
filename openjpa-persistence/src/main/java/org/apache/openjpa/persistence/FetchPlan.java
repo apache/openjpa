@@ -15,13 +15,9 @@
  */
 package org.apache.openjpa.persistence;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import javax.persistence.LockModeType;
 
-import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.meta.FetchGroup;
 
@@ -120,6 +116,7 @@ public interface FetchPlan {
      * use when loading objects.
      */
     public FetchPlan addFetchGroups(String... groups);
+
     /**
      * Adds <code>groups</code> to the set of fetch group names to
      * use when loading objects.

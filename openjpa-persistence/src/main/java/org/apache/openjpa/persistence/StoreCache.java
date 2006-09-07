@@ -15,20 +15,14 @@
  */
 package org.apache.openjpa.persistence;
 
-import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collection;
 
 import org.apache.openjpa.datacache.DataCache;
-import org.apache.openjpa.datacache.DelegatingDataCache;
-import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.meta.MetaDataRepository;
 
 /**
  * Represents the L2 cache over the data store.
  *
  * @author Abe White
- * @author Pinaki Poddar
  * @since 0.4.1
  * @published
  */

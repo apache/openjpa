@@ -17,9 +17,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
@@ -34,9 +31,6 @@ class AndExpression
 
     private final Exp _exp1;
     private final Exp _exp2;
-    private Joins _joins = null;
-    private boolean _paren1 = false;
-    private boolean _paren2 = false;
 
     /**
      * Constructor. Supply the expressions to combine.
@@ -46,40 +40,36 @@ class AndExpression
         _exp2 = exp2;
     }
 
-    public void initialize(Select sel, JDBCStore store,
-        Object[] params, Map contains) {
-        _exp1.initialize(sel, store, params, contains);
-        _exp2.initialize(sel, store, params, contains);
-        _joins = sel.and(_exp1.getJoins(), _exp2.getJoins());
-
-        _paren1 = _exp1 instanceof OrExpression;
-        _paren2 = _exp2 instanceof OrExpression;
+    public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
+        ExpState s1 = _exp1.initialize(sel, ctx, contains);
+        ExpState s2 = _exp2.initialize(sel, ctx, contains);
+        return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
-    public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        if (_paren1)
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf) {
+        BinaryOpExpState bstate = (BinaryOpExpState) state;
+        boolean paren1 = _exp1 instanceof OrExpression;
+        boolean paren2 = _exp2 instanceof OrExpression;
+        if (paren1)
             buf.append("(");
-        _exp1.appendTo(buf, sel, store, params, fetch);
-        if (_paren1)
+        _exp1.appendTo(sel, ctx, bstate.state1, buf);
+        if (paren1)
             buf.append(")");
         buf.append(" AND ");
-        if (_paren2)
+        if (paren2)
             buf.append("(");
-        _exp2.appendTo(buf, sel, store, params, fetch);
-        if (_paren2)
+        _exp2.appendTo(sel, ctx, bstate.state2, buf);
+        if (paren2)
             buf.append(")");
-        sel.append(buf, _joins);
+        sel.append(buf, state.joins);
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _exp1.selectColumns(sel, store, params, pks, fetch);
-        _exp2.selectColumns(sel, store, params, pks, fetch);
-    }
-
-    public Joins getJoins() {
-        return _joins;
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        BinaryOpExpState bstate = (BinaryOpExpState) state;
+        _exp1.selectColumns(sel, ctx, bstate.state1, pks);
+        _exp2.selectColumns(sel, ctx, bstate.state2, pks);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

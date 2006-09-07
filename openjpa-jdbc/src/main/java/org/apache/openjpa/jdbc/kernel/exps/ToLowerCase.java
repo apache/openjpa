@@ -15,8 +15,8 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 
 /**
@@ -34,16 +34,16 @@ class ToLowerCase
         super(val);
     }
 
-    public void initialize(Select sel, JDBCStore store, boolean nullTest) {
-        _val.initialize(sel, store, false);
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf, int index) {
 
-        DBDictionary dict = store.getDBDictionary();
+        DBDictionary dict = ctx.store.getDBDictionary();
         String func = dict.toLowerCaseFunction;
         dict.assertSupport(func != null, "ToLowerCaseFunction");
 
         int idx = func.indexOf("{0}");
-        _pre = func.substring(0, idx);
-        _post = func.substring(idx + 3);
+        buf.append(func.substring(0, idx));
+        getValue().appendTo(sel, ctx, state, buf, index);
+        buf.append(func.substring(idx + 3));
     }
 }
-
