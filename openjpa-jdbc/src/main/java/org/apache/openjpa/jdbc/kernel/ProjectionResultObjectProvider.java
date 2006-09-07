@@ -15,6 +15,8 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import org.apache.openjpa.jdbc.kernel.exps.ExpContext;
+import org.apache.openjpa.jdbc.kernel.exps.QueryExpressionsState;
 import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
@@ -29,32 +31,37 @@ class ProjectionResultObjectProvider
     extends SelectResultObjectProvider {
 
     private final QueryExpressions[] _exps;
+    private final QueryExpressionsState[] _state;
+    private final ExpContext _ctx;
 
     /**
      * Constructor.
      *
      * @param sel the select to execute
-     * @param store the store manager to delegate loading to
-     * @param fetch the fetch configuration
      * @param exps the query expressions
+     * @param states the query expression states
+     * @param ctx the query execution context
      */
-    public ProjectionResultObjectProvider(SelectExecutor sel, JDBCStore store,
-        JDBCFetchConfiguration fetch, QueryExpressions exps) {
-        this(sel, store, fetch, new QueryExpressions[]{ exps });
+    public ProjectionResultObjectProvider(SelectExecutor sel, 
+        QueryExpressions exps, QueryExpressionsState state, ExpContext ctx) {
+        this(sel, new QueryExpressions[]{ exps }, 
+            new QueryExpressionsState[]{ state }, ctx);
     }
 
     /**
      * Constructor.
      *
      * @param sel the select to execute
-     * @param store the store manager to delegate loading to
-     * @param fetch the fetch configuration
      * @param exps the query expressions
+     * @param states the query expression states
+     * @param ctx the query execution context
      */
-    public ProjectionResultObjectProvider(SelectExecutor sel, JDBCStore store,
-        JDBCFetchConfiguration fetch, QueryExpressions[] exps) {
-        super(sel, store, fetch);
+    public ProjectionResultObjectProvider(SelectExecutor sel, 
+        QueryExpressions[] exps, QueryExpressionsState[] state, ExpContext ctx){
+        super(sel, ctx.store, ctx.fetch);
         _exps = exps;
+        _state = state;
+        _ctx = ctx;
     }
 
     public Object getResultObject()
@@ -63,8 +70,8 @@ class ProjectionResultObjectProvider
         int idx = res.indexOf();
         Object[] arr = new Object[_exps[idx].projections.length];
         for (int i = 0; i < _exps[idx].projections.length; i++)
-            arr[i] = ((Val) _exps[idx].projections[i]).load(res, getStore(),
-                getFetchConfiguration());
+            arr[i] = ((Val) _exps[idx].projections[i]).load(_ctx, 
+                _state[idx].projections[i], res);
         return arr;
     }
 }

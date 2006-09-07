@@ -628,8 +628,8 @@ public class ExpressionStoreQuery
         private final ExpressionParser _parser;
         private final ExpressionFactory[] _facts;
         private final QueryExpressions[] _exps;
+        private final Class[] _projTypes;
         private Value[] _inMemOrdering;
-        private Class[] _projTypes;
 
         public DataStoreExecutor(ExpressionStoreQuery q,
             ClassMetaData meta, boolean subclasses,
@@ -644,10 +644,17 @@ public class ExpressionStoreQuery
                 _facts[i] = q.getExpressionFactory(_metas[i]);
 
             _exps = new QueryExpressions[_metas.length];
-            for (int i = 0; i < _exps.length; i++) {
+            for (int i = 0; i < _exps.length; i++)
                 _exps[i] = parser.eval(parsed, q, _facts[i], _metas[i]);
-                for (int j = 0; j < _exps[i].projections.length; j++)
-                    assertNotContainer(_exps[i].projections[j], q);
+
+            if (_exps[0].projections.length == 0)
+                _projTypes = StoreQuery.EMPTY_CLASSES;
+            else {
+                _projTypes = new Class[_exps[0].projections.length];
+                for (int i = 0; i < _exps[0].projections.length; i++) {
+                    assertNotContainer(_exps[0].projections[i], q);
+                    _projTypes[i] = _exps[0].projections[i].getType();
+                }
             }
         }
 
@@ -706,29 +713,16 @@ public class ExpressionStoreQuery
                     _inMemOrdering = _parser.eval(_exps[0].orderingClauses,
                         (ExpressionStoreQuery) q, factory, _meta);
                 }
-
-                // use the parsed ordering expression to extract the ordering
-                // value
-                Val val = (Val) _inMemOrdering[orderIndex];
-                return val.evaluate(resultObject, resultObject,
-                    q.getContext().getStoreContext(), params);
             }
+
+            // use the parsed ordering expression to extract the ordering value
+            Val val = (Val) _inMemOrdering[orderIndex];
+            return val.evaluate(resultObject, resultObject,
+                q.getContext().getStoreContext(), params);
         }
 
         public Class[] getProjectionTypes(StoreQuery q) {
-            if (_exps[0].projections.length == 0)
-                return StoreQuery.EMPTY_CLASSES;
-
-            synchronized (this) {
-                if (_projTypes == null) {
-                    // delay creating this array until it is requested b/c
-                    // before execution the types might not be initialized
-                    _projTypes = new Class[_exps[0].projections.length];
-                    for (int i = 0; i < _exps[0].projections.length; i++)
-                        _projTypes[i] = _exps[0].projections[i].getType();
-				}
-				return _projTypes;
-			}
+            return _projTypes;
 		}
 	}
 }

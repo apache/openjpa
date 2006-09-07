@@ -15,22 +15,17 @@
  */
 package org.apache.openjpa.persistence;
 
-import java.util.Iterator;
 import java.util.List;
-
-import org.apache.openjpa.kernel.DelegatingExtent;
 
 /**
  * An extent is a logical view of all instances of a class.
  *
  * @author Abe White
- * @author Pinaki Poddar
  * @since 0.4.0
  * @published
  */
 public interface Extent<T>
     extends Iterable<T> {
-
 
     /**
      * Delegate.

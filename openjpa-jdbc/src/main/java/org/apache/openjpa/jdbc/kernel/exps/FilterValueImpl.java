@@ -15,8 +15,6 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -32,19 +30,17 @@ import org.apache.openjpa.jdbc.sql.Select;
 class FilterValueImpl
     implements FilterValue {
 
-    private final Val _val;
     private final Select _sel;
-    private final JDBCStore _store;
-    private final Object[] _params;
-    private final JDBCFetchConfiguration _fetch;
+    private final ExpContext _ctx;
+    private final ExpState _state;
+    private final Val _val;
 
-    public FilterValueImpl(Val val, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        _val = val;
+    public FilterValueImpl(Select sel, ExpContext ctx, ExpState state, 
+        Val val) {
         _sel = sel;
-        _store = store;
-        _params = params;
-        _fetch = fetch;
+        _ctx = ctx;
+        _state = state;
+        _val = val;
     }
 
     public Class getType() {
@@ -52,7 +48,7 @@ class FilterValueImpl
     }
 
     public int length() {
-        return _val.length();
+        return _val.length(_sel, _ctx, _state);
     }
 
     public void appendTo(SQLBuffer buf) {
@@ -60,19 +56,19 @@ class FilterValueImpl
     }
 
     public void appendTo(SQLBuffer buf, int index) {
-        _val.appendTo(buf, index, _sel, _store, _params, _fetch);
+        _val.appendTo(_sel, _ctx, _state, buf, index);
     }
 
     public String getColumnAlias(Column col) {
-        return _sel.getColumnAlias(col, _val.getJoins());
+        return _sel.getColumnAlias(col, _state.joins);
     }
 
     public String getColumnAlias(String col, Table table) {
-        return _sel.getColumnAlias(col, table, _val.getJoins());
+        return _sel.getColumnAlias(col, table, _state.joins);
     }
 
     public Object toDataStoreValue(Object val) {
-        return _val.toDataStoreValue(val, _store);
+        return _val.toDataStoreValue(_sel, _ctx, _state, val);
     }
 
     public boolean isConstant() {
@@ -80,11 +76,12 @@ class FilterValueImpl
     }
 
     public Object getValue() {
-        return (isConstant()) ? ((Const) _val).getValue() : null;
+        return (isConstant()) ? ((Const) _val).getValue(_ctx.params) : null;
     }
 
     public Object getSQLValue() {
-        return (isConstant()) ? ((Const) _val).getSQLValue() : null;
+        return (isConstant()) ? ((Const) _val).getSQLValue(_sel, _ctx, _state) 
+            : null;
     }
 
     public boolean isPath() {
@@ -92,10 +89,10 @@ class FilterValueImpl
     }
 
     public ClassMapping getClassMapping() {
-        return (isPath()) ? ((PCPath) _val).getClassMapping() : null;
+        return (isPath()) ? ((PCPath) _val).getClassMapping(_state) : null;
     }
 
     public FieldMapping getFieldMapping() {
-        return (isPath()) ? ((PCPath) _val).getFieldMapping() : null;
+        return (isPath()) ? ((PCPath) _val).getFieldMapping(_state) : null;
     }
 }

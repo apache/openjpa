@@ -19,11 +19,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
-import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -42,7 +39,6 @@ abstract class Const
     implements Constant {
 
     private ClassMetaData _meta = null;
-    private Column[] _cols = null;
 
     public ClassMetaData getMetaData() {
         return _meta;
@@ -53,33 +49,17 @@ abstract class Const
     }
 
     /**
-     * Return the column for the value at the specified index, or null.
-     */
-    public Column getColumn(int index) {
-        return (_cols != null && _cols.length > index) ? _cols[index] : null;
-    }
-
-    /**
-     * Return the value of this constant.
-     */
-    public abstract Object getValue();
-
-    public Object getValue(Object[] parameters) {
-        return getValue();
-    }
-
-    /**
      * Return the SQL value of this constant.
      */
-    public Object getSQLValue() {
-        return getValue();
+    public Object getSQLValue(Select sel, ExpContext ctx, ExpState state) {
+        return getValue(ctx, state);
     }
 
     /**
      * Return true if this constant's SQL value is equivalent to NULL.
      */
-    public boolean isSQLValueNull() {
-        Object val = getSQLValue();
+    public boolean isSQLValueNull(Select sel, ExpContext ctx, ExpState state) {
+        Object val = getSQLValue(sel, ctx, state);
         if (val == null)
             return true;
         if (!(val instanceof Object[]))
@@ -93,69 +73,78 @@ abstract class Const
         return true;
     }
 
-    public void initialize(Select sel, JDBCStore store, boolean nullTest) {
+    /**
+     * Return the value of this constant.  May be more robust than the
+     * parameters-only form.
+     */
+    public Object getValue(ExpContext ctx, ExpState state) {
+        return getValue(ctx.params);
     }
 
-    public Joins getJoins() {
-        return null;
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
+        return new ConstExpState();
     }
 
-    public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchConfiguration fetch) {
+    /**
+     * Constant expression state.
+     */
+    protected static class ConstExpState
+        extends ExpState {
+
+        public Column[] cols = null;
+
+        /**
+         * Return the column for the value at the specified index, or null.
+         */
+        public Column getColumn(int index) {
+            return (cols != null && cols.length > index) ? cols[index] : null;
+        }
+    }
+
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+        Val other, ExpState otherState) {
         if (other instanceof PCPath)
-            _cols = ((PCPath) other).getColumns();
-        else
-            _cols = null;
+            ((ConstExpState) state).cols = ((PCPath) other).
+                getColumns(otherState);
     }
 
-    public Object toDataStoreValue(Object val, JDBCStore store) {
-        return val;
+    public void select(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        sel.select(newSQLBuffer(sel, ctx, state), this);
     }
 
-    public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchConfiguration fetch) {
-        sel.select(newSQLBuffer(sel, store, params, fetch), this);
-    }
-
-    private SQLBuffer newSQLBuffer(Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        calculateValue(sel, store, params, null, fetch);
-        SQLBuffer buf = new SQLBuffer(store.getDBDictionary());
-        appendTo(buf, 0, sel, store, params, fetch);
-        clearParameters();
+    private SQLBuffer newSQLBuffer(Select sel, ExpContext ctx, ExpState state) {
+        calculateValue(sel, ctx, state, null, null);
+        SQLBuffer buf = new SQLBuffer(ctx.store.getDBDictionary());
+        appendTo(sel, ctx, state, buf, 0);
         return buf;
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
     }
 
-    public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchConfiguration fetch) {
-        sel.groupBy(newSQLBuffer(sel, store, params, fetch));
+    public void groupBy(Select sel, ExpContext ctx, ExpState state) {
+        sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
-    public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchConfiguration fetch) {
-        sel.orderBy(newSQLBuffer(sel, store, params, fetch), asc, false);
+    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+        boolean asc) {
+        sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false);
     }
 
-    public Object load(Result res, JDBCStore store,
-        JDBCFetchConfiguration fetch)
+    public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
-        int code = JavaTypes.getTypeCode(getType());
-        if (code == JavaTypes.OBJECT)
-            code = JavaSQLTypes.JDBC_DEFAULT;
-        return Filters.convert(res.getObject(this, code, null), getType());
+        return getValue(ctx, state);
     }
 
-    public int length() {
+    public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
     }
 
-    public void appendIsEmpty(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        Object obj = getValue();
+    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        Object obj = getValue(ctx, state);
         if (obj instanceof Collection && ((Collection) obj).isEmpty())
             sql.append(TRUE);
         else if (obj instanceof Map && ((Map) obj).isEmpty())
@@ -164,9 +153,9 @@ abstract class Const
             sql.append(FALSE);
     }
 
-    public void appendIsNotEmpty(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        Object obj = getValue();
+    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql){
+        Object obj = getValue(ctx, state);
         if (obj instanceof Collection && ((Collection) obj).isEmpty())
             sql.append(FALSE);
         else if (obj instanceof Map && ((Map) obj).isEmpty())
@@ -175,9 +164,9 @@ abstract class Const
             sql.append(TRUE);
     }
 
-    public void appendSize(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        Object obj = getValue();
+    public void appendSize(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        Object obj = getValue(ctx, state);
         if (obj instanceof Collection)
             sql.appendValue(((Collection) obj).size());
         else if (obj instanceof Map)
@@ -186,17 +175,17 @@ abstract class Const
             sql.append("1");
     }
 
-    public void appendIsNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        if (getSQLValue() == null)
+    public void appendIsNull(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        if (isSQLValueNull(sel, ctx, state))
             sql.append(TRUE);
         else
             sql.append(FALSE);
     }
 
-    public void appendIsNotNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        if (getSQLValue() != null)
+    public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        if (!isSQLValueNull(sel, ctx, state))
             sql.append(TRUE);
         else
             sql.append(FALSE);

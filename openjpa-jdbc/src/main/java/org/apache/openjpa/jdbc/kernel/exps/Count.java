@@ -15,7 +15,6 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Select;
 
 /**
@@ -33,11 +32,9 @@ class Count
         super(val);
     }
 
-    public void initialize(Select sel, JDBCStore store, boolean nullTest) {
-        super.initialize(sel, store, nullTest);
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         // join into related object if present
-        if (getVal()instanceof PCPath)
-            ((PCPath) getVal()).joinRelation();
+        return initializeValue(sel, ctx, JOIN_REL);
     }
 
     protected Class getType(Class c) {

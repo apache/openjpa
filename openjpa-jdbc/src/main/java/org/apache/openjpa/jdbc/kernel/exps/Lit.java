@@ -15,8 +15,6 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
@@ -33,8 +31,6 @@ class Lit
 
     private Object _val;
     private int _ptype;
-    private Object _sqlVal = null;
-    private int _otherLen = 0;
 
     /**
      * Constructor. Supply literal value.
@@ -56,7 +52,7 @@ class Lit
         return _ptype;
     }
 
-    public Object getValue() {
+    public Object getValue() { 
         return _val;
     }
 
@@ -64,24 +60,42 @@ class Lit
         _val = val;
     }
 
-    public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchConfiguration fetch) {
-        super.calculateValue(sel, store, params, other, fetch);
+    public Object getValue(Object[] params) {
+        return getValue();
+    }
+
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
+        return new LitExpState();
+    }
+
+    /**
+     * Expression state.
+     */
+    private static class LitExpState
+        extends ConstExpState {
+
+        public Object sqlValue;
+        public int otherLength; 
+    } 
+
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+        Val other, ExpState otherState) {
+        super.calculateValue(sel, ctx, state, other, otherState);
+        LitExpState lstate = (LitExpState) state;
         if (other != null) {
-            _sqlVal = other.toDataStoreValue(_val, store);
-            _otherLen = other.length();
+            lstate.sqlValue = other.toDataStoreValue(sel, ctx, otherState,_val);
+            lstate.otherLength = other.length(sel, ctx, otherState);
         } else
-            _sqlVal = _val;
+            lstate.sqlValue = _val;
     }
 
-    public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        if (_otherLen > 1)
-            sql.appendValue(((Object[]) _sqlVal)[index], getColumn(index));
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
+        LitExpState lstate = (LitExpState) state;
+        if (lstate.otherLength > 1)
+            sql.appendValue(((Object[]) lstate.sqlValue)[index], 
+                lstate.getColumn(index));
         else
-            sql.appendValue(_sqlVal, getColumn(index));
-    }
-
-    public void clearParameters() {
+            sql.appendValue(lstate.sqlValue, lstate.getColumn(index));
     }
 }

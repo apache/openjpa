@@ -17,10 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
-import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -47,7 +44,7 @@ abstract class UnaryOp
         _val = val;
     }
 
-    protected Val getVal() {
+    protected Val getValue() {
         return _val;
     }
 
@@ -57,10 +54,6 @@ abstract class UnaryOp
 
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
-    }
-
-    public boolean isVariable() {
-        return false;
     }
 
     public Class getType() {
@@ -73,74 +66,62 @@ abstract class UnaryOp
         _cast = type;
     }
 
-    public void initialize(Select sel, JDBCStore store, boolean nullTest) {
-        _val.initialize(sel, store, false);
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
+        return initializeValue(sel, ctx, flags);
     }
 
-    public Joins getJoins() {
-        return _val.getJoins();
+    protected ExpState initializeValue(Select sel, ExpContext ctx, int flags) {
+        return _val.initialize(sel, ctx, flags);
     }
 
-    public Object toDataStoreValue(Object val, JDBCStore store) {
-        return val;
-    }
-
-    public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchConfiguration fetch) {
-        sel.select(newSQLBuffer(sel, store, params, fetch), this);
+    public void select(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        sel.select(newSQLBuffer(sel, ctx, state), this);
         if (isAggregate())
             sel.setAggregate(true);
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _val.selectColumns(sel, store, params, true, fetch);
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        _val.selectColumns(sel, ctx, state, true);
     }
 
-    public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchConfiguration fetch) {
-        sel.groupBy(newSQLBuffer(sel, store, params, fetch));
+    public void groupBy(Select sel, ExpContext ctx, ExpState state) {
+        sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
-    public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchConfiguration fetch) {
-        sel.orderBy(newSQLBuffer(sel, store, params, fetch), asc, false);
+    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+        boolean asc) {
+        sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false);
     }
 
-    private SQLBuffer newSQLBuffer(Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        calculateValue(sel, store, params, null, fetch);
-        SQLBuffer buf = new SQLBuffer(store.getDBDictionary());
-        appendTo(buf, 0, sel, store, params, fetch);
-        clearParameters();
+    private SQLBuffer newSQLBuffer(Select sel, ExpContext ctx, ExpState state) {
+        calculateValue(sel, ctx, state, null, null);
+        SQLBuffer buf = new SQLBuffer(ctx.store.getDBDictionary());
+        appendTo(sel, ctx, state, buf, 0);
         return buf;
     }
 
-    public Object load(Result res, JDBCStore store,
-        JDBCFetchConfiguration fetch)
+    public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
         return Filters.convert(res.getObject(this,
             JavaSQLTypes.JDBC_DEFAULT, null), getType());
     }
 
-    public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchConfiguration fetch) {
-        _val.calculateValue(sel, store, params, null, fetch);
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+        Val other, ExpState otherState) {
+        _val.calculateValue(sel, ctx, state, null, null);
     }
 
-    public void clearParameters() {
-        _val.clearParameters();
-    }
-
-    public int length() {
+    public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
     }
 
-    public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
         sql.append(getOperator());
         sql.append("(");
-        _val.appendTo(sql, 0, sel, store, params, fetch);
+        _val.appendTo(sel, ctx, state, sql, 0);
         sql.append(")");
     }
 

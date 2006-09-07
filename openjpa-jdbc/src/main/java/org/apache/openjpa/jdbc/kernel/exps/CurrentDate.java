@@ -17,10 +17,10 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Date;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.util.InternalException;
 
 /**
  * A literal current DATE/TIME/TIMESTAMP value in a filter.
@@ -30,13 +30,9 @@ import org.apache.openjpa.jdbc.sql.Select;
 class CurrentDate
     extends Const {
 
-    static final int DATE = 1;
-    static final int TIME = 2;
-    static final int TIMESTAMP = 3;
-
     private final int _type;
 
-    CurrentDate(int type) {
+    public CurrentDate(int type) {
         _type = type;
     }
 
@@ -47,24 +43,25 @@ class CurrentDate
     public void setImplicitType(Class type) {
     }
 
-    public Object getValue() {
+    public Object getValue(Object[] params) {
         return new Date();
     }
 
-    public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchConfiguration fetch) {
-    }
-
-    public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        if (_type == DATE)
-            sql.append(store.getDBDictionary().currentDateFunction);
-        else if (_type == TIME)
-            sql.append(store.getDBDictionary().currentTimeFunction);
-        else if (_type == TIMESTAMP)
-            sql.append(store.getDBDictionary().currentTimestampFunction);
-    }
-
-    public void clearParameters() {
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
+        switch (_type) {
+            case JavaSQLTypes.DATE:
+                sql.append(ctx.store.getDBDictionary().currentDateFunction);
+                break;
+            case JavaSQLTypes.TIME:
+                sql.append(ctx.store.getDBDictionary().currentTimeFunction);
+                break;
+            case JavaSQLTypes.TIMESTAMP:
+                sql.append(ctx.store.getDBDictionary().
+                    currentTimestampFunction);
+                break;
+            default:
+                throw new InternalException();
+        }
     }
 }

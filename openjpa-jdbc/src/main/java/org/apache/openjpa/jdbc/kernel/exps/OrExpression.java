@@ -19,9 +19,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
@@ -36,7 +33,6 @@ class OrExpression
 
     private final Exp _exp1;
     private final Exp _exp2;
-    private Joins _joins = null;
 
     /**
      * Constructor. Supply the expressions to combine.
@@ -46,56 +42,53 @@ class OrExpression
         _exp2 = exp2;
     }
 
-    public void initialize(Select sel, JDBCStore store,
-        Object[] params, Map contains) {
+    public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
         // when OR'ing expressions each expression gets its own copy of the
         // contains counts, cause it's OK for each to use the same aliases
         Map contains2 = null;
         if (contains != null)
             contains2 = new HashMap(contains);
 
-        _exp1.initialize(sel, store, params, contains);
-        _exp2.initialize(sel, store, params, contains2);
-        _joins = sel.or(_exp1.getJoins(), _exp2.getJoins());
+        ExpState s1 = _exp1.initialize(sel, ctx, contains);
+        ExpState s2 = _exp2.initialize(sel, ctx, contains2);
+        ExpState ret = new BinaryOpExpState(sel.or(s1.joins, s2.joins), s1, s2);
         if (contains == null)
-            return;
+            return ret;
 
         // combine the contains counts from the copy into the main map
         Map.Entry entry;
         Integer val1, val2;
-        for (Iterator itr = contains2.entrySet().iterator();
-            itr.hasNext();) {
+        for (Iterator itr = contains2.entrySet().iterator(); itr.hasNext();) {
             entry = (Map.Entry) itr.next();
             val2 = (Integer) entry.getValue();
             val1 = (Integer) contains.get(entry.getKey());
             if (val1 == null || val2.intValue() > val1.intValue())
                 contains.put(entry.getKey(), val2);
         }
+        return ret;
     }
 
-    public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        boolean paren = _joins != null && !_joins.isEmpty();
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf) {
+        BinaryOpExpState bstate = (BinaryOpExpState) state;
+        boolean paren = bstate.joins != null && !bstate.joins.isEmpty();
         if (paren)
             buf.append("(");
 
-        _exp1.appendTo(buf, sel, store, params, fetch);
+        _exp1.appendTo(sel, ctx, bstate.state1, buf);
         buf.append(" OR ");
-        _exp2.appendTo(buf, sel, store, params, fetch);
+        _exp2.appendTo(sel, ctx, bstate.state2, buf);
 
         if (paren)
             buf.append(")");
-        sel.append(buf, _joins);
+        sel.append(buf, bstate.joins);
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _exp1.selectColumns(sel, store, params, pks, fetch);
-        _exp2.selectColumns(sel, store, params, pks, fetch);
-    }
-
-    public Joins getJoins() {
-        return _joins;
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        BinaryOpExpState bstate = (BinaryOpExpState) state;
+        _exp1.selectColumns(sel, ctx, bstate.state1, pks);
+        _exp2.selectColumns(sel, ctx, bstate.state2, pks);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

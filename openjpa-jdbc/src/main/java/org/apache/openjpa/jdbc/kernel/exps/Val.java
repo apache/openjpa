@@ -36,64 +36,54 @@ public interface Val
     extends Value {
 
     /**
-     * Initialize the value. This method should recursively initialize any
-     * sub-values. It should also cache the {@link Joins} instance
-     * containing the joins for this value. No additional joins should be
-     * made after this call. The parent expression might modify these joins
-     * during its own initialization so that common joins are moved up the
-     * expression tree. These joins should not be included in the SQL
-     * appended through any of the <code>append</code> methods.
-     *
-     * @param sel used to create {@link Joins} instances
-     * @param store the store manager for the query
-     * @param nullTest if true, then this value will be compared
-     * to null or tested for emptiness
+     * Initialization flag indicating that this value will be compared to null.
      */
-    public void initialize(Select sel, JDBCStore store, boolean nullTest);
+    public final int NULL_CMP = 1;
 
     /**
-     * Return the joins for this value. These joins should be created
-     * and cached during the {@link #initialize} method. The parent
-     * expression might modify these joins during its own initialization so
-     * that common joins are moved up the expression tree.
+     * Initialization flag indicating to join into any relation path.
      */
-    public Joins getJoins();
+    public final int JOIN_REL = 2; 
+
+    /**
+     * Initialize the value. This method should recursively initialize any
+     * sub-values. 
+     */
+    public ExpState initialize(Select sel, ExpContext ctx, int flags);
 
     /**
      * Return the datastore value of the given object in the context of this
      * value.
      */
-    public Object toDataStoreValue(Object val, JDBCStore store);
+    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state, 
+        Object val);
 
     /**
      * Select the data for this value.
      */
-    public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchConfiguration fetch);
+    public void select(Select sel, ExpContext ctx, ExpState state, boolean pks);
 
     /**
      * Select just the columns for this value.
      */
-    public void selectColumns(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchConfiguration fetch);
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks);
 
     /**
      * Group by this value.
      */
-    public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchConfiguration fetch);
+    public void groupBy(Select sel, ExpContext ctx, ExpState state);
 
     /**
      * Order by this value.
      */
-    public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchConfiguration fetch);
+    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+        boolean asc);
 
     /**
      * Load the data for this value.
      */
-    public Object load(Result res, JDBCStore store,
-        JDBCFetchConfiguration fetch)
+    public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException;
 
     /**
@@ -102,55 +92,50 @@ public interface Val
      *
      * @param other the value being compared to, or null if not a comparison
      */
-    public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchConfiguration fetch);
-
-    /**
-     * Clear parameter values held by this value or its subcomponents.
-     * This method is called sometime after <code>calculateValue</code>.
-     */
-    public void clearParameters();
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+        Val other, ExpState otherState);
 
     /**
      * Return the number of SQL elements in this value.
      */
-    public int length();
+    public int length(Select sel, ExpContext ctx, ExpState state);
 
     /**
      * Append the <code>index</code>th SQL element to the given buffer.
      */
-    public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch);
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, 
+        int index);
 
     /**
      * Append the SQL testing whether this value is empty to the given buffer.
      */
-    public void appendIsEmpty(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch);
+    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql);
 
     /**
      * Append the SQL testing whether this value is not empty to
      * the given buffer.
      */
-    public void appendIsNotEmpty(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch);
+    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql);
 
     /**
      * Append the SQL checking the size of this value.
      */
-    public void appendSize(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch);
+    public void appendSize(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql);
 
     /**
      * Append the SQL testing whether this value is null to the given buffer.
      */
-    public void appendIsNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch);
+    public void appendIsNull(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql);
 
     /**
      * Append the SQL testing whether this value is not null to the given
      * buffer.
      */
-    public void appendIsNotNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch);
+    public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql);
 }

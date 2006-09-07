@@ -152,8 +152,7 @@ public class OpenJPAPersistence
     public static OpenJPAEntityManager cast(EntityManager em) {
         if (em instanceof OpenJPAEntityManager)
             return (OpenJPAEntityManager) em;
-        else
-            return (OpenJPAEntityManager) em.getDelegate();
+        return (OpenJPAEntityManager) em.getDelegate();
     }
 
     /**
@@ -181,8 +180,7 @@ public class OpenJPAPersistence
     public static OpenJPAEntityManagerFactory getEntityManagerFactory(Map map) {
         ConfigurationProvider cp = new MapConfigurationProvider(map);
         try {
-            return toEntityManagerFactory(Bootstrap.getBrokerFactory
-                (cp, null));
+            return toEntityManagerFactory(Bootstrap.getBrokerFactory(cp, null));
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
@@ -257,8 +255,7 @@ public class OpenJPAPersistence
             if (o instanceof PersistenceCapable)
                 return toEntityManager((Broker) ((PersistenceCapable) o).
                     pcGetGenericContext());
-            else
-                return null;
+            return null;
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }

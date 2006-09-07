@@ -17,9 +17,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
@@ -46,7 +43,6 @@ class CompareExpression
     private final Val _val1;
     private final Val _val2;
     private final String _op;
-    private Joins _joins = null;
 
     /**
      * Constructor. Supply values and operator.
@@ -57,39 +53,33 @@ class CompareExpression
         _op = op;
     }
 
-    public void initialize(Select sel, JDBCStore store,
-        Object[] params, Map contains) {
-        _val1.initialize(sel, store, false);
-        _val2.initialize(sel, store, false);
-        _joins = sel.and(_val1.getJoins(), _val2.getJoins());
+    public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
+        ExpState s1 = _val1.initialize(sel, ctx, 0);
+        ExpState s2 = _val2.initialize(sel, ctx, 0);
+        return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
-    public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        _val1.calculateValue(sel, store, params, _val2, fetch);
-        _val2.calculateValue(sel, store, params, _val1, fetch);
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf) {
+        BinaryOpExpState bstate = (BinaryOpExpState) state;
+        _val1.calculateValue(sel, ctx, bstate.state1, _val2, bstate.state2);
+        _val2.calculateValue(sel, ctx, bstate.state2, _val1, bstate.state1);
         if (!Filters.canConvert(_val1.getType(), _val2.getType(), false)
             && !Filters.canConvert(_val2.getType(), _val1.getType(), false))
             throw new UserException(_loc.get("cant-convert", _val1.getType(),
                 _val2.getType()));
 
-        store.getDBDictionary().comparison(buf, _op,
-            new FilterValueImpl(_val1, sel, store, params, fetch),
-            new FilterValueImpl(_val2, sel, store, params, fetch));
-        sel.append(buf, _joins);
-
-        _val1.clearParameters();
-        _val2.clearParameters();
+        ctx.store.getDBDictionary().comparison(buf, _op,
+            new FilterValueImpl(sel, ctx, bstate.state1, _val1),
+            new FilterValueImpl(sel, ctx, bstate.state2, _val2));
+        sel.append(buf, state.joins);
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _val1.selectColumns(sel, store, params, true, fetch);
-        _val2.selectColumns(sel, store, params, true, fetch);
-    }
-
-    public Joins getJoins() {
-        return _joins;
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        BinaryOpExpState bstate = (BinaryOpExpState) state;
+        _val1.selectColumns(sel, ctx, bstate.state1, true);
+        _val2.selectColumns(sel, ctx, bstate.state2, true);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

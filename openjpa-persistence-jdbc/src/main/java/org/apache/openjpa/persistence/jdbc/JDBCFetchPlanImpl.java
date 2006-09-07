@@ -31,7 +31,6 @@ import org.apache.openjpa.persistence.PersistenceExceptions;
  *
  * @since 0.4.0
  * @author Abe White
- * @published
  */
 public class JDBCFetchPlanImpl
     extends FetchPlanImpl

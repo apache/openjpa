@@ -15,13 +15,9 @@
  */
 package org.apache.openjpa.persistence;
 
-import java.util.Collections;
 import javax.persistence.Query;
 
-import org.apache.openjpa.datacache.DelegatingQueryCache;
 import org.apache.openjpa.datacache.QueryCache;
-import org.apache.openjpa.datacache.QueryKey;
-import org.apache.openjpa.datacache.TypesChangedEvent;
 
 /**
  * Query result cache.

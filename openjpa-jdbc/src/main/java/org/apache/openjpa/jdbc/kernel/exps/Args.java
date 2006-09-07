@@ -15,8 +15,6 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
@@ -36,7 +34,6 @@ public class Args
     implements Arguments {
 
     private final Val[] _args;
-    private Joins _joins = null;
     private ClassMetaData _meta = null;
 
     /**
@@ -55,6 +52,19 @@ public class Args
             System.arraycopy(((Args) val2)._args, 0, _args, len1, len2);
         else
             _args[len1] = val2;
+    }
+
+    /**
+     * Return a filter value for each argument.
+     */
+    public FilterValue[] newFilterValues(Select sel, ExpContext ctx, 
+        ExpState state) {
+        ArgsExpState astate = (ArgsExpState) state; 
+        FilterValue[] filts = new FilterValue[_args.length];
+        for (int i = 0; i < _args.length; i++)
+            filts[i] = new FilterValueImpl(sel, ctx, astate.states[i], 
+                _args[i]); 
+        return filts;
     }
 
     public Value[] getValues() {
@@ -91,84 +101,88 @@ public class Args
     public void setImplicitType(Class type) {
     }
 
-    public void initialize(Select sel, JDBCStore store, boolean nullTest) {
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
+        ExpState[] states = new ExpState[_args.length];
+        Joins joins = null;
         for (int i = 0; i < _args.length; i++) {
-            _args[i].initialize(sel, store, nullTest);
-            if (_joins == null)
-                _joins = _args[i].getJoins();
+            states[i] = _args[i].initialize(sel, ctx, flags);
+            if (joins == null)
+                joins = states[i].joins;
             else
-                _joins = sel.and(_joins, _args[i].getJoins());
+                joins = sel.and(joins, states[i].joins);
+        }
+        return new ArgsExpState(joins, states);
+    }
+
+    /**
+     * Expression state.
+     */
+    private static class ArgsExpState
+        extends ExpState {
+        
+        public ExpState[] states;
+
+        public ArgsExpState(Joins joins, ExpState[] states) {
+            super(joins);
+            this.states = states;
         }
     }
 
-    public Joins getJoins() {
-        return _joins;
+    public void select(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
     }
 
-    public Object toDataStoreValue(Object val, JDBCStore store) {
-        return val;
-    }
-
-    public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchConfiguration fetch) {
-    }
-
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        ArgsExpState astate = (ArgsExpState) state;
         for (int i = 0; i < _args.length; i++)
-            _args[i].selectColumns(sel, store, params, pks, fetch);
+            _args[i].selectColumns(sel, ctx, astate.states[i], pks);
     }
 
-    public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchConfiguration fetch) {
+    public void groupBy(Select sel, ExpContext ctx, ExpState state) {
     }
 
-    public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchConfiguration fetch) {
+    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+        boolean asc) {
     }
 
-    public Object load(Result res, JDBCStore store,
-        JDBCFetchConfiguration fetch) {
+    public Object load(ExpContext ctx, ExpState state, Result res) {
         return null;
     }
 
-    public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchConfiguration fetch) {
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+        Val other, ExpState otherState) {
+        ArgsExpState astate = (ArgsExpState) state;
         for (int i = 0; i < _args.length; i++)
-            _args[i].calculateValue(sel, store, params, null, fetch);
+            _args[i].calculateValue(sel, ctx, astate.states[i], null, null);
     }
 
-    public void clearParameters() {
-        for (int i = 0; i < _args.length; i++)
-            _args[i].clearParameters();
-    }
-
-    public int length() {
+    public int length(Select sel, ExpContext ctx, ExpState state) {
         return 0;
     }
 
-    public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
     }
 
-    public void appendIsEmpty(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+    public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
     }
 
-    public void appendIsNotEmpty(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+    public void appendIsNotEmpty(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql){
     }
 
-    public void appendSize(SQLBuffer sql, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
+    public void appendSize(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
     }
 
-    public void appendIsNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+    public void appendIsNull(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
     }
 
-    public void appendIsNotNull(SQLBuffer sql, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
+    public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

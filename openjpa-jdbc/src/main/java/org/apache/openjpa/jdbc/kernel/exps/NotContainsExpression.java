@@ -17,10 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
@@ -35,7 +32,6 @@ class NotContainsExpression
     implements Exp {
 
     private final Exp _exp;
-    private Map _contains = null;
 
     /**
      * Constructor. Supply the expression to negate.
@@ -44,37 +40,48 @@ class NotContainsExpression
         _exp = exp;
     }
 
-    public void initialize(Select sel, JDBCStore store,
-        Object[] params, Map contains) {
-        _contains = contains;
+    public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
+        return new NotContainsExpState(contains);
     }
 
-    public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        DBDictionary dict = store.getDBDictionary();
+    /**
+     * Expression state.
+     */
+    private static class NotContainsExpState
+        extends ExpState {
+        
+        public final Map contains;
+
+        public NotContainsExpState(Map contains) {
+            this.contains = contains;
+        }
+    }
+
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf) {
+        DBDictionary dict = ctx.store.getDBDictionary();
         dict.assertSupport(dict.supportsSubselect, "SupportsSubselect");
 
-        Select sub = store.getSQLFactory().newSelect();
+        Select sub = ctx.store.getSQLFactory().newSelect();
         sub.setParent(sel, null);
-        _exp.initialize(sub, store, params, _contains);
-        sub.where(sub.and(null, _exp.getJoins()));
+        ExpState estate = _exp.initialize(sub, ctx, ((NotContainsExpState) 
+            state).contains);
+        sub.where(sub.and(null, estate.joins));
 
         SQLBuffer where = new SQLBuffer(dict).append("(");
-        _exp.appendTo(where, sub, store, params, fetch);
+        _exp.appendTo(sub, ctx, estate, where);
         if (where.getSQL().length() > 1)
             sub.where(where.append(")"));
 
         buf.append("0 = ");
-        buf.appendCount(sub, fetch);
+        buf.appendCount(sub, ctx.fetch);
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _exp.selectColumns(sel, store, params, true, fetch);
-    }
-
-    public Joins getJoins() {
-        return null;
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        ExpState estate = _exp.initialize(sel, ctx, ((NotContainsExpState) 
+            state).contains);
+        _exp.selectColumns(sel, ctx, estate, true);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

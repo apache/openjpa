@@ -17,11 +17,8 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
-import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -40,7 +37,6 @@ class Aggregate
     private final JDBCAggregateListener _listener;
     private final Val _arg;
     private final ClassMapping _candidate;
-    private Joins _joins = null;
     private ClassMetaData _meta = null;
     private Class _cast = null;
 
@@ -84,103 +80,77 @@ class Aggregate
         _cast = type;
     }
 
-    public void initialize(Select sel, JDBCStore store, boolean nullTest) {
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
+        if (_arg == null)
+            return ExpState.NULL;
+
         // note that we tell targets and args to extensions that are sql
         // paths to go ahead and join to their related object (if any),
         // because we assume that, unlike most operations, if a relation
         // field like a 1-1 is given as the target of an extension, then
         // the extension probably acts on some field or column in the
         // related object, not the 1-1 field itself
-        if (_arg != null) {
-            _arg.initialize(sel, store, false);
-            if (_arg instanceof PCPath)
-                ((PCPath) _arg).joinRelation();
-            _joins = _arg.getJoins();
-        }
+        return _arg.initialize(sel, ctx, JOIN_REL);
     }
 
-    public Joins getJoins() {
-        return _joins;
-    }
-
-    public Object toDataStoreValue(Object val, JDBCStore store) {
-        return val;
-    }
-
-    public void select(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchConfiguration fetch) {
-        sel.select(newSQLBuffer(sel, store, params, fetch), this);
+    public void select(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        sel.select(newSQLBuffer(sel, ctx, state), this);
         sel.setAggregate(true);
     }
 
-    public void selectColumns(Select sel, JDBCStore store, Object[] params,
-        boolean pks, JDBCFetchConfiguration fetch) {
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
         if (_arg != null)
-            _arg.selectColumns(sel, store, params, true, fetch);
+            _arg.selectColumns(sel, ctx, state, true);
     }
 
-    public void groupBy(Select sel, JDBCStore store, Object[] params,
-        JDBCFetchConfiguration fetch) {
-        sel.groupBy(newSQLBuffer(sel, store, params, fetch));
+    public void groupBy(Select sel, ExpContext ctx, ExpState state) {
+        sel.groupBy(newSQLBuffer(sel, ctx, state));
     }
 
-    public void orderBy(Select sel, JDBCStore store, Object[] params,
-        boolean asc, JDBCFetchConfiguration fetch) {
-        sel.orderBy(newSQLBuffer(sel, store, params, fetch), asc, false);
+    public void orderBy(Select sel, ExpContext ctx, ExpState state, 
+        boolean asc) {
+        sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false);
     }
 
-    private SQLBuffer newSQLBuffer(Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        calculateValue(sel, store, params, null, fetch);
-        SQLBuffer buf = new SQLBuffer(store.getDBDictionary());
-        appendTo(buf, 0, sel, store, params, fetch);
-        clearParameters();
+    private SQLBuffer newSQLBuffer(Select sel, ExpContext ctx, ExpState state) {
+        calculateValue(sel, ctx, state, null, null);
+        SQLBuffer buf = new SQLBuffer(ctx.store.getDBDictionary());
+        appendTo(sel, ctx, state, buf, 0);
         return buf;
     }
 
-    public Object load(Result res, JDBCStore store,
-        JDBCFetchConfiguration fetch)
+    public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
-        return Filters.convert(res.getObject(this,
-            JavaSQLTypes.JDBC_DEFAULT, null), getType());
+        return Filters.convert(res.getObject(this, JavaSQLTypes.JDBC_DEFAULT, 
+            null), getType());
     }
 
-    public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchConfiguration fetch) {
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+        Val other, ExpState otherState) {
         if (_arg != null)
-            _arg.calculateValue(sel, store, params, null, fetch);
+            _arg.calculateValue(sel, ctx, state, null, null);
     }
 
-    public void clearParameters() {
-        if (_arg != null)
-            _arg.clearParameters();
-    }
-
-    public int length() {
+    public int length(Select sel, ExpContext ctx, ExpState state) {
         return 1;
     }
 
-    public void appendTo(SQLBuffer sql, int index, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
-        _listener.appendTo(sql, getArgs(sel, store, params, fetch),
-            _candidate, store);
-        sel.append(sql, _joins);
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
+        _listener.appendTo(sql, getArgs(sel, ctx, state), _candidate, 
+            ctx.store);
+        sel.append(sql, state.joins);
     }
 
-    private FilterValue[] getArgs(Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
+    private FilterValue[] getArgs(Select sel, ExpContext ctx, ExpState state) {
         if (_arg == null)
             return null;
-        if (_arg instanceof Args) {
-            Val[] vals = ((Args) _arg).getVals();
-            FilterValue[] filts = new FilterValue[vals.length];
-            for (int i = 0; i < vals.length; i++)
-                filts[i] = new FilterValueImpl(vals[i], sel, store, params,
-                    fetch);
-            return filts;
-        }
+        if (_arg instanceof Args)
+            return ((Args) _arg).newFilterValues(sel, ctx, state);
         return new FilterValue[]{
-            new FilterValueImpl(_arg, sel, store, params, fetch)
+            new FilterValueImpl(sel, ctx, state, _arg)
         };
     }
 

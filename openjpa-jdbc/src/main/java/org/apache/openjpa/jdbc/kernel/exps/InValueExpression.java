@@ -37,8 +37,8 @@ class InValueExpression
     /**
      * Return the collection to test for containment with.
      */
-    protected Collection getCollection() {
-        Map map = (Map) getConst().getValue();
+    protected Collection getCollection(ExpContext ctx, ExpState state) {
+        Map map = (Map) getConstant().getValue(ctx, state);
         return (map == null) ? null : map.values();
     }
 }

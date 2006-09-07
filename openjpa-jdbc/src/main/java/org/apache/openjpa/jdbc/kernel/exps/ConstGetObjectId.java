@@ -15,8 +15,8 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 
@@ -29,9 +29,6 @@ class ConstGetObjectId
     extends Const {
 
     private final Const _constant;
-    private Object _val = null;
-    private Object _sqlVal = null;
-    private int _otherLen = 0;
 
     /**
      * Constructor. Supply constant to traverse.
@@ -47,37 +44,62 @@ class ConstGetObjectId
     public void setImplicitType(Class type) {
     }
 
-    public Object getValue() {
-        return _val;
+    public Object getValue(Object[] params) {
+        Object o = _constant.getValue(params);
+        if (!(o instanceof PersistenceCapable))
+            return null;
+        return ((PersistenceCapable) o).pcFetchObjectId();
     }
 
-    public Object getSQLValue() {
-        return _sqlVal;
+    public Object getValue(ExpContext ctx, ExpState state) {
+        return ctx.store.getContext().getObjectId(_constant.getValue(ctx, 
+            ((ConstGetObjectIdExpState) state).constantState));
     }
 
-    public void calculateValue(Select sel, JDBCStore store,
-        Object[] params, Val other, JDBCFetchConfiguration fetch) {
-        super.calculateValue(sel, store, params, other, fetch);
-        _constant.calculateValue(sel, store, params, null, fetch);
-        _val = store.getContext().getObjectId(_constant.getValue());
+    public ExpState initialize(Select sel, ExpContext ctx, int flags) {
+        return new ConstGetObjectIdExpState(_constant.initialize(sel, ctx, 0));
+    }
+
+    public Object getSQLValue(Select sel, ExpContext ctx, ExpState state) {
+        return ((ConstGetObjectIdExpState) state).sqlValue;
+    }
+
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+        Val other, ExpState otherState) {
+        super.calculateValue(sel, ctx, state, other, otherState);
+        ConstGetObjectIdExpState cstate = (ConstGetObjectIdExpState) state;
+        _constant.calculateValue(sel, ctx, cstate.constantState, null, null);
+        Object oid = ctx.store.getContext().getObjectId(_constant.getValue(ctx, 
+            cstate.constantState));
         if (other != null) {
-            _sqlVal = other.toDataStoreValue(_val, store);
-            _otherLen = other.length();
+            cstate.sqlValue = other.toDataStoreValue(sel, ctx, otherState, oid);
+            cstate.otherLength = other.length(sel, ctx, otherState);
         } else
-            _sqlVal = _val;
+            cstate.sqlValue = oid;
     }
 
-    public void appendTo(SQLBuffer sql, int index, Select sel,
-        JDBCStore store, Object[] params, JDBCFetchConfiguration fetch) {
-        if (_otherLen > 1)
-            sql.appendValue(((Object[]) _sqlVal)[index], getColumn(index));
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
+        ConstGetObjectIdExpState cstate = (ConstGetObjectIdExpState) state;
+        if (cstate.otherLength > 1)
+            sql.appendValue(((Object[]) cstate.sqlValue)[index], 
+                cstate.getColumn(index));
         else
-            sql.appendValue(_sqlVal, getColumn(index));
+            sql.appendValue(cstate.sqlValue, cstate.getColumn(index));
     }
 
-    public void clearParameters() {
-        _constant.clearParameters();
-        _val = null;
-        _sqlVal = null;
+    /**
+     * Expression state.
+     */
+    private static class ConstGetObjectIdExpState 
+        extends ConstExpState {
+
+        public final ExpState constantState;
+        public Object sqlValue = null;
+        public int otherLength = 0;
+
+        public ConstGetObjectIdExpState(ExpState constantState) {
+            this.constantState = constantState;
+        }
     }
 }

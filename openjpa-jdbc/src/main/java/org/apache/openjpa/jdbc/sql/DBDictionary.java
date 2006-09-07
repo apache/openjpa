@@ -59,6 +59,8 @@ import javax.sql.DataSource;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.jdbc.kernel.exps.ExpContext;
+import org.apache.openjpa.jdbc.kernel.exps.ExpState;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -1851,6 +1853,8 @@ public class DBDictionary
 
         // manually build up the SET clause for the UPDATE statement
         sql.append(" SET ");
+        ExpContext ctx = new ExpContext(store, params, 
+            store.getFetchConfiguration());
         for (Iterator i = updateParams.entrySet().iterator(); i.hasNext();) {
             Map.Entry next = (Map.Entry) i.next();
             FieldMetaData fmd = (FieldMetaData) next.getKey();
@@ -1859,15 +1863,15 @@ public class DBDictionary
             Column col = ((FieldMapping) fmd).getColumns()[0];
             sql.append(col.getName());
             sql.append(" = ");
-            val.initialize(sel, store, false);
-            JDBCFetchConfiguration fetch = store.getFetchConfiguration();
-            val.calculateValue(sel, store, params, null, fetch);
+
+            ExpState state = val.initialize(sel, ctx, 0);
+            val.calculateValue(sel, ctx, state, null, null);
 
             // append the value with a null for the Select; i
             // indicates that the
-            for (int j = 0; j < val.length(); j++)
-                val.appendTo(sql, j, (allowAlias) ? sel : null, store, params, 
-                    fetch);
+            int length = val.length(sel, ctx, state);
+            for (int j = 0; j < length; j++)
+                val.appendTo((allowAlias) ? sel : null, ctx, state, sql, j);
 
             if (i.hasNext())
                 sql.append(", ");
@@ -3607,10 +3611,7 @@ public class DBDictionary
         } catch (IOException ioe) {
             throw new GeneralException(ioe);
         } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-            }
+            try { in.close(); } catch (IOException e) {}
         }
 
         // add additional reserved words set by user

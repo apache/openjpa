@@ -17,9 +17,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
@@ -34,7 +31,6 @@ class BindVariableAndExpression
 
     private final BindVariableExpression _bind;
     private final Exp _exp;
-    private Joins _joins = null;
 
     /**
      * Constructor. Supply the two combined expressions.
@@ -44,30 +40,25 @@ class BindVariableAndExpression
         _exp = exp;
     }
 
-    public void initialize(Select sel, JDBCStore store,
-        Object[] params, Map contains) {
-        _bind.initialize(sel, store, params, contains);
-        _exp.initialize(sel, store, params, contains);
-        _joins = sel.and(_bind.getJoins(), _exp.getJoins());
+    public ExpState initialize(Select sel, ExpContext ctx, Map contains) {
+        ExpState s1 = _bind.initialize(sel, ctx, contains);
+        ExpState s2 = _exp.initialize(sel, ctx, contains);
+        return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
-    public void appendTo(SQLBuffer buf, Select sel, JDBCStore store,
-        Object[] params, JDBCFetchConfiguration fetch) {
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf) {
         boolean or = _exp instanceof OrExpression;
         if (or)
             buf.append("(");
-        _exp.appendTo(buf, sel, store, params, fetch);
+        _exp.appendTo(sel, ctx, ((BinaryOpExpState) state).state2, buf);
         if (or)
             buf.append(")");
     }
 
-    public void selectColumns(Select sel, JDBCStore store,
-        Object[] params, boolean pks, JDBCFetchConfiguration fetch) {
-        _exp.selectColumns(sel, store, params, pks, fetch);
-    }
-
-    public Joins getJoins() {
-        return _joins;
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+        boolean pks) {
+        _exp.selectColumns(sel, ctx, ((BinaryOpExpState) state).state2, pks);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

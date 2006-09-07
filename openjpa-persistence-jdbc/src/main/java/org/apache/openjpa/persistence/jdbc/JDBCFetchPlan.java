@@ -15,15 +15,10 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
-import org.apache.openjpa.jdbc.kernel.DelegatingJDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.LRSSizes;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
-import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
-import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.persistence.FetchPlan;
-import org.apache.openjpa.persistence.PersistenceExceptions;
 
 /**
  * JDBC extensions to the fetch plan.
@@ -36,27 +31,87 @@ import org.apache.openjpa.persistence.PersistenceExceptions;
 public interface JDBCFetchPlan
     extends FetchPlan, EagerFetchModes, LRSSizes, JoinSyntaxes {
 
+    /**
+     * Eager fetch mode in loading relations.
+     * 
+     * @see EagerFetchModes
+     */
     public int getEagerFetchMode();
 
+    /**
+     * Eager fetch mode in loading relations.
+     * 
+     * @see EagerFetchModes
+     */
     public JDBCFetchPlan setEagerFetchMode(int mode);
 
+    /**
+     * Eager fetch mode in loading subclasses.
+     * 
+     * @see EagerFetchModes
+     */
     public int getSubclassFetchMode();
 
+    /**
+     * Eager fetch mode in loading subclasses.
+     * 
+     * @see EagerFetchModes
+     */
     public JDBCFetchPlan setSubclassFetchMode(int mode);
 
+    /**
+     * Type of JDBC result set to use for query results.
+     * 
+     * @see java.sql.ResultSet
+     */
     public int getResultSetType();
 
+    /**
+     * Type of JDBC result set to use for query results.
+     * 
+     * @see java.sql.ResultSet
+     */
     public JDBCFetchPlan setResultSetType(int type);
 
+    /**
+     * Result set fetch direction.
+     * 
+     * @see java.sql.ResultSet
+     */
     public int getFetchDirection();
 
+    /**
+     * Result set fetch direction.
+     * 
+     * @see java.sql.ResultSet
+     */
     public JDBCFetchPlan setFetchDirection(int direction);
 
+    /**
+     * How to determine the size of a large result set.
+     * 
+     * @see LRSSizes
+     */
     public int getLRSSize();
 
+    /**
+     * How to determine the size of a large result set.
+     * 
+     * @see LRSSizes
+     */
     public JDBCFetchPlan setLRSSize(int lrsSize);
 
+    /**
+     * SQL join syntax.
+     *
+     * @see JoinSyntaxes
+     */
     public int getJoinSyntax();
 
+    /**
+     * SQL join syntax.
+     *
+     * @see JoinSyntaxes
+     */
     public JDBCFetchPlan setJoinSyntax(int syntax);
 }

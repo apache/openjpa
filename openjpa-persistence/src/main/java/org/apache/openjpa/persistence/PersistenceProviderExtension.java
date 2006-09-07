@@ -11,16 +11,14 @@ import org.apache.openjpa.kernel.BrokerFactory;
  * @nojavadoc
  */
 public interface PersistenceProviderExtension {
+
 	/**
 	 * Gets the Configuration Provider implementation for this receiver.
-	 * 
 	 */
 	public ConfigurationProviderImpl newConfigurationProviderImpl();
 	
 	/**
 	 * Gets the EntityManagerFactory given a Broker Factory.
-	 * @param factory
-
 	 */
 	public OpenJPAEntityManagerFactory toEntityManagerFactory(BrokerFactory 
 		factory);
