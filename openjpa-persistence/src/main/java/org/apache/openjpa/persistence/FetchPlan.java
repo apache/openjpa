@@ -52,7 +52,6 @@ public interface FetchPlan {
      */
     public static final int DEFAULT = FetchConfiguration.DEFAULT;
 
-
     /**
      * Delegate.
      */

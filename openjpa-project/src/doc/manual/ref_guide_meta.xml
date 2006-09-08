@@ -412,7 +412,7 @@ OpenJPA recognizes the following class extensions:
                 <title>
                     Fetch Groups
                 </title>
-                <indexterm zone="data-cache">
+                <indexterm zone="fetch-groups">
                     <primary>
                         metadata
                     </primary>
@@ -493,31 +493,6 @@ remains valid. Use -1 for no timeout. Defaults to the
                         </para>
                     </listitem>
                 </itemizedlist>
-                <para>
-The <literal>data-cache</literal> key accepts the following values:
-                </para>
-                <itemizedlist>
-                    <listitem>
-                        <para>
-<literal>true</literal>: Use the default cache, as configured by the
-<link linkend="openjpa.DataCache"><literal>openjpa.DataCache</literal></link>
-configuration property. This is the default when no extension is given, unless a
-superclass names a different cache.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>false</literal>: Data for instances of this class should not be
-cached.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>&lt;cache-name&gt;</literal>: Place data for instances of this class
-into the cache with name <literal>&lt;cache-name&gt;</literal>.
-                        </para>
-                    </listitem>
-                </itemizedlist>
             </section>
             <section id="detached-state-field">
                 <title>
@@ -593,14 +568,6 @@ annotation accepts an array of lock group names.</phrase> For details on lock
 groups, see <xref linkend="ref_guide_lock_groups_and_subclasses"/>.
                 </para>
             </section>
-            <section id="auditable">
-                <title>
-                    Auditable
-                </title>
-                <para>
-Reserved for future use.
-                </para>
-            </section>
         </section>
         <section id="ref_guide_meta_field">
             <title>
@@ -613,7 +580,7 @@ OpenJPA recognizes the following field extensions:
                 <title>
                     Dependent
                 </title>
-                <indexterm zone="data-cache">
+                <indexterm zone="dependent">
                     <primary>
                         metadata
                     </primary>
@@ -663,6 +630,38 @@ Marks the key entities in a map field as dependent.
                         </para>
                     </listitem>
                 </itemizedlist>
+            </section>
+            <section id="load-fetch-group">
+                <title>
+                    Load Fetch Group
+                </title>
+                <indexterm zone="load-fetch-group">
+                    <primary>
+                        metadata
+                    </primary>
+                    <secondary>
+                        extensions
+                    </secondary>
+                    <tertiary>
+                        load fetch group
+                    </tertiary>
+                </indexterm>
+                <indexterm zone="load-fetch-group">
+                    <primary>
+                        fetch groups
+                    </primary>
+                    <secondary>
+                        load fetch group
+                    </secondary>
+                </indexterm>
+                <para>
+The <ulink url="../apidocs/org/apache/openjpa/persistence/LoadFetchGroup.html">
+<classname>org.apache.openjpa.persistence.LoadFetchGroup</classname></ulink> 
+annotation specifies a field's load fetch group. 
+<xref linkend="ref_guide_fetch"/> discusses OpenJPA's support for fetch groups 
+in general; see <xref linkend="ref_guide_fetch_custom"/> for how to use this
+annotation in particular.
+                </para>
             </section>
             <section id="lrs">
                 <title>
