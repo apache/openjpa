@@ -86,6 +86,7 @@
         <module>openjpa-kernel</module>
         <module>openjpa-jdbc</module>
         <module>openjpa-xmlstore</module>
+        <module>openjpa-all</module>
         <module>openjpa-project</module>
     </modules>
     <profiles>

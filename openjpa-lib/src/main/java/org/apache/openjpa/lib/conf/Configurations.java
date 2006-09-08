@@ -18,8 +18,10 @@ package org.apache.openjpa.lib.conf;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
@@ -30,6 +32,7 @@ import javax.naming.NamingException;
 
 import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.ParseException;
@@ -466,36 +469,40 @@ public class Configurations {
             (ConfigurationProvider.class, loader);
         ConfigurationProvider provider = null;
         int providerCount = 0;
-        StringBuffer errs = null;
+        List errs = null;
         for (int i = 0; i < impls.length; i++) {
-            provider = newProvider(impls[i]);
-            if (provider == null)
-                continue;
-
-            providerCount++;
             try {
+                provider = (ConfigurationProvider) impls[i].newInstance();
+                if (provider == null)
+                    continue;
+
+                providerCount++;
+
                 if ((globals && provider.loadGlobals(loader))
                     || (!globals && provider.loadDefaults(loader)))
                     return provider;
             } catch (MissingResourceException mre) {
                 throw mre;
-            } catch (Exception e) {
-                if (errs == null)
-                    errs = new StringBuffer();
-                else
-                    errs.append(", ");
-                errs.append(e.toString());
+            } catch (Throwable t) {
+                (errs == null ? errs = new ArrayList() : errs).add(t);
             }
         }
 
         String type = (globals) ? "globals" : "defaults";
+        MissingResourceException ex = null;
+
         if (errs != null)
-            throw new MissingResourceException(errs.toString(),
+            ex = new MissingResourceException(errs.toString(),
                 Configurations.class.getName(), type);
-        if (providerCount == 0)
-            throw new MissingResourceException(_loc.get ("no-providers", 
+        else if (providerCount == 0)
+            ex = new MissingResourceException(_loc.get ("no-providers", 
                 ConfigurationProvider.class.getName()).getMessage(),
                 Configurations.class.getName(), type);
+
+        if (ex != null)
+            throw (MissingResourceException) JavaVersions.initCause(ex,
+                errs.size() == 0 ? null : (Throwable) errs.get(0));
+
         return null;
     }
 

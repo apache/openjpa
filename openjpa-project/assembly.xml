@@ -12,6 +12,7 @@
                 <include>NOTICE*</include>
             </includes>
         </fileSet>
+        <!--
         <fileSet>
             <directory>licenses</directory>
             <outputDirectory>/lib</outputDirectory>
@@ -31,6 +32,7 @@
             <directory>target/examples</directory>
             <outputDirectory>/examples</outputDirectory>
         </fileSet>
+        -->
     </fileSets>
     <dependencySets>
         <dependencySet>
@@ -65,30 +67,43 @@
 
                 <!-- optional -->
                 <exclude>junit:junit</exclude>
+
+                <!-- these are placed in the modules/ directory -->
+                <exclude>org.apache.openjpa:openjpa-all</exclude>
+                <exclude>org.apache.openjpa:openjpa-lib</exclude>
+                <exclude>org.apache.openjpa:openjpa-kernel</exclude>
+                <exclude>org.apache.openjpa:openjpa-kernel-4</exclude>
+                <exclude>org.apache.openjpa:openjpa-kernel-5</exclude>
+                <exclude>org.apache.openjpa:openjpa-jdbc</exclude>
+                <exclude>org.apache.openjpa:openjpa-jdbc-5</exclude>
+                <exclude>org.apache.openjpa:openjpa-persistence</exclude>
+                <exclude>org.apache.openjpa:openjpa-persistence-jdbc</exclude>
+                <exclude>org.apache.openjpa:openjpa-xmlstore</exclude>
             </excludes>
         </dependencySet>
 
-
-        <!--
         <dependencySet>
-            <outputDirectory>/optional</outputDirectory>
+            <outputDirectory>/modules</outputDirectory>
             <unpack>false</unpack>
-            <scope>runtime</scope>
             <includes>
-                <include>org.apache.derby:derby</include>
+                <include>org.apache.openjpa:openjpa-lib</include>
+                <include>org.apache.openjpa:openjpa-kernel</include>
+                <include>org.apache.openjpa:openjpa-kernel-4</include>
+                <include>org.apache.openjpa:openjpa-kernel-5</include>
+                <include>org.apache.openjpa:openjpa-jdbc</include>
+                <include>org.apache.openjpa:openjpa-jdbc-5</include>
+                <include>org.apache.openjpa:openjpa-persistence</include>
+                <include>org.apache.openjpa:openjpa-persistence-jdbc</include>
+                <include>org.apache.openjpa:openjpa-xmlstore</include>
             </includes>
         </dependencySet>
-        -->
 
-        <!--
-         <dependencySet>
+        <dependencySet>
             <outputDirectory>/</outputDirectory>
             <unpack>false</unpack>
-            <scope>runtime</scope>
             <includes>
                 <include>org.apache.openjpa:openjpa-all</include>
             </includes>
         </dependencySet>
-        -->
     </dependencySets>
 </assembly>
