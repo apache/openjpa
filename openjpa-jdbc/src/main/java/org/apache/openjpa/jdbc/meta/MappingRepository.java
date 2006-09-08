@@ -1006,7 +1006,7 @@ public class MappingRepository
                 return ImmutableValueHandler.getInstance();
             case JavaTypes.PC:
                 if (!val.getTypeMapping().isMapped()
-                    && useUntypedPCHandler(val))
+                    && useUntypedPCHandler(val)) 
                     return UntypedPCValueHandler.getInstance();
                 break;
             case JavaTypes.PC_UNTYPED:

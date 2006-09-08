@@ -472,11 +472,9 @@ public class AnnotationPersistenceMetaDataParser
         if (isMetaDataMode()) {
             // while the spec only provides for embedded exclusive, it doesn't
             // seem hard to support otherwise
-            if (entity == null) {
+            if (entity == null)
                 meta.setEmbeddedOnly(true);
-                if (_cls.isAnnotationPresent(MappedSuperclass.class))
-                    meta.setIdentityType(ClassMetaData.ID_UNKNOWN);
-            } else {
+            else {
                 meta.setEmbeddedOnly(false);
                 if (!StringUtils.isEmpty(entity.name()))
                     meta.setTypeAlias(entity.name());
