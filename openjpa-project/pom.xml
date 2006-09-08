@@ -12,7 +12,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>openjpa-project</artifactId>
     <packaging>pom</packaging>
-    <name>OpenJPA Project</name>
+    <name>OpenJPA Distribution</name>
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa</artifactId>
@@ -78,7 +78,7 @@
                         <id>bin</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>assembly</goal>
+                            <goal>attached</goal>
                         </goals>
                         <configuration>
                             <descriptor>assembly.xml</descriptor>
@@ -91,7 +91,7 @@
                         <id>sources</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>assembly</goal>
+                            <goal>attached</goal>
                         </goals>
                         <configuration>
                             <descriptor>source-assembly.xml</descriptor>
@@ -134,6 +134,11 @@
 
     <!-- need to explicitly list dependencies for assembly to work -->
     <dependencies>
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa-all</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-lib</artifactId>
