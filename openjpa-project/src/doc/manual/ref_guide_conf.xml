@@ -2124,7 +2124,8 @@ MaxFetchDepth</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> The maximum depth of relations to
-traverse when eager fetching. Use -1 for no limit. Defaults to 1.
+traverse when eager fetching. Use -1 for no limit. Defaults to 1.  See
+<xref linkend="ref_guide_perfpack_eager"/> for details on eager fetching.
             </para>
         </section>
         <section id="openjpa.MetaDataFactory">

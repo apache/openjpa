@@ -1649,30 +1649,11 @@ runtime to vary the sets of fields that are eagerly loaded.
             </title>
             <para>
 OpenJPA places any field that is eagerly loaded according to the JPA metadata
-rules into the built-in <emphasis>default</emphasis> fetch group. The default
-fetch group is always active; you cannot remove it at runtime. Thus fields in
-this group are always loaded immediately when an object is fetched from the
-datastore.
-            </para>
-            <para>
-A field can be a member of zero or one fetch groups, including the default fetch
-group. That is, fields in the default fetch group cannot be in an additional
-fetch group, and a field cannot declare itself a member of more than one fetch
-group. So to place a field in a custom fetch group, you must first exclude it
-from eager fetching in your JPA metadata, if it does not already default to lazy
-loading.
-            </para>
-            <para>
-When lazy-loading a field, OpenJPA checks to see if that field declares itself
-to be a member of a fetch group. If so, OpenJPA will load all fields in that
-fetch group.
-            </para>
-            <para>
-Additionally, it is possible to configure a OpenJPA <classname> EntityManager
-</classname> or <classname>Query</classname> to use a particular fetch group or
-set of fetch groups when loading new objects, as described later in this
-chapter. When this is the case, OpenJPA loads the default fetch group plus any
-fields in the specified set of additional fetch groups.
+rules into the built-in <emphasis>default</emphasis> fetch group. As its name
+implies, the default fetch group is active by default.  You may also
+define your own named fetch groups and activate or deactivate them at runtime,
+as described later in this chapter. OpenJPA will eagerly-load the fields in all
+active fetch groups when loading objects from the datastore.
             </para>
             <para>
 You create fetch groups with the
@@ -1734,36 +1715,35 @@ include in the fetch group.
                 </listitem>
                 <listitem>
                     <para>
-<literal>depth</literal>: If the attribute represents a relation, the depth to
-which to recurse. The current fetch group will be applied to the related object
-when fetching it, and so on until the depth is exhausted or the related object
-has no relations in the current fetch group. Under the default depth of 1, the
-related object will be fetched, but none of its relations will be traversed,
-even if they are in the current fetch group. With a depth of 2, the related
-object will be fetched, and if it has any relations in the current fetch group,
-those will be fetched with a depth of 1. A depth of 0 indicates that the
-recursion continues until the graph is exhausted or a related object has no
-relations in the current fetch group.
+<literal>recursionDepth</literal>: If the attribute represents a relation, the 
+maximum number of same-typed relations to eager-fetch from this field.  Defaults
+to 1.  For example, consider an <classname>Employee</classname> class with a 
+<literal>manager</literal> field, also of type <classname>Employee</classname>.
+When we load an <classname>Employee</classname> and the <literal>
+manager</literal> field is in an active fetch group, the recursion depth (along
+with the max fetch depth setting, described below) determines whether we only 
+retrieve the target <classname>Employee</classname> and his manager (depth 1), 
+or whether we also retrieve the manager's manager (depth 2), or the manager's 
+manager's manager (depth 3), etc.  Use -1 for unlimited depth.
                     </para>
                 </listitem>
             </itemizedlist>
-            <para>
-Thus, to create a <emphasis>detail</emphasis> fetch group consisting of the
-<literal>publisher</literal> and <literal>articles</literal> relations, with the
-fetch group applied recursively to the related objects, use:
-            </para>
             <example id="ref_guide_fetch_customgroups">
                 <title>
                     Custom Fetch Group Metadata
                 </title>
+                <para>
+Creates a <emphasis>detail</emphasis> fetch group consisting of the
+<literal>publisher</literal> and <literal>articles</literal> relations, use:
+                </para>
 <programlisting>
 import org.apache.openjpa.persistence.*;
 
 @Entity
 @FetchGroups({
     @FetchGroup(name="detail", attributes={
-        @FetchAttribute(name="publisher" depth=0),
-        @FetchAttribute(name="articles" depth=0)
+        @FetchAttribute(name="publisher"),
+        @FetchAttribute(name="articles")
     }),
     ...
 })
@@ -1773,13 +1753,51 @@ public class Magazine
 }
 </programlisting>
             </example>
-            <note>
-                <para>
-OpenJPA currently only supports a depth of 0 for fetch attributes. This
-restriction will be lifted in a future release, along with the restriction
-limiting each attribute to a single fetch group.
-                </para>
-            </note>
+            <para>
+A field can be a member of any number of fetch groups.  A field can also
+declare a <emphasis>load fetch group</emphasis>.  
+When you access a lazy-loaded field for the first time, OpenJPA makes a
+datastore trip to fetch that field's data.  Sometimes, however, you know
+that whenever you access a lazy field A, you're likely to access lazy fields B
+and C as well.  Therefore, it would be more efficient to fetch the data for A,
+B, and C in the same datastore trip.  By setting A's load fetch group to the 
+name of a <link linkend="ref_guide_fetch">fetch group</link> containing B and 
+C, you can tell OpenJPA to load all of these fields together when A is first 
+accessed.
+            </para>
+            <para>
+Use OpenJPA's
+<ulink url="../apidocs/org/apache/openjpa/persistence/LoadFetchGroup.html">
+<classname>org.apache.openjpa.persistence.LoadFetchGroup</classname></ulink>
+annotation to specify the load fetch group of any persistent field. The value of
+the annotation is the name of a declared fetch group whose members should be
+loaded along with the annotated field.
+            </para>
+            <example id="ref_guide_fetch_loadgroup">
+                <title>
+                    Load Fetch Group Metadata
+                </title>
+<programlisting>
+import org.apache.openjpa.persistence.*;
+
+@Entity
+@FetchGroups({
+    @FetchGroup(name="detail", attributes={
+        @FetchAttribute(name="publisher"),
+        @FetchAttribute(name="articles")
+    }),
+    ...
+})
+public class Magazine
+{
+   @ManyToOne(fetch=FetchType.LAZY)
+   @LoadFetchGroup("detail")
+   private Publisher publisher;
+
+   ...
+}
+</programlisting>
+            </example>
         </section>
         <section id="ref_guide_fetch_conf">
             <title>
@@ -1808,16 +1826,31 @@ You can control the default set of fetch groups with the
 fetch group names.
             </para>
             <para>
-In JPA, OpenJPA's <classname>OpenJPAEntityManager</classname> and <classname>
+You can also set the system's default maximum fetch depth with the
+<link linkend="openjpa.MaxFetchDepth"><literal>openjpa.MaxFetchDepth</literal>
+</link> configuration property.  The maximum fetch depth determines how "deep" 
+into the object graph to traverse when loading an instance.  The default maximum
+depth is 1, meaning that OpenJPA will load at most the target instance and its 
+immediate relations.  By increasing the depth, you can allow OpenJPA to also 
+load relations of relations, to arbitrary depth.  A value of -1 symbolizes an
+infinite maximum, telling OpenJPA to fetch configured relations until it reaches
+the edges of the object graph.  Of course, which relation fields are loaded 
+depends on whether the fields are eager or lazy, and on the active fetch groups.
+A fetch group member's recursion depth may also limit the fetch depth to 
+something less than the configured maximum.
+            </para>
+            <para>
+OpenJPA's <classname>OpenJPAEntityManager</classname> and <classname>
 OpenJPAQuery</classname> extensions to the standard <classname>EntityManager
 </classname> and <classname>Query</classname> interfaces provide access to a
 <ulink url="../../api/openjpa/persistence/FetchPlan.html"><classname>
 org.apache.openjpa.persistence.FetchPlan</classname></ulink> object. The
-<classname>FetchPlan</classname> maintains the set of active fetch groups. It
-begins with the groups defined in the <literal>openjpa.FetchGroups</literal>
-property, but allows you to add and remove groups for an individual <classname>
-EntityManager</classname> or <classname>Query</classname> through the methods
-below.
+<classname>FetchPlan</classname> maintains the set of active fetch groups and
+the maximum fetch depth. It begins with the groups and depth defined in the 
+<literal>openjpa.FetchGroups</literal> and <literal>openjpa.MaxFetchDepth
+</literal> properties, but allows you to add or remove groups and change the
+maximum fetch depth for an individual <classname>EntityManager</classname> or 
+<classname>Query</classname> through the methods below.
             </para>
 <programlisting>
 public FetchPlan addFetchGroup (String group);
@@ -1829,6 +1862,8 @@ public FetchPlan removeFetchGroups (Collection groups);
 public FetchPlan resetFetchGroups ();
 public Collection&lt;String&gt; getFetchGroups (); 
 public void clearFetchGroups ();
+public FetchPlan setMaxFetchDepth(int depth);
+public int getMaxFetchDepth();
 </programlisting>
             <para>
 <xref linkend="ref_guide_runtime"/> details the <classname>
@@ -1845,7 +1880,7 @@ import org.apache.openjpa.persistence.*;
 ...
 
 OpenJPAQuery kq = OpenJPAPersistence.cast (em.createQuery (...));
-kq.getFetchPlan ().addFetchGroup ("detail");
+kq.getFetchPlan ().setMaxFetchDepth(3).addFetchGroup ("detail");
 List results = kq.getResultList ();
 </programlisting>
             </example>
@@ -1865,8 +1900,8 @@ List results = kq.getResultList ();
             <para>
 In addition to controlling fetch configuration on a per-fetch-group basis, you
 can configure OpenJPA to include particular fields in the current fetch
-configuration. This allows you to add individual fields that are not in the
-default fetch group or in any other currently-active fetch groups to the set of
+plan. This allows you to add individual fields that are not in the
+default fetch group or in any other active fetch groups to the set of
 fields that will be eagerly loaded from the database.
             </para>
             <para>
@@ -1994,15 +2029,16 @@ table. If you perform a query that returns 100 <classname>Person</classname>
 objects, and then you have to retrieve the <classname>Address</classname> for
 each person, OpenJPA may make as many as 101 queries (the initial query, plus
 one for the address of each person returned). Or if some of the <classname>
-Person</classname> instances turn out to be <classname>Employee</classname> s,
+Person</classname> instances turn out to be <classname>Employee</classname>s,
 where <classname>Employee</classname> has additional data in its own joined
 table, OpenJPA once again might need to make extra database trips to access the
 additional employee data. With eager fetching, OpenJPA can reduce these cases to
 a single query.
         </para>
         <para>
-Eager fetching only affects relations in the fetch groups being loaded (see
-<xref linkend="ref_guide_fetch"/> ). In other words, relations that would
+Eager fetching only affects relations in the active fetch groups, and is limited
+by the declared maximum fetch depth and field recursion depth (see
+<xref linkend="ref_guide_fetch"/>). In other words, relations that would
 not normally be loaded immediately when retrieving an object or accessing a
 field are not affected by eager fetching. In our example above, the address of
 each person would only be eagerly fetched if the query were configured to
@@ -2072,8 +2108,7 @@ from relation fetching, and can be disabled for specific classes.
 Some databases may not support UNIONs or outer joins. Also, OpenJPA can not use
 outer joins if you have set the <link linkend="openjpa.jdbc.DBDictionary">
 <literal> DBDictionary</literal></link>'s <literal>JoinSyntax</literal> to
-<literal>traditional</literal>. See <xref linkend="ref_guide_dbsetup_sql92"/>
-.
+<literal>traditional</literal>. See <xref linkend="ref_guide_dbsetup_sql92"/>.
                     </para>
                 </note>
             </listitem>
@@ -2291,13 +2326,6 @@ more data into memory than anticipated.
                 </listitem>
                 <listitem>
                     <para>
-Eager fetching can sometimes be <emphasis>less</emphasis> efficient than
-standard fetching when circular relations are included in the configured fetch
-groups.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
 Once OpenJPA eager-joins into a class, it cannot issue any further eager to-many
 joins or parallel selects from that class in the same query. To-one joins,
 however, can recurse to any level.
@@ -2316,8 +2344,7 @@ turn off eager to-many joining.
                     <para>
 OpenJPA cannot eagerly join to polymorphic relations to non-leaf classes in a
 table-per-class inheritance hierarchy. You can work around this restriction
-using the mapping extensions described in <xref linkend="nonpolymorphic"/>
-.
+using the mapping extensions described in <xref linkend="nonpolymorphic"/>.
                     </para>
                 </listitem>
             </itemizedlist>
