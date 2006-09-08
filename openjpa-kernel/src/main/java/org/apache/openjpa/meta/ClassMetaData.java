@@ -142,7 +142,7 @@ public class ClassMetaData
     private Boolean _embedded = null;
     private Boolean _interface = null;
     private Class _impl = null;
-    private int _identity = -1;
+    private int _identity = ID_UNKNOWN;
     private int _idStrategy = ValueStrategies.NONE;
     private int _accessType = ACCESS_UNKNOWN;
 
@@ -374,23 +374,16 @@ public class ClassMetaData
      * primary key fields, and {@link #ID_APPLICATION} otherwise.
      */
     public int getIdentityType() {
-        switch (_identity) {
-            case -1:
-                ClassMetaData sup = getPCSuperclassMetaData();
-                if (sup != null && sup.getIdentityType() != ID_UNKNOWN)
-                    _identity = sup.getIdentityType();
-                else {
-                    FieldMetaData[] pks = getPrimaryKeyFields();
-                    if (pks.length > 0)
-                        _identity = ID_APPLICATION;
-                    else
-                        _identity = ID_DATASTORE;
-                }
-                break;
-            case ID_UNKNOWN:
+        if (_identity == ID_UNKNOWN) {
+            ClassMetaData sup = getPCSuperclassMetaData();
+            if (sup != null && sup.getIdentityType() != ID_UNKNOWN)
+                _identity = sup.getIdentityType();
+            else {
                 if (getPrimaryKeyFields().length > 0)
                     _identity = ID_APPLICATION;
-                break;
+                else 
+                    _identity = (isMapped()) ? ID_DATASTORE : ID_UNKNOWN;
+            }
         }
         return _identity;
     }
@@ -1636,8 +1629,6 @@ public class ClassMetaData
      * Validate mapping data.
      */
     protected void validateMapping(boolean runtime) {
-        if (isMapped() && getIdentityType() == ID_UNKNOWN)
-            throw new MetaDataException(_loc.get("mapped-unknownid", this));
     }
 
     /**
@@ -1676,28 +1667,30 @@ public class ClassMetaData
      */
     private void validateIdentity(boolean runtime) {
         // make sure identity types are consistent
-        if (_super != null && _identity != -1
-            && getPCSuperclassMetaData().getIdentityType() != _identity)
+        ClassMetaData sup = getPCSuperclassMetaData();
+        int id = getIdentityType();
+        if (sup != null && sup.getIdentityType() != ID_UNKNOWN
+            && sup.getIdentityType() != id)
             throw new MetaDataException(_loc.get("id-types", _type));
 
         // check for things the data store doesn't support
         Collection opts = _repos.getConfiguration().supportedOptions();
-        if (getIdentityType() == ID_APPLICATION
+        if (id == ID_APPLICATION
             && !opts.contains(OpenJPAConfiguration.OPTION_ID_APPLICATION)) {
             throw new UnsupportedException(_loc.get("appid-not-supported",
                 _type));
         }
-        if (getIdentityType() == ID_DATASTORE
+        if (id == ID_DATASTORE
             && !opts.contains(OpenJPAConfiguration.OPTION_ID_DATASTORE)) {
             throw new UnsupportedException(_loc.get
                 ("datastoreid-not-supported", _type));
         }
 
-        if (getIdentityType() == ID_APPLICATION) {
+        if (id == ID_APPLICATION) {
             if (_idStrategy != ValueStrategies.NONE)
                 throw new MetaDataException(_loc.get("appid-strategy", _type));
             validateAppIdClass(runtime);
-        } else
+        } else if (id != ID_UNKNOWN)
             validateNoPKFields();
 
         int strategy = getIdentityStrategy();
