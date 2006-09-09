@@ -15,6 +15,8 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -34,23 +36,18 @@ public class TestPersistence
 
     private EntityManagerFactory emf;
 
-    protected EntityManager getEM() {
-        if (emf == null)
-            emf = Persistence.createEntityManagerFactory("simple-emf-test");
-        assertNotNull(emf);
-
-        EntityManager em = emf.createEntityManager();
-        assertNotNull(em);
-
-        return em;
+    public void setUp() {
+        Map props = new HashMap();
+        props.put("openjpa.MetaDataFactory", 
+            "jpa(Types=" + AllFieldTypes.class.getName() + ")");
+        emf = Persistence.createEntityManagerFactory("test", props);
     }
 
-    public void tearDown()
-        throws Exception {
-        super.tearDown();
-
+    public void tearDown() {
+        if (emf == null)
+            return;
         try {
-            EntityManager em = getEM();
+            EntityManager em = emf.createEntityManager();
             em.getTransaction().begin();
             em.createQuery("delete from AllFieldTypes").executeUpdate();
             em.getTransaction().commit();
@@ -61,11 +58,10 @@ public class TestPersistence
     }
 
     public void testCreateEntityManager() {
-        EntityManager em = getEM();
+        EntityManager em = emf.createEntityManager();
 
         EntityTransaction t = em.getTransaction();
         assertNotNull(t);
-
         t.begin();
         t.setRollbackOnly();
         t.rollback();
@@ -75,14 +71,11 @@ public class TestPersistence
         OpenJPAEntityManager ojem = (OpenJPAEntityManager) em;
         ojem.getFetchPlan().setMaxFetchDepth(-1);
         assertEquals(-1, ojem.getFetchPlan().getMaxFetchDepth());
-
         em.close();
     }
 
     public void testPersist() {
-        EntityManager em;
-
-        em = getEM();
+        EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new AllFieldTypes());
         em.getTransaction().commit();
@@ -90,9 +83,7 @@ public class TestPersistence
     }
 
     public void testQuery() {
-        EntityManager em;
-
-        em = getEM();
+        EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AllFieldTypes aft = new AllFieldTypes();
         aft.setStringField("foo");
@@ -101,7 +92,7 @@ public class TestPersistence
         em.getTransaction().commit();
         em.close();
 
-        em = getEM();
+        em = emf.createEntityManager();
         em.getTransaction().begin();
         assertEquals(1, em.createQuery
             ("select x from AllFieldTypes x where x.stringField = 'foo'").
