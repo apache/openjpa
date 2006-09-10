@@ -230,7 +230,7 @@ public class PersistenceMetaDataFactory
         ClassLoader loader = repos.getConfiguration().
             getClassResolverInstance().getClassLoader(cls, envLoader);
         XMLPersistenceMetaDataParser xmlParser = getXMLParser();
-        xmlParser.setClassLoader(loader);
+        xmlParser.setClassLoader(envLoader);
         xmlParser.setEnvClassLoader(envLoader);
         xmlParser.setMode(mode);
         try {
