@@ -1792,6 +1792,17 @@ public class DBDictionary
             return sql;
         }
 
+        Table table = mapping.getTable();
+        String tableName = getFullName(table, false);
+
+        // only use a  subselect if the where is not empty; otherwise
+        // an unqualified delete or update will work
+        if (sel.getWhere() == null || sel.getWhere().isEmpty()) {
+            sql.append(tableName);
+            appendUpdates(sel, store, sql, params, updateParams, false);
+            return sql;
+        }
+
         // we need to use a subselect if we are to bulk delete where
         // the select includes multiple tables; if the database
         // doesn't support it, then we need to sigal this by returning null
@@ -1799,8 +1810,6 @@ public class DBDictionary
             return null;
 
         Column[] pks = mapping.getPrimaryKeyColumns();
-        Table table = mapping.getTable();
-        String tableName = getFullName(table, false);
         sel.clearSelects();
         sel.setDistinct(true);
 
