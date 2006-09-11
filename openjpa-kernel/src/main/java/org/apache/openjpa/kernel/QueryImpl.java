@@ -657,11 +657,11 @@ public class QueryImpl
         ClassMetaData[] metas;
         if (_class == null || _storeQuery.supportsAbstractExecutors())
             metas = new ClassMetaData[]{ meta };
-        else if (meta != null && (_subclasses || meta.isMapped()))
-            metas = new ClassMetaData[]{ meta };
-        else if (_subclasses)
+        else if (_subclasses && (meta == null || meta.isManagedInterface()))
             metas = repos.getImplementorMetaDatas(_class,
                 _broker.getClassLoader(), true);
+        else if (meta != null && (_subclasses || meta.isMapped()))
+            metas = new ClassMetaData[]{ meta };
         else
             metas = StoreQuery.EMPTY_METAS;
 

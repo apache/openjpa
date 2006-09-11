@@ -120,10 +120,11 @@ public class ExtentImpl
                 _broker.getClassLoader(), false);
 
             ClassMetaData[] metas;
-            if (meta != null && (meta.isMapped() || (_subs
+            if (meta != null && (!_subs || !meta.isManagedInterface())
+                && (meta.isMapped() || (_subs
                 && meta.getMappedPCSubclassMetaDatas().length > 0)))
                 metas = new ClassMetaData[]{ meta };
-            else if (meta == null && _subs)
+            else if (_subs && (meta == null || meta.isManagedInterface()))
                 metas = repos.getImplementorMetaDatas(_type,
                     _broker.getClassLoader(), false);
             else

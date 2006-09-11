@@ -660,7 +660,8 @@ public class MappingTool
         ClassMapping mapping = repos.getMapping(cls, null, false);
         if (mapping != null)
             return mapping;
-        if (!validate || repos.getPersistenceAware(cls) != null)
+        if (!validate || cls.isInterface() || 
+            repos.getPersistenceAware(cls) != null)
             return null;
         throw new MetaDataException(_loc.get("no-meta", cls));
     }
