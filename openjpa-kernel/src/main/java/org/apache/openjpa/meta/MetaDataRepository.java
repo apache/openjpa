@@ -83,8 +83,8 @@ public class MetaDataRepository
     public static final int VALIDATE_RUNTIME = 8;
 
     protected static final Class[] EMPTY_CLASSES = new Class[0];
-    protected static final PersistenceAwareClass[] EMPTY_PAWARE_CLASSES = 
-    	new PersistenceAwareClass[0];
+    protected static final NonPersistentMetaData[] EMPTY_NON_PERSISTENT = 
+    	new NonPersistentMetaData[0];
     protected final ClassMetaData[] EMPTY_METAS;
     protected final FieldMetaData[] EMPTY_FIELDS;
     protected final Order[] EMPTY_ORDERS;
@@ -110,6 +110,7 @@ public class MetaDataRepository
     private final Map _seqs = new HashMap();
     private final Map _aliases = Collections.synchronizedMap(new HashMap());
     private final Map _pawares = Collections.synchronizedMap(new HashMap());
+    private final Map _nonMapped = Collections.synchronizedMap(new HashMap());
     
     // map of classes to lists of their subclasses
     private final Map _subs = Collections.synchronizedMap(new HashMap());
@@ -886,6 +887,7 @@ public class MetaDataRepository
                 meta, impl));
         _ifaces.put(meta.getDescribedType(), impl);
         _metas.put(impl, meta);
+        addDeclaredInterfaceImpl(meta, meta.getDescribedType());
     }
     
     synchronized InterfaceImplGenerator getImplGenerator() {
@@ -1034,54 +1036,110 @@ public class MetaDataRepository
     }
      
     /**
-     * Gets the persistence-aware class corresponding to the given class. Can
-     * be null, if the given class is not registered as persistence-aware with
-     * this receiver.
+     * Gets the metadata corresponding to the given persistence-aware class. 
+     * Returns null, if the given class is not registered as 
+     * persistence-aware.
      */
-    public PersistenceAwareClass getPersistenceAware(Class cls) {
-    	return (PersistenceAwareClass)_pawares.get(cls);
+    public NonPersistentMetaData getPersistenceAware(Class cls) {
+    	return (NonPersistentMetaData)_pawares.get(cls);
     }
     
     /**
-     * Gets all the registered persistence-aware classes.
+     * Gets all the metadatas for persistence-aware classes
      * 
-     * @return empty array if no class has been registered
+     * @return empty array if no class has been registered as pers-aware
      */
-    public PersistenceAwareClass[] getPersistenceAwares() {
+    public NonPersistentMetaData[] getPersistenceAwares() {
         synchronized (_pawares) {
             if (_pawares.isEmpty())
-                return EMPTY_PAWARE_CLASSES;
-            return (PersistenceAwareClass[])_pawares.values().toArray
-                (new PersistenceAwareClass[_pawares.size()]);
+                return EMPTY_NON_PERSISTENT;
+            return (NonPersistentMetaData[])_pawares.values().toArray
+                (new NonPersistentMetaData[_pawares.size()]);
         }
     }
 
     /**
-     * Add the given class as persitence-aware.
+     * Add the given class as persistence-aware.
      * 
      * @param cls non-null and must not alreaddy be added as persitence-capable
      */
-    public PersistenceAwareClass addPersistenceAware(Class cls) {
+    public NonPersistentMetaData addPersistenceAware(Class cls) {
     	if (cls == null)
     		return null;
         synchronized(this) {
             if (_pawares.containsKey(cls))
-                return (PersistenceAwareClass)_pawares.get(cls);
+                return (NonPersistentMetaData)_pawares.get(cls);
             if (getCachedMetaData(cls) != null)
                 throw new MetaDataException(_loc.get("pc-and-aware", cls));
-            PersistenceAwareClass result = new PersistenceAwareClass(cls, this);
-            _pawares.put(cls, result);
-            return result;
+            NonPersistentMetaData meta = new NonPersistentMetaData(cls, this,
+                NonPersistentMetaData.TYPE_PERSISTENCE_AWARE);
+            _pawares.put(cls, meta);
+            return meta;
     	}
     }
 
     /**
-     * Remove a persitence-aware class from this receiver.
+     * Remove a persitence-aware class from the repository
      * 
-     * @return true if removed, false if not contained in this receiver
+     * @return true if removed
      */
     public boolean removePersistenceAware(Class cls) {
     	return _pawares.remove(cls) != null;
+    }
+
+    /**
+     * Gets the metadata corresponding to the given non-mapped interface.
+     * Returns null, if the given interface is not registered as 
+     * persistence-aware.
+     */
+    public NonPersistentMetaData getNonMappedInterface(Class iface) {
+    	return (NonPersistentMetaData)_nonMapped.get(iface);
+    }
+    
+    /**
+     * Gets the corresponding metadatas for all registered, non-mapped
+     * interfaces
+     * 
+     * @return empty array if no non-mapped interface has been registered.
+     */
+    public NonPersistentMetaData[] getNonMappedInterfaces() {
+        synchronized (_nonMapped) {
+            if (_nonMapped.isEmpty())
+                return EMPTY_NON_PERSISTENT;
+            return (NonPersistentMetaData[])_nonMapped.values().toArray
+                (new NonPersistentMetaData[_nonMapped.size()]);
+        }
+    }
+
+    /**
+     * Add the given non-mapped interface to the repository.
+     * 
+     * @param iface the non-mapped interface
+     */
+    public NonPersistentMetaData addNonMappedInterface(Class iface) {
+    	if (iface == null)
+    		return null;
+        synchronized(this) {
+            if (!iface.isInterface())
+                throw new MetaDataException(_loc.get("not-non-mapped", iface));
+            if (_nonMapped.containsKey(iface))
+                return (NonPersistentMetaData)_nonMapped.get(iface);
+            if (getCachedMetaData(iface) != null)
+                throw new MetaDataException(_loc.get("non-mapped-pc", iface));
+            NonPersistentMetaData meta = new NonPersistentMetaData(iface, this,
+                NonPersistentMetaData.TYPE_NON_MAPPED_INTERFACE);
+            _nonMapped.put(iface, meta);
+            return meta;
+    	}
+    }
+
+    /**
+     * Remove a non-mapped interface from the repository
+     * 
+     * @return true if removed
+     */
+    public boolean removeNonMappedInterface(Class iface) {
+    	return _nonMapped.remove(iface) != null;
     }
 
     /**
@@ -1102,6 +1160,7 @@ public class MetaDataRepository
         _factory.clear();
         _aliases.clear();
         _pawares.clear();
+        _nonMapped.clear();
     }
 
     /**
@@ -1317,7 +1376,7 @@ public class MetaDataRepository
      * Update the list of implementations of base classes and interfaces.
      */
     private void updateImpls(Class cls, Class leastDerived, Class check) {
-        if (_factory.getDefaults().isDeclaredInterfacePersistent())
+        if (!_factory.getDefaults().isDeclaredInterfacePersistent())
             return;
         // allow users to query on common non-pc superclasses
         Class sup = check.getSuperclass();

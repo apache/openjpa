@@ -142,6 +142,7 @@ public class ClassMetaData
     private Boolean _embedded = null;
     private Boolean _interface = null;
     private Class _impl = null;
+    private Map _ifaceMap = new HashMap();
     private int _identity = ID_UNKNOWN;
     private int _idStrategy = ValueStrategies.NONE;
     private int _accessType = ACCESS_UNKNOWN;
@@ -693,6 +694,37 @@ public class ClassMetaData
      */
     public void setInterfaceImpl(Class impl) {
         _impl = impl;
+    }
+
+    /**
+     * Alias properties from the given interface during  queries to
+     * the local field.
+     */
+    public void setInterfacePropertyAlias(Class iface, String orig, 
+        String local) {
+        synchronized (_ifaceMap) {
+            Map fields = (Map) _ifaceMap.get(iface);
+            if (fields == null) {
+                fields = new HashMap();
+                _ifaceMap.put(iface, fields);
+            }
+            if (fields.containsKey(orig))
+                throw new MetaDataException(_loc.get("duplicate-iface-alias", 
+                    this, orig, local));
+            fields.put(orig, local);
+        }
+    }
+    
+    /**
+     * Get local field alias for the given interface property.
+     */
+    public String getInterfacePropertyAlias(Class iface, String orig) {
+        synchronized (_ifaceMap) {
+            Map fields = (Map) _ifaceMap.get(iface);
+            if (fields == null)
+                return null;
+            return (String) fields.get(orig);
+        }
     }
     
     /**
@@ -2194,6 +2226,10 @@ public class ClassMetaData
             fg = addDeclaredFetchGroup(fgs[i].getName());
             fg.copy(fgs[i]); 
         }
+
+        // copy iface re-mapping
+        _ifaceMap.clear();
+        _ifaceMap.putAll(meta._ifaceMap);
     }
 
     /**
