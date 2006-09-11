@@ -812,7 +812,6 @@ public class ClassMetaData
     protected FieldMetaData getSuperclassField(FieldMetaData supField) {
         ClassMetaData sm = getPCSuperclassMetaData();
         FieldMetaData fmd = sm == null ? null : sm.getField(supField.getName());
-
         if (fmd == null || fmd.getManagement() != fmd.MANAGE_PERSISTENT)
             throw new MetaDataException(_loc.get("unmanaged-sup-field",
                 supField, this));

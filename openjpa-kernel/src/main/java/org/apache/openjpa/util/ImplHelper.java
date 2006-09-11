@@ -139,7 +139,8 @@ public class ImplHelper {
      */
     public static Object generateFieldValue(StoreContext ctx,
         FieldMetaData fmd) {
-        return generateValue(ctx, null, fmd, fmd.getDeclaredTypeCode());
+        return generateValue(ctx, fmd.getDefiningMetaData(), fmd, 
+            fmd.getDeclaredTypeCode());
     }
 
     /**
