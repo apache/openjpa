@@ -112,8 +112,9 @@ public class EntityManagerFactoryImpl
         _factory.lock();
         try {
             if (_queryCache == null)
-                _queryCache = new QueryResultCacheImpl(_factory.getConfiguration().
-                    getDataCacheManagerInstance().getSystemQueryCache());
+                _queryCache = new QueryResultCacheImpl(_factory.
+                    getConfiguration().getDataCacheManagerInstance().
+                    getSystemQueryCache());
             return _queryCache;
         } finally {
             _factory.unlock();

@@ -223,10 +223,12 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         ValueMapping elem = field.getElementMapping();
         ColumnIO io = elem.getColumnIO();
         ForeignKey fk = elem.getForeignKey();
-        if (!io.isAnyUpdatable(fk, true))
+        if (fk.getDeleteAction() != ForeignKey.ACTION_NONE
+            || !io.isAnyUpdatable(fk, true)) 
             return;
 
-        // null any existing inverse columns that refer to this obj
+        // if the fk doesn't enforce it, null any existing inverse columns 
+        // that refer to this obj
         assertInversable();
         Row row = rm.getAllRows(fk.getTable(), Row.ACTION_UPDATE);
         row.setForeignKey(fk, io, null);

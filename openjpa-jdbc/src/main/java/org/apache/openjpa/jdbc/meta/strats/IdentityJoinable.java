@@ -71,7 +71,8 @@ class IdentityJoinable
 
     public Object getJoinValue(OpenJPAStateManager sm, Column col,
         JDBCStore store) {
-        return Numbers.valueOf(((Id) sm.getObjectId()).getId());
+        Id id = (Id) sm.getObjectId();
+        return (id == null) ? null : id.getIdObject();
     }
 
     public void setAutoAssignedValue(OpenJPAStateManager sm, JDBCStore store,

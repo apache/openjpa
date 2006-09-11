@@ -243,12 +243,13 @@ public class RelationFieldStrategy
         throws SQLException {
         ForeignKey fk = field.getForeignKey();
         ColumnIO io = field.getColumnIO();
-        if (!io.isAnyUpdatable(fk, true))
+        if (fk.getDeleteAction() != ForeignKey.ACTION_NONE 
+            || !io.isAnyUpdatable(fk, true))
             return;
 
+        // null inverse if not already enforced by fk
         if (field.getIndependentTypeMappings().length != 1)
             throw RelationStrategies.uninversable(field);
-
         Row row = rm.getAllRows(fk.getTable(), Row.ACTION_UPDATE);
         row.setForeignKey(fk, io, null);
         row.whereForeignKey(fk, sm);

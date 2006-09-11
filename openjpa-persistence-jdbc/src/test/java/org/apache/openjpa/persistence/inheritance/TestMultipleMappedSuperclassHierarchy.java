@@ -24,7 +24,6 @@ import javax.persistence.Persistence;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 /**
  * Perform basic operations on an inheritance hierarchy involving multiple

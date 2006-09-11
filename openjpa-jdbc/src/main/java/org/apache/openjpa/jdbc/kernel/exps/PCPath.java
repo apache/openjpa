@@ -288,12 +288,6 @@ class PCPath
             if (prev.op == Action.GET || prev.op == Action.GET_OUTER
                 || prev.op == Action.GET_KEY)
                 return prev;
-
-            // break if we're getting to path portions that we copied from
-            // our variable
-            if (prev.op == Action.VAR || prev.op == Action.UNBOUND_VAR
-                || prev.op == Action.SUBQUERY)
-                break;
         }
         return null;
     }
