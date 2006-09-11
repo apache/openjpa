@@ -133,8 +133,9 @@ public class OperationOrderUpdateManager
                 || rel.getIndex() >= row.getIndex())
                 continue;
 
-            // create an update to null the offending fk before deleting
-            update = new RowImpl(row.getTable(), Row.ACTION_UPDATE);
+            // create an update to null the offending fk before deleting.  use
+            // a primary row to be sure to copy delayed-flush pks/fks
+            update = new PrimaryRow(row.getTable(), Row.ACTION_UPDATE, null);
             row.copyInto(update, true);
             update.setForeignKey(fks[i], row.getForeignKeyIO(fks[i]), null);
             if (updates == null)
