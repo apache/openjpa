@@ -268,43 +268,43 @@ public class JDBCStoreManager
         Object oid = sm.getObjectId();
         ClassMapping mapping = (ClassMapping) sm.getMetaData();
         Result res = null;
-        if (info != null && info.result != null) {
-            res = info.result;
-            info.sm = sm;
-            if (info.mapping == null)
-                info.mapping = mapping;
-            mapping = info.mapping;
-        } else if (oid instanceof OpenJPAId
-            && !((OpenJPAId) oid).hasSubclasses()) {
-            Boolean custom = customLoad(sm, mapping, state, fetch);
-            if (custom != null)
-                return custom.booleanValue();
-            res = getInitializeStateResult(sm, mapping, fetch,
-                Select.SUBS_EXACT);
-            if (res == null && !selectPrimaryKey(sm, mapping, fetch))
-                return false;
-            if (res != null && !res.next())
-                return false;
-        } else {
-            ClassMapping[] mappings = mapping.
-                getIndependentAssignableMappings();
-            if (mappings.length == 1) {
-                mapping = mappings[0];
+        try {
+            if (info != null && info.result != null) {
+                res = info.result;
+                info.sm = sm;
+                if (info.mapping == null)
+                    info.mapping = mapping;
+                mapping = info.mapping;
+            } else if (oid instanceof OpenJPAId
+                && !((OpenJPAId) oid).hasSubclasses()) {
                 Boolean custom = customLoad(sm, mapping, state, fetch);
                 if (custom != null)
                     return custom.booleanValue();
                 res = getInitializeStateResult(sm, mapping, fetch,
-                    Select.SUBS_ANY_JOINABLE);
+                    Select.SUBS_EXACT);
                 if (res == null && !selectPrimaryKey(sm, mapping, fetch))
                     return false;
-            } else
-                res = getInitializeStateUnionResult(sm, mapping, mappings,
-                    fetch);
-            if (res != null && !res.next())
-                return false;
-        }
+                if (res != null && !res.next())
+                    return false;
+            } else {
+                ClassMapping[] mappings = mapping.
+                    getIndependentAssignableMappings();
+                if (mappings.length == 1) {
+                    mapping = mappings[0];
+                    Boolean custom = customLoad(sm, mapping, state, fetch);
+                    if (custom != null)
+                        return custom.booleanValue();
+                    res = getInitializeStateResult(sm, mapping, fetch,
+                        Select.SUBS_ANY_JOINABLE);
+                    if (res == null && !selectPrimaryKey(sm, mapping, fetch))
+                        return false;
+                } else
+                    res = getInitializeStateUnionResult(sm, mapping, mappings,
+                        fetch);
+                if (res != null && !res.next())
+                    return false;
+            }
 
-        try {
             // figure out what type of object this is; the state manager
             // only guarantees to provide a base class
             Class type;
@@ -454,9 +454,9 @@ public class JDBCStoreManager
 
             // if the instance is hollow and there's a customized
             // get by id method, use it
-            if (sm.getLoaded().length() == 0)
-                if (mapping.customLoad(sm, this, null, jfetch))
-                    removeLoadedFields(sm, fields);
+            if (sm.getLoaded().length() == 0 
+                && mapping.customLoad(sm, this, null, jfetch))
+                removeLoadedFields(sm, fields);
 
             //### select is kind of a big object, and in some cases we don't
             //### use it... would it be worth it to have a small shell select
