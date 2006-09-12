@@ -888,6 +888,14 @@ public class MetaDataRepository
         _ifaces.put(meta.getDescribedType(), impl);
         _metas.put(impl, meta);
         addDeclaredInterfaceImpl(meta, meta.getDescribedType());
+        ClassMetaData sup = meta.getPCSuperclassMetaData();
+        while (sup != null) {
+            // record superclass interface info while we can as well as we
+            // will only register concrete superclass in PCRegistry
+            sup.clearSubclassCache();
+            addToCollection(_subs, sup.getDescribedType(), impl, true);
+            sup = (ClassMetaData) sup.getPCSuperclassMetaData();
+        }
     }
     
     synchronized InterfaceImplGenerator getImplGenerator() {
