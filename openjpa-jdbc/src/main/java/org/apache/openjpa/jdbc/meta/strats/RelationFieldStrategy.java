@@ -243,8 +243,7 @@ public class RelationFieldStrategy
         throws SQLException {
         ForeignKey fk = field.getForeignKey();
         ColumnIO io = field.getColumnIO();
-        if (fk.getDeleteAction() != ForeignKey.ACTION_NONE 
-            || !io.isAnyUpdatable(fk, true))
+        if (!io.isAnyUpdatable(fk, true))
             return;
 
         // null inverse if not already enforced by fk

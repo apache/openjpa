@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.jdbc.conf;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.meta.MetaDataPlusMappingFactory;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -89,7 +90,7 @@ public class MappingFactoryValue
         // if no mapping factory set, check for default for this factory
         if (clsName == null || clsName.length() == 0) {
             String def;
-            if (mapping != null) {
+            if (!StringUtils.isEmpty(mapping)) {
                 def = unalias(metaPlugin.alias(metaClsName),
                     _mappedMetaFactoryDefaults, true);
                 if (def != null)
