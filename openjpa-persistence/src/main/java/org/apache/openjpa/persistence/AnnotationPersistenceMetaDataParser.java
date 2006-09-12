@@ -1200,7 +1200,7 @@ public class AnnotationPersistenceMetaDataParser
         if (!anno.optional())
             fmd.setNullValue(FieldMetaData.NULL_EXCEPTION);
         if (anno.targetEntity() != void.class)
-            fmd.setDeclaredType(anno.targetEntity());
+            fmd.setTypeOverride(anno.targetEntity());
         setCascades(fmd, anno.cascade());
     }
 
@@ -1223,7 +1223,7 @@ public class AnnotationPersistenceMetaDataParser
         if (isMappingOverrideMode() && !StringUtils.isEmpty(anno.mappedBy()))
             fmd.setMappedBy(anno.mappedBy());
         if (anno.targetEntity() != void.class)
-            fmd.setDeclaredType(anno.targetEntity());
+            fmd.setTypeOverride(anno.targetEntity());
         setCascades(fmd, anno.cascade());
     }
 
