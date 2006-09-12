@@ -223,8 +223,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         ValueMapping elem = field.getElementMapping();
         ColumnIO io = elem.getColumnIO();
         ForeignKey fk = elem.getForeignKey();
-        if (fk.getDeleteAction() != ForeignKey.ACTION_NONE
-            || !io.isAnyUpdatable(fk, true)) 
+        if (!io.isAnyUpdatable(fk, true)) 
             return;
 
         // if the fk doesn't enforce it, null any existing inverse columns 

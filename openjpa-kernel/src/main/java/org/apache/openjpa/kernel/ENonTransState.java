@@ -17,7 +17,7 @@ package org.apache.openjpa.kernel;
 
 /**
  * Lifecycle state.
- *  Represents an embedded instance that is not transactional, but that
+ * Represents an embedded instance that is not transactional, but that
  * allows access to persistent data. This state is reachable only if the
  * retainValues flag of the broker is set.
  *
