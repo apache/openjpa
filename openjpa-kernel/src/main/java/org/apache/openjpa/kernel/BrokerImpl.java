@@ -2404,9 +2404,9 @@ public class BrokerImpl
         if (sm != null) {
             if (sm.isDetached())
                 throw newDetachedException(obj, "delete");
-            sm.delete();
             if ((action & OpCallbacks.ACT_CASCADE) != 0)
                 sm.cascadeDelete(call);
+            sm.delete();
         } else if (assertPersistenceCapable(obj).pcIsDetached() == Boolean.TRUE)
             throw newDetachedException(obj, "delete");
     }

@@ -13,22 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.openjpa.persistence.inheritance;
+package org.apache.openjpa.persistence.relations;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+public interface IFace {
 
-@MappedSuperclass
-public class MappedSuperclassBase {
-
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private long id;
-
-    public long getId() {
-        return id;
-    }
+    public String getName();
 }
-
