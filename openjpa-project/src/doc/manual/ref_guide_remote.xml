@@ -53,7 +53,7 @@ sections explain these capabilities in detail.
         </indexterm>
         <para>
 The JPA Overview describes the specification's standard detach and attach APIs
-in <xref linkend="jpa_overview_em_lifecycle"/>. This section enumerates 
+in <xref linkend="jpa_overview_em_lifecycle"/>. This section enumerates
 OpenJPA's enhancements to the standard behavior.
         </para>
         <section id="ref_guide_detach_behavior">
@@ -621,7 +621,7 @@ the following:
                         TCP Remote Commit Provider Configuration
                     </title>
 <programlisting>
-&lt;property name="openjpa.RemoteCommitProvider" 
+&lt;property name="openjpa.RemoteCommitProvider"
     value="tcp(Addresses=10.0.1.10;10.0.1.11;10.0.1.12;10.0.1.13)"/&gt;
 </programlisting>
                 </example>
@@ -685,9 +685,7 @@ creating an implementation of the
 <classname> RemoteCommitProvider</classname></ulink> interface, possibly by
 extending the
 <ulink url="../apidocs/org/apache/openjpa/event/AbstractRemoteCommitProvider.html">
-<classname>AbstractRemoteCommitProvider</classname></ulink> abstract class. For
-details on particular customization needs, contact us at
-<ulink url="mailto:support@solarmetric.com"> support@solarmetric.com</ulink>.
+<classname>AbstractRemoteCommitProvider</classname></ulink> abstract class..
             </para>
         </section>
     </section>
