@@ -837,9 +837,9 @@ public class XMLPersistenceMetaDataParser
             props = null;
         } else // plugin
         {
-            seq = null;
             clsName = Configurations.getClassName(seq);
             props = Configurations.getProperties(seq);
+            seq = null;
         }
 
         meta.setSequencePlugin(Configurations.getPlugin(clsName, props));
