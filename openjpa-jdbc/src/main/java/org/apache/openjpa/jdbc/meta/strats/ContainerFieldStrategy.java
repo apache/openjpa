@@ -29,7 +29,7 @@ import org.apache.openjpa.jdbc.sql.Select;
  * An abstract container mapping that handles traversing the
  * join to examine the size of the relation.
  *
- * @author <a href="mailto:mprudhom@bea.com">Marc Prud'hommeaux</a>
+ * @author Marc Prud'hommeaux
  */
 public abstract class ContainerFieldStrategy
     extends AbstractFieldStrategy {

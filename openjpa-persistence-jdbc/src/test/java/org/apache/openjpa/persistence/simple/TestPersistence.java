@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 /**
  * Simple test case to get an EntityManager and perform some basic operations.
  *
- * @author <a href="mailto:mprudhom@bea.com">Marc Prud'hommeaux</a>
+ * @author Marc Prud'hommeaux
  */
 public class TestPersistence
     extends TestCase {
@@ -38,7 +38,7 @@ public class TestPersistence
 
     public void setUp() {
         Map props = new HashMap();
-        props.put("openjpa.MetaDataFactory", 
+        props.put("openjpa.MetaDataFactory",
             "jpa(Types=" + AllFieldTypes.class.getName() + ")");
         emf = Persistence.createEntityManagerFactory("test", props);
     }

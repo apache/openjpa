@@ -24,7 +24,7 @@ import org.apache.openjpa.util.UserException;
 /**
  * Signifies that a lexical error occurred when parsing the JPQL statement.
  *
- * @author <a href="mailto:mprudhom@bea.com">Marc Prud'hommeaux</a>
+ * @author Marc Prud'hommeaux
  */
 public class ParseException
     extends UserException {

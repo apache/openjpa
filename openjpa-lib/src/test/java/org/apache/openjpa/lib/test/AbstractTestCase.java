@@ -1029,7 +1029,7 @@ public abstract class AbstractTestCase extends TestCase {
      * A ClassLoader that is completely isolated with respect to
      * any classes that are loaded in the System ClassLoader.
      *
-     * @author <a href="mailto:marc@solarmetric.com">Marc Prud'hommeaux</a>
+     * @author Marc Prud'hommeaux
      */
     private static class IsolatedClassLoader extends NestedClassLoader {
 
@@ -1460,7 +1460,7 @@ public abstract class AbstractTestCase extends TestCase {
      * if a test hasn't completed in a shorted amount of time than
      * the global test timeout.
      *
-     * @author <a href="mailto:marc@solarmetric.com">Marc Prud'hommeaux</a>
+     * @author Marc Prud'hommeaux
      */
     private static class WatchdogThread extends Thread {
 
