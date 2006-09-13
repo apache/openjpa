@@ -1237,7 +1237,7 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
         String val = attrs.getValue("target-entity");
         if (val != null)
-            fmd.setDeclaredType(classForName(val));
+            fmd.setTypeOverride(classForName(val));
         assertPC(fmd, "OneToOne");
         fmd.setSerialized(false); // override any Lob annotation
         if (!fmd.isDefaultFetchGroupExplicit())
@@ -1251,7 +1251,7 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
         String val = attrs.getValue("target-entity");
         if (val != null)
-            fmd.setDeclaredType(classForName(val));
+            fmd.setTypeOverride(classForName(val));
         assertPC(fmd, "ManyToOne");
         fmd.setSerialized(false); // override any Lob annotation
         if (!fmd.isDefaultFetchGroupExplicit())
