@@ -21,7 +21,7 @@ import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Lifecycle state.
- *  Represents a persistent instance that is not transactional, but that
+ * Represents a persistent instance that is not transactional, but that
  * allows access to persistent data. This state is reachable only if the
  * RetainState property is set.
  *

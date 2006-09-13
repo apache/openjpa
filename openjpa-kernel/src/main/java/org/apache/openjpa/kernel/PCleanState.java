@@ -17,7 +17,7 @@ package org.apache.openjpa.kernel;
 
 /**
  * Lifecycle state.
- *  Represents a persistent instance that is participating in the current
+ * Represents a persistent instance that is participating in the current
  * transaction, but has not yet been modified.
  *
  * @author Abe White

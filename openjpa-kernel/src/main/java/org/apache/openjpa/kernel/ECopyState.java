@@ -17,7 +17,7 @@ package org.apache.openjpa.kernel;
 
 /**
  * Lifecycle state.
- *  Represents an instance that was copied and made embedded within the
+ * Represents an instance that was copied and made embedded within the
  * current	transaction.
  *
  * @author Abe White

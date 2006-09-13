@@ -17,7 +17,7 @@ package org.apache.openjpa.kernel;
 
 /**
  * Lifecycle state.
- *  Represents an instance that was persisted outside a transaction.
+ * Represents an instance that was persisted outside a transaction.
  *
  * @author Steve Kim
  */

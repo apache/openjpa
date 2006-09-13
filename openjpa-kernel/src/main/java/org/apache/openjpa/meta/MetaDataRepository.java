@@ -1127,9 +1127,9 @@ public class MetaDataRepository
     public NonPersistentMetaData addNonMappedInterface(Class iface) {
     	if (iface == null)
     		return null;
+        if (!iface.isInterface())
+            throw new MetaDataException(_loc.get("not-non-mapped", iface));
         synchronized(this) {
-            if (!iface.isInterface())
-                throw new MetaDataException(_loc.get("not-non-mapped", iface));
             if (_nonMapped.containsKey(iface))
                 return (NonPersistentMetaData)_nonMapped.get(iface);
             if (getCachedMetaData(iface) != null)

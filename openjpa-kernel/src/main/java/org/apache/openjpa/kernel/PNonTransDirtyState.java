@@ -17,7 +17,7 @@ package org.apache.openjpa.kernel;
 
 /**
  * Lifecycle state.
- *  Represents a persistent instance that has been dirtied outside of
+ * Represents a persistent instance that has been dirtied outside of
  * transaction. This state is only reachable only if the
  * RetainNontransactional property is set.
  *
