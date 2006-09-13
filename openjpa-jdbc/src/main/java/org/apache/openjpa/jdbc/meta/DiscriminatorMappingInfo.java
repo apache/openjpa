@@ -67,8 +67,8 @@ public class DiscriminatorMappingInfo
             return discrim.getMappingRepository().getMappingDefaults().
                 getDiscriminatorValue(discrim, adapt);
 
-        if (_value.length() > 0 &&
-            (_value.charAt(0) == '-' || Character.isDigit(_value.charAt(0)))) {
+        if (_value.length() > 0 && (_value.charAt(0) == '-' 
+            || Character.isDigit(_value.charAt(0)))) {
             try {
                 if (_value.indexOf('.') == -1)
                     return new Integer(_value);

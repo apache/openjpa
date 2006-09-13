@@ -17,7 +17,7 @@ package org.apache.openjpa.kernel;
 
 /**
  * Lifecycle state.
- *  Represents a transient instance; this state lasts only through
+ * Represents a transient instance; this state lasts only through
  * the {@link #initialize} method, which immediately removes the
  * persistence capable instance from management by the OpenJPA runtime.
  *

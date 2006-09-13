@@ -17,7 +17,7 @@ package org.apache.openjpa.kernel;
 
 /**
  * Lifecycle state.
- *  Represents an instance that was made persistent within the
+ * Represents an instance that was made persistent within the
  * current	transaction, flushed, and subsequently deleted.
  *
  * @author Patrick Linskey

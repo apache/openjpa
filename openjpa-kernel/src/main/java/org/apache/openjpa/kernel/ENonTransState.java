@@ -55,13 +55,11 @@ class ENonTransState
     }
 
     PCState beforeRead(StateManagerImpl context, int field) {
-        error("embed-ref", context);
-        return null;
+        return error("embed-ref", context);
     }
 
     PCState beforeWrite(StateManagerImpl context, int field, boolean mutate) {
-        error("embed-ref", context);
-        return null;
+        return error("embed-ref", context);
     }
 
     PCState beforeOptimisticWrite(StateManagerImpl context, int field,

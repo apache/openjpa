@@ -17,7 +17,7 @@ package org.apache.openjpa.kernel;
 
 /**
  * Lifecycle state.
- *  Represents a temporarily managed transient instance whose fields
+ * Represents a temporarily managed transient instance whose fields
  * are loaded for the purpose of field inspection such
  * as for cascades. This state should be released as soon as inspection
  * is complete.

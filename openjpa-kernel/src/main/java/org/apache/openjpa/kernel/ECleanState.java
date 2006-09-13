@@ -17,7 +17,7 @@ package org.apache.openjpa.kernel;
 
 /**
  * Lifecycle state.
- *  Represents an embedded instance that is managed by a StateManager and
+ * Represents an embedded instance that is managed by a StateManager and
  * may be participating in the current	transaction, but has not yet been
  * modified.
  *

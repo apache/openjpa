@@ -1747,8 +1747,8 @@ public class BrokerImpl
             _flags &= ~FLAG_ACTIVE;
             _flags &= ~FLAG_FLUSHED;
 
-            if (_transEventManager != null &&
-                _transEventManager.hasEndListeners()) {
+            if (_transEventManager != null 
+                && _transEventManager.hasEndListeners()) {
                 _transEventManager.fireEvent(new TransactionEvent(this,
                     status == Status.STATUS_COMMITTED
                         ? TransactionEvent.AFTER_COMMIT_COMPLETE
@@ -3016,11 +3016,9 @@ public class BrokerImpl
         StateManagerImpl sm;
         for (Iterator itr = states.iterator(); itr.hasNext();) {
             sm = (StateManagerImpl) itr.next();
-            if (!sm.isPersistent()) {
-                if (sm.getPCState() != PCState.TCLEAN)
-                    sm.nontransactional();
+            if (!sm.isPersistent())
                 itr.remove();
-            } else if (!sm.getMetaData().isDetachable()) {
+            else if (!sm.getMetaData().isDetachable()) {
                 sm.release(true);
                 itr.remove();
             }

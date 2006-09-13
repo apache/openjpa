@@ -433,10 +433,11 @@ public class ValueMetaDataImpl
         _attach = vmd.getCascadeAttach();
         _refresh = vmd.getCascadeRefresh();
         _typeOverride = vmd.getTypeOverride();
+        _serialized = vmd.isSerialized();
         if (_embeddedMeta != null)
             _embeddedMeta.setDescribedType(vmd.getDeclaredType());
 
-        // don't allow copy to override embedded; don't copy serialized at all
+        // don't allow copy to override embedded
         if (_embedded == null)
             setEmbedded(vmd.isEmbedded());
     }

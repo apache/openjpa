@@ -17,7 +17,7 @@ package org.apache.openjpa.kernel;
 
 /**
  * Lifecycle state.
- *  Represents a hollow instance that exists in the data store, but whose
+ * Represents a hollow instance that exists in the data store, but whose
  * state has not been loaded and who is not active in the current transaction
  * (if any). This may be the state of instances returned on ID lookups or by
  * traversing relations, and the state of persistent instances outside of

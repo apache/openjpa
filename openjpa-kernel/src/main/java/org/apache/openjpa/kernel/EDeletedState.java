@@ -17,7 +17,7 @@ package org.apache.openjpa.kernel;
 
 /**
  * Lifecycle state.
- *  Represents an embedded instance that has been deleted in the current
+ * Represents an embedded instance that has been deleted in the current
  * transaction.
  *
  * @author Abe White
