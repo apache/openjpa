@@ -3017,7 +3017,8 @@ public class BrokerImpl
         for (Iterator itr = states.iterator(); itr.hasNext();) {
             sm = (StateManagerImpl) itr.next();
             if (!sm.isPersistent()) {
-                sm.nontransactional();
+                if (sm.getPCState() != PCState.TCLEAN)
+                    sm.nontransactional();
                 itr.remove();
             } else if (!sm.getMetaData().isDetachable()) {
                 sm.release(true);
