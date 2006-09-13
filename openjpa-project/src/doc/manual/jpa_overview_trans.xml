@@ -280,11 +280,10 @@ of hanging due to deadlock.
 OpenJPA uses optimistic semantics by default, but supports both optimistic and
 datastore transactions. OpenJPA also offers advanced locking and versioning APIs
 for fine-grained control over database resource allocation and object
-versioning. See <xref linkend="ref_guide_locking"/> and
-<xref linkend="ref_guide_lock_groups"/> of the Reference Guide for details
+versioning. See <xref linkend="ref_guide_locking"/> of the Reference Guide for details
 on locking. <xref linkend="jpa_overview_meta_version"/>
 of this document covers standard object versioning, while
-<xref linkend="ref_guide_mapping_jpa"/> of the Reference Guide discusses 
+<xref linkend="ref_guide_mapping_jpa"/> of the Reference Guide discusses
 additional versioning strategies available in OpenJPA.
             </para>
         </note>
@@ -305,7 +304,7 @@ additional versioning strategies available in OpenJPA.
             <imageobject>
                 <!-- PNG image data, 193 x 157 (see README) -->
                 <imagedata fileref="img/jpa-transaction.png" width="129px"/>
-                
+
             </imageobject>
         </mediaobject>
         <para>

@@ -114,7 +114,7 @@ the <methodname>getId</methodname> method in your source file.</phrase>
             <imageobject>
                 <!-- PNG image data, 509 x 133 (see README) -->
                 <imagedata fileref="img/enhancement.png" width="339px"/>
-                
+
             </imageobject>
         </mediaobject>
         <para>
@@ -722,7 +722,7 @@ public class Magazine
 {
     @OneToOne
     private Photograph coverPhoto;
-    
+
     ...
 }
 
@@ -732,7 +732,7 @@ public class Photograph
     @OneToOne
     @InverseLogical("coverPhoto")
     private Magazine mag;
-    
+
     ...
 }
 </programlisting>
@@ -1099,8 +1099,8 @@ import org.apache.openjpa.persistence.*;
 @Entity
 public class Company
 {
-    @ManyToMany 
-    @LRS private Collection&lt;Employee&gt; employees;     
+    @ManyToMany
+    @LRS private Collection&lt;Employee&gt; employees;
 
     ...
 }
@@ -1230,9 +1230,9 @@ their corresponding metadata extensions.
                 </title>
                 <tgroup cols="2" align="left" colsep="1" rowsep="1">
                     <colspec colname="method"/>
-                    
+
                     <colspec colname="extension"/>
-                    
+
                     <thead>
                         <row>
                             <entry colname="method">
@@ -1247,64 +1247,64 @@ their corresponding metadata extensions.
                         <row>
                             <entry colname="method">
                                 <literal>
-                                    
+
               public String CustomType.toString()
-              
+
                                 </literal>
                             </entry>
                             <entry colname="extension">
                                 <literal>
-                                    
+
               @Externalizer("toString")
-              
+
                                 </literal>
                             </entry>
                         </row>
                         <row>
                             <entry colname="method">
                                 <literal>
-                                    
+
               public String CustomType.toString(StoreContext ctx)
-              
+
                                 </literal>
                             </entry>
                             <entry colname="extension">
                                 <literal>
-                                    
+
               @Externalizer("toString")
-              
+
                                 </literal>
                             </entry>
                         </row>
                         <row>
                             <entry colname="method">
                                 <literal>
-                                    
+
               public static String AnyClass.toString(CustomType ct)
-              
+
                                 </literal>
                             </entry>
                             <entry colname="extension">
                                 <literal>
-                                    
+
               @Externalizer("AnyClass.toString")
-              
+
                                 </literal>
                             </entry>
                         </row>
                         <row>
                             <entry colname="method">
                                 <literal>
-                                    
+
               public static String AnyClass.toString(CustomType ct, StoreContext ctx)
-              
+
                                 </literal>
                             </entry>
                             <entry colname="extension">
                                 <literal>
-                                    
+
               @Externalizer("AnyClass.toString")
-              
+
                                 </literal>
                             </entry>
                         </row>
@@ -1336,9 +1336,9 @@ corresponding metadata extensions.
                 </title>
                 <tgroup cols="2" align="left" colsep="1" rowsep="1">
                     <colspec colname="method"/>
-                    
+
                     <colspec colname="extension"/>
-                    
+
                     <thead>
                         <row>
                             <entry colname="method">
@@ -1353,78 +1353,78 @@ corresponding metadata extensions.
                         <row>
                             <entry colname="method">
                                 <literal>
-                                    
+
               public CustomType(String str)
-              
+
                                 </literal>
                             </entry>
                             <entry colname="extension">
-                                
+
               none
-              
+
                             </entry>
                         </row>
                         <row>
                             <entry colname="method">
                                 <literal>
-                                    
+
               public static CustomType CustomType.fromString(String str)
-              
+
                                 </literal>
                             </entry>
                             <entry colname="extension">
                                 <literal>
-                                    
+
               @Factory("fromString")
-              
+
                                 </literal>
                             </entry>
                         </row>
                         <row>
                             <entry colname="method">
                                 <literal>
-                                    
+
               public static CustomType CustomType.fromString(String str, StoreContext ctx)
-              
+
                                 </literal>
                             </entry>
                             <entry colname="extension">
                                 <literal>
-                                    
+
               @Factory("fromString")
-              
+
                                 </literal>
                             </entry>
                         </row>
                         <row>
                             <entry colname="method">
                                 <literal>
-                                    
+
               public static CustomType AnyClass.fromString(String str)
-              
+
                                 </literal>
                             </entry>
                             <entry colname="extension">
                                 <literal>
-                                    
+
               @Factory("AnyClass.fromString")
-              
+
                                 </literal>
                             </entry>
                         </row>
                         <row>
                             <entry colname="method">
                                 <literal>
-                                    
+
               public static CustomType AnyClass.fromString(String str, StoreContext ctx)
-              
+
                                 </literal>
                             </entry>
                             <entry colname="extension">
                                 <literal>
-                                    
+
               @Factory("AnyClass.fromString")
-              
+
                                 </literal>
                             </entry>
                         </row>
@@ -1482,19 +1482,19 @@ public class Magazine
 {
     // use Class.getName and Class.forName to go to/from strings
     @Persistent
-    @Externalizer("getName") 
+    @Externalizer("getName")
     @Factory("forName")
     private Class cls;
 
-    // use URL.getExternalForm for externalization. no factory; 
+    // use URL.getExternalForm for externalization. no factory;
     // we can rely on the URL string constructor
     @Persistent
     @Externalizer("toExternalForm")
     private URL url;
 
-    // use our custom methods; notice how we use the KeyType and ElementType 
+    // use our custom methods; notice how we use the KeyType and ElementType
     // annotations to specify the metadata for our externalized map
-    @Persistent 
+    @Persistent
     @Externalizer("Magazine.mapFromCustomType")
     @Factory("Magazine.mapToCustomType")
     @KeyType(String.class) @ElementType(String.class)
@@ -1693,7 +1693,7 @@ properties in the fetch group.
                 </listitem>
                 <listitem>
                     <para>
-<literal>String[] fetchGroups</literal>: Other fetch groups whose fields to 
+<literal>String[] fetchGroups</literal>: Other fetch groups whose fields to
 include in this group.
                     </para>
                 </listitem>
@@ -1715,15 +1715,15 @@ include in the fetch group.
                 </listitem>
                 <listitem>
                     <para>
-<literal>recursionDepth</literal>: If the attribute represents a relation, the 
+<literal>recursionDepth</literal>: If the attribute represents a relation, the
 maximum number of same-typed relations to eager-fetch from this field.  Defaults
-to 1.  For example, consider an <classname>Employee</classname> class with a 
+to 1.  For example, consider an <classname>Employee</classname> class with a
 <literal>manager</literal> field, also of type <classname>Employee</classname>.
 When we load an <classname>Employee</classname> and the <literal>
 manager</literal> field is in an active fetch group, the recursion depth (along
-with the max fetch depth setting, described below) determines whether we only 
-retrieve the target <classname>Employee</classname> and his manager (depth 1), 
-or whether we also retrieve the manager's manager (depth 2), or the manager's 
+with the max fetch depth setting, described below) determines whether we only
+retrieve the target <classname>Employee</classname> and his manager (depth 1),
+or whether we also retrieve the manager's manager (depth 2), or the manager's
 manager's manager (depth 3), etc.  Use -1 for unlimited depth.
                     </para>
                 </listitem>
@@ -1755,14 +1755,14 @@ public class Magazine
             </example>
             <para>
 A field can be a member of any number of fetch groups.  A field can also
-declare a <emphasis>load fetch group</emphasis>.  
+declare a <emphasis>load fetch group</emphasis>.
 When you access a lazy-loaded field for the first time, OpenJPA makes a
 datastore trip to fetch that field's data.  Sometimes, however, you know
 that whenever you access a lazy field A, you're likely to access lazy fields B
 and C as well.  Therefore, it would be more efficient to fetch the data for A,
-B, and C in the same datastore trip.  By setting A's load fetch group to the 
-name of a <link linkend="ref_guide_fetch">fetch group</link> containing B and 
-C, you can tell OpenJPA to load all of these fields together when A is first 
+B, and C in the same datastore trip.  By setting A's load fetch group to the
+name of a <link linkend="ref_guide_fetch">fetch group</link> containing B and
+C, you can tell OpenJPA to load all of these fields together when A is first
 accessed.
             </para>
             <para>
@@ -1828,15 +1828,15 @@ fetch group names.
             <para>
 You can also set the system's default maximum fetch depth with the
 <link linkend="openjpa.MaxFetchDepth"><literal>openjpa.MaxFetchDepth</literal>
-</link> configuration property.  The maximum fetch depth determines how "deep" 
+</link> configuration property.  The maximum fetch depth determines how "deep"
 into the object graph to traverse when loading an instance.  The default maximum
-depth is 1, meaning that OpenJPA will load at most the target instance and its 
-immediate relations.  By increasing the depth, you can allow OpenJPA to also 
+depth is 1, meaning that OpenJPA will load at most the target instance and its
+immediate relations.  By increasing the depth, you can allow OpenJPA to also
 load relations of relations, to arbitrary depth.  A value of -1 symbolizes an
 infinite maximum, telling OpenJPA to fetch configured relations until it reaches
-the edges of the object graph.  Of course, which relation fields are loaded 
+the edges of the object graph.  Of course, which relation fields are loaded
 depends on whether the fields are eager or lazy, and on the active fetch groups.
-A fetch group member's recursion depth may also limit the fetch depth to 
+A fetch group member's recursion depth may also limit the fetch depth to
 something less than the configured maximum.
             </para>
             <para>
@@ -1846,10 +1846,10 @@ OpenJPAQuery</classname> extensions to the standard <classname>EntityManager
 <ulink url="../../api/openjpa/persistence/FetchPlan.html"><classname>
 org.apache.openjpa.persistence.FetchPlan</classname></ulink> object. The
 <classname>FetchPlan</classname> maintains the set of active fetch groups and
-the maximum fetch depth. It begins with the groups and depth defined in the 
+the maximum fetch depth. It begins with the groups and depth defined in the
 <literal>openjpa.FetchGroups</literal> and <literal>openjpa.MaxFetchDepth
 </literal> properties, but allows you to add or remove groups and change the
-maximum fetch depth for an individual <classname>EntityManager</classname> or 
+maximum fetch depth for an individual <classname>EntityManager</classname> or
 <classname>Query</classname> through the methods below.
             </para>
 <programlisting>
@@ -1860,7 +1860,7 @@ public FetchPlan removeFetchGroup (String group);
 public FetchPlan removeFetchGroups (String... groups);
 public FetchPlan removeFetchGroups (Collection groups);
 public FetchPlan resetFetchGroups ();
-public Collection&lt;String&gt; getFetchGroups (); 
+public Collection&lt;String&gt; getFetchGroups ();
 public void clearFetchGroups ();
 public FetchPlan setMaxFetchDepth(int depth);
 public int getMaxFetchDepth();
@@ -1918,7 +1918,7 @@ public FetchPlan removeFields (String... fields);
 public FetchPlan removeFields (Class cls, String... fields);
 public FetchPlan removeFields (Collection fields);
 public FetchPlan removeFields (Class cls, Collection fields);
-public Collection&lt;String&gt; getFields (); 
+public Collection&lt;String&gt; getFields ();
 public void clearFields ();
 </programlisting>
             <para>
@@ -2348,271 +2348,6 @@ using the mapping extensions described in <xref linkend="nonpolymorphic"/>.
                     </para>
                 </listitem>
             </itemizedlist>
-        </section>
-    </section>
-    <section id="ref_guide_lock_groups">
-        <title>
-            Lock Groups
-        </title>
-        <indexterm zone="ref_guide_lock_groups">
-            <primary>
-                locking
-            </primary>
-            <secondary>
-                lock groups
-            </secondary>
-        </indexterm>
-        <indexterm zone="ref_guide_lock_groups">
-            <primary>
-                lock groups
-            </primary>
-            <seealso>
-                locking
-            </seealso>
-        </indexterm>
-        <para>
-OpenJPA supports both optimistic and datastore locking strategies, but
-optimistic locking is the preferred approach in most applications. Typically,
-optimistic locking is performed at the object level of granularity. That is,
-changes to any part of the same object in concurrent transactions will result in
-an optimistic locking exception being thrown by the transaction that commits
-last. In many applications, this is acceptable. However, if your application has
-a high likelihood of concurrent writes to different parts of the same object,
-then it may be advantageous to use a finer-grained optimistic lock.
-Additionally, certain parts of an object model may be best modeled without any
-locking at all, or with a last-commit-wins strategy. It is for these types of
-situations that OpenJPA offers customizable optimistic lock groups, which allow
-you to achieve sub-object-level locking granularity.
-        </para>
-        <para>
-For example, an <classname>Employee</classname> class may have some fields
-configurable by the employee the object represents ( <literal> firstName
-</literal>, <literal>lastName</literal>, <literal> phoneNumber</literal> ), some
-that are only modifiable by that employee's manager ( <literal>salary</literal>
-, <literal>title</literal> ), and some in which concurrent updates are
-acceptable (a list of <literal> projects</literal> ). In such a model, you can
-greatly improve the success of concurrent updates in optimistic transactions by
-putting <literal>firstName</literal>, <literal>lastName</literal>, and <literal>
-phoneNumber</literal> into one lock group, <literal>salary</literal> and
-<literal>title</literal> into another, and excluding the <literal>projects
-</literal> field from optimistic lock checks altogether.
-        </para>
-        <para>
-<phrase> You specify a field's lock group in JPA metadata with the
-<ulink url="../apidocs/org/apache/openjpa/persistence/LockGroup.html">
-<classname>org.apache.openjpa.persistence.LockGroup</classname></ulink>
-annotation.</phrase> See <xref linkend="lock-group"/> for details on lock
-group metadata.
-        </para>
-        <example id="ref_guide_lock_groups_metadata">
-            <title>
-                Lock Group Metadata
-            </title>
-<programlisting>
-import org.apache.openjpa.persistence.*;
-
-@Entity
-public class Employee
-{
-    // default lock group
-    private String firstName;
-    private String lastName;
-    private String phoneNumber;
-
-    // named lock group
-    @LockGroup("corporate") private float  salary;
-    @LockGroup("corporate") private String title;
-
-    // no lock group; allow concurrent modifications
-    @LockGroup(LockGroup.NONE) private Set&lt;Project&gt; projects;
-
-    ...
-}
-</programlisting>
-        </example>
-        <para>
-Currently, lock groups are only supported when using number and timestamp
-version strategies. They are not supported in the state-comparison strategy,
-though you can still exclude fields from participating in optimistic versioning
-under this strategy by setting the their lock group to <literal>none</literal>.
-        </para>
-        <section id="ref_guide_lock_groups_and_subclasses">
-            <title>
-                Lock Groups and Subclasses
-            </title>
-            <indexterm zone="ref_guide_lock_groups_and_subclasses">
-                <primary>
-                    lock groups
-                </primary>
-                <secondary>
-                    subclasses
-                </secondary>
-            </indexterm>
-            <para>
-Due to mapping restrictions, subclasses cannot simply declare additional lock
-groups implicitly, as is done in the example shown above. Instead, the
-least-derived mapped type in the persistent hierarchy must list all lock groups
-that its children can use via the <phrase>
-<ulink url="../apidocs/org/apache/openjpa/persistence/LockGroups.html">
-<classname> org.apache.openjpa.persistence.LockGroups</classname></ulink>
-annotation</phrase> For example, if the <classname>Employee</classname> class in
-the last example extended <classname>Person</classname>, the metadata would
-have looked like so:
-            </para>
-            <example id="ref_guide_lock_groups_and_subclasses_metadata">
-                <title>
-                    Lock Group Metadata
-                </title>
-                <!-- ### -->
-<programlisting>
-import org.apache.openjpa.persistence.*;
-
-@Entity
-@LockGroups({"corporate"})
-public class Person
-{
-    // default lock group
-    private String firstName;
-    private String lastName;
-    private String phoneNumber;
-
-    ...
-}
-
-@Entity
-public class Employee
-    extends Person
-{
-    // named lock group
-    @LockGroup("corporate") private float  salary;
-    @LockGroup("corporate") private String title;
-
-    // no lock group; allow concurrent modifications
-    @LockGroup(LockGroup.NONE) private Set&lt;Project&gt; projects;
-
-    ...
-}
-</programlisting>
-<programlisting>
-public class Person
-{
-    private String firstName;
-    private String lastName;
-    private String phoneNumber;
-
-    ...
-}
-
-
-public class Employee
-    extends Person
-{
-    // these fields can only be set by the employee's manager
-    private float  salary;
-    private String title;
-
-    // this field might be updated concurrently by the employee,
-    // other team members, or the employee's manager
-    private Set projects;
-
-    ...
-}
-
-
-&lt;?xml version="1.0"?&gt;
-&lt;jdo&gt;
-  &lt;package name=""&gt;
-    &lt;class name="Person"&gt;
-      &lt;!-- here we list the lock groups that will be used by Employee --&gt;
-      &lt;extension vendor-name="openjpa" key="lock-groups" value="corporate"/&gt;
-    &lt;/class&gt;
-    &lt;class name="Employee"&gt;
-      &lt;!-- named lock group --&gt;
-      &lt;field name="salary"&gt;
-        &lt;extension vendor-name="openjpa" key="lock-group" value="corporate"/&gt;
-      &lt;/field&gt;
-      &lt;field name="title"&gt;
-        &lt;extension vendor-name="openjpa" key="lock-group" value="corporate"/&gt;
-      &lt;/field&gt;
-      &lt;!-- no lock group; allow concurrent modifications --&gt;
-      &lt;field name="projects"&gt;
-        &lt;collection element-type="Project"/&gt;
-        &lt;extension vendor-name="openjpa" key="lock-group" value="none"/&gt;
-      &lt;/field&gt;
-    &lt;/class&gt;
-  &lt;/package&gt;
-&lt;/jdo&gt;
-</programlisting>
-            </example>
-            <para>
-The exceptions to this rule are the <literal>none</literal> and <literal>
-default</literal> built-in lock groups. They can be used at any point in the
-inheritance hierarchy without pre-declaration. Additionally, the lock groups
-listing can contain lock groups that would otherwise be implicitly defined in
-the least-derived type metadata.
-            </para>
-        </section>
-        <section id="ref_guide_lock_group_mapping">
-            <title>
-                Lock Group Mapping
-            </title>
-            <indexterm zone="ref_guide_lock_group_mapping">
-                <primary>
-                    lock groups
-                </primary>
-                <secondary>
-                    mapping metadata
-                </secondary>
-            </indexterm>
-            <indexterm zone="ref_guide_lock_group_mapping">
-                <primary>
-                    mapping metadata
-                </primary>
-                <secondary>
-                    version
-                </secondary>
-                <tertiary>
-                    lock group mapping
-                </tertiary>
-                <seealso>
-                    lock groups
-                </seealso>
-            </indexterm>
-            <para>
-When using custom lock groups with a relational database, OpenJPA will need a
-version column for each of the groups, instead of just one version column. This
-means that you must use surrogate versioning; you cannot use a version field.
-OpenJPA also currently requires that all the version columns for a given object
-be in the same table. Finally, it is only possible to use a single version
-strategy for a given object. That is, you cannot have one version number column
-and another timestamp version column.
-            </para>
-            <para>
-<phrase> Use the
-<ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/VersionColumn.html">
-<classname>org.apache.openjpa.persistence.jdbc.VersionColumn(s)</classname>
-</ulink> annotation to specify the version column for each lock group in JPA
-mapping.</phrase>
-            </para>
-            <example id="ref_guide_lock_groups_mapping_ex">
-                <title>
-                    Mapping Lock Groups
-                </title>
-<programlisting>
-import org.apache.openjpa.persistence.jdbc.*;
-
-@Entity
-@Table(name="EMP")
-@VersionColumns({
-    @VersionColumn(name="VERS_CORP" lockGroup="corporate"),
-    @VersionColumn(name="VERS")
-})
-public class Employee
-{
-    ...
-}
-</programlisting>
-            </example>
         </section>
     </section>
 </chapter>
