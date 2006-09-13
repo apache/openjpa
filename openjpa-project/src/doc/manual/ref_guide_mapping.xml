@@ -314,7 +314,7 @@ mappingtool -a buildSchema -sa build -sql create.sql Magazine.java
             </example>
             <example id="ref_guid_mapping_ddl_part_ddl">
                 <title>
-                    Create DDL to Update Database for Current 
+                    Create DDL to Update Database for Current
         Mappings
                 </title>
                 <para>
@@ -879,7 +879,7 @@ own customization class.
             </see>
         </indexterm>
         <para>
-In the <emphasis>meet-in-the-middle</emphasis>  
+In the <emphasis>meet-in-the-middle</emphasis>
 mapping approach, you control both the relational model and the object model. It
 is up to you to define the mappings between these models.  The mapping
 tool's <literal>validate</literal> action is useful to meet-in-the-middle
@@ -1126,10 +1126,7 @@ column. Defaults to true.
                     </listitem>
                     <listitem>
                         <para>
-<literal>VersionColumnName</literal>: The default name of version columns. If
-you use custom lock groups, this name may be combined with lock group names. See
-<xref linkend="ref_guide_lock_groups"/> for more information on lock
-groups.
+<literal>VersionColumnName</literal>: The default name of version columns.
                         </para>
                     </listitem>
                     <listitem>
@@ -1200,8 +1197,8 @@ handler.
                 Configuring Mapping Defaults
             </title>
 <programlisting>
-&lt;property name="openjpa.jdbc.MappingDefaults" 
-    value="ForeignKeyDeleteAction=restrict, 
+&lt;property name="openjpa.jdbc.MappingDefaults"
+    value="ForeignKeyDeleteAction=restrict,
     FieldStrategies='org.mag.data.InfoStruct=org.mag.mapping.InfoStructHandler'"/&gt;
 </programlisting>
         </example>
@@ -1357,7 +1354,7 @@ to differentiate it from a column name.
             <imageobject>
                 <!-- PNG image data, 427 x 211 (see README) -->
                 <imagedata fileref="img/joins-constant.png" width="285px"/>
-                
+
             </imageobject>
         </mediaobject>
         <para>
@@ -1369,7 +1366,7 @@ T1.FK</literal> to <literal>T2.PK1</literal>, we also have to specify that
 <literal>T2.PK2</literal> has the value <literal>a</literal>. Here is how we'd
 accomplish this in mapping metadata.
         </para>
-<programlisting> 
+<programlisting>
 @Entity
 @Table(name="T1")
 public class ...
@@ -1389,7 +1386,7 @@ the constant value so that it won't be confused with a column name. You do not
 need single quotes for numeric constants. For example, the syntax to join
 <literal>T1.R2</literal> to <literal>T2.R4</literal> is:
         </para>
-<programlisting> 
+<programlisting>
 @Entity
 @Table(name="T1")
 public class ...
@@ -1405,7 +1402,7 @@ public class ...
         <para>
 Finally, from the inverse direction, these joins would look like this:
         </para>
-<programlisting> 
+<programlisting>
 @Entity
 @Table(name="T2")
 public class ...
@@ -1579,9 +1576,7 @@ you to use a surrogate version column in place of a version field if you like.
 You map the surrogate version column with the
 <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/VersionColumn.html">
 <classname>org.apache.openjpa.persistence.jdbc.VersionColumn</classname></ulink>
-annotation. If you take advantage of OpenJPA's ability to define multiple
-<link linkend="ref_guide_lock_groups">lock groups</link>, you may have multiple
-version columns. In that case, use the
+annotation. You can also use the
 <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/VersionColumns.html">
 <classname>org.apache.openjpa.persistence.jdbc.VersionColumns</classname>
 </ulink> annotation to declare an array of <classname>VersionColumn</classname>
@@ -1591,11 +1586,6 @@ values. Each <classname>VersionColumn</classname> has the following properties:
                 <listitem>
                     <para>
 <literal>String name</literal>: Defaults to <literal>VERSN</literal>.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>String lockGroup</literal>
                     </para>
                 </listitem>
                 <listitem>
@@ -1635,10 +1625,7 @@ values. Each <classname>VersionColumn</classname> has the following properties:
                 </listitem>
             </itemizedlist>
             <para>
-The <literal>lockGroup</literal> property allows you to specify that a version
-column is for some lock group other than the default group. See
-<xref linkend="ref_guide_lock_groups"/> for an example. All other
-properties correspond exactly to the same-named properties on the standard
+All properties correspond exactly to the same-named properties on the standard
 <classname>Column</classname> annotation, described in
 <xref linkend="jpa_overview_mapping_column"/>.
             </para>
@@ -2121,7 +2108,7 @@ foreign key (logical or actual) in the table of the related type.
                 <imageobject>
                     <!-- PNG image data, 392 x 192 (see README) -->
                     <imagedata fileref="img/inv-key-coll.png" width="261"/>
-                    
+
                 </imageobject>
             </mediaobject>
             <para>
@@ -2404,7 +2391,7 @@ Here again is our map example from <xref linkend="ref_guide_mapping_jpa_map"/>
                     <imageobject>
                         <!-- PNG image data, 410 x 266 (see README) -->
                         <imagedata fileref="img/string-rel-map.png" width="273px"/>
-                        
+
                     </imageobject>
                 </mediaobject>
             </section>

@@ -335,7 +335,7 @@ public class MappingDefaultsImpl
 
     /**
      * Default base name for version identity columns, or null to the mapping's
-     * built-in name. This name may be combined with lock group names.
+     * built-in name.
      */
     public String getVersionColumnName() {
         return _versName;
@@ -343,7 +343,7 @@ public class MappingDefaultsImpl
 
     /**
      * Default base name for version identity columns, or null to the mapping's
-     * built-in name. This name may be combined with lock group names.
+     * built-in name.
      */
     public void setVersionColumnName(String versName) {
         _versName = versName;

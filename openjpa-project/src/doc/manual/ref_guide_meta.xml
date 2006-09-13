@@ -555,19 +555,6 @@ marker annotation; it does not recognize any properties. Your annotated field
 must be of type <classname>Object</classname>.
                 </para>
             </section>
-            <section id="lock-groups">
-                <title>
-                    Lock Groups
-                </title>
-                <para>
-OpenJPA requires you to pre-declare subclass lock groups in the least-derived
-mapped class. <phrase> The JPA
-<ulink url="../apidocs/org/apache/openjpa/persistence/LockGroups.html">
-<classname>org.apache.openjpa.persistence.LockGroups</classname></ulink>
-annotation accepts an array of lock group names.</phrase> For details on lock
-groups, see <xref linkend="ref_guide_lock_groups_and_subclasses"/>.
-                </para>
-            </section>
         </section>
         <section id="ref_guide_meta_field">
             <title>
@@ -656,9 +643,9 @@ Marks the key entities in a map field as dependent.
                 </indexterm>
                 <para>
 The <ulink url="../apidocs/org/apache/openjpa/persistence/LoadFetchGroup.html">
-<classname>org.apache.openjpa.persistence.LoadFetchGroup</classname></ulink> 
-annotation specifies a field's load fetch group. 
-<xref linkend="ref_guide_fetch"/> discusses OpenJPA's support for fetch groups 
+<classname>org.apache.openjpa.persistence.LoadFetchGroup</classname></ulink>
+annotation specifies a field's load fetch group.
+<xref linkend="ref_guide_fetch"/> discusses OpenJPA's support for fetch groups
 in general; see <xref linkend="ref_guide_fetch_custom"/> for how to use this
 annotation in particular.
                 </para>
@@ -775,34 +762,6 @@ This extension names the inverse field in a logical bidirectional relation.
 <classname>org.apache.openjpa.persistence.InverseLogical</classname></ulink>
 annotation.</phrase> We discuss logical bidirectional relations and this
 extension in detail in <xref linkend="ref_guide_inverses"/>.
-                </para>
-            </section>
-            <section id="lock-group">
-                <title>
-                    Lock Group
-                </title>
-                <indexterm zone="lock-group">
-                    <primary>
-                        metadata
-                    </primary>
-                    <secondary>
-                        extensions
-                    </secondary>
-                    <tertiary>
-                        lock group
-                    </tertiary>
-                    <seealso>
-                        locking
-                    </seealso>
-                </indexterm>
-                <para>
-Lock groups allow for fine-grained optimistic locking concurrency. Use <phrase>
-OpenJPA's <ulink url="../apidocs/org/apache/openjpa/persistence/LockGroup.html">
-<classname>org.apache.openjpa.persistence.LockGroup</classname></ulink>
-annotation</phrase> to name the lock group for a field. You can exclude a field
-from optimistic locking with a value of <literal>none</literal>. We discuss
-lock groups and this extension further in <xref linkend="ref_guide_lock_groups"/>
-.
                 </para>
             </section>
             <section id="read-only">
@@ -1056,7 +1015,6 @@ public class Magazine
 {
     @ManyToMany
     @LRS
-    @LockGroup(LockGroup.NONE)
     private Collection&lt;Subscriber&gt; subscribers;
 
     @ExternalValues({"true=1", "false=2"})
