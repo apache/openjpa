@@ -823,9 +823,7 @@ public class StateManagerImpl
         if (field != -1 && _meta.getField(field).isPrimaryKey())
             return;
 
-        boolean active = _broker.isActive();
-        boolean ending = _broker.isTransactionEnding();
-        if (active && !ending) {
+        if (_broker.isActive() && !_broker.isTransactionEnding()) {
             if (_broker.getOptimistic())
                 setPCState(_state.beforeOptimisticRead(this, field));
             else

@@ -1642,16 +1642,11 @@ public class BrokerImpl
     }
 
     /**
-     * Return whether the given transaction is ending, i.e. in the 2nd phase
+     * Return whether the current transaction is ending, i.e. in the 2nd phase
      * of a commit or rollback
      */
     boolean isTransactionEnding() {
-        beginOperation(true);
-        try {
-            return (_flags & FLAG_TRANS_ENDING) != 0;
-        } finally {
-            endOperation();
-        }
+        return (_flags & FLAG_TRANS_ENDING) != 0;
     }
 
     public boolean beginOperation(boolean syncTrans) {
