@@ -1461,9 +1461,9 @@ public class AnnotationPersistenceMetaDataParser
             props = null;
         } else if (seq.indexOf('(') != -1) // plugin
         {
-            seq = null;
             clsName = Configurations.getClassName(seq);
             props = Configurations.getProperties(seq);
+            seq = null;
         } else {
             clsName = SequenceMetaData.IMPL_NATIVE;
             props = null;
