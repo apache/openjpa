@@ -135,6 +135,7 @@ public class BrokerImpl
     private static final int FLAG_FLUSH_REQUIRED = 2 << 8;
     private static final int FLAG_REMOTE_LISTENER = 2 << 9;
     private static final int FLAG_RETAINED_CONN = 2 << 10;
+    private static final int FLAG_TRANS_ENDING = 2 << 11;
 
     private static final Localizer _loc =
         Localizer.forPackage(BrokerImpl.class);
@@ -1640,6 +1641,19 @@ public class BrokerImpl
         }
     }
 
+    /**
+     * Return whether the given transaction is ending, i.e. in the 2nd phase
+     * of a commit or rollback
+     */
+    boolean isTransactionEnding() {
+        beginOperation(true);
+        try {
+            return (_flags & FLAG_TRANS_ENDING) != 0;
+        } finally {
+            endOperation();
+        }
+    }
+
     public boolean beginOperation(boolean syncTrans) {
         lock();
         try {
@@ -1722,6 +1736,7 @@ public class BrokerImpl
         try {
             assertActiveTransaction();
 
+            _flags |= FLAG_TRANS_ENDING;
             endTransaction(status);
             if (_sync != null)
                 _sync.afterCompletion(status);
@@ -1746,6 +1761,7 @@ public class BrokerImpl
         } finally {
             _flags &= ~FLAG_ACTIVE;
             _flags &= ~FLAG_FLUSHED;
+            _flags &= ~FLAG_TRANS_ENDING;
 
             if (_transEventManager != null 
                 && _transEventManager.hasEndListeners()) {
