@@ -1017,7 +1017,7 @@ public class MetaDataRepository
             return EMPTY_METAS;
 
         // get impls of given interface / abstract class
-        processRegisteredClasses();
+        loadRegisteredClassMetaData(envLoader);
         Collection vals = (Collection) _impls.get(cls);
         ClassMetaData meta;
         Collection mapped = null;
