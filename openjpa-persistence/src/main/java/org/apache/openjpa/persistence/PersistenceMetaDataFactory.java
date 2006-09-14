@@ -30,6 +30,8 @@ import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -277,12 +279,28 @@ public class PersistenceMetaDataFactory
                 hasNamedQuery(queryName, ((NamedQueries) cls.getAnnotation
                     (NamedQueries.class)).value()))
                 return cls;
+            if (cls.isAnnotationPresent(NamedNativeQuery.class) && hasNamedNativeQuery
+                (queryName, (NamedNativeQuery) cls.getAnnotation(NamedNativeQuery.class)))
+                return cls;
+            if (cls.isAnnotationPresent(NamedNativeQueries.class) &&
+                hasNamedNativeQuery(queryName, ((NamedNativeQueries) cls.getAnnotation
+                    (NamedNativeQueries.class)).value()))
+                return cls;
         }
         return null;
     }
 
     private boolean hasNamedQuery(String query, NamedQuery... queries) {
         for (NamedQuery q : queries) {
+            if (query.equals(q.name()))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean hasNamedNativeQuery(String query,
+        NamedNativeQuery... queries) {
+        for (NamedNativeQuery q : queries) {
             if (query.equals(q.name()))
                 return true;
         }
