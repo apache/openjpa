@@ -759,7 +759,7 @@ public class SelectImpl
 
         // delegate to store manager to select in same order it loads result
         ((JDBCStoreManager) store).select(wrapper, mapping, subclasses, null,
-            null, fetch, eager, ident);
+            null, fetch, eager, ident, (_flags & OUTER) != 0);
 
         // reset
         if (hasJoins)
@@ -1626,6 +1626,10 @@ public class SelectImpl
         return this;
     }
 
+    public Joins newOuterJoins() {
+        return ((PathJoins) newJoins()).setOuter(true);
+    }
+
     public void append(SQLBuffer buf, Joins joins) {
         if (joins == null || joins.isEmpty())
             return;
@@ -1744,10 +1748,9 @@ public class SelectImpl
             return joins;
 
         // record that this is an outer join set, even if it's empty
-        PathJoins pj = (PathJoins) joins;
-        pj.setOuter(true);
-        if (joins.isEmpty())
-            return joins;
+        PathJoins pj = ((PathJoins) joins).setOuter(true);
+        if (pj.isEmpty())
+            return pj;
 
         Join join;
         Join rec;
@@ -1928,7 +1931,8 @@ public class SelectImpl
         return false;
     }
 
-    public void setOuter(boolean outer) {
+    public PathJoins setOuter(boolean outer) {
+        return new SelectJoins(this).setOuter(true);
     }
 
     public boolean isDirty() {
@@ -1994,14 +1998,12 @@ public class SelectImpl
      * Represents a SQL string selected with null id.
      */
     private static class NullId {
-
     }
 
     /**
      * Represents a placeholder SQL string.
      */
     private static class Placeholder {
-
     }
 
     /**
@@ -2269,7 +2271,8 @@ public class SelectImpl
             return false;
         }
 
-        public void setOuter(boolean outer) {
+        public PathJoins setOuter(boolean outer) {
+            return this;
         }
 
         public boolean isDirty() {
@@ -2345,7 +2348,8 @@ public class SelectImpl
             return false;
         }
 
-        public void setOuter(boolean outer) {
+        public PathJoins setOuter(boolean outer) {
+            return this;
         }
 
         public boolean isDirty() {
@@ -2452,8 +2456,9 @@ public class SelectImpl
             return _outer;
         }
 
-        public void setOuter(boolean outer) {
+        public PathJoins setOuter(boolean outer) {
             _outer = outer;
+            return this;
         }
 
         public boolean isDirty() {
@@ -2797,14 +2802,9 @@ interface PathJoins
     extends Joins {
 
     /**
-     * Return whether this join set ended with an outer join.
-     */
-    public boolean isOuter();
-
-    /**
      * Mark this as an outer joins set.
      */
-    public void setOuter(boolean outer);
+    public PathJoins setOuter(boolean outer);
 
     /**
      * Return true if this instance has a path, any joins, or a variable.

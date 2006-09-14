@@ -810,6 +810,10 @@ public abstract class AbstractResult
             return true;
         }
 
+        public boolean isOuter() {
+            return false;
+        }
+
         public Joins crossJoin(Table localTable, Table foreignTable) {
             return this;
         }

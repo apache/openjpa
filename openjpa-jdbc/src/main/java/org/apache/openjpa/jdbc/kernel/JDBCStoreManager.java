@@ -367,7 +367,7 @@ public class JDBCStoreManager
         throws SQLException {
         Select sel = _sql.newSelect();
         if (!select(sel, mapping, subs, sm, null, fetch,
-            JDBCFetchConfiguration.EAGER_JOIN, true))
+            JDBCFetchConfiguration.EAGER_JOIN, true, false))
             return null;
 
         sel.wherePrimaryKey(sm.getObjectId(), mapping, this);
@@ -463,8 +463,8 @@ public class JDBCStoreManager
             //### object that only creates a real select when actually used?
 
             Select sel = _sql.newSelect();
-            if (select(sel, mapping, sel.SUBS_EXACT, sm, fields, jfetch,
-                EagerFetchModes.EAGER_JOIN, true)) {
+            if (select(sel, mapping, Select.SUBS_EXACT, sm, fields, jfetch,
+                EagerFetchModes.EAGER_JOIN, true, false)) {
                 sel.wherePrimaryKey(sm.getObjectId(), mapping, this);
                 res = sel.execute(this, jfetch, lockLevel);
                 try {
@@ -854,18 +854,20 @@ public class JDBCStoreManager
      * @param eager eager fetch mode to use
      * @param ident whether to select primary key columns as distinct
      * identifiers
+     * @param outer whether we're outer-joining to this type
      * @return true if the select is required, false otherwise
      */
     public boolean select(Select sel, ClassMapping mapping, int subs,
         OpenJPAStateManager sm, BitSet fields, JDBCFetchConfiguration fetch,
-        int eager, boolean ident) {
+        int eager, boolean ident, boolean outer) {
         // add class conditions so that they're cloned for any batched selects
         boolean joinedSupers = false;
         if ((sm == null || sm.getPCState() == PCState.TRANSIENT)
-            && (subs == sel.SUBS_JOINABLE || subs == sel.SUBS_NONE)) {
+            && (subs == Select.SUBS_JOINABLE || subs == Select.SUBS_NONE)) {
             loadSubclasses(mapping); 
+            Joins joins = (outer) ? sel.newOuterJoins() : null;
             joinedSupers = mapping.getDiscriminator().addClassConditions(sel,
-                subs == sel.SUBS_JOINABLE, null);
+                subs == Select.SUBS_JOINABLE, joins);
         }
 
         // create all our eager selects so that those fields are reserved
@@ -889,7 +891,7 @@ public class JDBCStoreManager
                 fetch.traverseJDBC(eagerToMany), eager);
 
         // optionally select subclass mappings
-        if (subs == sel.SUBS_JOINABLE || subs == sel.SUBS_ANY_JOINABLE)
+        if (subs == Select.SUBS_JOINABLE || subs == Select.SUBS_ANY_JOINABLE)
             selectSubclassMappings(sel, mapping, sm, fetch);
         if (sm != null)
             sel.setDistinct(false);

@@ -810,6 +810,10 @@ public class LogicalUnion
             return sel.newJoins();
         }
 
+        public Joins newOuterJoins() {
+            return sel.newOuterJoins();
+        }
+
         public void append(SQLBuffer buf, Joins joins) {
             sel.append(buf, joins);
         }
