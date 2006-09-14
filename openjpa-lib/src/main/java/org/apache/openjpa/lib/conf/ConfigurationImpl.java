@@ -374,8 +374,12 @@ public class ConfigurationImpl
         PropertyDescriptor[] pds = getPropertyDescriptors();
         _mds = new MethodDescriptor[pds.length * 2];
         for (int i = 0; i < pds.length; i++) {
-            _mds[i * 2] = new MethodDescriptor(pds[i].getWriteMethod());
-            _mds[(i * 2) + 1] = new MethodDescriptor(pds[i].getReadMethod());
+            Method write = pds[i].getWriteMethod();
+            if (write != null)
+                _mds[i * 2] = new MethodDescriptor(write);
+            Method read = pds[i].getReadMethod();
+            if (read != null)
+                _mds[(i * 2) + 1] = new MethodDescriptor(read);
         }
         return _mds;
     }
