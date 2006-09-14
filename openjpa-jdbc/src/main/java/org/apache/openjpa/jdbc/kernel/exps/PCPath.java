@@ -130,6 +130,13 @@ class PCPath
     }
 
     /**
+     * Return whether this is a path involving a variable.
+     */
+    public boolean isVariablePath() {
+        return _type != PATH;
+    }
+
+    /**
      * If this path is part of a contains clause, then alias it to the
      * proper contains id before initialization.
      */
