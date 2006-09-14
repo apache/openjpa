@@ -1528,6 +1528,11 @@ public class XMLPersistenceMetaDataParser
             return false;
         boolean system = currentElement() == null;
 
+        Class type = currentElement() == null ? null :
+            ((ClassMetaData) currentElement()).getDescribedType();
+        if (type == null)
+            type = Object.class;
+
         if (_callbacks == null) {
             _callbacks = (Collection<LifecycleCallbacks>[])
                 new Collection[LifecycleEvent.ALL_EVENTS.length];
@@ -1538,7 +1543,7 @@ public class XMLPersistenceMetaDataParser
         LifecycleCallbacks adapter;
         if (_listener != null)
             adapter = new BeanLifecycleCallbacks(_listener,
-                attrs.getValue("method-name"), false);
+                attrs.getValue("method-name"), false, type);
         else
             adapter = new MethodLifecycleCallbacks(_cls,
                 attrs.getValue("method-name"), false);

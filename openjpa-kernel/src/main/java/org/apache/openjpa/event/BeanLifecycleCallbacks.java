@@ -38,9 +38,10 @@ public class BeanLifecycleCallbacks
      *
      * @arg whether another argunent is expected such as AfterDetach
      */
-    public BeanLifecycleCallbacks(Class cls, String method, boolean arg) {
+    public BeanLifecycleCallbacks(Class cls, String method, boolean arg,
+        Class type) {
         this(cls, getMethod(cls, method, arg ? new Class[]{ Object.class,
-            Object.class } : new Class[]{ Object.class }), arg);
+            type } : new Class[]{ type }), arg);
     }
 
     /**
