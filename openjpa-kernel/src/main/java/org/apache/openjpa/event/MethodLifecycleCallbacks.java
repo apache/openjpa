@@ -16,6 +16,7 @@
 package org.apache.openjpa.event;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
@@ -92,7 +93,14 @@ public class MethodLifecycleCallbacks
      */
     protected static Method getMethod(Class cls, String method, Class[] args) {
         try {
-            return cls.getMethod(method, args);
+            Method[] methods = cls.getMethods();
+            for (int i = 0; i < methods.length; i++) {
+                if (!method.equals(methods[i].getName()))
+                    continue;
+
+                if (isAssignable(methods[i].getParameterTypes(), args))
+                    return methods[i];
+            }
         } catch (Throwable t) {
             try {
                 // try again with the declared methods, which will
@@ -103,8 +111,32 @@ public class MethodLifecycleCallbacks
                 return m;
             } catch (Throwable t2) {
                 throw new UserException(_loc.get("method-notfound",
-                    cls.getName(), method), t);
+                    cls.getName(), method,
+                        args == null ? null : Arrays.asList(args)), t);
             }
 		}
+
+        throw new UserException(_loc.get("method-notfound",
+            cls.getName(), method,
+                args == null ? null : Arrays.asList(args)));
 	}
+
+    /** 
+     * Returns true if all parameters in the from array are assignable
+     * from the corresponding parameters of the to array. 
+     */
+    private static boolean isAssignable(Class[] from, Class[] to) {
+        if (from == null)
+            return to == null;
+
+        if (from.length != to.length)
+            return false;
+
+        for (int i = 0; i < from.length; i++) {
+            if (from[i] == null || !from[i].isAssignableFrom(to[i]))
+                return false;
+        }
+
+        return true;
+    } 
 }

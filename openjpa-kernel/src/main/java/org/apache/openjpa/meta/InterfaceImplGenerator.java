@@ -205,7 +205,7 @@ class InterfaceImplGenerator {
             return true;
         try {
             Method meth = iface.getDeclaredMethod("is" + StringUtils.capitalize
-                (fmd.getName()), null);
+                (fmd.getName()), (Class[]) null);
             return meth == null;
         } catch (NoSuchMethodException e) {}
         return true;
