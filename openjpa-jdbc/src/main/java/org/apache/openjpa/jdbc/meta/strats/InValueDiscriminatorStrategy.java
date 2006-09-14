@@ -126,20 +126,29 @@ public abstract class InValueDiscriminatorStrategy
         if (subs.length == 0 && base.getJoinablePCSuperclassMapping() == null)
             return null;
 
-        // if not selecting subclasses, limit to just the given class
         Column col = disc.getColumns()[0];
         SQLBuffer sql = new SQLBuffer(sel.getConfiguration().
             getDBDictionaryInstance());
-        sql.append(sel.getColumnAlias(col, joins));
-        if (!subclasses || subs.length == 0)
+        boolean outer = joins != null && joins.isOuter();
+        if (outer)
+            sql.append("(");
+        String alias = sel.getColumnAlias(col, joins);
+        sql.append(alias);
+
+        // if not selecting subclasses, limit to just the given class
+        if (!outer && (!subclasses || subs.length == 0))
             return sql.append(" = ").appendValue(getDiscriminatorValue(base),
                 col);
 
+        if (outer)
+            sql.append(" IS ").appendValue(null).append(" OR ").append(alias);
         sql.append(" IN (");
         sql.appendValue(getDiscriminatorValue(base), col);
         for (int i = 0; i < subs.length; i++)
             sql.append(", ").appendValue(getDiscriminatorValue(subs[i]), col);
         sql.append(")");
+        if (outer)
+            sql.append(")");
         return sql;
     }
 }

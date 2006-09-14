@@ -32,6 +32,11 @@ public interface Joins {
     public boolean isEmpty();
 
     /**
+     * Whether this joins path results in outer joins.
+     */
+    public boolean isOuter();
+
+    /**
      * Perform a cross join on the given tables.
      */
     public Joins crossJoin(Table localTable, Table foreignTable);

@@ -653,6 +653,11 @@ public interface Select
     public Joins newJoins();
 
     /**
+     * Return a new instance to use for outer joining.
+     */
+    public Joins newOuterJoins();
+
+    /**
      * Append the given joins to the given buffer.
      */
     public void append(SQLBuffer buf, Joins joins);
