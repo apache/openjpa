@@ -299,6 +299,10 @@ public class ExpressionStoreQuery
          * Throw proper exception if given value is a collection/map/array.
          */
         protected void assertNotContainer(Value val, StoreQuery q) {
+            // variables represent container elements, not the container itself
+            if (val.isVariable())
+                return;
+
             Class type;
             if (val instanceof Path) {
                 FieldMetaData fmd = ((Path) val).last();
