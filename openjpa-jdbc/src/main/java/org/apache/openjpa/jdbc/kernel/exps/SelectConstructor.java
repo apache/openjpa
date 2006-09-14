@@ -25,8 +25,11 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.exps.AbstractExpressionVisitor;
+import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.Expression;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
+import org.apache.openjpa.kernel.exps.Value;
 
 /**
  * Turns parsed queries into selects.
@@ -120,8 +123,7 @@ public class SelectConstructor {
             else if ((exps.distinct & exps.DISTINCT_FALSE) != 0)
                 sel.setDistinct(false);
         } else if (exps.projections.length > 0) {
-            if (!sel.isDistinct() && (exps.distinct & exps.DISTINCT_TRUE) != 0)
-            {
+            if (!sel.isDistinct() && (exps.distinct & exps.DISTINCT_TRUE) != 0){
                 // if the select is not distinct but the query is, force
                 // the select to be distinct
                 sel.setDistinct(true);
@@ -133,8 +135,11 @@ public class SelectConstructor {
                 // get unique candidate values) and needed field values and
                 // applies the where conditions; the outer select applies
                 // ordering, grouping, etc
-                if (exps.isAggregate() 
-                    || (exps.distinct & exps.DISTINCT_TRUE) == 0) {
+                boolean agg = exps.isAggregate();
+                boolean candidate = ProjectionExpressionVisitor.
+                    hasCandidateProjections(exps.projections);
+                if (agg || (candidate 
+                    && (exps.distinct & exps.DISTINCT_TRUE) == 0)) {
                     DBDictionary dict = ctx.store.getDBDictionary();
                     dict.assertSupport(dict.supportsSubselect,
                         "SupportsSubselect");
@@ -142,10 +147,16 @@ public class SelectConstructor {
                     Select inner = sel;
                     sel = ctx.store.getSQLFactory().newSelect();
                     sel.setParent(parent, alias);
-                    sel.setDistinct(exps.isAggregate()
+                    sel.setDistinct(agg
                         && (exps.distinct & exps.DISTINCT_TRUE) != 0);
                     sel.setFromSelect(inner);
-                }
+
+                // auto-distincting happens to get unique candidate instances
+                // back; don't auto-distinct if the user isn't selecting 
+                // candidate data
+                } else if (!candidate 
+                    && (exps.distinct & exps.DISTINCT_TRUE) == 0) 
+                    sel.setDistinct(false);
             }
         }
         return sel;
@@ -293,6 +304,39 @@ public class SelectConstructor {
             ctx.store.loadSubclasses(mapping);
             mapping.getDiscriminator().addClassConditions((inner != null) 
                 ? inner : sel, subclasses, joins);
+        }
+    }
+
+    /**
+     * Used to check whether a query's result projections are on the candidate.
+     */
+    private static class ProjectionExpressionVisitor
+        extends AbstractExpressionVisitor {
+
+        private boolean _candidate = false;
+        private int _level = 0;
+
+        public static boolean hasCandidateProjections(Value[] projs) {
+            ProjectionExpressionVisitor v = new ProjectionExpressionVisitor();
+            for (int i = 0; i < projs.length; i++) {
+                projs[i].acceptVisit(v);
+                if (v._candidate)
+                    return true;
+            }
+            return false;
+        }
+
+        public void enter(Value val) {
+            if (!_candidate) {
+                _candidate = (_level == 0 && val instanceof Constant)
+                    || (val instanceof PCPath 
+                    && !((PCPath) val).isVariablePath());
+            }
+            _level++;
+        }
+
+        public void exit(Value val) {
+            _level--;
         }
     }
 }
