@@ -92,11 +92,6 @@ public class MetaDataRepository
     private static final Localizer _loc = Localizer.forPackage
         (MetaDataRepository.class);
 
-    // number of metadatas that have been registered thus far. This does not
-    // include dynamically-generated subclasses; it is just the count of
-    // user-created metadatas that were registered.
-    private int _count = 0;
-
     // system sequence
     private SequenceMetaData _sysSeq = null;
 
@@ -742,7 +737,6 @@ public class MetaDataRepository
             if (_pawares.containsKey(cls))
                 throw new MetaDataException(_loc.get("pc-and-aware", cls));
             _metas.put(cls, meta);
-            _count++;
         }
         return meta;
     }
@@ -863,7 +857,6 @@ public class MetaDataRepository
             Class impl = (Class) _ifaces.remove(cls);
             if (impl != null)
                 _metas.remove(impl);
-            _count--;
             return true;
         }
         return false;

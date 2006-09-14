@@ -245,6 +245,13 @@ class PCPath
             : _class.getPrimaryKeyColumns();
     }
 
+    public boolean isVariable() {
+        if (_actions == null)
+            return false;
+        Action action = (Action) _actions.getLast();
+        return action.op == Action.UNBOUND_VAR || action.op == Action.VAR; 
+    }
+
     public void get(FieldMetaData field, boolean nullTraversal) {
         if (_actions == null)
             _actions = new LinkedList();

@@ -1358,7 +1358,7 @@ class JPQLExpressionBuilder
         // determind how to evauate a variabe
         if (!val.isVariable())
             return val;
-        else if (handleVar == VAR_PATH)
+        else if (handleVar == VAR_PATH && !(val instanceof Path))
             return newPath(val, val.getMetaData());
         else if (handleVar == VAR_ERROR)
             throw parseException(EX_USER, "unexpected-var",
