@@ -101,6 +101,9 @@ public class MethodLifecycleCallbacks
                 if (isAssignable(methods[i].getParameterTypes(), args))
                     return methods[i];
             }
+
+            return cls.getMethod(method, args);
+
         } catch (Throwable t) {
             try {
                 // try again with the declared methods, which will
@@ -115,10 +118,6 @@ public class MethodLifecycleCallbacks
                         args == null ? null : Arrays.asList(args)), t);
             }
 		}
-
-        throw new UserException(_loc.get("method-notfound",
-            cls.getName(), method,
-                args == null ? null : Arrays.asList(args)));
 	}
 
     /** 
@@ -133,7 +132,7 @@ public class MethodLifecycleCallbacks
             return false;
 
         for (int i = 0; i < from.length; i++) {
-            if (from[i] == null || !from[i].isAssignableFrom(to[i]))
+            if (from[i] != null && !from[i].isAssignableFrom(to[i]))
                 return false;
         }
 
