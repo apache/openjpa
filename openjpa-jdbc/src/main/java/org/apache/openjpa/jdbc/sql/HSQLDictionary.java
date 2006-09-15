@@ -214,6 +214,18 @@ public class HSQLDictionary
         return cols;
     }
 
+    public void setDouble(PreparedStatement stmnt, int idx, double val,
+        Column col)
+        throws SQLException {
+        // HSQL has a bug where it cannot store a double if it is
+        // exactly the same as Long.MAX_VALUE or MIN_VALUE
+        if (val == Long.MAX_VALUE || val == Long.MIN_VALUE) {
+            stmnt.setLong(idx, (long)val);
+        } else  {
+            super.setDouble(stmnt, idx, val, col);
+        }
+    }
+
     public void setBigDecimal(PreparedStatement stmnt, int idx, BigDecimal val,
         Column col)
         throws SQLException {
