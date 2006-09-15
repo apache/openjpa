@@ -1377,8 +1377,6 @@ public class MetaDataRepository
      * Update the list of implementations of base classes and interfaces.
      */
     private void updateImpls(Class cls, Class leastDerived, Class check) {
-        if (!_factory.getDefaults().isDeclaredInterfacePersistent())
-            return;
         // allow users to query on common non-pc superclasses
         Class sup = check.getSuperclass();
         if (leastDerived == cls && sup != null && sup != Object.class) {
@@ -1386,6 +1384,10 @@ public class MetaDataRepository
             updateImpls(cls, leastDerived, sup);
         }
 
+        // allow users to query on any implemented interfaces unless defaults 
+        // say the user must create persistent interfaces explicitly
+        if (!_factory.getDefaults().isDeclaredInterfacePersistent())
+            return;
         Class[] ints = check.getInterfaces();
         for (int i = 0; i < ints.length; i++) {
             // don't map java-standard interfaces

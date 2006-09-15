@@ -76,8 +76,8 @@ class SingleFieldManager
                 if (proxy == null) {
                     proxy = (Proxy) _sm.newFieldProxy(field);
                     ((Date) proxy).setTime(((Date) objval).getTime());
-                    if (proxy instanceof Timestamp &&
-                        objval instanceof Timestamp)
+                    if (proxy instanceof Timestamp 
+                        && objval instanceof Timestamp)
                         ((Timestamp) proxy).setNanos(((Timestamp) objval).
                             getNanos());
                     ret = true;
@@ -89,12 +89,7 @@ class SingleFieldManager
                 proxy = checkProxy();
                 if (proxy == null) {
                     proxy = (Proxy) _sm.newFieldProxy(field);
-                    if (objval != null) {
-                        Calendar pcal = (Calendar) proxy;
-                        Calendar ocal = (Calendar) objval;
-                        pcal.setTime(ocal.getTime());
-                        pcal.setTimeZone(ocal.getTimeZone());
-                    }
+                    ((Calendar) proxy).setTime(((Calendar) objval).getTime());
                     ret = true;
                 }
                 break;

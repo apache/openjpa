@@ -20,8 +20,8 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -510,13 +510,17 @@ public class DataCacheStoreManager
         for (Iterator itr = states.iterator(); itr.hasNext();) {
             sm = (OpenJPAStateManager) itr.next();
 
-            if (sm.getPCState() == PCState.PNEW) {
+            if (sm.getPCState() == PCState.PNEW && !sm.isFlushed()) {
                 if (_inserts == null)
-                    _inserts = new LinkedList();
+                    _inserts = new ArrayList();
                 _inserts.add(sm);
-            } else if (_inserts != null &&
-                (sm.getPCState() == PCState.PNEWDELETED ||
-                sm.getPCState() == PCState.PNEWFLUSHEDDELETED))
+
+                // may have been re-persisted
+                if (_deletes != null)
+                    _deletes.remove(sm);
+            } else if (_inserts != null 
+                && (sm.getPCState() == PCState.PNEWDELETED 
+                || sm.getPCState() == PCState.PNEWFLUSHEDDELETED))
                 _inserts.remove(sm);
             else if (sm.getPCState() == PCState.PDIRTY) {
                 if (_updates == null)
@@ -524,7 +528,7 @@ public class DataCacheStoreManager
                 _updates.put(sm, sm.getDirty());
             } else if (sm.getPCState() == PCState.PDELETED) {
                 if (_deletes == null)
-                    _deletes = new LinkedList();
+                    _deletes = new HashSet();
                 _deletes.add(sm);
             }
         }
@@ -572,10 +576,10 @@ public class DataCacheStoreManager
      */
     private static class Modifications {
 
-        public final List additions = new LinkedList();
-        public final List newUpdates = new LinkedList();
-        public final List existingUpdates = new LinkedList();
-        public final List deletes = new LinkedList();
+        public final List additions = new ArrayList();
+        public final List newUpdates = new ArrayList();
+        public final List existingUpdates = new ArrayList();
+        public final List deletes = new ArrayList();
     }
 
     private static class PCDataHolder {

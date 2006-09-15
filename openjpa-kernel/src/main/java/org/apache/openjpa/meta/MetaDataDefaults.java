@@ -28,10 +28,16 @@ public interface MetaDataDefaults
     extends CallbackModes {
 
     /**
-     * Return the default access type for base persistent class with
+     * Return the default access type for a base persistent class with
      * {@link ClassMetaData#ACCESS_UNKNOWN} access type.
      */
     public int getDefaultAccessType();
+
+    /**
+     * Return the default identity type for unmapped classes without primary
+     * key fields.
+     */
+    public int getDefaultIdentityType();
 
     /**
      * What to do on lifecycle callback exceptions.

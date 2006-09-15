@@ -379,12 +379,13 @@ public class ClassMetaData
             ClassMetaData sup = getPCSuperclassMetaData();
             if (sup != null && sup.getIdentityType() != ID_UNKNOWN)
                 _identity = sup.getIdentityType();
-            else {
-                if (getPrimaryKeyFields().length > 0)
-                    _identity = ID_APPLICATION;
-                else 
-                    _identity = (isMapped()) ? ID_DATASTORE : ID_UNKNOWN;
-            }
+            else if (getPrimaryKeyFields().length > 0)
+                _identity = ID_APPLICATION;
+            else if (isMapped())
+                _identity = ID_DATASTORE;
+            else
+                _identity = _repos.getMetaDataFactory().getDefaults().
+                    getDefaultIdentityType();
         }
         return _identity;
     }
