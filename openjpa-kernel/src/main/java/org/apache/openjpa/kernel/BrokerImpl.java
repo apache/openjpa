@@ -4140,6 +4140,18 @@ public class BrokerImpl
         if (obj instanceof PersistenceCapable)
             return (PersistenceCapable) obj;
 
+        // check for difference instances of the PersistenceCapable interface
+        // and throw a better error that mentions the class loaders
+        Class[] intfs = obj.getClass().getInterfaces();
+        for (int i = 0; intfs != null && i < intfs.length; i++) {
+            if (intfs[i].getName().equals(PersistenceCapable.class.getName())) {
+                throw new UserException(_loc.get("pc-loader-different",
+                    Exceptions.toString(obj),
+                    PersistenceCapable.class.getClassLoader(),
+                    intfs[i].getClassLoader())).setFailedObject(obj);
+            }
+        }
+
         // not enhanced
         throw new UserException(_loc.get("pc-cast",
             Exceptions.toString(obj))).setFailedObject(obj);
