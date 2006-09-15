@@ -259,20 +259,17 @@ public class DetachManager
      * Return a detached version of the given instance.
      */
     public Object detach(Object toDetach) {
-        CallbackException excep = null;
+        List exceps = null;
         try {
             return detachInternal(toDetach);
         } catch (CallbackException ce) {
-            excep = ce;
+            exceps = new ArrayList(1);
+            exceps.add(ce);
             return null; // won't be reached as exception will be rethrown
         } finally {
-            List exceps = null;
-
-            if (excep == null || !_failFast) {
+            if (exceps == null || !_failFast)
                 exceps = invokeAfterDetach(Collections.singleton(toDetach),
-                    null);
-            } else
-                exceps = Collections.singletonList(excep);
+                    exceps);
             if (_detached != null)
                 _detached.clear();
             throwExceptions(exceps);
@@ -303,11 +300,8 @@ public class DetachManager
                 failFast = true;
             exceps = add(exceps, re);
         } finally {
-            // invoke post callbacks unless all failed
-            if (!failFast && (exceps == null
-                || exceps.size() < instances.size())) {
+            if (!failFast)
                 exceps = invokeAfterDetach(instances, exceps);
-            }
             if (_detached != null)
                 _detached.clear();
         }

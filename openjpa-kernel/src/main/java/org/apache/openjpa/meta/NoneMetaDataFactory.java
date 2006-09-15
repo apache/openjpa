@@ -93,6 +93,10 @@ public class NoneMetaDataFactory
         return ClassMetaData.ACCESS_UNKNOWN;
     }
 
+    public int getDefaultIdentityType() {
+        return ClassMetaData.ID_UNKNOWN;
+    }
+
     public int getCallbackMode() {
         return CALLBACK_IGNORE;
     }

@@ -40,6 +40,7 @@ public abstract class AbstractMetaDataDefaults
         (AbstractMetaDataDefaults.class);
 
     private int _access = ClassMetaData.ACCESS_FIELD;
+    private int _identity = ClassMetaData.ID_UNKNOWN;
     private boolean _ignore = true;
     private boolean _interface = true;
     private boolean _pcRegistry = true;
@@ -63,18 +64,34 @@ public abstract class AbstractMetaDataDefaults
 
     /**
      * The default access type for base classes with ACCESS_UNKNOWN.
-     * Returns ACCESS_FIELD by default.
+     * ACCESS_FIELD by default.
+     */
+    public int getDefaultAccessType() {
+        return _access;
+    }
+
+    /**
+     * The default access type for base classes with ACCESS_UNKNOWN.
+     * ACCESS_FIELD by default.
      */
     public void setDefaultAccessType(int access) {
         _access = access;
     }
 
     /**
-     * The default access type for base classes with ACCESS_UNKNOWN.
-     * Returns ACCESS_FIELD by default.
+     * The default identity type for unmapped classes without primary 
+     * key fields. ID_UNKNOWN by default.
      */
-    public int getDefaultAccessType() {
-        return _access;
+    public int getDefaultIdentityType() {
+        return _identity;
+    }
+
+    /**
+     * The default identity type for unmapped classes without primary 
+     * key fields. ID_UNKNOWN by default.
+     */
+    public void setDefaultIdentityType(int identity) {
+        _identity = identity;
     }
 
     public int getCallbackMode() {
