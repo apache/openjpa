@@ -1,7 +1,10 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='1.0'>
 
     <!-- docbook stylesheet customizations for openjpa manual -->
-	<xsl:import href="http://docbook.sourceforge.net/release/xsl/1.69.1/html/chunk.xsl"/>
+	<!-- <xsl:import href="http://docbook.sourceforge.net/release/xsl/1.69.1/html/chunk.xsl"/> -->
+    <!-- locally downloaded cache of stylesheets -->
+	<xsl:import href="../../../target/stylesheets/1.69.1/html/chunk.xsl"/>
+
 
 	<xsl:param name="html.stylesheet">../css/docbook.css</xsl:param>
 
@@ -20,5 +23,6 @@
 	<xsl:param name="section.autolabel" select="1"/>
 
 	<xsl:param name="use.id.as.filename" select="'1'"/>
+	<xsl:template name="process.image.attributes"/>
 </xsl:stylesheet>
 
