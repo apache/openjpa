@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -372,15 +373,19 @@ public class ConfigurationImpl
         if (_mds != null)
             return _mds;
         PropertyDescriptor[] pds = getPropertyDescriptors();
-        _mds = new MethodDescriptor[pds.length * 2];
+
+        List descs = new LinkedList(); 
         for (int i = 0; i < pds.length; i++) {
             Method write = pds[i].getWriteMethod();
-            if (write != null)
-                _mds[i * 2] = new MethodDescriptor(write);
             Method read = pds[i].getReadMethod();
-            if (read != null)
-                _mds[(i * 2) + 1] = new MethodDescriptor(read);
+            if (read != null && write != null) {
+                descs.add(new MethodDescriptor(write));
+                descs.add(new MethodDescriptor(read));
+            }
         }
+
+        _mds = (MethodDescriptor[])descs.
+            toArray(new MethodDescriptor[descs.size()]);
         return _mds;
     }
 
