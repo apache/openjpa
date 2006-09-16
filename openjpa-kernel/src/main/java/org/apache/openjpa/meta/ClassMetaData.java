@@ -142,6 +142,7 @@ public class ClassMetaData
     private Boolean _embedded = null;
     private Boolean _interface = null;
     private Class _impl = null;
+    private List _interfaces = null;
     private Map _ifaceMap = new HashMap();
     private int _identity = ID_UNKNOWN;
     private int _idStrategy = ValueStrategies.NONE;
@@ -698,6 +699,38 @@ public class ClassMetaData
     }
 
     /**
+     * Return all explicitly declared interfaces this class implements.
+     */
+    public Class[] getDeclaredInterfaces() {
+        if (_interfaces == null)
+            return _repos.EMPTY_CLASSES;
+
+        return (Class[]) _interfaces.toArray(new Class[_interfaces.size()]);
+    }
+
+    /**
+     * Explicitly declare the given interface among the ones this
+     * class implements.
+     */
+    public void addDeclaredInterface(Class iface) {
+        if (_interfaces == null)
+            _interfaces = new ArrayList();
+        if (!iface.isInterface())
+            throw new MetaDataException(_loc.get("declare-non-interface",
+                this, iface));
+        _interfaces.add(iface);
+    }
+
+    /**
+     * Remove the given interface from the declared list.
+     */
+    public boolean removeDeclaredInterface(Class iface) {
+        if (_interfaces == null)
+            return false;
+        return _interfaces.remove(iface);
+    }
+
+    /**
      * Alias properties from the given interface during  queries to
      * the local field.
      */
@@ -725,6 +758,18 @@ public class ClassMetaData
             if (fields == null)
                 return null;
             return (String) fields.get(orig);
+        }
+    }
+    
+    /**
+     * Return all aliases property named for the given interface.
+     */
+    public String[] getInterfaceAliasedProperties(Class iface) {
+        synchronized (_ifaceMap) {
+            Map fields = (Map) _ifaceMap.get(iface);
+            if (fields == null)
+                return new String[0];
+            return (String[]) fields.keySet().toArray(new String[0]);
         }
     }
     
@@ -1609,6 +1654,13 @@ public class ClassMetaData
 
         // resolve lifecycle metadata now to prevent lazy threading problems
         _lifeMeta.resolve();
+
+        // record implements in the repository
+        if (_interfaces != null) {
+            for (Iterator it = _interfaces.iterator(); it.hasNext();) {
+                _repos.addDeclaredInterfaceImpl(this, (Class) it.next());
+            }
+        }
 
         // resolve fetch groups
         if (_fgMap != null)
