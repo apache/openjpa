@@ -138,7 +138,7 @@ public abstract class ColumnVersionStrategy
 
         // set where and update conditions on row
         for (int i = 0; i < cols.length; i++) {
-            if (curVersion != null)
+            if (curVersion != null && sm.isVersionCheckRequired())
                 row.whereObject(cols[i], curVersion);
             if (vers.getColumnIO().isUpdatable(i, nextVersion == null))
                 row.setObject(cols[i], nextVersion);

@@ -17,6 +17,7 @@ package org.apache.openjpa.util;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -164,6 +165,30 @@ public class ImplHelper {
             default:
                 return null;
         }
+    }
+
+    /** 
+     * Returns the fields of the state that require an update. 
+     *  
+     * @param  sm  the state to check
+     * @return the BitSet of fields that need update, or null if none
+     */
+    public static BitSet getUpdateFields(OpenJPAStateManager sm) {
+
+        if ((sm.getPCState() == PCState.PDIRTY
+            && (!sm.isFlushed() || sm.isFlushedDirty()))
+            || (sm.getPCState() == PCState.PNEW && sm.isFlushedDirty())) {
+            BitSet dirty = sm.getDirty();
+            if (sm.isFlushed()) {
+                dirty = (BitSet) dirty.clone();
+                dirty.andNot(sm.getFlushed());
+            }
+
+            if (dirty.length() > 0)
+                return dirty;
+        }
+
+        return null;
     }
 
     /**
