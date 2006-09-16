@@ -6,7 +6,7 @@
 	<xsl:import href="../../../target/stylesheets/1.69.1/html/chunk.xsl"/>
 
 
-	<xsl:param name="html.stylesheet">../css/docbook.css</xsl:param>
+	<xsl:param name="html.stylesheet">css/docbook.css</xsl:param>
 
 	<xsl:param name="html.cleanup" select="1"/>
 	<xsl:param name="label.from.part" select="1"/>
