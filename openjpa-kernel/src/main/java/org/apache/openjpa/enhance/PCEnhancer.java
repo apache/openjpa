@@ -1904,7 +1904,7 @@ public class PCEnhancer {
                 method.makeProtected();
                 access = "protected";
             }
-            if (_log.isWarnEnabled())
+            if (!_meta.getDescribedType().isInterface() && _log.isWarnEnabled())
                 _log.warn(_loc.get("enhance-adddefaultconst", type, access));
         }
     }

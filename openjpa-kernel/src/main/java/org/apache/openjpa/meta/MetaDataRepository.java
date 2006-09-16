@@ -865,9 +865,23 @@ public class MetaDataRepository
     /**
      * Add the given metadata as declared interface implementation.
      */
-    public void addDeclaredInterfaceImpl(ClassMetaData meta, Class iface) {
+    void addDeclaredInterfaceImpl(ClassMetaData meta, Class iface) {
         synchronized (_impls) {
-            addToCollection(_impls, iface, meta.getDescribedType(), false);
+            boolean supDec = false;
+            Collection vals = (Collection) _impls.get(iface);
+            
+            // check to see if the superclass already declares to avoid dups
+            if (vals != null) {
+                ClassMetaData sup = meta.getPCSuperclassMetaData();
+                while (vals != null && sup != null && !supDec) {
+                    supDec = vals.contains(sup.getDescribedType());
+                    sup = sup.getPCSuperclassMetaData();
+                }
+                if (supDec)
+                    return;
+            }
+
+            addToCollection(_impls, iface, meta.getDescribedType(), true);
         }
     }
 
