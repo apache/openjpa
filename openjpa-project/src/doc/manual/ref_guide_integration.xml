@@ -330,7 +330,7 @@ object-relational mapping data is always synchronized with your persistent class
 definitions, without needing to remember to invoke the mapping tool manually.
 The task's parameters correspond exactly to the long versions of the
 command-line arguments to the <link linkend="ref_guide_mapping_mappingtool">
-<literal> mappingtool</literal></link>.
+<literal>mappingtool</literal></link>.
             </para>
             <para>
 The mapping tool task accepts a nested <literal>fileset</literal> tag to specify

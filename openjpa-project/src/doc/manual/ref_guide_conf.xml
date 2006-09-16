@@ -235,7 +235,7 @@ number of lines to skip between sections of code. Defaults to 2.
                     Code Formatting with the Reverse Mapping Tool
                 </title>
 <programlisting>
-reversemappingtool -cf.spaceBeforeParen true -cf.tabSpaces 4
+java org.apache.openjpa.jdbc.meta.ReverseMappingTool -cf.spaceBeforeParen true -cf.tabSpaces 4
 </programlisting>
             </example>
         </section>

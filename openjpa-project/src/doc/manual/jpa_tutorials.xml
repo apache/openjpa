@@ -168,10 +168,11 @@ files listed above.
                         <para>
                         <indexterm>
                             <primary>
-                                openjpac
+                                org.apache.openjpa.enhance.PCEnhancer
                             </primary>
                         </indexterm>
-<command>openjpac</command>: Runs the OpenJPA enhancer against the specified
+<command>org.apache.openjpa.enhance.PCEnhancer</command>:
+Runs the OpenJPA enhancer against the specified
 classes. More information is available in <xref linkend="ref_guide_pc_enhance"/>
  of the Reference Guide.
                         </para>
@@ -180,10 +181,11 @@ classes. More information is available in <xref linkend="ref_guide_pc_enhance"/>
                         <para>
                         <indexterm>
                             <primary>
-                                mappingtool
+                                org.apache.openjpa.jdbc.meta.MappingTool
                             </primary>
                         </indexterm>
-<command>mappingtool</command>: A utility that can be used to create and
+<command>org.apache.openjpa.jdbc.meta.MappingTool</command>:
+A utility that can be used to create and
 maintain the object-relational mappings and schema of all persistent classes in
 a JDBC-compliant datastore. This functionality allows the underlying mappings
 and schema to be easily kept up-to-date with the Java classes in the system. See
@@ -369,7 +371,7 @@ You can use any java compiler instead of <command>javac</command>.
 Enhance the persistent classes.
                     </para>
 <programlisting>
-openjpac -p persistence.xml Animal.java Dog.java
+java org.apache.openjpa.enhance.PCEnhancer -p persistence.xml Animal.java Dog.java
 </programlisting>
                     <para>
 This step runs the OpenJPA enhancer on the <filename>Animal.java</filename> and
@@ -413,13 +415,13 @@ the Reference Guide.
                         <para>
                         <indexterm>
                             <primary>
-                                mappingtool
+                                org.apache.openjpa.jdbc.meta.MappingTool
                             </primary>
                         </indexterm>
 Create the object-relational mappings and database schema.
                         </para>
 <programlisting>
-mappingtool -p persistence.xml Animal.java Dog.java
+java org.apache.openjpa.jdbc.meta.MappingTool -p persistence.xml Animal.java Dog.java
 </programlisting>
                         <para>
 This command propagates the necessary schema for the specified classes to the
@@ -443,7 +445,7 @@ If you are curious, you can view the schema OpenJPA created for the tutorial
 classes with OpenJPA's schema tool:
                         </para>
 <programlisting>
-schematool -p persistence.xml -a reflect -f tmp.schema
+java org.apache.openjpa.jdbc.schema.SchemaTool -p persistence.xml -a reflect -f tmp.schema
 </programlisting>
                         <para>
 This will create a <filename>tmp.schema</filename> file with an XML
@@ -801,7 +803,7 @@ javac Rabbit.java
 Enhance the <classname>Rabbit</classname> class.
                     </para>
 <programlisting>
-openjpac -p persistence.xml Rabbit.java
+java org.apache.openjpa.enhance.PCEnhancer -p persistence.xml Rabbit.java
 </programlisting>
                 </listitem>
                 <listitem>
@@ -809,7 +811,7 @@ openjpac -p persistence.xml Rabbit.java
 Refresh the object-relational mappings and database schema.
                     </para>
 <programlisting>
-mappingtool -p persistence.xml Rabbit.java
+java org.apache.openjpa.jdbc.meta.MappingTool -p persistence.xml Rabbit.java
 </programlisting>
                 </listitem>
             </orderedlist>
@@ -889,7 +891,7 @@ javac Snake.java
 Enhance the class.
                     </para>
 <programlisting>
-openjpac -p persistence.xml Snake.java
+java org.apache.openjpa.enhance.PCEnhancer -p persistence.xml Snake.java
 </programlisting>
                 </listitem>
                 <listitem>
@@ -901,7 +903,7 @@ As we have created a new persistent class, we must map it to the database and
 change the schema to match. So run the mapping tool:
                     </para>
 <programlisting>
-mappingtool -p persistence.xml Snake.java
+java org.apache.openjpa.jdbc.meta.MappingTool -p persistence.xml Snake.java
 </programlisting>
                 </listitem>
                 <listitem>
@@ -1101,7 +1103,7 @@ enhance the classes.
                     </para>
 <programlisting>
 javac Snake.java Rabbit.java
-openjpac -p persistence.xml Snake.java Rabbit.java
+java org.apache.openjpa.enhance.PCEnhancer -p persistence.xml Snake.java Rabbit.java
 </programlisting>
                 </listitem>
                 <listitem>
@@ -1109,7 +1111,7 @@ openjpac -p persistence.xml Snake.java Rabbit.java
 Refresh the mappings and database.
                     </para>
 <programlisting>
-mappingtool -p persistence.xml Snake.java Rabbit.java
+java org.apache.openjpa.jdbc.meta.MappingTool -p persistence.xml Snake.java Rabbit.java
 </programlisting>
                 </listitem>
             </orderedlist>
@@ -1302,7 +1304,7 @@ javac *.java  ejb/*.java jsp/*.java
 Enhance the Car class.
                 </para>
 <programlisting>
-openjpac -p persistence.xml Car.java
+java org.apache.openjpa.enhance.PCEnhancer -p persistence.xml Car.java
 </programlisting>
                 <para>
 Run the mapping tool; make sure that your <filename> META-INF/persistence.xml
@@ -1315,7 +1317,7 @@ include <classname>samples.persistence.j2ee.Car</classname> in the
 &lt;config-property name="MetaDataFactory"&gt;Types=samples.persistence.j2ee.Car&lt;/config-property/&gt;
 </programlisting>
 <programlisting>
-mappingtool -p persistence.xml Car.java
+java org.apache.openjpa.jdbc.meta.MappingTool -p persistence.xml Car.java
 </programlisting>
                 <para>
 Build an J2EE application archive by running Ant against the <filename>
