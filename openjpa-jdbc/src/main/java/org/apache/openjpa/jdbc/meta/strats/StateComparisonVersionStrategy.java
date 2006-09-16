@@ -101,28 +101,30 @@ public class StateComparisonVersionStrategy
         // db values match our previous image
         FieldMapping[] fields = (FieldMapping[]) sm.getMetaData().getFields();
         Row row;
-        for (int i = 0, max = loaded.length(); i < max; i++) {
-            if (!loaded.get(i))
-                continue;
+        if (sm.isVersionCheckRequired()) {
+            for (int i = 0, max = loaded.length(); i < max; i++) {
+                if (!loaded.get(i))
+                    continue;
 
-            // update our next state image with the new field value
-            if (sm.getDirty().get(i) && !sm.getFlushed().get(i))
-                nextState[i] = sm.fetch(fields[i].getIndex());
+                // update our next state image with the new field value
+                if (sm.getDirty().get(i) && !sm.getFlushed().get(i))
+                    nextState[i] = sm.fetch(fields[i].getIndex());
 
-            // fetch the row for this field; if no row exists, then we can't
-            // add one because we have no updates to perform; that means we
-            // won't detect OL exceptions when another transaction changes
-            // fields that aren't in any of the same tables as fields that
-            // this transaction changed
-            row = rm.getRow(fields[i].getTable(), Row.ACTION_UPDATE,
-                sm, false);
-            if (row == null)
-                continue;
+                // fetch the row for this field; if no row exists, then we can't
+                // add one because we have no updates to perform; that means we
+                // won't detect OL exceptions when another transaction changes
+                // fields that aren't in any of the same tables as fields that
+                // this transaction changed
+                row = rm.getRow(fields[i].getTable(), Row.ACTION_UPDATE,
+                    sm, false);
+                if (row == null)
+                    continue;
 
-            // set WHERE criteria matching the previous state image so the
-            // update will fail if any changes have been made by another trans
-            fields[i].where(sm, store, rm, state[i]);
-            row.setFailedObject(sm.getManagedInstance());
+                // set WHERE criteria matching the previous state image so the
+                // update will fail for any changes made by another transaction
+                fields[i].where(sm, store, rm, state[i]);
+                row.setFailedObject(sm.getManagedInstance());
+            }
         }
         sm.setNextVersion(nextState);
     }

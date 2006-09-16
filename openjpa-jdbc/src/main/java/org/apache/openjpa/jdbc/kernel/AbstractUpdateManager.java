@@ -35,6 +35,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.OptimisticException;
 
@@ -139,6 +140,8 @@ public abstract class AbstractUpdateManager
         RowManager rowMgr, JDBCStore store, Collection exceps,
         Collection customs) {
         try {
+            BitSet dirty;
+
             if (sm.getPCState() == PCState.PNEW && !sm.isFlushed()) {
                 insert(sm, (ClassMapping) sm.getMetaData(), rowMgr, store,
                     customs);
@@ -146,18 +149,9 @@ public abstract class AbstractUpdateManager
                 || sm.getPCState() == PCState.PDELETED) {
                 delete(sm, (ClassMapping) sm.getMetaData(), rowMgr, store,
                     customs);
-            } else if ((sm.getPCState() == PCState.PDIRTY && (!sm.isFlushed() || sm
-                .isFlushedDirty()))
-                || (sm.getPCState() == PCState.PNEW && sm.isFlushedDirty())) {
-                BitSet dirty = sm.getDirty();
-                if (sm.isFlushed()) {
-                    dirty = (BitSet) dirty.clone();
-                    dirty.andNot(sm.getFlushed());
-                }
-
-                if (dirty.length() > 0)
-                    update(sm, dirty, (ClassMapping) sm.getMetaData(), rowMgr,
-                        store, customs);
+            } else if ((dirty = ImplHelper.getUpdateFields(sm)) != null) {
+                update(sm, dirty, (ClassMapping) sm.getMetaData(), rowMgr,
+                    store, customs);
             } else if (sm.isVersionUpdateRequired()) {
                 updateIndicators(sm, (ClassMapping) sm.getMetaData(), rowMgr,
                     store, customs, true);

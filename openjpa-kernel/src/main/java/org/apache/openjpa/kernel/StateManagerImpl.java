@@ -38,6 +38,7 @@ import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.Exceptions;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.ObjectNotFoundException;
@@ -2926,7 +2927,23 @@ public class StateManagerImpl
      * Returns whether this instance needs a version check.
      */
     public boolean isVersionCheckRequired() {
-        return (_flags & FLAG_VERSION_CHECK) > 0;
+
+        // explicit flag for version check
+        if ((_flags & FLAG_VERSION_CHECK) > 0)
+            return true;
+
+        // need to check version if we have any dirty fields, unless we
+        // are in a datastore transaction
+        if (ImplHelper.getUpdateFields(this) != null) {
+            if (_broker.getOptimistic()) {
+                return true;
+            } else {
+                return _broker.getConfiguration().
+                    getCompatibilityInstance().getNonOptimisticVersionCheck();
+            }
+        }
+
+        return false;
     }
 
     /**

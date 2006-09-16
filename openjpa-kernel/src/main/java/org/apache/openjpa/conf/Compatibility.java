@@ -26,6 +26,7 @@ public class Compatibility {
     private boolean _copyIds = false;
     private boolean _closeOnCommit = true;
     private boolean _quotedNumbers = false;
+    private boolean _nonOptimisticVersionCheck = false;
 
     /**
      * Whether to require exact identity value types when creating object
@@ -136,4 +137,24 @@ public class Compatibility {
     public void setCloseOnManagedCommit(boolean close) {
         _closeOnCommit = close;
 	}	
+
+    /** 
+     * Whether or not to perform a version check on instances being updated
+     * in a datastore transaction. Version of OpenJPA prior to 4.1 always
+     * forced a version check.
+     */
+    public void setNonOptimisticVersionCheck
+        (boolean nonOptimisticVersionCheck) {
+        _nonOptimisticVersionCheck = nonOptimisticVersionCheck;
+    }
+
+    /** 
+     * Whether or not to perform a version check on instances being updated
+     * in a datastore transaction. Version of OpenJPA prior to 4.1 always
+     * forced a version check.
+     */
+    public boolean getNonOptimisticVersionCheck() {
+        return _nonOptimisticVersionCheck;
+    }
+
 }
