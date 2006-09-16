@@ -138,9 +138,9 @@ are loaded into the JVM. The following sections describe each option.
                 </secondary>
             </indexterm>
             <para>
-The enhancer can be invoked at build time via the included <literal>openjpac
-</literal> script or via its Java class, <classname>
-org.apache.openjpa.enhance.PCEnhancer</classname>.
+The enhancer can be invoked at build time 
+via the Java tool,
+<classname>org.apache.openjpa.enhance.PCEnhancer</classname>.
             </para>
             <note>
                 <para>
@@ -153,7 +153,7 @@ You can also enhance via Ant; see <xref linkend="ref_guide_integration_enhance"/
                     Using the OpenJPA Enhancer
                 </title>
 <programlisting>
-openjpac Magazine.java
+java org.apache.openjpa.enhance.PCEnhancer Magazine.java
 </programlisting>
             </example>
             <para>
@@ -513,8 +513,7 @@ generated identity class. Once the application identity tool has generated the
 class code, you can set the <literal>@IdClass</literal> annotation.
             </para>
             <para>
-The application identity tool can be invoked via the included <literal>
-appidtool</literal> shell/bat script or via its Java class,
+The application identity tool can be invoked via the Java class,
 <ulink url="../apidocs/org/apache/openjpa/enhance/ApplicationIdTool">
 <classname>org.apache.openjpa.enhance.ApplicationIdTool</classname></ulink>.
             </para>
@@ -529,7 +528,7 @@ application identity tool's Ant task.
                     Using the Application Identity Tool
                 </title>
 <programlisting>
-appidtool -s Id Magazine.java
+java org.apache.openjpa.enhance.ApplicationIdTool -s Id Magazine.java
 </programlisting>
             </example>
             <para>

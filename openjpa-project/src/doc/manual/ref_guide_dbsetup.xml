@@ -4420,7 +4420,7 @@ Add the necessary schema components to the database to match the given XML
 document, but don't drop any data:
             </para>
 <programlisting>
-schematool targetSchema.xml
+java org.apache.openjpa.jdbc.schema.SchemaTool targetSchema.xml
 </programlisting>
         </example>
         <example id="ref_guide_schema_schematool_script">
@@ -4432,13 +4432,13 @@ Repeat the same action as the first example, but this time don't change the
 database. Instead, write any planned changes to a SQL script:
             </para>
 <programlisting>
-schematool -f script.sql targetSchema.xml
+java org.apache.openjpa.jdbc.schema.SchemaTool -f script.sql targetSchema.xml
 </programlisting>
             <para>
 Write a SQL script that will re-create the current database:
             </para>
 <programlisting>
-schematool -a createDB -f script.sql
+java org.apache.openjpa.jdbc.schema.SchemaTool -a createDB -f script.sql
 </programlisting>
         </example>
         <example id="ref_guide_schema_schematool_drop">
@@ -4449,7 +4449,7 @@ schematool -a createDB -f script.sql
 Drop the current database:
             </para>
 <programlisting>
-schematool -a dropDB
+java org.apache.openjpa.jdbc.schema.SchemaTool -a dropDB
 </programlisting>
         </example>
         <example id="ref_guide_schema_schematool_reflect">
@@ -4472,7 +4472,7 @@ Write an XML representation of the current schema to file <filename>schema.xml
 </filename>.
             </para>
 <programlisting>
-schematool -a reflect -f schema.xml
+java org.apache.openjpa.jdbc.schema.SchemaTool -a reflect -f schema.xml
 </programlisting>
         </example>
     </section>

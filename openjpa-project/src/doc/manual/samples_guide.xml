@@ -86,31 +86,23 @@ You should then proceed to pass in the configuration file you are using to the
 enhancer:
                 </para>
                 <para>
-<userinput>openjpac -p persistence.xml Machine.java Crane.java Bulldozer.java
-Operator.java</userinput>
-                </para>
-                <para>
-or
-                </para>
-                <para>
-<userinput>jdoc -p jdo.properties Machine.java Crane.java Bulldozer.java
+<userinput>java org.apache.openjpa.enhance.PCEnhancer -p persistence.xml Machine.java Crane.java Bulldozer.java
 Operator.java</userinput>
                 </para>
             </listitem>
             <listitem>
                 <para>
-Similarly, you should pass in the same argument to <literal>mappingtool
-</literal>:
+Similarly, you should pass in the same argument to <literal>org.apache.openjpa.jdbc.meta.MappingTool</literal>:
                 </para>
                 <para>
-<userinput>mappingtool -p persistence.xml -a buildSchema Machine.java
+<userinput>java org.apache.openjpa.jdbc.meta.MappingTool -p persistence.xml -a buildSchema Machine.java
 Crane.java Bulldozer.java Operator.java</userinput>
                 </para>
                 <para>
 or
                 </para>
                 <para>
-<userinput>mappingtool -p jdo.properties -a buildSchema Machine.java Crane.java
+<userinput>java org.apache.openjpa.jdbc.meta.MappingTool -p jdo.properties -a buildSchema Machine.java Crane.java
 Bulldozer.java Operator.java</userinput>
                 </para>
             </listitem>
