@@ -232,7 +232,7 @@ public class PersistenceMetaDataFactory
         ClassLoader loader = repos.getConfiguration().
             getClassResolverInstance().getClassLoader(cls, envLoader);
         XMLPersistenceMetaDataParser xmlParser = getXMLParser();
-        xmlParser.setClassLoader(envLoader);
+        xmlParser.setClassLoader(envLoader != null ? envLoader : loader);
         xmlParser.setEnvClassLoader(envLoader);
         xmlParser.setMode(mode);
         try {
@@ -276,15 +276,16 @@ public class PersistenceMetaDataFactory
                 (queryName, (NamedQuery) cls.getAnnotation(NamedQuery.class)))
                 return cls;
             if (cls.isAnnotationPresent(NamedQueries.class) &&
-                hasNamedQuery(queryName, ((NamedQueries) cls.getAnnotation
-                    (NamedQueries.class)).value()))
+                hasNamedQuery(queryName, ((NamedQueries) cls.
+                    getAnnotation(NamedQueries.class)).value()))
                 return cls;
-            if (cls.isAnnotationPresent(NamedNativeQuery.class) && hasNamedNativeQuery
-                (queryName, (NamedNativeQuery) cls.getAnnotation(NamedNativeQuery.class)))
+            if (cls.isAnnotationPresent(NamedNativeQuery.class) &&
+                hasNamedNativeQuery(queryName, (NamedNativeQuery) cls.
+                    getAnnotation(NamedNativeQuery.class)))
                 return cls;
             if (cls.isAnnotationPresent(NamedNativeQueries.class) &&
-                hasNamedNativeQuery(queryName, ((NamedNativeQueries) cls.getAnnotation
-                    (NamedNativeQueries.class)).value()))
+                hasNamedNativeQuery(queryName, ((NamedNativeQueries) cls.
+                    getAnnotation(NamedNativeQueries.class)).value()))
                 return cls;
         }
         return null;
