@@ -135,6 +135,9 @@ public class OracleDictionary
         smallintTypeName = "NUMBER{0}";
         tinyintTypeName = "NUMBER{0}";
         longVarcharTypeName = "LONG";
+        binaryTypeName = "BLOB";
+        varbinaryTypeName = "BLOB";
+        longVarbinaryTypeName = "BLOB";
         timeTypeName = "DATE";
         varcharTypeName = "VARCHAR2{0}";
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
