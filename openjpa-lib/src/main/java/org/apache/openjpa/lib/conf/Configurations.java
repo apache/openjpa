@@ -163,6 +163,50 @@ public class Configurations {
     }
 
     /**
+     * Set the given {@link Configuration} instance from the command line
+     * options provided. All property names of the given configuration are
+     * recognized; additionally, if a <code>properties</code> or
+     * <code>p</code> argument exists, the resource it
+     * points to will be loaded and set into the given configuration instance.
+     * It can point to either a file or a resource name.
+     */
+    public static void populateConfiguration(Configuration conf, Options opts) {
+        String props = opts.removeProperty("properties", "p", null);
+        ConfigurationProvider provider;
+        if (props != null && props.length() > 0) {
+            String path = props;
+            String anchor = null;
+            int idx = path.lastIndexOf('#');
+            if (idx != -1) {
+                if (idx < path.length() - 1)
+                    anchor = path.substring(idx + 1);
+                path = path.substring(0, idx);
+                if (path.length() == 0)
+                    throw new MissingResourceException(_loc.get("anchor-only",
+                        props).getMessage(), Configurations.class.getName(), 
+                        props);
+            }
+
+            File file = new File(path);
+            if (file.isFile())
+                provider = ProductDerivations.load(file, anchor, null);
+            else {
+                file = new File("META-INF" + File.separatorChar + path);
+                if (file.isFile())
+                    provider = ProductDerivations.load(file, anchor, null);
+                else
+                    provider = ProductDerivations.load(path, anchor, (Map)null);
+            }
+            provider.setInto(conf);
+        } else {
+            provider = ProductDerivations.loadDefaults(null);
+            if (provider != null)
+                provider.setInto(conf);
+        }
+        opts.setInto(conf);
+    }
+
+    /**
      * Helper method to throw an informative description on instantiation error.
      */
     private static RuntimeException getCreateException(String clsName,
@@ -398,261 +442,6 @@ public class Configurations {
         } catch (RuntimeException re) {
             throw new ParseException(_loc.get("prop-parse", properties), re);
         }
-    }
-
-    /**
-     * Set the given {@link Configuration} instance from the command line
-     * options provided. All property names of the given configuration are
-     * recognized; additionally, if a <code>properties</code> or
-     * <code>p</code> argument exists, the resource it
-     * points to will be loaded and set into the given configuration instance.
-     * It can point to either a file or a resource name.
-     */
-    public static void populateConfiguration(Configuration conf, Options opts) {
-        String props = opts.removeProperty("properties", "p", null);
-        if (props != null && props.length() > 0) {
-            String path = props;
-            String anchor = null;
-            int idx = path.lastIndexOf('#');
-            if (idx != -1) {
-                if (idx < path.length() - 1)
-                    anchor = path.substring(idx + 1);
-                path = path.substring(0, idx);
-                if (path.length() == 0)
-                    throw new MissingResourceException(_loc.get("anchor-only",
-                        props).getMessage(), Configurations.class.getName(), 
-                        props);
-            }
-
-            File file = new File(path);
-            ConfigurationProvider provider;
-            if (file.isFile())
-                provider = load(file, anchor, null);
-            else {
-                file = new File("META-INF" + File.separatorChar + path);
-                if (file.isFile())
-                    provider = load(file, anchor, null);
-                else
-                    provider = load(path, anchor, null);
-            }
-            provider.setInto(conf);
-        } else {
-            ConfigurationProvider provider = loadDefaults(null);
-            if (provider != null)
-                provider.setInto(conf);
-        }
-        opts.setInto(conf);
-    }
-
-    /**
-     * Return a {@link ConfigurationProvider} that has parsed system defaults.
-     */
-    public static ConfigurationProvider loadDefaults(ClassLoader loader) {
-        return load(loader, false);
-    }
-
-    /**
-     * Return a {@link ConfigurationProvider} that has parsed system globals.
-     */
-    static ConfigurationProvider loadGlobals(ClassLoader loader) {
-        return load(loader, true);
-    }
-
-    /**
-     * Load globals or defaults.
-     */
-    private static ConfigurationProvider load(ClassLoader loader, 
-        boolean globals) {
-        if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
-        Class[] impls = Services.getImplementorClasses
-            (ConfigurationProvider.class, loader);
-        ConfigurationProvider provider = null;
-        int providerCount = 0;
-        List errs = null;
-        for (int i = 0; i < impls.length; i++) {
-            try {
-                provider = (ConfigurationProvider) impls[i].newInstance();
-                if (provider == null)
-                    continue;
-
-                providerCount++;
-
-                if ((globals && provider.loadGlobals(loader))
-                    || (!globals && provider.loadDefaults(loader)))
-                    return provider;
-            } catch (MissingResourceException mre) {
-                throw mre;
-            } catch (Throwable t) {
-                (errs == null ? errs = new ArrayList() : errs).add(t);
-            }
-        }
-
-        String type = (globals) ? "globals" : "defaults";
-        MissingResourceException ex = null;
-
-        if (errs != null)
-            ex = new MissingResourceException(errs.toString(),
-                Configurations.class.getName(), type);
-        else if (providerCount == 0)
-            ex = new MissingResourceException(_loc.get ("no-providers", 
-                ConfigurationProvider.class.getName()).getMessage(),
-                Configurations.class.getName(), type);
-
-        if (ex != null)
-            throw (MissingResourceException) JavaVersions.initCause(ex,
-                errs.size() == 0 ? null : (Throwable) errs.get(0));
-
-        return null;
-    }
-
-    /**
-     * Return a new new configuration provider instance of the given class,
-     * or null if the class cannot be instantiated.
-     */
-    private static ConfigurationProvider newProvider(Class cls) {
-        try {
-            return (ConfigurationProvider) cls.newInstance();
-        } catch (Throwable e) {
-            return null;
-        }
-    }
-
-    /**
-     * Return a {@link ConfigurationProvider} that has parsed the given
-     * resource. Throws {@link MissingResourceException} if resource does
-     * not exist.
-     */
-    public static ConfigurationProvider load(String resource, 
-        ClassLoader loader) {
-        if (resource == null || resource.length() == 0)
-            return null;
-
-        String path = resource;
-        String anchor = null;
-        int idx = path.indexOf('#');
-        if (idx != -1) {
-            if (idx < path.length() - 1)
-                anchor = path.substring(idx + 1);
-            path = path.substring(0, idx);
-            if (path.length() == 0)
-                throw new MissingResourceException(_loc.get("anchor-only", 
-                    resource).getMessage(), Configurations.class.getName(), 
-                    resource);
-        }
-        return load(path, anchor, loader);
-    }
-
-    /**
-     * Return a {@link ConfigurationProvider} that has parsed the given
-     * resource. Throws {@link MissingResourceException} if resource does
-     * not exist.
-     */
-    public static ConfigurationProvider load(String resource, String anchor, 
-        ClassLoader loader) {
-        if (resource == null || resource.length() == 0)
-            return null;
-
-        if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
-        Class[] impls = Services.getImplementorClasses
-            (ConfigurationProvider.class, loader);
-        ConfigurationProvider provider = null;
-        int providerCount = 0;
-        StringBuffer errs = null;
-        for (int i = 0; i < impls.length; i++) {
-            provider = newProvider(impls[i]);
-            if (provider == null)
-                continue;
-
-            providerCount++;
-            try {
-                if (provider.load(resource, anchor, loader))
-                    return provider;
-            } catch (MissingResourceException mre) {
-                throw mre;
-            } catch (Exception e) {
-                if (errs == null)
-                    errs = new StringBuffer();
-                else
-                    errs.append(", ");
-                errs.append(e.toString());
-            }
-        }
-        String msg;
-        if (errs != null)
-            msg = errs.toString();
-        else if (providerCount == 0)
-            msg = _loc.get("no-providers", 
-                ConfigurationProvider.class.getName()).getMessage();
-        else
-            msg = _loc.get("no-provider", resource).getMessage();
-        
-        throw new MissingResourceException(msg,
-            Configurations.class.getName(), resource);
-    }
-
-    /**
-     * Return a {@link ConfigurationProvider} that has parsed the given
-     * file. Throws {@link MissingResourceException} if file does not exist.
-     */
-    public static ConfigurationProvider load(File file, ClassLoader loader) {
-        if (file == null)
-            return null;
-
-        String anchor = null;
-        try {
-            String path = file.getCanonicalPath();
-            int idx = path.indexOf('#');
-            if (idx != -1) {
-                if (idx < path.length() - 1)
-                    anchor = path.substring(idx + 1);
-                path = path.substring(0, idx);
-                if (path.length() == 0)
-                    throw new MissingResourceException(_loc.get("anchor-only",
-                        file).getMessage(), Configurations.class.getName(), 
-                        file.toString());
-                file = new File(path);
-            }
-        } catch (IOException ioe) {
-            // ignore
-        }
-        return load(file, anchor, loader);
-    }
-
-    /**
-     * Return a {@link ConfigurationProvider} that has parsed the given
-     * file. Throws {@link MissingResourceException} if file does not exist.
-     */
-    public static ConfigurationProvider load(File file, String anchor, 
-        ClassLoader loader) {
-        if (file == null)
-            return null;
-
-        if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
-        Class[] impls = Services.getImplementorClasses
-            (ConfigurationProvider.class, loader);
-        ConfigurationProvider provider = null;
-        StringBuffer errs = null;
-        for (int i = 0; i < impls.length; i++) {
-            provider = newProvider(impls[i]);
-            try {
-                if (provider != null && provider.load(file, anchor))
-                    return provider;
-            } catch (MissingResourceException mre) {
-                throw mre;
-            } catch (Exception e) {
-                if (errs == null)
-                    errs = new StringBuffer();
-                else
-                    errs.append(", ");
-                errs.append(e.toString());
-            }
-        }
-        String msg = (errs == null) ? file.toString() : errs.toString();
-        throw new MissingResourceException(msg,
-            Configurations.class.getName(), file.toString());
     }
 
     /**

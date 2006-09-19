@@ -16,9 +16,9 @@
 package org.apache.openjpa.xmlstore;
 
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
-import org.apache.openjpa.conf.ProductDerivations;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
+import org.apache.openjpa.lib.conf.ProductDerivations;
 
 /**
  * Configuration implementation for the XML file store. Each unique

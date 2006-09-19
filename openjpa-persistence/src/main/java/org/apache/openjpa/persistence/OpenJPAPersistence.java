@@ -15,6 +15,9 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -28,24 +31,17 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.rmi.PortableRemoteObject;
 
+import org.apache.openjpa.conf.BrokerFactoryValue;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.MapConfigurationProvider;
+import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.util.ByteId;
-import org.apache.openjpa.util.CharId;
-import org.apache.openjpa.util.Id;
-import org.apache.openjpa.util.ImplHelper;
-import org.apache.openjpa.util.IntId;
-import org.apache.openjpa.util.LongId;
-import org.apache.openjpa.util.ObjectId;
-import org.apache.openjpa.util.OpenJPAId;
-import org.apache.openjpa.util.ShortId;
-import org.apache.openjpa.util.StringId;
+import org.apache.openjpa.util.*;
 
 /**
  * Static helper method for JPA users, including switching
@@ -66,20 +62,26 @@ public class OpenJPAPersistence
     private static Localizer _loc =
         Localizer.forPackage(OpenJPAPersistence.class);
 
+    
+    public static OpenJPAEntityManagerFactory toEntityManagerFactory
+       (BrokerFactory factory) {
+        return toEntityManagerFactory(factory, null);
+    }
+    
     /**
      * Return an entity manager factory facade to the given broker factory.
      */
     public static OpenJPAEntityManagerFactory toEntityManagerFactory
-        (BrokerFactory factory) {
+        (BrokerFactory factory, ConfigurationProvider cp) {
         if (factory == null)
             return null;
-
         factory.lock();
+        
         try {
             OpenJPAEntityManagerFactory emf = (OpenJPAEntityManagerFactory)
                 factory.getUserObject(EMF_KEY);
             if (emf == null) {
-                emf = newEntityManagerFactory(factory);
+                emf = newEntityManagerFactory(factory, cp, null);
                 factory.putUserObject(EMF_KEY, emf);
             }
             return emf;
@@ -89,10 +91,6 @@ public class OpenJPAPersistence
             factory.unlock();
         }
     }
-
-    protected static OpenJPAEntityManagerFactory newEntityManagerFactory(BrokerFactory factory) {
-		return new EntityManagerFactoryImpl(factory);
-	}
     
     /**
      * Return the underlying broker factory for the given persistence manager
@@ -443,4 +441,49 @@ public class OpenJPAPersistence
 			return String.class;
 		return oidClass;
 	}
+    
+    private static OpenJPAEntityManagerFactory newEntityManagerFactory (
+        BrokerFactory brokerFactory, ConfigurationProvider conf, 
+        ClassLoader loader) {
+            if (conf == null)
+                conf = new MapConfigurationProvider();
+            ProductDerivations.beforeConfigurationConstruct(conf);
+
+            Class cls = getFactoryClass(conf, loader);
+            Constructor ctr;
+            try {
+                ctr = cls.getConstructor(BrokerFactory.class); 
+                return (OpenJPAEntityManagerFactory)ctr
+                   .newInstance(brokerFactory);
+            } catch (Exception e) {
+                throw PersistenceExceptions.toPersistenceException(e);
+            }
+        }
+
+    /**
+     * Instantiate the factory class designated in properties.
+     */
+    private static Class getFactoryClass(ConfigurationProvider conf,
+        ClassLoader loader) {
+        if (loader == null)
+            loader = Thread.currentThread().getContextClassLoader();
+
+        Object cls = EntityManagerFactoryValue.get(conf);
+        if (cls instanceof Class)
+            return (Class) cls;
+
+        EntityManagerFactoryValue value = new EntityManagerFactoryValue();
+        value.setString((String) cls);
+        String clsName = value.getClassName();
+        if (clsName == null)
+            throw new UserException(_loc.get("no-emf", 
+                conf.getProperties())).setFatal(true);
+
+        try {
+            return Class.forName(clsName, true, loader);
+        } catch (Exception e) {
+            throw new UserException(_loc.get("bad-emf-class",
+                clsName), e).setFatal(true);
+        }
+    }
 }

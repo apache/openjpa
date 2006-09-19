@@ -20,7 +20,6 @@ import java.sql.ResultSet;
 import javax.sql.DataSource;
 
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
-import org.apache.openjpa.conf.ProductDerivations;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCBrokerFactory;
 import org.apache.openjpa.jdbc.kernel.LRSSizes;
@@ -39,6 +38,7 @@ import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.conf.IntValue;
 import org.apache.openjpa.lib.conf.ObjectValue;
 import org.apache.openjpa.lib.conf.PluginValue;
+import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.StringListValue;
 import org.apache.openjpa.lib.conf.StringValue;
 import org.apache.openjpa.lib.jdbc.ConnectionDecorator;

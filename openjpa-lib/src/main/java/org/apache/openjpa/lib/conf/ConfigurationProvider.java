@@ -30,34 +30,6 @@ import java.util.Map;
 public interface ConfigurationProvider {
 
     /**
-     * Load globals, or return false if no globals for this provider found.
-     */
-    public boolean loadGlobals(ClassLoader loader) throws Exception;
-
-    /**
-     * Load defaults, or return false if no defaults for this provider found.
-     */
-    public boolean loadDefaults(ClassLoader loader) throws Exception;
-
-    /**
-     * Load the given given resource, or return false if it is not a resource
-     * this provider understands. The given class loader may be null.
-     *
-     * @param anchor optional named anchor within a multiple-configuration
-     * resource
-     */
-    public boolean load(String resource, String anchor, ClassLoader loader) 
-        throws Exception;
-
-    /**
-     * Load given file, or return false if it is not a file this provider
-     * understands.
-     *
-     * @param anchor optional named anchor within a multiple-configuration file
-     */
-    public boolean load(File file, String anchor) throws Exception;
-
-    /**
      * Return properties loaded thus far, or empty map if none.
      */
     public Map getProperties();
@@ -78,4 +50,48 @@ public interface ConfigurationProvider {
      * Set loaded information into the given configuration.
      */
     public void setInto(Configuration conf);
+    
+    /**
+     * Loads the global resource. The meaning of <em>global</em> is specific
+     * to concrte implementaion. 
+     * @param loader used to locate the resource. If null uses the current
+     * thread's loader.
+     * @return true if located and loaded global configuration 
+     */
+    public boolean loadGlobals(ClassLoader loader) throws Exception;
+
+    /**
+     * Loads the default resource. The meaning of <em>default</em> is specific
+     * to concrte implementaion. 
+     * @param loader used to locate the resource. If null uses the current
+     * thread's loader.
+     * @return true if located and loaded default configuration 
+     */
+    public boolean loadDefaults(ClassLoader loader) throws Exception;
+    
+    /**
+     * Loads the given resource. 
+     * @param resource name of the resource
+     * @param anchor optional named anchor within a resource containing multiple
+     * configuration
+     * @param loader used to locate the resource. If null uses the current
+     * thread's loader.
+     * @return true if located and loaded configuration 
+     */
+    public boolean load(String resource, String anchor, ClassLoader loader) 
+        throws Exception;
+    
+    public boolean load(String resource, String anchor, Map map) 
+        throws Exception;
+
+    /**
+     * Loads the given resource. 
+     * @param file name of the file to load from
+     * @param anchor optional named anchor within a file containing multiple
+     * configuration
+     * @return true if located and loaded configuration 
+     */
+    public boolean load(File file, String anchor) throws Exception;
+
+
 }

@@ -50,10 +50,9 @@
                                     </sequential>
                                 </macrodef>
 
-                                <aggregate-file servicename="org.apache.openjpa.conf.ProductDerivation"/>
+                                <aggregate-file servicename="org.apache.openjpa.lib.conf.ProductDerivation"/>
                                 <aggregate-file servicename="javax.persistence.spi.PersistenceProvider"/>
                                 <aggregate-file servicename="org.apache.openjpa.kernel.exps.ExpressionParser"/>
-                                <aggregate-file servicename="org.apache.openjpa.lib.conf.ConfigurationProvider"/>
                             </tasks>
                         </configuration>
                         <goals>
