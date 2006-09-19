@@ -61,7 +61,7 @@ public class EntityManagerFactoryImpl
     /**
      * Constructor. Delegate must be provided on construction.
      */
-    protected EntityManagerFactoryImpl(BrokerFactory factory) {
+    public EntityManagerFactoryImpl(BrokerFactory factory) {
         _factory = new DelegatingBrokerFactory(factory,
             PersistenceExceptions.TRANSLATOR);
     }
@@ -175,7 +175,7 @@ public class EntityManagerFactoryImpl
         // regardless of PersistenceContextType
         broker.setAutoDetach(AutoDetach.DETACH_CLOSE);
         broker.setDetachedNew(false);
-        OpenJPAEntityManager em = OpenJPAPersistence.toEntityManager(broker);
+        OpenJPAEntityManager em = new EntityManagerImpl(this, broker);
 
         // allow setting of other bean properties of EM
         List<RuntimeException> errs = null;

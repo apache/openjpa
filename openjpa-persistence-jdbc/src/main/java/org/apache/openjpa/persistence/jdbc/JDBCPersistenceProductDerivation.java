@@ -16,9 +16,11 @@
 package org.apache.openjpa.persistence.jdbc;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.conf.ProductDerivation;
+import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
+import org.apache.openjpa.lib.conf.AbstractProductDerivation;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.PersistenceProductDerivation;
@@ -29,21 +31,20 @@ import org.apache.openjpa.persistence.PersistenceProductDerivation;
  * @author Abe White
  * @nojavadoc
  */
-public class JDBCPersistenceProductDerivation
-    implements ProductDerivation {
-
+public class JDBCPersistenceProductDerivation extends AbstractProductDerivation 
+    implements OpenJPAProductDerivation {
+    
     public int getType() {
         return TYPE_SPEC_STORE;
     }
 
-    public void beforeConfigurationConstruct(ConfigurationProvider cp) {
-    }
-
-    public void beforeConfigurationLoad(OpenJPAConfiguration c) {
-        c.getStoreFacadeTypeRegistry().registerImplementation(FetchPlan.class, 
-            JDBCStoreManager.class, JDBCFetchPlanImpl.class);
+    public boolean beforeConfigurationLoad(Configuration c) {
+        if (c instanceof OpenJPAConfiguration) 
+        ((OpenJPAConfiguration)c).getStoreFacadeTypeRegistry().
+            registerImplementation(FetchPlan.class, JDBCStoreManager.class, 
+            JDBCFetchPlanImpl.class);
         if (!(c instanceof JDBCConfigurationImpl))
-            return;
+            return false;
 
         JDBCConfigurationImpl conf = (JDBCConfigurationImpl) c;
         String jpa = PersistenceProductDerivation.SPEC_JPA;
@@ -63,16 +64,24 @@ public class JDBCPersistenceProductDerivation
             PersistenceMappingDefaults.class.getName());
         conf.mappingDefaultsPlugin.setAlias(jpa,
             PersistenceMappingDefaults.class.getName());
+        return true;
     }
 
-    public void afterSpecificationSet(OpenJPAConfiguration c) {
+    public boolean afterSpecificationSet(Configuration c) {
         String jpa = PersistenceProductDerivation.SPEC_JPA;
-        if (!(c instanceof JDBCConfigurationImpl)
-            || !jpa.equals(c.getSpecification()))
-            return;
-
+        if (!(c instanceof JDBCConfigurationImpl))
+            return false;
         JDBCConfigurationImpl conf = (JDBCConfigurationImpl) c;
+        
+         if (!jpa.equals(conf.getSpecification()))
+            return false;
+        
         conf.mappingDefaultsPlugin.setDefault(jpa);
         conf.mappingDefaultsPlugin.setString(jpa);
+        return true;
+    }
+    
+    public ConfigurationProvider newConfigurationProvider() {
+        return null;
     }
 }

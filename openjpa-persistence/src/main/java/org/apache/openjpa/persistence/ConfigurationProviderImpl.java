@@ -85,7 +85,12 @@ public class ConfigurationProviderImpl
 
     /**
      * Load configuration from the given persistence unit with the specified
-     * user properties.
+     * user properties in <code>m</code>.
+     * Checks if this receiver's PersistenceProvider matches with the 
+     * PersistenceProvider specified in the given PersistenceUnitInfo.
+     * @return false if PersistenceUnitInfo is null.
+     * false if this receiver's PersistenceProvider does not matche with the 
+     * PersistenceProvider specified in the given PersistenceUnitInfo. 
      */
     public boolean load(PersistenceUnitInfo pinfo, Map m)
         throws IOException {
@@ -93,9 +98,9 @@ public class ConfigurationProviderImpl
             return false;
         String providerName = pinfo.getPersistenceProviderClassName();
         if (!StringUtils.isEmpty(providerName)
-            && !getPersistenceProviderName().equals(providerName))
+            && !getPersistenceProviderName().equals(providerName)) {
             return false;
-        
+        }
         addProperties(PersistenceUnitInfoImpl.toOpenJPAProperties(pinfo));
         if (m != null)
             addProperties(m);
@@ -244,14 +249,14 @@ public class ConfigurationProviderImpl
     @Override
     public boolean load(String rsrc, String anchor, ClassLoader loader)
         throws IOException {
-        if (!rsrc.endsWith(".xml"))
+        if (rsrc != null && !rsrc.endsWith(".xml"))
             return false;
         return load(rsrc, anchor, null, loader, true) == Boolean.TRUE;
     }
 
     @Override
     public boolean load(File file, String anchor) {
-        if (!file.getName().endsWith(".xml"))
+        if (file != null && !file.getName().endsWith(".xml"))
             return false;
 
         try {

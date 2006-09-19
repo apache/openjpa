@@ -209,7 +209,7 @@ public interface OpenJPAConfiguration
      * A configuration can be set with defaults for a specific specification.
      */
     public String getSpecification();
-
+    
     /**
      * Set the specification that this configuration should use for the
      * various properties that need to have different defaults for different

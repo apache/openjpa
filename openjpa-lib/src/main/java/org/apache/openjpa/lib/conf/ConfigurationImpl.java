@@ -120,7 +120,7 @@ public class ConfigurationImpl
 
     /**
      * Default constructor. Attempts to load default properties through
-     * system's configured {@link ConfigurationProvider}s.
+     * system's configured {@link ProductDerivation}s.
      */
     public ConfigurationImpl() {
         this(true);
@@ -153,10 +153,10 @@ public class ConfigurationImpl
 
     /**
      * Automatically load global values from the system's
-     * {@link ConfigurationProvider}s, and from System properties.
+     * {@link ProductDerivation}s, and from System properties.
      */
     public boolean loadGlobals() {
-        ConfigurationProvider provider = Configurations.loadGlobals
+        ConfigurationProvider provider = ProductDerivations.loadGlobals
             (getClass().getClassLoader());
         if (provider != null)
             provider.setInto(this);
@@ -752,8 +752,8 @@ public class ConfigurationImpl
      * <code>properties</code> value with the name of a resource.
      */
     public void setProperties(String resourceName) throws IOException {
-        Configurations.load(resourceName, getClass().getClassLoader()).
-            setInto(this);
+        ProductDerivations.load(resourceName, null, 
+                getClass().getClassLoader()).setInto(this);
         _auto = resourceName;
     }
 
@@ -763,7 +763,8 @@ public class ConfigurationImpl
      * <code>propertiesFile</code> value with the name of a file.
      */
     public void setPropertiesFile(File file) throws IOException {
-        Configurations.load(file, getClass().getClassLoader()).setInto(this);
+        ProductDerivations.load(file, null, 
+                getClass().getClassLoader()).setInto(this);
         _auto = file.toString();
     }
 

@@ -18,11 +18,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 
-import org.apache.openjpa.lib.conf.ConfigurationImpl;
-import org.apache.openjpa.lib.conf.ObjectValue;
-import org.apache.openjpa.lib.conf.PluginValue;
-import org.apache.openjpa.lib.conf.StringValue;
-import org.apache.openjpa.lib.conf.Value;
+import org.apache.openjpa.lib.conf.*;
 import org.apache.openjpa.lib.test.AbstractTestCase;
 
 /**
@@ -30,8 +26,16 @@ import org.apache.openjpa.lib.test.AbstractTestCase;
  * in a sub-package so that it can have its own localizer.properties
  * properties, which are required for the bean descriptors used by the
  * configuration framework {@link Value}.
+ * 
+ * This test has been modified to test the same functionality of 
+ * ConfigurationProvider but now invoked via ProductDerivation.
+ * 
+ * This test assumes a <code>"test.properties"</code> file available in
+ * classpath and also system property <code>"openjpatest.properties"</code>
+ * is set to <code>"test.properties"</code>.
  *
  * @author Abe White
+ * @author Pinaki Poddar
  */
 public class TestConfigurationImpl extends AbstractTestCase {
 

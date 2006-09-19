@@ -29,6 +29,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.meta.ClassArgParser;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;

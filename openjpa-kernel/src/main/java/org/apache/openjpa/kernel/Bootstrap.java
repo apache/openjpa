@@ -19,9 +19,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.openjpa.conf.BrokerFactoryValue;
-import org.apache.openjpa.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.MapConfigurationProvider;
+import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.OpenJPAException;

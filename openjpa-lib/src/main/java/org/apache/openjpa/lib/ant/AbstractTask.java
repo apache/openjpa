@@ -29,7 +29,7 @@ import org.apache.tools.ant.types.Path;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
-import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
@@ -155,7 +155,7 @@ public abstract class AbstractTask extends MatchingTask {
         if (_conf == null)
             _conf = newConfiguration();
         if (_conf.getPropertiesResource() == null) {
-            ConfigurationProvider cp = Configurations.loadDefaults
+            ConfigurationProvider cp = ProductDerivations.loadDefaults
                 (_conf.getClass().getClassLoader());
             if (cp != null)
                 cp.setInto(_conf);

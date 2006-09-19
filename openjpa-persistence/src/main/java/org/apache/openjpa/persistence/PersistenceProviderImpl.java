@@ -35,6 +35,8 @@ import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.conf.ProductDerivation;
+import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 
@@ -46,7 +48,7 @@ import org.apache.openjpa.meta.MetaDataRepository;
  * @see Persistence#createEntityManagerFactory(String,Map)
  */
 public class PersistenceProviderImpl
-    implements PersistenceProvider, PersistenceProviderExtension {
+    implements PersistenceProvider {
 
     static final String CLASS_TRANSFORMER_OPTIONS =
         "openjpa.ClassTransformerOptions";
@@ -63,11 +65,13 @@ public class PersistenceProviderImpl
      */
     public EntityManagerFactory createEntityManagerFactory(String name,
         String resource, Map m) {
-        ConfigurationProviderImpl cp = newConfigurationProviderImpl();
         try {
-            if (cp.load(resource, name, m))
-            	return toEntityManagerFactory(
-            		Bootstrap.newBrokerFactory(cp, cp.getClassLoader()));
+            ConfigurationProvider cp = ProductDerivations.load(resource, name, 
+                 m);
+            if (cp != null) {
+                BrokerFactory factory = Bootstrap.newBrokerFactory(cp, null);
+            	return OpenJPAPersistence.toEntityManagerFactory(factory, cp);
+            }
             else
                  return null;
         } catch (Exception e) {
@@ -81,11 +85,13 @@ public class PersistenceProviderImpl
 
     public EntityManagerFactory createContainerEntityManagerFactory(
         PersistenceUnitInfo pui, Map map) {
-        ConfigurationProviderImpl cp = newConfigurationProviderImpl();
+        ConfigurationProviderImpl cp = newConfigurationProvider();
         try {
             if (cp.load(pui, map)) {
-                OpenJPAEntityManagerFactory emf = toEntityManagerFactory(
-                        Bootstrap.newBrokerFactory(cp, cp.getClassLoader()));
+                BrokerFactory factory = Bootstrap.newBrokerFactory(cp, 
+                     cp.getClassLoader());
+                OpenJPAEntityManagerFactory emf = 
+                    OpenJPAPersistence.toEntityManagerFactory(factory);
                 Properties p = pui.getProperties();
                 String ctOpts = null;
                 if (p != null)
@@ -101,14 +107,14 @@ public class PersistenceProviderImpl
         }
     }
     
-    public ConfigurationProviderImpl newConfigurationProviderImpl() {
-    	return new ConfigurationProviderImpl();
+    /**
+     * Gets the configuration provider to locate and load configuration data.
+     * An implementation is returned rather than the interface.
+      */
+    protected ConfigurationProviderImpl newConfigurationProvider() {
+        return new ConfigurationProviderImpl();
     }
-    
-    public OpenJPAEntityManagerFactory toEntityManagerFactory(BrokerFactory factory) {
-    	return OpenJPAPersistence.toEntityManagerFactory(factory);
-    }
-    
+            
     /**
      * Java EE 5 class transformer.
      */

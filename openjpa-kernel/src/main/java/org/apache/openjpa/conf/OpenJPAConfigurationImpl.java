@@ -15,8 +15,12 @@
  */
 package org.apache.openjpa.conf;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
@@ -38,15 +42,7 @@ import org.apache.openjpa.kernel.SavepointManager;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
-import org.apache.openjpa.lib.conf.BooleanValue;
-import org.apache.openjpa.lib.conf.ConfigurationImpl;
-import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.lib.conf.IntValue;
-import org.apache.openjpa.lib.conf.ObjectValue;
-import org.apache.openjpa.lib.conf.PluginListValue;
-import org.apache.openjpa.lib.conf.PluginValue;
-import org.apache.openjpa.lib.conf.StringListValue;
-import org.apache.openjpa.lib.conf.StringValue;
+import org.apache.openjpa.lib.conf.*;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataFactory;
@@ -140,7 +136,6 @@ public class OpenJPAConfigurationImpl
 
     private Collection supportedOptions = new HashSet(33);
     private String spec = null;
-    
     private final StoreFacadeTypeRegistry _storeFacadeRegistry =
         new StoreFacadeTypeRegistry();
 
@@ -531,7 +526,6 @@ public class OpenJPAConfigurationImpl
                     spec));
             return false;
         }
-
         this.spec = spec;
         ProductDerivations.afterSpecificationSet(this);
         return true;

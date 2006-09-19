@@ -68,6 +68,16 @@ public class MapConfigurationProvider implements ConfigurationProvider {
         return false;
     }
 
+    /**
+     * Loads only if the given map is non-null.
+     * Always returns false.
+     */
+    public boolean load(String rsrc, String anchor, Map m) throws Exception {
+        if (m != null)
+            addProperties(m);
+        return false;
+    }
+
     public Map getProperties() {
         return (_props == null) ? Collections.EMPTY_MAP : _props;
     }
