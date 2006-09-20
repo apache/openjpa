@@ -730,9 +730,9 @@ public class JDBCStoreManager
 
     /**
      * Connect to the database. This method is separated out so that it
-     * can be profiled.
+     * can be overridden.
      */
-    private RefCountConnection connectInternal() throws SQLException {
+    protected RefCountConnection connectInternal() throws SQLException {
         return new RefCountConnection(_ds.getConnection());
     }
 
@@ -1237,7 +1237,7 @@ public class JDBCStoreManager
      * Connection wrapper that keeps an internal ref count so that it knows
      * when to really close.
      */
-    private class RefCountConnection extends DelegatingConnection {
+    protected class RefCountConnection extends DelegatingConnection {
 
         private boolean _retain = false;
         private int _refs = 0;
