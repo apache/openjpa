@@ -2927,23 +2927,14 @@ public class StateManagerImpl
      * Returns whether this instance needs a version check.
      */
     public boolean isVersionCheckRequired() {
-
         // explicit flag for version check
-        if ((_flags & FLAG_VERSION_CHECK) > 0)
+        if ((_flags & FLAG_VERSION_CHECK) != 0)
             return true;
 
-        // need to check version if we have any dirty fields, unless we
-        // are in a datastore transaction
-        if (ImplHelper.getUpdateFields(this) != null) {
-            if (_broker.getOptimistic()) {
-                return true;
-            } else {
-                return _broker.getConfiguration().
-                    getCompatibilityInstance().getNonOptimisticVersionCheck();
-            }
-        }
-
-        return false;
+        if (!_broker.getOptimistic() && !_broker.getConfiguration().
+            getCompatibilityInstance().getNonOptimisticVersionCheck())
+            return false;
+        return _state.isVersionCheckRequired(this);
     }
 
     /**

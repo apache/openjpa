@@ -53,17 +53,22 @@ public class EntityManagerFactoryImpl
     private static final Localizer _loc = Localizer.forPackage
         (EntityManagerFactoryImpl.class);
 
-    private final DelegatingBrokerFactory _factory;
+    private DelegatingBrokerFactory _factory = null;
     private transient Constructor<FetchPlan> _plan = null;
     private transient StoreCache _cache = null;
     private transient QueryResultCache _queryCache = null;
 
     /**
-     * Constructor. Delegate must be provided on construction.
+     * Default constructor provided for auto-instantiation.
+     */
+    public EntityManagerFactoryImpl() {
+    }
+
+    /**
+     * Supply delegate on construction.
      */
     public EntityManagerFactoryImpl(BrokerFactory factory) {
-        _factory = new DelegatingBrokerFactory(factory,
-            PersistenceExceptions.TRANSLATOR);
+        setBrokerFactory(factory);
     }
 
     /**
@@ -71,6 +76,14 @@ public class EntityManagerFactoryImpl
      */
     public BrokerFactory getBrokerFactory() {
         return _factory.getDelegate();
+    }
+
+    /**
+     * Delegate must be provided before use.
+     */
+    public void setBrokerFactory(BrokerFactory factory) {
+        _factory = new DelegatingBrokerFactory(factory,
+            PersistenceExceptions.TRANSLATOR);
     }
 
     public OpenJPAConfiguration getConfiguration() {
@@ -175,7 +188,7 @@ public class EntityManagerFactoryImpl
         // regardless of PersistenceContextType
         broker.setAutoDetach(AutoDetach.DETACH_CLOSE);
         broker.setDetachedNew(false);
-        OpenJPAEntityManager em = new EntityManagerImpl(this, broker);
+        OpenJPAEntityManager em = newEntityManagerImpl(broker);
 
         // allow setting of other bean properties of EM
         List<RuntimeException> errs = null;
@@ -224,8 +237,14 @@ public class EntityManagerFactoryImpl
                 (Throwable[]) errs.toArray(new Throwable[errs.size()]),
                 null, true);
         }
-
         return em;
+    }
+
+    /**
+     * Create a new entity manager around the given broker.
+     */
+    protected EntityManagerImpl newEntityManagerImpl(Broker broker) {
+        return new EntityManagerImpl(this, broker);
     }
 
     public void addLifecycleListener(Object listener, Class... classes) {

@@ -69,6 +69,10 @@ class PDeletedState
         return error("deleted", context);
     }
 
+    boolean isVersionCheckRequired(StateManagerImpl context) {
+        return true;
+    }
+
     boolean isTransactional() {
         return true;
     }

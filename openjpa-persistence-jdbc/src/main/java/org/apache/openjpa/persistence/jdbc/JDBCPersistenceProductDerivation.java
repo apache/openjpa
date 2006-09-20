@@ -21,7 +21,6 @@ import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.Configuration;
-import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.PersistenceProductDerivation;
 
@@ -31,18 +30,21 @@ import org.apache.openjpa.persistence.PersistenceProductDerivation;
  * @author Abe White
  * @nojavadoc
  */
-public class JDBCPersistenceProductDerivation extends AbstractProductDerivation 
+public class JDBCPersistenceProductDerivation 
+    extends AbstractProductDerivation 
     implements OpenJPAProductDerivation {
     
     public int getType() {
         return TYPE_SPEC_STORE;
     }
 
+    @Override
     public boolean beforeConfigurationLoad(Configuration c) {
-        if (c instanceof OpenJPAConfiguration) 
-        ((OpenJPAConfiguration)c).getStoreFacadeTypeRegistry().
-            registerImplementation(FetchPlan.class, JDBCStoreManager.class, 
-            JDBCFetchPlanImpl.class);
+        if (c instanceof OpenJPAConfiguration) {
+            ((OpenJPAConfiguration) c).getStoreFacadeTypeRegistry().
+                registerImplementation(FetchPlan.class, JDBCStoreManager.class, 
+                JDBCFetchPlanImpl.class);
+        }
         if (!(c instanceof JDBCConfigurationImpl))
             return false;
 
@@ -67,21 +69,17 @@ public class JDBCPersistenceProductDerivation extends AbstractProductDerivation
         return true;
     }
 
+    @Override
     public boolean afterSpecificationSet(Configuration c) {
-        String jpa = PersistenceProductDerivation.SPEC_JPA;
         if (!(c instanceof JDBCConfigurationImpl))
             return false;
         JDBCConfigurationImpl conf = (JDBCConfigurationImpl) c;
-        
-         if (!jpa.equals(conf.getSpecification()))
+        String jpa = PersistenceProductDerivation.SPEC_JPA;
+        if (!jpa.equals(conf.getSpecification()))
             return false;
         
         conf.mappingDefaultsPlugin.setDefault(jpa);
         conf.mappingDefaultsPlugin.setString(jpa);
         return true;
-    }
-    
-    public ConfigurationProvider newConfigurationProvider() {
-        return null;
     }
 }

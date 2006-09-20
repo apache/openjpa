@@ -143,7 +143,7 @@ public class ClassMetaData
     private Boolean _interface = null;
     private Class _impl = null;
     private List _interfaces = null;
-    private Map _ifaceMap = new HashMap();
+    private final Map _ifaceMap = new HashMap();
     private int _identity = ID_UNKNOWN;
     private int _idStrategy = ValueStrategies.NONE;
     private int _accessType = ACCESS_UNKNOWN;
@@ -703,8 +703,7 @@ public class ClassMetaData
      */
     public Class[] getDeclaredInterfaces() {
         if (_interfaces == null)
-            return _repos.EMPTY_CLASSES;
-
+            return MetaDataRepository.EMPTY_CLASSES;
         return (Class[]) _interfaces.toArray(new Class[_interfaces.size()]);
     }
 
@@ -713,11 +712,11 @@ public class ClassMetaData
      * class implements.
      */
     public void addDeclaredInterface(Class iface) {
-        if (_interfaces == null)
-            _interfaces = new ArrayList();
-        if (!iface.isInterface())
+        if (iface == null || !iface.isInterface())
             throw new MetaDataException(_loc.get("declare-non-interface",
                 this, iface));
+        if (_interfaces == null)
+            _interfaces = new ArrayList();
         _interfaces.add(iface);
     }
 
@@ -1657,9 +1656,8 @@ public class ClassMetaData
 
         // record implements in the repository
         if (_interfaces != null) {
-            for (Iterator it = _interfaces.iterator(); it.hasNext();) {
+            for (Iterator it = _interfaces.iterator(); it.hasNext();)
                 _repos.addDeclaredInterfaceImpl(this, (Class) it.next());
-            }
         }
 
         // resolve fetch groups

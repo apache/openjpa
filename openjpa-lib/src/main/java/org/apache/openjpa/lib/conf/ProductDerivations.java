@@ -20,12 +20,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.MissingResourceException;
 
-import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.Services;
 
 /**
@@ -37,10 +34,9 @@ import org.apache.openjpa.lib.util.Services;
 public class ProductDerivations {
 
     private static final ProductDerivation[] _derivations;
-
     static {
         Class[] pdcls = Services.getImplementorClasses(ProductDerivation.class,
-          ProductDerivation.class.getClassLoader());
+            ProductDerivation.class.getClassLoader());
         List derivations = new ArrayList(pdcls.length);
         for (int i = 0; i < pdcls.length; i++) {
             try {
@@ -72,7 +68,7 @@ public class ProductDerivations {
     public static void beforeConfigurationConstruct(ConfigurationProvider cp) {
         for (int i = 0; i < _derivations.length; i++) {
             try {
-                boolean ret = _derivations[i].beforeConfigurationConstruct(cp);
+                _derivations[i].beforeConfigurationConstruct(cp);
             } catch (Exception e) {
                 // can't log; no configuration yet
                 e.printStackTrace();
@@ -87,7 +83,7 @@ public class ProductDerivations {
     public static void beforeConfigurationLoad(Configuration conf) {
         for (int i = 0; i < _derivations.length; i++) {
             try {
-                boolean ret = _derivations[i].beforeConfigurationLoad(conf);
+                _derivations[i].beforeConfigurationLoad(conf);
             } catch (Exception e) {
                 // logging not configured yet
                 e.printStackTrace();
@@ -102,7 +98,7 @@ public class ProductDerivations {
     public static void afterSpecificationSet(Configuration conf) {
         for (int i = 0; i < _derivations.length; i++) {
             try {
-                boolean ret = _derivations[i].afterSpecificationSet(conf);
+                _derivations[i].afterSpecificationSet(conf);
             } catch (Exception e) {
                 // logging not configured yet
                 e.printStackTrace();
@@ -125,19 +121,18 @@ public class ProductDerivations {
             loader = Thread.currentThread().getContextClassLoader();
         ConfigurationProvider provider = null;
         StringBuffer errs = null;
-        for (int i = 0; i < _derivations.length; i++) {
+        // most specific to least
+        for (int i = _derivations.length - 1; i >= 0; i--) {
             try {
                 provider = _derivations[i].load(resource, anchor, loader);
-                if (provider != null) {
+                if (provider != null)
                     return provider;
-                }
             } catch (Throwable t) {
-                errs = (errs == null) ? new StringBuffer() 
-                        : errs.append("\r\n");
+                errs = (errs == null) ? new StringBuffer() : errs.append("\n");
                 errs.append(_derivations[i].getClass().getName() + ":" + t);
             }
         }
-        reportError(errs, resource);
+        reportErrors(errs, resource);
         return null;
     }
 
@@ -155,74 +150,21 @@ public class ProductDerivations {
             loader = Thread.currentThread().getContextClassLoader();
         ConfigurationProvider provider = null;
         StringBuffer errs = null;
-        for (int i = 0; i < _derivations.length; i++) {
+        // most specific to least
+        for (int i = _derivations.length - 1; i >= 0; i--) {
             try {
                 provider = _derivations[i].load(file, anchor);
-                if (provider != null) {
+                if (provider != null)
                     return provider;
-                }
             } catch (Throwable t) {
-                errs = (errs == null) ? new StringBuffer() 
-                        : errs.append("\r\n");
+                errs = (errs == null) ? new StringBuffer() : errs.append("\n");
                 errs.append(_derivations[i].getClass().getName() + ":" + t);
             }
         }
-        reportError(errs, file.getAbsolutePath());
+        reportErrors(errs, file.getAbsolutePath());
         return null;
     }
-    
-    public static ConfigurationProvider load(String rsrc, String anchor, 
-        Map m) {
-        ConfigurationProvider provider = null;
-        StringBuffer errs = null;
-        for (int i = 0; i < _derivations.length; i++) {
-            try {
-                provider = _derivations[i].load(rsrc, anchor, m);
-                if (provider != null) {
-                    return provider;
-                }
-            } catch (Throwable t) {
-                errs = (errs == null) ? new StringBuffer() 
-                        : errs.append("\r\n");
-                errs.append(_derivations[i].getClass().getName() + ":" + t);
-            }
-        }
-        reportError(errs, rsrc);
-        return null;
-    }
-        
-    public static ConfigurationProvider load(ClassLoader loader, 
-       boolean globals) {
-        if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
-        
-        ConfigurationProvider provider = null;
-        StringBuffer errs = null;
-        String type = (globals) ? "globals" : "defaults";
-        for (int i = 0; i < _derivations.length; i++) {
-            try {
-                provider = (globals) ? _derivations[i].loadGlobals(loader) 
-                        : _derivations[i].loadDefaults(loader);
-                if (provider != null) {
-                   return provider;
-                }
-            } catch (Throwable t) {
-                errs = (errs == null) ? new StringBuffer() 
-                        : errs.append("\r\n");
-                errs.append(_derivations[i].getClass().getName() + ":" + t);
-            }
-        }
-        reportError(errs, type);
-        return null;
-    }
-    
-    private static void reportError(StringBuffer errs, String resource) {
-        if (errs == null)
-            return;
-        throw new MissingResourceException(
-                errs.toString(), ProductDerivations.class.getName(), resource);
-    }
-
+   
     /**
      * Return a {@link ConfigurationProvider} that has parsed system defaults.
      */
@@ -236,7 +178,44 @@ public class ProductDerivations {
     public static ConfigurationProvider loadGlobals(ClassLoader loader) {
         return load(loader, true);
     }
-    
+            
+    /**
+     * Load a built-in resource location.
+     */
+    private static ConfigurationProvider load(ClassLoader loader, 
+       boolean globals) {
+        if (loader == null)
+            loader = Thread.currentThread().getContextClassLoader();
+        
+        ConfigurationProvider provider = null;
+        StringBuffer errs = null;
+        String type = (globals) ? "globals" : "defaults";
+        // most specific to least
+        for (int i = _derivations.length - 1; i >= 0; i--) {
+            try {
+                provider = (globals) ? _derivations[i].loadGlobals(loader) 
+                    : _derivations[i].loadDefaults(loader);
+                if (provider != null)
+                   return provider;
+            } catch (Throwable t) {
+                errs = (errs == null) ? new StringBuffer() : errs.append("\n");
+                errs.append(_derivations[i].getClass().getName() + ":" + t);
+            }
+        }
+        reportErrors(errs, type);
+        return null;
+    }
+ 
+    /**
+     * Thrown proper exception for given errors.
+     */
+    private static void reportErrors(StringBuffer errs, String resource) {
+        if (errs == null)
+            return;
+        throw new MissingResourceException(errs.toString(), 
+            ProductDerivations.class.getName(), resource);
+    }
+
     /**
      * Compare {@link ProductDerivation}s.
      */

@@ -27,9 +27,6 @@ import org.apache.openjpa.lib.test.AbstractTestCase;
  * properties, which are required for the bean descriptors used by the
  * configuration framework {@link Value}.
  * 
- * This test has been modified to test the same functionality of 
- * ConfigurationProvider but now invoked via ProductDerivation.
- * 
  * This test assumes a <code>"test.properties"</code> file available in
  * classpath and also system property <code>"openjpatest.properties"</code>
  * is set to <code>"test.properties"</code>.

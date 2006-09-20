@@ -61,19 +61,20 @@ public class PersistenceProviderImpl
      * identified by <code>resource</code>, and uses the first resource found
      * when doing this lookup, regardless of the name specified in the XML
      * resource or the name of the jar that the resource is contained in.
-     *  This does no pooling of EntityManagersFactories.
+     * This does no pooling of EntityManagersFactories.
      */
     public EntityManagerFactory createEntityManagerFactory(String name,
         String resource, Map m) {
+        PersistenceProductDerivation pd = new PersistenceProductDerivation();
         try {
-            ConfigurationProvider cp = ProductDerivations.load(resource, name, 
-                 m);
-            if (cp != null) {
-                BrokerFactory factory = Bootstrap.newBrokerFactory(cp, null);
-            	return OpenJPAPersistence.toEntityManagerFactory(factory, cp);
-            }
-            else
-                 return null;
+            ConfigurationProvider cp = pd.load(resource, name, m);
+            if (cp == null)
+                return null;
+
+            if (m != null)
+                cp.addProperties(m);
+            BrokerFactory factory = Bootstrap.newBrokerFactory(cp, null);
+            return OpenJPAPersistence.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
@@ -84,37 +85,29 @@ public class PersistenceProviderImpl
     }
 
     public EntityManagerFactory createContainerEntityManagerFactory(
-        PersistenceUnitInfo pui, Map map) {
-        ConfigurationProviderImpl cp = newConfigurationProvider();
+        PersistenceUnitInfo pui, Map m) {
+        PersistenceProductDerivation pd = new PersistenceProductDerivation();
         try {
-            if (cp.load(pui, map)) {
-                BrokerFactory factory = Bootstrap.newBrokerFactory(cp, 
-                     cp.getClassLoader());
-                OpenJPAEntityManagerFactory emf = 
-                    OpenJPAPersistence.toEntityManagerFactory(factory);
-                Properties p = pui.getProperties();
-                String ctOpts = null;
-                if (p != null)
-                    ctOpts = p.getProperty(CLASS_TRANSFORMER_OPTIONS);
-                pui.addTransformer(new ClassTransformerImpl(
-                    emf.getConfiguration(), ctOpts,
-                    pui.getNewTempClassLoader()));
-                return emf;
-            } else
+            ConfigurationProvider cp = pd.load(pui, m);
+            if (cp == null)
                 return null;
+
+            BrokerFactory factory = Bootstrap.newBrokerFactory(cp, 
+                pui.getClassLoader());
+            OpenJPAEntityManagerFactory emf = 
+                OpenJPAPersistence.toEntityManagerFactory(factory);
+            Properties p = pui.getProperties();
+            String ctOpts = null;
+            if (p != null)
+                ctOpts = p.getProperty(CLASS_TRANSFORMER_OPTIONS);
+            pui.addTransformer(new ClassTransformerImpl(emf.getConfiguration(),
+                ctOpts, pui.getNewTempClassLoader()));
+            return emf;
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
     
-    /**
-     * Gets the configuration provider to locate and load configuration data.
-     * An implementation is returned rather than the interface.
-      */
-    protected ConfigurationProviderImpl newConfigurationProvider() {
-        return new ConfigurationProviderImpl();
-    }
-            
     /**
      * Java EE 5 class transformer.
      */

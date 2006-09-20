@@ -64,6 +64,10 @@ class PDirtyState
         return error("dirty", context);
     }
 
+    boolean isVersionCheckRequired(StateManagerImpl context) {
+        return !context.isFlushed() || context.isFlushedDirty(); 
+    }
+
     PCState afterRefresh() {
         return PCLEAN;
     }

@@ -867,21 +867,16 @@ public class MetaDataRepository
      */
     void addDeclaredInterfaceImpl(ClassMetaData meta, Class iface) {
         synchronized (_impls) {
-            boolean supDec = false;
             Collection vals = (Collection) _impls.get(iface);
             
             // check to see if the superclass already declares to avoid dups
             if (vals != null) {
                 ClassMetaData sup = meta.getPCSuperclassMetaData();
-                while (vals != null && sup != null && !supDec) {
-                    supDec = vals.contains(sup.getDescribedType());
-                    sup = sup.getPCSuperclassMetaData();
-                }
-                if (supDec)
-                    return;
+                for (; sup != null; sup = sup.getPCSuperclassMetaData())
+                    if (vals.contains(sup.getDescribedType()))
+                        return;
             }
-
-            addToCollection(_impls, iface, meta.getDescribedType(), true);
+            addToCollection(_impls, iface, meta.getDescribedType(), false);
         }
     }
 
@@ -1399,7 +1394,7 @@ public class MetaDataRepository
         }
 
         // allow users to query on any implemented interfaces unless defaults 
-        // say the user must create persistent interfaces explicitly
+        // say the user must implement persistent interfaces explicitly in meta
         if (!_factory.getDefaults().isDeclaredInterfacePersistent())
             return;
         Class[] ints = check.getInterfaces();

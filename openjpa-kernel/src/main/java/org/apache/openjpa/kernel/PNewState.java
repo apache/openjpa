@@ -68,6 +68,10 @@ class PNewState
         return error("new", context);
     }
 
+    boolean isVersionCheckRequired(StateManagerImpl context) {
+        return context.isFlushedDirty(); 
+    }
+
     boolean isTransactional() {
         return true;
     }

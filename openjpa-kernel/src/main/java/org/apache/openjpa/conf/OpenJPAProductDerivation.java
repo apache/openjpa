@@ -18,14 +18,14 @@ package org.apache.openjpa.conf;
 import org.apache.openjpa.lib.conf.ProductDerivation;
 
 /**
- * 
  * Adds datastore based extension to ProductDerivation.  
  *
  * @since 0.4.1
  * @author Pinaki Poddar
- *
  */
 public interface OpenJPAProductDerivation extends ProductDerivation {
+
+    public static final int TYPE_SPEC = 0;
     public static final int TYPE_STORE = 200;
     public static final int TYPE_SPEC_STORE = 300;
     public static final int TYPE_PRODUCT_STORE = 400;
