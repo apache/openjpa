@@ -199,8 +199,12 @@ public class NativeJDBCSeq
 
     protected Object nextInternal(JDBCStore store, ClassMapping mapping)
         throws SQLException {
-        long next = getSequence(getConnection(store));
-        return Numbers.valueOf(next);
+        Connection conn = getConnection(store);
+        try {
+            return Numbers.valueOf(getSequence(conn));
+        } finally {
+            closeConnection(conn);
+        }
     }
 
     /**

@@ -41,10 +41,6 @@ public abstract class AbstractJDBCSeq
     protected int type = TYPE_DEFAULT;
     protected Object current = null;
 
-    // used to track current conn so that we can close it
-    private Connection _conn = null;
-    private boolean _commit = false;
-
     /**
      * Records the sequence type.
      */
@@ -52,7 +48,7 @@ public abstract class AbstractJDBCSeq
         this.type = type;
     }
 
-    public synchronized Object next(StoreContext ctx, ClassMetaData meta) {
+    public Object next(StoreContext ctx, ClassMetaData meta) {
         JDBCStore store = getStore(ctx);
         try {
             current = nextInternal(store, (ClassMapping) meta);
@@ -63,12 +59,10 @@ public abstract class AbstractJDBCSeq
             throw SQLExceptions.getStore(se, store.getDBDictionary());
         } catch (Exception e) {
             throw new StoreException(e);
-        } finally {
-            closeConnection();
         }
     }
 
-    public synchronized Object current(StoreContext ctx, ClassMetaData meta) {
+    public Object current(StoreContext ctx, ClassMetaData meta) {
         JDBCStore store = getStore(ctx);
         try {
             return currentInternal(store, (ClassMapping) meta);
@@ -78,13 +72,10 @@ public abstract class AbstractJDBCSeq
             throw SQLExceptions.getStore(se, store.getDBDictionary());
         } catch (Exception e) {
             throw new StoreException(e);
-        } finally {
-            closeConnection();
         }
     }
 
-    public synchronized void allocate(int additional, StoreContext ctx,
-        ClassMetaData meta) {
+    public void allocate(int additional, StoreContext ctx, ClassMetaData meta) {
         JDBCStore store = getStore(ctx);
         try {
             allocateInternal(additional, store, (ClassMapping) meta);
@@ -94,8 +85,6 @@ public abstract class AbstractJDBCSeq
             throw SQLExceptions.getStore(se, store.getDBDictionary());
         } catch (Exception e) {
             throw new StoreException(e);
-        } finally {
-            closeConnection();
         }
     }
 
@@ -121,7 +110,7 @@ public abstract class AbstractJDBCSeq
     /**
      * Return the current sequence object. By default returns the last
      * sequence value used, or null if no sequence values have been requested
-     * yet.
+     * yet. Default implementation is not threadsafe.
      */
     protected Object currentInternal(JDBCStore store, ClassMapping mapping)
         throws Exception {
@@ -149,41 +138,31 @@ public abstract class AbstractJDBCSeq
      */
     protected Connection getConnection(JDBCStore store)
         throws SQLException {
-        // close previous connection if user is asking for another connection
-        closeConnection();
-
         if (type == TYPE_TRANSACTIONAL || type == TYPE_CONTIGUOUS)
-            _conn = store.getConnection();
-        else {
-            JDBCConfiguration conf = store.getConfiguration();
-            DataSource ds = conf.getDataSource2(store.getContext());
-            _conn = ds.getConnection();
-            if (_conn.getAutoCommit())
-                _conn.setAutoCommit(false);
-            _commit = true;
-        }
-        return _conn;
+            return store.getConnection();
+
+        JDBCConfiguration conf = store.getConfiguration();
+        DataSource ds = conf.getDataSource2(store.getContext());
+        Connection conn = ds.getConnection();
+        if (conn.getAutoCommit())
+            conn.setAutoCommit(false);
+        return conn;
     }
 
     /**
      * Close the current connection.
      */
-    protected void closeConnection() {
-        if (_conn == null)
+    protected void closeConnection(Connection conn) {
+        if (conn == null)
             return;
 
         try {
-            if (_commit)
-                _conn.commit();
+            if (type == TYPE_TRANSACTIONAL || type == TYPE_CONTIGUOUS)
+                conn.commit();
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se);
         } finally {
-            try {
-                _conn.close();
-            } catch (SQLException se) {
-            }
-            _conn = null;
-            _commit = false;
+            try { conn.close(); } catch (SQLException se) {}
         }
     }
 }
