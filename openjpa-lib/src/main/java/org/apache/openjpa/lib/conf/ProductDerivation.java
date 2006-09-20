@@ -20,14 +20,11 @@ import java.util.Map;
 
 /**
  * Hooks for deriving products with additional functionality.
- * The specific implementation uses corresponding {@link ConfigurationProvider}
- * to locate and parse configuration information from global, default or
- * explictly-specified resources.
- * All implementations of this interface will have a chance to mutate
- * a {@link Configuration} both before and after the user-specified
- * configuration data is loaded. 
- * The order in which the product derivations are evaluated is determined by the 
- * specificity of the derivation type.
+ * Parses configuration information from global, default or explictly-specified
+ * resources. All implementations of this interface will have a chance to mutate
+ * a {@link Configuration} both before and after the user-specified 
+ * configuration data is loaded. The order in which the product derivations are
+ * evaluated is determined by the specificity of the derivation type.
  *
  * @author Abe White
  * @author Pinaki Poddar
@@ -35,7 +32,6 @@ import java.util.Map;
  */
 public interface ProductDerivation {
 
-    public static final int TYPE_SPEC = 0;
     public static final int TYPE_PRODUCT = 100;
     public static final int TYPE_FEATURE = 1000;
 
@@ -45,29 +41,30 @@ public interface ProductDerivation {
     public int getType();
 
     /**
-     * Load globals via the returned ConfigurationProvider, or return null if 
+     * Load globals into the returned ConfigurationProvider, or return null if 
      * no globals is found.
      */
     public ConfigurationProvider loadGlobals(ClassLoader loader) 
         throws Exception;
 
     /**
-     * Load defaults via the returned ConfigurationProvider, or return null if 
+     * Load defaults into the returned ConfigurationProvider, or return null if 
      * no defaults is found.
      */
     public ConfigurationProvider loadDefaults(ClassLoader loader) 
         throws Exception;
 
     /**
-     * Load the given given resource via the returned ConfigurationProvider, or 
-     * return null if it is not a resource this receiver understands. 
+     * Load the given given resource into the returned ConfigurationProvider, 
+     * or return null if it is not a resource this receiver understands. 
      * The given class loader may be null.
      *
      * @param anchor optional named anchor within a multiple-configuration
      * resource
      */
     public ConfigurationProvider load(String resource, String anchor, 
-        ClassLoader loader) throws Exception;
+        ClassLoader loader) 
+        throws Exception;
 
     /**
      * Load given file, or return null if it is not a file this receiver
@@ -79,21 +76,11 @@ public interface ProductDerivation {
         throws Exception;
     
     /**
-     * Load given resource overriding with the given map <code>m</code>, or 
-     * return null if it is not a resource this receiver* understands.
-     *
-     * @param anchor optional named anchor within a multiple-configuration file
-     * @param m optional properties to override the content of the resource.
-     */
-    public ConfigurationProvider load(String rsrc, String anchor, Map m) 
-        throws Exception;
-
-    
-    /**
      * Provides the instance with a callback to mutate the initial properties
      * of the {@link ConfigurationProvider}. This is primarily to alter or
      * add properties that determine what type of configuration is constructed,
      * and therefore is typically used at runtime only.
+     * 
      * @return true if given ConfigurationProvider has been mutated.
      */
     public boolean beforeConfigurationConstruct(ConfigurationProvider cp);
@@ -101,12 +88,14 @@ public interface ProductDerivation {
     /**
      * Provides the instance with the opportunity to mutate
      * <code>conf</code> before the user configuration is applied.
+     *
      * @return true if given Configuration has been mutated.
      */
     public boolean beforeConfigurationLoad(Configuration conf);
 
     /**
      * Called after the specification has been set.
+     *
      * @return true if given Configuration has been mutated.
      */
     public boolean afterSpecificationSet(Configuration conf);

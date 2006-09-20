@@ -403,6 +403,14 @@ public class PCState
     }
 
     /**
+     * Whether this state requires a version check when being flushed, 
+     * assuming the system is configured for version checks.
+     */
+    boolean isVersionCheckRequired(StateManagerImpl context) {
+        return false;
+    }
+
+    /**
      * Throw an error with a localized message identified by the given key.
      */
     PCState error(String key, StateManagerImpl context) {

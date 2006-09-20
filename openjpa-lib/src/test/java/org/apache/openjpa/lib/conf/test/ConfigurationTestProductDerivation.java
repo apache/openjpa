@@ -15,17 +15,25 @@
  */
 package org.apache.openjpa.lib.conf.test;
 
+import java.io.File;
+import java.io.InputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.MissingResourceException;
+import java.util.Properties;
+
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
+import org.apache.openjpa.lib.conf.MapConfigurationProvider;
 import org.apache.openjpa.lib.conf.ProductDerivation;
 
 /**
  * A Product Derivation to test loading of global and default configuration with
- * System settings. This provider uses 
- * {@link ConfigurationTestConfigurationProvider} which reads its global from
- * a file specified by <code>"openjpatest.properties"</code> system property.
+ * System settings.  Reads its global from a file specified by 
+ * <code>"openjpatest.properties"</code> system property.
  *
  * @author Pinaki Poddar
+ * @author Abe White
  */
 public class ConfigurationTestProductDerivation 
     extends AbstractProductDerivation {
@@ -33,10 +41,60 @@ public class ConfigurationTestProductDerivation
     public int getType() {
         return ProductDerivation.TYPE_PRODUCT;
     }
-    
-    public ConfigurationProvider newConfigurationProvider() {
-        return new ConfigurationTestConfigurationProvider();
-    }
-    
-}
 
+    public ConfigurationProvider loadGlobals(ClassLoader loader)
+        throws IOException {
+        return load(null, loader);
+    }
+
+    public ConfigurationProvider load(String rsrc, ClassLoader loader)
+        throws IOException {
+        if (rsrc == null)
+            rsrc = System.getProperty("openjpatest.properties");
+        if (rsrc == null || !rsrc.endsWith(".properties"))
+            return null;
+
+        URL url = findResource(rsrc, loader);
+        if (url == null)
+            throw new MissingResourceException(rsrc, getClass().getName(), 
+                rsrc);
+
+        InputStream in = url.openStream();
+        Properties props = new Properties();
+        if (in != null) {
+            try {
+                props.load(in);
+                return new MapConfigurationProvider(props);
+            } finally {
+                try { in.close(); } catch (Exception e) {}
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Locate the given resource.
+     */
+    private URL findResource(String rsrc, ClassLoader loader)
+        throws IOException {
+        if (loader != null)
+            return loader.getResource(rsrc);
+
+        // in jbuilder the classloader can be null
+        URL url = null;
+        loader = getClass().getClassLoader();
+        if (loader != null)
+            url = loader.getResource(rsrc);
+        if (url == null) {
+            loader = Thread.currentThread().getContextClassLoader();
+            if (loader != null)
+                url = loader.getResource(rsrc);
+        }
+        if (url == null) {
+            loader = ClassLoader.getSystemClassLoader();
+            if (loader != null)
+                url = loader.getResource(rsrc);
+        }
+        return url;
+    }
+}

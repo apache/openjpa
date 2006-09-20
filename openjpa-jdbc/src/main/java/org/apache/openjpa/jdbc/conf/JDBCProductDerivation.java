@@ -45,8 +45,4 @@ public class JDBCProductDerivation extends AbstractProductDerivation
         }
         return false;
     }
-    
-    public ConfigurationProvider newConfigurationProvider() {
-        return null;
-    }
 }

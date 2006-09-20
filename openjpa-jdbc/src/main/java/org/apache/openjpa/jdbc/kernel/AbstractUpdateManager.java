@@ -68,10 +68,7 @@ public abstract class AbstractUpdateManager
                 conn);
             return flush(states, store, psMgr);
         } finally {
-            try {
-                conn.close();
-            } catch (SQLException se) {
-            }
+            try { conn.close(); } catch (SQLException se) {}
         }
     }
 
@@ -141,7 +138,6 @@ public abstract class AbstractUpdateManager
         Collection customs) {
         try {
             BitSet dirty;
-
             if (sm.getPCState() == PCState.PNEW && !sm.isFlushed()) {
                 insert(sm, (ClassMapping) sm.getMetaData(), rowMgr, store,
                     customs);
@@ -156,10 +152,10 @@ public abstract class AbstractUpdateManager
                 updateIndicators(sm, (ClassMapping) sm.getMetaData(), rowMgr,
                     store, customs, true);
             } else if (sm.isVersionCheckRequired()) {
-                if (!((ClassMapping) sm.getMetaData()).getVersion()
-                    .checkVersion(sm, store, false))
-                    exceps = addException(exceps, new OptimisticException(sm
-                        .getManagedInstance()));
+                if (!((ClassMapping) sm.getMetaData()).getVersion().
+                    checkVersion(sm, store, false))
+                    exceps = addException(exceps, new OptimisticException(sm.
+                        getManagedInstance()));
             }
         } catch (SQLException se) {
             exceps = addException(exceps, SQLExceptions.getStore(se, dict));

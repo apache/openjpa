@@ -195,9 +195,14 @@ public class Configurations {
                 if (file.isFile())
                     provider = ProductDerivations.load(file, anchor, null);
                 else
-                    provider = ProductDerivations.load(path, anchor, (Map)null);
+                    provider = ProductDerivations.load(path, anchor, null);
             }
-            provider.setInto(conf);
+            if (provider != null)
+                provider.setInto(conf);
+            else
+                throw new MissingResourceException(_loc.get("no-provider",
+                    props).getMessage(), Configurations.class.getName(), 
+                    props);
         } else {
             provider = ProductDerivations.loadDefaults(null);
             if (provider != null)

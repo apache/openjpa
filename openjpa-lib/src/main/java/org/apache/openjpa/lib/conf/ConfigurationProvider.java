@@ -15,7 +15,6 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import java.io.File;
 import java.util.Map;
 
 /**
@@ -50,48 +49,4 @@ public interface ConfigurationProvider {
      * Set loaded information into the given configuration.
      */
     public void setInto(Configuration conf);
-    
-    /**
-     * Loads the global resource. The meaning of <em>global</em> is specific
-     * to concrte implementaion. 
-     * @param loader used to locate the resource. If null uses the current
-     * thread's loader.
-     * @return true if located and loaded global configuration 
-     */
-    public boolean loadGlobals(ClassLoader loader) throws Exception;
-
-    /**
-     * Loads the default resource. The meaning of <em>default</em> is specific
-     * to concrte implementaion. 
-     * @param loader used to locate the resource. If null uses the current
-     * thread's loader.
-     * @return true if located and loaded default configuration 
-     */
-    public boolean loadDefaults(ClassLoader loader) throws Exception;
-    
-    /**
-     * Loads the given resource. 
-     * @param resource name of the resource
-     * @param anchor optional named anchor within a resource containing multiple
-     * configuration
-     * @param loader used to locate the resource. If null uses the current
-     * thread's loader.
-     * @return true if located and loaded configuration 
-     */
-    public boolean load(String resource, String anchor, ClassLoader loader) 
-        throws Exception;
-    
-    public boolean load(String resource, String anchor, Map map) 
-        throws Exception;
-
-    /**
-     * Loads the given resource. 
-     * @param file name of the file to load from
-     * @param anchor optional named anchor within a file containing multiple
-     * configuration
-     * @return true if located and loaded configuration 
-     */
-    public boolean load(File file, String anchor) throws Exception;
-
-
 }

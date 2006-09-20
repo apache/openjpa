@@ -65,23 +65,15 @@ public class OpenJPAPersistence
     
     public static OpenJPAEntityManagerFactory toEntityManagerFactory
        (BrokerFactory factory) {
-        return toEntityManagerFactory(factory, null);
-    }
-    
-    /**
-     * Return an entity manager factory facade to the given broker factory.
-     */
-    public static OpenJPAEntityManagerFactory toEntityManagerFactory
-        (BrokerFactory factory, ConfigurationProvider cp) {
         if (factory == null)
             return null;
+
         factory.lock();
-        
         try {
             OpenJPAEntityManagerFactory emf = (OpenJPAEntityManagerFactory)
                 factory.getUserObject(EMF_KEY);
             if (emf == null) {
-                emf = newEntityManagerFactory(factory, cp, null);
+                emf = EntityManagerFactoryValue.newFactory(factory);
                 factory.putUserObject(EMF_KEY, emf);
             }
             return emf;
@@ -116,10 +108,9 @@ public class OpenJPAPersistence
             if (em == null) {
                 EntityManagerFactoryImpl emf = (EntityManagerFactoryImpl)
                     toEntityManagerFactory(broker.getBrokerFactory());
-                em = new EntityManagerImpl(emf, broker);
+                em = emf.newEntityManagerImpl(broker);
                 broker.putUserObject(EM_KEY, em);
             }
-
             return em;
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
@@ -127,8 +118,6 @@ public class OpenJPAPersistence
             broker.unlock();
         }
     }
-    
-     
 
     /**
      * Return the underlying broker for the given entity manager facade.
@@ -441,49 +430,4 @@ public class OpenJPAPersistence
 			return String.class;
 		return oidClass;
 	}
-    
-    private static OpenJPAEntityManagerFactory newEntityManagerFactory (
-        BrokerFactory brokerFactory, ConfigurationProvider conf, 
-        ClassLoader loader) {
-            if (conf == null)
-                conf = new MapConfigurationProvider();
-            ProductDerivations.beforeConfigurationConstruct(conf);
-
-            Class cls = getFactoryClass(conf, loader);
-            Constructor ctr;
-            try {
-                ctr = cls.getConstructor(BrokerFactory.class); 
-                return (OpenJPAEntityManagerFactory)ctr
-                   .newInstance(brokerFactory);
-            } catch (Exception e) {
-                throw PersistenceExceptions.toPersistenceException(e);
-            }
-        }
-
-    /**
-     * Instantiate the factory class designated in properties.
-     */
-    private static Class getFactoryClass(ConfigurationProvider conf,
-        ClassLoader loader) {
-        if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
-
-        Object cls = EntityManagerFactoryValue.get(conf);
-        if (cls instanceof Class)
-            return (Class) cls;
-
-        EntityManagerFactoryValue value = new EntityManagerFactoryValue();
-        value.setString((String) cls);
-        String clsName = value.getClassName();
-        if (clsName == null)
-            throw new UserException(_loc.get("no-emf", 
-                conf.getProperties())).setFatal(true);
-
-        try {
-            return Class.forName(clsName, true, loader);
-        } catch (Exception e) {
-            throw new UserException(_loc.get("bad-emf-class",
-                clsName), e).setFatal(true);
-        }
-    }
 }

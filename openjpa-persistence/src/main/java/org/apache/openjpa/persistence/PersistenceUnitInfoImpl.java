@@ -296,6 +296,15 @@ public class PersistenceUnitInfoImpl
 
     /**
      * Return a {@link Map} containing the properties necessary to create
+     * a {@link Configuration} that reflects the information in this
+     * persistence unit info.
+     */
+    public Map toOpenJPAProperties() {
+        return toOpenJPAProperties(this);
+    }
+
+    /**
+     * Return a {@link Map} containing the properties necessary to create
      * a {@link Configuration} that reflects the information in the given
      * persistence unit info.
      */
