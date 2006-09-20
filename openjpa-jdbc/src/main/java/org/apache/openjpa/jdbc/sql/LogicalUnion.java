@@ -85,7 +85,8 @@ public class LogicalUnion
 
         SelectImpl seed;
         for (int i = 0; i < sels; i++) {
-            seed = (seeds == null) ? new SelectImpl(conf)
+            seed = (seeds == null)
+                ? (SelectImpl) conf.getSQLFactoryInstance().newSelect()
                 : (SelectImpl) seeds[i];
             this.sels[i] = newUnionSelect(seed, i);
         }

@@ -283,7 +283,7 @@ public class SelectImpl
         throws SQLException {
         if (fetch == null)
             fetch = store.getFetchConfiguration();
-        return execute(this, store.getContext(), store, fetch,
+        return execute(store.getContext(), store, fetch,
             fetch.getReadLockLevel());
     }
 
@@ -292,31 +292,31 @@ public class SelectImpl
         throws SQLException {
         if (fetch == null)
             fetch = store.getFetchConfiguration();
-        return execute(this, store.getContext(), store, fetch, lockLevel);
+        return execute(store.getContext(), store, fetch, lockLevel);
     }
 
     /**
      * Execute this select in the context of the given store manager. The
      * context is passed in separately for profiling purposes.
      */
-    private static Result execute(SelectImpl sel, StoreContext ctx,
-        JDBCStore store, JDBCFetchConfiguration fetch, int lockLevel)
+    protected Result execute(StoreContext ctx, JDBCStore store, 
+        JDBCFetchConfiguration fetch, int lockLevel)
         throws SQLException {
         boolean forUpdate = false;
-        if (!sel.isAggregate() && sel._grouping == null) {
+        if (!isAggregate() && _grouping == null) {
             JDBCLockManager lm = store.getLockManager();
             if (lm != null)
-                forUpdate = lm.selectForUpdate(sel, lockLevel);
+                forUpdate = lm.selectForUpdate(this, lockLevel);
         }
 
-        SQLBuffer sql = sel.toSelect(forUpdate, fetch);
-        int rsType = (sel.isLRS() && sel.supportsRandomAccess(forUpdate))
+        SQLBuffer sql = toSelect(forUpdate, fetch);
+        int rsType = (isLRS() && supportsRandomAccess(forUpdate))
             ? -1 : ResultSet.TYPE_FORWARD_ONLY;
         Connection conn = store.getConnection();
         PreparedStatement stmnt = null;
         ResultSet rs = null;
         try {
-            if (sel.isLRS())
+            if (isLRS())
                 stmnt = sql.prepareStatement(conn, fetch, rsType, -1);
             else
                 stmnt = sql.prepareStatement(conn, rsType, -1);
@@ -329,12 +329,12 @@ public class SelectImpl
             throw se;
         }
 
-        SelectResult res = new SelectResult(conn, stmnt, rs, sel._dict);
-        res.setSelect(sel);
+        SelectResult res = new SelectResult(conn, stmnt, rs, _dict);
+        res.setSelect(this);
         res.setStore(store);
         res.setLocking(forUpdate);
         try {
-            addEagerResults(res, sel, store, fetch);
+            addEagerResults(res, this, store, fetch);
         } catch (SQLException se) {
             res.close();
             throw se;
@@ -1470,7 +1470,7 @@ public class SelectImpl
         Select[] clones = null;
         SelectImpl sel;
         for (int i = 0; i < sels; i++) {
-            sel = new SelectImpl(_conf);
+            sel = (SelectImpl) conf.getSQLFactoryInstance().newSelect();
             sel._flags = _flags;
             sel._flags &= ~AGGREGATE;
             sel._flags &= ~OUTER;
