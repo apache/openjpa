@@ -44,8 +44,8 @@ import org.apache.openjpa.meta.JavaTypes;
 public class ClassTableJDBCSeq 
     extends TableJDBCSeq {
 
-    private static final Localizer _loc = Localizer
-        .forPackage(ClassTableJDBCSeq.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (ClassTableJDBCSeq.class);
 
     private final Map _stats = new HashMap();
     private boolean _ignore = false;
@@ -95,7 +95,7 @@ public class ClassTableJDBCSeq
         _aliases = aliases;
     }
 
-    protected Status getStatus(ClassMapping mapping) {
+    protected synchronized Status getStatus(ClassMapping mapping) {
         if (mapping == null)
             return null;
         String key = getKey(mapping, false);
