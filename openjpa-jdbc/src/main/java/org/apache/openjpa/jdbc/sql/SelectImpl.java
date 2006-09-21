@@ -1470,7 +1470,7 @@ public class SelectImpl
         Select[] clones = null;
         SelectImpl sel;
         for (int i = 0; i < sels; i++) {
-            sel = (SelectImpl) conf.getSQLFactoryInstance().newSelect();
+            sel = (SelectImpl) _conf.getSQLFactoryInstance().newSelect();
             sel._flags = _flags;
             sel._flags &= ~AGGREGATE;
             sel._flags &= ~OUTER;
