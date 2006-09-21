@@ -133,7 +133,8 @@ public class ProductDerivations {
             }
         }
         reportErrors(errs, resource);
-        return null;
+        throw new MissingResourceException(resource, 
+            ProductDerivations.class.getName(), resource);
     }
 
     /**
@@ -162,7 +163,8 @@ public class ProductDerivations {
             }
         }
         reportErrors(errs, file.getAbsolutePath());
-        return null;
+        throw new MissingResourceException(file.getAbsolutePath(), 
+            ProductDerivations.class.getName(), file.getAbsolutePath());
     }
    
     /**

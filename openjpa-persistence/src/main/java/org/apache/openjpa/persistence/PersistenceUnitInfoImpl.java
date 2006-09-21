@@ -48,6 +48,8 @@ import org.apache.openjpa.util.ClassResolver;
 public class PersistenceUnitInfoImpl
     implements PersistenceUnitInfo, SourceTracker {
 
+    public static final String KEY_PROVIDER = "javax.persistence.provider";
+
     private static final Localizer s_loc = Localizer.forPackage
         (PersistenceUnitInfoImpl.class);
 
@@ -181,8 +183,8 @@ public class PersistenceUnitInfoImpl
     }
 
     public List<URL> getJarFileUrls() {
-        return (_jarFiles == null)
-            ? (List<URL>) Collections.EMPTY_LIST : _jarFiles;
+        return (_jarFiles == null) ? (List<URL>) Collections.EMPTY_LIST 
+            : _jarFiles;
     }
 
     public void addJarFile(URL jar) {
@@ -215,8 +217,8 @@ public class PersistenceUnitInfoImpl
                 }
             }
         }
-        throw new IllegalArgumentException(s_loc.get("bad-jar-name", name)
-            .getMessage());
+        throw new IllegalArgumentException(s_loc.get("bad-jar-name", name).
+            getMessage());
     }
 
     public List<String> getManagedClassNames() {
@@ -269,13 +271,13 @@ public class PersistenceUnitInfoImpl
         for (Object o : map.entrySet()) {
             key = ((Map.Entry) o).getKey();
             val = ((Map.Entry) o).getValue();
-            if ("javax.persistence.provider".equals(key))
+            if (KEY_PROVIDER.equals(key))
                 setPersistenceProviderClassName((String) val);
             else if ("javax.persistence.transactionType".equals(key)) {
                 PersistenceUnitTransactionType ttype;
                 if (val instanceof String)
-                    ttype = Enum.valueOf
-                        (PersistenceUnitTransactionType.class, (String) val);
+                    ttype = Enum.valueOf(PersistenceUnitTransactionType.class, 
+                        (String) val);
                 else
                     ttype = (PersistenceUnitTransactionType) val;
                 setTransactionType(ttype);
@@ -320,11 +322,9 @@ public class PersistenceUnitInfoImpl
             map.put("openjpa.ConnectionFactoryMode", "managed");
             hasJta = true;
         } else if (info instanceof PersistenceUnitInfoImpl
-            && ((PersistenceUnitInfoImpl) info).getJtaDataSourceName() != null)
-        {
-            map.put("openjpa.ConnectionFactoryName",
-                ((PersistenceUnitInfoImpl)
-                    info).getJtaDataSourceName());
+            && ((PersistenceUnitInfoImpl) info).getJtaDataSourceName() != null){
+            map.put("openjpa.ConnectionFactoryName", ((PersistenceUnitInfoImpl)
+                info).getJtaDataSourceName());
             map.put("openjpa.ConnectionFactoryMode", "managed");
             hasJta = true;
         }
@@ -343,8 +343,7 @@ public class PersistenceUnitInfoImpl
             if (!hasJta)
                 map.put("openjpa.ConnectionFactoryName", nonJtaName);
             else
-                map.put("openjpa.ConnectionFactory2Name",
-                    nonJtaName);
+                map.put("openjpa.ConnectionFactory2Name", nonJtaName);
         }
 
         if (info.getClassLoader() != null)
@@ -354,13 +353,13 @@ public class PersistenceUnitInfoImpl
         Properties props = info.getProperties();
         if (props != null) {
             map.putAll(props);
-            // this isn't a real config property; remove it.
+            // this isn't a real config property; remove it
             map.remove(PersistenceProviderImpl.CLASS_TRANSFORMER_OPTIONS);
         }
 
         Properties metaFactoryProps = new Properties();
-        if (info.getManagedClassNames() != null &&
-            !info.getManagedClassNames().isEmpty()) {
+        if (info.getManagedClassNames() != null 
+            && !info.getManagedClassNames().isEmpty()) {
             StringBuffer types = new StringBuffer();
             for (String type : info.getManagedClassNames()) {
                 if (types.length() > 0)
@@ -404,8 +403,7 @@ public class PersistenceUnitInfoImpl
         }
         if (!metaFactoryProps.isEmpty()) {
             // set persistent class locations as properties of metadata factory
-            String factory =
-                (String) map.get("openjpa.MetaDataFactory");
+            String factory = (String) map.get("openjpa.MetaDataFactory");
             if (factory == null)
                 factory = Configurations.serializeProperties(metaFactoryProps);
             else {
@@ -417,6 +415,9 @@ public class PersistenceUnitInfoImpl
             }
             map.put("openjpa.MetaDataFactory", factory);
         }
+
+        // always record provider name for product derivations to access
+        map.put(KEY_PROVIDER, info.getPersistenceProviderClassName());
         return map;
     }
 
