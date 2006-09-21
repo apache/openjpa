@@ -751,7 +751,7 @@ public class ConfigurationImpl
      */
     public void setProperties(String resourceName) throws IOException {
         ProductDerivations.load(resourceName, null, 
-                getClass().getClassLoader()).setInto(this);
+            getClass().getClassLoader()).setInto(this);
         _auto = resourceName;
     }
 
@@ -761,8 +761,8 @@ public class ConfigurationImpl
      * <code>propertiesFile</code> value with the name of a file.
      */
     public void setPropertiesFile(File file) throws IOException {
-        ProductDerivations.load(file, null, 
-                getClass().getClassLoader()).setInto(this);
+        ProductDerivations.load(file, null, getClass().getClassLoader()).
+            setInto(this);
         _auto = file.toString();
     }
 
