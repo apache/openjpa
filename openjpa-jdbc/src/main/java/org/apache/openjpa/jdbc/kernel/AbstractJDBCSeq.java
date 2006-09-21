@@ -157,7 +157,7 @@ public abstract class AbstractJDBCSeq
             return;
 
         try {
-            if (type == TYPE_TRANSACTIONAL || type == TYPE_CONTIGUOUS)
+            if (type != TYPE_TRANSACTIONAL && type != TYPE_CONTIGUOUS)
                 conn.commit();
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se);

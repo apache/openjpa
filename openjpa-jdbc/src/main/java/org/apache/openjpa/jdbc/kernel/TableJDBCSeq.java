@@ -230,7 +230,7 @@ public class TableJDBCSeq
         if (current == null) {
             Connection conn = getConnection(store);
             try {
-                long cur = getSequence(mapping, getConnection(store));
+                long cur = getSequence(mapping, conn);
                 if (cur != -1)
                     current = Numbers.valueOf(cur);
             } finally {
@@ -614,10 +614,7 @@ public class TableJDBCSeq
             catch (NumberFormatException nfe) {
                 return false;
             } finally {
-                try {
-                    conn.close();
-                } catch (SQLException se) {
-                }
+                try { conn.close(); } catch (SQLException se) {}
             }
         } else
             return false;
