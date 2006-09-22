@@ -34,8 +34,14 @@ class Abs
     }
 
     protected Class getType(Class c) {
-        if (c == Long.class || c == long.class)
-            return long.class;
+        Class wrap = Filters.wrap(c);
+        if (wrap == Integer.class
+            || wrap == Float.class
+            || wrap == Double.class
+            || wrap == Long.class
+            || wrap == BigDecimal.class
+            || wrap == BigInteger.class)
+            return Filters.unwrap(c);
         return int.class;
     }
 
