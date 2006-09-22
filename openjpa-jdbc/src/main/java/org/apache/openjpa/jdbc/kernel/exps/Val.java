@@ -38,12 +38,18 @@ public interface Val
     /**
      * Initialization flag indicating that this value will be compared to null.
      */
-    public final int NULL_CMP = 1;
+    public final int NULL_CMP = 2 << 0;
 
     /**
      * Initialization flag indicating to join into any relation path.
      */
-    public final int JOIN_REL = 2; 
+    public final int JOIN_REL = 2 << 1; 
+
+    /**
+     * Initialization flag indicating to force an outer join into any relation 
+     * path.
+     */
+    public final int FORCE_OUTER = 2 << 2; 
 
     /**
      * Initialize the value. This method should recursively initialize any
