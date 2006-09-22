@@ -194,7 +194,7 @@ public class SelectConstructor {
                 // have to join through to related type for pc object 
                 // projections; this ensures that we have all our joins cached
                 state.projections[i] = resultVal.initialize(sel, ctx, 
-                    Val.JOIN_REL);
+                    Val.JOIN_REL | Val.FORCE_OUTER);
                 joins = sel.and(joins, state.projections[i].joins);
             }
         }

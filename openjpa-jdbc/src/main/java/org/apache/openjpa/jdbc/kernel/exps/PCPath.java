@@ -415,7 +415,8 @@ class PCPath
             traverseField(pstate, key, forceOuter, true);
         pstate.joinedRel = false;
         if ((flags & JOIN_REL) != 0)
-            joinRelation(pstate, key, forceOuter, false);
+            joinRelation(pstate, key, forceOuter || (flags & FORCE_OUTER) != 0,
+                false);
         return pstate;
     }
 
