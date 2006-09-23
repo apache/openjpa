@@ -2303,8 +2303,8 @@ public class DBDictionary
         FilterValue rhs) {
         boolean castlhs = false;
         boolean castrhs = false;
-        Class lc = lhs.getType();
-        Class rc = rhs.getType();
+        Class lc = Filters.wrap(lhs.getType());
+        Class rc = Filters.wrap(rhs.getType());
         int type = 0;
         if (requiresCastForMathFunctions && (lc != rc
             || (lhs.isConstant() && rhs.isConstant()))) {
@@ -2355,8 +2355,8 @@ public class DBDictionary
         FilterValue rhs) {
         boolean castlhs = false;
         boolean castrhs = false;
-        Class lc = lhs.getType();
-        Class rc = rhs.getType();
+        Class lc = Filters.wrap(lhs.getType());
+        Class rc = Filters.wrap(rhs.getType());
         int type = 0;
         if (requiresCastForComparisons && (lc != rc
             || (lhs.isConstant() && rhs.isConstant()))) {
