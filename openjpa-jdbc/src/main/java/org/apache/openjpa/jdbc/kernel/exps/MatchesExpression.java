@@ -95,8 +95,12 @@ class MatchesExpression
             // create a DB wildcard string by replacing the
             // multi token (e.g., '.*') and the single token (e.g., ".")
             // with '%' and '.' with '_'
-            str = Strings.replace(str, _multi, "%");
-            str = Strings.replace(str, _single, "_");
+            String[] parts;
+            StringBuffer repbuf;
+
+            str = replaceEscape(str, _multi, "%", _escape);
+            str = replaceEscape(str, _single, "_", _escape);
+
             buf.append(" LIKE ").appendValue(str, col);
 
             // escape out characters by using the database's escape sequence
@@ -104,6 +108,39 @@ class MatchesExpression
                 buf.append(" ESCAPE '").append(_escape).append("'");
         }
         sel.append(buf, state.joins);
+    }
+
+    /** 
+     * Perform a string replacement with simplistic escape handing. 
+     *  
+     * @param  str      the source string
+     * @param  from     the string to find
+     * @param  to       the string to replace
+     * @param  escape   the string to use to escape replacement
+     * @return          the replaced string
+     */
+    private static String replaceEscape(String str, String from, String to,
+        String escape) {
+        String[] parts = Strings.split(str, from, Integer.MAX_VALUE);
+        StringBuffer repbuf = new StringBuffer();
+        for (int i = 0; parts != null && i < parts.length; i++) {
+            if (i > 0) {
+                // if the previous part ended with an escape character, then
+                // escape the character and remove the previous escape;
+                // this doesn't support any double-escaping or other more
+                // sophisticated features
+                if (parts[i - 1].endsWith(escape)) {
+                    repbuf.setLength(repbuf.length() - 1);
+                    repbuf.append(from);
+                }
+                else {
+                    repbuf.append(to);
+                }
+            }
+            repbuf.append(parts[i]);
+        }
+
+        return repbuf.toString();
     }
 
     public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
