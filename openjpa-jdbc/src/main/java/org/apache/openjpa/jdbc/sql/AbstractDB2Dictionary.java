@@ -28,6 +28,8 @@ public abstract class AbstractDB2Dictionary
         bitTypeName = "SMALLINT";
         smallintTypeName = "SMALLINT";
         tinyintTypeName = "SMALLINT";
+        longVarbinaryTypeName = "BLOB";
+        varbinaryTypeName = "BLOB";
 
         toUpperCaseFunction = "UPPER(CAST({0} AS VARCHAR(1000)))";
         toLowerCaseFunction = "LOWER(CAST({0} AS VARCHAR(1000)))";
