@@ -2908,11 +2908,19 @@ public class DBDictionary
             || !supportsUpdateAction(fk.getUpdateAction()))
             return null;
 
-        String delAction = getActionName(fk.getDeleteAction());
-        String upAction = getActionName(fk.getUpdateAction());
-
         Column[] locals = fk.getColumns();
         Column[] foreigns = fk.getPrimaryKeyColumns();
+
+        int delActionId = fk.getDeleteAction();
+        if (delActionId == ForeignKey.ACTION_NULL) {
+            for (int i = 0; i < foreigns.length; i++) {
+                if (foreigns[i].isNotNull())
+                    delActionId = ForeignKey.ACTION_NONE;
+            }
+        }
+
+        String delAction = getActionName(delActionId);
+        String upAction = getActionName(fk.getUpdateAction());
 
         StringBuffer buf = new StringBuffer();
         if (fk.getName() != null
