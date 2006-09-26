@@ -56,5 +56,6 @@ public class EntityManagerFactoryValue
         setAliases(ALIASES);
         setDefault(ALIASES[0]);
         setClassName(ALIASES[1]);
+        setScope(getClass());
     }
 }
