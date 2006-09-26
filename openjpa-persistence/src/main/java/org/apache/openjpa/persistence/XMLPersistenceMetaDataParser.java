@@ -1485,9 +1485,9 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
         _listener = classForName(attrs.getValue("class"));
         boolean system = currentElement() == null;
-        Collection<LifecycleCallbacks>[] parsed =
-            AnnotationPersistenceMetaDataParser.parseCallbackMethods(_listener,
-                null, true, true);
+        Collection<LifecycleCallbacks>[] parsed = 
+            new AnnotationPersistenceMetaDataParser(_conf).parseCallbackMethods
+            (_listener, null, true, true);
         if (parsed == null)
             return true;
 
@@ -1593,8 +1593,8 @@ public class XMLPersistenceMetaDataParser
         Class supCls = cls.getDescribedType().getSuperclass();
         Collection<LifecycleCallbacks>[] supCalls = null;
         if (!Object.class.equals(supCls)) {
-            supCalls = AnnotationPersistenceMetaDataParser.parseCallbackMethods
-                (supCls, null, true, false);
+            supCalls = new AnnotationPersistenceMetaDataParser(_conf).
+                parseCallbackMethods(supCls, null, true, false);
         }
         if (supCalls != null) {
             for (int event : LifecycleEvent.ALL_EVENTS) {
