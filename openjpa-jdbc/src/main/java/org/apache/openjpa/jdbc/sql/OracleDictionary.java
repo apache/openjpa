@@ -147,7 +147,7 @@ public class OracleDictionary
             "ACCESS", "AUDIT", "CLUSTER", "COMMENT", "COMPRESS", "EXCLUSIVE",
             "FILE", "IDENTIFIED", "INCREMENT", "INDEX", "INITIAL", "LOCK",
             "LONG", "MAXEXTENTS", "MINUS", "MODE", "NOAUDIT", "NOCOMPRESS",
-            "NOWAIT", "OFFLINE", "ONLINE", "PCTFREE", "ROW",
+            "NOWAIT", "OFFLINE", "ONLINE", "PCTFREE", "ROW", "INDEX",
         }));
     }
 
