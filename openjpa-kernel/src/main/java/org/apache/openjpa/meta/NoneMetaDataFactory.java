@@ -122,4 +122,12 @@ public class NoneMetaDataFactory
     public Class getUnimplementedExceptionType() {
         return null;
     }
+    
+    public boolean getAllowsMultipleMethodsOnSameCallback() {
+        return true;
+    }
+    
+    public boolean getAllowsMissingCallbackConstructor() {
+        return true;
+    }
 }

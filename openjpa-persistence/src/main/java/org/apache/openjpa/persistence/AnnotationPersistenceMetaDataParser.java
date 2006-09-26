@@ -84,6 +84,7 @@ import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.DelegatingMetaDataFactory;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -98,12 +99,13 @@ import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.UpdateStrategies;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.meta.ValueStrategies;
+import org.apache.openjpa.meta.MetaDataDefaults;
 import static org.apache.openjpa.persistence.MetaDataTag.*;
-import static org.apache.openjpa.persistence.MetaDataTag.LRS;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UnsupportedException;
+import org.apache.openjpa.util.UserException;
 import serp.util.Numbers;
 import serp.util.Strings;
 
@@ -769,7 +771,7 @@ public class AnnotationPersistenceMetaDataParser
      * @param sups whether to scan superclasses
      * @param listener whether this is a listener or not
      */
-    public static Collection<LifecycleCallbacks>[] parseCallbackMethods
+    public Collection<LifecycleCallbacks>[] parseCallbackMethods
         (Class cls, Collection<LifecycleCallbacks>[] callbacks, boolean sups,
             boolean listener) {
         // first sort / filter based on inheritance
@@ -813,9 +815,15 @@ public class AnnotationPersistenceMetaDataParser
 
                 for (int i = 0; events != null && i < events.length; i++) {
                     int e = events[i];
-                    if (callbacks[e] == null)
-                        callbacks[e] = new ArrayList(3);
+                    if (!verifyHasNoArgConstructor(cls))
+                        continue; 
+                    if (!verifyMultipleMethodsOnSameEvent(cls, callbacks[e], m, 
+                        tag))
+                        continue;
 
+                    if (callbacks[e] == null)
+                        callbacks[e] = new ArrayList(3);                   
+                    
                     if (listener) {
                         callbacks[e].add(new BeanLifecycleCallbacks(cls, m,
                             false));
@@ -829,6 +837,51 @@ public class AnnotationPersistenceMetaDataParser
         return callbacks;
     }
 
+    private boolean verifyMultipleMethodsOnSameEvent(Class cls, 
+            Collection<LifecycleCallbacks> callbacks, Method method, 
+            MetaDataTag tag) {
+        boolean result = true;
+        if (callbacks == null || callbacks.isEmpty())
+            return true;
+        MetaDataDefaults defaults = getRepository().getMetaDataFactory().
+            getDefaults();
+        for (LifecycleCallbacks lc: callbacks) {
+            if (!(lc instanceof MethodLifecycleCallbacks))
+                continue;
+            Method exists = ((MethodLifecycleCallbacks)lc).getCallbackMethod();
+            if (exists.getDeclaringClass().equals(method.getDeclaringClass())) {
+                result = false;
+                Object[] args = new Object[]{method.getDeclaringClass()
+                    .getName(), method.getName(), exists.getName(), 
+                    tag.toString()};
+                if (defaults.getAllowsMultipleMethodsOnSameCallback()) {
+                    _log.warn(_loc.get("multiple-methods-on-callback", 
+                        args));
+                 } else {
+                    throw new UserException(
+                        _loc.get("multiple-methods-on-callback-error", args));
+                 }
+             }
+        }
+        return result;
+    }
+    
+    private boolean verifyHasNoArgConstructor(Class cls) {
+        MetaDataDefaults defaults = getRepository().getMetaDataFactory().
+            getDefaults();
+        try {
+            cls.getConstructor(new Class[]{});
+            return true;
+        } catch (Throwable t) {
+            Message msg = _loc.get("missing-no-arg-constructor", cls.getName());
+            if (defaults.getAllowsMissingCallbackConstructor())
+                _log.warn(msg);
+            else
+                throw new UserException(msg, t);
+        } 
+        return false;
+    }
+    
     /**
      * Store lifecycle metadata.
      */
