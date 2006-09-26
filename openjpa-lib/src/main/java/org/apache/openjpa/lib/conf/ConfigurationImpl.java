@@ -398,10 +398,12 @@ public class ConfigurationImpl
             try {
                 _pds[i] = getPropertyDescriptor(val);
             } catch (MissingResourceException mre) {
+mre.printStackTrace();
                 if (failures == null)
                     failures = new ArrayList();
                 failures.add(val.getProperty());
             } catch (IntrospectionException ie) {
+ie.printStackTrace();
                 if (failures == null)
                     failures = new ArrayList();
                 failures.add(val.getProperty());
@@ -425,8 +427,8 @@ public class ConfigurationImpl
         // set up property descriptor
         PropertyDescriptor pd;
         try {
-            pd = new PropertyDescriptor
-                (Introspector.decapitalize(prop), getClass());
+            pd = new PropertyDescriptor(Introspector.decapitalize(prop), 
+                getClass());
         } catch (IntrospectionException ie) {
             // if there aren't any methods for this value(i.e., if it's a
             // dynamically-added value), then an IntrospectionException will
@@ -707,8 +709,10 @@ public class ConfigurationImpl
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         for (int i = 0; i < prefixes.length; i++) {
             if (propName.toLowerCase().startsWith(prefixes[i])
-                && propName.length() > prefixes[i].length()
-                && propName.indexOf('.', prefixes[i].length()) == -1)
+                && propName.length() > prefixes[i].length() + 1
+                && propName.indexOf('.', prefixes[i].length()) 
+                == prefixes[i].length()
+                && propName.indexOf('.', prefixes[i].length() + 1) == -1)
                 return true;
         }
         return false;
