@@ -50,12 +50,14 @@ public interface MetaDataDefaults
      */
     public boolean getCallbacksBeforeListeners(int type);
     
-    /** Flags if multiple methods of the same class can handle the same 
+    /** 
+     * Flags if multiple methods of the same class can handle the same 
      * callback event.
      */
     public boolean getAllowsMultipleMethodsOnSameCallback();
 
-    /** Flags if it allowed for the callback listener class not to have a no-arg 
+    /** 
+     * Flags if it allowed for the callback listener class not to have a no-arg 
      * constructor.
      */
     public boolean getAllowsMissingCallbackConstructor();
