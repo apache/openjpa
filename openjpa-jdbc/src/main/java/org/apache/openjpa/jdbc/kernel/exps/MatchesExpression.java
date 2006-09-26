@@ -95,12 +95,8 @@ class MatchesExpression
             // create a DB wildcard string by replacing the
             // multi token (e.g., '.*') and the single token (e.g., ".")
             // with '%' and '.' with '_'
-            String[] parts;
-            StringBuffer repbuf;
-
             str = replaceEscape(str, _multi, "%", _escape);
             str = replaceEscape(str, _single, "_", _escape);
-
             buf.append(" LIKE ").appendValue(str, col);
 
             // escape out characters by using the database's escape sequence
@@ -123,23 +119,20 @@ class MatchesExpression
         String escape) {
         String[] parts = Strings.split(str, from, Integer.MAX_VALUE);
         StringBuffer repbuf = new StringBuffer();
-        for (int i = 0; parts != null && i < parts.length; i++) {
+        for (int i = 0; i < parts.length; i++) {
             if (i > 0) {
                 // if the previous part ended with an escape character, then
                 // escape the character and remove the previous escape;
                 // this doesn't support any double-escaping or other more
                 // sophisticated features
-                if (parts[i - 1].endsWith(escape)) {
+                if (!from.equals(to) && parts[i - 1].endsWith(escape)) {
                     repbuf.setLength(repbuf.length() - 1);
                     repbuf.append(from);
-                }
-                else {
+                } else
                     repbuf.append(to);
-                }
             }
             repbuf.append(parts[i]);
         }
-
         return repbuf.toString();
     }
 
