@@ -403,7 +403,8 @@ public class PersistenceUnitInfoImpl
         }
         if (!metaFactoryProps.isEmpty()) {
             // set persistent class locations as properties of metadata factory
-            String factory = (String) map.get("openjpa.MetaDataFactory");
+            String factory = (String) Configurations.getProperty
+                ("MetaDataFactory", map);
             if (factory == null)
                 factory = Configurations.serializeProperties(metaFactoryProps);
             else {
@@ -417,7 +418,8 @@ public class PersistenceUnitInfoImpl
         }
 
         // always record provider name for product derivations to access
-        map.put(KEY_PROVIDER, info.getPersistenceProviderClassName());
+        if (info.getPersistenceProviderClassName() != null)
+            map.put(KEY_PROVIDER, info.getPersistenceProviderClassName());
         return map;
     }
 

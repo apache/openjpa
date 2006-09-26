@@ -2120,11 +2120,11 @@ object-to-datastore mapping to use.
 MaxFetchDepth</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>1</literal>
+<emphasis role="bold">Default:</emphasis><literal>-1</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> The maximum depth of relations to
-traverse when eager fetching. Use -1 for no limit. Defaults to 1.  See
+traverse when eager fetching. Use -1 for no limit. Defaults to no limit.  See
 <xref linkend="ref_guide_perfpack_eager"/> for details on eager fetching.
             </para>
         </section>

@@ -1828,15 +1828,17 @@ fetch group names.
 You can also set the system's default maximum fetch depth with the
 <link linkend="openjpa.MaxFetchDepth"><literal>openjpa.MaxFetchDepth</literal>
 </link> configuration property.  The maximum fetch depth determines how "deep"
-into the object graph to traverse when loading an instance.  The default maximum
-depth is 1, meaning that OpenJPA will load at most the target instance and its
-immediate relations.  By increasing the depth, you can allow OpenJPA to also
-load relations of relations, to arbitrary depth.  A value of -1 symbolizes an
-infinite maximum, telling OpenJPA to fetch configured relations until it reaches
-the edges of the object graph.  Of course, which relation fields are loaded
-depends on whether the fields are eager or lazy, and on the active fetch groups.
-A fetch group member's recursion depth may also limit the fetch depth to
-something less than the configured maximum.
+into the object graph to traverse when loading an instance.  For example, with
+a <literal>MaxFetchDepth</literal> of 1, OpenJPA will load at most the target 
+instance and its immediate relations.  With a <literal>MaxFetchDepth</literal>
+of 2, OpenJPA may load the target instance, its immediate relations, and
+the relations of those relations.  This works to arbitrary depth.  In fact,
+the default <literal>MaxFetchDepth</literal> value is -1, which symbolizes 
+infinite depth.  Under this setting, OpenJPA will fetch configured relations 
+until it reaches the edges of the object graph.  Of course, which relation 
+fields are loaded depends on whether the fields are eager or lazy, and on the 
+active fetch groups.  A fetch group member's recursion depth may also limit 
+the fetch depth to something less than the configured maximum.
             </para>
             <para>
 OpenJPA's <classname>OpenJPAEntityManager</classname> and <classname>

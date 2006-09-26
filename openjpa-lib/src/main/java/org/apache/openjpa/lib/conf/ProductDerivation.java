@@ -41,6 +41,11 @@ public interface ProductDerivation {
     public int getType();
 
     /**
+     * Return the configuration prefix for properties of this product.
+     */
+    public String getConfigurationPrefix();
+
+    /**
      * Load globals into the returned ConfigurationProvider, or return null if 
      * no globals is found.
      */

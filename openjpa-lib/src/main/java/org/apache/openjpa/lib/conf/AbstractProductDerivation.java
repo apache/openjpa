@@ -27,6 +27,10 @@ import java.util.Map;
 public abstract class AbstractProductDerivation
     implements ProductDerivation {
 
+    public String getConfigurationPrefix() {
+        return null;
+    }
+
     public ConfigurationProvider loadGlobals(ClassLoader loader)
         throws Exception {
         return null;

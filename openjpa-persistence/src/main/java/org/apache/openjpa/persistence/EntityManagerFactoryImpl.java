@@ -34,6 +34,8 @@ import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.DelegatingBrokerFactory;
 import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
+import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ImplHelper;
@@ -145,42 +147,42 @@ public class EntityManagerFactoryImpl
             props = new HashMap(props);
 
         OpenJPAConfiguration conf = getConfiguration();
-        String user =
-            (String) props.remove("openjpa.ConnectionUserName");
+        String user = (String) Configurations.removeProperty
+            ("ConnectionUserName", props);
         if (user == null)
             user = conf.getConnectionUserName();
-        String pass =
-            (String) props.remove("openjpa.ConnectionPassword");
+        String pass = (String) Configurations.removeProperty
+            ("ConnectionPassword", props);
         if (pass == null)
             pass = conf.getConnectionPassword();
 
-        String str =
-            (String) props.remove("openjpa.TransactionMode");
+        String str = (String) Configurations.removeProperty
+            ("TransactionMode", props);
         boolean managed;
         if (str == null)
             managed = conf.isTransactionModeManaged();
         else {
-            Value val = conf.getValue("openjpa.TransactionMode");
+            Value val = conf.getValue("TransactionMode");
             managed = Boolean.parseBoolean(val.unalias(str));
         }
 
-        Object obj = props.remove("openjpa.ConnectionRetainMode");
+        Object obj = Configurations.removeProperty("ConnectionRetainMode", 
+            props);
         int retainMode;
         if (obj instanceof Number)
             retainMode = ((Number) obj).intValue();
-        else if (obj != null) {
-            Value val =
-                conf.getValue("openjpa.ConnectionRetainMode");
+        else if (obj == null)
+            retainMode = conf.getConnectionRetainModeConstant();
+        else {
+            Value val = conf.getValue("ConnectionRetainMode");
             try {
                 retainMode = Integer.parseInt(val.unalias((String) obj));
             } catch (Exception e) {
                 throw new ArgumentException(_loc.get("bad-em-prop",
                     "openjpa.ConnectionRetainMode", obj),
-                    new Throwable[]{ e },
-                    obj, true);
+                    new Throwable[]{ e }, obj, true);
             }
-        } else
-            retainMode = conf.getConnectionRetainModeConstant();
+        }
 
         Broker broker = _factory.newBroker(user, pass, managed, retainMode,
             false);
@@ -191,15 +193,23 @@ public class EntityManagerFactoryImpl
         OpenJPAEntityManager em = newEntityManagerImpl(broker);
 
         // allow setting of other bean properties of EM
+        String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         List<RuntimeException> errs = null;
         Method setter = null;
-        String prop;
+        String prop, prefix;
         Object val;
         for (Map.Entry entry : (Set<Map.Entry>) props.entrySet()) {
             prop = (String) entry.getKey();
-            if (!prop.startsWith("openjpa."))
-                continue;
-            prop = prop.substring("openjpa.".length());
+            prefix = null;
+            for (int i = 0; i < prefixes.length; i++) {
+                prefix = prefixes[i] + ".";
+                if (prop.startsWith(prefix))
+                    break;
+                prefix = null; 
+            } 
+            if (prefix == null)
+                continue; 
+            prop = prop.substring(prefix.length());
             try {
                 setter = ImplHelper.getSetter(em.getClass(), prop);
             } catch (OpenJPAException ke) {

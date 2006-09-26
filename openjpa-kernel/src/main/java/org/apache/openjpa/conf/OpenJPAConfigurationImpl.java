@@ -165,14 +165,6 @@ public class OpenJPAConfigurationImpl
         super(false);
         String[] aliases;
 
-        // setup super's log factory plugin
-        logFactoryPlugin.setProperty("Log");
-        logFactoryPlugin.setAlias("openjpa", 
-            "org.apache.openjpa.lib.log.LogFactoryImpl");
-        aliases = logFactoryPlugin.getAliases();
-        logFactoryPlugin.setDefault(aliases[0]);
-        logFactoryPlugin.setString(aliases[0]);
-
         classResolverPlugin = addPlugin("ClassResolver", true);
         aliases = new String[]{
             "default", "org.apache.openjpa.util.ClassResolverImpl",
@@ -401,8 +393,8 @@ public class OpenJPAConfigurationImpl
         fetchBatchSize.set(-1);
 
         maxFetchDepth = addInt("MaxFetchDepth");
-        maxFetchDepth.setDefault("1");
-        maxFetchDepth.set(1);
+        maxFetchDepth.setDefault("-1");
+        maxFetchDepth.set(-1);
 
         fetchGroups = addStringList("FetchGroups");
         fetchGroups.setDefault("default");

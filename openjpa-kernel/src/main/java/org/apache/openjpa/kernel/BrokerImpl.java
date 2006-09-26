@@ -3399,8 +3399,8 @@ public class BrokerImpl
             default:
                 // use store manager for native sequence
                 if (fmd == null) {
-                    // this will return a sequence even for app id classes, which
-                    // is what we want for backwards-compatibility
+                    // this will return a sequence even for app id classes, 
+                    // which is what we want for backwards-compatibility
                     return _store.getDataStoreIdSequence(meta);
                 }
                 return _store.getValueSequence(fmd);

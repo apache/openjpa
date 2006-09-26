@@ -297,8 +297,7 @@ public class QueryImpl
                 _extent = _broker.newExtent(cls, _subclasses);
                 _extent.setIgnoreChanges(_ignoreChanges);
             } else if (_extent != null
-                && _extent.getIgnoreChanges() != _ignoreChanges && cls != null)
-            {
+                && _extent.getIgnoreChanges() != _ignoreChanges && cls != null){
                 _extent = _broker.newExtent(cls, _extent.hasSubclasses());
                 _extent.setIgnoreChanges(_ignoreChanges);
             }

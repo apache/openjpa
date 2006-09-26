@@ -23,6 +23,7 @@ import org.apache.openjpa.abstractstore.AbstractStoreBrokerFactory;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.PluginValue;
+import org.apache.openjpa.lib.conf.ProductDerivations;
 
 /**
  * Value type used to represent the {@link BrokerFactory}. This type is
@@ -40,20 +41,10 @@ public class BrokerFactoryValue
     private static final List _aliases = new ArrayList();
     private static final List _prefixes = new ArrayList(2);
     static {
-        _prefixes.add("openjpa");
         addDefaultAlias("abstractstore",
             AbstractStoreBrokerFactory.class.getName());
     }
-    
-    /**
-     * Add <code>prefix</code> to the list of prefixes under which configuration
-     * properties may be scoped.
-     */
-    public static void addPropertyPrefix(String prefix) {
-        if (!_prefixes.contains(prefix))
-            _prefixes.add(prefix);
-    }
-    
+
     /**
      * Add a mapping from <code>alias</code> to <code>cls</code> to the list
      * of default aliases for new values created after this invocation.
@@ -67,10 +58,11 @@ public class BrokerFactoryValue
      * Extract the value of this property if set in the given provider.
      */
     public static Object get(ConfigurationProvider cp) {
+        String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         Map props = cp.getProperties();
         Object bf;
-        for (int i = 0; i < _prefixes.size (); i++) {
-            bf = props.get(_prefixes.get(i) + "." + KEY);
+        for (int i = 0; i < prefixes.length; i++) {
+            bf = props.get(prefixes[i] + "." + KEY);
             if (bf != null)
                 return  bf;
         }
@@ -78,10 +70,10 @@ public class BrokerFactoryValue
     }
 
     /**
-     * Return the key to use for this property.
+     * Set the value of this property in the given provider.
      */
-    public static String getKey(ConfigurationProvider cp) {
-        return _prefixes.get(0) + "." + KEY;
+    public static void set(ConfigurationProvider cp, String value) {
+        cp.addProperty("openjpa." + KEY, value);
     }
 
     public BrokerFactoryValue() {

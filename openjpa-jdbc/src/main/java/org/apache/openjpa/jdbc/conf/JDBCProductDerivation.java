@@ -39,8 +39,7 @@ public class JDBCProductDerivation extends AbstractProductDerivation
     public boolean beforeConfigurationConstruct(ConfigurationProvider cp) {
         // default to JDBC when no broker factory set
         if (BrokerFactoryValue.get(cp) == null) {
-            cp.addProperty(BrokerFactoryValue.getKey(cp),
-                JDBCBrokerFactory.class.getName());
+            BrokerFactoryValue.set(cp, JDBCBrokerFactory.class.getName());
             return true;
         }
         return false;

@@ -80,7 +80,7 @@ public class OracleDictionary
     public String autoAssignSequenceName = null;
 
     /**
-     * Flag to use OpenJPA 3 style naming for auto assign sequence name and
+     * Flag to use OpenJPA 0.3 style naming for auto assign sequence name and
      * trigger name for backwards compatibility.
      */
     public boolean openjpa3GeneratedKeyNames = false;

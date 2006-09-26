@@ -50,8 +50,7 @@ import org.apache.openjpa.meta.MetaDataRepository;
 public class PersistenceProviderImpl
     implements PersistenceProvider {
 
-    static final String CLASS_TRANSFORMER_OPTIONS =
-        "openjpa.ClassTransformerOptions";
+    static final String CLASS_TRANSFORMER_OPTIONS = "ClassTransformerOptions";
 
     /**
      * Loads the entity manager specified by <code>name</code>, applying
@@ -71,8 +70,6 @@ public class PersistenceProviderImpl
             if (cp == null)
                 return null;
 
-            if (m != null)
-                cp.addProperties(m);
             BrokerFactory factory = Bootstrap.newBrokerFactory(cp, null);
             return OpenJPAPersistence.toEntityManagerFactory(factory);
         } catch (Exception e) {
@@ -97,9 +94,8 @@ public class PersistenceProviderImpl
             OpenJPAEntityManagerFactory emf = 
                 OpenJPAPersistence.toEntityManagerFactory(factory);
             Properties p = pui.getProperties();
-            String ctOpts = null;
-            if (p != null)
-                ctOpts = p.getProperty(CLASS_TRANSFORMER_OPTIONS);
+            String ctOpts = (String) Configurations.getProperty
+                (CLASS_TRANSFORMER_OPTIONS, p);
             pui.addTransformer(new ClassTransformerImpl(emf.getConfiguration(),
                 ctOpts, pui.getNewTempClassLoader()));
             return emf;

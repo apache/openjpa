@@ -34,6 +34,7 @@ import org.apache.openjpa.lib.util.Services;
 public class ProductDerivations {
 
     private static final ProductDerivation[] _derivations;
+    private static final String[] _prefixes;
     static {
         Class[] pdcls = Services.getImplementorClasses(ProductDerivation.class,
             ProductDerivation.class.getClassLoader());
@@ -59,6 +60,24 @@ public class ProductDerivations {
         Collections.sort(derivations, new ProductDerivationComparator());
         _derivations = (ProductDerivation[]) derivations.toArray
             (new ProductDerivation[derivations.size()]);
+
+        List prefixes = new ArrayList(2);
+        for (int i = 0; i < _derivations.length; i++) {
+            if (_derivations[i].getConfigurationPrefix() != null
+                && !"openjpa".equals(_derivations[i].getConfigurationPrefix()))
+                prefixes.add(_derivations[i].getConfigurationPrefix());
+        }
+        _prefixes = new String[1 + prefixes.size()];
+        _prefixes[0] = "openjpa";
+        for (int i = 0; i < prefixes.size(); i++)
+            _prefixes[i + 1] = (String) prefixes.get(i);
+    }
+
+    /**
+     * Return the recognized prefixes for configuration properties.
+     */
+    public static String[] getConfigurationPrefixes() {
+        return _prefixes;
     }
 
     /**

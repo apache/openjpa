@@ -241,7 +241,6 @@ public interface JDBCConfiguration
      * <li><code>parallel</code>: When querying for objects, also select for
      * both 1-1 relations using joins and to-many relations using batched
      * selects.</li>
-     * </li>
      * </ul>
      */
     public void setEagerFetchMode(String mode);
