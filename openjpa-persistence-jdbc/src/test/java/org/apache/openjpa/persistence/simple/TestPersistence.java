@@ -69,8 +69,8 @@ public class TestPersistence
         // openjpa-facade test
         assertTrue(em instanceof OpenJPAEntityManager);
         OpenJPAEntityManager ojem = (OpenJPAEntityManager) em;
-        ojem.getFetchPlan().setMaxFetchDepth(-1);
-        assertEquals(-1, ojem.getFetchPlan().getMaxFetchDepth());
+        ojem.getFetchPlan().setMaxFetchDepth(1);
+        assertEquals(1, ojem.getFetchPlan().getMaxFetchDepth());
         em.close();
     }
 

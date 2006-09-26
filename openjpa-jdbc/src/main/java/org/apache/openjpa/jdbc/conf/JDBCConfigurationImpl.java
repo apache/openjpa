@@ -865,9 +865,15 @@ public class JDBCConfigurationImpl
     }
 
     protected boolean isInvalidProperty(String propName) {
+        if (super.isInvalidProperty(propName))
+            return true;
+
         // handle openjpa.jdbc.SomeMisspelledProperty, but not
         // openjpa.someotherimplementation.SomeProperty
-        return super.isInvalidProperty(propName)
-            || propName.toLowerCase().startsWith("openjpa.jdbc");
+        String[] prefixes = ProductDerivations.getConfigurationPrefixes();
+        for (int i = 0; i < prefixes.length; i++)
+            if (propName.toLowerCase().startsWith(prefixes[i] + ".jdbc"))
+                return true; 
+        return false;
     }
 }

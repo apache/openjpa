@@ -78,8 +78,7 @@ public interface Configuration
     public String getProductName();
     
     /**
-     * Set the product name.  The set name will automatically be added to
-     * the property prefixes.
+     * Set the product name.
      */
     public void setProductName(String name);
 
@@ -159,14 +158,6 @@ public interface Configuration
      * part of the equality and hashing calculations.
      */
     public void fromProperties(Map map);
-
-    /**
-     * Add <code>prefix</code> to the list of prefixes to use
-     * to identify valid configuration properties. "openjpa" and any
-     * product name set with {@link #setProductName} will automatically
-     * be added.
-     */
-    public void addPropertyPrefix(String prefix);
 
     /**
      * Adds a listener for any property changes. The property events fired

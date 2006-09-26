@@ -1376,7 +1376,7 @@ public class SchemaTool {
         flags.ignoreErrors = opts.removeBooleanProperty
             ("ignoreErrors", "i", flags.ignoreErrors);
         flags.openjpaTables = opts.removeBooleanProperty
-            ("openjpaTables", "kt", flags.openjpaTables);
+            ("openjpaTables", "ot", flags.openjpaTables);
         flags.primaryKeys = opts.removeBooleanProperty
             ("primaryKeys", "pk", flags.primaryKeys);
         flags.foreignKeys = opts.removeBooleanProperty

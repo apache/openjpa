@@ -32,6 +32,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
+import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.MapConfigurationProvider;
@@ -180,7 +181,10 @@ public class PersistenceProductDerivation
     @Override
     public ConfigurationProvider loadGlobals(ClassLoader loader)
         throws IOException {
-        String rsrc = System.getProperty("openjpa.properties");
+        String[] prefixes = ProductDerivations.getConfigurationPrefixes();
+        String rsrc = null;
+        for (int i = 0; i < prefixes.length && StringUtils.isEmpty(rsrc); i++)
+           rsrc = System.getProperty(prefixes[i] + ".properties"); 
         boolean explicit = !StringUtils.isEmpty(rsrc);
         String anchor = null;
         int idx = (!explicit) ? -1 : rsrc.lastIndexOf('#');

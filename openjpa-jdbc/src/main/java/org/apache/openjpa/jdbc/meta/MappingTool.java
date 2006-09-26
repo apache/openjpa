@@ -930,7 +930,7 @@ public class MappingTool
         flags.dropTables = opts.removeBooleanProperty
             ("dropTables", "dt", flags.dropTables);
         flags.openjpaTables = opts.removeBooleanProperty
-            ("openjpaTables", "kt", flags.openjpaTables);
+            ("openjpaTables", "ot", flags.openjpaTables);
         flags.dropSequences = opts.removeBooleanProperty
             ("dropSequences", "dsq", flags.dropSequences);
         flags.readSchema = opts.removeBooleanProperty
