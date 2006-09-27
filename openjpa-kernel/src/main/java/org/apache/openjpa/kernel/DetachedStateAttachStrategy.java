@@ -70,7 +70,7 @@ class DetachedStateAttachStrategy
 
     public Object attach(AttachManager manager, Object toAttach,
         ClassMetaData meta, PersistenceCapable into, OpenJPAStateManager owner,
-        ValueMetaData ownerMeta) {
+        ValueMetaData ownerMeta, boolean explicit) {
         BrokerImpl broker = manager.getBroker();
         PersistenceCapable pc = (PersistenceCapable) toAttach;
 
@@ -94,7 +94,8 @@ class DetachedStateAttachStrategy
             sm = (StateManagerImpl) broker.embed(into, null, owner, ownerMeta);
             into = sm.getPersistenceCapable();
         } else if (state == null) {
-            sm = persist(manager, pc, meta, ApplicationIds.create(pc, meta));
+            sm = persist(manager, pc, meta, ApplicationIds.create(pc, meta),
+                explicit);
             into = sm.getPersistenceCapable();
         } else if (!embedded && into == null) {
             Object id = getDetachedObjectId(manager, pc);
@@ -117,7 +118,7 @@ class DetachedStateAttachStrategy
                 // the transaction was rolled back; the danger is that
                 // the instance was made persistent, detached, committed,
                 // and then deleted, but this is an uncommon case
-                sm = persist(manager, pc, meta, id);
+                sm = persist(manager, pc, meta, id, explicit);
                 into = sm.getPersistenceCapable();
 
                 // nullify the state, since the new instance won't have one
@@ -144,7 +145,7 @@ class DetachedStateAttachStrategy
                 // only attach fields in the FG of the detached instance; new
                 // instances get all their fields attached
                 if (fields == null || fields.get(i))
-                    attachField(manager, pc, sm, fmds[i], true);
+                    attachField(manager, pc, sm, fmds[i], false);
             }
         }
         finally {

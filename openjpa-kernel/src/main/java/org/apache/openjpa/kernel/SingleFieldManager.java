@@ -250,21 +250,22 @@ class SingleFieldManager
             case JavaTypes.PC_UNTYPED:
                 if (!_broker.isDetachedNew() && _broker.isDetached(objval))
                     return; // allow but ignore
-                _broker.persist(objval, call);
+                _broker.persist(objval, false, call);
                 break;
             case JavaTypes.ARRAY:
-                _broker.persistAll(Arrays.asList((Object[]) objval), call);
+                _broker.persistAll(Arrays.asList((Object[]) objval), false, 
+                    call);
                 break;
             case JavaTypes.COLLECTION:
-                _broker.persistAll((Collection) objval, call);
+                _broker.persistAll((Collection) objval, false, call);
                 break;
             case JavaTypes.MAP:
                 if (fmd.getKey().getCascadePersist()
                     == ValueMetaData.CASCADE_IMMEDIATE)
-                    _broker.persistAll(((Map) objval).keySet(), call);
+                    _broker.persistAll(((Map) objval).keySet(), false, call);
                 if (fmd.getElement().getCascadePersist()
                     == ValueMetaData.CASCADE_IMMEDIATE)
-                    _broker.persistAll(((Map) objval).values(), call);
+                    _broker.persistAll(((Map) objval).values(), false, call);
                 break;
         }
     }
@@ -467,7 +468,9 @@ class SingleFieldManager
             return false;
 
         // perform pers-by-reach and dependent refs
-        boolean ret = preFlush(fmd, call);
+        boolean ret = false;
+        if (!_sm.isProvisional())
+            ret = preFlush(fmd, call);
 
         // manage inverses
         InverseManager manager = _broker.getInverseManager();
@@ -740,7 +743,7 @@ class SingleFieldManager
                         Exceptions.toString(_sm.getManagedInstance()))).
                     setFailedObject(obj);
         } else
-            sm = _broker.persist(obj, null, call);
+            sm = _broker.persist(obj, null, true, call);
 
         if (sm != null) {
             // if deleted and not managed inverse, die
@@ -750,6 +753,7 @@ class SingleFieldManager
                     Exceptions.toString(obj), vmd,
                     Exceptions.toString(_sm.getManagedInstance()))).
                     setFailedObject(obj);
+            ((StateManagerImpl) sm).nonprovisional();
             ((StateManagerImpl) sm).setDereferencedDependent(false, true);
         }
     }
