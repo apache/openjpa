@@ -241,15 +241,17 @@ public class PersistenceProductDerivation
         ConfigurationParser parser = new ConfigurationParser(m);
         PersistenceUnitInfoImpl pinfo = parseResources(parser, urls, name, 
             loader);
-        if (pinfo == null || !isOpenJPAPersistenceProvider(pinfo, loader)) {
+        if (pinfo == null) {
             if (!explicit)
                 return Boolean.FALSE;
-            String msg = (pinfo == null) ? "missing-xml-config"
-                : "cantload-xml-config";
-            throw new MissingResourceException(_loc.get(msg, rsrc,
-                String.valueOf(name)).getMessage(), getClass().getName(), rsrc);
+            throw new MissingResourceException(_loc.get("missing-xml-config", 
+                rsrc, String.valueOf(name)).getMessage(), getClass().getName(), 
+                rsrc);
+        } else if (!isOpenJPAPersistenceProvider(pinfo, loader)) {
+            throw new MissingResourceException(_loc.get("unknown-provider", 
+                rsrc, name, pinfo.getPersistenceProviderClassName()).
+                getMessage(), getClass().getName(), rsrc);
         }
-
         cp.addProperties(pinfo.toOpenJPAProperties());
         cp.setSource(pinfo.getPersistenceXmlFileUrl().toString());
         return Boolean.TRUE;
