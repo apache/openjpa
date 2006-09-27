@@ -87,7 +87,7 @@ public class DetachedStateManager
 
     public Object attach(AttachManager manager, Object toAttach,
         ClassMetaData meta, PersistenceCapable into, OpenJPAStateManager owner,
-        ValueMetaData ownerMeta, boolean explicit) {
+        ValueMetaData ownerMeta) {
         BrokerImpl broker = manager.getBroker();
         StateManagerImpl sm = null;
         if (_embedded) {
@@ -225,8 +225,7 @@ public class DetachedStateManager
                         PersistenceCapable toPC = null;
                         if (objval != null && fields[i].isEmbeddedPC())
                             toPC = (PersistenceCapable) objval;
-                        objval = manager.attach(objval, toPC, sm, fields[i],
-                            false);
+                        objval = manager.attach(objval, toPC, sm, fields[i]);
                     }
                     if (_dirty.get(i))
                         sm.settingObjectField(pc, i, (!loaded.get(i)) ? null
@@ -686,10 +685,6 @@ public class DetachedStateManager
     }
 
     public boolean isFlushedDirty() {
-        throw new UnsupportedOperationException();
-    }
-
-    public boolean isProvisional() {
         throw new UnsupportedOperationException();
     }
 

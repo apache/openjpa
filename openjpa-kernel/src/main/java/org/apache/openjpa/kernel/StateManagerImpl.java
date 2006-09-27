@@ -996,16 +996,6 @@ public class StateManagerImpl
     /**
      * Delegates to the current state.
      *
-     * @see PCState#nonprovisional
-     * @see Broker#nonprovisional
-     */
-    void nonprovisional() {
-        setPCState(_state.nonprovisional());
-    }
-
-    /**
-     * Delegates to the current state.
-     *
      * @see PCState#release
      * @see Broker#release
      */
@@ -1260,10 +1250,6 @@ public class StateManagerImpl
 
     public boolean isPendingTransactional() {
         return _state.isPendingTransactional();
-    }
-
-    public boolean isProvisional() {
-        return _state.isProvisional();
     }
 
     public boolean isPersistent() {

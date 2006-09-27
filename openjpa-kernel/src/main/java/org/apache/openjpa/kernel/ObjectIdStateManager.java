@@ -317,10 +317,6 @@ public class ObjectIdStateManager
         return false;
     }
 
-    public boolean isProvisional() {
-        return false;
-    }
-
     public BitSet getLoaded() {
         throw new UnsupportedOperationException();
     }

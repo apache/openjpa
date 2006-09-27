@@ -94,7 +94,7 @@ class AttachManager {
 
         CallbackException excep = null;
         try {
-            return attach(pc, null, null, null, true);
+            return attach(pc, null, null, null);
         } catch (CallbackException ce) {
             excep = ce;
             return null; // won't be reached as the exceps will be rethrown
@@ -122,7 +122,7 @@ class AttachManager {
             int i = 0;
             for (Iterator itr = instances.iterator(); itr.hasNext(); i++) {
                 try {
-                    attached[i] = attach(itr.next(), null, null, null, true);
+                    attached[i] = attach(itr.next(), null, null, null);
                 } catch (OpenJPAException ke) {
                     // track exceptions and optimistic failed objects
                     if (opt && !(ke instanceof OptimisticException))
@@ -212,10 +212,9 @@ class AttachManager {
      * @param into the instance we're attaching into
      * @param owner state manager for <code>into</code>
      * @param ownerMeta the field we traversed to find <code>toAttach</code>
-     * @param explicit whether to make new instances explicitly persistent
      */
     Object attach(Object toAttach, PersistenceCapable into,
-        OpenJPAStateManager owner, ValueMetaData ownerMeta, boolean explicit) {
+        OpenJPAStateManager owner, ValueMetaData ownerMeta) {
         if (toAttach == null)
             return null;
 
@@ -234,7 +233,7 @@ class AttachManager {
             getMetaDataRepositoryInstance().getMetaData(toAttach.getClass(),
             _broker.getClassLoader(), true);
         return getStrategy(toAttach).attach(this, toAttach, meta, into,
-            owner, ownerMeta, explicit);
+            owner, ownerMeta);
     }
 
     /**

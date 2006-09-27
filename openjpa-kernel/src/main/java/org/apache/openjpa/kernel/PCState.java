@@ -63,11 +63,6 @@ public class PCState
     public static final PCState PNEWDELETED = new PNewDeletedState();
 
     /**
-     * Persistent-New-Provisional
-     */
-    public static final PCState PNEWPROVISIONAL = new PNewProvisionalState();
-
-    /**
      * Persistent-Nontransactinoal
      */
     public static final PCState PNONTRANS = new PNonTransState();
@@ -230,14 +225,6 @@ public class PCState
      * Returns the <code>this</code> pointer by default.
      */
     PCState delete(StateManagerImpl context) {
-        return this;
-    }
-
-    /**
-     * Return the state to transition to after making no longer provisional. 
-     * The context is not given because no actions should be taken.
-     */
-    PCState nonprovisional() {
         return this;
     }
 
@@ -416,15 +403,6 @@ public class PCState
     }
 
     /**
-     * Return whether this is a state that will become transient
-     * at the end of the next transaction.
-     * Returns <code>false</code> by default.
-     */
-    boolean isProvisional() {
-        return false;
-    }
-
-    /**
      * Whether this state requires a version check when being flushed, 
      * assuming the system is configured for version checks.
      */
@@ -452,8 +430,6 @@ public class PCState
             return PDELETED;
         if (this instanceof PNewDeletedState)
             return PNEWDELETED;
-        if (this instanceof PNewProvisionalState)
-            return PNEWPROVISIONAL;
         if (this instanceof PNonTransState)
             return PNONTRANS;
         if (this instanceof PNonTransDirtyState)
