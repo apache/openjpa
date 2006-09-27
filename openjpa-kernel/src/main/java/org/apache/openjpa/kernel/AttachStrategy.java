@@ -55,11 +55,10 @@ abstract class AttachStrategy
      * @param into instance we're attaching into
      * @param owner state manager for <code>into</code>
      * @param ownerMeta field we traversed to find <code>toAttach</code>
-     * @param explicit whether to make new instances explicitly persistent
      */
     public abstract Object attach(AttachManager manager,
         Object toAttach, ClassMetaData meta, PersistenceCapable into,
-        OpenJPAStateManager owner, ValueMetaData ownerMeta, boolean explicit);
+        OpenJPAStateManager owner, ValueMetaData ownerMeta);
 
     /**
      * Return the identity of the given detached instance.
@@ -74,12 +73,10 @@ abstract class AttachStrategy
         int field);
 
     /**
-     * Return a PNew/PNewProvisional managed object for the given detached 
-     * instance.
+     * Return a PNew managed object for the given detached instance.
      */
     protected StateManagerImpl persist(AttachManager manager,
-        PersistenceCapable pc, ClassMetaData meta, Object appId, 
-        boolean explicit) {
+        PersistenceCapable pc, ClassMetaData meta, Object appId) {
         PersistenceCapable newInstance;
         if (!manager.getCopyNew())
             newInstance = pc;
@@ -89,7 +86,7 @@ abstract class AttachStrategy
             newInstance = pc.pcNewInstance(null, appId, false);
 
         return (StateManagerImpl) manager.getBroker().persist
-            (newInstance, appId, explicit, manager.getBehavior());
+            (newInstance, appId, manager.getBehavior());
     }
 
     /**
@@ -194,7 +191,7 @@ abstract class AttachStrategy
                             manager.getDetachedObjectId(frmpc))) {
                             intopc = null;
                         }
-                        frmpc = manager.attach(frmpc, intopc, sm, fmd, false);
+                        frmpc = manager.attach(frmpc, intopc, sm, fmd);
                     }
                     if (frmpc != topc)
                         sm.settingObjectField(into, i, topc, frmpc, set);
@@ -323,7 +320,7 @@ abstract class AttachStrategy
             if (vmd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                 elem = getReference(manager, itr.next(), sm, vmd);
             else
-                elem = manager.attach(itr.next(), null, sm, vmd, false);
+                elem = manager.attach(itr.next(), null, sm, vmd);
             coll.add(elem);
         }
         return coll;
@@ -435,13 +432,13 @@ abstract class AttachStrategy
                 if (keymd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                     key = getReference(manager, key, sm, keymd);
                 else
-                    key = manager.attach(key, null, sm, keymd, false);
+                    key = manager.attach(key, null, sm, keymd);
                 val = entry.getValue();
                 if (valmd.isDeclaredTypePC()) {
                     if (valmd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                         val = getReference(manager, val, sm, valmd);
                     else
-                        val = manager.attach(val, null, sm, valmd, false);
+                        val = manager.attach(val, null, sm, valmd);
                 }
                 map.put(key, val);
             }
@@ -452,8 +449,7 @@ abstract class AttachStrategy
                 if (valmd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                     val = getReference(manager, entry.getValue(), sm, valmd);
                 else
-                    val = manager.attach(entry.getValue(), null, sm, valmd, 
-                        false);
+                    val = manager.attach(entry.getValue(), null, sm, valmd);
                 entry.setValue(val);
             }
         }
@@ -483,7 +479,7 @@ abstract class AttachStrategy
                 if (vmd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                     elem = getReference(manager, elem, sm, vmd);
                 else
-                    elem = manager.attach(elem, null, sm, vmd, false);
+                    elem = manager.attach(elem, null, sm, vmd);
             }
             diff = diff || !equals(elem, Array.get(toa, i), pc);
             Array.set(newa, i, elem);

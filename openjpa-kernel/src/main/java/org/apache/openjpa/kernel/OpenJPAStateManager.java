@@ -121,11 +121,6 @@ public interface OpenJPAStateManager
     public boolean isFlushedDirty();
 
     /**
-     * Return whether this object is provisionally persistent.
-     */
-    public boolean isProvisional();
-
-    /**
      * Return a read-only mask of the indexes of all loaded fields.
      */
     public BitSet getLoaded();
