@@ -363,7 +363,7 @@ public class PCEnhancer {
         FieldMetaData[] fmds = _meta.getDeclaredFields();
         Method meth;
         BCMethod getter, setter = null;
-        BCField returned, assigned;
+        BCField returned, assigned = null;
         for (int i = 0; i < fmds.length; i++) {
             if (!(fmds[i].getBackingMember() instanceof Method)) {
                 addViolation("property-bad-member",
@@ -408,11 +408,15 @@ public class PCEnhancer {
                 }
             }
 
-            assigned = getAssignedField(setter);
+            if (setter != null)
+                assigned = getAssignedField(setter);
+
             if (assigned != null) {
                 if (_backingFields == null)
                     _backingFields = new HashMap();
-                _backingFields.put(setter.getName(), assigned.getName());
+
+                if (setter != null)
+                    _backingFields.put(setter.getName(), assigned.getName());
 
                 if (assigned != returned)
                     addViolation("property-setter-getter-mismatch",
