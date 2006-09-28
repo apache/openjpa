@@ -245,6 +245,21 @@ class PersistenceMetaDataDefaults
         int mods = member.getModifiers();
         if (Modifier.isTransient(mods))
             return false;
+
+        if (member instanceof Method) {
+            try {
+                // check for setters for methods
+                Method setter = meta.getDescribedType().getDeclaredMethod("set"
+                    + name.substring(0, 1).toUpperCase() + name.substring(1),
+                    new Class[] { ((Method) member).getReturnType() });
+                if (setter == null)
+                    return false;
+            } catch (Exception e) {
+                // e.g., NoSuchMethodException
+                return false;
+            }
+        }
+
         PersistenceStrategy strat = getPersistenceStrategy(null, member);
         if (strat == null || strat == PersistenceStrategy.TRANSIENT)
             return false;
