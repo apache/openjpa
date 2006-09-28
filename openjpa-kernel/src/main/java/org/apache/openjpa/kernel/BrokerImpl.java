@@ -2152,7 +2152,25 @@ public class BrokerImpl
     // Object lifecycle
     ////////////////////
 
+    public void persist(Object obj, OpCallbacks call) {
+        persist(obj, null, true, call);
+    }
+
+    public OpenJPAStateManager persist(Object obj, Object id,
+        OpCallbacks call) {
+        return persist(obj, id, true, call);
+    }
+
     public void persistAll(Collection objs, OpCallbacks call) {
+        persistAll(objs, true, call);
+    }
+
+    /**
+     * Persist the given objects.  Indicate whether this was an explicit persist
+     * (PNEW) or a provisonal persist (PNEWPROVISIONAL).
+     */
+    public void persistAll(Collection objs, boolean explicit, 
+        OpCallbacks call) {
         if (objs.isEmpty())
             return;
 
@@ -2163,7 +2181,7 @@ public class BrokerImpl
 
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
                 try {
-                    persist(itr.next(), call);
+                    persist(itr.next(), explicit, call);
                 } catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
@@ -2212,11 +2230,20 @@ public class BrokerImpl
         throw err.setNestedThrowables(t).setFatal(fatal);
     }
 
-    public void persist(Object obj, OpCallbacks call) {
-        persist(obj, null, call);
+    /**
+     * Persist the given object.  Indicate whether this was an explicit persist
+     * (PNEW) or a provisonal persist (PNEWPROVISIONAL)
+     */
+    public void persist(Object obj, boolean explicit, OpCallbacks call) {
+        persist(obj, null, explicit, call);
     }
 
-    public OpenJPAStateManager persist(Object obj, Object id,
+    /**
+     * Persist the given object.  Indicate whether this was an explicit persist
+     * (PNEW) or a provisonal persist (PNEWPROVISIONAL).
+     * See {@link Broker} for details on this method.
+     */
+    public OpenJPAStateManager persist(Object obj, Object id, boolean explicit,
         OpCallbacks call) {
         if (obj == null)
             return null;
@@ -2299,9 +2326,12 @@ public class BrokerImpl
 
             // create new sm
             sm = new StateManagerImpl(id, meta, this);
-            if ((_flags & FLAG_ACTIVE) != 0)
-                sm.initialize(pc, PCState.PNEW);
-            else
+            if ((_flags & FLAG_ACTIVE) != 0) {
+                if (explicit)
+                    sm.initialize(pc, PCState.PNEW);
+                else
+                    sm.initialize(pc, PCState.PNEWPROVISIONAL);
+            } else
                 sm.initialize(pc, PCState.PNONTRANSNEW);
             if ((action & OpCallbacks.ACT_CASCADE) != 0)
                 sm.cascadePersist(call);

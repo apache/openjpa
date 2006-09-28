@@ -59,7 +59,7 @@ class VersionAttachStrategy
 
     public Object attach(AttachManager manager, Object toAttach,
         ClassMetaData meta, PersistenceCapable into, OpenJPAStateManager owner,
-        ValueMetaData ownerMeta) {
+        ValueMetaData ownerMeta, boolean explicit) {
         BrokerImpl broker = manager.getBroker();
         PersistenceCapable pc = (PersistenceCapable) toAttach;
 
@@ -82,7 +82,8 @@ class VersionAttachStrategy
             sm = (StateManagerImpl) broker.embed(into, null, owner, ownerMeta);
             into = sm.getPersistenceCapable();
         } else if (isNew) {
-            sm = persist(manager, pc, meta, ApplicationIds.create(pc, meta));
+            sm = persist(manager, pc, meta, ApplicationIds.create(pc, meta),
+                explicit);
             into = sm.getPersistenceCapable();
         } else if (!embedded && into == null) {
             Object id = getDetachedObjectId(manager, toAttach);
@@ -235,8 +236,8 @@ class VersionAttachStrategy
         PersistenceCapable intoPC = (into == null) ? null
             : into.getPersistenceCapable();
         if (vmd.isEmbedded())
-            return manager.attach(pc, intoPC, sm, vmd);
-        return manager.attach(pc, intoPC, null, null);
+            return manager.attach(pc, intoPC, sm, vmd, false);
+        return manager.attach(pc, intoPC, null, null, false);
     }
 
     /**

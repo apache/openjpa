@@ -369,6 +369,10 @@ public class StateManagerImpl
         return (_flags & FLAG_FLUSHED_DIRTY) > 0;
     }
 
+    public boolean wasPreFlushed() {
+        return (_flags & FLAG_PRE_FLUSHED) > 0;
+    }
+
     public BitSet getLoaded() {
         return _loaded;
     }
@@ -996,6 +1000,16 @@ public class StateManagerImpl
     /**
      * Delegates to the current state.
      *
+     * @see PCState#nonprovisional
+     * @see Broker#nonprovisional
+     */
+    void nonprovisional(boolean flush, boolean logical, OpCallbacks call) {
+        setPCState(_state.nonprovisional(this, flush, logical, call));
+    }
+
+    /**
+     * Delegates to the current state.
+     *
      * @see PCState#release
      * @see Broker#release
      */
@@ -1250,6 +1264,10 @@ public class StateManagerImpl
 
     public boolean isPendingTransactional() {
         return _state.isPendingTransactional();
+    }
+
+    public boolean isProvisional() {
+        return _state.isProvisional();
     }
 
     public boolean isPersistent() {
@@ -2619,6 +2637,9 @@ public class StateManagerImpl
      * for all strategies that don't require flushing.
      */
     void preFlush(boolean logical, OpCallbacks call) {
+        if ((_flags & FLAG_PRE_FLUSHED) != 0)
+            return;
+
         if (isPersistent()) {
             fireLifecycleEvent(LifecycleEvent.BEFORE_STORE);
             _flags |= FLAG_PRE_FLUSHED;
@@ -2632,7 +2653,7 @@ public class StateManagerImpl
                 if ((logical || !assignField(i, true)) && !_flush.get(i)
                     && _dirty.get(i)) {
                     provideField(_pc, _single, i);
-                    if (_single.preFlush(call))
+                    if (_single.preFlush(logical, call))
                         replaceField(_pc, _single, i);
                     else
                         _single.clear();
