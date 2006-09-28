@@ -843,8 +843,6 @@ public class AnnotationPersistenceMetaDataParser
         boolean result = true;
         if (callbacks == null || callbacks.isEmpty())
             return true;
-        MetaDataDefaults defaults = getRepository().getMetaDataFactory().
-            getDefaults();
         for (LifecycleCallbacks lc: callbacks) {
             if (!(lc instanceof MethodLifecycleCallbacks))
                 continue;
@@ -854,9 +852,10 @@ public class AnnotationPersistenceMetaDataParser
                 Object[] args = new Object[]{method.getDeclaringClass()
                     .getName(), method.getName(), exists.getName(), 
                     tag.toString()};
-                if (defaults.getAllowsMultipleMethodsOnSameCallback()) {
-                    _log.warn(_loc.get("multiple-methods-on-callback", 
-                        args));
+                PersistenceMetaDataDefaults defaults = getDefaults();
+                if (defaults == null || 
+                    defaults.getAllowsMultipleMethodsOnSameCallback()) {
+                    _log.warn(_loc.get("multiple-methods-on-callback", args));
                  } else {
                     throw new UserException(
                         _loc.get("multiple-methods-on-callback-error", args));
@@ -867,19 +866,27 @@ public class AnnotationPersistenceMetaDataParser
     }
     
     private boolean verifyHasNoArgConstructor(Class cls) {
-        MetaDataDefaults defaults = getRepository().getMetaDataFactory().
-            getDefaults();
         try {
             cls.getConstructor(new Class[]{});
             return true;
         } catch (Throwable t) {
+            PersistenceMetaDataDefaults defaults = getDefaults();
             Message msg = _loc.get("missing-no-arg-constructor", cls.getName());
-            if (defaults.getAllowsMissingCallbackConstructor())
+            if (defaults == null || 
+                defaults.getAllowsMissingCallbackConstructor())
                 _log.warn(msg);
             else
                 throw new UserException(msg, t);
         } 
         return false;
+    }
+    
+    private PersistenceMetaDataDefaults getDefaults() {
+        MetaDataDefaults defaults = getRepository().getMetaDataFactory().
+            getDefaults();
+        if (defaults instanceof PersistenceMetaDataDefaults)
+            return (PersistenceMetaDataDefaults)defaults;
+        return null;
     }
     
     /**
