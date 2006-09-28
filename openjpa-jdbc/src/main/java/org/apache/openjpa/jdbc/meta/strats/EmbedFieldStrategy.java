@@ -627,6 +627,10 @@ public class EmbedFieldStrategy
             return isFlushed();
         }
 
+        public boolean isProvisional() {
+            return _owner.isProvisional();
+        }
+
         public BitSet getLoaded() {
             // consider everything loaded
             if (_full == null) {

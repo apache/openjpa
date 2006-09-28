@@ -55,10 +55,11 @@ abstract class AttachStrategy
      * @param into instance we're attaching into
      * @param owner state manager for <code>into</code>
      * @param ownerMeta field we traversed to find <code>toAttach</code>
+     * @param explicit whether to make new instances explicitly persistent
      */
     public abstract Object attach(AttachManager manager,
         Object toAttach, ClassMetaData meta, PersistenceCapable into,
-        OpenJPAStateManager owner, ValueMetaData ownerMeta);
+        OpenJPAStateManager owner, ValueMetaData ownerMeta, boolean explicit);
 
     /**
      * Return the identity of the given detached instance.
@@ -73,10 +74,12 @@ abstract class AttachStrategy
         int field);
 
     /**
-     * Return a PNew managed object for the given detached instance.
+     * Return a PNew/PNewProvisional managed object for the given detached 
+     * instance.
      */
     protected StateManagerImpl persist(AttachManager manager,
-        PersistenceCapable pc, ClassMetaData meta, Object appId) {
+        PersistenceCapable pc, ClassMetaData meta, Object appId, 
+        boolean explicit) {
         PersistenceCapable newInstance;
         if (!manager.getCopyNew())
             newInstance = pc;
@@ -86,7 +89,7 @@ abstract class AttachStrategy
             newInstance = pc.pcNewInstance(null, appId, false);
 
         return (StateManagerImpl) manager.getBroker().persist
-            (newInstance, appId, manager.getBehavior());
+            (newInstance, appId, explicit, manager.getBehavior());
     }
 
     /**
@@ -191,7 +194,7 @@ abstract class AttachStrategy
                             manager.getDetachedObjectId(frmpc))) {
                             intopc = null;
                         }
-                        frmpc = manager.attach(frmpc, intopc, sm, fmd);
+                        frmpc = manager.attach(frmpc, intopc, sm, fmd, false);
                     }
                     if (frmpc != topc)
                         sm.settingObjectField(into, i, topc, frmpc, set);
@@ -199,6 +202,8 @@ abstract class AttachStrategy
                 break;
             case JavaTypes.COLLECTION:
                 Collection frmc = (Collection) fetchObjectField(i);
+                System.out.println("Fetch:" + fmd + ":" + frmc
+                    + ":" + nullLoaded);
                 if (frmc == null && !nullLoaded)
                     return false;
                 Collection toc = (Collection) sm.fetchObjectField(i);
@@ -320,7 +325,7 @@ abstract class AttachStrategy
             if (vmd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                 elem = getReference(manager, itr.next(), sm, vmd);
             else
-                elem = manager.attach(itr.next(), null, sm, vmd);
+                elem = manager.attach(itr.next(), null, sm, vmd, false);
             coll.add(elem);
         }
         return coll;
@@ -432,13 +437,13 @@ abstract class AttachStrategy
                 if (keymd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                     key = getReference(manager, key, sm, keymd);
                 else
-                    key = manager.attach(key, null, sm, keymd);
+                    key = manager.attach(key, null, sm, keymd, false);
                 val = entry.getValue();
                 if (valmd.isDeclaredTypePC()) {
                     if (valmd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                         val = getReference(manager, val, sm, valmd);
                     else
-                        val = manager.attach(val, null, sm, valmd);
+                        val = manager.attach(val, null, sm, valmd, false);
                 }
                 map.put(key, val);
             }
@@ -449,7 +454,8 @@ abstract class AttachStrategy
                 if (valmd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                     val = getReference(manager, entry.getValue(), sm, valmd);
                 else
-                    val = manager.attach(entry.getValue(), null, sm, valmd);
+                    val = manager.attach(entry.getValue(), null, sm, valmd, 
+                        false);
                 entry.setValue(val);
             }
         }
@@ -479,7 +485,7 @@ abstract class AttachStrategy
                 if (vmd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
                     elem = getReference(manager, elem, sm, vmd);
                 else
-                    elem = manager.attach(elem, null, sm, vmd);
+                    elem = manager.attach(elem, null, sm, vmd, false);
             }
             diff = diff || !equals(elem, Array.get(toa, i), pc);
             Array.set(newa, i, elem);

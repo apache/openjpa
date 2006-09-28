@@ -250,21 +250,22 @@ class SingleFieldManager
             case JavaTypes.PC_UNTYPED:
                 if (!_broker.isDetachedNew() && _broker.isDetached(objval))
                     return; // allow but ignore
-                _broker.persist(objval, call);
+                _broker.persist(objval, false, call);
                 break;
             case JavaTypes.ARRAY:
-                _broker.persistAll(Arrays.asList((Object[]) objval), call);
+                _broker.persistAll(Arrays.asList((Object[]) objval), false, 
+                    call);
                 break;
             case JavaTypes.COLLECTION:
-                _broker.persistAll((Collection) objval, call);
+                _broker.persistAll((Collection) objval, false, call);
                 break;
             case JavaTypes.MAP:
                 if (fmd.getKey().getCascadePersist()
                     == ValueMetaData.CASCADE_IMMEDIATE)
-                    _broker.persistAll(((Map) objval).keySet(), call);
+                    _broker.persistAll(((Map) objval).keySet(), false, call);
                 if (fmd.getElement().getCascadePersist()
                     == ValueMetaData.CASCADE_IMMEDIATE)
-                    _broker.persistAll(((Map) objval).values(), call);
+                    _broker.persistAll(((Map) objval).values(), false, call);
                 break;
         }
     }
@@ -460,14 +461,14 @@ class SingleFieldManager
      * pc fields. Return true if the field needs to be replaced with the
      * new value.
      */
-    public boolean preFlush(OpCallbacks call) {
+    public boolean preFlush(boolean logical, OpCallbacks call) {
         // only care about object fields
         FieldMetaData fmd = _sm.getMetaData().getField(field);
         if (fmd.getDeclaredTypeCode() < JavaTypes.OBJECT)
             return false;
 
         // perform pers-by-reach and dependent refs
-        boolean ret = preFlush(fmd, call);
+        boolean ret = preFlush(fmd, logical, call);
 
         // manage inverses
         InverseManager manager = _broker.getInverseManager();
@@ -523,7 +524,8 @@ class SingleFieldManager
     /**
      * Helper method to perform pre flush actions on the current object.
      */
-    private boolean preFlush(FieldMetaData fmd, OpCallbacks call) {
+    private boolean preFlush(FieldMetaData fmd, boolean logical, 
+        OpCallbacks call) {
         // check for illegal nulls
         if (objval == null) {
             if (fmd.getNullValue() == FieldMetaData.NULL_EXCEPTION
@@ -552,13 +554,13 @@ class SingleFieldManager
         // check for pcs in field value
         if (preFlush(fmd, fmd.getDeclaredTypeCode(),
             fmd.getKey().getDeclaredTypeCode(),
-            fmd.getElement().getDeclaredTypeCode(), false, call))
+            fmd.getElement().getDeclaredTypeCode(), false, logical, call))
             return true;
 
         // also check for pcs in externalized values
         if (fmd.isExternalized())
             preFlush(fmd, fmd.getTypeCode(), fmd.getKey().getTypeCode(),
-                fmd.getElement().getTypeCode(), true, call);
+                fmd.getElement().getTypeCode(), true, logical, call);
         return false;
     }
 
@@ -567,7 +569,7 @@ class SingleFieldManager
      * dependent objects won't be deleted.
      */
     private boolean preFlush(FieldMetaData fmd, int type, int keyType,
-        int elemType, boolean external, OpCallbacks call) {
+        int elemType, boolean external, boolean logical, OpCallbacks call) {
         Object val = objval;
         if (val == null)
             return false;
@@ -582,14 +584,14 @@ class SingleFieldManager
                     if (external)
                         val = fmd.getExternalValue(val, _broker);
                     if (val != null)
-                        preFlushPC(fmd, val, call);
+                        preFlushPC(fmd, val, logical, call);
                 }
                 break;
             case JavaTypes.PC_UNTYPED:
                 if (external)
                     val = fmd.getExternalValue(val, _broker);
                 if (val != null)
-                    preFlushPC(fmd, val, call);
+                    preFlushPC(fmd, val, logical, call);
                 break;
             case JavaTypes.ARRAY:
                 if (fmd.getElement().isEmbeddedPC())
@@ -599,7 +601,8 @@ class SingleFieldManager
                     if (external)
                         val = fmd.getExternalValue(val, _broker);
                     if (val != null)
-                        preFlushPCs(fmd.getElement(), (Object[]) val, call);
+                        preFlushPCs(fmd.getElement(), (Object[]) val, logical, 
+                            call);
                 }
                 break;
             case JavaTypes.COLLECTION:
@@ -616,14 +619,16 @@ class SingleFieldManager
                         // lrs fields
                         ChangeTracker ct = ((Proxy) val).getChangeTracker();
                         if (ct != null && ct.isTracking()) {
-                            preFlushPCs(fmd.getElement(), ct.getAdded(), call);
+                            preFlushPCs(fmd.getElement(), ct.getAdded(), 
+                                logical, call);
                             preFlushPCs(fmd.getElement(), ct.getChanged(),
-                                call);
+                                logical, call);
                             flushed = true;
                         }
                     }
                     if (!flushed && val != null)
-                        preFlushPCs(fmd.getElement(), (Collection) val, call);
+                        preFlushPCs(fmd.getElement(), (Collection) val, logical,
+                            call);
                 }
                 break;
             case JavaTypes.MAP:
@@ -647,13 +652,16 @@ class SingleFieldManager
                             getChangeTracker();
                         if (ct != null && ct.isTracking() && ct.getTrackKeys())
                         {
-                            preFlushPCs(fmd.getKey(), ct.getAdded(), call);
-                            preFlushPCs(fmd.getKey(), ct.getChanged(), call);
+                            preFlushPCs(fmd.getKey(), ct.getAdded(), logical,
+                                call);
+                            preFlushPCs(fmd.getKey(), ct.getChanged(), logical,
+                                call);
                             flushed = true;
                         }
                     }
                     if (!flushed && val != null)
-                        preFlushPCs(fmd.getKey(), ((Map) val).keySet(), call);
+                        preFlushPCs(fmd.getKey(), ((Map) val).keySet(), logical,
+                            call);
                 }
 
                 if (!valEmbed && (elemType == JavaTypes.PC
@@ -669,21 +677,21 @@ class SingleFieldManager
                         if (ct != null && ct.isTracking()) {
                             if (ct.getTrackKeys()) {
                                 preFlushPCs(fmd.getElement(), ct.getAdded(),
-                                    (Map) val, call);
+                                    (Map) val, logical, call);
                                 preFlushPCs(fmd.getElement(), ct.getChanged(),
-                                    (Map) val, call);
+                                    (Map) val, logical, call);
                             } else {
                                 preFlushPCs(fmd.getElement(), ct.getAdded(),
-                                    call);
+                                    logical, call);
                                 preFlushPCs(fmd.getElement(), ct.getChanged(),
-                                    call);
+                                    logical, call);
                             }
                             flushed = true;
                         }
                     }
                     if (!flushed && val != null)
                         preFlushPCs(fmd.getElement(), ((Map) val).values(),
-                            call);
+                            logical, call);
                 }
                 break;
         }
@@ -695,9 +703,9 @@ class SingleFieldManager
      * the given keys.
      */
     private void preFlushPCs(ValueMetaData vmd, Collection keys, Map map,
-        OpCallbacks call) {
+        boolean logical, OpCallbacks call) {
         for (Iterator itr = keys.iterator(); itr.hasNext();)
-            preFlushPC(vmd, map.get(itr.next()), call);
+            preFlushPC(vmd, map.get(itr.next()), logical, call);
     }
 
     /**
@@ -705,9 +713,9 @@ class SingleFieldManager
      * the given array.
      */
     private void preFlushPCs(ValueMetaData vmd, Object[] objs,
-        OpCallbacks call) {
+        boolean logical, OpCallbacks call) {
         for (int i = 0; i < objs.length; i++)
-            preFlushPC(vmd, objs[i], call);
+            preFlushPC(vmd, objs[i], logical, call);
     }
 
     /**
@@ -715,15 +723,16 @@ class SingleFieldManager
      * the given collection.
      */
     private void preFlushPCs(ValueMetaData vmd, Collection objs,
-        OpCallbacks call) {
+        boolean logical, OpCallbacks call) {
         for (Iterator itr = objs.iterator(); itr.hasNext();)
-            preFlushPC(vmd, itr.next(), call);
+            preFlushPC(vmd, itr.next(), logical, call);
     }
 
     /**
      * Perform pre flush operations on the given object.
      */
-    private void preFlushPC(ValueMetaData vmd, Object obj, OpCallbacks call) {
+    private void preFlushPC(ValueMetaData vmd, Object obj, boolean logical,
+        OpCallbacks call) {
         if (obj == null)
             return;
 
@@ -740,7 +749,7 @@ class SingleFieldManager
                         Exceptions.toString(_sm.getManagedInstance()))).
                     setFailedObject(obj);
         } else
-            sm = _broker.persist(obj, null, call);
+            sm = _broker.persist(obj, null, true, call);
 
         if (sm != null) {
             // if deleted and not managed inverse, die
@@ -750,6 +759,7 @@ class SingleFieldManager
                     Exceptions.toString(obj), vmd,
                     Exceptions.toString(_sm.getManagedInstance()))).
                     setFailedObject(obj);
+            ((StateManagerImpl) sm).nonprovisional(true, logical, call);
             ((StateManagerImpl) sm).setDereferencedDependent(false, true);
         }
     }
