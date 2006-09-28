@@ -369,10 +369,6 @@ public class StateManagerImpl
         return (_flags & FLAG_FLUSHED_DIRTY) > 0;
     }
 
-    public boolean wasPreFlushed() {
-        return (_flags & FLAG_PRE_FLUSHED) > 0;
-    }
-
     public BitSet getLoaded() {
         return _loaded;
     }
@@ -2637,9 +2633,6 @@ public class StateManagerImpl
      * for all strategies that don't require flushing.
      */
     void preFlush(boolean logical, OpCallbacks call) {
-        if ((_flags & FLAG_PRE_FLUSHED) != 0)
-            return;
-
         if (isPersistent()) {
             fireLifecycleEvent(LifecycleEvent.BEFORE_STORE);
             _flags |= FLAG_PRE_FLUSHED;
