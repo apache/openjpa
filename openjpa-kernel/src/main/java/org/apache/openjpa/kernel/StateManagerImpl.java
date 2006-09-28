@@ -2633,7 +2633,9 @@ public class StateManagerImpl
      * for all strategies that don't require flushing.
      */
     void preFlush(boolean logical, OpCallbacks call) {
-        if (isPersistent()) {
+        boolean second = (_flags & FLAG_PRE_FLUSHED) != 0;
+
+        if (isPersistent() && !second) {
             fireLifecycleEvent(LifecycleEvent.BEFORE_STORE);
             _flags |= FLAG_PRE_FLUSHED;
         }
