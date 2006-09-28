@@ -45,8 +45,6 @@ public abstract class AbstractMetaDataDefaults
     private boolean _interface = true;
     private boolean _pcRegistry = true;
     private int _callback = CALLBACK_RETHROW;
-    private boolean _allowsMultipleMethodsOnSameCallback = true;
-    private boolean _allowsMissingCallbackConstructor = true;
 
     /**
      * Whether to attempt to use the information from registered classes
@@ -354,22 +352,6 @@ public abstract class AbstractMetaDataDefaults
         return UnsupportedOperationException.class;
     }
 
-    public boolean getAllowsMultipleMethodsOnSameCallback() {
-        return _allowsMultipleMethodsOnSameCallback;
-    }
-    
-    public void setAllowsMultipleMethodsOnSameCallback(boolean flag) {
-        _allowsMultipleMethodsOnSameCallback = flag;
-    }
-    
-    public boolean getAllowsMissingCallbackConstructor() {
-        return _allowsMissingCallbackConstructor;
-    }
-    
-    public void setAllowsMissingCallbackConstructor(boolean flag) {
-        _allowsMissingCallbackConstructor = flag;
-    }
-    
     /**
      * Helper method; returns true if the given class appears to be
      * user-defined.

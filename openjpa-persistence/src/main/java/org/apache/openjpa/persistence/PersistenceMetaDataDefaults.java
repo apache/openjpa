@@ -57,9 +57,13 @@ import org.apache.openjpa.util.MetaDataException;
  *
  * @author Patrick Linskey
  * @author Abe White
+ * @nojavadoc
  */
-class PersistenceMetaDataDefaults
+public class PersistenceMetaDataDefaults
     extends AbstractMetaDataDefaults {
+
+    private boolean _allowsMultipleMethodsOnSameCallback;
+    private boolean _allowsMissingCallbackConstructor;
 
     private static Localizer _loc = Localizer.forPackage
         (PersistenceMetaDataDefaults.class);
@@ -93,6 +97,8 @@ class PersistenceMetaDataDefaults
     public PersistenceMetaDataDefaults() {
         setCallbackMode(CALLBACK_RETHROW | CALLBACK_ROLLBACK |
             CALLBACK_FAIL_FAST);
+        _allowsMultipleMethodsOnSameCallback = true;
+        _allowsMissingCallbackConstructor = true;
     }
 
     /**
@@ -265,4 +271,31 @@ class PersistenceMetaDataDefaults
             return false;
         return true;
 	}
+    
+    /** 
+     * Flags if multiple methods of the same class can handle the same 
+     * callback event.
+     */
+    public boolean getAllowsMultipleMethodsOnSameCallback() {
+        return _allowsMultipleMethodsOnSameCallback;
+    }
+    
+    public void setAllowsMultipleMethodsOnSameCallback(boolean flag) {
+        _allowsMultipleMethodsOnSameCallback = flag;
+    }
+
+    /** 
+     * Flags if it allowed for the callback listener class not to have a no-arg 
+     * constructor.
+     */
+    
+    public boolean getAllowsMissingCallbackConstructor() {
+        return _allowsMissingCallbackConstructor;
+    }
+    
+    public void setAllowsMissingCallbackConstructor(boolean flag) {
+        _allowsMissingCallbackConstructor = flag;
+    }
+    
+    
 }

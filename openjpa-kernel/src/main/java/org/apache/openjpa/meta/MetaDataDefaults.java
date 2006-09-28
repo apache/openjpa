@@ -50,18 +50,6 @@ public interface MetaDataDefaults
      */
     public boolean getCallbacksBeforeListeners(int type);
     
-    /** 
-     * Flags if multiple methods of the same class can handle the same 
-     * callback event.
-     */
-    public boolean getAllowsMultipleMethodsOnSameCallback();
-
-    /** 
-     * Flags if it allowed for the callback listener class not to have a no-arg 
-     * constructor.
-     */
-    public boolean getAllowsMissingCallbackConstructor();
-    
     /**
      * Whether to ignore members which are not persistent by default
      * during metadata population. Defaults to true.
