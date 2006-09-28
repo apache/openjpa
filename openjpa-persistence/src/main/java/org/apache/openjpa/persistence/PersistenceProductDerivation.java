@@ -248,6 +248,8 @@ public class PersistenceProductDerivation
                 rsrc, String.valueOf(name)).getMessage(), getClass().getName(), 
                 rsrc);
         } else if (!isOpenJPAPersistenceProvider(pinfo, loader)) {
+            if (!explicit)
+                return Boolean.FALSE;
             throw new MissingResourceException(_loc.get("unknown-provider", 
                 rsrc, name, pinfo.getPersistenceProviderClassName()).
                 getMessage(), getClass().getName(), rsrc);
@@ -307,19 +309,31 @@ public class PersistenceProductDerivation
      */
     private static boolean isOpenJPAPersistenceProvider
         (PersistenceUnitInfo pinfo, ClassLoader loader) {
-        String name = pinfo.getPersistenceProviderClassName();
-        if (StringUtils.isEmpty(name) 
-            || PersistenceProviderImpl.class.getName().equals(name))
+        String provider = pinfo.getPersistenceProviderClassName();
+        if (StringUtils.isEmpty(provider) 
+            || PersistenceProviderImpl.class.getName().equals(provider))
             return true;
 
         if (loader == null)
             loader = Thread.currentThread().getContextClassLoader();
         try {
-            return PersistenceProviderImpl.class.isAssignableFrom
-                (Class.forName(name, false, loader));
+            if (PersistenceProviderImpl.class.isAssignableFrom
+                (Class.forName(provider, false, loader))) {
+                // log not configured yet
+                warn(_loc.get("extended-provider", provider).getMessage());
+                return true;
+            }
         } catch (Throwable t) {
+            warn(_loc.get("unloadable-provider", provider, t).
+                getMessage());
             return false;
         }
+        warn(_loc.get("unrecognized-provider", provider).getMessage());
+        return false;
+    }
+    
+    private static void warn(String msg) {
+        System.err.println(msg);
     }
 
     /**
