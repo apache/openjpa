@@ -78,7 +78,7 @@
                 <executions>
                     <execution>
                         <id>set subversion revision</id>
-                        <phase>package</phase>
+                        <phase>compile</phase>
                         <configuration>
                             <tasks>
                                 <property name="tmpdir"
