@@ -41,7 +41,7 @@ public class OpenJPAVersion {
     public static final int MINOR_RELEASE;
     public static final int PATCH_RELEASE;
     public static final String RELEASE_STATUS;
-    public static final int REVISION_NUMBER;
+    public static final String REVISION_NUMBER;
 
     static {
         Package pack = OpenJPAVersion.class.getPackage();
@@ -73,7 +73,7 @@ public class OpenJPAVersion {
             patch = 0;
         }
 
-        int revision = 0;
+        String revision = "";
         try {
             InputStream in = OpenJPAVersion.class.
                 getResourceAsStream("/META-INF/revision.properties");
@@ -81,8 +81,7 @@ public class OpenJPAVersion {
                 try {
                     Properties props = new Properties();
                     props.load(in);
-                    revision = Integer.parseInt
-                        (props.getProperty("revision.number"));
+                    revision = props.getProperty("revision.number");
                 } finally {
                     in.close();
                 }
