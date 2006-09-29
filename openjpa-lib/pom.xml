@@ -91,10 +91,18 @@
 
                                 <property name="outdir" value="${tmpdir}"/>
 
-                                <xmlproperty file="${basedir}/.svn/entries"
-                                    collapseAttributes="true"/>
+                                <property name="svnversion.executable"
+                                    value="svnversion"/>
+                                <exec outputproperty="subversion.revision"
+                                    failonerror="false"
+                                    failifexecutionfails="false"
+                                    executable="${svnversion.executable}">
+                                    <arg line="-c ${basedir}/.."/>
+                                </exec>
                                 <property name="subversion.revision"
-                                    value="${wc-entries.entry.revision}"/>
+                                    value="unknown"/>
+                                <echo>Revision: ${subversion.revision}</echo>
+                                    
                                 <mkdir dir="${outdir}/META-INF"/>
                                 <echo file="${outdir}/META-INF/revision.properties">revision.number=${subversion.revision}</echo>
                                 <delete dir="${tmpdir}"/>
