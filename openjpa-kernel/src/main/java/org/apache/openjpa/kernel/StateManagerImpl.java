@@ -486,7 +486,8 @@ public class StateManagerImpl
      * @param recache whether to recache ourself on the new oid
      */
     private void assertObjectIdAssigned(boolean recache) {
-        if (!isNew() || isDeleted() || (_flags & FLAG_OID_ASSIGNED) > 0)
+        if (!isNew() || isDeleted() || isProvisional() || 
+            (_flags & FLAG_OID_ASSIGNED) > 0)
             return;
         if (_oid == null) {
             if (_meta.getIdentityType() == ClassMetaData.ID_DATASTORE)
@@ -905,7 +906,7 @@ public class StateManagerImpl
         Object orig = _id;
         assertObjectIdAssigned(false);
 
-        boolean wasNew = isNew() && !isDeleted();
+        boolean wasNew = isNew() && !isDeleted() && !isProvisional();
         if (_broker.getRetainState())
             setPCState(_state.commitRetain(this));
         else
@@ -997,10 +998,9 @@ public class StateManagerImpl
      * Delegates to the current state.
      *
      * @see PCState#nonprovisional
-     * @see Broker#nonprovisional
      */
-    void nonprovisional(boolean flush, boolean logical, OpCallbacks call) {
-        setPCState(_state.nonprovisional(this, flush, logical, call));
+    void nonprovisional(boolean logical, OpCallbacks call) {
+        setPCState(_state.nonprovisional(this, logical, call));
     }
 
     /**
@@ -2633,9 +2633,10 @@ public class StateManagerImpl
      * for all strategies that don't require flushing.
      */
     void preFlush(boolean logical, OpCallbacks call) {
-        boolean second = (_flags & FLAG_PRE_FLUSHED) != 0;
+        if ((_flags & FLAG_PRE_FLUSHED) != 0)
+            return;
 
-        if (isPersistent() && !second) {
+        if (isPersistent()) {
             fireLifecycleEvent(LifecycleEvent.BEFORE_STORE);
             _flags |= FLAG_PRE_FLUSHED;
         }

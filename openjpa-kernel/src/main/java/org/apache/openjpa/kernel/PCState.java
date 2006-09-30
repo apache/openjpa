@@ -235,10 +235,10 @@ public class PCState
 
     /**
      * Return the state to transition to after making no longer provisional. 
-     * The context is not given because no actions should be taken.
+     * Returns the <code>this</code> pointer by default.
      */
-    PCState nonprovisional(StateManagerImpl context, boolean flush, 
-        boolean logical, OpCallbacks call) {
+    PCState nonprovisional(StateManagerImpl context, boolean logical, 
+        OpCallbacks call) {
         return this;
     }
 
