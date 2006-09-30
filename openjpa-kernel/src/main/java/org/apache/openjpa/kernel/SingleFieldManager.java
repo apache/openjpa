@@ -748,8 +748,13 @@ class SingleFieldManager
                         Exceptions.toString(obj), vmd,
                         Exceptions.toString(_sm.getManagedInstance()))).
                     setFailedObject(obj);
-        } else
-            sm = _broker.persist(obj, null, true, call);
+        } else {
+            sm = _broker.getStateManager(obj);
+            if (sm != null && sm.isProvisional())
+                ((StateManagerImpl) sm).nonprovisional(logical, call);
+            else
+                sm = _broker.persist(obj, null, true, call);
+        }
 
         if (sm != null) {
             // if deleted and not managed inverse, die
@@ -759,7 +764,6 @@ class SingleFieldManager
                     Exceptions.toString(obj), vmd,
                     Exceptions.toString(_sm.getManagedInstance()))).
                     setFailedObject(obj);
-            ((StateManagerImpl) sm).nonprovisional(true, logical, call);
             ((StateManagerImpl) sm).setDereferencedDependent(false, true);
         }
     }

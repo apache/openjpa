@@ -24,17 +24,21 @@ package org.apache.openjpa.kernel;
  * @author: Abe White
  */
 class PNewProvisionalState
-    extends PNewState {
+    extends PCState {
+
+    void initialize(StateManagerImpl context) {
+        context.setLoaded(true);
+        context.setDirty(true);
+        context.saveFields(false);
+    }
 
     PCState persist(StateManagerImpl context) {
         return PNEW;
     }
 
-    PCState nonprovisional(StateManagerImpl context, boolean flush, 
-        boolean logical, OpCallbacks call) {
-        if (flush)
-            beforeFlush(context, logical, call);
-
+    PCState nonprovisional(StateManagerImpl context, boolean logical, 
+        OpCallbacks call) {
+        context.preFlush(logical, call);
         return PNEW;
     }
 
@@ -44,6 +48,35 @@ class PNewProvisionalState
 
     PCState commitRetain(StateManagerImpl context) {
         return TRANSIENT;
+    }
+
+    PCState rollback(StateManagerImpl context) {
+        return TRANSIENT;
+    }
+
+    PCState rollbackRestore(StateManagerImpl context) {
+        context.restoreFields();
+        return TRANSIENT;
+    }
+
+    PCState release(StateManagerImpl context) {
+        return TRANSIENT;
+    }
+
+    boolean isTransactional() {
+        return true;
+    }
+
+    boolean isPersistent() {
+        return true;
+    }
+
+    boolean isNew() {
+        return true;
+    }
+
+    boolean isDirty() {
+        return true;
     }
 
     boolean isProvisional() {
