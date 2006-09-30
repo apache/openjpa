@@ -59,6 +59,11 @@ class PNewProvisionalState
         return TRANSIENT;
     }
 
+    PCState delete(StateManagerImpl context) {
+        context.preDelete();
+        return TRANSIENT;
+    }
+
     PCState release(StateManagerImpl context) {
         return TRANSIENT;
     }

@@ -750,9 +750,7 @@ class SingleFieldManager
                     setFailedObject(obj);
         } else {
             sm = _broker.getStateManager(obj);
-            if (sm != null && sm.isProvisional())
-                ((StateManagerImpl) sm).nonprovisional(logical, call);
-            else
+            if (sm == null || !sm.isProvisional())
                 sm = _broker.persist(obj, null, true, call);
         }
 
@@ -764,6 +762,8 @@ class SingleFieldManager
                     Exceptions.toString(obj), vmd,
                     Exceptions.toString(_sm.getManagedInstance()))).
                     setFailedObject(obj);
+
+            ((StateManagerImpl) sm).nonprovisional(logical, call);
             ((StateManagerImpl) sm).setDereferencedDependent(false, true);
         }
     }
