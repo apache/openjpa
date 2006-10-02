@@ -83,7 +83,7 @@ attributes for the <literal>config</literal> tag are defined by the
 <classname>JDBCConfiguration</classname></ulink> bean methods. Note that
 excluding the <literal>config</literal> element will cause the Ant task to use
 the default system configuration mechanism, such as the configuration defined in
-the <phrase><filename>org.apache.openjpa.xml</filename></phrase> file.
+the <filename>org.apache.openjpa.xml</filename> file.
             </para>
             <para>
 Following is an example of how to use the nested <literal>config</literal> tag

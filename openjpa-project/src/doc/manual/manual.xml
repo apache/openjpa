@@ -37,7 +37,7 @@
 ]>
 <book id="manual">
     <bookinfo>
-        <title>OpenJPA Developers Guide</title>
+        <title>OpenJPA User's Guide</title>
     </bookinfo>
 
     <part id="introduction">
@@ -62,13 +62,16 @@
         &jpa_overview_conclusion.xml;
     </part>
 
+    <!--
+    ### TUTORIAL
     <part id="tutorials">
         <title>Tutorials</title>
         &jpa_tutorials.xml;
     </part>
+    -->
 
     <part id="ref_guide">
-        <title>OpenJPA <phrase>JPA</phrase> Reference Guide</title>
+        <title>Reference Guide</title>
         &ref_guide_intro.xml;
         &ref_guide_conf.xml;
         &ref_guide_logging.xml;
@@ -84,10 +87,12 @@
         &ref_guide_optimization.xml;
     </part>
 
+    <!--
     <part id="samples_guide_part">
-        <title>OpenJPA <phrase>JPA</phrase> Samples</title>
+        <title>Samples</title>
         &samples_guide.xml;
     </part>
+    -->
 
     &jpa_resources.xml;
     &supported_databases.xml;

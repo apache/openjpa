@@ -61,7 +61,7 @@ files the tools are running on. Detailed output is only available via the
 logging category the tool belongs to, such as <literal>openjpa.Enhance</literal>
 for the enhancer (see <xref linkend="ref_guide_pc_enhance"/>) or <literal>
 openjpa.MetaData</literal> for the mapping tool (see
-<xref linkend="ref_guide_mapping_mappingtool"/> ). This logging category
+<xref linkend="ref_guide_mapping_mappingtool"/>). This logging category
 is provided so that you can get a general idea of what a tool is doing without
 having to manipulate logging settings that might also affect runtime behavior.
                 </para>
@@ -133,19 +133,6 @@ logged to the <literal>INFO</literal> level.
                 <para>
                 <indexterm>
                     <primary>
-                        remote
-                    </primary>
-                    <secondary>
-                        log messages
-                    </secondary>
-                </indexterm>
-<literal>openjpa.Remote</literal>: Remote connection and execution messages.
-                </para>
-            </listitem>
-            <listitem>
-                <para>
-                <indexterm>
-                    <primary>
                         caching
                     </primary>
                     <secondary>
@@ -209,7 +196,7 @@ Pretty-printing properties configuration might look like so:
 <programlisting>
 &lt;property name="openjpa.Log" value="SQL=TRACE"/&gt;
 &lt;property name="openjpa.ConnectionFactoryProperties" 
-    value="MaxActive=100, PrettyPrint=true, PrettyPrintLineLength=72"/&gt;
+    value="PrettyPrint=true, PrettyPrintLineLength=72"/&gt;
 </programlisting>
             </listitem>
             <listitem>
@@ -245,8 +232,8 @@ By default, OpenJPA uses a basic logging framework with the following output
 format:
         </para>
         <para>
-<literal>millis</literal><literal>level</literal> [ <literal>thread name
-</literal> ] <literal>channel</literal> - <literal>message</literal>
+<literal>millis</literal><literal>level</literal> [<literal>thread 
+name</literal>] <literal>channel</literal> - <literal>message</literal>
         </para>
         <para>
 For example, when loading an application that uses OpenJPA, a message like the
@@ -511,32 +498,28 @@ package com.xyz;
 import org.apache.openjpa.lib.log.*;
 
 public class CustomLogFactory
-    implements LogFactory
-{   
+    implements LogFactory {   
+
     private String _prefix = "CUSTOM LOG";
 
-    public void setPrefix (String prefix)
-    {
+    public void setPrefix (String prefix) {
         _prefix = prefix;
     }
  
-    public Log getLog (String channel)
-    {
+    public Log getLog(String channel) {
         // Return a simple extension of AbstractLog that will log
         // everything to the System.err stream. Note that this is 
         // roughly equivalent to OpenJPA's default logging behavior.
-        return new AbstractLog ()
-        {
-            protected boolean isEnabled (short logLevel)
-            {
+        return new AbstractLog() {
+
+            protected boolean isEnabled(short logLevel) {
                 // log all levels
                 return true;
             }
 
-            protected void log (short type, String message, Throwable t)
-            {
+            protected void log (short type, String message, Throwable t) {
                 // just send everything to System.err
-                System.err.println (_prefix + ": " + type + ": "
+                System.err.println(_prefix + ": " + type + ": "
                     + message + ": " + t);
             }
         };

@@ -102,10 +102,7 @@ class PreparedStatementManagerImpl
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se, row.getFailedObject(), _dict);
         } finally {
-            try {
-                stmnt.close();
-            } catch (SQLException se) {
-            }
+            try { stmnt.close(); } catch (SQLException se) {}
         }
 
         // set auto assign values

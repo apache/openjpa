@@ -35,11 +35,13 @@ import javax.persistence.NamedNativeQuery;
 
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.conf.GenericConfigurable;
 import org.apache.openjpa.lib.meta.ClassAnnotationMetaDataFilter;
 import org.apache.openjpa.lib.meta.ClassArgParser;
 import org.apache.openjpa.lib.meta.MetaDataFilter;
 import org.apache.openjpa.lib.meta.MetaDataParser;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.AbstractCFMetaDataFactory;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -58,18 +60,18 @@ import org.apache.openjpa.util.MetaDataException;
  */
 public class PersistenceMetaDataFactory
     extends AbstractCFMetaDataFactory
-    implements Configurable {
+    implements Configurable, GenericConfigurable {
 
     private static final Localizer _loc = Localizer.forPackage
         (PersistenceMetaDataFactory.class);
 
+    private final PersistenceMetaDataDefaults _def = 
+        new PersistenceMetaDataDefaults();
     private AnnotationPersistenceMetaDataParser _annoParser = null;
     private XMLPersistenceMetaDataParser _xmlParser = null;
-    private PersistenceMetaDataDefaults _def = null;
     private Map<URL, Set> _xml = null; // xml rsrc -> class names
     private Set<URL> _unparsed = null; // xml rsrc
     private boolean _fieldOverride = true;
-    private int _access = ClassMetaData.ACCESS_FIELD;
 
     /**
      * Whether to use field-level override or class-level override.
@@ -85,18 +87,6 @@ public class PersistenceMetaDataFactory
      */
     public boolean getFieldOverride() {
         return _fieldOverride;
-    }
-
-    /**
-     * The default access type for base classes with ACCESS_UNKNOWN
-     */
-    public void setDefaultAccessType(String type) {
-        if (type == null)
-            return;
-        if ("PROPERTY".equals(type.toUpperCase()))
-            _access = ClassMetaData.ACCESS_PROPERTY;
-        else
-            _access = ClassMetaData.ACCESS_FIELD;
     }
 
     /**
@@ -333,10 +323,6 @@ public class PersistenceMetaDataFactory
     }
 
     public MetaDataDefaults getDefaults() {
-        if (_def == null) {
-            _def = new PersistenceMetaDataDefaults();
-            _def.setDefaultAccessType(_access);
-        }
         return _def;
     }
 
@@ -415,4 +401,8 @@ public class PersistenceMetaDataFactory
         else
 			rsrcs.add ("META-INF/orm.xml");
 	}
+
+    public void setInto(Options opts) {
+        opts.keySet().retainAll(opts.setInto(_def).keySet());
+    }
 }

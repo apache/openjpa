@@ -81,8 +81,8 @@ The <classname>EntityManager</classname> has two factory methods suitable for
 creating SQL queries:
         </para>
 <programlisting>
-public Query createNativeQuery (String sqlString, Class resultClass);
-public Query createNativeQuery (String sqlString, String resultSetMapping);
+public Query createNativeQuery(String sqlString, Class resultClass);
+public Query createNativeQuery(String sqlString, String resultSetMapping);
 </programlisting>
         <para>
 The first method is used to create a new <classname>Query</classname> instance
@@ -99,8 +99,8 @@ action.
             </title>
 <programlisting>
 EntityManager em = ...;
-Query query = em.createNativeQuery ("SELECT * FROM MAG", Magazine.class);
-processMagazines (query.getResultList ());
+Query query = em.createNativeQuery("SELECT * FROM MAG", Magazine.class);
+processMagazines(query.getResultList());
 </programlisting>
         </example>
         <note>
@@ -182,7 +182,6 @@ simple mapping between a class and the database:
             <imageobject>
                 <!-- PNG image data, 320 x 149 (see README) -->
                 <imagedata fileref="img/sqlquery-model.png" width="213px"/>
-                
             </imageobject>
         </mediaobject>
         <example id="jpa_overview_sqlquery_objex">
@@ -190,11 +189,11 @@ simple mapping between a class and the database:
                 Retrieving Persistent Objects
             </title>
 <programlisting>
-Query query = em.createNativeQuery ("SELECT ISBN, TITLE, PRICE, "
+Query query = em.createNativeQuery("SELECT ISBN, TITLE, PRICE, "
     + "VERS FROM MAG WHERE PRICE &gt; 5 AND PRICE &lt; 10", Magazine.class);
-List&lt;Magazine&gt; results = query.getResultList ();
+List&lt;Magazine&gt; results = (List&lt;Magazine&gt;) query.getResultList();
 for (Magazine mag : results)
-    processMagazine (mag);
+    processMagazine(mag);
 </programlisting>
         </example>
         <para>
@@ -207,13 +206,13 @@ magazines in any price range:
                 SQL Query Parameters
             </title>
 <programlisting>
-Query query = em.createNativeQuery ("SELECT ISBN, TITLE, PRICE, "
+Query query = em.createNativeQuery("SELECT ISBN, TITLE, PRICE, "
     + "VERS FROM MAG WHERE PRICE &gt; ?1 AND PRICE &lt; ?2", Magazine.class);
 
-query.setParameter (1, 5d);
-query.setParameter (2, 10d);
+query.setParameter(1, 5d);
+query.setParameter(2, 10d);
 
-List&lt;Magazine&gt; results = query.getResultList ();
+List&lt;Magazine&gt; results = (List&lt;Magazine&gt;) query.getResultList();
 for (Magazine mag : results)
     processMagazine (mag);
 </programlisting>

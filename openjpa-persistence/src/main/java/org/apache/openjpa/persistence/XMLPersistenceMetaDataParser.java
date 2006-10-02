@@ -48,6 +48,7 @@ import org.apache.openjpa.meta.DelegatingMetaDataFactory;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.LifecycleMetaData;
+import org.apache.openjpa.meta.MetaDataDefaults;
 import org.apache.openjpa.meta.MetaDataFactory;
 import static org.apache.openjpa.meta.MetaDataModes.*;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -196,8 +197,7 @@ public class XMLPersistenceMetaDataParser
      * The annotation parser. When class is discovered in an XML file,
      * we first parse any annotations present, then override with the XML.
      */
-    public void setAnnotationParser(
-        AnnotationPersistenceMetaDataParser parser) {
+    public void setAnnotationParser(AnnotationPersistenceMetaDataParser parser){
         _parser = parser;
     }
 
@@ -588,9 +588,10 @@ public class XMLPersistenceMetaDataParser
                     warnUnsupportedTag(name);
             }
         } else if (tag instanceof PersistenceStrategy) {
-            ret = startStrategy((PersistenceStrategy) tag, attrs);
+            PersistenceStrategy ps = (PersistenceStrategy) tag;
+            ret = startStrategy(ps, attrs);
             if (ret)
-                _strategy = (PersistenceStrategy) tag;
+                _strategy = ps;
         } else if (tag == ELEM_LISTENER)
             ret = startEntityListener(attrs);
         else if (tag == ELEM_ATTRS)
@@ -819,8 +820,7 @@ public class XMLPersistenceMetaDataParser
         if (log.isInfoEnabled())
             log.info(_loc.get("parse-sequence", name));
 
-        SequenceMetaData meta = getRepository().getCachedSequenceMetaData
-            (name);
+        SequenceMetaData meta = getRepository().getCachedSequenceMetaData(name);
         if (meta != null && log.isWarnEnabled())
             log.warn(_loc.get("override-sequence", name));
 
@@ -835,8 +835,7 @@ public class XMLPersistenceMetaDataParser
         if (seq == null || seq.indexOf('(') == -1) {
             clsName = SequenceMetaData.IMPL_NATIVE;
             props = null;
-        } else // plugin
-        {
+        } else { // plugin
             clsName = Configurations.getClassName(seq);
             props = Configurations.getProperties(seq);
             seq = null;
@@ -1075,8 +1074,7 @@ public class XMLPersistenceMetaDataParser
                 field = meta.addDeclaredField(name, type);
                 PersistenceMetaDataDefaults.setCascadeNone(field);
                 PersistenceMetaDataDefaults.setCascadeNone(field.getKey());
-                PersistenceMetaDataDefaults.setCascadeNone
-                    (field.getElement());
+                PersistenceMetaDataDefaults.setCascadeNone(field.getElement());
             }
             field.backingMember(member);
         } else if (field == null) {
@@ -1342,8 +1340,7 @@ public class XMLPersistenceMetaDataParser
         if (log.isInfoEnabled())
             log.info(_loc.get("parse-query", name));
 
-        QueryMetaData meta = getRepository().getCachedQueryMetaData
-            (null, name);
+        QueryMetaData meta = getRepository().getCachedQueryMetaData(null, name);
         if (meta != null && log.isWarnEnabled())
             log.warn(_loc.get("override-query", name, currentLocation()));
 
@@ -1398,8 +1395,7 @@ public class XMLPersistenceMetaDataParser
         if (log.isInfoEnabled())
             log.info(_loc.get("parse-native-query", name));
 
-        QueryMetaData meta = getRepository().getCachedQueryMetaData
-            (null, name);
+        QueryMetaData meta = getRepository().getCachedQueryMetaData(null, name);
         if (meta != null && log.isWarnEnabled())
             log.warn(_loc.get("override-query", name, currentLocation()));
 
@@ -1486,8 +1482,8 @@ public class XMLPersistenceMetaDataParser
         _listener = classForName(attrs.getValue("class"));
         boolean system = currentElement() == null;
         Collection<LifecycleCallbacks>[] parsed = 
-            new AnnotationPersistenceMetaDataParser(_conf).parseCallbackMethods
-            (_listener, null, true, true);
+            AnnotationPersistenceMetaDataParser.parseCallbackMethods(_listener,
+                null, true, true, _repos);
         if (parsed == null)
             return true;
 
@@ -1526,8 +1522,11 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
         if (!isMetaDataMode())
             return false;
-        boolean system = currentElement() == null;
+        int[] events = MetaDataParsers.getEventTypes(callback);
+        if (events == null)
+            return false;
 
+        boolean system = currentElement() == null;
         Class type = currentElement() == null ? null :
             ((ClassMetaData) currentElement()).getDescribedType();
         if (type == null)
@@ -1540,6 +1539,7 @@ public class XMLPersistenceMetaDataParser
                 _highs = new int[LifecycleEvent.ALL_EVENTS.length];
         }
 
+        MetaDataDefaults def = _repos.getMetaDataFactory().getDefaults();
         LifecycleCallbacks adapter;
         if (_listener != null)
             adapter = new BeanLifecycleCallbacks(_listener,
@@ -1548,12 +1548,13 @@ public class XMLPersistenceMetaDataParser
             adapter = new MethodLifecycleCallbacks(_cls,
                 attrs.getValue("method-name"), false);
 
-        int[] events = getEventTypes(callback);
-        if (events == null)
-            return true;
-
         for (int i = 0; i < events.length; i++) {
             int event = events[i];
+            if (_listener != null) {
+                MetaDataParsers.validateMethodsForSameCallback(_listener, 
+                    _callbacks[event], ((BeanLifecycleCallbacks) adapter).
+                    getCallbackMethod(), callback, def, getLog());
+            }
             if (_callbacks[event] == null)
                 _callbacks[event] = new ArrayList<LifecycleCallbacks>(3);
             _callbacks[event].add(adapter);
@@ -1561,28 +1562,6 @@ public class XMLPersistenceMetaDataParser
                 _highs[event]++;
         }
         return true;
-    }
-
-    static int[] getEventTypes(MetaDataTag tag) {
-        switch (tag) {
-            case PRE_PERSIST:
-                return new int[]{ LifecycleEvent.BEFORE_PERSIST };
-            case POST_PERSIST:
-                return new int[]{ LifecycleEvent.AFTER_PERSIST };
-            case PRE_REMOVE:
-                return new int[]{ LifecycleEvent.BEFORE_DELETE };
-            case POST_REMOVE:
-                return new int[]{ LifecycleEvent.AFTER_DELETE };
-            case PRE_UPDATE:
-                return new int[]{ LifecycleEvent.BEFORE_STORE };
-            case POST_UPDATE:
-                return new int[]{ LifecycleEvent.AFTER_STORE };
-            case POST_LOAD:
-                return new int[]{ LifecycleEvent.AFTER_LOAD,
-                    LifecycleEvent.AFTER_REFRESH };
-            default:
-                return null;
-        }
     }
 
     /**
@@ -1593,8 +1572,8 @@ public class XMLPersistenceMetaDataParser
         Class supCls = cls.getDescribedType().getSuperclass();
         Collection<LifecycleCallbacks>[] supCalls = null;
         if (!Object.class.equals(supCls)) {
-            supCalls = new AnnotationPersistenceMetaDataParser(_conf).
-                parseCallbackMethods(supCls, null, true, false);
+            supCalls = AnnotationPersistenceMetaDataParser.parseCallbackMethods
+                (supCls, null, true, false, _repos);
         }
         if (supCalls != null) {
             for (int event : LifecycleEvent.ALL_EVENTS) {
@@ -1622,11 +1601,10 @@ public class XMLPersistenceMetaDataParser
     /**
      * Instantiate the given class, taking into account the default package.
 	 */
-	protected Class classForName (String name)
-		throws SAXException
-	{
-		if ("Entity".equals (name))
+	protected Class classForName(String name)
+		throws SAXException {
+		if ("Entity".equals(name))
 			return PersistenceCapable.class;
-		return super.classForName (name, isRuntime ());
+		return super.classForName(name, isRuntime());
 	}
 }

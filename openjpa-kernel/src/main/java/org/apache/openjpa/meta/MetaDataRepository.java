@@ -340,8 +340,7 @@ public class MetaDataRepository
                         classList.add(cls);
                     break;
                 }
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 // this happens when the class is not loadable by
                 // the environment class loader, so it was probably
                 // listed elsewhere; also ignore linkage failures and
@@ -364,8 +363,7 @@ public class MetaDataRepository
 
         if (!mustExist)
             return null;
-        throw new MetaDataException(_loc.get("no-alias-meta", alias,
-            _aliases));
+        throw new MetaDataException(_loc.get("no-alias-meta", alias, _aliases));
     }
 
     /**
@@ -408,8 +406,7 @@ public class MetaDataRepository
             // class never registers itself with the system
             if ((_validate & VALIDATE_RUNTIME) != 0) {
                 try {
-                    Class.forName(cls.getName(), true,
-                        cls.getClassLoader());
+                    Class.forName(cls.getName(), true, cls.getClassLoader());
                 } catch (Throwable t) {
                 }
             }

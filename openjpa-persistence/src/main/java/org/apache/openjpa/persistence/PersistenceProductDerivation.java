@@ -113,9 +113,10 @@ public class PersistenceProductDerivation
         throws IOException {
         if (pinfo == null)
             return null;
-
-        if (!isOpenJPAPersistenceProvider(pinfo, null))
+        if (!isOpenJPAPersistenceProvider(pinfo, null)) {
+            warnUnknownProvider(pinfo);
             return null;
+        }
 
         ConfigurationProviderImpl cp = new ConfigurationProviderImpl();
         cp.addProperties(PersistenceUnitInfoImpl.toOpenJPAProperties(pinfo));
@@ -148,8 +149,10 @@ public class PersistenceProductDerivation
         // persistence.xml does not exist; just load map
         PersistenceUnitInfoImpl pinfo = new PersistenceUnitInfoImpl();
         pinfo.fromUserProperties(m);
-        if (!isOpenJPAPersistenceProvider(pinfo, null))
+        if (!isOpenJPAPersistenceProvider(pinfo, null)) {
+            warnUnknownProvider(pinfo);
             return null;
+        }
         cp.addProperties(pinfo.toOpenJPAProperties());
         return cp;
     }
@@ -248,8 +251,10 @@ public class PersistenceProductDerivation
                 rsrc, String.valueOf(name)).getMessage(), getClass().getName(), 
                 rsrc);
         } else if (!isOpenJPAPersistenceProvider(pinfo, loader)) {
-            if (!explicit)
+            if (!explicit) {
+                warnUnknownProvider(pinfo);
                 return Boolean.FALSE;
+            }
             throw new MissingResourceException(_loc.get("unknown-provider", 
                 rsrc, name, pinfo.getPersistenceProviderClassName()).
                 getMessage(), getClass().getName(), rsrc);
@@ -319,20 +324,30 @@ public class PersistenceProductDerivation
         try {
             if (PersistenceProviderImpl.class.isAssignableFrom
                 (Class.forName(provider, false, loader))) {
-                // log not configured yet
-                warn(_loc.get("extended-provider", provider).getMessage());
+                log(_loc.get("extended-provider", provider).getMessage());
                 return true;
             }
         } catch (Throwable t) {
-            warn(_loc.get("unloadable-provider", provider, t).
-                getMessage());
+            log(_loc.get("unloadable-provider", provider, t).getMessage());
             return false;
         }
-        warn(_loc.get("unrecognized-provider", provider).getMessage());
         return false;
     }
+
+    /**
+     * Warn the user that we could only find an unrecognized persistence 
+     * provider.
+     */
+    private static void warnUnknownProvider(PersistenceUnitInfo pinfo) {
+        log(_loc.get("unrecognized-provider", 
+            pinfo.getPersistenceProviderClassName()).getMessage());
+    }
     
-    private static void warn(String msg) {
+    /**
+     * Log a message.   
+     */
+    private static void log(String msg) {
+        // at this point logging isn't configured yet
         System.err.println(msg);
     }
 

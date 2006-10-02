@@ -35,7 +35,7 @@
         </see>
     </indexterm>
     <para>
-JPA recognizes two types of persistent classes: <emphasis> entity</emphasis>
+JPA recognizes two types of persistent classes: <emphasis>entity</emphasis>
 classes and <emphasis>embeddable</emphasis> classes. Each persistent instance of
 an entity class - each <emphasis>entity</emphasis> - represents a unique
 datastore record. You can use the <classname>EntityManager</classname> to find
@@ -49,9 +49,9 @@ never returned directly from the <classname>EntityManager</classname> or from a
 <classname>Query</classname>.
     </para>
     <para>
-Despite these differences, there are few differences between entity classes and
-embeddable classes. In fact, writing either type of persistent class is little
-different than writing any other class. There are no special parent classes to
+Despite these differences, there are few distinctions between entity classes and
+embeddable classes. In fact, writing either type of persistent class is a lot
+like writing any other class. There are no special parent classes to
 extend from, field types to use, or methods to write. This is one important way
 in which JPA makes persistence transparent to you, the developer.
     </para>
@@ -73,43 +73,38 @@ package org.mag;
  * Example persistent class.  Notice that it looks exactly like any other
  * class.  JPA makes writing persistent classes completely transparent.
  */
-public class Magazine
-{
-    private String    isbn;
-    private String    title;
-    private Set       articles = new HashSet ();
-    private Article   coverArticle;
-    private int       copiesSold;
-    private double    price;
-    private Company   publisher;
-    private int       version;
+public class Magazine {
 
-    protected Magazine ()
-    {
+    private String isbn;
+    private String title;
+    private Set articles = new HashSet();
+    private Article coverArticle;
+    private int copiesSold;
+    private double price;
+    private Company publisher;
+    private int version;
+
+    protected Magazine() {
     }
 
-    public Magazine (String title, String isbn)
-    {
+    public Magazine(String title, String isbn) {
         this.title = title;
         this.isbn = isbn;
     }
 
-    public void publish (Company publisher, double price)
-    {
+    public void publish(Company publisher, double price) {
         this.publisher = publisher;
-        publisher.addMagazine (this);
+        publisher.addMagazine(this);
         this.price = price;
     }
     
-    public void sell ()
-    {
+    public void sell() {
         copiesSold++;
-        publisher.addRevenue (price);
+        publisher.addRevenue(price);
     }
 
-    public void addArticle (Article article)
-    {
-        articles.add (article);
+    public void addArticle(Article article) {
+        articles.add(article);
     }
 
     // rest of methods omitted
@@ -210,7 +205,7 @@ are identity fields, because no two magazine records in the datastore can have
 the same <literal>isbn</literal> and <literal>title</literal> values.
 <xref linkend="jpa_overview_meta_id"/> will show you how to denote your
 identity fields in JPA metadata. <xref linkend="jpa_overview_pc_identity"/>
- below examines persistent identity.
+below examines persistent identity.
             </para>
             <note>
                 <para>
@@ -241,24 +236,24 @@ OpenJPA fully supports identity fields, but does not require them. See
             </indexterm>
             <para>
 The <literal>version</literal> field in our <classname>Magazine</classname>
-class may seem out of place. JPA uses a version field in your entity to detect
+class may seem out of place. JPA uses a version field in your entities to detect
 concurrent modifications to the same datastore record. When the JPA runtime
 detects an attempt to concurrently modify the same record, it throws an
 exception to the transaction attempting to commit last. This prevents
 overwriting the previous commit with stale data.
             </para>
             <para>
-The version field is not required, but without one concurrent threads or
+A version field is not required, but without one concurrent threads or
 processes might succeed in making conflicting changes to the same record at the
 same time. This is unacceptable to most applications.
 <xref linkend="jpa_overview_meta_version"/> shows you how to designate a
 version field in JPA metadata.
             </para>
             <para>
-The version field must be an integral type ( <classname> int</classname>,
-<classname>Long</classname>, etc) or a <classname>java.sql.Timestamp</classname>
-. You should consider version fields immutable. Changing the field value has
-undefined results.
+The version field must be an integral type (<classname> int</classname>,
+<classname>Long</classname>, etc) or a <classname>
+java.sql.Timestamp</classname>. You should consider version fields immutable. 
+Changing the field value has undefined results.
             </para>
             <note>
                 <para>
@@ -391,12 +386,12 @@ the field. JPA supports the following immutable types:
             <itemizedlist>
                 <listitem>
                     <para>
-All primitives ( <classname>int, float, byte</classname>, etc)
+All primitives (<classname>int, float, byte</classname>, etc)
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-All primitive wrappers ( <classname>java.lang.Integer, java.lang.Float,
+All primitive wrappers (<classname>java.lang.Integer, java.lang.Float,
 java.lang.Byte</classname>, etc)
                     </para>
                 </listitem>
@@ -527,7 +522,7 @@ Embeddable types
                 <listitem>
                     <para>
 <classname>java.util.Map</classname>s in which each entry maps the value of one
-of an entity's fields to that entity.
+of a related entity's fields to that entity.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -560,10 +555,9 @@ information on persisting serializable types.
             </para>
             <note>
                 <para>
-OpenJPA also supports arrays, <classname> java.lang.Number</classname>,
-<classname> java.util.Locale</classname>, all JDK 1.2 <classname> Set
-</classname>, <classname>List</classname>, and <classname> Map</classname>
-types, collections and maps of immutable and embedded as well as entity types,
+OpenJPA also supports arrays, <classname>java.lang.Number</classname>,
+<classname>java.util.Locale</classname>, all JDK 1.2 <classname>Set</classname>,
+<classname>List</classname>, and <classname>Map</classname> types, 
 and many other mutable and immutable field types. OpenJPA also allows you to
 plug in support for custom types.
                 </para>
@@ -688,10 +682,10 @@ in the datastore. Each entity's identity field values must be unique among all
 other entites of the same type.
         </para>
         <para>
-Identity fields must be primitives, primitive wrappers, <classname>String
-</classname> s, <classname>Date</classname> s, <classname>Timestamp</classname>
-s, or embeddable types. Notably, other entities instances can <emphasis>not
-</emphasis> be used as identity fields.
+Identity fields must be primitives, primitive wrappers, <classname>
+String</classname>s, <classname>Date</classname>s, <classname>
+Timestamp</classname>s, or embeddable types. Notably, other entities instances 
+can <emphasis>not</emphasis> be used as identity fields.
         </para>
         <note>
             <para>
@@ -726,7 +720,7 @@ as immutable objects in your applications.
             </seealso>
         </indexterm>
 If you are dealing with a single persistence context (see
-<xref linkend="jpa_overview_emfactory_perscontext"/> ), then you do not
+<xref linkend="jpa_overview_emfactory_perscontext"/>), then you do not
 have to compare identity fields to test whether two entity references represent
 the same state in the datastore. There is a much easier way: the <literal>==
 </literal> operator. JPA requires that each persistence context maintain only
@@ -811,7 +805,7 @@ If the class is an inner class, it must be <literal>static</literal>.
 All entity classes related by inheritance must use the same identity class, or
 else each entity class must have its own identity class whose inheritance
 hierarchy mirrors the inheritance hierarchy of the owning entity classes (see
-<xref linkend="jpa_overview_pc_identity_hierarchy"/> ).
+<xref linkend="jpa_overview_pc_identity_hierarchy"/>).
                     </para>
                 </listitem>
             </itemizedlist>
@@ -835,8 +829,8 @@ identity fields.
 /**
  * Persistent class using application identity.
  */
-public class Magazine
-{
+public class Magazine {
+
     private String isbn;    // identity field
     private String title;   // identity field
 
@@ -846,8 +840,8 @@ public class Magazine
     /**
      * Application identity class for Magazine.
      */
-    public static class MagazineId
-    {
+    public static class MagazineId {
+
         // each identity field in the Magazine class must have a
         // corresponding field in the identity class
         public String isbn;
@@ -859,8 +853,7 @@ public class Magazine
          * classes directly (some JPA implementations may subclass the
          * identity class).
          */
-        public boolean equals (Object other)
-        {
+        public boolean equals(Object other) {
             if (other == this)
                 return true;
             if (!(other instanceof MagazineId))
@@ -868,22 +861,20 @@ public class Magazine
     
             MagazineId mi = (MagazineId) other;
             return (isbn == mi.isbn
-                || (isbn != null &amp;&amp; isbn.equals (mi.isbn)))
+                || (isbn != null &amp;&amp; isbn.equals(mi.isbn)))
                 &amp;&amp; (title == mi.title
-                || (title != null &amp;&amp; title.equals (mi.title)));
+                || (title != null &amp;&amp; title.equals(mi.title)));
         }
      
         /**
          * Hashcode must also depend on identity values.
          */
-        public int hashCode ()
-        {
-            return ((isbn == null) ? 0 : isbn.hashCode ())
-                ^ ((title == null) ? 0 : title.hashCode ());
+        public int hashCode() {
+            return ((isbn == null) ? 0 : isbn.hashCode())
+                ^ ((title == null) ? 0 : title.hashCode());
         } 
 
-        public String toString ()
-        {
+        public String toString() {
             return isbn + ":" + title;
         }
     }
@@ -954,7 +945,7 @@ more identity fields.
                     <listitem>
                         <para>
 All subclasses of a concrete identity class must be <methodname>equals
-</methodname> and <methodname> hashCode</methodname> -compatible with the
+</methodname> and <methodname>hashCode</methodname>-compatible with the
 concrete superclass. This means that in our example, a <classname>ManagerId
 </classname> instance and a <classname>FullTimeEmployeeId</classname> instance
 with the same identity field values should have the same hash code, and should
@@ -1106,8 +1097,8 @@ datastructure.
 <ulink url="http://java.sun.com/javaee/5/docs/api/javax/persistence/PreUpdate.html">
 <classname>PreUpdate</classname></ulink>: Methods marked with this annotation
 will be invoked just the persistent values in your objects are flushed to the
-datastore. This is equivalent to the XML element tag <literal>pre-update
-</literal>.
+datastore. This is equivalent to the XML element tag <literal>
+pre-update</literal>.
                     </para>
                     <para>
 <classname>PreUpdate</classname> is the complement to <classname>PostLoad
@@ -1131,8 +1122,7 @@ persistent fields with information cached in non-persistent data.
 <classname>PostUpdate</classname></ulink>: Methods marked with this annotation
 will be invoked after changes to a given instance have been stored to the
 datastore. This is useful for clearing stale data cached at the application
-layer. This is equivalent to the XML element tag <literal>post-update</literal>
-.
+layer. This is equivalent to the XML element tag <literal>post-update</literal>.
                     </para>
                 </listitem>
                 <listitem>
@@ -1150,8 +1140,8 @@ layer. This is equivalent to the XML element tag <literal>post-update</literal>
 will be invoked before an object transactions to the deleted state. Access to
 persistent fields is valid within this method. You might use this method to
 cascade the deletion to related objects based on complex criteria, or to perform
-other cleanup. This is equivalent to the XML element tag <literal>pre-remove
-</literal>.
+other cleanup. This is equivalent to the XML element tag <literal>
+pre-remove</literal>.
                     </para>
                 </listitem>
                 <listitem>
@@ -1189,8 +1179,8 @@ Below is an example of how to declare callback methods on persistent classes:
  * Example persistent class declaring our entity listener.
  */
 @Entity
-public class Magazine
-{
+public class Magazine {
+
     @Transient 
     private byte[][] data;
 
@@ -1198,17 +1188,15 @@ public class Magazine
     private List&lt;Photo&gt; photos;
 
     @PostLoad
-    public void convertPhotos ()
-    {
-        data = new byte[photos.size ()][];
-        for (int i = 0; i &lt; photos.size (); i++)
-            data[i] = photos.get (i).toByteArray ();
+    public void convertPhotos() {
+        data = new byte[photos.size()][];
+        for (int i = 0; i &lt; photos.size(); i++)
+            data[i] = photos.get(i).toByteArray();
     }
 
     @PreDelete
-    public void logMagazineDeletion ()
-    {
-        getLog ().debug ("deleting magazine containing" + photos.size () 
+    public void logMagazineDeletion() {
+        getLog().debug("deleting magazine containing" + photos.size() 
             + " photos.");
     }
 }
@@ -1258,8 +1246,8 @@ classes.
  */
 @Entity
 @EntityListeners({ MagazineLogger.class, ... })
-public class Magazine
-{
+public class Magazine {
+
     // ... //
 }
 
@@ -1267,20 +1255,18 @@ public class Magazine
 /**
  * Example entity listener.
  */
-public class MagazineLogger
-{
+public class MagazineLogger {
+
     @PostPersist
-    public void logAddition (Object pc)
-    {
+    public void logAddition(Object pc) {
         getLog ().debug ("Added new magazine:" + ((Magazine) pc).getTitle ());
     }
 
 
     @PreRemove
-    public void logDeletion (Object pc)
-    {
-        getLog ().debug ("Removing from circulation:" + 
-            ((Magazine) pc).getTitle ());
+    public void logDeletion(Object pc) {
+        getLog().debug("Removing from circulation:" + 
+            ((Magazine) pc).getTitle());
     }
 }
 </programlisting>

@@ -105,11 +105,11 @@ datastore records.
 <emphasis role="bold"><link linkend="jpa_overview_trans"><classname>
 EntityTransaction</classname></link></emphasis>: Each <classname>EntityManager
 </classname> has a one-to-one relation with a single <classname>
-javax.persistence.EntityTransaction</classname>. <classname>EntityTransaction
-</classname>s allow operations on persistent data to be grouped into units of
-work that either completely succeed or completely fail, leaving the datastore in
-its original state. These all-or-nothing operations are important for
-maintaining data integrity.
+javax.persistence.EntityTransaction</classname>. <classname>
+EntityTransaction</classname>s allow operations on persistent data to be 
+grouped into units of work that either completely succeed or completely fail, 
+leaving the datastore in its original state. These all-or-nothing operations 
+are important for maintaining data integrity.
             </para>
         </listitem>
         <listitem>
@@ -178,38 +178,37 @@ container.
 <programlisting>
 // get an EntityManagerFactory using the Persistence class; typically 
 // the factory is cached for easy repeated use
-EntityManagerFactory factory = Persistence.createEntityManagerFactory (null);
+EntityManagerFactory factory = Persistence.createEntityManagerFactory(null);
 
 // get an EntityManager from the factory
-EntityManager em = factory.createEntityManager (PersistenceContextType.EXTENDED);
+EntityManager em = factory.createEntityManager(PersistenceContextType.EXTENDED);
 
 // updates take place within transactions
-EntityTransaction tx = em.getTransaction ();
-tx.begin ();
+EntityTransaction tx = em.getTransaction();
+tx.begin();
 
 // query for all employees who work in our research division
 // and put in over 40 hours a week average
-Query query = em.createQuery ("select e from Employee e where "
+Query query = em.createQuery("select e from Employee e where "
     + "e.division.name = 'Research' AND e.avgHours &gt; 40");
 List results = query.getResultList ();
 
 // give all those hard-working employees a raise
-for (Object res : results)
-{
+for (Object res : results) {
     Employee emp = (Employee) res;
-    emp.setSalary (emp.getSalary () * 1.1);
+    emp.setSalary(emp.getSalary() * 1.1);
 }
 
 // commit the updates and free resources
-tx.commit ();
-em.close ();
-factory.close ();
+tx.commit();
+em.close();
+factory.close();
 </programlisting>
     </example>
     <para>
 Within a container, the <classname>EntityManager</classname> will be injected
-and transactional handled declaratively. Thus, the in-container version of the
-example consists entirely of business logic:
+and transactions will be handled declaratively. Thus, the in-container version 
+of the example consists entirely of business logic:
     </para>
     <example id="jpa_overview_arch_interact_inside">
         <title>
@@ -219,15 +218,14 @@ example consists entirely of business logic:
 // query for all employees who work in our research division
 // and put in over 40 hours a week average - note that the EntityManager em
 // is injected using a @Resource annotation
-Query query = em.createQuery ("select e from Employee e where "
+Query query = em.createQuery("select e from Employee e where "
     + "e.division.name = 'Research' and e.avgHours &gt; 40");
-List results = query.getResultList ();
+List results = query.getResultList();
 
 // give all those hard-working employees a raise
-for (Object res : results)
-{
+for (Object res : results) {
     emp = (Employee) res;
-    emp.setSalary (emp.getSalary () * 1.1);
+    emp.setSalary(emp.getSalary() * 1.1);
 } 
 </programlisting>
     </example>
@@ -274,8 +272,8 @@ application.
         <para>
 The diagram above depicts the JPA exception architecture. All
 exceptions are unchecked. JPA uses standard exceptions where
-appropriate, most notably <classname> IllegalArgumentException</classname>s and
-<classname> IllegalStateException</classname> s. The specification also provides
+appropriate, most notably <classname>IllegalArgumentException</classname>s and
+<classname>IllegalStateException</classname>s. The specification also provides
 a few JPA-specific exceptions in the <literal>javax.persistence</literal>
 package. These exceptions should be self-explanatory. See the
 <ulink url="http://java.sun.com/javaee/5/docs/api">Javadoc</ulink> for

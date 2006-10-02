@@ -186,12 +186,10 @@ or deletes.
           flushes during your transaction to reduce its memory 
           requirements.  See the Javadoc:
           
-                        <phrase>
-                            <ulink url="javadoc/openjpa/persistence/OpenJPAEntityManager.html">
+                        <ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
                                 
           OpenJPAEntityManager.setLargeTransaction
-                            </ulink>
-                        </phrase>
+                        </ulink>
                         
           
           
@@ -203,9 +201,9 @@ If your transaction will visit objects that you know are very unlikely to be
 accessed by other transactions, for example an exhaustive report run only once a
 month, you can turn off population of the data cache so that the transaction
 doesn't fill the entire data cache with objects that won't be accessed again.
-Again, see the Javadoc: <phrase>
-<ulink url="javadoc/openjpa/persistence/OpenJPAEntityManager.html">
-OpenJPAEntityManager.setPopulateDataCache</ulink></phrase>
+Again, see the Javadoc: 
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+OpenJPAEntityManager.setPopulateDataCache</ulink>
                         </para>
                     </entry>
                 </row>

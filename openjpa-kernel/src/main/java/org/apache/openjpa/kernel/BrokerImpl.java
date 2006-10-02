@@ -1233,10 +1233,7 @@ public class BrokerImpl
         catch (RuntimeException re) {
             if (!rollback) {
                 forcedRollback = true;
-                try {
-                    _store.rollback();
-                } catch (RuntimeException re2) {
-                }
+                try { _store.rollback(); } catch (RuntimeException re2) {}
             }
             err = re;
         } finally {
@@ -3794,8 +3791,7 @@ public class BrokerImpl
                         _transAdditions = new HashSet();
                     _transAdditions.add(sm);
                 }
-            }
-            finally {
+            } finally {
                 unlock();
             }
         }

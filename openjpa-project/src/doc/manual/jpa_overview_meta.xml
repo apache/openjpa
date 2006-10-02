@@ -56,9 +56,9 @@ strategies:
     <orderedlist>
         <listitem>
             <para>
-In a resource named <filename>orm.xml</filename> placed in the <filename>
-META-INF</filename> directory of the classpath or the jar archive containing
-your persistent classes.
+In a resource named <filename>orm.xml</filename> placed in a <filename>
+META-INF</filename> directory within a directory in your classpath or within a 
+jar archive containing your persistent classes.
             </para>
         </listitem>
         <listitem>
@@ -221,7 +221,7 @@ attribute:
             <itemizedlist>
                 <listitem>
                     <para>
-<literal>class</literal>: This required attribute lists the class name for the
+<literal>class</literal>: Set this required attribute to the name of the
 identity class.
                     </para>
                 </listitem>
@@ -413,19 +413,16 @@ package org.mag;
 
 @Entity
 @IdClass(Magazine.MagazineId.class)
-public class Magazine
-{
+public class Magazine {
     ...
 
-    public static class MagazineId
-    {
+    public static class MagazineId {
         ...
     }
 }
 
 @Entity
-public class Article
-{
+public class Article {
     ...
 }
 
@@ -433,20 +430,17 @@ public class Article
 package org.mag.pub;
 
 @Entity
-public class Company
-{
+public class Company {
     ...
 }
 
 @Entity
-public class Author
-{
+public class Author {
     ...
 }
 
 @Embeddable
-public class Address
-{
+public class Address {
     ...
 }
 
@@ -454,42 +448,36 @@ public class Address
 package org.mag.subscribe;
 
 @MappedSuperclass
-public abstract class Document
-{
+public abstract class Document {
     ...
 }
 
 @Entity
 public class Contract
-    extends Document
-{
+    extends Document {
     ...
 }
 
 @Entity
-public class Subscription
-{
+public class Subscription {
     ...
 
     @Entity
     public static class LineItem
-        extends Contract
-    {
+        extends Contract {
         ...
     }
 }
 
 @Entity(name="Lifetime")
 public class LifetimeSubscription
-    extends Subscription
-{
+    extends Subscription {
     ...
 }
 
 @Entity(name="Trial")
 public class TrialSubscription
-    extends Subscription
-{
+    extends Subscription {
     ...
 }
 </programlisting>
@@ -587,19 +575,19 @@ Property access, on the other hand, retrieves and loads state through JavaBean
 <literal>T</literal>, you must define the following getter method:
         </para>
 <programlisting>
-T getP ();
+T getP();
 </programlisting>
         <para>
 For boolean properties, this is also acceptable:
         </para>
 <programlisting>
-boolean isP ();
+boolean isP();
 </programlisting>
         <para>
 You must also define the following setter method:
         </para>
 <programlisting>
-void setP (T value);
+void setP(T value);
 </programlisting>
         <para>
 To use property access, set your <literal>entity</literal> element's <literal>
@@ -608,9 +596,9 @@ metadata and mapping annotations on the getter method:
         </para>
 <programlisting>
 @ManyToOne
-private Company getPublisher () { ... }
+private Company getPublisher() { ... }
 
-private void setPublisher (Company publisher) { ... }
+private void setPublisher(Company publisher) { ... }
 </programlisting>
         <warning>
             <para>
@@ -662,7 +650,7 @@ either a persistent field or a persistent property.
             <para>
 The <classname>Transient</classname> annotation specifies that a field is
 non-persistent. Use it to exclude fields from management that would otherwise be
-persistent. <classname> Transient</classname> is a marker annotation only; it
+persistent. <classname>Transient</classname> is a marker annotation only; it
 has no properties.
             </para>
             <para>
@@ -873,8 +861,8 @@ represents the UUID as a 32-character hexadecimal string.
                 </itemizedlist>
                 <para>
 These string constants are defined in
-<ulink url="../../api/openjpa/persistence/Generator.html"><classname>
-org.apache.openjpa.persistence.Generator</classname></ulink>.
+<ulink url="../apidocs/org/apache/openjpa/persistence/Generator.html">
+<classname>org.apache.openjpa.persistence.Generator</classname></ulink>.
                 </para>
             </note>
         </section>
@@ -998,13 +986,13 @@ attribute is required.
 <classname>Basic</classname> signifies a standard value persisted as-is to the
 datastore. You can use the <classname>Basic</classname> annotation on persistent
 fields of the following types: primitives, primitive wrappers, <classname>
-java.lang.String</classname>, <classname>byte[]</classname>, <classname>Byte[]
-</classname>, <classname>char[]</classname>, <classname>Character[]</classname>
-, <classname>java.math.BigDecimal</classname>, <classname>java.math.BigInteger
-</classname>, <classname>java.util.Date</classname>, <classname>
-java.util.Calendar</classname>, <classname>java.sql.Date</classname>,
-<classname>java.sql.Timestamp</classname>, <classname>Enum</classname> s, and
-<classname>Serializable</classname> types.
+java.lang.String</classname>, <classname>byte[]</classname>, <classname>
+Byte[]</classname>, <classname>char[]</classname>, <classname>
+Character[]</classname>, <classname>java.math.BigDecimal</classname>, 
+<classname>java.math.BigInteger</classname>, <classname>
+java.util.Date</classname>, <classname>java.util.Calendar</classname>, 
+<classname>java.sql.Date</classname>, <classname>java.sql.Timestamp</classname>,
+<classname>Enum</classname>s, and <classname>Serializable</classname> types.
             </para>
             <para>
 <classname>Basic</classname> declares these properties:
@@ -1012,9 +1000,9 @@ java.util.Calendar</classname>, <classname>java.sql.Date</classname>,
             <itemizedlist>
                 <listitem>
                     <para>
-<literal>FetchType fetch</literal>: Whether to load the field eagerly (
-<literal>FetchType.EAGER</literal>) or lazily ( <literal>FetchType.LAZY
-</literal> ). Defaults to <literal>FetchType.EAGER</literal>.
+<literal>FetchType fetch</literal>: Whether to load the field eagerly 
+(<literal>FetchType.EAGER</literal>) or lazily (<literal>
+FetchType.LAZY</literal>). Defaults to <literal>FetchType.EAGER</literal>.
                     </para>
                 </listitem>
                 <listitem>
@@ -1187,8 +1175,8 @@ required.
                 </secondary>
             </indexterm>
             <para>
-When an entity <literal>A</literal> references a single entity <literal>B
-</literal>, and other <literal>A</literal>s might also reference the same
+When an entity <literal>A</literal> references a single entity <literal>
+B</literal>, and other <literal>A</literal>s might also reference the same
 <literal>B</literal>, we say there is a <emphasis>many to one</emphasis>
 relation from <literal>A</literal> to <literal>B</literal>. In our sample
 model, for example, each magazine has a reference to its publisher. Multiple
@@ -1214,18 +1202,18 @@ behavior for this field. We explore cascades below. Defaults to an empty array.
                 </listitem>
                 <listitem>
                     <para>
-<literal>FetchType fetch</literal>: Whether to load the field eagerly (
-<literal>FetchType.EAGER</literal>) or lazily ( <literal>FetchType.LAZY
-</literal> ). Defaults to <literal>FetchType.EAGER</literal>. See
-<xref linkend="jpa_overview_meta_fetch"/> above for details on fetch
-types.
+<literal>FetchType fetch</literal>: Whether to load the field eagerly 
+(<literal>FetchType.EAGER</literal>) or lazily 
+(<literal>FetchType.LAZY</literal>). Defaults to <literal>
+FetchType.EAGER</literal>. See <xref linkend="jpa_overview_meta_fetch"/> above 
+for details on fetch types.
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 <literal>boolean optional</literal>: Whether the related object must exist. If
-<literal>false</literal>, this field cannot be null. Defaults to <literal>true
-</literal>.
+<literal>false</literal>, this field cannot be null. Defaults to <literal>
+true</literal>.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -1247,8 +1235,8 @@ required.
                 </listitem>
                 <listitem>
                     <para>
-<literal>fetch</literal>: One of <literal>EAGER</literal> or <literal>LAZY
-</literal>.
+<literal>fetch</literal>: One of <literal>EAGER</literal> or <literal>
+LAZY</literal>.
                     </para>
                 </listitem>
                 <listitem>
@@ -1279,7 +1267,7 @@ null.
 We introduce the JPA <classname>EntityManager</classname> in
 <xref linkend="jpa_overview_em"/>. The <classname>EntityManager
 </classname> has APIs to persist new entities, remove (delete) existing
-entities, refresh entity state from the datastore, and merge <emphasis> detached
+entities, refresh entity state from the datastore, and merge <emphasis>detached
 </emphasis> entity state back into the persistence context. We explore all of
 these APIs in detail later in the overview.
                 </para>
@@ -1386,8 +1374,8 @@ equivalent:
             </indexterm>
             <para>
 When an entity <literal>A</literal> references multiple <literal>B</literal>
-entities, and no two <literal>A</literal>s reference the same <literal>B
-</literal>, we say there is a <emphasis>one to many</emphasis> relation from
+entities, and no two <literal>A</literal>s reference the same <literal>
+B</literal>, we say there is a <emphasis>one to many</emphasis> relation from
 <literal>A</literal> to <literal>B</literal>.
             </para>
             <para>
@@ -1428,11 +1416,11 @@ behavior for the collection elements. We explore cascades above in
                 </listitem>
                 <listitem>
                     <para>
-<literal>FetchType fetch</literal>: Whether to load the field eagerly (
-<literal>FetchType.EAGER</literal>) or lazily ( <literal>FetchType.LAZY
-</literal> ). Defaults to <literal>FetchType.LAZY</literal>. See
-<xref linkend="jpa_overview_meta_fetch"/> above for details on fetch
-types.
+<literal>FetchType fetch</literal>: Whether to load the field eagerly 
+(<literal>FetchType.EAGER</literal>) or lazily 
+(<literal>FetchType.LAZY</literal>). Defaults to <literal>
+FetchType.LAZY</literal>. See <xref linkend="jpa_overview_meta_fetch"/> above 
+for details on fetch types.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -1454,8 +1442,8 @@ required.
                 </listitem>
                 <listitem>
                     <para>
-<literal>fetch</literal>: One of <literal>EAGER</literal> or <literal>LAZY
-</literal>.
+<literal>fetch</literal>: One of <literal>EAGER</literal> or <literal>
+LAZY</literal>.
                     </para>
                 </listitem>
                 <listitem>
@@ -1578,8 +1566,8 @@ Reference Guide for details.
                 </secondary>
             </indexterm>
             <para>
-When an entity <literal>A</literal> references a single entity <literal>B
-</literal>, and no other <literal>A</literal>s can reference the same <literal>
+When an entity <literal>A</literal> references a single entity <literal>
+B</literal>, and no other <literal>A</literal>s can reference the same <literal>
 B</literal>, we say there is a <emphasis>one to one</emphasis> relation between
 <literal>A</literal> and <literal>B</literal>. In our sample model, <classname>
 Magazine</classname> has a one to one relation to <classname>Article</classname>
@@ -1615,18 +1603,18 @@ array.
                 </listitem>
                 <listitem>
                     <para>
-<literal>FetchType fetch</literal>: Whether to load the field eagerly (
-<literal>FetchType.EAGER</literal>) or lazily ( <literal>FetchType.LAZY
-</literal> ). Defaults to <literal>FetchType.EAGER</literal>. See
-<xref linkend="jpa_overview_meta_fetch"/> above for details on fetch
-types.
+<literal>FetchType fetch</literal>: Whether to load the field eagerly 
+(<literal>FetchType.EAGER</literal>) or lazily 
+(<literal>FetchType.LAZY</literal>). Defaults to <literal>
+FetchType.EAGER</literal>. See <xref linkend="jpa_overview_meta_fetch"/> above 
+for details on fetch types.
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 <literal>boolean optional</literal>: Whether the related object must exist. If
-<literal>false</literal>, this field cannot be null. Defaults to <literal>true
-</literal>.
+<literal>false</literal>, this field cannot be null. Defaults to <literal>
+true</literal>.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -1648,8 +1636,8 @@ required.
                 </listitem>
                 <listitem>
                     <para>
-<literal>fetch</literal>: One of <literal>EAGER</literal> or <literal>LAZY
-</literal>.
+<literal>fetch</literal>: One of <literal>EAGER</literal> or <literal>
+LAZY</literal>.
                     </para>
                 </listitem>
                 <listitem>
@@ -1692,7 +1680,7 @@ one-to-one</literal> element.
             <para>
 When an entity <literal>A</literal> references multiple <literal>B</literal>
 entities, and other <literal>A</literal>s might reference some of the same
-<literal>B</literal> s, we say there is a <emphasis>many to many</emphasis>
+<literal>B</literal>s, we say there is a <emphasis>many to many</emphasis>
 relation between <literal>A</literal> and <literal>B</literal>. In our sample
 model, for example, each article has a reference to all the authors that
 contributed to the article. Other articles might have some of the same authors.
@@ -1730,11 +1718,11 @@ behavior for the collection elements. We explore cascades above in
                 </listitem>
                 <listitem>
                     <para>
-<literal>FetchType fetch</literal>: Whether to load the field eagerly (
-<literal>FetchType.EAGER</literal>) or lazily ( <literal>FetchType.LAZY
-</literal> ). Defaults to <literal>FetchType.LAZY</literal>. See
-<xref linkend="jpa_overview_meta_fetch"/> above for details on fetch
-types.
+<literal>FetchType fetch</literal>: Whether to load the field eagerly 
+(<literal>FetchType.EAGER</literal>) or lazily 
+(<literal>FetchType.LAZY</literal>). Defaults to <literal>
+FetchType.LAZY</literal>. See <xref linkend="jpa_overview_meta_fetch"/> above 
+for details on fetch types.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -1756,8 +1744,8 @@ required.
                 </listitem>
                 <listitem>
                     <para>
-<literal>fetch</literal>: One of <literal>EAGER</literal> or <literal>LAZY
-</literal>.
+<literal>fetch</literal>: One of <literal>EAGER</literal> or <literal>
+LAZY</literal>.
                     </para>
                 </listitem>
                 <listitem>
@@ -1905,21 +1893,21 @@ Fields declared <literal>static, transient</literal>, or <literal>final
                 <listitem>
                     <para>
 Fields of any primitive type, primitive wrapper type, <classname>
-java.lang.String</classname>, <classname>byte[]</classname>, <classname>Byte[]
-</classname>, <classname>char[]</classname>, <classname>Character[]</classname>
-, <classname>java.math.BigDecimal</classname>, <classname>java.math.BigInteger
-</classname>, <classname>java.util.Date</classname>, <classname>
-java.util.Calendar</classname>, <classname>java.sql.Date</classname>,
-<classname>java.sql.Timestamp</classname>, or any <classname>Serializable
-</classname> type default to persistent, as if annotated with
-<link linkend="jpa_overview_meta_basic"><literal>@Basic</literal></link>.
+java.lang.String</classname>, <classname>byte[]</classname>, <classname>
+Byte[]</classname>, <classname>char[]</classname>, <classname>
+Character[]</classname>, <classname>java.math.BigDecimal</classname>, 
+<classname>java.math.BigInteger</classname>, <classname>
+java.util.Date</classname>, <classname> java.util.Calendar</classname>, 
+<classname>java.sql.Date</classname>, <classname>java.sql.Timestamp</classname>,
+or any <classname>Serializable</classname> type default to persistent, as if 
+annotated with <link linkend="jpa_overview_meta_basic"><literal>
+@Basic</literal></link>.
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 Fields of an embeddable type default to persistent, as if annotated with
-<link linkend="jpa_overview_meta_embedded"><literal> @Embedded</literal></link>
-.
+<link linkend="jpa_overview_meta_embedded"><literal>@Embedded</literal></link>.
                     </para>
                 </listitem>
                 <listitem>
@@ -3500,8 +3488,8 @@ package org.mag;
 
 @Entity
 @IdClass(Magazine.MagazineId.class)
-public class Magazine
-{
+public class Magazine {
+
     @Id private String isbn;
     @Id private String title;
     @Version private int version;
@@ -3524,15 +3512,14 @@ public class Magazine
 
     ...
 
-    public static class MagazineId
-    {
+    public static class MagazineId {
         ...
     }
 }
 
 @Entity
-public class Article
-{
+public class Article {
+
     @Id private long id;
     @Version private int version;
     
@@ -3550,8 +3537,8 @@ public class Article
 package org.mag.pub;
 
 @Entity
-public class Company
-{
+public class Company {
+
     @Id private long id;
     @Version private int version;
 
@@ -3569,8 +3556,8 @@ public class Company
 }
 
 @Entity
-public class Author
-{
+public class Author {
+
     @Id private long id;
     @Version private int version;
 
@@ -3585,8 +3572,8 @@ public class Author
 }
 
 @Embeddable
-public class Address
-{
+public class Address {
+
     private String street; // defaults to @Basic
     private String city;   // defaults to @Basic
     private String state;  // defaults to @Basic
@@ -3599,8 +3586,8 @@ public class Address
 package org.mag.subscribe;
 
 @MappedSuperclass
-public abstract class Document
-{
+public abstract class Document {
+
     @Id private long id;
     @Version private int version;
 
@@ -3609,16 +3596,16 @@ public abstract class Document
 
 @Entity
 public class Contract
-    extends Document
-{
+    extends Document {
+
     private String terms; // defaults to @Basic
 
     ...
 }
 
 @Entity
-public class Subscription
-{
+public class Subscription {
+
     @Id private long id;
     @Version private int version;
 
@@ -3633,8 +3620,8 @@ public class Subscription
 
     @Entity
     public static class LineItem
-        extends Contract
-    {
+        extends Contract {
+
         private String comments; // defaults to @Basic
         private double price;    // defaults to @Basic
         private long num;        // defaults to @Basic
@@ -3648,21 +3635,21 @@ public class Subscription
 
 @Entity(name="Lifetime")
 public class LifetimeSubscription
-    extends Subscription
-{
+    extends Subscription {
+
     @Basic(fetch=FetchType.LAZY)
-    private boolean getEliteClub () { ... }
-    public void setEliteClub (boolean elite) { ... }
+    private boolean getEliteClub() { ... }
+    public void setEliteClub(boolean elite) { ... }
 
     ...
 }
 
 @Entity(name="Trial")
 public class TrialSubscription
-    extends Subscription
-{
-    public Date getEndDate () { ... }
-    public void setEndDate (Date end) { ... }
+    extends Subscription {
+
+    public Date getEndDate() { ... }
+    public void setEndDate(Date end) { ... }
 
     ...
 }

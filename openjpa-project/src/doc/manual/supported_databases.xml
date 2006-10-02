@@ -4,7 +4,7 @@
     </title>
     <para>
 Following is a table of the database and JDBC driver versions that are supported
-by OpenJPA <phrase>JPA</phrase>.
+by OpenJPA.
     </para>
     <table tocentry="1">
         <title>
@@ -326,10 +326,7 @@ datastore transactions cannot use the pessimistic lock manager.
                     <listitem>
                         <para>
 Interbase does not support the <literal>LOWER</literal>, <literal>SUBSTRING
-</literal>, or <literal>INSTR</literal> SQL functions, which means that
-<methodname>toLowerCase()</methodname>, <methodname>indexOf()</methodname>, and
-<methodname>substring()</methodname> methods in <phrase>JPA</phrase> QL cannot
-be used.
+</literal>, or <literal>INSTR</literal> SQL functions>
                         </para>
                     </listitem>
                 </itemizedlist>
@@ -482,10 +479,7 @@ Firebird does not support auto-increment columns.
                     <listitem>
                         <para>
 Firebird does not support the <literal>LOWER</literal>, <literal>SUBSTRING
-</literal>, or <literal>INSTR</literal> SQL functions, which means that
-<methodname>toLowerCase()</methodname>, <methodname>indexOf()</methodname>, and
-<methodname>substring()</methodname> methods in <phrase>JPA</phrase> QL cannot
-be used.
+</literal>, or <literal>INSTR</literal> SQL functions.
                         </para>
                     </listitem>
                 </itemizedlist>

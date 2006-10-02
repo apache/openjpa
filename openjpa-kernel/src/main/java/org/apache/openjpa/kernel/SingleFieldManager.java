@@ -250,22 +250,22 @@ class SingleFieldManager
             case JavaTypes.PC_UNTYPED:
                 if (!_broker.isDetachedNew() && _broker.isDetached(objval))
                     return; // allow but ignore
-                _broker.persist(objval, false, call);
+                _broker.persist(objval, true, call);
                 break;
             case JavaTypes.ARRAY:
-                _broker.persistAll(Arrays.asList((Object[]) objval), false, 
+                _broker.persistAll(Arrays.asList((Object[]) objval), true, 
                     call);
                 break;
             case JavaTypes.COLLECTION:
-                _broker.persistAll((Collection) objval, false, call);
+                _broker.persistAll((Collection) objval, true, call);
                 break;
             case JavaTypes.MAP:
                 if (fmd.getKey().getCascadePersist()
                     == ValueMetaData.CASCADE_IMMEDIATE)
-                    _broker.persistAll(((Map) objval).keySet(), false, call);
+                    _broker.persistAll(((Map) objval).keySet(), true, call);
                 if (fmd.getElement().getCascadePersist()
                     == ValueMetaData.CASCADE_IMMEDIATE)
-                    _broker.persistAll(((Map) objval).values(), false, call);
+                    _broker.persistAll(((Map) objval).values(), true, call);
                 break;
         }
     }
@@ -615,8 +615,8 @@ class SingleFieldManager
                     if (external)
                         val = fmd.getExternalValue(val, _broker);
                     else if (val instanceof Proxy) {
-                        // shortcut change trackers; also ensures we don't iterate
-                        // lrs fields
+                        // shortcut change trackers; also ensures we don't 
+                        // iterate lrs fields
                         ChangeTracker ct = ((Proxy) val).getChangeTracker();
                         if (ct != null && ct.isTracking()) {
                             preFlushPCs(fmd.getElement(), ct.getAdded(), 
@@ -646,8 +646,8 @@ class SingleFieldManager
                         val = fmd.getExternalValue(val, _broker);
                         external = false;
                     } else if (val instanceof Proxy) {
-                        // shortcut change trackers; also ensures we don't iterate
-                        // lrs fields
+                        // shortcut change trackers; also ensures we don't 
+                        // iterate lrs fields
                         MapChangeTracker ct = (MapChangeTracker) ((Proxy) val).
                             getChangeTracker();
                         if (ct != null && ct.isTracking() && ct.getTrackKeys())
@@ -670,8 +670,8 @@ class SingleFieldManager
                     if (external)
                         val = fmd.getExternalValue(val, _broker);
                     else if (val instanceof Proxy) {
-                        // shortcut change trackers; also ensures we don't iterate
-                        // lrs fields
+                        // shortcut change trackers; also ensures we don't 
+                        // iterate lrs fields
                         MapChangeTracker ct = (MapChangeTracker) ((Proxy) val).
                             getChangeTracker();
                         if (ct != null && ct.isTracking()) {
@@ -743,10 +743,9 @@ class SingleFieldManager
 
             sm = _broker.getStateManager(obj);
             if (sm == null || !sm.isPersistent())
-                throw new InvalidStateException
-                    (_loc.get("cant-cascade-persist",
-                        Exceptions.toString(obj), vmd,
-                        Exceptions.toString(_sm.getManagedInstance()))).
+                throw new InvalidStateException(_loc.get("cant-cascade-persist",
+                    Exceptions.toString(obj), vmd,
+                    Exceptions.toString(_sm.getManagedInstance()))).
                     setFailedObject(obj);
         } else {
             sm = _broker.getStateManager(obj);
@@ -763,8 +762,9 @@ class SingleFieldManager
                     Exceptions.toString(_sm.getManagedInstance()))).
                     setFailedObject(obj);
 
-            ((StateManagerImpl) sm).nonprovisional(logical, call);
-            ((StateManagerImpl) sm).setDereferencedDependent(false, true);
+            StateManagerImpl smimpl = (StateManagerImpl) sm;
+            smimpl.nonprovisional(logical, call);
+            smimpl.setDereferencedDependent(false, true);
         }
     }
 

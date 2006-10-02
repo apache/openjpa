@@ -84,7 +84,6 @@ import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.DelegatingMetaDataFactory;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -580,14 +579,14 @@ public class AnnotationPersistenceMetaDataParser
                         highs[i] = listeners[i].size();
             }
             recordCallbacks(meta, parseCallbackMethods(_cls, listeners, false,
-                false), highs, false);
+                false, getRepository()), highs, false);
 
             // scan possibly non-PC hierarchy for callbacks.
             // redundant for PC superclass but we don't know that yet
             // so let LifecycleMetaData determine that
             if (!Object.class.equals(_cls.getSuperclass())) {
-                recordCallbacks(meta, parseCallbackMethods(_cls.
-                    getSuperclass(), null, true, false), null, true);
+                recordCallbacks(meta, parseCallbackMethods(_cls.getSuperclass(),
+                    null, true, false, getRepository()), null, true);
             }
         }
 
@@ -759,7 +758,8 @@ public class AnnotationPersistenceMetaDataParser
         Class[] classes = listeners.value();
         Collection<LifecycleCallbacks>[] parsed = null;
         for (Class cls : classes)
-            parsed = parseCallbackMethods(cls, parsed, true, true);
+            parsed = parseCallbackMethods(cls, parsed, true, true, 
+                getRepository());
         return parsed;
     }
 
@@ -771,9 +771,9 @@ public class AnnotationPersistenceMetaDataParser
      * @param sups whether to scan superclasses
      * @param listener whether this is a listener or not
      */
-    public Collection<LifecycleCallbacks>[] parseCallbackMethods
+    public static Collection<LifecycleCallbacks>[] parseCallbackMethods
         (Class cls, Collection<LifecycleCallbacks>[] callbacks, boolean sups,
-            boolean listener) {
+        boolean listener, MetaDataRepository repos) {
         // first sort / filter based on inheritance
         Set<Method> methods = new TreeSet<Method>(MethodComparator.
             getInstance());
@@ -796,16 +796,15 @@ public class AnnotationPersistenceMetaDataParser
                 }
             }
             sup = sup.getSuperclass();
-        }
-        while (sups && !Object.class.equals(sup));
+        } while (sups && !Object.class.equals(sup));
 
+        MetaDataDefaults def = repos.getMetaDataFactory().getDefaults();
         for (Method m : methods) {
             for (Annotation anno : m.getDeclaredAnnotations()) {
                 MetaDataTag tag = _tags.get(anno.annotationType());
                 if (tag == null)
                     continue;
-
-                int[] events = XMLPersistenceMetaDataParser.getEventTypes(tag);
+                int[] events = MetaDataParsers.getEventTypes(tag);
                 if (events == null)
                     continue;
 
@@ -813,18 +812,13 @@ public class AnnotationPersistenceMetaDataParser
                     callbacks = (Collection<LifecycleCallbacks>[])
                         new Collection[LifecycleEvent.ALL_EVENTS.length];
 
-                for (int i = 0; events != null && i < events.length; i++) {
+                for (int i = 0; i < events.length; i++) {
                     int e = events[i];
-                    if (!verifyHasNoArgConstructor(cls))
-                        continue; 
-                    if (!verifyMultipleMethodsOnSameEvent(cls, callbacks[e], m, 
-                        tag))
-                        continue;
-
                     if (callbacks[e] == null)
-                        callbacks[e] = new ArrayList(3);                   
-                    
+                        callbacks[e] = new ArrayList(3);
                     if (listener) {
+                        MetaDataParsers.validateMethodsForSameCallback(cls, 
+                            callbacks[e], m, tag, def, repos.getLog());
                         callbacks[e].add(new BeanLifecycleCallbacks(cls, m,
                             false));
                     } else {
@@ -835,58 +829,6 @@ public class AnnotationPersistenceMetaDataParser
             }
         }
         return callbacks;
-    }
-
-    private boolean verifyMultipleMethodsOnSameEvent(Class cls, 
-            Collection<LifecycleCallbacks> callbacks, Method method, 
-            MetaDataTag tag) {
-        boolean result = true;
-        if (callbacks == null || callbacks.isEmpty())
-            return true;
-        for (LifecycleCallbacks lc: callbacks) {
-            if (!(lc instanceof MethodLifecycleCallbacks))
-                continue;
-            Method exists = ((MethodLifecycleCallbacks)lc).getCallbackMethod();
-            if (exists.getDeclaringClass().equals(method.getDeclaringClass())) {
-                result = false;
-                Object[] args = new Object[]{method.getDeclaringClass()
-                    .getName(), method.getName(), exists.getName(), 
-                    tag.toString()};
-                PersistenceMetaDataDefaults defaults = getDefaults();
-                if (defaults == null || 
-                    defaults.getAllowsMultipleMethodsOnSameCallback()) {
-                    _log.warn(_loc.get("multiple-methods-on-callback", args));
-                 } else {
-                    throw new UserException(
-                        _loc.get("multiple-methods-on-callback-error", args));
-                 }
-             }
-        }
-        return result;
-    }
-    
-    private boolean verifyHasNoArgConstructor(Class cls) {
-        try {
-            cls.getConstructor(new Class[]{});
-            return true;
-        } catch (Throwable t) {
-            PersistenceMetaDataDefaults defaults = getDefaults();
-            Message msg = _loc.get("missing-no-arg-constructor", cls.getName());
-            if (defaults == null || 
-                defaults.getAllowsMissingCallbackConstructor())
-                _log.warn(msg);
-            else
-                throw new UserException(msg, t);
-        } 
-        return false;
-    }
-    
-    private PersistenceMetaDataDefaults getDefaults() {
-        MetaDataDefaults defaults = getRepository().getMetaDataFactory().
-            getDefaults();
-        if (defaults instanceof PersistenceMetaDataDefaults)
-            return (PersistenceMetaDataDefaults)defaults;
-        return null;
     }
     
     /**

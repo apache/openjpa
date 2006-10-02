@@ -22,7 +22,7 @@ javax.persistence Javadoc</ulink>
         </listitem>
         <listitem>
             <para>
-<ulink url="../../api/index.html">OpenJPA API Javadoc</ulink>
+<ulink url="../apidocs/index.html">OpenJPA API Javadoc</ulink>
             </para>
         </listitem>
         <listitem>

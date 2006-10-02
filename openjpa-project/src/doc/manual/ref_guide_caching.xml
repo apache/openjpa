@@ -289,7 +289,8 @@ tips on how to use this package to extend OpenJPA's caching service yourself.
             <para>
 Rather than use the low-level <literal>org.apache.openjpa.datacache</literal>
 package APIs, JPA users should typically access the data cache through OpenJPA's
-high-level <ulink url="../../api/openjpa/persistence/StoreCache.html">
+high-level 
+<ulink url="../apidocs/org/apache/openjpa/persistence/StoreCache.html">
 <classname>org.apache.openjpa.persistence.StoreCache</classname></ulink> facade.
 This facade has methods to pin and unpin records, evict data from the cache, and
 more.
@@ -309,7 +310,7 @@ corresponding persistent class, and dynamically delegates to that cache.
             </para>
             <para>
 If you know that you want to access a certain data cache and no others, the
-<ulink url="../../api/openjpa/persistence/OpenJPAEntityManagerFactory.html">
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManagerFactory.html">
 <methodname>OpenJPAEntityManagerFactory.getStoreCache(String name)</methodname>
 </ulink> method returns a <classname>StoreCache</classname> interface to a
 particular named data cache.
@@ -381,8 +382,8 @@ cache.evict (Magazine.class, changedMag.getId ());
             </example>
             <para>
 See the <classname>StoreCache</classname>
-<ulink url="../../api/openjpa/persistence/StoreCache.html">Javadoc</ulink> for
-information on additional functionality it provides. Also,
+<ulink url="../apidocs/org/apache/openjpa/persistence/StoreCache.html">
+Javadoc</ulink> for information on additional functionality it provides. Also,
 <xref linkend="ref_guide_runtime"/> discusses OpenJPA's other extensions
 to the standard set of JPA runtime interfaces.
             </para>
@@ -445,10 +446,10 @@ execution time is fully traversed.
             </para>
             <para>
 OpenJPA exposes a high-level interface to the query cache through the
-<ulink url="../../api/openjpa/persistence/QueryResultCache.html"><classname>
-org.apache.openjpa.persistence.QueryResultCache</classname></ulink> class. You
-can access this class through the <classname> OpenJPAEntityManagerFactory
-</classname>.
+<ulink url="../apidocs/org/apache/openjpa/persistence/QueryResultCache.html">
+<classname>org.apache.openjpa.persistence.QueryResultCache</classname></ulink> 
+class. You can access this class through the <classname>
+OpenJPAEntityManagerFactory</classname>.
             </para>
             <example id="ref_guide_cache_queryaccess">
                 <title>
@@ -825,8 +826,8 @@ instead.
                     <listitem>
                         <para>
 <literal>ClearOnClose</literal>: Whether the Tangosol named cache should be
-completely cleared when the <phrase><classname>EntityManagerFactory</classname>
-</phrase> is closed. Defaults to <literal>false</literal>.
+completely cleared when the <classname>EntityManagerFactory</classname>
+is closed. Defaults to <literal>false</literal>.
                         </para>
                     </listitem>
                 </itemizedlist>
