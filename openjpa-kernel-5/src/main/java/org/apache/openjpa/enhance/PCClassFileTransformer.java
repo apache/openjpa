@@ -44,12 +44,12 @@ public class PCClassFileTransformer
     private static final Localizer _loc = Localizer.forPackage
         (PCClassFileTransformer.class);
 
-    private boolean _transforming = false;
     private final MetaDataRepository _repos;
     private final PCEnhancer.Flags _flags;
     private final ClassLoader _tmpLoader;
     private final Log _log;
     private final Set _names;
+    private boolean _transforming = false;
 
     /**
      * Constructor.
@@ -92,14 +92,6 @@ public class PCClassFileTransformer
         _repos = repos;
         _tmpLoader = tmpLoader;
 
-        // ensure that we are using the temporary class loader for
-        // all class resolution
-        repos.getConfiguration().setClassResolver(new ClassResolver() {
-            public ClassLoader getClassLoader(Class context, ClassLoader env) {
-                return _tmpLoader;
-            }
-        });
-
         _log = repos.getConfiguration().
             getLog(OpenJPAConfiguration.LOG_ENHANCE);
         _flags = flags;
@@ -112,7 +104,6 @@ public class PCClassFileTransformer
     public byte[] transform(ClassLoader loader, String className,
         Class redef, ProtectionDomain domain, byte[] bytes)
         throws IllegalClassFormatException {
-
         if (loader == _tmpLoader)
             return null;
 
@@ -123,7 +114,6 @@ public class PCClassFileTransformer
             return null;
 
         _transforming = true;
-
         try {
             Boolean enhance = needsEnhance(className, redef, bytes);
             if (enhance != null && _log.isTraceEnabled())
