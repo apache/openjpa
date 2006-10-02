@@ -78,10 +78,10 @@ public interface OpenJPAEntityManagerFactory
      * settings. OpenJPA recognizes the following configuration settings in this
      * method:
      * <ul>
-     * <li>org.apache.openjpa.ConnectionUsername</li>
-     * <li>org.apache.openjpa.ConnectionPassword</li>
-     * <li>org.apache.openjpa.ConnectionRetainMode</li>
-     * <li>org.apache.openjpa.TransactionMode</li>
+     * <li>openjpa.ConnectionUsername</li>
+     * <li>openjpa.ConnectionPassword</li>
+     * <li>openjpa.ConnectionRetainMode</li>
+     * <li>openjpa.TransactionMode</li>
      * </ul>
      */
     public OpenJPAEntityManager createEntityManager(Map props);
@@ -90,7 +90,8 @@ public interface OpenJPAEntityManagerFactory
      * Register a listener for lifecycle-related events on the specified
      * classes. If the classes are null, all events will be propagated to
      * the listener. The listener will be passed on to all new entity
-     * managers. See the <code>org.apache.openjpa.event</code> package for listener types.
+     * managers. See the <code>org.apache.openjpa.event</code> package for 
+     * listener types.
      *
      * @since 0.3.3
      */

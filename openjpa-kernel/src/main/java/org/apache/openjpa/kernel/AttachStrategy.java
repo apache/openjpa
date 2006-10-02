@@ -202,8 +202,6 @@ abstract class AttachStrategy
                 break;
             case JavaTypes.COLLECTION:
                 Collection frmc = (Collection) fetchObjectField(i);
-                System.out.println("Fetch:" + fmd + ":" + frmc
-                    + ":" + nullLoaded);
                 if (frmc == null && !nullLoaded)
                     return false;
                 Collection toc = (Collection) sm.fetchObjectField(i);

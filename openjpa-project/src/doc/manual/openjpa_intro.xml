@@ -1,30 +1,27 @@
 <chapter id="openjpa_intro">
     <title>
         OpenJPA 
-        <phrase>
-            JPA
-        </phrase>
     </title>
     <indexterm zone="openjpa_intro">
         <primary>
             OpenJPA 
-            <phrase>
-                JPA
-            </phrase>
         </primary>
     </indexterm>
     <para>
-OpenJPA is Apache's implementation of Sun's <phrase>Java Persistence API (JPA)
-specification</phrase> for the transparent persistence of Java objects. This
-document provides an overview of <phrase>the JPA standard</phrase> and technical
+OpenJPA is Apache's implementation of Sun's Java Persistence API (JPA)
+specification for the transparent persistence of Java objects. This
+document provides an overview of the JPA standard and technical
 details on the use of OpenJPA.
     </para>
+<!-- 
+### TUTORIAL
     <para>
-To quickly get started with JPA, you may want to begin at
+To quickly get started with OpenJPA, you may want to begin at
 <xref linkend="jpa_tutorial"/>. If you would prefer to start with an
-introduction to the concepts of JPA, begin with
+introduction to the JPA specification, begin with
 <xref linkend="jpa_overview_intro"/>.
     </para>
+-->
     <section id="openjpa_intro_about">
         <title>
             About This Document
@@ -36,25 +33,27 @@ This document is intended for OpenJPA users. It is divided into several parts:
             <listitem>
                 <para>
 The <link linkend="jpa_overview_intro">JPA Overview</link> describes the
-fundamentals of JPA.
+fundamentals of the JPA specification.
                 </para>
             </listitem>
+<!-- 
+### TUTORIAL
             <listitem>
                 <para>
-In the <link linkend="tutorials">OpenJPA <phrase>JPA</phrase> Tutorials</link>
-you will develop simple persistent applications using OpenJPA. Through the
+In the <link linkend="tutorials">OpenJPA Tutorials</link> you will develop 
+simple persistent applications using OpenJPA. Through the
 tutorials' hands-on approach, you will become comfortable with the core tools
-and development processes under OpenJPA <phrase>JPA</phrase>.
+and development processes under OpenJPA.
                 </para>
             </listitem>
+-->
             <listitem>
                 <para>
-The <link linkend="ref_guide_intro">OpenJPA <phrase>JPA</phrase> Reference Guide
-</link> contains detailed documentation on all aspects of OpenJPA <phrase>JPA
-</phrase>. Browse through this guide to familiarize yourself with the many
-advanced features and customization opportunities OpenJPA provides. Later, you
-can use the guide when you need details on a specific aspect of OpenJPA <phrase>
-JPA</phrase>.
+The <link linkend="ref_guide_intro">OpenJPA Reference Guide</link> contains 
+detailed documentation on all aspects of OpenJPA.  Browse through this guide 
+to familiarize yourself with the many advanced features and customization 
+opportunities OpenJPA provides. Later, you can use the guide when you need 
+details on a specific aspect of OpenJPA.
                 </para>
             </listitem>
         </itemizedlist>

@@ -13,8 +13,8 @@ turn.
             Factory Deployment
         </title>
         <para>
-OpenJPA offers several <phrase><classname>EntityManagerFactory</classname>
-</phrase> deployment options.
+OpenJPA offers several <classname>EntityManagerFactory</classname>
+deployment options.
         </para>
         <section id="ref_guide_deploy_factory_standalone">
             <title>
@@ -39,12 +39,12 @@ The JPA Overview describes the <classname>javax.persistence.Persistence
 <classname>Persistence</classname> to add additional <classname>
 EntityManagerFactory</classname> creation methods. The <classname>
 org.apache.openjpa.persistence.OpenJPAPersistence</classname> class
-<ulink url="../../api/openjpa/persistence/OpenJPAPersistence.html"> Javadoc
-</ulink> details these extensions.
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAPersistence.html">
+Javadoc</ulink> details these extensions.
             </para>
             <para>
-After obtaining the factory, you can cache it for all <phrase><classname>
-EntityManager</classname></phrase> creation duties.
+After obtaining the factory, you can cache it for all <classname>
+EntityManager</classname> creation duties.
             </para>
         </section>
         <section id="ref_guide_deploy_inject">

@@ -20,7 +20,6 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.lib.conf.Configurable;
 
 /**
  * A DataSource that allows additional configuration options to be set
@@ -29,7 +28,7 @@ import org.apache.openjpa.lib.conf.Configurable;
  * @author Marc Prud'hommeaux
  */
 public interface DriverDataSource
-    extends DataSource, Configurable {
+    extends DataSource {
 
     public void setConnectionURL(String connectionURL);
 

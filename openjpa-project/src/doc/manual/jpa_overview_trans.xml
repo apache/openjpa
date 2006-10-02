@@ -140,10 +140,9 @@ includes a method to transfer funds from one user to another, and it looks
 something like this:
     </para>
 <programlisting>
-public void transferFunds (User from, User to, double amnt)
-{
-    from.decrementAccount (amnt);
-    to.incrementAccount (amnt);
+public void transferFunds(User from, User to, double amnt) {
+    from.decrementAccount(amnt);
+    to.incrementAccount(amnt);
 }
 </programlisting>
     <para>
@@ -280,8 +279,8 @@ of hanging due to deadlock.
 OpenJPA uses optimistic semantics by default, but supports both optimistic and
 datastore transactions. OpenJPA also offers advanced locking and versioning APIs
 for fine-grained control over database resource allocation and object
-versioning. See <xref linkend="ref_guide_locking"/> of the Reference Guide for details
-on locking. <xref linkend="jpa_overview_meta_version"/>
+versioning. See <xref linkend="ref_guide_locking"/> of the Reference Guide for 
+details on locking. <xref linkend="jpa_overview_meta_version"/>
 of this document covers standard object versioning, while
 <xref linkend="ref_guide_mapping_jpa"/> of the Reference Guide discusses
 additional versioning strategies available in OpenJPA.
@@ -312,13 +311,13 @@ JPA integrates with your container's <emphasis>managed</emphasis> transactions,
 allowing you to use the container's declarative transaction demarcation and its
 Java Transaction API (JTA) implementation for transaction management. Outside of
 a container, though, you must demarcate transactions manually through JPA. The
-<classname> EntityTransaction</classname> interface controls unmanaged
+<classname>EntityTransaction</classname> interface controls unmanaged
 transactions in JPA.
         </para>
 <programlisting>
-public void begin ();
-public void commit ();
-public void rollback ();
+public void begin();
+public void commit();
+public void rollback();
 </programlisting>
         <para>
         <indexterm>
@@ -376,7 +375,7 @@ also ends the persistence context. All managed entites will be detached from the
 <classname>EntityManager</classname>.
         </para>
 <programlisting>
-public boolean isActive ();
+public boolean isActive();
 </programlisting>
         <para>
         <indexterm>
@@ -388,31 +387,30 @@ public boolean isActive ();
             </secondary>
         </indexterm>
 Finally, the <methodname>isActive</methodname> method returns <literal>true
-</literal> if the transaction is in progress ( <methodname>begin</methodname>
+</literal> if the transaction is in progress (<methodname>begin</methodname>
 has been called more recently than <methodname>commit</methodname> or
-<methodname>rollback</methodname> ), and <literal>false</literal> otherwise.
+<methodname>rollback</methodname>), and <literal>false</literal> otherwise.
         </para>
         <example id="jpa_overview_trans_group">
             <title>
                 Grouping Operations with Transactions
             </title>
 <programlisting>
-public void transferFunds (EntityManager em, User from, User to, double amnt)
-{
+public void transferFunds(EntityManager em, User from, User to, double amnt) {
     // note: it would be better practice to move the transaction demarcation
     // code out of this method, but for the purposes of example...
-    Transaction trans = em.getTransaction ();
-    trans.begin ();
+    Transaction trans = em.getTransaction();
+    trans.begin();
     try
     {
-        from.decrementAccount (amnt);
-        to.incrementAccount (amnt);
-        trans.commit ();
+        from.decrementAccount(amnt);
+        to.incrementAccount(amnt);
+        trans.commit();
     }
     catch (RuntimeException re)
     {
-        if (trans.isActive ())
-            trans.rollback ();   // or could attempt to fix error and retry
+        if (trans.isActive())
+            trans.rollback();   // or could attempt to fix error and retry
         throw re;
     }
 }

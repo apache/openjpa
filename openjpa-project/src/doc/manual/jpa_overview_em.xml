@@ -18,14 +18,15 @@
 The diagram above presents an overview of the <classname>EntityManager
 </classname> interface. For a complete treatment of the <classname>
 EntityManager</classname> API, see the
-<ulink url="jdo-javadoc/javax/jdo/EntityManager.html"> Javadoc</ulink>
-documentation. Methods whose parameter signatures consist of an ellipsis (...)
-are overloaded to take multiple parameter types.
+<ulink url="http://java.sun.com/javaee/5/docs/api/javax/persistence/EntityManager.html">
+Javadoc</ulink> documentation. Methods whose parameter signatures consist of 
+an ellipsis (...) are overloaded to take multiple parameter types.
     </para>
     <note>
         <para>
 OpenJPA extends the standard <classname>EntityManager</classname> interface with
-the <ulink url="../../api/openjpa/persistence/OpenJPAEntityManager.html">
+the 
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>org.apache.openjpa.persistence.OpenJPAEntityManager</classname>
 </ulink> interface to provide additional functionality.
         </para>
@@ -100,7 +101,7 @@ Every <classname>EntityManager</classname> has a one-to-one relation with an
 </link> instance. In fact, many vendors use a single class to implement both the
 <classname>EntityManager</classname> and <classname>EntityTransaction
 </classname> interfaces. If your application requires multiple concurrent
-transactions, you will use multiple <classname>EntityManager</classname> s.
+transactions, you will use multiple <classname>EntityManager</classname>s.
         </para>
         <para>
 You can retrieve the <classname>EntityTransaction</classname> associated with an
@@ -129,7 +130,7 @@ demarcation or through the Java Transaction API (JTA) rather than through the
 lifecycle state of entity instances.
         </para>
 <programlisting>
-public void persist (Object entity);
+public void persist(Object entity);
 </programlisting>
         <para>
         <indexterm>
@@ -198,7 +199,7 @@ whose <link linkend="jpa_overview_meta_cascade">cascades</link> include
 This action can only be used in the context of an active transaction.
         </para>
 <programlisting>
-public void remove (Object entity);
+public void remove(Object entity);
 </programlisting>
         <para>
         <indexterm>
@@ -268,7 +269,7 @@ whose <link linkend="jpa_overview_meta_cascade">cascades</link> include
 This action can only be used in the context of an active transaction.
         </para>
 <programlisting>
-public void refresh (Object entity);
+public void refresh(Object entity);
 </programlisting>
         <para>
         <indexterm>
@@ -345,7 +346,7 @@ whose <link linkend="jpa_overview_meta_cascade">cascades</link> include
             </listitem>
         </itemizedlist>
 <programlisting>
-public Object merge (Object entity);
+public Object merge(Object entity);
 </programlisting>
         <para>
         <indexterm>
@@ -562,27 +563,27 @@ well as all transaction demarcation code.
             </indexterm>
 <programlisting>
 // create some objects
-Magazine mag = new Magazine ("1B78-YU9L", "JavaWorld");
+Magazine mag = new Magazine("1B78-YU9L", "JavaWorld");
 
-Company pub = new Company ("Weston House");
-pub.setRevenue (1750000D);
-mag.setPublisher (pub);
-pub.addMagazine (mag);
+Company pub = new Company("Weston House");
+pub.setRevenue(1750000D);
+mag.setPublisher(pub);
+pub.addMagazine(mag);
 
-Article art = new Article ("JPA Rules!", "Transparent Object Persistence");
-art.addAuthor (new Author ("Fred", "Hoyle"));
-mag.addArticle (art);
+Article art = new Article("JPA Rules!", "Transparent Object Persistence");
+art.addAuthor(new Author("Fred", "Hoyle"));
+mag.addArticle(art);
 
 // persist
-EntityManager em = emf.createEntityManager ();
-em.getTransaction ().begin ();
-em.persist (mag);
-em.persist (pub);
-em.persist (art);
-em.getTransaction ().commit ();
+EntityManager em = emf.createEntityManager();
+em.getTransaction().begin();
+em.persist(mag);
+em.persist(pub);
+em.persist(art);
+em.getTransaction().commit();
 
 // or we could continue using the EntityManager...
-em.close ();
+em.close();
 </programlisting>
         </example>
         <example id="jpa_overview_em_lifecycle_update">
@@ -601,23 +602,23 @@ em.close ();
                 </tertiary>
             </indexterm>
 <programlisting>
-Magazine.MagazineId mi = new Magazine.MagazineId ();
+Magazine.MagazineId mi = new Magazine.MagazineId();
 mi.isbn = "1B78-YU9L";
 mi.title = "JavaWorld";
 
 // updates should always be made within transactions; note that
 // there is no code explicitly linking the magazine or company
 // with the transaction; JPA automatically tracks all changes
-EntityManager em = emf.createEntityManager ();
-em.getTransaction ().begin ();
-Magazine mag = em.find (Magazine.class, mi);
-mag.setPrice (5.99);
-Company pub = mag.getPublisher ();
-pub.setRevenue (1750000D);
-em.getTransaction ().commit ();
+EntityManager em = emf.createEntityManager();
+em.getTransaction().begin();
+Magazine mag = em.find(Magazine.class, mi);
+mag.setPrice(5.99);
+Company pub = mag.getPublisher();
+pub.setRevenue(1750000D);
+em.getTransaction().commit();
 
 // or we could continue using the EntityManager...
-em.close ();
+em.close();
 </programlisting>
         </example>
         <example id="jpa_overview_em_lifecycle_delete">
@@ -641,16 +642,16 @@ em.close ();
 Object oid = ...;
 
 // deletes should always be made within transactions
-EntityManager em = emf.createEntityManager ();
-em.getTransaction ().begin ();
-Company pub = (Company) em.find (Company.class, oid);
-for (Subscription sub : pub.getSubscriptions ())
-    em.remove (sub);
-pub.getSubscriptions ().clear ();
-em.getTransaction ().commit ();
+EntityManager em = emf.createEntityManager();
+em.getTransaction().begin();
+Company pub = (Company) em.find(Company.class, oid);
+for (Subscription sub : pub.getSubscriptions())
+    em.remove(sub);
+pub.getSubscriptions().clear();
+em.getTransaction().commit();
 
 // or we could continue using the EntityManager...
-em.close ();
+em.close();
 </programlisting>
         </example>
         <example id="jpa_overview_em_detachex">
@@ -665,37 +666,37 @@ and transactions.
 <programlisting>
 // CLIENT:
 // requests an object with a given oid
-Record detached = (Record) getFromServer (oid);
+Record detached = (Record) getFromServer(oid);
 
 ...
 
 // SERVER:
 // send object to client; object detaches on EM close
-Object oid = processClientRequest ();
-EntityManager em = emf.createEntityManager ();
-Record record = em.find (Record.class, oid);
-em.close ();
-sendToClient (record);
+Object oid = processClientRequest();
+EntityManager em = emf.createEntityManager();
+Record record = em.find(Record.class, oid);
+em.close();
+sendToClient(record);
 
 ...
 
 // CLIENT:
 // makes some modifications and sends back to server
-detached.setSomeField ("bar");
-sendToServer (detached);
+detached.setSomeField("bar");
+sendToServer(detached);
 
 ...
 
 // SERVER:
 // merges the instance and commit the changes
-Record modified = (Record) processClientRequest ();
-EntityManager em = emf.createEntityManager ();
-em.getTransaction ().begin ();
-Record merged = (Record) em.merge (modified);
-merged.setLastModified (System.currentTimeMillis ());
-merged.setModifier (getClientIdentityCode ());
-em.getTransaction ().commit ();
-em.close ();
+Record modified = (Record) processClientRequest();
+EntityManager em = emf.createEntityManager();
+em.getTransaction().begin();
+Record merged = (Record) em.merge(modified);
+merged.setLastModified(System.currentTimeMillis());
+merged.setModifier(getClientIdentityCode());
+em.getTransaction().commit();
+em.close();
 </programlisting>
         </example>
     </section>
@@ -713,7 +714,7 @@ context type of the <classname>EntityManager</classname>; see
 persistence contexts.
         </para>
 <programlisting>
-public &lt;T&gt; T find (Class&lt;T&gt; cls, Object oid);
+public &lt;T&gt; T find(Class&lt;T&gt; cls, Object oid);
 </programlisting>
         <para>
         <indexterm>
@@ -751,7 +752,7 @@ entity with the given type and identity exists in the datastore, this method
 returns null.
         </para>
 <programlisting>
-public &lt;T&gt; T getReference (Class&lt;T&gt; cls, Object oid);
+public &lt;T&gt; T getReference(Class&lt;T&gt; cls, Object oid);
 </programlisting>
         <para>
         <indexterm>
@@ -794,11 +795,11 @@ gets loaded when you attempt to access a persistent field. At that time, the
 implementation may throw an <classname>EntityNotFoundException</classname> if it
 discovers that the entity does not exist in the datastore. The implementation
 may also throw an <classname>EntityNotFoundException</classname> from the
-<methodname>getReference</methodname> method itself. Unlike <methodname>find
-</methodname>, <methodname>getReference</methodname> does not return null.
+<methodname>getReference</methodname> method itself. Unlike <methodname>
+find</methodname>, <methodname>getReference</methodname> does not return null.
         </para>
 <programlisting>
-public boolean contains (Object entity);
+public boolean contains(Object entity);
 </programlisting>
         <para>
         <indexterm>
@@ -835,7 +836,7 @@ persistence context.
             </secondary>
         </indexterm>
 <programlisting>
-public void flush ();
+public void flush();
 </programlisting>
         <para>
         <indexterm>
@@ -875,8 +876,8 @@ progress, the <methodname>flush</methodname> method throws a <classname>
 TransactionRequiredException</classname>.
         </para>
 <programlisting>
-public FlushModeType getFlushMode ();
-public void setFlushMode (FlushModeType flushMode);
+public FlushModeType getFlushMode();
+public void setFlushMode(FlushModeType flushMode);
 </programlisting>
         <para>
         <indexterm>
@@ -928,7 +929,7 @@ control over flushing behavior. See the Reference Guide's
             </para>
         </note>
 <programlisting>
-public void clear ();
+public void clear();
 </programlisting>
         <para>
         <indexterm>
@@ -976,7 +977,7 @@ persistence context. All entities managed by the <classname>EntityManager
             </secondary>
         </indexterm>
 <programlisting>
-public Query createQuery (String query);
+public Query createQuery(String query);
 </programlisting>
         <para>
 <classname>Query</classname> objects are used to find entities matching certain
@@ -985,7 +986,7 @@ the given Java Persistence Query Language (JPQL) string. See
 <xref linkend="jpa_overview_query"/> for details.
         </para>
 <programlisting>
-public Query createNamedQuery (String name);
+public Query createNamedQuery(String name);
 </programlisting>
         <para>
 This method retrieves a query defined in metadata by name. The returned
@@ -994,9 +995,9 @@ declared in metadata. For more information on named queries, read
 <xref linkend="jpa_overview_query_named"/>.
         </para>
 <programlisting>
-public Query createNativeQuery (String sql);
-public Query createNativeQuery (String sql, Class resultCls);
-public Query createNativeQuery (String sql, String resultMapping);
+public Query createNativeQuery(String sql);
+public Query createNativeQuery(String sql, Class resultCls);
+public Query createNativeQuery(String sql, String resultMapping);
 </programlisting>
         <para>
 <emphasis>Native</emphasis> queries are queries in the datastore's native
@@ -1018,8 +1019,8 @@ native query support.
             </secondary>
         </indexterm>
 <programlisting>
-public boolean isOpen ();
-public void close ();
+public boolean isOpen();
+public void close();
 </programlisting>
         <para>
 When an <classname>EntityManager</classname> is no longer needed, you should

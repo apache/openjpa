@@ -955,7 +955,7 @@ schema that matches your object model.
 OpenJPA relies on foreign key constraint information at runtime to order SQL
 appropriately. Be sure to set your mapping defaults to reflect your existing
 database constraints, or use explicit foreign key mappings as described in
-<phrase><xref linkend="ref_guide_mapping_jpa_fk"/></phrase>.
+<xref linkend="ref_guide_mapping_jpa_fk"/>.
             </para>
         </important>
         <para>
@@ -980,7 +980,7 @@ properties (though with different default values).
             </listitem>
             <listitem>
                 <para>
-<phrase><literal>default</literal>:</phrase> This is an alias for the
+<literal>default</literal>: This is an alias for the
 <ulink url="../apidocs/org/apache/openjpa/jdbc/meta/MappingDefaultsImpl.html">
 <classname>org.apache.openjpa.jdbc.meta.MappingDefaultsImpl</classname></ulink>
 class. This default implementation is highly configurable. It has the following
@@ -2505,14 +2505,14 @@ OpenJPA recognizes the following class extensions.
                 <para>
 This extension specifies how to eagerly fetch subclass state. It overrides the
 global <link linkend="openjpa.jdbc.SubclassFetchMode"><literal>
-openjpa.jdbc.SubclassFetchMode</literal></link> property. <phrase> Set the JPA
+openjpa.jdbc.SubclassFetchMode</literal></link> property. Set the JPA
 <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/SubclassFetchMode.html">
 <classname>org.apache.openjpa.persistence.jdbc.SubclassFetchMode</classname>
 </ulink> annotation to a value from the
 <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/EagerFetchType.html">
 <classname>org.apache.openjpa.persistence.jdbc.EagerFetchType</classname>
 </ulink> enum: <literal>JOIN</literal>, <literal>PARALLEL</literal>, or
-<literal>NONE</literal>.</phrase> See <xref linkend="ref_guide_perfpack_eager"/>
+<literal>NONE</literal>. See <xref linkend="ref_guide_perfpack_eager"/>
  for a discussion of eager fetching.
                 </para>
             </section>
@@ -2625,14 +2625,14 @@ OpenJPA recognizes the following field extensions.
                 <para>
 This extension specifies how to eagerly fetch related objects. It overrides the
 global <link linkend="openjpa.jdbc.EagerFetchMode"><literal>
-openjpa.jdbc.EagerFetchMode</literal></link> property. <phrase>Set the JPA
+openjpa.jdbc.EagerFetchMode</literal></link> property. Set the JPA
 <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/EagerFetchMode.html">
 <classname>org.apache.openjpa.persistence.jdbc.EagerFetchMode</classname>
 </ulink> annotation to a value from the
 <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/EagerFetchType.html">
 <classname>org.apache.openjpa.persistence.jdbc.EagerFetchType</classname>
 </ulink> enum: <literal>JOIN</literal>, <literal>PARALLEL</literal>, or
-<literal>NONE</literal>.</phrase> See <xref linkend="ref_guide_perfpack_eager"/>
+<literal>NONE</literal>. See <xref linkend="ref_guide_perfpack_eager"/>
  for a discussion of eager fetching.
                 </para>
             </section>
@@ -2877,12 +2877,11 @@ concrete strategies in the <literal>org.apache.openjpa.jdbc.meta.strats
 </literal> package.
             </para>
             <para>
-<phrase>The
-<ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/Strategy.html">
+The <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/Strategy.html">
 <classname>org.apache.openjpa.persistence.jdbc.Strategy</classname></ulink>
 annotation allows you to declare a custom class mapping strategy in JPA mapping
 metadata. Set the value of the annotation to the full class name of your custom
-strategy.</phrase> You can configure your strategy class' bean properties using
+strategy. You can configure your strategy class' bean properties using
 OpenJPA's plugin syntax, detailed in <xref linkend="ref_guide_conf_plugins"/>
 .
             </para>
@@ -3028,10 +3027,10 @@ defaults in detail.
                 <para>
 Your other option is to explicitly install a custom value handler or strategy on
 a particular field. To do so, specify the full name of your implementation class
-in the proper mapping metadata extension. <phrase>OpenJPA includes the
+in the proper mapping metadata extension. OpenJPA includes the
 <ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/Strategy.html">
 <classname>org.apache.openjpa.persistence.jdbc.Strategy</classname></ulink>
-annotation.</phrase> You can configure the named strategy or handler's bean
+annotation. You can configure the named strategy or handler's bean
 properties in these extensions using OpenJPA's plugin format (see
 <xref linkend="ref_guide_conf_plugins"/> ).
                 </para>

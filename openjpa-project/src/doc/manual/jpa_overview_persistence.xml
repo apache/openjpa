@@ -35,15 +35,14 @@
         <imageobject>
             <!-- PNG image data, 427 x 121 (see README) -->
             <imagedata fileref="img/persistence.png" width="285px"/>
-            
         </imageobject>
     </mediaobject>
     <note>
         <para>
 OpenJPA also includes the
-<ulink url="../../api/openjpa/persistence/OpenJPAPersistence.html"><classname>
-OpenJPAPersistence</classname></ulink> helper class to provide additional
-utility methods.
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAPersistence.html">
+<classname>OpenJPAPersistence</classname></ulink> helper class to provide 
+additional utility methods.
         </para>
     </note>
     <para>
@@ -55,8 +54,8 @@ of a container, however, can use the
 EntityManagerFactory</classname> objects in a vendor-neutral fashion.
     </para>
 <programlisting>
-public static EntityManagerFactory createEntityManagerFactory (String name);
-public static EntityManagerFactory createEntityManagerFactory (String name, Map props);
+public static EntityManagerFactory createEntityManagerFactory(String name);
+public static EntityManagerFactory createEntityManagerFactory(String name, Map props);
 </programlisting>
     <para>
 Each <methodname>createEntityManagerFactory</methodname> method searches the
@@ -67,8 +66,8 @@ factory.
     </para>
     <para>
 <filename>persistence.xml</filename> files define <classname>
-EntityManagerFactories</classname>. The <methodname> createEntityManagerFactory
-</methodname> methods search for <filename> persistence.xml</filename> files
+EntityManagerFactories</classname>. The <methodname>createEntityManagerFactory
+</methodname> methods search for <filename>persistence.xml</filename> files
 within the <filename>META-INF</filename> directory of any <literal>CLASSPATH
 </literal> element. For example, if your <literal>CLASSPATH</literal> contains
 the <filename>conf</filename> directory, you could place an <classname>
@@ -120,9 +119,9 @@ name attribute is required.
             </listitem>
             <listitem>
                 <para>
-<literal>transaction-type</literal>: Whether to use managed ( <literal>JTA
-</literal>) or local ( <literal>RESOURCE_LOCAL</literal>) transaction
-management. Defaults to <literal>JTA</literal>.
+<literal>transaction-type</literal>: Whether to use managed 
+(<literal>JTA</literal>) or local (<literal>RESOURCE_LOCAL</literal>) 
+transaction management.
                 </para>
             </listitem>
             <listitem>
@@ -144,7 +143,7 @@ OpenJPA.
                 <para>
 <literal>jta-data-source</literal>: The JNDI name of a JDBC <classname>
 DataSource</classname> that is automatically enlisted in JTA transactions. This
-may be an XA <classname> DataSource</classname>.
+may be an XA <classname>DataSource</classname>.
                 </para>
             </listitem>
             <listitem>
@@ -155,22 +154,22 @@ DataSource</classname> that is not enlisted in JTA transactions.
             </listitem>
             <listitem>
                 <para>
-<literal>mapping-file</literal> *: The resource names of XML mapping files for
+<literal>mapping-file</literal>*: The resource names of XML mapping files for
 entities and embeddable classes. You can also specify mapping information in an
-<filename> orm.xml</filename> file in your <filename>META-INF</filename>
+<filename>orm.xml</filename> file in your <filename>META-INF</filename>
 directory. If present, the <filename>orm.xml</filename> mapping file will be
 read automatically.
                 </para>
             </listitem>
             <listitem>
                 <para>
-<literal>jar-file</literal> *: The names of jar files containing entities and
+<literal>jar-file</literal>*: The names of jar files containing entities and
 embeddable classes. The implementation will scan the jar for annotated classes.
                 </para>
             </listitem>
             <listitem>
                 <para>
-<literal>class</literal> *: The class names of entities and embeddable classes.
+<literal>class</literal>*: The class names of entities and embeddable classes.
                 </para>
             </listitem>
             <listitem>
@@ -234,11 +233,11 @@ EntityManagerFactories</classname> are typically injected.
 <programlisting>
 // if your persistence.xml file does not contain all settings already, you
 // can add vendor settings to a map 
-Properties props = new Properties ();
+Properties props = new Properties();
 ...
 
 // create the factory defined by the "openjpa" entity-manager entry
-EntityManagerFactory emf = Persistence.createEntityManagerFactory ("openjpa", props);
+EntityManagerFactory emf = Persistence.createEntityManagerFactory("openjpa", props);
 </programlisting>
         </example>
     </section>

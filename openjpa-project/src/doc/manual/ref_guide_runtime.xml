@@ -3,7 +3,7 @@
         Runtime Extensions
     </title>
     <para>
-This chapter describes OpenJPA extensions to the standard <phrase>JPA</phrase>
+This chapter describes OpenJPA extensions to the standard JPA
 interfaces, and outlines some additional features of the OpenJPA runtime.
     </para>
     <section id="ref_guide_runtime_arch">
@@ -17,7 +17,7 @@ and JDO are simply different "personalities" that can OpenJPA's native kernel
 can adopt.
         </para>
         <para>
-As a OpenJPA <phrase>JPA</phrase> user, you will not normally see beneath
+As a OpenJPA user, you will not normally see beneath
 OpenJPA's JPA personality. OpenJPA allows you to access its feature set without
 leaving the comfort of JPA. Where OpenJPA goes beyond standard JPA
 functionality, we have crafted JPA-specific APIs to each OpenJPA extension for
@@ -190,7 +190,7 @@ features. The <classname>OpenJPAEntityManagerFactory</classname> offers APIs to
 obtain managed and unmanaged <classname>EntityManager</classname>s from the
 same factory, to access the OpenJPA data and query caches, and to perform other
 OpenJPA-specific operations. See the
-<ulink url="../../api/openjpa/persistence/OpenJPAEntityManagerFactory.html">
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManagerFactory.html">
 interface Javadoc</ulink> for details.
             </para>
         </section>
@@ -216,7 +216,7 @@ interface Javadoc</ulink> for details.
             </indexterm>
             <para>
 All OpenJPA <classname>EntityManager</classname>s implement the
-<ulink url="../../api/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>org.apache.openjpa.persistence.OpenJPAEntityManager</classname>
 </ulink> interface. This interface extends the standard <classname>
 javax.persistence.EntityManager</classname>. Just as the standard <classname>
@@ -249,7 +249,7 @@ extensions this interface contains.
             <para>
 OpenJPA extends JPA's standard query functionality with the <classname>
 org.apache.openjpa.persistence.OpenJPAQuery</classname> interface. See its
-<ulink url="../../api/openjpa/persistence/OpenJPAQuery.html">Javadoc</ulink> for
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAQuery.html">Javadoc</ulink> for
 details on the convenience methods it provides.
             </para>
         </section>
@@ -276,7 +276,7 @@ details on the convenience methods it provides.
             <para>
 An <classname>Extent</classname> is a logical view of all persistent instances
 of a given entity class, possibly including subclasses. OpenJPA adds the
-<ulink url="../../api/openjpa/persistence/Extent.html"><classname>
+<ulink url="../apidocs/org/apache/openjpa/persistence/Extent.html"><classname>
 org.apache.openjpa.persistence.Extent</classname></ulink> class to the set of
 Java Persistence APIs. The following code illustrates iterating over all
 instances of the <classname>Magazine</classname> entity, without subclasses:
@@ -310,8 +310,8 @@ for (Magazine m : mags)
 In addition to the <classname>EntityManager</classname> object cache mandated by
 the JPA specification, OpenJPA includes a flexible datastore-level cache. You
 can access this cache from your JPA code using the
-<ulink url="../../api/openjpa/persistence/StoreCache.html"><classname>
-org.apache.openjpa.persistence.StoreCache</classname></ulink> facade.
+<ulink url="../apidocs/org/apache/openjpa/persistence/StoreCache.html">
+<classname>org.apache.openjpa.persistence.StoreCache</classname></ulink> facade.
 <xref linkend="ref_guide_cache"/> has detailed information on OpenJPA's
 data caching system, including the <classname>StoreCache</classname> facade.
             </para>
@@ -327,9 +327,9 @@ data caching system, including the <classname>StoreCache</classname> facade.
             </indexterm>
             <para>
 OpenJPA can cache query results as well as persistent object data. The
-<ulink url="../../api/openjpa/persistence/QueryResultCache.html"><classname>
-org.apache.openjpa.persistence.QueryResultCache</classname></ulink> is an
-JPA-flavored facade to OpenJPA's internal query cache. See
+<ulink url="../apidocs/org/apache/openjpa/persistence/QueryResultCache.html">
+<classname>org.apache.openjpa.persistence.QueryResultCache</classname></ulink> 
+is an JPA-flavored facade to OpenJPA's internal query cache. See
 <xref linkend="ref_guide_cache_query"/> for details on query caching in
 OpenJPA.
             </para>
@@ -361,10 +361,10 @@ groups</link>, and <link linkend="ref_guide_locking">lock levels</link>.
             </para>
             <para>
 OpenJPA goes one step further, extending <classname>FetchPlan</classname> with
-<ulink url="../../api/openjpa/persistence/jdbc/JDBCFetchPlan.html"><classname>
-org.apache.openjpa.persistence.jdbc.JDBCFetchPlan</classname></ulink> to add
-additional JDBC-specific tuning methods. Unless you have customized OpenJPA to
-use a non-relational back-end (see
+<ulink url="../apidocs/org/apache/openjpa/persistence/jdbc/JDBCFetchPlan.html">
+<classname>org.apache.openjpa.persistence.jdbc.JDBCFetchPlan</classname></ulink>
+to add additional JDBC-specific tuning methods. Unless you have customized 
+OpenJPA to use a non-relational back-end (see
 <xref linkend="ref_guide_enterprise_abstractstore"/> ), all <classname>
 FetchPlan</classname>s in OpenJPA implement <classname>JDBCFetchPlan</classname>
 , so feel free to cast to this interface.
@@ -397,10 +397,10 @@ FetchPlan</classname> s.
                 </primary>
             </indexterm>
             <para>
-<ulink url="../../api/openjpa/persistence/OpenJPAPersistence.html"><classname>
-org.apache.openjpa.persistence.OpenJPAPersistence</classname></ulink> is a
-static helper class that adds OpenJPA-specific utility methods to <classname>
-javax.persistence.Persistence</classname>.
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAPersistence.html">
+<classname>org.apache.openjpa.persistence.OpenJPAPersistence</classname></ulink>
+is a static helper class that adds OpenJPA-specific utility methods to 
+<classname>javax.persistence.Persistence</classname>.
             </para>
         </section>
     </section>
@@ -586,7 +586,7 @@ In addition to the standard
 <ulink url="http://java.sun.com/javaee/5/docs/api/javax/persistence/EntityManager.html">
 <methodname>EntityManager.lock (Object, LockModeType)</methodname></ulink>
 method, the
-<ulink url="../../api/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>OpenJPAEntityManager</classname></ulink> exposes the following
 methods to lock objects explicitly:
             </para>
@@ -879,9 +879,9 @@ changes. This chapter describes how to use and configure OpenJPA savepoints.
                 Using Savepoints
             </title>
             <para>
-OpenJPA's <phrase>
-<ulink url="../../api/openjpa/persistence/OpenJPAEntityManager.html">
-<classname>OpenJPAEntityManager</classname></ulink></phrase> have the following
+OpenJPA's 
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+<classname>OpenJPAEntityManager</classname></ulink> have the following
 methods to control savepoint behavior. Note that the savepoints work in tandem
 with the current transaction. This means that savepoints require an open
 transaction, and that a rollback of the transaction will rollback all of the
@@ -958,7 +958,8 @@ kem.getTransaction ().commit ();
                 Configuring Savepoints
             </title>
             <para>
-OpenJPA uses the <ulink url="javadoc/openjpa/kernel/SavepointManager">
+OpenJPA uses the 
+<ulink url="../apidocs/org/apache/openjpa/kernel/SavepointManager">
 <classname>org.apache.openjpa.kernel.SavepointManager</classname></ulink>
 <link linkend="ref_guide_conf_plugins">plugin</link> to handle perserving the
 savepoint state. OpenJPA includes the following <classname>SavepointManager
@@ -1199,8 +1200,8 @@ registration for very specific extensions that do not apply globally.
                         </para>
                         <para>
 See the <classname>OpenJPAQuery</classname>
-<ulink url="../../api/openjpa/persistence/OpenJPAQuery.html">Javadoc</ulink> for
-details.
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAQuery.html">
+Javadoc</ulink> for details.
                         </para>
                     </listitem>
                 </itemizedlist>
@@ -1267,8 +1268,8 @@ registration for very specific aggregates that do not apply globally.
                         </para>
                         <para>
 See the <classname>OpenJPAQuery</classname>
-<ulink url="../../api/openjpa/persistence/OpenJPAQuery.html">Javadoc</ulink> for
-details.
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAQuery.html">
+Javadoc</ulink> for details.
                         </para>
                     </listitem>
                 </itemizedlist>
@@ -1687,7 +1688,8 @@ OpenJPA allows you to access named generators at runtime through the
 public Generator getNamedGenerator (String name);
 </programlisting>
             <para>
-The returned <ulink url="../../api/openjpa/persistence/Generator.html">
+The returned 
+<ulink url="../apidocs/org/apache/openjpa/persistence/Generator.html">
 <classname>org.apache.openjpa.persistence.Generator</classname></ulink> is a
 facade over an internal OpenJPA <classname>Seq</classname>.
             </para>
@@ -1697,8 +1699,8 @@ retrieve the identity generator of any class, or the generator of any field.
 With these APIs, you do not have to know the generator name. Additionally, they
 allow you to access the implicit generator used by default for datastore
 identity classes. See the
-<ulink url="../../api/openjpa/persistence/OpenJPAEntityManager.html"> Javadoc
-</ulink> for the <methodname> OpenJPAEntityManager.getIdentityGenerator
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+Javadoc</ulink> for the <methodname> OpenJPAEntityManager.getIdentityGenerator
 </methodname> and <methodname>OpenJPAEntityManager.getFieldGenerator
 </methodname> methods for API details.
             </para>

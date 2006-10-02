@@ -101,7 +101,7 @@ configuration resource to use, and to override any property.
         </itemizedlist>
         <note>
             <para>
-Internally, the OpenJPA <phrase>JPA</phrase> runtime environment and development
+Internally, the OpenJPA runtime environment and development
 tools manipulate property settings through a general
 <ulink url="../apidocs/ResultObjectProvider/lib/conf/Configuration.html">
 <classname>Configuration</classname></ulink> interface, and in particular its
@@ -143,11 +143,11 @@ do not have a default resource in place, or when you wish to override the
 defaults. The given value can be the path to a file, or the resource name of a
 file somewhere in the <literal>CLASSPATH</literal>. OpenJPA will search the
 given location as well as the location prefixed by <filename> META-INF/
-</filename>. Thus, to point a OpenJPA tool at <phrase><filename>
-META-INF/persistence.xml</filename>,</phrase> you can use:
+</filename>. Thus, to point a OpenJPA tool at <filename>
+META-INF/my-persistence.xml</filename>, you can use:
                 </para>
 <programlisting>
-&lt;tool&gt; -p persistence.xml
+&lt;tool&gt; -p my-persistence.xml
 </programlisting>
             </listitem>
             <listitem>
@@ -232,10 +232,10 @@ number of lines to skip between sections of code. Defaults to 2.
             </itemizedlist>
             <example id="ref_guide_conf_devtools_format_ex">
                 <title>
-                    Code Formatting with the Reverse Mapping Tool
+                    Code Formatting with the Application Id Tool
                 </title>
 <programlisting>
-java org.apache.openjpa.jdbc.meta.ReverseMappingTool -cf.spaceBeforeParen true -cf.tabSpaces 4
+java org.apache.openjpa.enhance.ApplicationIdTool -cf.spaceBeforeParen true -cf.tabSpaces 4
 </programlisting>
             </example>
         </section>
@@ -353,6 +353,7 @@ majority of developers can omit them. The following properties apply to any
 OpenJPA back-end, though the given descriptions are tailored to OpenJPA's
 default JDBC store.
         </para>
+        <!--
         <section id="openjpa.AggregateListeners">
             <title>
                 openjpa.AggregateListeners
@@ -371,7 +372,7 @@ default JDBC store.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.AggregateListeners</literal>
             </para>
             <para>
@@ -381,7 +382,7 @@ openjpa.AggregateListeners</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 AggregateListeners</literal>
             </para>
             <para>
@@ -397,6 +398,7 @@ standard set of listeners. See <xref linkend="ref_guide_enterprise_queryext"/>
  for details on aggregate listeners.
             </para>
         </section>
+        -->
         <section id="openjpa.AutoClear">
             <title>
                 openjpa.AutoClear
@@ -418,7 +420,7 @@ standard set of listeners. See <xref linkend="ref_guide_enterprise_queryext"/>
                 </tertiary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.AutoClear
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.AutoClear
 </literal>
             </para>
             <para>
@@ -428,14 +430,14 @@ standard set of listeners. See <xref linkend="ref_guide_enterprise_queryext"/>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 AutoClear</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>datastore</literal>
+<emphasis role="bold">Default: </emphasis><literal>datastore</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>datastore</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>datastore</literal>,
 <literal>all</literal>
             </para>
             <para>
@@ -465,7 +467,7 @@ transaction.
                 </tertiary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.AutoDetach
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.AutoDetach
 </literal>
             </para>
             <para>
@@ -475,14 +477,14 @@ transaction.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 AutoDetach</literal>
             </para>
             <para>
 <emphasis role="bold">Default:</emphasis> -
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>close</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>close</literal>,
 <literal>commit</literal>, <literal>nontx-read</literal>
             </para>
             <para>
@@ -500,7 +502,7 @@ when managed instances will be automatically detached.
                 </primary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.BrokerFactory
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.BrokerFactory
 </literal>
             </para>
             <para>
@@ -510,14 +512,14 @@ when managed instances will be automatically detached.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 BrokerFactory</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>jdbc</literal>
+<emphasis role="bold">Default: </emphasis><literal>jdbc</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>jdbc</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>jdbc</literal>,
 <literal>abstractstore</literal>, <literal>remote</literal>
             </para>
             <para>
@@ -546,7 +548,7 @@ use.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.BrokerImpl
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.BrokerImpl
 </literal>
             </para>
             <para>
@@ -556,11 +558,11 @@ use.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 BrokerImpl</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>default</literal>
+<emphasis role="bold">Default: </emphasis><literal>default</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
@@ -588,7 +590,7 @@ org.apache.openjpa.kernel.Broker</classname></ulink> type to use at runtime. See
                 </see>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.ClassResolver
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.ClassResolver
 </literal>
             </para>
             <para>
@@ -598,11 +600,11 @@ org.apache.openjpa.kernel.Broker</classname></ulink> type to use at runtime. See
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ClassResolver</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>default</literal>
+<emphasis role="bold">Default: </emphasis><literal>default</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
@@ -628,7 +630,7 @@ special classloading needs.
                 </primary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.Compatibility
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.Compatibility
 </literal>
             </para>
             <para>
@@ -638,7 +640,7 @@ special classloading needs.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 Compatibility</literal>
             </para>
             <para>
@@ -667,7 +669,7 @@ behavior of previous OpenJPA releases.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.ConnectionDriverName</literal>
             </para>
             <para>
@@ -678,7 +680,7 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionDriverName
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ConnectionDriverName</literal>
             </para>
             <para>
@@ -709,7 +711,7 @@ database. See <xref linkend="ref_guide_dbsetup"/> for details.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.Connection2DriverName</literal>
             </para>
             <para>
@@ -720,7 +722,7 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getConnection2DriverName
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 Connection2DriverName</literal>
             </para>
             <para>
@@ -752,7 +754,7 @@ alternate connection factory used for unmanaged connections. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.ConnectionFactory</literal>
             </para>
             <para>
@@ -762,7 +764,7 @@ openjpa.ConnectionFactory</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ConnectionFactory</literal>
             </para>
             <para>
@@ -792,7 +794,7 @@ ConnectionFactory</literal>
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.ConnectionFactory2</literal>
             </para>
             <para>
@@ -802,7 +804,7 @@ openjpa.ConnectionFactory2</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ConnectionFactory2</literal>
             </para>
             <para>
@@ -832,7 +834,7 @@ javax.sql.DataSource</classname> to use to connect to the database. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.ConnectionFactoryName</literal>
             </para>
             <para>
@@ -843,7 +845,7 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactoryName
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ConnectionFactoryName</literal>
             </para>
             <para>
@@ -873,7 +875,7 @@ javax.sql.DataSource</classname> to use to connect to the database. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.ConnectionFactory2Name</literal>
             </para>
             <para>
@@ -884,7 +886,7 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactory2Name
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ConnectionFactory2Name</literal>
             </para>
             <para>
@@ -914,7 +916,7 @@ See <xref linkend="ref_guide_enterprise_xa"/> for details.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.ConnectionFactoryMode</literal>
             </para>
             <para>
@@ -925,14 +927,14 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactoryMode
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ConnectionFactoryMode</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>local</literal>
+<emphasis role="bold">Default: </emphasis><literal>local</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>local</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>local</literal>,
 <literal>managed</literal>
             </para>
             <para>
@@ -959,7 +961,7 @@ when integrating with the application server's managed transactions. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.ConnectionFactoryProperties</literal>
             </para>
             <para>
@@ -970,7 +972,7 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactoryProperties
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ConnectionFactoryProperties</literal>
             </para>
             <para>
@@ -979,7 +981,7 @@ ConnectionFactoryProperties</literal>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
 <xref linkend="ref_guide_conf_plugins"/>) listing properties for
-configuration of the <classname>javax.sql.DataSource</classname> in use. See the
+configuration of the datasource in use. See the
 <xref linkend="ref_guide_dbsetup"/> for details.
             </para>
         </section>
@@ -1001,7 +1003,7 @@ configuration of the <classname>javax.sql.DataSource</classname> in use. See the
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.ConnectionFactory2Properties</literal>
             </para>
             <para>
@@ -1012,7 +1014,7 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactory2Properties
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ConnectionFactory2Properties</literal>
             </para>
             <para>
@@ -1044,7 +1046,7 @@ alternate connection factory used for unmanaged connections. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.ConnectionPassword</literal>
             </para>
             <para>
@@ -1054,7 +1056,7 @@ openjpa.ConnectionPassword</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ConnectionPassword</literal>
             </para>
             <para>
@@ -1084,7 +1086,7 @@ specified in the <literal>ConnectionUserName</literal> property. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.Connection2Password</literal>
             </para>
             <para>
@@ -1094,7 +1096,7 @@ openjpa.Connection2Password</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 Connection2Password</literal>
             </para>
             <para>
@@ -1126,7 +1128,7 @@ alternate connection factory used for unmanaged connections. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.ConnectionProperties</literal>
             </para>
             <para>
@@ -1137,7 +1139,7 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionProperties
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ConnectionProperties</literal>
             </para>
             <para>
@@ -1168,7 +1170,7 @@ described below. See <xref linkend="ref_guide_dbsetup"/> for details.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.Connection2Properties</literal>
             </para>
             <para>
@@ -1179,7 +1181,7 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getConnection2Properties
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 Connection2Properties</literal>
             </para>
             <para>
@@ -1211,7 +1213,7 @@ alternate connection factory used for unmanaged connections. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.ConnectionURL
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.ConnectionURL
 </literal>
             </para>
             <para>
@@ -1221,7 +1223,7 @@ alternate connection factory used for unmanaged connections. See
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ConnectionURL</literal>
             </para>
             <para>
@@ -1250,7 +1252,7 @@ ConnectionURL</literal>
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.Connection2URL
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.Connection2URL
 </literal>
             </para>
             <para>
@@ -1260,7 +1262,7 @@ ConnectionURL</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 Connection2URL</literal>
             </para>
             <para>
@@ -1292,7 +1294,7 @@ connection factory used for unmanaged connections. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.ConnectionUserName</literal>
             </para>
             <para>
@@ -1302,7 +1304,7 @@ openjpa.ConnectionUserName</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ConnectionUserName</literal>
             </para>
             <para>
@@ -1332,7 +1334,7 @@ for details.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.Connection2UserName</literal>
             </para>
             <para>
@@ -1342,7 +1344,7 @@ openjpa.Connection2UserName</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 Connection2UserName</literal>
             </para>
             <para>
@@ -1374,7 +1376,7 @@ alternate connection factory used for unmanaged connections. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.ConnectionRetainMode</literal>
             </para>
             <para>
@@ -1385,11 +1387,11 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionRetainMode
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ConnectionRetainMode</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>on-demand</literal>
+<emphasis role="bold">Default: </emphasis><literal>on-demand</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> Controls how OpenJPA uses
@@ -1415,7 +1417,7 @@ sessions. See <xref linkend="ref_guide_dbsetup_retain"/> for details.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.DataCache
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.DataCache
 </literal>
             </para>
             <para>
@@ -1425,11 +1427,11 @@ sessions. See <xref linkend="ref_guide_dbsetup_retain"/> for details.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 DataCache</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>false</literal>
+<emphasis role="bold">Default: </emphasis><literal>false</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin list string (see
@@ -1457,7 +1459,7 @@ caching. See <xref linkend="ref_guide_cache_conf"/> for details.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.DataCacheManager</literal>
             </para>
             <para>
@@ -1467,11 +1469,11 @@ openjpa.DataCacheManager</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 DataCacheManager</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>default</literal>
+<emphasis role="bold">Default: </emphasis><literal>default</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
@@ -1500,7 +1502,7 @@ on data caching.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.DataCacheTimeout</literal>
             </para>
             <para>
@@ -1510,11 +1512,11 @@ openjpa.DataCacheTimeout</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 DataCacheTimeout</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>-1</literal>
+<emphasis role="bold">Default: </emphasis><literal>-1</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> The number of milliseconds that
@@ -1544,7 +1546,7 @@ classes. See <xref linkend="ref_guide_cache_conf"/> for details.
                 </tertiary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.DetachState
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.DetachState
 </literal>
             </para>
             <para>
@@ -1554,14 +1556,14 @@ classes. See <xref linkend="ref_guide_cache_conf"/> for details.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 DetachState</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>loaded</literal>
+<emphasis role="bold">Default: </emphasis><literal>loaded</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>loaded</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>loaded</literal>,
 <literal>fgs</literal>, <literal>all</literal>
             </para>
             <para>
@@ -1596,7 +1598,7 @@ of the detached graph and related options. For more details, see
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.DynamicDataStructs</literal>
             </para>
             <para>
@@ -1606,11 +1608,11 @@ openjpa.DynamicDataStructs</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 DynamicDataStructs</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>false</literal>
+<emphasis role="bold">Default: </emphasis><literal>false</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> Whether to dynamically generate
@@ -1643,7 +1645,7 @@ memory and speed optimization over time.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.FetchBatchSize
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.FetchBatchSize
 </literal>
             </para>
             <para>
@@ -1653,11 +1655,11 @@ memory and speed optimization over time.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 FetchBatchSize</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>-1</literal>
+<emphasis role="bold">Default: </emphasis><literal>-1</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> The number of rows to fetch at
@@ -1678,7 +1680,7 @@ runtime. See <xref linkend="ref_guide_dbsetup_lrs"/> for details.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.FetchGroups
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.FetchGroups
 </literal>
             </para>
             <para>
@@ -1688,7 +1690,7 @@ runtime. See <xref linkend="ref_guide_dbsetup_lrs"/> for details.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 FetchGroups</literal>
             </para>
             <para>
@@ -1701,6 +1703,7 @@ Fetch groups can also be set at runtime. See <xref linkend="ref_guide_fetch"/>
  for details.
             </para>
         </section>
+        <!--
         <section id="openjpa.FilterListeners">
             <title>
                 openjpa.FilterListeners
@@ -1719,7 +1722,7 @@ Fetch groups can also be set at runtime. See <xref linkend="ref_guide_fetch"/>
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.FilterListeners
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.FilterListeners
 </literal>
             </para>
             <para>
@@ -1729,7 +1732,7 @@ Fetch groups can also be set at runtime. See <xref linkend="ref_guide_fetch"/>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 FilterListeners</literal>
             </para>
             <para>
@@ -1745,6 +1748,7 @@ listeners. You can also add filter listeners to individual queries. See
 <xref linkend="ref_guide_enterprise_queryext"/> for details.
             </para>
         </section>
+        -->
         <section id="openjpa.FlushBeforeQueries">
             <title>
                 openjpa.FlushBeforeQueries
@@ -1771,11 +1775,11 @@ listeners. You can also add filter listeners to individual queries. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.FlushBeforeQueries</literal>
             </para>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.FlushBeforeQueries</literal>
             </para>
             <para>
@@ -1785,11 +1789,11 @@ openjpa.FlushBeforeQueries</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 FlushBeforeQueries</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>true</literal>
+<emphasis role="bold">Default: </emphasis><literal>true</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> Whether or not to flush any
@@ -1807,7 +1811,7 @@ query. See <xref linkend="ref_guide_dbsetup_retain"/> for details.
                 </primary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.IgnoreChanges
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.IgnoreChanges
 </literal>
             </para>
             <para>
@@ -1817,11 +1821,11 @@ query. See <xref linkend="ref_guide_dbsetup_retain"/> for details.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 IgnoreChanges</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>false</literal>
+<emphasis role="bold">Default: </emphasis><literal>false</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> Whether to consider modifications
@@ -1851,7 +1855,7 @@ or flush before running it against the datastore.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.InverseManager
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.InverseManager
 </literal>
             </para>
             <para>
@@ -1861,14 +1865,14 @@ or flush before running it against the datastore.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 InverseManager</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>false</literal>
+<emphasis role="bold">Default: </emphasis><literal>false</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>false</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>false</literal>,
 <literal>true</literal>
             </para>
             <para>
@@ -1898,7 +1902,7 @@ for managing bidirectional relations upon a flush. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.LockManager
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.LockManager
 </literal>
             </para>
             <para>
@@ -1908,14 +1912,14 @@ for managing bidirectional relations upon a flush. See
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 LockManager</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>pessimistic</literal>
+<emphasis role="bold">Default: </emphasis><literal>pessimistic</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>none</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>none</literal>,
 <literal>sjvm</literal>, <literal>pessimistic</literal>
             </para>
             <para>
@@ -1944,7 +1948,7 @@ locks on persistent instances during transactions.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.LockTimeout
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.LockTimeout
 </literal>
             </para>
             <para>
@@ -1954,11 +1958,11 @@ locks on persistent instances during transactions.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 LockTimeout</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>-1</literal>
+<emphasis role="bold">Default: </emphasis><literal>-1</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> The number of milliseconds to wait
@@ -1984,7 +1988,7 @@ for an object lock before throwing an exception, or -1 for no limit. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.Log</literal>
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.Log</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
@@ -1993,14 +1997,14 @@ for an object lock before throwing an exception, or -1 for no limit. See
 </ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>Log
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>Log
 </literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>true</literal>
+<emphasis role="bold">Default: </emphasis><literal>true</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>openjpa</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>openjpa</literal>,
 <literal>commons</literal>, <literal>log4j</literal>, <literal>none</literal>
             </para>
             <para>
@@ -2032,7 +2036,7 @@ For details on logging, see <xref linkend="ref_guide_logging"/>.
                 </tertiary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.ManagedRuntime
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.ManagedRuntime
 </literal>
             </para>
             <para>
@@ -2042,11 +2046,11 @@ For details on logging, see <xref linkend="ref_guide_logging"/>.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ManagedRuntime</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>auto</literal>
+<emphasis role="bold">Default: </emphasis><literal>auto</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
@@ -2067,7 +2071,7 @@ enterprise environment.
                 </primary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.Mapping
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.Mapping
 </literal>
             </para>
             <para>
@@ -2077,7 +2081,7 @@ enterprise environment.
 </ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 Mapping</literal>
             </para>
             <para>
@@ -2106,7 +2110,7 @@ object-to-datastore mapping to use.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.MaxFetchDepth
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.MaxFetchDepth
 </literal>
             </para>
             <para>
@@ -2116,11 +2120,11 @@ object-to-datastore mapping to use.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 MaxFetchDepth</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>-1</literal>
+<emphasis role="bold">Default: </emphasis><literal>-1</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> The maximum depth of relations to
@@ -2146,7 +2150,7 @@ traverse when eager fetching. Use -1 for no limit. Defaults to no limit.  See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.MetaDataFactory
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.MetaDataFactory
 </literal>
             </para>
             <para>
@@ -2156,15 +2160,11 @@ traverse when eager fetching. Use -1 for no limit. Defaults to no limit.  See
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 MetaDataFactory</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>jdo</literal>
-            </para>
-            <para>
-<emphasis role="bold">Possible values:</emphasis><literal>jdo</literal>,
-<literal>jpa</literal>, <literal>openjpa3</literal>
+<emphasis role="bold">Default:</emphasis> <literal>jpa</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
@@ -2193,7 +2193,7 @@ retrieve metadata for your persistent classes. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.Multithreaded
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.Multithreaded
 </literal>
             </para>
             <para>
@@ -2203,15 +2203,16 @@ retrieve metadata for your persistent classes. See
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 Multithreaded</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>false</literal>
+<emphasis role="bold">Default: </emphasis><literal>false</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> Whether persistent instances and
-OpenJPA components will be accessed by multiple threads at once.
+OpenJPA components other than the <classname>EntityManagerFactory</classname>
+will be accessed by multiple threads at once.
             </para>
         </section>
         <section id="openjpa.Optimistic">
@@ -2232,7 +2233,7 @@ OpenJPA components will be accessed by multiple threads at once.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.Optimistic
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.Optimistic
 </literal>
             </para>
             <para>
@@ -2242,11 +2243,11 @@ OpenJPA components will be accessed by multiple threads at once.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 Optimistic</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>true</literal>
+<emphasis role="bold">Default: </emphasis><literal>true</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> Selects between optimistic and
@@ -2271,7 +2272,7 @@ pessimistic (datastore) transactional modes.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.OrphanedKeyAction</literal>
             </para>
             <para>
@@ -2281,14 +2282,14 @@ openjpa.OrphanedKeyAction</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 OrphanedKeyAction</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>log</literal>
+<emphasis role="bold">Default: </emphasis><literal>log</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>log</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>log</literal>,
 <literal>exception</literal>, <literal>none</literal>
             </para>
             <para>
@@ -2310,7 +2311,7 @@ invoke when OpenJPA discovers an orphaned datastore key. See
                 </primary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.NontransactionalRead</literal>
             </para>
             <para>
@@ -2321,11 +2322,11 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getNontransactionalRead
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 NontransactionalRead</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>true</literal>
+<emphasis role="bold">Default: </emphasis><literal>true</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> Whether the OpenJPA runtime will
@@ -2342,7 +2343,7 @@ allow you to read data outside of a transaction.
                 </primary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.NontransactionalWrite</literal>
             </para>
             <para>
@@ -2353,11 +2354,11 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getNontransactionalWrite
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 NontransactionalWrite</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>false</literal>
+<emphasis role="bold">Default:</emphasis> <literal>false</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> Whether you can modify persistent
@@ -2383,7 +2384,7 @@ will take effect on the next transaction.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.ProxyManager
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.ProxyManager
 </literal>
             </para>
             <para>
@@ -2393,11 +2394,11 @@ will take effect on the next transaction.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ProxyManager</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>default</literal>
+<emphasis role="bold">Default: </emphasis><literal>default</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
@@ -2426,7 +2427,7 @@ mutable second class objects. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.QueryCache
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.QueryCache
 </literal>
             </para>
             <para>
@@ -2436,11 +2437,11 @@ mutable second class objects. See
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 QueryCache</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>true</literal>, when the data
+<emphasis role="bold">Default: </emphasis><literal>true</literal>, when the data
 cache (see <xref linkend="openjpa.DataCache"/>) is also enabled, <literal>
 false</literal> otherwise.
             </para>
@@ -2451,48 +2452,6 @@ false</literal> otherwise.
 <classname>org.apache.openjpa.datacache.QueryCache</classname></ulink>
 implementation to use for caching of queries loaded from the data store. See
 <xref linkend="ref_guide_cache_query"/> for details.
-            </para>
-        </section>
-        <section id="openjpa.QueryCompilationCache">
-            <title>
-                openjpa.QueryCompilationCache
-            </title>
-            <indexterm zone="openjpa.QueryCompilationCache">
-                <primary>
-                    QueryCompilationCache
-                </primary>
-            </indexterm>
-            <indexterm zone="openjpa.QueryCompilationCache">
-                <primary>
-                    caching
-                </primary>
-                <secondary>
-                    QueryCompilationCache
-                </secondary>
-            </indexterm>
-            <para>
-<emphasis role="bold">Property name:</emphasis><literal>
-openjpa.QueryCompilationCache</literal>
-            </para>
-            <para>
-<emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getQueryCompilationCache">
-<methodname>
-org.apache.openjpa.conf.OpenJPAConfiguration.getQueryCompilationCache
-</methodname></ulink>
-            </para>
-            <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
-QueryCompilationCache</literal>
-            </para>
-            <para>
-<emphasis role="bold">Default:</emphasis><literal>true</literal>.
-            </para>
-            <para>
-<emphasis role="bold">Description:</emphasis> A plugin string (see
-<xref linkend="ref_guide_conf_plugins"/>) describing the <literal>
-java.util.Map</literal> to use for caching of data used during query
-compilation. See <xref linkend="ref_guide_cache_querycomp"/> for details.
             </para>
         </section>
         <section id="openjpa.ReadLockLevel">
@@ -2513,7 +2472,7 @@ compilation. See <xref linkend="ref_guide_cache_querycomp"/> for details.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.ReadLockLevel
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.ReadLockLevel
 </literal>
             </para>
             <para>
@@ -2523,14 +2482,14 @@ compilation. See <xref linkend="ref_guide_cache_querycomp"/> for details.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ReadLockLevel</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>read</literal>
+<emphasis role="bold">Default: </emphasis><literal>read</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>none</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>none</literal>,
 <literal>read</literal>, <literal>write</literal>, numeric values for
 lock-manager specific lock levels
             </para>
@@ -2567,7 +2526,7 @@ levels are equivalent.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.RemoteCommitProvider</literal>
             </para>
             <para>
@@ -2578,7 +2537,7 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getRemoteCommitProvider
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 RemoteCommitProvider</literal>
             </para>
             <para>
@@ -2603,7 +2562,7 @@ implementation to use for distributed event notification. See
                 </primary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.RestoreState
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.RestoreState
 </literal>
             </para>
             <para>
@@ -2613,14 +2572,14 @@ implementation to use for distributed event notification. See
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 RestoreState</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>none</literal>
+<emphasis role="bold">Default: </emphasis><literal>none</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>none</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>none</literal>,
 <literal>immutable</literal>, <literal>all</literal>
             </para>
             <para>
@@ -2638,7 +2597,7 @@ to their pre-transaction values when a rollback occurs.
                 </primary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.RetainState
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.RetainState
 </literal>
             </para>
             <para>
@@ -2648,11 +2607,11 @@ to their pre-transaction values when a rollback occurs.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 RetainState</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>true</literal>
+<emphasis role="bold">Default: </emphasis><literal>true</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> Whether persistent fields retain
@@ -2677,7 +2636,7 @@ their values on transaction commit.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.RetryClassRegistration</literal>
             </para>
             <para>
@@ -2688,11 +2647,11 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getRetryClassRegistration
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 RetryClassRegistration</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>false</literal>
+<emphasis role="bold">Default: </emphasis><literal>false</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> Controls whether to log a warning
@@ -2708,12 +2667,12 @@ serious problems.
                 openjpa.SavepointManager
             </title>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.SavepointManager</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="javadoc/openjpa/conf/OpenJPAConfiguration.html#getSavepointManager">
+<ulink url="../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getSavepointManager">
 org.apache.openjpa.conf.OpenJPAConfiguration.getSavepointManager</ulink>
             </para>
             <para>
@@ -2721,19 +2680,19 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getSavepointManager</ulink>
 SavepointManager
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>in-mem</literal>
+<emphasis role="bold">Default: </emphasis><literal>in-mem</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>in-mem</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>in-mem</literal>,
 <literal>jdbc</literal>, <literal>oracle</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
 <xref linkend="ref_guide_conf_plugins"/>) describing a
-<ulink url="javadoc/openjpa/kernel/SavepointManager.html"><classname>
-org.apache.openjpa.kernel.SavepointManager</classname></ulink> to use for
-managing transaction savepoints. See <xref linkend="ref_guide_savepoints"/>
- for details.
+<ulink url="../apidocs/org/apache/openjpa/kernel/SavepointManager.html">
+<classname>org.apache.openjpa.kernel.SavepointManager</classname></ulink> to 
+use for managing transaction savepoints. See 
+<xref linkend="ref_guide_savepoints"/> for details.
             </para>
         </section>
         <section id="openjpa.Sequence">
@@ -2746,7 +2705,7 @@ managing transaction savepoints. See <xref linkend="ref_guide_savepoints"/>
                 </primary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.Sequence
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.Sequence
 </literal>
             </para>
             <para>
@@ -2756,11 +2715,11 @@ managing transaction savepoints. See <xref linkend="ref_guide_savepoints"/>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 Sequence</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>table</literal>
+<emphasis role="bold">Default: </emphasis><literal>table</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
@@ -2789,7 +2748,7 @@ information.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.TransactionMode
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.TransactionMode
 </literal>
             </para>
             <para>
@@ -2799,14 +2758,14 @@ information.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 TransactionMode</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>local</literal>
+<emphasis role="bold">Default: </emphasis><literal>local</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>local</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>local</literal>,
 <literal>managed</literal>
             </para>
             <para>
@@ -2832,7 +2791,7 @@ use. You can override this setting per-session.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.WriteLockLevel
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.WriteLockLevel
 </literal>
             </para>
             <para>
@@ -2842,14 +2801,14 @@ use. You can override this setting per-session.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 WriteLockLevel</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>write</literal>
+<emphasis role="bold">Default: </emphasis><literal>write</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>none</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>none</literal>,
 <literal>read</literal>, <literal>write</literal>, numeric values for
 lock-manager specific lock levels
             </para>
@@ -2894,7 +2853,7 @@ The following properties apply exclusively to the OpenJPA JDBC back-end.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.jdbc.ConnectionDecorators</literal>
             </para>
             <para>
@@ -2905,7 +2864,7 @@ org.apache.openjpa.jdbc.conf.JDBCConfiguration.getConnectionDecorators
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ConnectionDecorators</literal>
             </para>
             <para>
@@ -2919,7 +2878,7 @@ strings (see <xref linkend="ref_guide_conf_plugins"/>) describing
 instances to install on the connection factory. These decorators can wrap
 connections passed from the underlying <classname>DataSource</classname> to add
 functionality. OpenJPA will pass all connections through the list of decorators
-before using them. Note that by default OpenJPA <phrase>JPA</phrase> employs all
+before using them. Note that by default OpenJPA employs all
 of the built-in decorators in the <classname>org.apache.openjpa.lib.jdbc
 </classname> package already; you do not need to list them here.
             </para>
@@ -2942,7 +2901,7 @@ of the built-in decorators in the <classname>org.apache.openjpa.lib.jdbc
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.jdbc.DBDictionary</literal>
             </para>
             <para>
@@ -2952,7 +2911,7 @@ openjpa.jdbc.DBDictionary</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 DBDictionary</literal>
             </para>
             <para>
@@ -2969,7 +2928,7 @@ openjpa.ConnectionDriverName</literal></link>
 for database interaction. OpenJPA typically auto-configures the dictionary based
 on the JDBC URL, but you may have to set this property explicitly if you are
 using an unrecognized driver, or to plug in your own dictionary for a database
-OpenJPA <phrase>JPA</phrase> does not support out-of-the-box. See
+OpenJPA does not support out-of-the-box. See
 <xref linkend="ref_guide_dbsetup_dbsupport"/> for details.
             </para>
         </section>
@@ -2991,7 +2950,7 @@ OpenJPA <phrase>JPA</phrase> does not support out-of-the-box. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.jdbc.DriverDataSource</literal>
             </para>
             <para>
@@ -3001,11 +2960,11 @@ openjpa.jdbc.DriverDataSource</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 DriverDataSource</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>pooling</literal>
+<emphasis role="bold">Default: </emphasis><literal>pooling</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> The alias or full class name of
@@ -3013,11 +2972,7 @@ the
 <ulink url="../apidocs/org/apache/openjpa/jdbc/schema/DriverDataSource.html">
 <classname>org.apache.openjpa.jdbc.schema.DriverDataSource</classname></ulink>
 implementation to use to wrap JDBC Driver classes with javax.sql.DataSource
-instances. The provided default implementation (
-<ulink url="../apidocs/org/apache/openjpa/jdbc/schema/OpenJPAPoolingDataSource">
-<classname>org.apache.openjpa.jdbc.schema.OpenJPAPoolingDataSource</classname>
-</ulink>, will perform connection pooling as described at
-<xref linkend="ref_guide_dbsetup"/>.
+instances.
             </para>
         </section>
         <section id="openjpa.jdbc.EagerFetchMode">
@@ -3038,7 +2993,7 @@ instances. The provided default implementation (
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.jdbc.EagerFetchMode</literal>
             </para>
             <para>
@@ -3048,14 +3003,14 @@ openjpa.jdbc.EagerFetchMode</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 EagerFetchMode</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>parallel</literal>
+<emphasis role="bold">Default: </emphasis><literal>parallel</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>parallel</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>parallel</literal>,
 <literal>join</literal>, <literal>none</literal>
             </para>
             <para>
@@ -3082,7 +3037,7 @@ persistent relations. This setting can also be varied at runtime. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.jdbc.FetchDirection</literal>
             </para>
             <para>
@@ -3092,14 +3047,14 @@ openjpa.jdbc.FetchDirection</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 FetchDirection</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>forward</literal>
+<emphasis role="bold">Default: </emphasis><literal>forward</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>forward</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>forward</literal>,
 <literal>reverse</literal>, <literal>unknown</literal>
             </para>
             <para>
@@ -3126,7 +3081,7 @@ result lists will be accessed. This property can also be varied at runtime. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.jdbc.JDBCListeners</literal>
             </para>
             <para>
@@ -3136,7 +3091,7 @@ openjpa.jdbc.JDBCListeners</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 JDBCListeners</literal>
             </para>
             <para>
@@ -3169,7 +3124,7 @@ events.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.jdbc.LRSSize
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.jdbc.LRSSize
 </literal>
             </para>
             <para>
@@ -3179,14 +3134,14 @@ events.
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 LRSSize</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>query</literal>
+<emphasis role="bold">Default: </emphasis><literal>query</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>query</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>query</literal>,
 <literal>last</literal>, <literal>unknown</literal>
             </para>
             <para>
@@ -3213,7 +3168,7 @@ the size of a result list. This property can also be varied at runtime. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.jdbc.MappingDefaults</literal>
             </para>
             <para>
@@ -3223,15 +3178,11 @@ openjpa.jdbc.MappingDefaults</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 MappingDefaults</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis> default
-            </para>
-            <para>
-<emphasis role="bold">Possible values:</emphasis><literal>default</literal>,
-<literal>jpa</literal>, <literal>openjpa3</literal>
+<emphasis role="bold">Default:</emphasis> jpa
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
@@ -3261,7 +3212,7 @@ details.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.jdbc.MappingFactory</literal>
             </para>
             <para>
@@ -3271,15 +3222,11 @@ openjpa.jdbc.MappingFactory</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 MappingFactory</literal>
             </para>
             <para>
 <emphasis role="bold">Default:</emphasis> -
-            </para>
-            <para>
-<emphasis role="bold">Possible values:</emphasis><literal>jdo-orm</literal>,
-<literal>jdo-table</literal>, <literal>jpa</literal>, others
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
@@ -3308,7 +3255,7 @@ classes. See <xref linkend="ref_guide_mapping_factory"/> for details.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.jdbc.ResultSetType</literal>
             </para>
             <para>
@@ -3318,14 +3265,14 @@ openjpa.jdbc.ResultSetType</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 ResultSetType</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>forward-only</literal>
+<emphasis role="bold">Default: </emphasis><literal>forward-only</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>forward-only</literal>
+<emphasis role="bold">Possible values: </emphasis><literal>forward-only</literal>
 , <literal>scroll-sensitive</literal>, <literal>scroll-insensitive</literal>
             </para>
             <para>
@@ -3347,7 +3294,7 @@ when fetching result lists. This property can also be varied at runtime. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.jdbc.Schema
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.jdbc.Schema
 </literal>
             </para>
             <para>
@@ -3357,7 +3304,7 @@ when fetching result lists. This property can also be varied at runtime. See
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 Schema</literal>
             </para>
             <para>
@@ -3387,7 +3334,7 @@ tables. See <xref linkend="ref_guide_schema_def"/> for details.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.jdbc.SchemaFactory</literal>
             </para>
             <para>
@@ -3397,14 +3344,14 @@ openjpa.jdbc.SchemaFactory</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 SchemaFactory</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>dynamic</literal>
+<emphasis role="bold">Default: </emphasis><literal>dynamic</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>dynamic</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>dynamic</literal>,
 <literal>native</literal>, <literal>file</literal>, <literal>table</literal>,
 others
             </para>
@@ -3430,7 +3377,7 @@ use to store and retrieve information about the database schema. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.jdbc.Schemas
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.jdbc.Schemas
 </literal>
             </para>
             <para>
@@ -3440,7 +3387,7 @@ use to store and retrieve information about the database schema. See
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 Schemas</literal>
             </para>
             <para>
@@ -3470,7 +3417,7 @@ schemas and/or tables used for your persistent data. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>openjpa.jdbc.SQLFactory
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.jdbc.SQLFactory
 </literal>
             </para>
             <para>
@@ -3480,19 +3427,18 @@ schemas and/or tables used for your persistent data. See
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 SQLFactory</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>default</literal>
+<emphasis role="bold">Default: </emphasis><literal>default</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
 <xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../apidocs/org/apache/openjpa/jdbc/sql/SQLFactory.html"><classname>
 org.apache.openjpa.jdbc.sql.SQLFactory</classname></ulink> to use to abstract
-common SQL constructs. See <xref linkend="ref_guide_dbsetup_sqlfactory"/>
-for details.
+common SQL constructs.
             </para>
         </section>
         <section id="openjpa.jdbc.SubclassFetchMode">
@@ -3521,7 +3467,7 @@ for details.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.jdbc.SubclassFetchMode</literal>
             </para>
             <para>
@@ -3531,14 +3477,14 @@ openjpa.jdbc.SubclassFetchMode</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 SubclassFetchMode</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>parallel</literal>
+<emphasis role="bold">Default: </emphasis><literal>parallel</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>parallel</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>parallel</literal>,
 <literal>join</literal>, <literal>none</literal>
             </para>
             <para>
@@ -3565,7 +3511,7 @@ it is in other tables. This setting can also be varied at runtime. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.jdbc.SynchronizeMappings</literal>
             </para>
             <para>
@@ -3576,7 +3522,7 @@ org.apache.openjpa.jdbc.conf.JDBCConfiguration.getSynchronizeMappings
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 SynchronizeMappings</literal>
             </para>
             <para>
@@ -3615,7 +3561,7 @@ mappings and schema at runtime. Useful for rapid test/debug cycles. See
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.jdbc.TransactionIsolation</literal>
             </para>
             <para>
@@ -3626,14 +3572,14 @@ org.apache.openjpa.jdbc.conf.JDBCConfiguration.getTransactionIsolation
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 TransactionIsolation</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>default</literal>
+<emphasis role="bold">Default: </emphasis><literal>default</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values:</emphasis><literal>default</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>default</literal>,
 <literal>none</literal>, <literal>read-committed</literal>, <literal>
 read-uncommitted</literal>, <literal>repeatable-read</literal>, <literal>
 serializable</literal>
@@ -3662,7 +3608,7 @@ details.
                 </secondary>
             </indexterm>
             <para>
-<emphasis role="bold">Property name:</emphasis><literal>
+<emphasis role="bold">Property name: </emphasis><literal>
 openjpa.jdbc.UpdateManager</literal>
             </para>
             <para>
@@ -3672,11 +3618,11 @@ openjpa.jdbc.UpdateManager</literal>
 </methodname></ulink>
             </para>
             <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis><literal>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
 UpdateManager</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis><literal>default</literal>
+<emphasis role="bold">Default: </emphasis><literal>default</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> The full class name of the
@@ -3684,8 +3630,8 @@ UpdateManager</literal>
 <classname>org.apache.openjpa.jdbc.kernel.UpdateManager</classname></ulink> to
 use to flush persistent object changes to the datastore. The provided default
 implementation is
-<ulink url="../apidocs/org/apache/openjpa/jdbc/kernel/ConstraintUpdateManager">
-<classname>org.apache.openjpa.jdbc.kernel.ConstraintUpdateManager</classname>
+<ulink url="../apidocs/org/apache/openjpa/jdbc/kernel/OperationOrderUpdateManager">
+<classname>org.apache.openjpa.jdbc.kernel.OperationOrderUpdateManager</classname>
 </ulink>.
             </para>
         </section>

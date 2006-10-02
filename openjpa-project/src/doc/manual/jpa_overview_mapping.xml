@@ -192,20 +192,17 @@ package org.mag;
 @Entity
 @IdClass(Magazine.MagazineId.class)
 @Table(name="MAG")
-public class Magazine
-{
+public class Magazine {
     ...
 
-    public static class MagazineId
-    {
+    public static class MagazineId {
         ...
     }
 }
 
 @Entity
 @Table(name="ART")
-public class Article
-{
+public class Article {
     ...
 }
 
@@ -214,21 +211,18 @@ package org.mag.pub;
 
 @Entity
 @Table(name="COMP")
-public class Company
-{
+public class Company {
     ...
 }
 
 @Entity
 @Table(name="AUTH")
-public class Author
-{
+public class Author {
     ...
 }
 
 @Embeddable
-public class Address
-{
+public class Address {
     ...
 }
 
@@ -236,45 +230,39 @@ public class Address
 package org.mag.subscribe;
 
 @MappedSuperclass
-public abstract class Document
-{
+public abstract class Document {
     ...
 }
 
 @Entity
 @Table(schema="CNTRCT")
 public class Contract
-    extends Document
-{
+    extends Document {
     ...
 }
 
 @Entity
 @Table(name="SUB", schema="CNTRCT")
-public class Subscription
-{
+public class Subscription {
     ...
 
     @Entity
     @Table(name="LINE_ITEM", schema="CNTRCT")
     public static class LineItem
-        extends Contract
-    {
+        extends Contract {
         ...
     }
 }
 
 @Entity(name="Lifetime")
 public class LifetimeSubscription
-    extends Subscription
-{
+    extends Subscription {
     ...
 }
 
 @Entity(name="Trial")
 public class TrialSubscription
-    extends Subscription
-{
+    extends Subscription {
     ...
 }
 </programlisting>
@@ -396,8 +384,7 @@ column of the <literal>ART</literal> table:
 <programlisting>
 @Entity
 @Table(name="ART", uniqueConstraints=@Unique(columnNames="TITLE"))
-public class Article
-{
+public class Article {
     ...
 }
 </programlisting>
@@ -721,24 +708,23 @@ package org.mag;
 @Entity
 @IdClass(Magazine.MagazineId.class)
 @Table(name="MAG")
-public class Magazine
-{
+public class Magazine {
+
     @Column(length=9)
     @Id private String isbn;
     @Id private String title;
 
     ...
 
-    public static class MagazineId
-    {
+    public static class MagazineId {
         ...
     }
 }
 
 @Entity
 @Table(name="ART", uniqueConstraints=@Unique(columnNames="TITLE"))
-public class Article
-{
+public class Article {
+
     @Id private long id;
 
     ...
@@ -749,8 +735,8 @@ package org.mag.pub;
 
 @Entity
 @Table(name="COMP")
-public class Company
-{
+public class Company {
+
     @Column(name="CID")
     @Id private long id;
 
@@ -759,8 +745,8 @@ public class Company
 
 @Entity
 @Table(name="AUTH")
-public class Author
-{
+public class Author {
+
     @Column(name="AID", columnDefinition="INTEGER64")
     @Id private long id;
 
@@ -768,8 +754,7 @@ public class Author
 }
 
 @Embeddable
-public class Address
-{
+public class Address {
     ...
 }
 
@@ -777,8 +762,8 @@ public class Address
 package org.mag.subscribe;
 
 @MappedSuperclass
-public abstract class Document
-{
+public abstract class Document {
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
@@ -789,15 +774,14 @@ public abstract class Document
 @Entity
 @Table(schema="CNTRCT")
 public class Contract
-    extends Document
-{
+    extends Document {
     ...
 }
 
 @Entity
 @Table(name="SUB", schema="CNTRCT")
-public class Subscription
-{
+public class Subscription {
+
     @Id private long id;
 
     ...
@@ -805,23 +789,20 @@ public class Subscription
     @Entity
     @Table(name="LINE_ITEM", schema="CNTRCT")
     public static class LineItem
-        extends Contract
-    {
+        extends Contract {
         ...
     }
 }
 
 @Entity(name="Lifetime")
 public class LifetimeSubscription
-    extends Subscription
-{
+    extends Subscription {
     ...
 }
 
 @Entity(name="Trial")
 public class TrialSubscription
-    extends Subscription
-{
+    extends Subscription {
     ...
 }
 </programlisting>
@@ -1253,16 +1234,15 @@ package org.mag;
 @Entity
 @IdClass(Magazine.MagazineId.class)
 @Table(name="MAG")
-public class Magazine
-{
+public class Magazine {
+
     @Column(length=9)
     @Id private String isbn;
     @Id private String title;
 
     ...
 
-    public static class MagazineId
-    {
+    public static class MagazineId {
         ...
     }
 }
@@ -1270,8 +1250,8 @@ public class Magazine
 @Entity
 @Table(name="ART", uniqueConstraints=@Unique(columnNames="TITLE"))
 @SequenceGenerator(name="ArticleSeq", sequenceName="ART_SEQ")
-public class Article
-{
+public class Article {
+
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ArticleSeq") 
     private long id;
@@ -1284,8 +1264,8 @@ package org.mag.pub;
 
 @Entity
 @Table(name="COMP")
-public class Company
-{
+public class Company {
+
     @Column(name="CID")
     @Id private long id;
 
@@ -1294,8 +1274,8 @@ public class Company
 
 @Entity
 @Table(name="AUTH")
-public class Author
-{
+public class Author {
+
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="AuthorGen")
     @TableGenerator(name="AuthorGen", table="AUTH_GEN", pkColumnName="PK",
@@ -1307,8 +1287,7 @@ public class Author
 }
 
 @Embeddable
-public class Address
-{
+public class Address {
     ...
 }
 
@@ -1316,8 +1295,8 @@ public class Address
 package org.mag.subscribe;
 
 @MappedSuperclass
-public abstract class Document
-{
+public abstract class Document {
+
     @Id
     @GeneratedValue(generate=GenerationType.IDENTITY)
     private long id;
@@ -1328,15 +1307,15 @@ public abstract class Document
 @Entity
 @Table(schema="CNTRCT")
 public class Contract
-    extends Document
-{
+    extends Document {
+
     ...
 }
 
 @Entity
 @Table(name="SUB", schema="CNTRCT")
-public class Subscription
-{
+public class Subscription {
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
@@ -1346,23 +1325,20 @@ public class Subscription
     @Entity
     @Table(name="LINE_ITEM", schema="CNTRCT")
     public static class LineItem
-        extends Contract
-    {
+        extends Contract {
         ...
     }
 }
 
 @Entity(name="Lifetime")
 public class LifetimeSubscription
-    extends Subscription
-{
+    extends Subscription {
     ...
 }
 
 @Entity(name="Trial")
 public class TrialSubscription
-    extends Subscription
-{
+    extends Subscription {
     ...
 }
 </programlisting>
@@ -1545,15 +1521,13 @@ as well.
 @Entity
 @Table(name="SUB", schema="CNTRCT")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-public class Subscription
-{
+public class Subscription {
     ...
 }
 
 @Entity(name="Lifetime")
 public class LifetimeSubscription
-    extends Subscription
-{
+    extends Subscription {
     ...
 }
 </programlisting>
@@ -1774,21 +1748,18 @@ we include the primary key join column for illustrative purposes.
 @Table(schema="CNTRCT")
 @Inheritance(strategy=InheritanceType.JOINED)
 public class Contract
-    extends Document
-{
+    extends Document {
     ...
 }
 
-public class Subscription
-{
+public class Subscription {
     ...
 
     @Entity
     @Table(name="LINE_ITEM", schema="CNTRCT")
     @PrimaryKeyJoinColumn(name="ID", referencedColumnName="ID")
     public static class LineItem
-        extends Contract
-    {
+        extends Contract {
         ...
     }
 }
@@ -1823,8 +1794,7 @@ array of <classname> PrimaryKeyJoinColumn</classname> s. We could rewrite
     @PrimaryKeyJoinColumn(name="ID", referencedColumnName="ID")
 })
 public static class LineItem
-    extends Contract
-{
+    extends Contract {
     ...
 }
 </programlisting>
@@ -1977,16 +1947,14 @@ s to override superclass field mappings.
 @Entity
 @Table(name="MAG")
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
-public class Magazine
-{
+public class Magazine {
     ...
 }
 
 @Entity
 @Table(name="TABLOID")
 public class Tabloid
-    extends Magazine
-{
+    extends Magazine {
     ...
 }
 </programlisting>
@@ -2088,16 +2056,15 @@ package org.mag;
 @Entity
 @IdClass(Magazine.MagazineId.class)
 @Table(name="MAG")
-public class Magazine
-{
+public class Magazine {
+
     @Column(length=9)
     @Id private String isbn;
     @Id private String title;
 
     ...
 
-    public static class MagazineId
-    {
+    public static class MagazineId {
         ...
     }
 }
@@ -2105,8 +2072,8 @@ public class Magazine
 @Entity
 @Table(name="ART", uniqueConstraints=@Unique(columnNames="TITLE"))
 @SequenceGenerator(name="ArticleSeq", sequenceName="ART_SEQ")
-public class Article
-{
+public class Article {
+
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ArticleSeq") 
     private long id;
@@ -2119,8 +2086,8 @@ package org.mag.pub;
 
 @Entity
 @Table(name="COMP")
-public class Company
-{
+public class Company {
+
     @Column(name="CID")
     @Id private long id;
 
@@ -2129,8 +2096,8 @@ public class Company
 
 @Entity
 @Table(name="AUTH")
-public class Author
-{
+public class Author {
+
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="AuthorGen")
     @TableGenerator(name="AuthorGen", table="AUTH_GEN", pkColumnName="PK",
@@ -2142,8 +2109,7 @@ public class Author
 }
 
 @Embeddable
-public class Address
-{
+public class Address {
     ...
 }
 
@@ -2151,8 +2117,8 @@ public class Address
 package org.mag.subscribe;
 
 @MappedSuperclass
-public abstract class Document
-{
+public abstract class Document {
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
@@ -2164,16 +2130,15 @@ public abstract class Document
 @Table(schema="CNTRCT")
 @Inheritance(strategy=InheritanceType.JOINED)
 public class Contract
-    extends Document
-{
+    extends Document {
     ...
 }
 
 @Entity
 @Table(name="SUB", schema="CNTRCT")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-public class Subscription
-{
+public class Subscription {
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
@@ -2184,23 +2149,20 @@ public class Subscription
     @Table(name="LINE_ITEM", schema="CNTRCT")
     @PrimaryKeyJoinColumn(name="ID", referencedColumnName="ID")
     public static class LineItem
-        extends Contract
-    {
+        extends Contract {
         ...
     }
 }
 
 @Entity(name="Lifetime")
 public class LifetimeSubscription
-    extends Subscription
-{
+    extends Subscription {
     ...
 }
 
 @Entity(name="Trial")
 public class TrialSubscription
-    extends Subscription
-{
+    extends Subscription {
     ...
 }
 </programlisting>
@@ -2485,16 +2447,15 @@ package org.mag;
 @IdClass(Magazine.MagazineId.class)
 @Table(name="MAG")
 @DiscriminatorValue("Mag")
-public class Magazine
-{
+public class Magazine {
+
     @Column(length=9)
     @Id private String isbn;
     @Id private String title;
 
     ...
 
-    public static class MagazineId
-    {
+    public static class MagazineId {
         ...
     }
 }
@@ -2502,8 +2463,8 @@ public class Magazine
 @Entity
 @Table(name="ART", uniqueConstraints=@Unique(columnNames="TITLE"))
 @SequenceGenerator(name="ArticleSeq", sequenceName="ART_SEQ")
-public class Article
-{
+public class Article {
+
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ArticleSeq") 
     private long id;
@@ -2516,8 +2477,8 @@ package org.mag.pub;
 
 @Entity
 @Table(name="COMP")
-public class Company
-{
+public class Company {
+
     @Column(name="CID")
     @Id private long id;
 
@@ -2526,8 +2487,8 @@ public class Company
 
 @Entity
 @Table(name="AUTH")
-public class Author
-{
+public class Author {
+
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="AuthorGen")
     @TableGenerator(name="AuthorGen", table="AUTH_GEN", pkColumnName="PK",
@@ -2539,8 +2500,7 @@ public class Author
 }
 
 @Embeddable
-public class Address
-{
+public class Address {
     ...
 }
 
@@ -2548,8 +2508,8 @@ public class Address
 package org.mag.subscribe;
 
 @MappedSuperclass
-public abstract class Document
-{
+public abstract class Document {
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
@@ -2562,8 +2522,7 @@ public abstract class Document
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="CTYPE")
 public class Contract
-    extends Document
-{
+    extends Document {
     ...
 }
 
@@ -2571,8 +2530,8 @@ public class Contract
 @Table(name="SUB", schema="CNTRCT")
 @DiscriminatorColumn(name="KIND", discriminatorType=DiscriminatorType.INTEGER)
 @DiscriminatorValue("1")
-public class Subscription
-{
+public class Subscription {
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
@@ -2582,8 +2541,7 @@ public class Subscription
     @Entity
     @Table(name="LINE_ITEM", schema="CNTRCT")
     public static class LineItem
-        extends Contract
-    {
+        extends Contract {
         ...
     }
 }
@@ -2591,16 +2549,14 @@ public class Subscription
 @Entity(name="Lifetime")
 @DiscriminatorValue("2")
 public class LifetimeSubscription
-    extends Subscription
-{
+    extends Subscription {
     ...
 }
 
 @Entity(name="Trial")
 @DiscriminatorValue("3")
 public class TrialSubscription
-    extends Subscription
-{
+    extends Subscription {
     ...
 }
 </programlisting>
@@ -2983,8 +2939,8 @@ package org.mag;
 @IdClass(Magazine.MagazineId.class)
 @Table(name="MAG")
 @DiscriminatorValue("Mag")
-public class Magazine
-{
+public class Magazine {
+
     @Column(length=9)
     @Id private String isbn;
     @Id private String title;
@@ -3000,8 +2956,7 @@ public class Magazine
 
     ...
 
-    public static class MagazineId
-    {
+    public static class MagazineId {
         ...
     }
 }
@@ -3009,8 +2964,8 @@ public class Magazine
 @Entity
 @Table(name="ART", uniqueConstraints=@Unique(columnNames="TITLE"))
 @SequenceGenerator(name="ArticleSeq", sequenceName="ART_SEQ")
-public class Article
-{
+public class Article {
+
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ArticleSeq") 
     private long id;
@@ -3029,8 +2984,8 @@ package org.mag.pub;
 
 @Entity
 @Table(name="COMP")
-public class Company
-{
+public class Company {
+
     @Column(name="CID")
     @Id private long id;
 
@@ -3047,8 +3002,8 @@ public class Company
 
 @Entity
 @Table(name="AUTH")
-public class Author
-{
+public class Author {
+
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="AuthorGen")
     @TableGenerator(name="AuthorGen", table="AUTH_GEN", pkColumnName="PK",
@@ -3069,16 +3024,15 @@ public class Author
 }
 
 @Embeddable
-public class Address
-{
+public class Address {
     ...
 }
 
 package org.mag.subscribe;
 
 @MappedSuperclass
-public abstract class Document
-{
+public abstract class Document {
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
@@ -3094,8 +3048,8 @@ public abstract class Document
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="CTYPE")
 public class Contract
-    extends Document
-{
+    extends Document {
+
     @Lob
     private String terms;
 
@@ -3106,8 +3060,8 @@ public class Contract
 @Table(name="SUB", schema="CNTRCT")
 @DiscriminatorColumn(name="KIND", discriminatorType=DiscriminatorType.INTEGER)
 @DiscriminatorValue("1")
-public class Subscription
-{
+public class Subscription {
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
@@ -3126,8 +3080,8 @@ public class Subscription
     @Entity
     @Table(name="LINE_ITEM", schema="CNTRCT")
     public static class LineItem
-        extends Contract
-    {
+        extends Contract {
+
         @Column(name="COMM")
         private String comments;
 
@@ -3140,8 +3094,8 @@ public class Subscription
 @Entity(name="Lifetime")
 @DiscriminatorValue("2")
 public class LifetimeSubscription
-    extends Subscription
-{
+    extends Subscription {
+
     @Basic(fetch=FetchType.LAZY)
     @Column(name="ELITE")
     private boolean getEliteClub () { ... }
@@ -3153,8 +3107,8 @@ public class LifetimeSubscription
 @Entity(name="Trial")
 @DiscriminatorValue("3")
 public class TrialSubscription
-    extends Subscription
-{
+    extends Subscription {
+
     @Column(name="END")
     public Date getEndDate () { ... }
     public void setEndDate (Date end) { ... }
@@ -3405,8 +3359,8 @@ package org.mag;
 @Table(name="ART")
 @SecondaryTable(name="ART_DATA", 
     pkJoinColumns=@PrimaryKeyJoinColumn(name="ART_ID", referencedColumnName="ID"))
-public class Article
-{
+public class Article {
+
     @Id private long id;
 
     @Column(table="ART_DATA")
@@ -3550,8 +3504,8 @@ package org.mag.pub;
 
 @Entity
 @Table(name="COMP")
-public class Company
-{
+public class Company {
+
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name="street", column=@Column(name="STRT")),
@@ -3564,8 +3518,8 @@ public class Company
 
 @Entity
 @Table(name="AUTH")
-public class Author
-{
+public class Author {
+
     // use all defaults from Address class mappings
     private Address address;
     
@@ -3573,8 +3527,8 @@ public class Author
 }
 
 @Embeddable
-public class Address
-{
+public class Address {
+
     private String street;
     private String city;
     @Column(columnDefinition="CHAR(2)")
@@ -3632,8 +3586,8 @@ Contract</classname> table's <literal>CVERSION</literal> column.
                 </title>
 <programlisting>
 @MappedSuperclass
-public abstract class Document
-{
+public abstract class Document {
+
     @Column(name="VERS")
     @Version private int version;
 
@@ -3646,8 +3600,7 @@ public abstract class Document
 @DiscriminatorColumn(name="CTYPE")
 @AttributeOverride(name="version", column=@Column(name="CVERSION"))
 public class Contract
-    extends Document
-{
+    extends Document {
     ...
 }
 </programlisting>
@@ -3840,8 +3793,8 @@ Guide for details.
 package org.mag;
 
 @Table(name="AUTH")
-public class Magazine
-{
+public class Magazine {
+
     @Column(length=9)
     @Id private String isbn;
     @Id private String title;
@@ -3858,8 +3811,8 @@ public class Magazine
 }
 
 @Table(name="ART")
-public class Article
-{
+public class Article {
+
     @Id private long id;
 
     ...
@@ -3869,8 +3822,8 @@ public class Article
 package org.mag.pub;
 
 @Table(name="COMP")
-public class Company
-{
+public class Company {
+
     @Column(name="CID")
     @Id private long id;
 
@@ -3880,14 +3833,13 @@ public class Company
 
 package org.mag.subscribe;
 
-public class Subscription
-{
+public class Subscription {
     ...
 
     @Table(name="LINE_ITEM", schema="CNTRCT")
     public static class LineItem
-        extends Contract
-    {
+        extends Contract {
+
         @ManyToOne
         @JoinColumns({
             @JoinColumn(name="MAG_ISBN" referencedColumnName="ISBN"),
@@ -4092,8 +4044,8 @@ package org.mag;
 
 @Entity
 @Table(name="MAG")
-public class Magazine
-{
+public class Magazine {
+
     @Column(length=9)
     @Id private String isbn;
     @Id private String title;
@@ -4113,8 +4065,8 @@ public class Magazine
 
 @Entity
 @Table(name="ART")
-public class Article
-{
+public class Article {
+
     @Id private long id;
 
     @ManyToMany(cascade=CascadeType.PERSIST)
@@ -4132,8 +4084,8 @@ package org.mag.pub;
 
 @Entity
 @Table(name="AUTH")
-public class Author
-{
+public class Author {
+
     @Column(name="AID", columnDefinition="INTEGER64")
     @Id private long id;
 
@@ -4273,26 +4225,26 @@ package org.mag.subscribe;
 
 @Entity
 @Table(name="SUB", schema="CNTRCT")
-public class Subscription
-{
-@OneToMany(cascade={CascadeType.PERSIST,CascadeType.REMOVE})
-@MapKey(name="num")
-@JoinTable(name="SUB_ITEMS", schema="CNTRCT",
-    joinColumns=@JoinColumn(name="SUB_ID"),
-    inverseJoinColumns=@JoinColumn(name="ITEM_ID"))
-private Map&lt;Long,LineItem&gt; items;
+public class Subscription {
 
-...
-
-@Entity
-@Table(name="LINE_ITEM", schema="CNTRCT")
-public static class LineItem
-    extends Contract
-{
-    private long num;
+    @OneToMany(cascade={CascadeType.PERSIST,CascadeType.REMOVE})
+    @MapKey(name="num")
+    @JoinTable(name="SUB_ITEMS", schema="CNTRCT",
+        joinColumns=@JoinColumn(name="SUB_ID"),
+        inverseJoinColumns=@JoinColumn(name="ITEM_ID"))
+    private Map&lt;Long,LineItem&gt; items;
 
     ...
-}
+
+    @Entity
+    @Table(name="LINE_ITEM", schema="CNTRCT")
+    public static class LineItem
+        extends Contract {
+
+        private long num;
+
+        ...
+    }
 }
 </programlisting>
                 <para>
@@ -4370,8 +4322,8 @@ package org.mag;
 @IdClass(Magazine.MagazineId.class)
 @Table(name="MAG")
 @DiscriminatorValue("Mag")
-public class Magazine
-{
+public class Magazine {
+
     @Column(length=9)
     @Id private String isbn;
     @Id private String title;
@@ -4409,8 +4361,7 @@ public class Magazine
 
     ...
 
-    public static class MagazineId
-    {
+    public static class MagazineId {
         ...
     }
 }
@@ -4418,8 +4369,8 @@ public class Magazine
 @Entity
 @Table(name="ART", uniqueConstraints=@Unique(columnNames="TITLE"))
 @SequenceGenerator(name="ArticleSeq", sequenceName="ART_SEQ")
-public class Article
-{
+public class Article {
+
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ArticleSeq") 
     private long id;
@@ -4445,8 +4396,8 @@ package org.mag.pub;
 
 @Entity
 @Table(name="COMP")
-public class Company
-{
+public class Company {
+
     @Column(name="CID")
     @Id private long id;
 
@@ -4479,8 +4430,8 @@ public class Company
 
 @Entity
 @Table(name="AUTH")
-public class Author
-{
+public class Author {
+
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="AuthorGen")
     @TableGenerator(name="AuthorGen", tableName="AUTH_GEN", pkColumnName="PK",
@@ -4506,8 +4457,8 @@ public class Author
 }
 
 @Embeddable
-public class Address
-{
+public class Address {
+
     private String street;
     private String city;
     @Column(columnDefinition="CHAR(2)")
@@ -4519,8 +4470,8 @@ public class Address
 package org.mag.subscribe;
 
 @MappedSuperclass
-public abstract class Document
-{
+public abstract class Document {
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
@@ -4536,8 +4487,8 @@ public abstract class Document
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="CTYPE")
 public class Contract
-    extends Document
-{
+    extends Document {
+
     @Lob
     private String terms;
 
@@ -4548,8 +4499,8 @@ public class Contract
 @Table(name="SUB", schema="CNTRCT")
 @DiscriminatorColumn(name="KIND", discriminatorType=DiscriminatorType.INTEGER)
 @DiscriminatorValue("1")
-public class Subscription
-{
+public class Subscription {
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
@@ -4575,8 +4526,8 @@ public class Subscription
     @Entity
     @Table(name="LINE_ITEM", schema="CNTRCT")
     public static class LineItem
-        extends Contract
-    {
+        extends Contract {
+
         @Column(name="COMM")
         private String comments;
 
@@ -4596,8 +4547,8 @@ public class Subscription
 @Entity(name="Lifetime")
 @DiscriminatorValue("2")
 public class LifetimeSubscription
-    extends Subscription
-{
+    extends Subscription {
+
     @Basic(fetch=FetchType.LAZY)
     @Column(name="ELITE")
     private boolean getEliteClub () { ... }
@@ -4609,8 +4560,8 @@ public class LifetimeSubscription
 @Entity(name="Trial")
 @DiscriminatorValue("3")
 public class TrialSubscription
-    extends Subscription
-{
+    extends Subscription {
+
     @Column(name="END")
     public Date getEndDate () { ... }
     public void setEndDate (Date end) { ... }

@@ -53,17 +53,15 @@ import static org.apache.openjpa.persistence.PersistenceStrategy.*;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
- * Javax persistence-based metadata defaults.
+ * JPA-based metadata defaults.
  *
  * @author Patrick Linskey
  * @author Abe White
- * @nojavadoc
  */
 public class PersistenceMetaDataDefaults
     extends AbstractMetaDataDefaults {
 
-    private boolean _allowsMultipleMethodsOnSameCallback;
-    private boolean _allowsMissingCallbackConstructor;
+    private boolean _allowsMultipleMethodsForSameCallback = true;
 
     private static Localizer _loc = Localizer.forPackage
         (PersistenceMetaDataDefaults.class);
@@ -97,8 +95,6 @@ public class PersistenceMetaDataDefaults
     public PersistenceMetaDataDefaults() {
         setCallbackMode(CALLBACK_RETHROW | CALLBACK_ROLLBACK |
             CALLBACK_FAIL_FAST);
-        _allowsMultipleMethodsOnSameCallback = true;
-        _allowsMissingCallbackConstructor = true;
     }
 
     /**
@@ -181,6 +177,35 @@ public class PersistenceMetaDataDefaults
         if (Serializable.class.isAssignableFrom(type))
             return BASIC;
         return null;
+    }
+    
+    /** 
+     * Flags if multiple methods of the same class can handle the same 
+     * callback event.
+     */
+    public boolean getAllowsMultipleMethodsForSameCallback() {
+        return _allowsMultipleMethodsForSameCallback;
+    }
+    
+    /** 
+     * Flags if multiple methods of the same class can handle the same 
+     * callback event.
+     */
+    public void setAllowsMultipleMethodsForSameCallback(boolean flag) {
+        _allowsMultipleMethodsForSameCallback = flag;
+    }
+
+    /**
+     * Auto-configuration method for the default access type of base classes 
+     * with ACCESS_UNKNOWN
+     */
+    public void setDefaultAccessType(String type) {
+        if (type == null)
+            return;
+        if ("PROPERTY".equals(type.toUpperCase()))
+            setDefaultAccessType(ClassMetaData.ACCESS_PROPERTY);
+        else
+            setDefaultAccessType(ClassMetaData.ACCESS_FIELD);
     }
 
     @Override
@@ -271,31 +296,4 @@ public class PersistenceMetaDataDefaults
             return false;
         return true;
 	}
-    
-    /** 
-     * Flags if multiple methods of the same class can handle the same 
-     * callback event.
-     */
-    public boolean getAllowsMultipleMethodsOnSameCallback() {
-        return _allowsMultipleMethodsOnSameCallback;
-    }
-    
-    public void setAllowsMultipleMethodsOnSameCallback(boolean flag) {
-        _allowsMultipleMethodsOnSameCallback = flag;
-    }
-
-    /** 
-     * Flags if it allowed for the callback listener class not to have a no-arg 
-     * constructor.
-     */
-    
-    public boolean getAllowsMissingCallbackConstructor() {
-        return _allowsMissingCallbackConstructor;
-    }
-    
-    public void setAllowsMissingCallbackConstructor(boolean flag) {
-        _allowsMissingCallbackConstructor = flag;
-    }
-    
-    
 }

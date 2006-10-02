@@ -8,7 +8,7 @@
         </primary>
     </indexterm>
     <para>
-OpenJPA <phrase>JPA</phrase> uses a relational database for object persistence.
+OpenJPA uses a relational database for object persistence.
 It communicates with the database using the Java DataBase Connectivity (JDBC)
 APIs. This chapter describes how to configure OpenJPA to work with the JDBC
 driver for your database, and how to access JDBC functionality at runtime.
@@ -34,9 +34,8 @@ driver for your database, and how to access JDBC functionality at runtime.
             </seealso>
         </indexterm>
         <para>
-OpenJPA includes its own <classname>javax.sql.DataSource</classname>
-implementation, complete with configurable connection pooling and prepared
-statement caching. If you choose to use OpenJPA's <classname>DataSource
+OpenJPA includes its own simple <classname>javax.sql.DataSource</classname>
+implementation.  If you choose to use OpenJPA's <classname>DataSource
 </classname>, then you must specify the following properties:
         </para>
         <itemizedlist>
@@ -84,8 +83,7 @@ user.
             </listitem>
         </itemizedlist>
         <para>
-To configure advanced features such as connection pooling and prepared statement
-caching, or to configure the underlying JDBC driver, use the following optional
+To configure advanced features, use the following optional
 properties. The syntax of these property strings follows the syntax of OpenJPA
 plugin parameters described in <xref linkend="ref_guide_conf_plugins"/>.
         </para>
@@ -125,521 +123,6 @@ this plugin string:
                         <para>
                         <indexterm>
                             <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                ExceptionAction
-                            </tertiary>
-                        </indexterm>
-<literal>ExceptionAction</literal>: The action to take when when a connection
-that has thrown an exception is returned to the pool. Set to <literal>destroy
-</literal> to destroy the connection. Set to <literal> validate</literal> to
-validate the connection (subject to the <literal>TestOnReturn</literal>,
-<literal> TestOnBorrow</literal>, and other test settings). Set to <literal>
-none</literal> to ignore the fact that the connection has thrown an exception,
-and assume it is still usable. Defaults to <literal> destroy</literal>.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                MaxActive
-                            </tertiary>
-                        </indexterm>
-<literal>MaxActive</literal>: The maximum number of database connections in use
-at one time. A value of 0 disables connection pooling. Defaults to 8. This is
-the maximum number of connections that OpenJPA will give out to your
-application. If a connection is requested while <literal>MaxActive</literal>
-other connections are in use, OpenJPA will wait for <literal>MaxWait</literal>
-milliseconds for a connection to be returned, and will then throw an exception
-if no connection was made available.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                MaxIdle
-                            </tertiary>
-                        </indexterm>
-<literal>MaxIdle</literal>: The maximum number of idle database connections to
-keep in the pool. Defaults to 8. If this number is less than <literal>MaxActive
-</literal>, then OpenJPA will close extra connections that are returned to the
-pool if there are already <literal>MaxIdle</literal> available connections. This
-allows for unexpected or atypical load while still maintaining a relatively
-small pool when there is less load on the system.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                MaxTotal
-                            </tertiary>
-                        </indexterm>
-<literal>MaxTotal</literal>: The maximum number of database connections in the
-pool, whether active or idle. Defaults to -1, meaning no limit (the limit will
-be dictated by <literal>MaxActive</literal> and <literal>MaxIdle</literal> for
-each unique user name).
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                MaxWait
-                            </tertiary>
-                        </indexterm>
-<literal>MaxWait</literal>: The maximum number of milliseconds to wait for a
-free database connection to become available before giving up. Defaults to 3000.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                MinEvictableIdleTimeMillis
-                            </tertiary>
-                        </indexterm>
-<literal>MinEvictableIdleTimeMillis</literal>: The minimum number of
-milliseconds that a database connection can sit idle before it becomes a
-candidate for eviction from the pool. Defaults to 30 minutes. Set to 0 to never
-evict a connection based on idle time alone.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                RollbackOnReturn
-                            </tertiary>
-                        </indexterm>
-<literal>RollbackOnReturn</literal>: Force all connections to be rolled back
-when they are retuned to the pool. If false, the <classname> DataSource
-</classname> will only roll back connections when it detects that there have
-been any transactional updates on the connection.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                TestOnBorrow
-                            </tertiary>
-                        </indexterm>
-<literal>TestOnBorrow</literal>: Whether to to validate database connections
-before obtaining them from the pool. Note that validation only consists of a
-call to the connection's <methodname>isClosed</methodname> method unless you
-specify a <literal>ValidationSQL</literal> string. Defaults to <literal>true
-</literal>.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                TestOnReturn
-                            </tertiary>
-                        </indexterm>
-<literal>TestOnReturn</literal>: Set to <literal>true</literal> to validate
-database connections when they are returned to the pool. Note that validation
-only consists of a call to the connection's <methodname>isClosed</methodname>
-method unless you specify a <literal>ValidationSQL</literal> string.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                TestWhileIdle
-                            </tertiary>
-                        </indexterm>
-<literal>TestWhileIdle</literal>: Set to <literal>true</literal> to periodically
-validate idle database connections.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                TimeBetweenEvictionRunsMillis
-                            </tertiary>
-                        </indexterm>
-<literal>TimeBetweenEvictionRunsMillis</literal>: The number of milliseconds
-between runs of the eviction thread. Defaults to <literal>-1</literal>, meaning
-the eviction thread will never run.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                TrackParameters
-                            </tertiary>
-                        </indexterm>
-<literal>TrackParameters</literal>: When <literal>true</literal>, OpenJPA will
-track the parameters that were set for all <classname>PreparedStatement
-</classname>s that are executed or batched so that they can be included in
-error messages. Defaults to <literal>true</literal>.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                ValidationSQL
-                            </tertiary>
-                        </indexterm>
-<literal>ValidationSQL</literal>: A simple SQL query to issue to validate a
-database connection. If this property is not set, then the only validation
-performed is to use the <methodname>Connection.isClosed</methodname> method. The
-following table shows the default settings for different databases. If a
-database is not shown, this property defaults to null.
-                        </para>
-                        <table>
-                            <title>
-                                Validation SQL Defaults
-                            </title>
-                            <tgroup cols="2" align="left" colsep="1" rowsep="1">
-                                <colspec colname="db"/>
-                                
-                                <colspec colname="sql"/>
-                                
-                                <thead>
-                                    <row>
-                                        <entry colname="db">
-                                            Database
-                                        </entry>
-                                        <entry colname="sql">
-                                            SQL
-                                        </entry>
-                                    </row>
-                                </thead>
-                                <tbody>
-                                    <row>
-                                        <entry colname="db">
-                                            DB2
-                                        </entry>
-                                        <entry colname="sql">
-                                            
-                      SELECT DISTINCT(CURRENT TIMESTAMP) 
-                      FROM SYSIBM.SYSTABLES
-                    
-                                        </entry>
-                                    </row>
-                                    <row>
-                                        <entry colname="db">
-                                            Empress
-                                        </entry>
-                                        <entry colname="sql">
-                                            
-                      SELECT DISTINCT(TODAY) 
-                      FROM SYS_TABLES
-                    
-                                        </entry>
-                                    </row>
-                                    <row>
-                                        <entry colname="db">
-                                            Informix
-                                        </entry>
-                                        <entry colname="sql">
-                                            
-                      SELECT DISTINCT CURRENT TIMESTAMP 
-                      FROM INFORMIX.SYSTABLES
-                    
-                                        </entry>
-                                    </row>
-                                    <row>
-                                        <entry colname="db">
-                                            MySQL
-                                        </entry>
-                                        <entry colname="sql">
-                                            
-                      SELECT NOW()
-                    
-                                        </entry>
-                                    </row>
-                                    <row>
-                                        <entry colname="db">
-                                            Oracle
-                                        </entry>
-                                        <entry colname="sql">
-                                            
-                      SELECT SYSDATE FROM DUAL
-                    
-                                        </entry>
-                                    </row>
-                                    <row>
-                                        <entry colname="db">
-                                            Postgres
-                                        </entry>
-                                        <entry colname="sql">
-                                            
-                      SELECT NOW()
-                    
-                                        </entry>
-                                    </row>
-                                    <row>
-                                        <entry colname="db">
-                                            SQLServer
-                                        </entry>
-                                        <entry colname="sql">
-                                            
-                      SELECT GETDATE()
-                    
-                                        </entry>
-                                    </row>
-                                    <row>
-                                        <entry colname="db">
-                                            Sybase
-                                        </entry>
-                                        <entry colname="sql">
-                                            
-                      SELECT GETDATE()
-                    
-                                        </entry>
-                                    </row>
-                                </tbody>
-                            </tgroup>
-                        </table>
-                        <para>
-To disable validation SQL, set this property to an empty string, as in
-<xref linkend="ref_guide_dbsetup_builtin_ex"/>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                ClosePoolSQL
-                            </tertiary>
-                        </indexterm>
-<literal>ClosePoolSQL</literal>: A simple SQL statement to execute when the
-connection pool is completely closed. This can be used, for example, to cleanly
-issue a shutdown statement to a file-based database.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                ValidationTimeout
-                            </tertiary>
-                        </indexterm>
-<literal>ValidationTimeout</literal>: The minimum number of milliseconds that
-must elapse before a connection will ever be re-validated. This property is
-typically used with <literal>TestOnBorrow</literal> or <literal>TestOnReturn
-</literal> to reduce the number of validations performed, because the same
-connection is often borrowed and returned many times in a short span. Defaults
-to <literal>300000</literal> (5 minutes).
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                WarningAction
-                            </tertiary>
-                        </indexterm>
-<literal>WarningAction</literal>: The action to take when a <classname>
-SQLWarning</classname> is detected on a connection. Possible values are:
-                        </para>
-                        <itemizedlist>
-                            <listitem>
-                                <para>
-<literal>ignore</literal>: Warnings will not be checked for, and will be
-ignored. This is the default.
-                                </para>
-                            </listitem>
-                            <listitem>
-                                <para>
-<literal>trace</literal>: The warning will be logged on the <literal>TRACE
-</literal> channel of the JDBC log.
-                                </para>
-                            </listitem>
-                            <listitem>
-                                <para>
-<literal>info</literal>: The warning will be logged on the <literal>INFO
-</literal> channel of the JDBC log.
-                                </para>
-                            </listitem>
-                            <listitem>
-                                <para>
-<literal>warn</literal>: The warning will be logged on the <literal>WARN
-</literal> channel of the JDBC log.
-                                </para>
-                            </listitem>
-                            <listitem>
-                                <para>
-<literal>error</literal>: The warning will be logged on the <literal>ERROR
-</literal> channel of the JDBC log.
-                                </para>
-                            </listitem>
-                            <listitem>
-                                <para>
-<literal>throw</literal>: All <classname>SQLWarning</classname> instances will
-be thrown as if they were errors.
-                                </para>
-                            </listitem>
-                            <listitem>
-                                <para>
-<literal>handle</literal>: The <classname>SQLWarning</classname> instance will
-be passed through the <methodname>handleWarning</methodname> method of
-<ulink url="javadoc/openjpa/jdbc/sql/DBDictionary.html"><classname>
-org.apache.openjpa.jdbc.sql.DBDictionary</classname></ulink>, which allows a
-custom extension of the dictionary to use heuristic-based warning handling.
-                                </para>
-                            </listitem>
-                        </itemizedlist>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                connections
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                WhenExhaustedAction
-                            </tertiary>
-                        </indexterm>
-<literal>WhenExhaustedAction</literal>: The action to take when there are no
-available database connections in the pool. Set to <literal>exception</literal>
-to immediately throw an exception. Set to <literal> block</literal> to block
-until a connection is available or the maximum wait time is exceeded. Set to
-<literal>grow</literal> to automatically grow the pool. Defaults to <literal>
-block</literal>.
-                        </para>
-                    </listitem>
-                </itemizedlist>
-                <para>
-Additionally, the following properties are available whether you use OpenJPA's
-built-in <classname>DataSource</classname> or a third-party's:
-                </para>
-                <itemizedlist>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
-                                prepared statement
-                            </primary>
-                            <secondary>
-                                pooling
-                            </secondary>
-                            <tertiary>
-                                MaxCachedStatements
-                            </tertiary>
-                        </indexterm>
-<literal>MaxCachedStatements</literal>: The maximum number of <classname>
-java.sql.PreparedStatement</classname>s to cache. Statement caching can
-dramatically speed up some databases. Defaults to 50 for OpenJPA's <classname>
-DataSource</classname>, and 0 for third-party <classname>DataSource</classname>
-s. Most third-party <classname>DataSource</classname>s do not benefit from
-OpenJPA's prepared statement cache, because each returned connection has a
-unique hash code, making it impossible for OpenJPA to match connections to their
-cached statements.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                        <indexterm>
-                            <primary>
                                 JDBC
                             </primary>
                             <secondary>
@@ -648,6 +131,34 @@ cached statements.
                         </indexterm>
 <literal>QueryTimeout</literal>: The maximum number of seconds the JDBC driver
 will wait for a statement to execute.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                        <indexterm>
+                            <primary>
+                                SQL
+                            </primary>
+                            <secondary>
+                                PrettyPrint
+                            </secondary>
+                        </indexterm>
+<literal>PrettyPrint</literal>: Boolean indicating whether to pretty-print
+logged SQL statements.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                        <indexterm>
+                            <primary>
+                                SQL
+                            </primary>
+                            <secondary>
+                                PrettyPrintLineLength
+                            </secondary>
+                        </indexterm>
+<literal>PrettyPrintLineLength</literal>: The maximum number of characters in
+each pretty-printed SQL line.
                         </para>
                     </listitem>
                 </itemizedlist>
@@ -663,7 +174,7 @@ will wait for a statement to execute.
 &lt;property name="openjpa.ConnectionURL" value="jdbc:hsqldb:db-hypersonic"/&gt;
 &lt;property name="openjpa.ConnectionDriverName" value="org.hsqldb.jdbcDriver"/&gt;
 &lt;property name="openjpa.ConnectionFactoryProperties" 
-    value="MaxActive=50, MaxIdle=10, ValidationTimeout=50000, MaxCachedStatements=100, ValidationSQL=''"/&gt;
+    value="PrettyPrint=true, PrettyPrintLineLength=80"/&gt;
 </programlisting>
         </example>
     </section>
@@ -706,11 +217,11 @@ Persistence.createEntityManagerFactory</methodname> under the
                     </primary>
                 </indexterm>
 Bind the <classname>DataSource</classname> into JNDI, and then specify its
-location in the <phrase><literal>jta-data-source</literal> or <literal>
+location in the <literal>jta-data-source</literal> or <literal>
 non-jta-data-source</literal> element of the
 <link linkend="jpa_overview_persistence_xml">JPA XML format</link> (depending on
 whether the <classname>DataSource</classname> is managed by JTA), or in the
-</phrase><link linkend="openjpa.ConnectionFactoryName"><literal>
+<link linkend="openjpa.ConnectionFactoryName"><literal>
 openjpa.ConnectionFactoryName</literal></link> property.
                 </para>
             </listitem>
@@ -733,11 +244,11 @@ openjpa.ConnectionProperties</literal></link> setting.
             </listitem>
         </itemizedlist>
         <para>
-Some advanced features of OpenJPA's own <classname>DataSource</classname> can
+The features of OpenJPA's own <classname>DataSource</classname> can
 also be used with third-party implementations. OpenJPA layers on top of the
 third-party <classname>DataSource</classname> to provide the extra
-functionality. To configure these advanced features, including prepared
-statement caching, use the <link linkend="openjpa.ConnectionFactoryProperties">
+functionality. To configure these features use the 
+<link linkend="openjpa.ConnectionFactoryProperties">
 <literal>openjpa.ConnectionFactoryProperties</literal></link> property described
 in the previous section.
         </para>
@@ -782,10 +293,12 @@ Certain application servers automatically enlist their <classname> DataSource
 </classname>s in global transactions. When this is the case, OpenJPA should not
 attempt to commit the underlying connection, leaving JDBC transaction completion
 to the application server. To notify OpenJPA that your third-party <classname>
-DataSource</classname> is managed by the application server, set the
+DataSource</classname> is managed by the application server, use the 
+<literal>jta-data-source</literal> element of your <filename>
+persistence.xml</filename> file or set the
 <link linkend="openjpa.ConnectionFactoryMode"><literal>
-openjpa.ConnectionFactoryMode</literal></link> property to <literal>managed
-</literal>.
+openjpa.ConnectionFactoryMode</literal></link> property to <literal>
+managed</literal>.
             </para>
             <para>
 Note that OpenJPA can only use managed <classname>DataSource</classname>s when
@@ -799,15 +312,11 @@ configure a second unmanaged <classname>DataSource</classname> that OpenJPA can
 use to perform tasks that are independent of the global transaction. The most
 common of these tasks is updating the sequence table OpenJPA uses to generate
 unique primary key values for your datastore identity objects. Configure the
-second <classname> DataSource</classname> just as the first, but use the various
+second <classname>DataSource</classname> using the <literal>non-jta-data-source
+</literal> <filename>persistence.xml</filename> element, or OpenJPA's various
 "2" connection properties, such as <literal>openjpa.ConnectionFactory2Name
 </literal> or <literal>openjpa.Connection2DriverName</literal>. These
-properties are outlined in <xref linkend="ref_guide_conf"/>. <phrase> If
-your second <classname>DataSource</classname> is also bound to JNDI, you can use
-JPA XML's <literal>non-jta-data-source</literal> to specify its location.
-</phrase> Typically, <phrase>though,</phrase> you will use OpenJPA's built-in
-implementation for the second <classname>DataSource</classname> (see
-<xref linkend="ref_guide_dbsetup_builtin"/> ).
+properties are outlined in <xref linkend="ref_guide_conf"/>.
             </para>
             <example id="ref_guide_enterprise_xa_conf_ex">
                 <title>
@@ -822,10 +331,6 @@ implementation for the second <classname>DataSource</classname> (see
     &lt;property name="openjpa.Connection2Password" value="tiger"/&gt;
     &lt;property name="openjpa.Connection2URL" value="jdbc:oracle:thin:@CROM:1521:OpenJPADB"/&gt;
     &lt;property name="openjpa.Connection2DriverName" value="oracle.jdbc.driver.OracleDriver"/&gt;
-    &lt;property name="openjpa.ConnectionFactory2Properties" value="MaxActive=20, MaxIdle=10"/&gt;
-    &lt;!-- managed transaction and enlisted configuration --&gt;
-    &lt;property name="openjpa.TransactionMode" value="managed"/&gt;
-    &lt;property name="openjpa.ConnectionFactoryMode" value="managed"/&gt;
 &lt;/properties&gt;
 </programlisting>
             </example>
@@ -853,19 +358,20 @@ implementation for the second <classname>DataSource</classname> (see
         </indexterm>
         <para>
 The JPA standard defines how to access JDBC connections from enterprise beans.
-OpenJPA also provides APIs to access an <classname> EntityManager</classname>'s
+OpenJPA also provides APIs to access an <classname>EntityManager</classname>'s
 connection, or to retrieve a connection directly from the <classname>
 EntityManagerFactory</classname>'s <classname>DataSource</classname>.
         </para>
         <para>
-The <ulink url="../../api/openjpa/persistence/OpenJPAEntityManager.html">
+The 
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <methodname>OpenJPAEntityManager.getConnection</methodname></ulink> method
 returns an <classname>EntityManager</classname>'s connection. If the <classname>
 EntityManager</classname> does not already have a connection, it will obtain
 one. The returned connection is only guaranteed to be transactionally consistent
 with other <classname>EntityManager</classname> operations if the <classname>
 EntityManager</classname> is in a managed or non-optimistic transaction, if the
-<classname> EntityManager</classname> has flushed in the current transaction, or
+<classname>EntityManager</classname> has flushed in the current transaction, or
 if you have used the <methodname>OpenJPAEntityManager.beginStore</methodname>
 method to ensure that a datastore transaction is in progress. Always close the
 returned connection before attempting any other <classname>EntityManager
@@ -882,12 +388,12 @@ import org.apache.openjpa.persistence.*;
 
 ...
 
-OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
-Connection conn = (Connection) kem.getConnection ();
+OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
+Connection conn = (Connection) kem.getConnection();
 
 // do JDBC stuff
 
-conn.close ();
+conn.close();
 </programlisting>
         </example>
         <para>
@@ -907,14 +413,14 @@ import org.apache.openjpa.persistence.*;
 
 ...
 
-OpenJPAEntityManagerFactory kemf = OpenJPAPersistence.cast (emf);
-OpenJPAConfiguration conf = kemf.getConfiguration ();
-DataSource dataSource = (DataSource) conf.getConnectionFactory ();
-Connection conn = dataSource.getConnection ();
+OpenJPAEntityManagerFactory kemf = OpenJPAPersistence.cast(emf);
+OpenJPAConfiguration conf = kemf.getConfiguration();
+DataSource dataSource = (DataSource) conf.getConnectionFactory();
+Connection conn = dataSource.getConnection();
 
 // do JDBC stuff
 
-conn.close ();
+conn.close();
 </programlisting>
         </example>
     </section>
@@ -939,7 +445,7 @@ conn.close ();
             </seealso>
         </indexterm>
         <para>
-OpenJPA <phrase>JPA</phrase> can take advantage of any JDBC 2.x compliant
+OpenJPA can take advantage of any JDBC 2.x compliant
 driver, making almost any major database a candidate for use. See our officially
 supported database list in <xref linkend="supported_databases"/> for more
 information. Typically, OpenJPA auto-configures its JDBC behavior and SQL
@@ -993,7 +499,8 @@ the <ulink url="../apidocs/org/apache/openjpa/jdbc/sql/DB2Dictionary.html">
                     </primary>
                 </indexterm>
 <literal>derby</literal>: Dictionary for the Apache Derby database. This is an
-alias for the <ulink url="javadoc/openjpa/jdbc/sql/DerbyDictionary.html">
+alias for the 
+<ulink url="../apidocs/org/apache/openjpa/jdbc/sql/DerbyDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.DerbyDictionary</classname> class.
 </ulink>
                 </para>
@@ -1232,9 +739,9 @@ create database primary keys for identifiers. Defaults to <literal>true
                         </secondary>
                     </indexterm>
 <literal>ConstraintNameMode</literal>: When creating constraints, whether to
-put the constraint name before the definition ( <literal>before</literal> ),
-just after the constraint type name ( <literal>mid</literal> ), or after the
-constraint definition ( <literal>after</literal> ). Defaults to <literal>before
+put the constraint name before the definition (<literal>before</literal>),
+just after the constraint type name (<literal>mid</literal>), or after the
+constraint definition (<literal>after</literal>). Defaults to <literal>before
 </literal>.
                     </para>
                 </listitem>
@@ -3058,147 +2565,6 @@ detects that this is the case, a warning will be logged.
             </itemizedlist>
         </section>
     </section>
-    <section id="ref_guide_dbsetup_sqlfactory">
-        <title>
-            SQLFactory Properties
-        </title>
-        <indexterm zone="ref_guide_dbsetup_dbsupport">
-            <primary>
-                SQL
-            </primary>
-            <secondary>
-                SQLFactory
-            </secondary>
-        </indexterm>
-        <para>
-Some aspects of advanced SQL aren't configured through the <classname>
-DBDictionary</classname>, but through the <classname>SQLFactory</classname>.
-The <literal>openjpa.jdbc.SQLFactory</literal> configuration property is a
-<link linkend="ref_guide_conf_plugins">plugin string</link> you can use to
-configure the following parameters:
-        </para>
-        <itemizedlist>
-            <listitem id="SQLFactory.BatchLimit">
-                <para>
-                <indexterm>
-                    <primary>
-                        prepared statement
-                    </primary>
-                    <secondary>
-                        batching
-                    </secondary>
-                    <tertiary>
-                        BatchLimit
-                    </tertiary>
-                </indexterm>
-<literal>BatchLimit</literal>: The maximum number of SQL update statements to
-batch together. Set to 0 to disable statement batching, or -1 for no limit. See
-<xref linkend="ref_guide_perfpack_batch"/>.
-                </para>
-            </listitem>
-            <listitem id="SQLFactory.BatchParameterLimit">
-                <para>
-                <indexterm>
-                    <primary>
-                        prepared statement
-                    </primary>
-                    <secondary>
-                        batching
-                    </secondary>
-                    <tertiary>
-                        BatchParameterLimit
-                    </tertiary>
-                </indexterm>
-<literal>BatchParameterLimit</literal>: The maximum number of parameters that
-can be batched together for a single batch update. Some databases can only
-handle a certain total number of prepared statement parameters in a single
-batch. This value will cause OpenJPA to flush a SQL batch once the number of
-batched statements times the number of bound parameters per statement exceeds
-this value. Set to 0 to disable SQL batching, or -1 for no limit.
-                </para>
-            </listitem>
-            <listitem id="SQLFactory.SupportsUpdateCountsForBatch">
-                <para>
-                <indexterm>
-                    <primary>
-                        prepared statement
-                    </primary>
-                    <secondary>
-                        batching
-                    </secondary>
-                    <tertiary>
-                        SupportsUpdateCountsForBatch
-                    </tertiary>
-                </indexterm>
-<literal>SupportsUpdateCountsForBatch</literal>: Whether the JDBC driver
-correctly returns the set of update counts when a batch statement is executed.
-                </para>
-            </listitem>
-            <listitem id="SQLFactory.SupportsTotalCountsForBatch">
-                <para>
-                <indexterm>
-                    <primary>
-                        prepared statement
-                    </primary>
-                    <secondary>
-                        batching
-                    </secondary>
-                    <tertiary>
-                        SupportsTotalCountsForBatch
-                    </tertiary>
-                </indexterm>
-<literal>SupportsTotalCountsForBatch</literal>: If a JDBC driver doesn't
-support batch update counts, whether it at least returns the total number of
-updates made when a batch statement is executed.
-                </para>
-            </listitem>
-            <listitem id="SQLFactory.SupportsUnion">
-                <para>
-                <indexterm>
-                    <primary>
-                        SQL
-                    </primary>
-                    <secondary>
-                        union
-                    </secondary>
-                    <tertiary>
-                        SupportsUnion
-                    </tertiary>
-                </indexterm>
-<literal>SupportsUnion</literal>: Whether the database supports SQL UNIONs.
-                </para>
-            </listitem>
-            <listitem id="SQLFactory.SupportsUnionWithUnalignedOrdering">
-                <para>
-                <indexterm>
-                    <primary>
-                        SQL
-                    </primary>
-                    <secondary>
-                        union
-                    </secondary>
-                    <tertiary>
-                        SupportsUnionWithUnalignedOrdering
-                    </tertiary>
-                </indexterm>
-<literal>SupportsUnionWithUnalignedOrdering</literal>: Whether the database
-supports SQL UNIONs that order on columns that are not in the same position in
-all the SELECTs that make up the UNION.
-                </para>
-            </listitem>
-        </itemizedlist>
-        <para>
-The defaults for these properties depend on the database in use.
-        </para>
-        <example id="ref_guide_dbsetup_sqlfactoryex">
-            <title>
-                Configuring SQLFactory Properties
-            </title>
-<programlisting>
-&lt;property name="openjpa.jdbc.SQLFactory" value="BatchLimit=100, SupportsUnion=true"/&gt;
-</programlisting>
-        </example>
-    </section>
     <section id="ref_guide_dbsetup_isolation">
         <title>
             Setting the Transaction Isolation
@@ -3335,8 +2701,7 @@ Not all databases support this syntax.
         </itemizedlist>
         <para>
 You can change the join syntax at runtime through the OpenJPA fetch
-configuration API, which is described in <xref linkend="ref_guide_runtime"/>
-.
+configuration API, which is described in <xref linkend="ref_guide_runtime"/>.
         </para>
         <example id="ref_guide_dbsetup_sql92_conf">
             <title>
@@ -3355,11 +2720,11 @@ import org.apache.openjpa.persistence.jdbc.*;
 
 ... 
 
-Query q = em.createQuery ("select m from Magazine m where m.title = 'JDJ'");
-OpenJPAQuery kq = OpenJPAPersistence.cast (q);
+Query q = em.createQuery("select m from Magazine m where m.title = 'JDJ'");
+OpenJPAQuery kq = OpenJPAPersistence.cast(q);
 JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan ();
-fetch.setJoinSyntax (JDBCFetchPlan.JOIN_SYNTAX_SQL92);
-List results = q.getResultList ();
+fetch.setJoinSyntax(JDBCFetchPlan.JOIN_SYNTAX_SQL92);
+List results = q.getResultList();
 </programlisting>
         </example>
     </section>
@@ -3376,10 +2741,10 @@ List results = q.getResultList ();
             </secondary>
         </indexterm>
         <para>
-Through the properties we've covered thus far, you can configure each <phrase>
-<classname>EntityManagerFactory</classname></phrase> to access a different
+Through the properties we've covered thus far, you can configure each 
+<classname>EntityManagerFactory</classname> to access a different
 database. If your application accesses multiple databases, we recommend that you
-maintain a separate properties file for each one. This will allow you to easily
+maintain a separate persistence unit for each one. This will allow you to easily
 load the appropriate resource for each database at runtime, and to give the
 correct configuration file to OpenJPA's command-line tools during development.
         </para>
@@ -3481,8 +2846,6 @@ non-locking datastore transaction. This is the default.
 <literal>with-connection</literal>: Flush only if the <classname>EntityManager
 </classname> has already established a dedicated connection to the datastore,
 otherwise execute the query in-memory.
-                </para>
-                <para>
 This option is useful if you use long-running optimistic transactions and want
 to ensure that these transactions do not consume database resources until
 commit. OpenJPA's behavior with this option is dependent on the transaction
@@ -3529,27 +2892,18 @@ results.
                         <entry colname="col1">
                         </entry>
                         <entry colname="col2">
-                            
-              FlushBeforeQueries = false
-            
+FlushBeforeQueries = false
                         </entry>
                         <entry colname="col3">
-                            
-              FlushBeforeQueries = true
-            
+FlushBeforeQueries = true
                         </entry>
                         <entry colname="col4">
-                            
-              FlushBeforeQueries = with-connection; 
-              ConnectionRetainMode = on-demand
-            
+FlushBeforeQueries = with-connection; 
+ConnectionRetainMode = on-demand
                         </entry>
                         <entry colname="col5">
-                            
-              FlushBeforeQueries = with-connection; 
-              ConnectionRetainMode = transaction 
-              or always
-            
+FlushBeforeQueries = with-connection; 
+ConnectionRetainMode = transaction or always
                         </entry>
                     </row>
                 </thead>
@@ -3557,92 +2911,77 @@ results.
                     <row>
                         <entry colname="col1">
                             <emphasis role="bold">
-                                
-              IgnoreChanges = true
-              
+IgnoreChanges = true
                             </emphasis>
                         </entry>
                         <entry colname="col2">
-                            no flush
+no flush
                         </entry>
                         <entry colname="col3">
-                            no flush
+no flush
                         </entry>
                         <entry colname="col4">
-                            no flush
+no flush
                         </entry>
                         <entry colname="col5">
-                            no flush
+no flush
                         </entry>
                     </row>
                     <row>
                         <entry colname="col1">
                             <emphasis role="bold">
-                                
-              IgnoreChanges = false; no tx active
-              
+IgnoreChanges = false; no tx active
                             </emphasis>
                         </entry>
                         <entry colname="col2">
-                            no flush
+no flush
                         </entry>
                         <entry colname="col3">
-                            no flush
+no flush
                         </entry>
                         <entry colname="col4">
-                            no flush
+no flush
                         </entry>
                         <entry colname="col5">
-                            no flush
+no flush
                         </entry>
                     </row>
                     <row>
                         <entry colname="col1">
                             <emphasis role="bold">
-                                
-              IgnoreChanges = false; datastore tx active
-              
+IgnoreChanges = false; datastore tx active
                             </emphasis>
                         </entry>
                         <entry colname="col2">
-                            no flush
+no flush
                         </entry>
                         <entry colname="col3">
-                            flush
+flush
                         </entry>
                         <entry colname="col4">
-                            flush
+flush
                         </entry>
                         <entry colname="col5">
-                            flush
+flush
                         </entry>
                     </row>
                     <row>
                         <entry colname="col1">
                             <emphasis role="bold">
-                                
-              IgnoreChanges = false; optimistic tx active
-              
+IgnoreChanges = false; optimistic tx active
                             </emphasis>
                         </entry>
                         <entry colname="col2">
-                            no flush
+no flush
                         </entry>
                         <entry colname="col3">
-                            flush
+flush
                         </entry>
                         <entry colname="col4">
-                            
-              no flush unless 
-                            <methodname>
-                                flush
-                            </methodname>
-                             has 
-              already been invoked
-            
+no flush unless <methodname>flush</methodname> has already been invoked
                         </entry>
                         <entry colname="col5">
-                            flush
+flush
                         </entry>
                     </row>
                 </tbody>
@@ -3664,61 +3003,10 @@ results.
 <programlisting>
 import org.apache.openjpa.persistence.*;
 
-... 
-
-// obtaining an em with a certain transaction and connection retain mode
-OpenJPAEntityManagerFactory kemf = OpenJPAPersistence.cast (emf);
-EntityManager em = kemf.createEntityManager (PersistenceContextType.EXTENDED,
-    false, OpenJPAEntityManager.CONN_RETAIN_ALWAYS);
-
-...
-
-// changing the flush mode for an individual EntityManager
-OpenJPAEntityManager em = OpenJPAPersistence.cast (em);
-FetchPlan fetch = kem.getFetchPlan ();
-fetch.setFlushBeforeQueries (FetchPlan.QUERY_FLUSH_TRUE);
-</programlisting>
-        </example>
-    </section>
-    <section id="ref_guide_perfpack_batch">
-        <title>
-            Statement Batching
-        </title>
-        <indexterm zone="ref_guide_perfpack_batch">
-            <primary>
-                prepared statement
-            </primary>
-            <secondary>
-                batching
-            </secondary>
-        </indexterm>
-        <para>
-In addition to connection pooling and prepared statement caching, OpenJPA
-employs statement batching to speed up JDBC updates. Statement batching is
-enabled by default for any JDBC driver that supports it. When batching is on,
-OpenJPA automatically orders its SQL statements to maximize the size of each
-batch. This can result in large performance gains for transactions that modify a
-lot of data.
-        </para>
-        <para>
-You configure statement batching through the system
-<ulink url="../apidocs/org/apache/openjpa/jdbc/sql/DBDictionary.html">
-<classname>DBDictionary</classname></ulink>, which is controlled by the
-<link linkend="openjpa.jdbc.DBDictionary"><literal>openjpa.jdbc.DBDictionary
-</literal></link> configuration property. The example below shows how to enable
-and disable statement batching via your configuration properties.
-        </para>
-        <example id="ref_guide_perfpack_batch_ex">
-            <title>
-                Configuring SQL Batching
-            </title>
-            <para>
-The batch limit is the maximum number of statements OpenJPA will ever batch
-together. A value of -1 means "no limit" - this is the default for most
-dictionaries. A value of 0 disables batching.
-            </para>
-<programlisting>
-&lt;property name="openjpa.jdbc.DBDictionary" value="BatchLimit=25"/&gt;
+// obtaining an em with a certain connection retain mode
+Map props = new HashMap();
+props.put("openjpa.ConnectionRetainMode", "always");
+EntityManager em = emf.createEntityManager(props);
 </programlisting>
         </example>
     </section>
@@ -3924,14 +3212,14 @@ import org.apache.openjpa.persistence.jdbc.*;
 
 ...
 
-Query q = em.createQuery ("select m from Magazine m where m.title = 'JDJ'");
-OpenJPAQuery kq = OpenJPAPersistence.cast (q);
-JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan ();
-fetch.setFetchSize (20);
-fetch.setResultSetType (ResultSet.TYPE_SCROLL_INSENSITIVE);
-fetch.setFetchDirection (ResultSet.FETCH_FORWARD);
-fetch.setLRSSize (JDBCFetchPlan.SIZE_LAST);
-List results = (List) q.getResultList ();
+Query q = em.createQuery("select m from Magazine m where m.title = 'JDJ'");
+OpenJPAQuery kq = OpenJPAPersistence.cast(q);
+JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan();
+fetch.setFetchSize(20);
+fetch.setResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
+fetch.setFetchDirection(ResultSet.FETCH_FORWARD);
+fetch.setLRSSize(JDBCFetchPlan.SIZE_LAST);
+List results = q.getResultList();
 </programlisting>
         </example>
     </section>
@@ -3951,7 +3239,7 @@ List results = (List) q.getResultList ();
 It is common to duplicate a database model in multiple schemas. You may have one
 schema for development and another for production, or different database users
 may access different schemas. OpenJPA facilitates these patterns with the
-<link linkend="openjpa.jdbc.Schema"><literal> openjpa.jdbc.Schema</literal>
+<link linkend="openjpa.jdbc.Schema"><literal>openjpa.jdbc.Schema</literal>
 </link> configuration property. This property establishes a default schema for
 any unqualified table names, allowing you to leave schema names out of your
 mapping definitions.
@@ -4048,8 +3336,9 @@ built-in options to choose from:
                     <para>
 <literal>dynamic</literal>: This is the default setting. It is an alias for the
 <ulink url="../apidocs/org/apache/openjpa/jdbc/schema/DynamicSchemaFactory.html">
-<classname>org.apache.openjpa.jdbc.schema.DynamicSchemaFactory</classname>
-</ulink>. The <classname>DynamicSchemaFactory</classname> is the most performant
+<classname>
+org.apache.openjpa.jdbc.schema.DynamicSchemaFactory</classname></ulink>. The 
+<classname>DynamicSchemaFactory</classname> is the most performant
 schema factory, because it does not validate mapping information against the
 database. Instead, it assumes all object-relational mapping information is
 correct, and dynamically builds an in-memory representation of the schema from
@@ -4067,11 +3356,9 @@ that OpenJPA can order its SQL statements to meet them.
 metadata and object-relational mapping information. This factory uses the
 <classname>java.sql.DatabaseMetaData</classname> interface to reflect on the
 schema and ensure that it is consistent with the mapping data being read.
-Because the factory doesn't reflect on a table definition until that table is
-mentioned by the mapping information, we call it "lazy". Use this factory if you
-want up-front validation that your mapping metadata is consistent with the
-database during development. This factory accepts the following important
-properties:
+Use this factory if you want up-front validation that your mapping metadata is 
+consistent with the database during development. This factory accepts the 
+following important properties:
                     </para>
                     <itemizedlist>
                         <listitem>
@@ -4217,9 +3504,8 @@ dependencies. Thus the schema tool is useful as a general way to manipulate
 schemas.
         </para>
         <para>
-You can invoke the schema tool through the <literal>schematool</literal>
-shell/bat script included in the OpenJPA distribution, or through its Java
-class, <ulink url="../apidocs/org/apache/openjpa/jdbc/schema/SchemaTool.html">
+You can invoke the schema tool through its Java class, 
+<ulink url="../apidocs/org/apache/openjpa/jdbc/schema/SchemaTool.html">
 <classname>org.apache.openjpa.jdbc.schema.SchemaTool</classname></ulink>. In
 addition to the universal flags of the <link linkend="ref_guide_conf">
 configuration framework</link>, the schema tool accepts the following command
@@ -4246,7 +3532,7 @@ CLASSPATH</literal>, data will be written to that resource. Use <literal>stdout
             </listitem>
             <listitem>
                 <para>
-<literal>-openjpaTables/-kt &lt;true/t | false/f&gt;</literal>: When reflecting
+<literal>-openjpaTables/-ot &lt;true/t | false/f&gt;</literal>: When reflecting
 on the schema, whether to reflect on tables and sequences whose names start with
 <literal>OPENJPA_</literal>. Certain OpenJPA components may use such tables -
 for example, the <literal>table</literal> schema factory option covered in
@@ -4286,23 +3572,21 @@ indexes on existing tables. Defaults to <literal>true</literal>.
             <listitem>
                 <para>
 <literal>-primaryKeys/-pk &lt;true/t | false/f&gt;</literal>: Whether to
-manipulate primary keys on existing tables. Defaults to <literal>true</literal>
-.
+manipulate primary keys on existing tables. Defaults to <literal>true</literal>.
                 </para>
             </listitem>
             <listitem>
                 <para>
 <literal>-foreignKeys/-fk &lt;true/t | false/f&gt;</literal>: Whether to
-manipulate foreign keys on existing tables. Defaults to <literal>true</literal>
-.
+manipulate foreign keys on existing tables. Defaults to <literal>true</literal>.
                 </para>
             </listitem>
             <listitem>
                 <para>
 <literal>-record/-r &lt;true/t | false/f&gt;</literal>: Use <literal>false
 </literal> to prevent writing the schema changes made by the tool to the current
-<link linkend="ref_guide_schema_info_factory"><literal>schema factory</literal>
-</link>. Defaults to <literal>true</literal>.
+<link linkend="ref_guide_schema_info_factory"><literal>schema 
+factory</literal></link>. Defaults to <literal>true</literal>.
                 </para>
             </listitem>
             <listitem>

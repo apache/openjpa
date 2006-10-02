@@ -486,8 +486,8 @@ public class StateManagerImpl
      * @param recache whether to recache ourself on the new oid
      */
     private void assertObjectIdAssigned(boolean recache) {
-        if (!isNew() || isDeleted() || isProvisional() || 
-            (_flags & FLAG_OID_ASSIGNED) > 0)
+        if (!isNew() || isDeleted() || isProvisional() 
+            || (_flags & FLAG_OID_ASSIGNED) != 0)
             return;
         if (_oid == null) {
             if (_meta.getIdentityType() == ClassMetaData.ID_DATASTORE)

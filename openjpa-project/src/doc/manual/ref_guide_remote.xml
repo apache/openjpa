@@ -73,7 +73,7 @@ In JPA, objects detach automatically when they are serialized or when a
 <link linkend="jpa_overview_emfactory_perscontext">persistence context</link>
 ends. The specification does not define any way to explicitly detach objects.
 The extended
-<ulink url="../../api/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>OpenJPAEntityManager</classname></ulink>, however, allows you to
 explicitly detach objects at any time.
             </para>
@@ -111,8 +111,8 @@ your objects. Setting the <literal>RollbackOnly</literal> flag prevents OpenJPA
 from flushing when detaching dirty objects; instead OpenJPA just runs its
 pre-flush actions (see the <methodname>OpenJPAEntityManager.preFlush
 </methodname>
-<ulink url="../../api/openjpa/persistence/OpenJPAEntityManager.html"> Javadoc
-</ulink> for details).
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+Javadoc</ulink> for details).
             </para>
             <para>
 This allows you to use the same instances in multiple
@@ -152,7 +152,7 @@ attached instance's corresponding fields to null.
                 </listitem>
                 <listitem>
                     <para>
-If the instance has <phrase> a <literal>Version</literal> field,</phrase>
+If the instance has a <literal>Version</literal> field,
 OpenJPA will consider the object detached if the version field has a non-default
 value, and new otherwise.
                     </para>
@@ -322,7 +322,7 @@ use detached state managers, as determined by the settings above.
             <para>
 You can also alter the set of fields that will be included in the detached graph
 at runtime.
-<ulink url="../../api/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>OpenJPAEntityManager</classname></ulink>s expose the following APIs
 for controlling detached state:
             </para>

@@ -22,7 +22,7 @@ EntityManager</classname> instances for application use.
         <para>
 OpenJPA extends the standard <classname>EntityManagerFactory</classname>
 interface with the
-<ulink url="../../api/openjpa/persistence/OpenJPAEntityManagerFactory.html">
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManagerFactory.html">
 <classname>OpenJPAEntityManagerFactory</classname></ulink> to provide additional
 functionality.
         </para>
@@ -73,9 +73,9 @@ vendors to pool factories, cutting down on resource utilization.
                 JNDI
             </primary>
         </indexterm>
-JPA allows you to create and configure an <classname>EntityManagerFactory
-</classname>, then store it in a Java Naming and Directory Interface (JNDI)
-tree for later retrieval and use.
+JPA allows you to create and configure an <classname>
+EntityManagerFactory</classname>, then store it in a Java Naming and Directory 
+Interface (JNDI) tree for later retrieval and use.
         </para>
     </section>
     <section id="jpa_overview_emfactory_em">
@@ -102,8 +102,8 @@ tree for later retrieval and use.
             </secondary>
         </indexterm>
 <programlisting>
-public EntityManager createEntityManager ();
-public EntityManager createEntityManager (Map map);
+public EntityManager createEntityManager();
+public EntityManager createEntityManager(Map map);
 </programlisting>
         <para>
 The two <methodname>createEntityManager</methodname> methods above create a new
@@ -144,8 +144,8 @@ createEntityManager</methodname>:
 <literal>openjpa.&lt;property&gt;</literal>, where <emphasis>&lt;property&gt;
 </emphasis> is any JavaBean property of the
 <ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
-<classname> org.apache.openjpa.persistence.OpenJPAEntityManager</classname>
-</ulink>.
+<classname>
+org.apache.openjpa.persistence.OpenJPAEntityManager</classname></ulink>.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -217,7 +217,7 @@ merging detached entities.
         <para>
 Injected <classname>EntityManager</classname>s have use a <emphasis>transaction
 </emphasis>, while <classname> EntityManager</classname>s obtained through the
-<classname>EntityManagerFactory</classname> have an <emphasis> extended
+<classname>EntityManagerFactory</classname> have an <emphasis>extended
 </emphasis> persistence context. We describe these persistence context types
 below.
         </para>
@@ -276,9 +276,9 @@ EntityManager em; // injected
 
 // each operation occurs in a separate persistence context, and returns 
 // a new detached instance
-Magazine mag1 = em.find (Magazine.class, magId);
-Magazine mag2 = em.find (Magazine.class, magId);
-assertTrue (mag2 != mag1);
+Magazine mag1 = em.find(Magazine.class, magId);
+Magazine mag2 = em.find(Magazine.class, magId);
+assertTrue(mag2 != mag1);
 ...
 
 // transaction begins:
@@ -287,17 +287,17 @@ assertTrue (mag2 != mag1);
 // detached objects.  however, two lookups within the same transaction
 // return the same instance, because the persistence context spans the
 // transaction
-Magazine mag3 = em.find (Magazine.class, magId);
-assertTrue (mag3 != mag1 &amp;&amp; mag3 != mag2);
-Magazine mag4 = em.find (Magazine.class (magId);
-assertTrue (mag4 == mag3);
+Magazine mag3 = em.find(Magazine.class, magId);
+assertTrue(mag3 != mag1 &amp;&amp; mag3 != mag2);
+Magazine mag4 = em.find(Magazine.class (magId);
+assertTrue(mag4 == mag3);
 ...
 
 // transaction commits:
 
 // once again, each operation returns a new instance
-Magazine mag5 = em.find (Magazine.class, magId);
-assertTrue (mag5 != mag3);
+Magazine mag5 = em.find(Magazine.class, magId);
+assertTrue(mag5 != mag3);
 </programlisting>
             </example>
         </section>
@@ -324,30 +324,30 @@ EntityManager</classname> using an extended persistence context.
                 </para>
 <programlisting>
 EntityManagerFactory emf = ...
-EntityManager em = emf.createEntityManager (PersistenceContextType.EXTENDED);
+EntityManager em = emf.createEntityManager();
 
 // persistence context active for entire life of EM, so only one entity
 // for a given persistent identity
-Magazine mag1 = em.find (Magazine.class, magId);
-Magazine mag2 = em.find (Magazine.class, magId);
-assertTrue (mag2 == mag1);
+Magazine mag1 = em.find(Magazine.class, magId);
+Magazine mag2 = em.find(Magazine.class, magId);
+assertTrue(mag2 == mag1);
 
-em.getTransaction ().begin ();
+em.getTransaction().begin();
 
 // same persistence context active within the transaction
-Magazine mag3 = em.find (Magazine.class, magId);
-assertTrue (mag3 == mag1);
-Magazine mag4 = em.find (Magazine.class (magId);
-assertTrue (mag4 == mag1);
+Magazine mag3 = em.find(Magazine.class, magId);
+assertTrue(mag3 == mag1);
+Magazine mag4 = em.find(Magazine.class (magId);
+assertTrue(mag4 == mag1);
 
 em.getTransaction.commit ();
 
 // when the transaction commits, instance still managed
-Magazine mag5 = em.find (Magazine.class, magId);
-assertTrue (mag5 == mag1);
+Magazine mag5 = em.find(Magazine.class, magId);
+assertTrue(mag5 == mag1);
 
 // instance finally becomes detached when EM closes
-em.close ();
+em.close();
 </programlisting>
             </example>
         </section>
@@ -389,8 +389,8 @@ close the factory, or only close it when the application is exiting. Only
 applications that require multiple factories with different configurations have
 an obvious reason to create and close multiple <classname>EntityManagerFactory
 </classname> instances. Once a factory is closed, all methods except
-<methodname>isOpen</methodname> throw an <classname> IllegalStateException
-</classname>.
+<methodname>isOpen</methodname> throw an <classname>
+IllegalStateException</classname>.
         </para>
     </section>
 </chapter>

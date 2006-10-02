@@ -3,8 +3,8 @@
         Metadata
     </title>
     <para>
-The JPA Overview covers JPA metadata in <xref linkend="jpa_overview_meta"/>
-. This chapter discusses OpenJPA's extensions to standard JPA metadata.
+The JPA Overview covers JPA metadata in <xref linkend="jpa_overview_meta"/>. 
+This chapter discusses OpenJPA's extensions to standard JPA metadata.
     </para>
     <section id="ref_guide_meta_factory">
         <title>
@@ -24,14 +24,14 @@ The JPA Overview covers JPA metadata in <xref linkend="jpa_overview_meta"/>
         <para>
 The <link linkend="openjpa.MetaDataFactory"><literal>openjpa.MetaDataFactory
 </literal></link> configuration property controls metadata loading and storing.
-This property takes a plugin string (see <xref linkend="ref_guide_conf_plugins"/>
-) describing a concrete
+This property takes a plugin string (see 
+<xref linkend="ref_guide_conf_plugins"/>) describing a concrete
 <ulink url="../apidocs/org/apache/openjpa/meta/MetaDataFactory.html">
 <classname>org.apache.openjpa.meta.MetaDataFactory</classname></ulink>
 implementation. A metadata factory can load mapping information as well as
 persistence metadata, or it can leave mapping information to a separate
 <emphasis>mapping factory</emphasis> (see
-<xref linkend="ref_guide_mapping_factory"/> ). OpenJPA recognizes the
+<xref linkend="ref_guide_mapping_factory"/>). OpenJPA recognizes the
 following built-in metadata factories:
         </para>
         <itemizedlist>
@@ -39,17 +39,20 @@ following built-in metadata factories:
                 <para>
 <literal>jpa</literal>: Standard JPA metadata. This is an alias for the
 <ulink url="../apidocs/org/apache/openjpa/persistence/PersistenceMetaDataFactory.html">
-<classname> org.apache.openjpa.persistence.PersistenceMetaDataFactory
-</classname></ulink>.
+<classname> 
+org.apache.openjpa.persistence.PersistenceMetaDataFactory</classname></ulink>.
                 </para>
             </listitem>
         </itemizedlist>
         <para>
-The standard metadata factories all accept the following properties for locating
-persistent classes. Each property represents a different mechanism for locating
-persistent types; you can choose the mechanism or combination of mechanisms that
-are most convenient. See <xref linkend="ref_guide_pc_pcclasses"/> for a
-discussion of when it is necessary to list your persistent classes.
+JPA has built-in settings for listing your persistent classes, which 
+the <link linkend="jpa_overview_persistence_xml">JPA Overview</link> describes.
+OpenJPA supports these JPA standard settings by translating them into its own
+internal metadata factory properties.  Each internal property represents a 
+different mechanism for locating persistent types; you can choose the mechanism
+or combination of mechanisms that are most convenient. See 
+<xref linkend="ref_guide_pc_pcclasses"/> for a discussion of when it is 
+necessary to list your persistent classes.
         </para>
         <itemizedlist>
             <listitem>
@@ -61,22 +64,22 @@ persistent class names.
             <listitem>
                 <para>
 <literal>Resources</literal>: A semicolon-separated list of resource paths to
-metadata files or jar archives. Each jar archive will be scanned for <phrase>
-annotated JPA entities</phrase>.
+metadata files or jar archives. Each jar archive will be scanned for 
+annotated JPA entities.
                 </para>
             </listitem>
             <listitem>
                 <para>
 <literal>URLs</literal>: A semicolon-separated list of URLs of metadata files
-or jar archives. Each jar archive will be scanned for <phrase>annotated JPA
-entities</phrase>.
+or jar archives. Each jar archive will be scanned for annotated JPA
+entities.
                 </para>
             </listitem>
             <listitem>
                 <para>
 <literal>ClasspathScan</literal>: A semicolon-separated list of directories or
 jar archives listed in your classpath. Each directory and jar archive will be
-scanned for <phrase>annotated JPA entities</phrase>.
+scanned for annotated JPA entities.
                 </para>
             </listitem>
         </itemizedlist>
@@ -85,7 +88,7 @@ scanned for <phrase>annotated JPA entities</phrase>.
                 Setting a Standard Metadata Factory
             </title>
 <programlisting>
-&lt;property name="openjpa.MetaDataFactory" value="jpa"/&gt;
+&lt;property name="openjpa.MetaDataFactory" value="jpa(ClasspathScan=build;lib.jar)"/&gt;
 </programlisting>
         </example>
         <example id="ref_guide_meta_customfactoryex">
@@ -227,160 +230,6 @@ annotation exists. For example, <xref linkend="ref_guide_mapping_jpa_columns"/>
 to denote a persistent <classname>java.awt.Point</classname> field.
             </para>
         </section>
-        <section id="ref_guide_meta_jpa_persistent_coll">
-            <title>
-                Persistent Collection Fields
-            </title>
-            <indexterm zone="ref_guide_meta_jpa_persistent_coll">
-                <primary>
-                    persistent fields
-                </primary>
-                <secondary>
-                    collection metadata
-                </secondary>
-            </indexterm>
-            <para>
-JPA standardizes support for collections of entities with the <literal>
-OneToMany</literal> and <literal>ManyToMany</literal> persistence strategies.
-OpenJPA expands collection support to handle collections of simple types
-(primitive wrappers, <classname>String</classname> s, etc), custom types, and
-embedded objects.
-            </para>
-            <para>
-The
-<ulink url="../apidocs/org/apache/openjpa/persistence/PersistentCollection.html">
-<classname>org.apache.openjpa.persistence.PersistentCollection</classname>
-</ulink> metadata annotation represents a persistent collection field. It has
-the following properties:
-            </para>
-            <itemizedlist>
-                <listitem>
-                    <para>
-<literal>Class elementType</literal>: The class of the collection elements.
-This information is usually taken from the parameterized collection element
-type. You must supply it explicitly, however, if your field isn't a
-parameterized type.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>FetchType fetch</literal>: Whether to load the collection eagerly or
-lazily. Corresponds exactly to the same-named property of standard JPA
-annotations such as <link linkend="jpa_overview_meta_basic"><classname> Basic
-</classname></link>. Defaults to <literal>FetchType.LAZY</literal>.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>String mappedBy</literal>: Names the field in the related entity that
-maps this bidirectional relation. Corresponds to the same-named property of
-standard JPA annotations such as <link linkend="jpa_overview_meta_manytomany">
-<classname> ManyToMany</classname></link>.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>CascadeType[] elementCascade</literal>: Array of enum values defining
-cascade behavior for the collection elements. Corresponds exactly to the
-<literal>cascade</literal> property of standard JPA annotations such as
-<link linkend="jpa_overview_meta_manytomany"><classname>ManyToMany</classname>
-</link>. Defaults to empty array.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>boolean elementEmbedded</literal>: Set this property to <literal>true
-</literal> if the elements are stored as embedded objects.
-                    </para>
-                </listitem>
-            </itemizedlist>
-            <para>
-<xref linkend="ref_guide_mapping_jpa_coll"/> contains several examples of
-using <classname>PersistentCollection</classname> to mark non-standard
-collection fields persistent.
-            </para>
-        </section>
-        <section id="ref_guide_meta_jpa_persistent_map">
-            <title>
-                Persistent Map Fields
-            </title>
-            <indexterm zone="ref_guide_meta_jpa_persistent_map">
-                <primary>
-                    persistent fields
-                </primary>
-                <secondary>
-                    map metadata
-                </secondary>
-            </indexterm>
-            <para>
-JPA has limited support for maps. OpenJPA introduces the
-<ulink url="../apidocs/org/apache/openjpa/persistence/PersistentMap.html">
-<classname>org.apache.openjpa.persistence.PersistentMap</classname></ulink>
-metadata annotation to represent a persistent map field. It has the following
-properties:
-            </para>
-            <itemizedlist>
-                <listitem>
-                    <para>
-<literal>Class keyType</literal>: The class of the map keys. This information
-is usually taken from the parameterized map key type. You must supply it
-explicitly, however, if your field isn't a parameterized type.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>Class elementType</literal>: The class of the map values. This
-information is usually taken from the parameterized map value type. You must
-supply it explicitly, however, if your field isn't a parameterized type.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>FetchType fetch</literal>: Whether to load the collection eagerly or
-lazily. Corresponds exactly to the same-named property of standard JPA
-annotations such as <link linkend="jpa_overview_meta_basic"><classname> Basic
-</classname></link>. Defaults to <literal>FetchType.LAZY</literal>.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>CascadeType[] keyCascade</literal>: Array of enum values defining
-cascade behavior for the map keys. Corresponds exactly to the <literal>cascade
-</literal> property of standard JPA annotations such as
-<link linkend="jpa_overview_meta_manytoone"><classname>ManyToOne</classname>
-</link>. Defaults to empty array.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>CascadeType[] elementCascade</literal>: Array of enum values defining
-cascade behavior for the map values. Corresponds exactly to the <literal>
-cascade</literal> property of standard JPA annotations such as
-<link linkend="jpa_overview_meta_manytoone"><classname>ManyToOne</classname>
-</link>. Defaults to empty array.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>boolean keyEmbedded</literal>: Set this property to <literal>true
-</literal> if the map keys are stored as embedded objects.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>boolean elementEmbedded</literal>: Set this property to <literal>true
-</literal> if the map values are stored as embedded objects.
-                    </para>
-                </listitem>
-            </itemizedlist>
-            <para>
-Map keys and values in OpenJPA can be entities, simple types (primitive
-wrappers, <classname>String</classname> s, etc), custom types, or embedded
-objects. <xref linkend="ref_guide_mapping_jpa_map"/> contains several
-examples of using <classname>PersistentMap</classname> to annotate persistent
-map fields.
-            </para>
-        </section>
     </section>
     <section id="ref_guide_meta_ext">
         <title>
@@ -473,15 +322,6 @@ properties:
 class. Defaults to <literal>true</literal> for base classes, or the superclass
 value for subclasses. If you set this property to <literal>false</literal>, all
 other properties are ignored.
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>String name</literal>: Place data for instances of the class in a
-named cache. By default, instance data is placed in the same cache as superclass
-data, or the default cache configured through the
-<link linkend="openjpa.DataCache"><literal> openjpa.DataCache</literal></link>
-configuration property for base classes.
                         </para>
                     </listitem>
                     <listitem>
@@ -669,73 +509,13 @@ annotation in particular.
                     </seealso>
                 </indexterm>
                 <para>
-This boolean extension, denoted by <phrase> the JPA
+This boolean extension, denoted by the OpenJPA
 <ulink url="../apidocs/org/apache/openjpa/persistence/LRS.html"><classname>
-org.apache.openjpa.persistence.LRS</classname></ulink> annotation,</phrase>
+org.apache.openjpa.persistence.LRS</classname></ulink> annotation,
 indicates that a field should use OpenJPA's special large result set collection
 or map proxies. A complete description of large result set proxies is available
 in <xref linkend="ref_guide_pc_scos_proxy_lrs"/>.
                 </para>
-            </section>
-            <section id="order-by">
-                <title>
-                    Order-By
-                </title>
-                <indexterm zone="order-by">
-                    <primary>
-                        metadata
-                    </primary>
-                    <secondary>
-                        extensions
-                    </secondary>
-                    <tertiary>
-                        order-by
-                    </tertiary>
-                </indexterm>
-                <para>
-<phrase> The JPA Overview's <xref linkend="jpa_overview_meta_orderby"/>
-describes JPA's <literal>OrderBy</literal> annotation for loading the elements
-of collection fields in a prescribed order.</phrase> Ordering syntax is as
-follows:
-                </para>
-<programlisting>
-#element|&lt;field name&gt;[ asc|ascending|desc|descending][, ...]
-</programlisting>
-                <para>
-The token <literal>#element</literal> represents the element value. Simple
-element types such as strings and primitive wrappers are sorted based on their
-natural ordering. If the collection holds persistent objects, its elements are
-sorted based on the natural ordering of the objects' primary key values. By
-substituting a field name for the <literal> #element</literal> token, you can
-order a collection of persistent objects by an arbitrary field in the related
-type, rather than by primary key.
-                </para>
-                <para>
-The field name or <literal>#element</literal> token may be followed by the
-keywords <literal>asc/ascending</literal> or <literal>desc/descending</literal>
-in either all-upper or all-lower case to mandate ascending and descending order.
-If the direction is omitted, OpenJPA defaults to ascending order.
-                </para>
-                <para>
-Note that the defined ordering is only applied when the collection is loaded
-from the datastore. It is not maintained by OpenJPA as you modify the collection
-in memory.
-                </para>
-                <para>
-The following ordering string orders a collection by its element values in
-descending order:
-                </para>
-<programlisting>
-"#element desc"
-</programlisting>
-                <para>
-The following ordering string orders a collection of <classname>Author
-</classname> objects by each author's last name in ascending order. If two last
-names are equal, the authors are ordered by first name in ascending order.
-                </para>
-<programlisting>
-"firstName, lastName"
-</programlisting>
             </section>
             <section id="inverse-logical">
                 <title>
@@ -757,10 +537,10 @@ names are equal, the authors are ordered by first name in ascending order.
                 </indexterm>
                 <para>
 This extension names the inverse field in a logical bidirectional relation.
-<phrase> To create a logical bidrectional relation in OpenJPA, use the
+To create a logical bidrectional relation in OpenJPA, use the
 <ulink url="../apidocs/org/apache/openjpa/persistence/InverseLogical.html">
 <classname>org.apache.openjpa.persistence.InverseLogical</classname></ulink>
-annotation.</phrase> We discuss logical bidirectional relations and this
+annotation. We discuss logical bidirectional relations and this
 extension in detail in <xref linkend="ref_guide_inverses"/>.
                 </para>
             </section>
@@ -798,7 +578,7 @@ existing persistent objects; new object fields are always writeable.
 To mark a field read-only in JPA metadata, set the
 <ulink url="../apidocs/org/apache/openjpa/persistence/ReadOnly.html">
 <classname>org.apache.openjpa.persistence.ReadOnly</classname></ulink>
-annotation to a
+annotation to an
 <ulink url="../apidocs/org/apache/openjpa/persistence/UpdateAction.html">
 <classname>org.apache.openjpa.persistence.UpdateAction</classname></ulink> enum
 value. The <classname>UpdateAction</classname> enum includes:
@@ -876,7 +656,7 @@ non-interface, unrecognized field types, which are all assigned level 3 support.
                 <para>
 With OpenJPA's type family of metadata extensions, you can control the level of
 support given to your unknown/interface-typed fields. Setting the value of this
-extension to <phrase><classname>Entity</classname></phrase> indicates that the
+extension to <classname>Entity</classname> indicates that the
 field value will always be some persistent object, and gives level 2 support.
 Setting the value of this extension to the class of a concrete persistent type
 is even better; it gives you level 1 support (just as if you had declared your
@@ -934,10 +714,10 @@ org.apache.openjpa.persistence.KeyType</classname></ulink>
                     </seealso>
                 </indexterm>
                 <para>
-The <phrase> JPA
+The OpenJPA
 <ulink url="../apidocs/org/apache/openjpa/persistence/Externalizer.html">
 <classname>org.apache.openjpa.persistence.Externalizer</classname></ulink>
-annotation</phrase> names a method to transform a field value into a value of
+annotation names a method to transform a field value into a value of
 another type. See <xref linkend="ref_guide_pc_extern"/> for details.
                 </para>
             </section>
@@ -960,9 +740,9 @@ another type. See <xref linkend="ref_guide_pc_extern"/> for details.
                     </seealso>
                 </indexterm>
                 <para>
-The <phrase> JPA
+The OpenJPA
 <ulink url="../apidocs/org/apache/openjpa/persistence/Factory.html"><classname>
-org.apache.openjpa.persistence.Factory</classname></ulink> annotation</phrase>
+org.apache.openjpa.persistence.Factory</classname></ulink> annotation
 names a method to re-create a field value from its externalized form. See
 <xref linkend="ref_guide_pc_extern"/> for details.
                 </para>
@@ -986,10 +766,10 @@ names a method to re-create a field value from its externalized form. See
                     </seealso>
                 </indexterm>
                 <para>
-The <phrase> JPA
+The OpenJPA
 <ulink url="../apidocs/org/apache/openjpa/persistence/ExternalValues.html">
 <classname>org.apache.openjpa.persistence.ExternalValues</classname></ulink>
-annotation</phrase> declares values for transformation of simple fields to
+annotation declares values for transformation of simple fields to
 different constant values in the datastore. See
 <xref linkend="ref_guide_pc_extern_values"/> for details.
                 </para>
@@ -1020,10 +800,6 @@ public class Magazine
     @ExternalValues({"true=1", "false=2"})
     @Type(int.class)
     private boolean weekly;
-
-    @PersistentCollection
-    @OrderBy("#element DESC")
-    private List&lt;String&gt; subtitles;
 
     ...
 }

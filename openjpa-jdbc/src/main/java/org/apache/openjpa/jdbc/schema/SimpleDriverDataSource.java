@@ -25,10 +25,15 @@ import java.util.Properties;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.util.StoreException;
 
+/**
+ * Non-pooling driver data source.
+ */
 public class SimpleDriverDataSource
-    implements DriverDataSource {
+    implements DriverDataSource, Configurable {
 
     private String _connectionDriverName;
     private String _connectionURL;
@@ -40,38 +45,6 @@ public class SimpleDriverDataSource
     private Driver _driver;
     private ClassLoader _classLoader;
 
-    private synchronized Driver getDriver()
-        throws SQLException {
-        if (_driver == null)
-            _driver = DriverManager.getDriver(_connectionURL);
-
-        if (_driver == null) {
-            try {
-                Class.forName(_connectionDriverName, true, _classLoader);
-            } catch (Exception e) {
-            }
-
-            _driver = DriverManager.getDriver(_connectionURL);
-        }
-
-        if (_driver == null) {
-            try {
-                _driver = (Driver) Class.forName(_connectionDriverName,
-                    true, _classLoader).newInstance();
-            } catch (Exception e) {
-                if (e instanceof SQLException)
-                    throw(SQLException) e;
-
-                if (e instanceof RuntimeException)
-                    throw(RuntimeException) e;
-
-                throw new SQLException(e.getClass() + ": " + e.getMessage());
-            }
-        }
-
-        return _driver;
-    }
-
     public Connection getConnection()
         throws SQLException {
         return getConnection(null);
@@ -80,16 +53,13 @@ public class SimpleDriverDataSource
     public Connection getConnection(String username, String password)
         throws SQLException {
         Properties props = new Properties();
-
         if (username == null)
             username = _connectionUserName;
-
         if (username != null)
             props.put("user", username);
 
         if (password == null)
             password = _connectionPassword;
-
         if (password != null)
             props.put("password", password);
 
@@ -98,7 +68,7 @@ public class SimpleDriverDataSource
 
     public Connection getConnection(Properties props)
         throws SQLException {
-        return getDriver().connect(_conf.getConnectionURL(), props);
+        return _driver.connect(_conf.getConnectionURL(), props);
     }
 
     public int getLoginTimeout() {
@@ -115,14 +85,31 @@ public class SimpleDriverDataSource
     public void setLogWriter(PrintWriter out) {
     }
 
+    public void setConfiguration(Configuration conf) {
+        _conf = (JDBCConfiguration) conf;
+    }
+
     public void startConfiguration() {
     }
 
     public void endConfiguration() {
-    }
-
-    public void setConfiguration(Configuration conf) {
-        _conf = (JDBCConfiguration) conf;
+        try {
+            _driver = DriverManager.getDriver(_connectionURL);
+            if (_driver == null) {
+                try {
+                    Class.forName(_connectionDriverName, true, _classLoader);
+                } catch (Exception e) {
+                }
+                _driver = DriverManager.getDriver(_connectionURL);
+            }
+            if (_driver == null)
+                _driver = (Driver) Class.forName(_connectionDriverName,
+                    true, _classLoader).newInstance();
+        } catch (Exception e) {
+            if (e instanceof RuntimeException)
+                throw(RuntimeException) e;
+            throw new StoreException(e);
+        }
     }
 
     public void initDBDictionary(DBDictionary dict) {

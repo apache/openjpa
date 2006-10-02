@@ -3,10 +3,14 @@
         Conclusion
     </title>
     <para>
-This concludes our overview of the JPA specification. The
-<link linkend="jpa_tutorials_intro">OpenJPA Tutorials</link> continue your
+This concludes our overview of the JPA specification. 
+<!--
+### TUTORIAL
+The <link linkend="jpa_tutorials_intro">OpenJPA Tutorials</link> continue your
 JPA education with step-by-step instructions for building simple JPA
-applications. The <link linkend="ref_guide_intro">OpenJPA Reference Guide</link>
+applications. 
+-->
+The <link linkend="ref_guide_intro">OpenJPA Reference Guide</link>
 contains detailed documentation on all aspects of the OpenJPA implementation 
 and core development tools.
     </para>
