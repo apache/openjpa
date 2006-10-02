@@ -21,7 +21,6 @@ import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
 import java.util.Map;
 import java.util.Properties;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -30,6 +29,7 @@ import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.enhance.PCClassFileTransformer;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.BrokerFactory;
@@ -39,6 +39,7 @@ import org.apache.openjpa.lib.conf.ProductDerivation;
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.util.ClassResolver;
 
 
 /**
@@ -89,16 +90,15 @@ public class PersistenceProviderImpl
             if (cp == null)
                 return null;
 
+            // add enhancer
+            String ctOpts = (String) Configurations.getProperty
+                (CLASS_TRANSFORMER_OPTIONS, pui.getProperties());
+            pui.addTransformer(new ClassTransformerImpl(cp, ctOpts, 
+                pui.getNewTempClassLoader()));
+
             BrokerFactory factory = Bootstrap.newBrokerFactory(cp, 
                 pui.getClassLoader());
-            OpenJPAEntityManagerFactory emf = 
-                OpenJPAPersistence.toEntityManagerFactory(factory);
-            Properties p = pui.getProperties();
-            String ctOpts = (String) Configurations.getProperty
-                (CLASS_TRANSFORMER_OPTIONS, p);
-            pui.addTransformer(new ClassTransformerImpl(emf.getConfiguration(),
-                ctOpts, pui.getNewTempClassLoader()));
-            return emf;
+            return OpenJPAPersistence.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
@@ -112,13 +112,31 @@ public class PersistenceProviderImpl
 
         private final ClassFileTransformer _trans;
 
-        private ClassTransformerImpl(OpenJPAConfiguration conf, String options,
-            ClassLoader tempClassLoader) {
-            MetaDataRepository repos = conf.getMetaDataRepositoryInstance().
-                newInstance();
+        private ClassTransformerImpl(ConfigurationProvider cp, String props, 
+            final ClassLoader tmpLoader) {
+            // create an independent conf for enhancement
+            OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
+            cp.setInto(conf);
+            // don't allow connections
+            conf.setConnectionUserName(null);
+            conf.setConnectionPassword(null);
+            conf.setConnectionURL(null);
+            conf.setConnectionDriverName(null);
+            conf.setConnectionFactoryName(null);
+            // use the tmp loader for everything
+            conf.setClassResolver(new ClassResolver() {
+                public ClassLoader getClassLoader(Class context, 
+                    ClassLoader env) {
+                    return tmpLoader;
+                }
+            });
+            conf.setReadOnly(true);
+            conf.instantiateAll();
+
+            MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
             repos.setResolve(MetaDataModes.MODE_MAPPING, false);
             _trans = new PCClassFileTransformer(repos,
-                Configurations.parseProperties(options), tempClassLoader);
+                Configurations.parseProperties(props), tmpLoader);
         }
 
         public byte[] transform(ClassLoader cl, String name,
