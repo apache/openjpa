@@ -266,14 +266,6 @@ public class MappingRepository
         return getQueryKey(cls, name);
     }
 
-    public MetaDataRepository newInstance() {
-        MappingRepository repos = new MappingRepository();
-        repos.setConfiguration(getConfiguration());
-        repos.startConfiguration();
-        repos.endConfiguration();
-        return repos;
-    }
-
     public ClassMapping getMapping(Class cls, ClassLoader envLoader,
         boolean mustExist) {
         return (ClassMapping) super.getMetaData(cls, envLoader, mustExist);

@@ -157,18 +157,6 @@ public class MetaDataRepository
     }
 
     /**
-     * Create a new instance of the same type as this instance, using this
-     * instance's configuration.
-     */
-    public MetaDataRepository newInstance() {
-        MetaDataRepository repos = new MetaDataRepository();
-        repos.setConfiguration(_conf);
-        repos.startConfiguration();
-        repos.endConfiguration();
-        return repos;
-    }
-
-    /**
      * The I/O used to load metadata.
      */
     public MetaDataFactory getMetaDataFactory() {

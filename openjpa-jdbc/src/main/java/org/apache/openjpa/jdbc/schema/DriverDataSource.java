@@ -30,34 +30,79 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 public interface DriverDataSource
     extends DataSource {
 
+    /**
+     * JDBC URL.
+     */
     public void setConnectionURL(String connectionURL);
 
+    /**
+     * JDBC URL.
+     */
     public String getConnectionURL();
 
+    /**
+     * Driver class name.
+     */
     public void setConnectionDriverName(String connectionDriverName);
 
+    /**
+     * Driver class name.
+     */
     public String getConnectionDriverName();
 
+    /**
+     * JDBC user name.
+     */
     public void setConnectionUserName(String connectionUserName);
 
+    /**
+     * JDBC user name.
+     */
     public String getConnectionUserName();
 
+    /**
+     * JDBC password.
+     */
     public void setConnectionPassword(String connectionPassword);
 
+    /**
+     * JDBC password.
+     */
     public void setClassLoader(ClassLoader classLoader);
 
+    /**
+     * Classloader for loading driver class, etc.
+     */
     public ClassLoader getClassLoader();
 
+    /**
+     * Configuration of datasource properties.
+     */
     public void setConnectionFactoryProperties(Properties props);
 
+    /**
+     * Configuration of datasource properties.
+     */
     public Properties getConnectionFactoryProperties();
 
+    /**
+     * Configuration of connection.
+     */
     public void setConnectionProperties(Properties props);
 
+    /**
+     * Configuration of connection.
+     */
     public Properties getConnectionProperties();
 
+    /**
+     * Provide any built-in decorators; may be null.
+     */
     public List createConnectionDecorators();
 
+    /**
+     * Initialize self and dictionary once available.
+     */
     public void initDBDictionary(DBDictionary dict);
 }
 
