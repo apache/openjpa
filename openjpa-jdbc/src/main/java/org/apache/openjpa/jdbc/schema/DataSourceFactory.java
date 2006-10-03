@@ -146,11 +146,9 @@ public class DataSourceFactory {
                 ecd.addListener(listeners[i]);
             decorators.add(ecd);
 
-            // ask the DriverDataSource to provide any additional
-            // decorators
+            // ask the DriverDataSource to provide any additional decorators
             if (ds instanceof DriverDataSource) {
-                List decs = ((DriverDataSource) ds).
-                    createConnectionDecorators();
+                List decs = ((DriverDataSource)ds).createConnectionDecorators();
                 if (decs != null)
                     decorators.addAll(decs);
             }

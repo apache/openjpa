@@ -230,6 +230,133 @@ annotation exists. For example, <xref linkend="ref_guide_mapping_jpa_columns"/>
 to denote a persistent <classname>java.awt.Point</classname> field.
             </para>
         </section>
+		<section id="ref_guide_meta_jpa_persistent_coll">
+			<title>Persistent Collection Fields</title>
+			<indexterm zone="ref_guide_meta_jpa_persistent_coll">
+				<primary>persistent fields</primary>
+				<secondary>collection metadata</secondary>
+			</indexterm>
+			<para>
+JPA standardizes support for collections of entities with the <literal>
+OneToMany</literal> and <literal>ManyToMany</literal> persistence strategies.  
+OpenJPA supports these strategies, and may be extended for other strategies as 
+well.  For extended strategies, use the 
+<ulink url="../apidocs/org/apache/openjpa/persistence/PersistentCollection.html">
+<classname>kodo.persistence.PersistentCollection</classname></ulink> metadata 
+annotation to represents any persistent collection field.  It has the following
+properties:
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+<literal>Class elementType</literal>: The class of the collection elements.  
+This information is usually taken from the parameterized collection element 
+type.  You must supply it explicitly, however, if your field isn't a 
+parameterized type.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+<literal>FetchType fetch</literal>: Whether to load the collection eagerly or 
+lazily.  Corresponds exactly to the same-named property of standard JPA 
+annotations such as <link linkend="ejb3_overview_meta_basic"><classname>
+Basic</classname></link>. Defaults to <literal>FetchType.LAZY</literal>.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+<literal>String mappedBy</literal>: Names the field in the related entity that 
+maps this bidirectional relation.  Corresponds to the same-named property of 
+standard JPA annotations such as <link linkend="ejb3_overview_meta_manytomany">
+<classname>ManyToMany</classname></link>.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+<literal>CascadeType[] elementCascade</literal>: Array of enum values defining 
+cascade behavior for the collection elements.  Corresponds exactly to the 
+<literal>cascade</literal> property of standard JPA annotations such as 
+<link linkend="ejb3_overview_meta_manytomany"><classname>
+ManyToMany</classname></link>. Defaults to empty array.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+<literal>boolean elementEmbedded</literal>: Set this property to <literal>true
+</literal> if the elements are stored as embedded objects.
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section id="ref_guide_meta_jpa_persistent_map">
+			<title>Persistent Map Fields</title>
+			<indexterm zone="ref_guide_meta_jpa_persistent_map">
+				<primary>persistent fields</primary>
+				<secondary>map metadata</secondary>
+			</indexterm>
+			<para>
+JPA has limited support for maps.  If you extend JPA's standard map support to 
+encompass new mappings, use the 
+<ulink url="../apidocs/org/apache/openjpa/persistence/PersistentMap.html">
+<classname>kodo.persistence.PersistentMap</classname></ulink> metadata 
+annotation to represent your custom persistent map fields.  It has the 
+following properties:
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+<literal>Class keyType</literal>: The class of the map keys.  This information 
+is usually taken from the parameterized map key type.  You must supply it 
+explicitly, however, if your field isn't a parameterized type.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+<literal>Class elementType</literal>: The class of the map values.  This 
+information is usually taken from the parameterized map value type.  You must 
+supply it explicitly, however, if your field isn't a parameterized type.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+<literal>FetchType fetch</literal>: Whether to load the collection eagerly or 
+lazily.  Corresponds exactly to the same-named property of standard JPA 
+annotations such as <link linkend="ejb3_overview_meta_basic"><classname>
+Basic</classname></link>. Defaults to <literal>FetchType.LAZY</literal>.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+<literal>CascadeType[] keyCascade</literal>: Array of enum values defining 
+cascade behavior for the map keys.  Corresponds exactly to the <literal>cascade
+</literal> property of standard JPA annotations such as 
+<link linkend="ejb3_overview_meta_manytoone"><classname>
+ManyToOne</classname></link>. Defaults to empty array.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+<literal>CascadeType[] elementCascade</literal>: Array of enum values defining 
+cascade behavior for the map values.  Corresponds exactly to the 
+<literal>cascade</literal> property of standard JPA annotations such as 
+<link linkend="ejb3_overview_meta_manytoone"><classname>
+ManyToOne</classname></link>. Defaults to empty array.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+<literal>boolean keyEmbedded</literal>: Set this property to <literal>true
+</literal> if the map keys are stored as embedded objects.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+<literal>boolean elementEmbedded</literal>: Set this property to <literal>
+true</literal> if the map values are stored as embedded objects.
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
     </section>
     <section id="ref_guide_meta_ext">
         <title>

@@ -13,7 +13,7 @@ turn.
             Factory Deployment
         </title>
         <para>
-OpenJPA offers several <classname>EntityManagerFactory</classname>
+OpenJPA offers two <classname>EntityManagerFactory</classname>
 deployment options.
         </para>
         <section id="ref_guide_deploy_factory_standalone">
@@ -44,19 +44,191 @@ Javadoc</ulink> details these extensions.
             </para>
             <para>
 After obtaining the factory, you can cache it for all <classname>
-EntityManager</classname> creation duties.
+EntityManager</classname> creation duties.  OpenJPA factories support being 
+bound to JNDI as well.
             </para>
         </section>
         <section id="ref_guide_deploy_inject">
             <title>
                 EntityManager Injection
             </title>
-            <!-- ### -->
             <para>
-TBD
+Java EE 5 application servers allow you to <emphasis>inject</emphasis> 
+entity managers into your session beans using the <literal>PersistenceContext
+</literal> annotation.  See your application server documentation for details.
             </para>
         </section>
     </section>
+	<section id="ref_guide_enterprise_trans">
+		<title>
+            Integrating with the Transaction Manager
+        </title>
+		<indexterm zone="ref_guide_enterprise_trans">
+			<primary>
+                transactions
+            </primary>
+			<secondary>
+                managed
+            </secondary>
+		</indexterm>
+		<indexterm zone="ref_guide_enterprise_trans">
+			<primary>
+                TransactionManager
+            </primary>
+			<secondary>
+                integration
+            </secondary>
+		</indexterm>
+		<indexterm>
+			<primary>
+                managed transactions
+            </primary>
+			<see>
+                transactions
+            </see>
+		</indexterm>
+		<indexterm>
+            <primary>
+                TransactionMode
+            </primary>
+        </indexterm>
+		<para>
+OpenJPA <classname>EntityManager</classname>s have the ability to automatically
+synchronize their transactions with an external transaction manager.  
+###
+If you 
+deploy via <link linkend="ref_guide_deploy_inject"><classname>EntityManager
+</classname> injection</link> as described above, this synchronization is
+typically automatic.   Whether 
+or not <classname>EntityManager</classname>s from a given <classname>
+EntityManagerFactory</classname> exhibit this behavior by default depends on 
+the <link linkend="kodo.TransactionMode">
+		<literal>kodo.TransactionMode</literal></link> configuration property.
+		The property can take the following values:
+		</para>
+		<para condition="jdo_notcombo">
+		Kodo <classname>PersistenceManager</classname>s have the ability 
+		to automatically synchronize their transactions with an external 
+		transaction manager.  Whether or not <classname>
+		PersistenceManager</classname>s from a given 
+		<classname>PersistenceManagerFactory</classname> exhibit this behavior 
+		by default depends on the <link linkend="kodo.TransactionMode">
+		<literal>kodo.TransactionMode</literal></link> configuration property.
+		The property can take the following values:
+		</para>
+		<para condition="combo">
+		Kodo <classname>EntityManager</classname>s and <classname>
+		PersistenceManager</classname>s have the ability 
+		to automatically synchronize their transactions with an external 
+		transaction manager.  Whether or not <classname>
+		EntityManager</classname>s and <classname>
+		PersistenceManager</classname>s from a given factory exhibit this 
+		behavior by default depends on the <link linkend="kodo.TransactionMode">
+		<literal>kodo.TransactionMode</literal></link> configuration property.
+		The property can take the following values:
+		</para>
+		<itemizedlist> 
+			<listitem>
+				<para>
+				<literal>local</literal>: Perform transaction operations
+				locally.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+				<literal>managed</literal>: Integrate with the application
+				server's managed global transactions.  
+				</para>
+			</listitem>
+		</itemizedlist> 
+		<para condition="ejb">
+		You can override the global transaction mode setting when you obtain an
+		<classname>EntityManager</classname> using the 
+		<ulink url="&api-dir;/kodo/persistence/KodoEntityManagerFactory.html">
+		<classname>KodoEntityManagerFactory</classname></ulink>'s
+		<methodname>createEntityManager(PersistenceContextType ctype, boolean managed, int connRetainMode)
+		</methodname> method.
+		</para>
+		<para condition="jdo">
+		You can override the global transaction mode setting when you obtain a 
+		<classname>PersistenceManager</classname> using the 
+		<ulink url="&api-dir;/kodo/jdo/KodoPersistenceManagerFactory.html">
+		<classname>KodoPersistenceManagerFactory</classname></ulink>'s
+		<methodname>getPersistenceManager(boolean managed, int connRetainMode)
+		</methodname> method.
+		</para>
+		<para>
+		<indexterm><primary>ManagedRuntime</primary></indexterm>
+		In order to use global transactions, Kodo must be able to access
+		the application server's <classname>javax.transaction.TransactionManager
+		</classname>.  Kodo can automatically discover the transaction
+		manager for most major application servers.  Occasionally, however, 
+		you might have to point Kodo to the transaction manager for an 
+		unrecognized or non-standard application server setup.  This is 
+		accomplished through the <link linkend="kodo.ManagedRuntime"><literal>
+		kodo.ManagedRuntime</literal></link> configuration property.  This
+		property describes a 
+		<ulink url="&javadoc-dir;/kodo/ee/ManagedRuntime.html"><classname>
+		kodo.ee.ManagedRuntime</classname></ulink> implementation to use
+		for transaction manager discovery.  You can specify your own 
+		implementation, or use one of the built-ins:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+				<literal>auto</literal>: This is the default.  It is an alias 
+				for the
+				<ulink url="&javadoc-dir;/kodo/ee/AutomaticManagedRuntime.html">
+				<classname>kodo.ee.AutomaticManagedRuntime</classname></ulink>
+				class.  This managed runtime is able to automatically integrate
+				with several common application servers.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+				<literal>invocation</literal>: An alias for the
+				<ulink url="&javadoc-dir;/kodo/ee/InvocationManagedRuntime.html">
+				<classname>kodo.ee.InvocationManagedRuntime</classname></ulink>
+				class.  You can configure this runtime to invoke any static
+				method in order to obtain the appserver's transaction manager.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+				<literal>jndi</literal>: An alias for the
+				<ulink url="&javadoc-dir;/kodo/ee/JNDIManagedRuntime.html">
+				<classname>kodo.ee.JNDIManagedRuntime</classname></ulink>
+				class.  You can configure this runtime to look up the
+				transaction manager at any JNDI location.
+				</para>
+			</listitem>
+		</itemizedlist>
+		<para>
+		See the Javadoc for of each class for details on the bean properties 
+		you can pass to these plugins in your configuration string.  
+		</para>
+		&feature-enterprise;
+		<example id="ref_guide_enterprise_transex">
+			<title>Configuring Transaction Manager Integration</title>
+			<para condition="combo">JPA XML format:</para>
+<programlisting condition="ejb">
+<![CDATA[<property name="kodo.TransactionMode" value="managed"/>
+<property name="kodo.ManagedRuntime" value="jndi(TransactionManagerName=java:/TransactionManager)"/>]]>
+</programlisting>
+			<para condition="combo">JDO properties format:</para>
+<programlisting condition="jdo">
+kodo.TransactionMode: managed
+kodo.ManagedRuntime: jndi(TransactionManagerName=java:/TransactionManager)
+</programlisting>
+		</example>
+		<para>
+		Note that even when Kodo is using managed transaction, you can control
+		transactions through the specification local transaction APIs if you
+		wish.  Kodo will propagate your transaction calls to the global
+		transaction.
+		</para>
+	</section>
+
     <section id="ref_guide_enterprise_xa">
         <title>
             XA Transactions
@@ -128,7 +300,7 @@ managed environment. The following components are required:
                 <listitem>
                     <para>
 A managed environment that provides an XA compliant transaction manager.
-Examples of this are application servers such as JBoss and WebLogic.
+Examples of this are application servers such as WebLogic or JBoss.
                     </para>
                 </listitem>
                 <listitem>
