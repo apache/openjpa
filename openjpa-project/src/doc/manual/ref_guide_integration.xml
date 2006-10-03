@@ -112,29 +112,27 @@ loaded relative to the current CLASSPATH.
             </para>
             <example id="ref_guide_integration_props">
                 <title>
-                    Using the Properties Attribute of the &lt;config&gt; 
-        Tag
+                    Using the Properties Attribute of the &lt;config&gt; Tag
                 </title>
 <programlisting>
 &lt;mappingtool&gt;
   &lt;fileset dir="${basedir}"&gt;
     &lt;include name="**/model/*.java"/&gt;
   &lt;/fileset&gt;
-  &lt;config properties="openjpa-dev.properties"/&gt;
+  &lt;config properties="openjpa-dev.xml"/&gt;
 &lt;/mappingtool&gt;
 </programlisting>
             </example>
             <example id="ref_guide_integration_propsfile">
                 <title>
-                    Using the PropertiesFile Attribute of the &lt;config&gt; 
-        Tag
+                    Using the PropertiesFile Attribute of the &lt;config&gt; Tag
                 </title>
 <programlisting>
 &lt;mappingtool&gt;
   &lt;fileset dir="${basedir}"&gt;
     &lt;include name="**/model/*.java"/&gt;
   &lt;/fileset&gt;
-  &lt;config propertiesFile="../conf/openjpa-dev.properties"/&gt;
+  &lt;config propertiesFile="../conf/openjpa-dev.xml"/&gt;
 &lt;/mappingtool&gt;
 </programlisting>
             </example>
@@ -209,15 +207,17 @@ formatting attributes.
             <para>
 The enhancer task allows you to invoke the OpenJPA enhancer directly from within
 the Ant build process. The task's parameters correspond exactly to the long
-versions of the command-line arguments to <link linkend="ref_guide_pc_enhance">
-<literal>openjpac</literal></link>.
+versions of the command-line arguments to the 
+<link linkend="ref_guide_pc_enhance"><classname>
+org.apache.openjpa.enhance.PCEnhancer</classname></link>.
             </para>
             <para>
 The enhancer task accepts a nested <literal>fileset</literal> tag to specify the
 files that should be processed. You can specify <filename>.java</filename> or
 <filename>.class</filename> files. If you do not specify any files, the task
-will run on the classes listed in your <link linkend="openjpa.MetaDataFactory">
-<literal> openjpa.MetaDataFactory</literal></link> property.
+will run on the classes listed in your <filename>persistence.xml</filename> or
+<link linkend="openjpa.MetaDataFactory"><literal>
+openjpa.MetaDataFactory</literal></link> property.
             </para>
             <para>
 Following is an example of using the enhancer task in a <filename>build.xml
@@ -266,17 +266,17 @@ Following is an example of using the enhancer task in a <filename>build.xml
             <para>
 The application identity tool task allows you to invoke the application identity
 tool directly from within the Ant build process. The task's parameters
-correspond exactly to the long versions of the command-line arguments to
-<link linkend="ref_guide_pc_appid_appidtool"><literal>appidtool</literal></link>
-.
+correspond exactly to the long versions of the command-line arguments to the
+<link linkend="ref_guide_pc_appid_appidtool"><classname>
+org.openjpa.enhance.ApplicationIdTool</classname></link>.
             </para>
             <para>
 The application identity tool task accepts a nested <literal>fileset</literal>
 tag to specify the files that should be processed. You can specify <filename>
 .java</filename> or <filename>.class</filename> files. If you do not specify any
-files, the task will run on the classes listed in your
-<link linkend="openjpa.MetaDataFactory"><literal> openjpa.MetaDataFactory
-</literal></link> property.
+files, the task will run on the classes listed in your <filename>persistence.xml
+</filename> file or <link linkend="openjpa.MetaDataFactory"><literal>
+openjpa.MetaDataFactory</literal></link> property.
             </para>
             <para>
 Following is an example of using the application identity tool task in a
@@ -330,14 +330,15 @@ object-relational mapping data is always synchronized with your persistent class
 definitions, without needing to remember to invoke the mapping tool manually.
 The task's parameters correspond exactly to the long versions of the
 command-line arguments to the <link linkend="ref_guide_mapping_mappingtool">
-<literal>mappingtool</literal></link>.
+<classname>org.apache.openjpa.jdbc.meta.MappingTool</classname></link>.
             </para>
             <para>
 The mapping tool task accepts a nested <literal>fileset</literal> tag to specify
 the files that should be processed. You can specify <filename>.java</filename>
 or <filename>.class</filename> files. If you do not specify any files, the task
-will run on the classes listed in your <link linkend="openjpa.MetaDataFactory">
-<literal> openjpa.MetaDataFactory</literal></link> property.
+will run on the classes listed in your <filename>persistence.xml</filename> file
+or <link linkend="openjpa.MetaDataFactory"><literal>
+openjpa.MetaDataFactory</literal></link> property.
             </para>
             <para>
 Following is an example of a <filename>build.xml</filename> target that invokes
@@ -389,8 +390,8 @@ The reverse mapping tool task allows you to directly invoke the reverse mapping
 tool from within Ant. While many users will only run the reverse mapping process
 once, others will make it part of their build process. The task's parameters
 correspond exactly to the long versions of the command-line arguments to the
-<link linkend="ref_guide_pc_reverse_reversemappingtool"><literal>
-reversemappingtool</literal></link>.
+<link linkend="ref_guide_pc_reverse_reversemappingtool"><classname>
+org.apache.openjpa.jdbc.meta.ReverseMappingTool</classname></link>.
             </para>
             <para>
 Following is an example of a <filename>build.xml</filename> target that invokes
@@ -440,8 +441,8 @@ the reverse mapping tool:
 The schema tool task allows you to directly invoke the schema tool from within
 the Ant build process. The task's parameters correspond exactly to the long
 versions of the command-line arguments to the
-<link linkend="ref_guide_schema_schematool"><literal> schematool</literal>
-</link>.
+<link linkend="ref_guide_schema_schematool"><classname>
+org.apache.openjpa.jdbc.schema.SchemaTool</classname></link>.
             </para>
             <para>
 Following is an example of a <filename>build.xml</filename> target that invokes
@@ -468,15 +469,5 @@ the schema tool:
 </programlisting>
             </example>
         </section>
-    </section>
-    <section id="ref_guide_integration_maven">
-        <title>
-            Maven
-        </title>
-        <indexterm zone="ref_guide_integration_maven">
-            <primary>
-                Maven
-            </primary>
-        </indexterm>
     </section>
 </chapter>

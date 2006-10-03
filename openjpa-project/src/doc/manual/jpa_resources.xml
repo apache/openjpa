@@ -16,18 +16,13 @@ EJB 3 JSR page</ulink>
         </listitem>
         <listitem>
             <para>
-<ulink url="http://java.sun.com/javaee/5/docs/api/index.html">Locally mirrored
+<ulink url="http://java.sun.com/javaee/5/docs/api/index.html">
 javax.persistence Javadoc</ulink>
             </para>
         </listitem>
         <listitem>
             <para>
-<ulink url="../apidocs/index.html">OpenJPA API Javadoc</ulink>
-            </para>
-        </listitem>
-        <listitem>
-            <para>
-<ulink url="../apidocs/index.html">Full OpenJPA Javadoc</ulink>
+<ulink url="../apidocs/index.html">OpenJPA Javadoc</ulink>
             </para>
         </listitem>
         <listitem>

@@ -333,9 +333,9 @@ public class QueryImpl
     }
 
     public OpenJPAQuery setHint(String key, Object value) {
-        if (key == null || !key.startsWith("org.apache.openjpa."))
+        if (key == null || !key.startsWith("openjpa."))
             return this;
-        String k = key.substring("org.apache.openjpa.".length());
+        String k = key.substring("openjpa.".length());
 
         try {
             if ("Subclasses".equals(k)) {

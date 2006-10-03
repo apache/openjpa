@@ -85,7 +85,7 @@ The <link linkend="ref_guide_runtime_openjpapersistence"><classname>
 org.apache.openjpa.persistence.OpenJPAPersistence</classname></link> helper
 allows you to convert between <classname>EntityManagerFactories</classname> and
 <classname>BrokerFactories</classname>, <classname>EntityManager</classname>s
-and <classname>Broker</classname> s.
+and <classname>Broker</classname>s.
         </para>
         <section id="ref_guide_runtime_pmextension">
             <title>
@@ -153,14 +153,14 @@ preventing a straight cast. <classname>OpenJPAPersistence</classname>'s
 <methodname>cast</methodname> methods work around these proxies.
         </para>
 <programlisting> 
-public static OpenJPAEntityManagerFactory cast (EntityManagerFactory emf);
-public static OpenJPAEntityManager cast (EntityManager em);
-public static OpenJPAQuery cast (Query q);
+public static OpenJPAEntityManagerFactory cast(EntityManagerFactory emf);
+public static OpenJPAEntityManager cast(EntityManager em);
+public static OpenJPAQuery cast(Query q);
 </programlisting>
         <para>
 We provide additional information on the <classname>OpenJPAPersistence
-</classname> helper <link linkend="ref_guide_runtime_openjpapersistence"> below
-</link>.
+</classname> helper <link linkend="ref_guide_runtime_openjpapersistence"> 
+below</link>.
         </para>
         <section id="ref_guide_runtime_emfactory">
             <title>
@@ -187,9 +187,8 @@ The <classname>org.apache.openjpa.persistence.OpenJPAEntityManagerFactory
 </classname> interface extends the basic <classname>
 javax.persistence.EntityManagerFactory</classname> with OpenJPA-specific
 features. The <classname>OpenJPAEntityManagerFactory</classname> offers APIs to
-obtain managed and unmanaged <classname>EntityManager</classname>s from the
-same factory, to access the OpenJPA data and query caches, and to perform other
-OpenJPA-specific operations. See the
+access the OpenJPA data and query caches and to perform other OpenJPA-specific 
+operations. See the
 <ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManagerFactory.html">
 interface Javadoc</ulink> for details.
             </para>
@@ -221,7 +220,7 @@ All OpenJPA <classname>EntityManager</classname>s implement the
 </ulink> interface. This interface extends the standard <classname>
 javax.persistence.EntityManager</classname>. Just as the standard <classname>
 EntityManager</classname> is the primary window into JPA services, the
-<classname> OpenJPAEntityManager</classname> is the primary window from JPA into
+<classname>OpenJPAEntityManager</classname> is the primary window from JPA into
 OpenJPA-specific functionality. We strongly encourage you to investigate the API
 extensions this interface contains.
             </para>
@@ -249,8 +248,8 @@ extensions this interface contains.
             <para>
 OpenJPA extends JPA's standard query functionality with the <classname>
 org.apache.openjpa.persistence.OpenJPAQuery</classname> interface. See its
-<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAQuery.html">Javadoc</ulink> for
-details on the convenience methods it provides.
+<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAQuery.html">Javadoc
+</ulink> for details on the convenience methods it provides.
             </para>
         </section>
         <section id="ref_guide_runtime_jpaextent">
@@ -290,8 +289,8 @@ import org.apache.openjpa.persistence.*;
 
 ...
 
-OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
-Extent&lt;Magazine&gt; mags = kem.getExtent (Magazine.class, false);
+OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
+Extent&lt;Magazine&gt; mags = kem.getExtent(Magazine.class, false);
 for (Magazine m : mags)
     processMagazine (m);
 </programlisting>
@@ -352,7 +351,7 @@ OpenJPA.
                 </seealso>
             </indexterm>
             <para>
-Many of the aforementioned OpenJPA interfaces give you access to a <classname>
+Many of the aforementioned OpenJPA interfaces give you access to an <classname>
 org.apache.openjpa.persistence.FetchPlan</classname> instance. The <classname>
 FetchPlan</classname> allows you to exercise some control over how objects are
 fetched from the datastore, including <link linkend="ref_guide_dbsetup_lrs">
@@ -366,14 +365,14 @@ OpenJPA goes one step further, extending <classname>FetchPlan</classname> with
 to add additional JDBC-specific tuning methods. Unless you have customized 
 OpenJPA to use a non-relational back-end (see
 <xref linkend="ref_guide_enterprise_abstractstore"/> ), all <classname>
-FetchPlan</classname>s in OpenJPA implement <classname>JDBCFetchPlan</classname>
-, so feel free to cast to this interface.
+FetchPlan</classname>s in OpenJPA implement <classname>
+JDBCFetchPlan</classname>, so feel free to cast to this interface.
             </para>
             <para>
 Fetch plans pass on from parent components to child components. The <classname>
 EntityManagerFactory</classname> settings (via your configuration properties)
 for things like the fetch size, result set type, and custom fetch groups are
-passed on to the fetch plan of the <classname> EntityManager</classname>s it
+passed on to the fetch plan of the <classname>EntityManager</classname>s it
 produces. The settings of each <classname>EntityManager</classname>, in turn,
 are passed on to each <classname>Query</classname> and <classname>Extent
 </classname> it returns. Note that the opposite, however, is not true. Modifying
@@ -384,7 +383,7 @@ configuration does not affect the <classname> EntityManagerFactory</classname>.
             </para>
             <para>
 <xref linkend="ref_guide_fetch"/> includes examples using <classname>
-FetchPlan</classname> s.
+FetchPlan</classname>s.
             </para>
         </section>
         <section id="ref_guide_runtime_openjpapersistence">
@@ -515,12 +514,12 @@ locked. You can also use the fetch plan of an individual <classname>Query
 <classname>Query</classname>.
             </para>
 <programlisting>
-public LockModeType getReadLockMode ();
-public FetchPlan setReadLockMode (LockModeType mode);
-public LockModeType getWriteLockMode ();
-public FetchPlan setWriteLockMode (LockModeType mode);
-long getLockTimeout ();
-FetchPlan setLockTimeout (long timeout);
+public LockModeType getReadLockMode();
+public FetchPlan setReadLockMode(LockModeType mode);
+public LockModeType getWriteLockMode();
+public FetchPlan setWriteLockMode(LockModeType mode);
+long getLockTimeout();
+FetchPlan setLockTimeout(long timeout);
 </programlisting>
             <para>
 Controlling locking through these runtime APIs works even during optimistic
@@ -538,24 +537,24 @@ import org.apache.openjpa.persistence.*;
 ...
 
 EntityManager em = ...;
-em.getTransaction ().begin ();
+em.getTransaction().begin();
 
 // load stock we know we're going to update at write lock mode
-Query q = em.createQuery ("select s from Stock s where symbol = :s");
-q.setParameter ("s", symbol);
-OpenJPAQuery kq = OpenJPAPersistence.cast (q);
-FetchPlan fetch = kq.getFetchPlan ();
-fetch.setReadLockMode (LockModeType.WRITE);
-fetch.setLockTimeout (3000); // 3 seconds
-Stock stock = (Stock) q.getSingleResult ();
+Query q = em.createQuery("select s from Stock s where symbol = :s");
+q.setParameter("s", symbol);
+OpenJPAQuery oq = OpenJPAPersistence.cast(q);
+FetchPlan fetch = oq.getFetchPlan ();
+fetch.setReadLockMode(LockModeType.WRITE);
+fetch.setLockTimeout(3000); // 3 seconds
+Stock stock = (Stock) q.getSingleResult();
 
 // load an object we don't need locked at none lock mode
-fetch = (OpenJPAPersistence.cast (em)).getFetchPlan ();
-fetch.setReadLockMode (null);
-Market market = em.find (Market.class, marketId);
+fetch = OpenJPAPersistence.cast(em).getFetchPlan();
+fetch.setReadLockMode(null);
+Market market = em.find(Market.class, marketId);
 
-stock.setPrice (market.calculatePrice (stock));
-em.getTransaction ().commit ();
+stock.setPrice(market.calculatePrice(stock));
+em.getTransaction().commit();
 </programlisting>
             </example>
         </section>
@@ -576,7 +575,7 @@ In addition to allowing you to control implicit locking levels, OpenJPA provides
 explicit APIs to lock objects and to retrieve their current lock level.
             </para>
 <programlisting>
-public LockModeType OpenJPAEntityManager.getLockMode (Object pc);
+public LockModeType OpenJPAEntityManager.getLockMode(Object pc);
 </programlisting>
             <para>
 Returns the level at which the given object is currently locked.
@@ -584,19 +583,19 @@ Returns the level at which the given object is currently locked.
             <para>
 In addition to the standard
 <ulink url="http://java.sun.com/javaee/5/docs/api/javax/persistence/EntityManager.html">
-<methodname>EntityManager.lock (Object, LockModeType)</methodname></ulink>
+<methodname>EntityManager.lock(Object, LockModeType)</methodname></ulink>
 method, the
 <ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>OpenJPAEntityManager</classname></ulink> exposes the following
 methods to lock objects explicitly:
             </para>
 <programlisting>
-public void lock (Object pc);
-public void lock (Object pc, LockModeType mode, long timeout);
-public void lockAll (Object... pcs);
-public void lockAll (Object... pcs, LockModeType mode, long timeout);
-public void lockAll (Collection pcs);
-public void lockAll (Collection pcs, LockModeType mode, long timeout);
+public void lock(Object pc);
+public void lock(Object pc, LockModeType mode, long timeout);
+public void lockAll(Object... pcs);
+public void lockAll(Object... pcs, LockModeType mode, long timeout);
+public void lockAll(Collection pcs);
+public void lockAll(Collection pcs, LockModeType mode, long timeout);
 </programlisting>
             <para>
 Methods that do not take a lock level or timeout parameter default to the
@@ -610,21 +609,21 @@ current fetch plan. The example below demonstrates these methods in action.
 import org.apache.openjpa.persistence.*;
 
 // retrieve the lock level of an object
-OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
+OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
 Stock stock = ...;
-LockModeType level = kem.getLockMode (stock);
+LockModeType level = oem.getLockMode(stock);
 if (level == OpenJPAModeType.WRITE) ...
 
 ...
 
-kem.setOptimistic (true);
-kem.getTransaction ().begin ();
+oem.setOptimistic(true);
+oem.getTransaction().begin ();
 
 // override default of not locking during an opt trans to lock stock object
-kem.lock (stock, LockModeType.WRITE, 1000);
-stock.setPrice (market.calculatePrice (stock));
+oem.lock(stock, LockModeType.WRITE, 1000);
+stock.setPrice(market.calculatePrice(stock));
 
-kem.getTransaction ().commit ();
+oem.getTransaction().commit();
 </programlisting>
             </example>
         </section>
@@ -658,9 +657,10 @@ own lock manager, or use one of the bundled options:
                     <para>
 <literal>pessimistic</literal>: This is an alias for the
 <ulink url="../apidocs/org/apache/openjpa/jdbc/kernel/PessimisticLockManager.html">
-<classname>org.apache.openjpa.jdbc.kernel.PessimisticLockManager</classname>
-</ulink>, which uses SELECT FOR UPDATE statements (or the database's
-equivalent) to lock the database rows corresponding to locked objects. This lock
+<classname>o
+rg.apache.openjpa.jdbc.kernel.PessimisticLockManager</classname></ulink>, which
+uses SELECT FOR UPDATE statements (or the database's equivalent) to lock the 
+database rows corresponding to locked objects. This lock
 manager does not distinguish between read locks and write locks; all locks are
 write locks.
                     </para>
@@ -681,16 +681,6 @@ properties:
 <ulink url="../apidocs/org/apache/openjpa/kernel/NoneLockManager.html">
 <classname>org.apache.openjpa.kernel.NoneLockManager</classname></ulink>, which
 does not perform any locking at all.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>sjvm</literal>: An alias for the
-<ulink url="../apidocs/org/apache/openjpa/kernel/SingleJVMExclusiveLockManager.html">
-<classname>org.apache.openjpa.kernel.SingleJVMExclusiveLockManager</classname>
-</ulink>. This lock manager uses in-memory mutexes to obtain exclusive locks on
-object ids. It does not perform any database-level locking. Also, it does not
-distinguish between read and write locks; all locks are write locks.
                     </para>
                 </listitem>
                 <listitem>
@@ -839,16 +829,16 @@ locks the object. The only way to positively guarantee that the object is locked
 and has the most recent state to refresh the object after locking it.
                     </para>
                     <para>
-When using the default lock manager, the case above can only occur when OpenJPA
-cannot issue the state-loading SELECT as a locking statement due to database
-limitations. For example, some databases cannot lock SELECTs that use joins. The
-default lock manager will log an INFO message to the <literal>openjpa.Runtime
-</literal> logging channel whenever it cannot lock the initial SELECT due to
-database limitations. By paying attention to these log messages, you can see
-where you might consider using an object refresh to guarantee that you have the
-most recent state, or where you might rethink the way you load the state in
-question to circumvent the database limitations that prevent OpenJPA from
-issuing a locking SELECT in the first place.
+When using the pessimistic lock manager, the case above can only occur when 
+OpenJPA cannot issue the state-loading SELECT as a locking statement due to 
+database limitations. For example, some databases cannot lock SELECTs that use 
+joins. The pessimistic lock manager will log an INFO message to the <literal>
+openjpa.Runtime</literal> logging channel whenever it cannot lock the initial 
+SELECT due to database limitations. By paying attention to these log messages, 
+you can see where you might consider using an object refresh to guarantee that 
+you have the most recent state, or where you might rethink the way you load the
+state in question to circumvent the database limitations that prevent OpenJPA 
+from issuing a locking SELECT in the first place.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -888,9 +878,9 @@ transaction, and that a rollback of the transaction will rollback all of the
 changes in the transaction regardless of any savepoints set.
             </para>
 <programlisting>
-void setSavepoint (String name);
-void releaseSavepoint (String name);
-void rollbackToSavepoint (String name);
+void setSavepoint(String name);
+void releaseSavepoint(String name);
+void rollbackToSavepoint(String name);
 </programlisting>
             <para>
 To set a savepoint, simply call <methodname>setSavepoint</methodname>, passing
@@ -910,9 +900,9 @@ still set new savepoints. Savepoints will also be cleared after the current
 transaction is committed or rolled back.
             </para>
             <para>
-If a savepoint is no longer needed, you can release any resources such as in
-memory state and datastore resources by calling <methodname>releaseSavepoint
-</methodname>. This method should not be called for savepoints that have been
+If a savepoint is no longer needed, you can release any resources it is 
+consuming resources by calling <methodname>releaseSavepoint</methodname>. This 
+method should not be called for savepoints that have been
 released automatically through other means, such as commit of a transaction or
 rollback to a prior savepoint. While savepoints made after this savepoint will
 also be released, there are no other effects on the current transaction.
@@ -930,26 +920,26 @@ import org.apache.openjpa.persistence.*;
 
 ...
 
-OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
-kem.getTransaction ().begin ();
+OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
+oem.getTransaction().begin();
 
-Magazine mag = kem.find (Magazine.class, id);
-mag.setPageCount (300);
-kem.setSavepoint ("pages");
+Magazine mag = oem.find(Magazine.class, id);
+mag.setPageCount(300);
+oem.setSavepoint("pages");
 
-mag.setPrice (mag.getPageCount () * pricePerPage);
+mag.setPrice(mag.getPageCount() * pricePerPage);
 // we decide to release pages since price depends on pages.
-kem.releaseSavepoint ("pages");
-kem.setSavepoint ("price");
+oem.releaseSavepoint("pages");
+oem.setSavepoint("price");
 
-mag.setPrice (testPrice);
+mag.setPrice(testPrice);
 ...
 
 // we determine the test price is not good
-kem.rollbackToSavepoint ("price");
+oem.rollbackToSavepoint("price");
 
-// the price is now restored to mag.getPageCount () * pricePerPage
-kem.getTransaction ().commit ();
+// the price is now restored to mag.getPageCount() * pricePerPage
+oem.getTransaction().commit();
 </programlisting>
             </example>
         </section>
@@ -1000,6 +990,7 @@ implements savepoints by issuing a flush to the database.
             </itemizedlist>
         </section>
     </section>
+    <!--
     <section id="ref_guide_enterprise_queryext">
         <title>
             Query Language Extensions
@@ -1020,7 +1011,6 @@ JPQL is a powerful, easy-to-use query language, but you may occasionally find it
 limiting in some way. To circumvent the limitations of JPQL, OpenJPA provides
 extensions to the JPQL language, and allows you to extend it as well.
         </para>
-        <!-- ### -->
         <warning>
             <para>
 The JPQL parser in this release does not yet allow extensions. They will be made
@@ -1275,6 +1265,7 @@ Javadoc</ulink> for details.
                 </itemizedlist>
             </section>
         </section>
+        -->
         <section id="ref_guide_enterprise_methodql">
             <title>
                 MethodQL
@@ -1311,36 +1302,23 @@ import org.apache.openjpa.persistence.*;
 // the class is in the candidate class' package or in the query imports, you
 // can omit the package; if the method is in the candidate class, you can omit
 // the class name and just specify the method name
-OpenJPAEntityManager kem = OpenJPAPersistence.cast (emf);
-OpenJPAQuery q = kem.createQuery ("openjpa.MethodQL", "com.xyz.Finder.getByName");
+OpenJPAEntityManager oem = OpenJPAPersistence.cast(emf);
+OpenJPAQuery q = oem.createQuery("openjpa.MethodQL", "com.xyz.Finder.getByName");
 
 // set the type of objects that the method returns
-q.setResultClass (Person.class);
+q.setResultClass(Person.class);
 
 // parameters are passed the same way as in standard queries
-q.setParameter ("firstName", "Fred").setParameter ("lastName", "Lucas");
+q.setParameter("firstName", "Fred").setParameter("lastName", "Lucas");
 
 // this executes your method to get the results
-List results = q.getResultList ();
+List results = q.getResultList();
 </programlisting>
             <para>
 For datastore queries, the method must have the following signature:
             </para>
 <programlisting>
-public static 
-<ulink url="../apidocs/org/apache/openjpa/lib/rop/ResultObjectProvider.html">ResultObjectProvider
-</ulink>
- xxx(
-<ulink url="../apidocs/org/apache/openjpa/kernel/StoreContext.html">StoreContext
-</ulink>
- ctx, 
-    
-<ulink url="../apidocs/org/apache/openjpa/meta/ClassMetaData.html">ClassMetaData
-</ulink>
- meta, boolean subclasses, Map params, 
-<ulink url="../apidocs/org/apache/openjpa/kernel/FetchConfiguration.html">FetchConfiguration
-</ulink>
- fetch)
+public static <ulink url="../apidocs/org/apache/openjpa/lib/rop/ResultObjectProvider.html">ResultObjectProvider</ulink> xxx(<ulink url="../apidocs/org/apache/openjpa/kernel/StoreContext.html">StoreContext</ulink> ctx, <ulink url="../apidocs/org/apache/openjpa/meta/ClassMetaData.html">ClassMetaData</ulink> meta, boolean subclasses, Map params, <ulink url="../apidocs/org/apache/openjpa/kernel/FetchConfiguration.html">FetchConfiguration </ulink> fetch)
 </programlisting>
             <para>
 The returned result object provider should produce objects of the candidate
@@ -1354,24 +1332,16 @@ In-memory execution is slightly different, taking in one object at a time and
 returning a boolean on whether the object matches the query:
             </para>
 <programlisting>
-public static boolean xxx(
-<ulink url="../apidocs/org/apache/openjpa/kernel/StoreContext.html">StoreContext
-</ulink>
- ctx, 
-<ulink url="../apidocs/org/apache/openjpa/meta/ClassMetaData.html">ClassMetaData
-</ulink>
- meta, 
-    boolean subclasses, Object obj, Map params, 
-<ulink url="../apidocs/org/apache/openjpa/kernel/FetchConfiguration.html">FetchConfiguration
-</ulink>
- fetch)
+public static boolean xxx(<ulink url="../apidocs/org/apache/openjpa/kernel/StoreContext.html">StoreContext</ulink> ctx, <ulink url="../apidocs/org/apache/openjpa/meta/ClassMetaData.html">ClassMetaData</ulink> meta, boolean subclasses, Object obj, Map params, <ulink url="../apidocs/org/apache/openjpa/kernel/FetchConfiguration.html">FetchConfiguration</ulink> fetch)
 </programlisting>
             <para>
 In both method versions, the given <literal>params</literal> map contains the
 names and values of all the parameters for the query.
             </para>
         </section>
+    <!--
     </section>
+    -->
     <section id="ref_guide_sequence">
         <title>
             Generators
@@ -1398,7 +1368,7 @@ including the current persistence environment, the JDBC <classname>DataSource
 <ulink url="../apidocs/org/apache/openjpa/jdbc/kernel/AbstractJDBCSeq.html">
 <classname>org.apache.openjpa.jdbc.kernel.AbstractJDBCSeq</classname></ulink>
 helps you create custom JDBC-based sequences. OpenJPA also supplies the
-following built-in <classname>Seq</classname> s:
+following built-in <classname>Seq</classname>s:
         </para>
         <itemizedlist>
             <listitem>
@@ -1418,11 +1388,10 @@ alias for the
 class. The <classname>TableJDBCSeq</classname> uses a special single-row table
 to store a global sequence number. If the table does not already exist, it is
 created the first time you run the
-<link linkend="ref_guide_mapping_mappingtool"> mapping tool</link>'s on a class
-that requires it. You can also use the class' <methodname>main</methodname>
-method or the <literal>sequencetable</literal> shell/bat script to manipulate
-the table; see the <methodname>TableJDBCSeq.main</methodname> method Javadoc for
-usage details.
+<link linkend="ref_guide_mapping_mappingtool">mapping tool</link> on a class
+that requires it. You can also use the class's <methodname>main</methodname>
+method to manipulate the table; see the 
+<methodname>TableJDBCSeq.main</methodname> method Javadoc for usage details.
                 </para>
                 <para>
 This <classname>Seq</classname> has the following properties:
@@ -1480,8 +1449,8 @@ OPENJPA_SEQUENCES_TABLE</literal>. It also adds the following properties:
                     <listitem>
                         <para>
 <literal>IgnoreUnmapped</literal>: Whether to ignore unmapped base classes, and
-instead use one row per least-derived mapped class. Defaults to <literal>false
-</literal>.
+instead use one row per least-derived mapped class. Defaults to <literal>
+false</literal>.
                         </para>
                     </listitem>
                     <listitem>
@@ -1496,8 +1465,7 @@ primary key value of each row, rather than the full class name. Defaults to
 As with the <classname>TableJDBCSeq</classname>, the <classname>
 ClassTableJDBCSeq</classname> creates its table automatically during mapping
 tool runs. However, you can manually manipulate the table through the class'
-<methodname>main</methodname> method, or through the <literal>
-classsequencetable</literal> shell/bat script. See the Javadoc for the
+<methodname>main</methodname> method. See the Javadoc for the
 <methodname> ClassTableJDBCSeq.main</methodname> method for usage details.
                 </para>
             </listitem>
@@ -1523,8 +1491,7 @@ rather than a fixed pattern of one row per class. Its table defaults to
                 <itemizedlist>
                     <listitem>
                         <para>
-<literal>PrimaryKeyValue</literal>: The primary key value used by this
-instance.
+<literal>PrimaryKeyValue</literal>: The primary key value used by this instance.
                         </para>
                     </listitem>
                 </itemizedlist>
@@ -1532,9 +1499,8 @@ instance.
 As with the <classname>TableJDBCSeq</classname>, the <classname>
 ValueTableJDBCSeq</classname> creates its table automatically during mapping
 tool runs. However, you can manually manipulate the table through the class'
-<methodname>main</methodname> method, or through the <literal>
-valuesequencetable</literal> shell/bat script. See the Javadoc for the
-<methodname> ValueTableJDBCSeq.main</methodname> method for usage details.
+<methodname>main</methodname> method. See the Javadoc for the
+<methodname>ValueTableJDBCSeq.main</methodname> method for usage details.
                 </para>
             </listitem>
             <listitem>
@@ -1573,8 +1539,7 @@ properties:
                     </listitem>
                     <listitem>
                         <para>
-<literal>Increment</literal>: The amount the sequence increments. Defaults to
-1.
+<literal>Increment</literal>: The amount the sequence increments. Defaults to 1.
                         </para>
                     </listitem>
                     <listitem>
@@ -1610,7 +1575,7 @@ You can use JPA <literal>SequenceGenerator</literal>s to describe any built-in
 implementation. Set the <literal>sequenceName</literal> attribute to a plugin
 string describing your choice. See
 <xref linkend="jpa_overview_mapping_sequence"/> in the JPA Overview for
-details on defining <literal>SequenceGenerator</literal> s.
+details on defining <literal>SequenceGenerator</literal>s.
         </para>
         <para>
 See <xref linkend="ref_guide_conf_plugins"/> for plugin string formatting.
@@ -1622,8 +1587,8 @@ See <xref linkend="ref_guide_conf_plugins"/> for plugin string formatting.
 <programlisting>
 @Entity
 @Table(name="AUTO")
-public class Author
-{
+public class Author {
+
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="AuthorSeq")
     @SequenceGenerator(name="AuthorSeq" sequence="table(Table=AUTO_SEQ, Increment=100)")
@@ -1685,7 +1650,7 @@ OpenJPA allows you to access named generators at runtime through the
 <methodname>OpenJPAEntityManager.getNamedGenerator</methodname> method:
             </para>
 <programlisting>
-public Generator getNamedGenerator (String name);
+public Generator getNamedGenerator(String name);
 </programlisting>
             <para>
 The returned 
@@ -1728,8 +1693,8 @@ and more. Where appropriate, event notifications include the set of
 persistence-capable objects participating in the transaction.
         </para>
 <programlisting>
-public void addTransactionListener (Object listener);
-public void removeTransactionListener (Object listener);
+public void addTransactionListener(Object listener);
+public void removeTransactionListener(Object listener);
 </programlisting>
         <para>
 These <classname>OpenJPAEntityManager</classname> methods allow you to add and

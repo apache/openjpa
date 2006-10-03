@@ -22,9 +22,9 @@ such as <classname>EntityManager</classname>s and queries connect directly to
 the datastore and execute their actions in the same JVM as the code using them.
 It is <emphasis>online</emphasis> in that all changes to managed objects must be
 made in the context of an active <classname> EntityManager</classname>. These
-two properties, combined with the fact that <classname> EntityManager
-</classname>s cannot be serialized for storage or network transfer, make the
-standard JPA runtime difficult to incorporate into some enterprise and
+two properties, combined with the fact that <classname>
+EntityManager</classname>s cannot be serialized for storage or network transfer,
+make the standard JPA runtime difficult to incorporate into some enterprise and
 client/server program designs.
     </para>
     <para>
@@ -78,9 +78,9 @@ The extended
 explicitly detach objects at any time.
             </para>
 <programlisting>
-public Object detach (Object pc):
-public Object[] detachAll (Object... pcs):
-public Collection detachAll (Collection pcs):
+public Object detach(Object pc):
+public Object[] detachAll(Object... pcs):
+public Collection detachAll(Collection pcs):
 </programlisting>
             <para>
 Each detach method returns detached copies of the given instances. The copy
@@ -220,11 +220,9 @@ default.
                 </listitem>
                 <listitem>
                     <para>
-<literal>fgs</literal>: Detach all fields and relations in the default fetch
-group, and any other fetch groups that you have added to the current
+<literal>fgs</literal>: Detach all fields and relations in the current 
 <link linkend="ref_guide_runtime">fetch configuration</link>. For more
-information on custom fetch groups, see <xref linkend="ref_guide_fetch"/>
-.
+information on custom fetch groups, see <xref linkend="ref_guide_fetch"/>.
                     </para>
                 </listitem>
                 <listitem>
@@ -330,8 +328,8 @@ for controlling detached state:
 public static final int DETACH_LOADED;
 public static final int DETACH_FGS;
 public static final int DETACH_ALL;
-public int getDetachState ();
-public void setDetachState (int mode);
+public int getDetachState();
+public void setDetachState(int mode);
 </programlisting>
             <section id="ref_guide_detach_field">
                 <title>
@@ -365,8 +363,8 @@ import org.apache.openjpa.persistence.*;
 
 @Entity
 public class Magazine
-    implements Serializable
-{
+    implements Serializable {
+
     private String name;
     @DetachedState private Object state;
     ...
@@ -474,7 +472,6 @@ OpenJPA includes built in remote commit providers for JMS and TCP communication.
                     </tertiary>
                 </indexterm>
                 <para>
-OpenJPA includes built in remote commit providers for JMS and TCP communication.
 The JMS remote commit provider can be configured by setting the
 <link linkend="openjpa.RemoteCommitProvider"><literal>
 openjpa.RemoteCommitProvider</literal></link> property to contain the
@@ -551,7 +548,7 @@ The TCP remote commit provider has several options that are defined as host
 specifications containing a host name or IP address and an optional port
 separated by a colon. For example, the host specification <literal>
 saturn.bea.com:1234</literal> represents an <classname>InetAddress</classname>
-retrieved by invoking <methodname>InetAddress.getByName ("saturn.bea.com")
+retrieved by invoking <methodname>InetAddress.getByName("saturn.bea.com")
 </methodname> and a port of 1234.
                 </para>
                 <para>
