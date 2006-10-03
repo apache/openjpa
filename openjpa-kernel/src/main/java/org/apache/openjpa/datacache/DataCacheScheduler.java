@@ -97,6 +97,7 @@ public class DataCacheScheduler
         _stop = false;
         if (_thread == null) {
             _thread = new Thread(this, _loc.get("scheduler-name").getMessage());
+            _thread.setDaemon(true);
             _thread.start();
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("scheduler-start", _thread.getName()));
