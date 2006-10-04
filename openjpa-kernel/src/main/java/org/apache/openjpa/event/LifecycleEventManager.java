@@ -52,6 +52,21 @@ public class LifecycleEventManager
     private List _exceps = new LinkedList();
     private boolean _firing = false;
     private boolean _fail = false;
+    private boolean _failFast = false;
+
+    /**
+     * Whether to fail after first exception when firing events to listeners.
+     */
+    public boolean isFailFast() {
+        return _failFast;
+    }
+
+    /**
+     * Whether to fail after first exception when firing events to listeners.
+     */
+    public void setFailFast(boolean failFast) {
+        _failFast = failFast;
+    }
 
     /**
      * Register a lifecycle listener for the given classes. If the classes
@@ -207,22 +222,19 @@ public class LifecycleEventManager
         ClassMetaData meta, int type) {
         if (meta.getLifecycleMetaData().getIgnoreSystemListeners())
             return false;
-        boolean failFast = (meta.getRepository().getMetaDataFactory().
-            getDefaults().getCallbackMode() & CALLBACK_FAIL_FAST) != 0;
-        if (fireEvent(null, source, null, type, _listeners, true, failFast,
-            null) == Boolean.TRUE)
+        if (fireEvent(null, source, null, type, _listeners, true, null) 
+            == Boolean.TRUE)
             return true;
         ListenerList system = meta.getRepository().getSystemListeners();
         if (!system.isEmpty() && fireEvent(null, source, null, type, system,
-            true, failFast, null) == Boolean.TRUE)
+            true, null) == Boolean.TRUE)
             return true;
         if (_classListeners != null) {
             Class c = source == null ? meta.getDescribedType() :
                 source.getClass();
             do {
                 if (fireEvent(null, source, null, type, (ListenerList)
-                    _classListeners.get(c), true, failFast, null)
-                    == Boolean.TRUE)
+                    _classListeners.get(c), true, null) == Boolean.TRUE)
                     return true;
                 c = c.getSuperclass();
             } while (c != null && c != Object.class);
@@ -250,21 +262,18 @@ public class LifecycleEventManager
             getDefaults();
 
         boolean callbacks = def.getCallbacksBeforeListeners(type);
-        boolean failFast = (def.getCallbackMode() & CALLBACK_FAIL_FAST) != 0;
-
         if (callbacks)
-            makeCallbacks(source, related, meta, type, failFast, exceptions);
+            makeCallbacks(source, related, meta, type, exceptions);
 
         LifecycleEvent ev = (LifecycleEvent) fireEvent(null, source, related,
-            type, _listeners, false, failFast, exceptions);
+            type, _listeners, false, exceptions);
 
         if (_classListeners != null) {
             Class c = source == null ? meta.getDescribedType() :
                 source.getClass();
             do {
                 ev = (LifecycleEvent) fireEvent(ev, source, related, type,
-                    (ListenerList) _classListeners.get(c), false, failFast,
-                    exceptions);
+                    (ListenerList) _classListeners.get(c), false, exceptions);
                 c = c.getSuperclass();
             } while (c != null && c != Object.class);
         }
@@ -272,12 +281,11 @@ public class LifecycleEventManager
         // make system listeners
         if (!meta.getLifecycleMetaData().getIgnoreSystemListeners()) {
             ListenerList system = meta.getRepository().getSystemListeners();
-            fireEvent(ev, source, related, type, system, false, failFast,
-                exceptions);
+            fireEvent(ev, source, related, type, system, false, exceptions);
         }
 
         if (!callbacks)
-            makeCallbacks(source, related, meta, type, failFast, exceptions);
+            makeCallbacks(source, related, meta, type, exceptions);
 
         // create return array before clearing exceptions
         Exception[] ret;
@@ -309,7 +317,7 @@ public class LifecycleEventManager
      * Make callbacks, recording any exceptions in the given collection.
      */
     private void makeCallbacks(Object source, Object related,
-        ClassMetaData meta, int type, boolean failFast, Collection exceptions) {
+        ClassMetaData meta, int type, Collection exceptions) {
         // make lifecycle callbacks
         LifecycleCallbacks[] callbacks = meta.getLifecycleMetaData().
             getCallbacks(type);
@@ -318,7 +326,7 @@ public class LifecycleEventManager
                 callbacks[i].makeCallback(source, related, type);
             } catch (Exception e) {
                 exceptions.add(e);
-                if (failFast)
+                if (_failFast)
                     _fail = true;
             }
         }
@@ -329,8 +337,7 @@ public class LifecycleEventManager
      * listeners. The event may have already been constructed.
      */
     private Object fireEvent(LifecycleEvent ev, Object source, Object rel,
-        int type, ListenerList listeners, boolean mock, boolean failFast,
-        List exceptions) {
+        int type, ListenerList listeners, boolean mock, List exceptions) {
         if (listeners == null || !listeners.hasListeners(type))
             return null;
 
@@ -471,7 +478,7 @@ public class LifecycleEventManager
             }
             catch (Exception e) {
                 exceptions.add(e);
-                if (failFast)
+                if (_failFast)
                     _fail = true;
             }
         }

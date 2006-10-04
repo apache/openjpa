@@ -23,6 +23,7 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.ee.ManagedRuntime;
+import org.apache.openjpa.event.CallbackModes;
 import org.apache.openjpa.kernel.AutoClear;
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.ConnectionRetainModes;
@@ -41,7 +42,7 @@ public interface OpenJPAEntityManager
     extends EntityManager, EntityTransaction, javax.resource.cci.Connection,
     javax.resource.cci.LocalTransaction, javax.resource.spi.LocalTransaction,
     Closeable, ConnectionRetainModes, DetachState, RestoreState, AutoDetach,
-    AutoClear {
+    AutoClear, CallbackModes {
 
     /**
      * Return the factory that produced this entity manager.
@@ -301,6 +302,18 @@ public interface OpenJPAEntityManager
     public void removeTransactionListener(Object listener);
 
     /**
+     * The {@link CallbackModes} flags for handling transaction listener
+     * exceptions.
+     */
+    public int getTransactionListenerCallbackMode();
+
+    /**
+     * The {@link CallbackModes} flags for handling transaction listener
+     * exceptions.
+     */
+    public void setTransactionListenerCallbackMode(int callbackMode);
+
+    /**
      * Register a listener for lifecycle-related events on the specified
      * classes. If the classes are null, all events will be propagated to
      * the listener.
@@ -311,6 +324,18 @@ public interface OpenJPAEntityManager
      * Remove a listener for lifecycle-related events.
      */
     public void removeLifecycleListener(Object listener);
+
+    /**
+     * The {@link CallbackModes} flags for handling lifecycle listener
+     * exceptions.
+     */
+    public int getLifecycleListenerCallbackMode();
+
+    /**
+     * The {@link CallbackModes} flags for handling lifecycle listener
+     * exceptions.
+     */
+    public void setLifecycleListenerCallbackMode(int callbackMode);
 
     ///////////
     // Lookups

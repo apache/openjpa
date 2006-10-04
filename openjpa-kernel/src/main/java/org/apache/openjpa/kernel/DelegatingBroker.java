@@ -794,6 +794,22 @@ public class DelegatingBroker
         }
     }
 
+    public int getTransactionListenerCallbackMode() {
+        try {
+            return _broker.getTransactionListenerCallbackMode();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public void setTransactionListenerCallbackMode(int mode) {
+        try {
+            _broker.setTransactionListenerCallbackMode(mode);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
     public void addLifecycleListener(Object listener, Class[] classes) {
         try {
             _broker.addLifecycleListener(listener, classes);
@@ -805,6 +821,22 @@ public class DelegatingBroker
     public void removeLifecycleListener(Object listener) {
         try {
             _broker.removeLifecycleListener(listener);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public int getLifecycleListenerCallbackMode() {
+        try {
+            return _broker.getLifecycleListenerCallbackMode();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public void setLifecycleListenerCallbackMode(int mode) {
+        try {
+            _broker.setLifecycleListenerCallbackMode(mode);
         } catch (RuntimeException re) {
             throw translate(re);
         }
