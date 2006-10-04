@@ -30,6 +30,10 @@ public class CallbackException
         super(msg);
     }
 
+    public CallbackException(Throwable cause) {
+        super(cause);
+    }
+
     public int getSubtype() {
         return CALLBACK;
     }

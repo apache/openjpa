@@ -670,14 +670,20 @@ public class BrokerImpl
         if (exceps.length == 0 || (mode & CALLBACK_IGNORE) != 0)
             return;
 
-        OpenJPAException ke = new CallbackException(_loc.get("callback-err")).
-            setNestedThrowables(exceps).setFatal(true);
-        if ((mode & CALLBACK_ROLLBACK) != 0 && (_flags & FLAG_ACTIVE) != 0)
+        OpenJPAException ce;
+        if (exceps.length == 1)
+            ce = new CallbackException(exceps[0]);
+        else 
+            ce = new CallbackException(_loc.get("callback-err")).
+                setNestedThrowables(exceps);
+        if ((mode & CALLBACK_ROLLBACK) != 0 && (_flags & FLAG_ACTIVE) != 0) {
+            ce.setFatal(true);
             setRollbackOnlyInternal();
+        }
         if ((mode & CALLBACK_LOG) != 0 && _log.isWarnEnabled())
-            _log.warn(ke);
+            _log.warn(ce);
         if ((mode & CALLBACK_RETHROW) != 0)
-            throw ke;
+            throw ce;
     }
 
     public void addTransactionListener(Object tl) {
