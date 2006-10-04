@@ -9,6 +9,7 @@ package sun.misc;
  *
  * @author Dawid Kurzyniec
  * @version 1.0
+ * @nojavadoc
  */
 public final class Perf {
 
