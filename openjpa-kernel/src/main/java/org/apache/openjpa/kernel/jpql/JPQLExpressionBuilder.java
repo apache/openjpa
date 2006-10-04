@@ -313,16 +313,6 @@ class JPQLExpressionBuilder
             Value proj = getValue(node);
             exps.projections[i] = proj;
             exps.projectionAliases[i] = nextAlias();
-
-            // projections along PCs in JPQL imply inner join semantics:
-            // e.g. "select x.y.z.someField from Entity x" implies
-            // "where y is not null and z is not null"
-            if (proj instanceof Path && node.id == JJTPATH) {
-                Path path = getPCPath(node);
-                if (path.last() != null
-                    && path.last().getDeclaredTypeMetaData() != null)
-                    exp = addJoin(path, null, true, exp);
-            }
         }
         return exp;
     }
