@@ -1794,7 +1794,9 @@ public class BrokerImpl
             _flags &= ~FLAG_FLUSHED;
             _flags &= ~FLAG_TRANS_ENDING;
 
-            if (_transEventManager.hasEndListeners()) {
+            // event manager nulled if freed broker
+            if (_transEventManager != null 
+                && _transEventManager.hasEndListeners()) {
                 fireTransactionEvent(new TransactionEvent(this,
                     status == Status.STATUS_COMMITTED
                         ? TransactionEvent.AFTER_COMMIT_COMPLETE
@@ -4021,10 +4023,7 @@ public class BrokerImpl
             _extents = null;
         }
 
-        try {
-            releaseConnection();
-        } catch (RuntimeException re) {
-        }
+        try { releaseConnection(); } catch (RuntimeException re) {}
 
         _lm.close();
         _store.close();

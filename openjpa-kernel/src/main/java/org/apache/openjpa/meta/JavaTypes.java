@@ -287,7 +287,7 @@ public class JavaTypes {
                 // no break
             case DOUBLE:
                 if (val instanceof String)
-                    new Double(val.toString());
+                    return new Double(val.toString());
                 return val;
             case FLOAT_OBJ:
                 if (val instanceof Float)
@@ -297,7 +297,7 @@ public class JavaTypes {
                 // no break
             case FLOAT:
                 if (val instanceof String)
-                    new Float(val.toString());
+                    return new Float(val.toString());
                 return val;
             case INT_OBJ:
                 if (val instanceof Integer)
@@ -307,7 +307,7 @@ public class JavaTypes {
                 // no break
             case INT:
                 if (val instanceof String)
-                    new Integer(val.toString());
+                    return new Integer(val.toString());
                 return val;
             case LONG_OBJ:
                 if (val instanceof Long)
@@ -317,7 +317,7 @@ public class JavaTypes {
                 // no break
             case LONG:
                 if (val instanceof String)
-                    new Long(val.toString());
+                    return new Long(val.toString());
                 return val;
             case NUMBER:
                 if (val instanceof Number)
@@ -333,7 +333,7 @@ public class JavaTypes {
                 // no break
             case SHORT:
                 if (val instanceof String)
-                    new Short(val.toString());
+                    return new Short(val.toString());
                 return val;
             case STRING:
                 return val.toString();
