@@ -35,6 +35,7 @@ import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
@@ -341,7 +342,7 @@ public class HandlerFieldStrategy
         Column col, Object autoInc) {
         Object data;
         if (_cols.length == 1)
-            data = autoInc;
+            data = JavaTypes.convert(autoInc, col.getJavaType());
         else {
             // multiple columns; have to get current value, replace this col's
             // value with the given one, and reset
@@ -351,7 +352,8 @@ public class HandlerFieldStrategy
                 data = new Object[_cols.length];
             for (int i = 0; i < _cols.length; i++) {
                 if (_cols[i] == col) {
-                    ((Object[]) data)[i] = autoInc;
+                    ((Object[]) data)[i] = JavaTypes.convert(autoInc, 
+                        col.getJavaType());
                     break;
                 }
             }
