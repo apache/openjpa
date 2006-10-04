@@ -861,7 +861,7 @@ represents the UUID as a 32-character hexadecimal string.
                 </itemizedlist>
                 <para>
 These string constants are defined in
-<ulink url="../apidocs/org/apache/openjpa/persistence/Generator.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/Generator.html">
 <classname>org.apache.openjpa.persistence.Generator</classname></ulink>.
                 </para>
             </note>

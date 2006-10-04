@@ -73,7 +73,7 @@ In JPA, objects detach automatically when they are serialized or when a
 <link linkend="jpa_overview_emfactory_perscontext">persistence context</link>
 ends. The specification does not define any way to explicitly detach objects.
 The extended
-<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>OpenJPAEntityManager</classname></ulink>, however, allows you to
 explicitly detach objects at any time.
             </para>
@@ -111,7 +111,7 @@ your objects. Setting the <literal>RollbackOnly</literal> flag prevents OpenJPA
 from flushing when detaching dirty objects; instead OpenJPA just runs its
 pre-flush actions (see the <methodname>OpenJPAEntityManager.preFlush
 </methodname>
-<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 Javadoc</ulink> for details).
             </para>
             <para>
@@ -320,7 +320,7 @@ use detached state managers, as determined by the settings above.
             <para>
 You can also alter the set of fields that will be included in the detached graph
 at runtime.
-<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>OpenJPAEntityManager</classname></ulink>s expose the following APIs
 for controlling detached state:
             </para>
@@ -433,7 +433,7 @@ To enable remote events, you must configure the <classname> EntityManagerFactory
         <para>
 When a <literal>RemoteCommitProvider</literal> is properly configured, you can
 register
-<ulink url="../apidocs/org/apache/openjpa/event/RemoteCommitListener.html">
+<ulink url="../javadoc/org/apache/openjpa/event/RemoteCommitListener.html">
 <classname>RemoteCommitListener</classname></ulink>s that will be alerted with
 a list of modified object ids whenever a transaction on a remote machine
 successfully commits.
@@ -678,10 +678,10 @@ provider, we modify the previous example as follows:
             <para>
 You can develop additional mechanisms for remote event notification be by
 creating an implementation of the
-<ulink url="../apidocs/org/apache/openjpa/event/RemoteCommitProvider.html">
+<ulink url="../javadoc/org/apache/openjpa/event/RemoteCommitProvider.html">
 <classname> RemoteCommitProvider</classname></ulink> interface, possibly by
 extending the
-<ulink url="../apidocs/org/apache/openjpa/event/AbstractRemoteCommitProvider.html">
+<ulink url="../javadoc/org/apache/openjpa/event/AbstractRemoteCommitProvider.html">
 <classname>AbstractRemoteCommitProvider</classname></ulink> abstract class..
             </para>
         </section>
