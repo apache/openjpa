@@ -21,6 +21,7 @@ import javax.resource.cci.LocalTransaction;
 import javax.transaction.Synchronization;
 
 import org.apache.openjpa.ee.ManagedRuntime;
+import org.apache.openjpa.event.CallbackModes;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -40,7 +41,7 @@ public interface Broker
     extends Synchronization, Connection, LocalTransaction,
     javax.resource.spi.LocalTransaction, Closeable, StoreContext,
     ConnectionRetainModes, DetachState, LockLevels,
-    RestoreState, AutoClear, AutoDetach {
+    RestoreState, AutoClear, AutoDetach, CallbackModes {
 
     /**
      * Set the broker's behavior for implicit actions such as flushing,
@@ -241,6 +242,18 @@ public interface Broker
     public void removeTransactionListener(Object listener);
 
     /**
+     * The callback mode for handling exceptions from transaction event
+     * listeners.
+     */
+    public int getTransactionListenerCallbackMode();
+
+    /**
+     * The callback mode for handling exceptions from transaction event
+     * listeners.
+     */
+    public void setTransactionListenerCallbackMode(int mode);
+
+    /**
      * Register a listener for lifecycle-related events on the specified
      * classes. If the classes are null, all events will be propagated to
      * the listener.
@@ -260,6 +273,16 @@ public interface Broker
      * Return the lifecycle event manager associated with the broker.
      */
     public LifecycleEventManager getLifecycleEventManager();
+
+    /**
+     * The callback mode for handling exceptions from lifecycle event listeners.
+     */
+    public int getLifecycleListenerCallbackMode();
+
+    /**
+     * The callback mode for handling exceptions from lifecycle event listeners.
+     */
+    public void setLifecycleListenerCallbackMode(int mode);
 
     /**
      * Begin a transaction.

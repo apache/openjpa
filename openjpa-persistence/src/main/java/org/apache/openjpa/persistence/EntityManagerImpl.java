@@ -283,12 +283,28 @@ public class EntityManagerImpl
         _broker.removeTransactionListener(listener);
     }
 
+    public int getTransactionListenerCallbackMode() {
+        return _broker.getTransactionListenerCallbackMode();
+    }
+
+    public void setTransactionListenerCallbackMode(int mode) {
+        _broker.setTransactionListenerCallbackMode(mode);
+    }
+
     public void addLifecycleListener(Object listener, Class... classes) {
         _broker.addLifecycleListener(listener, classes);
     }
 
     public void removeLifecycleListener(Object listener) {
         _broker.removeLifecycleListener(listener);
+    }
+
+    public int getLifecycleListenerCallbackMode() {
+        return _broker.getLifecycleListenerCallbackMode();
+    }
+
+    public void setLifecycleListenerCallbackMode(int mode) {
+        _broker.setLifecycleListenerCallbackMode(mode);
     }
 
     @SuppressWarnings("unchecked")

@@ -37,12 +37,27 @@ public abstract class AbstractConcurrentEventManager implements EventManager {
     private static Exception[] EMPTY_EXCEPTIONS = new Exception[0];
 
     private final Collection _listeners;
+    private boolean _failFast = false;
 
     /**
      * Default constructor.
      */
     public AbstractConcurrentEventManager() {
         _listeners = newListenerCollection();
+    }
+
+    /**
+     * Whether to fail after the first exception thrown by any listener.
+     */
+    public boolean isFailFast() {
+        return _failFast;
+    }
+
+    /**
+     * Whether to fail after the first exception thrown by any listener.
+     */
+    public void setFailFast(boolean failFast) {
+        _failFast = failFast;
     }
 
     /**
@@ -93,6 +108,8 @@ public abstract class AbstractConcurrentEventManager implements EventManager {
             try {
                 fireEvent(event, itr.next());
             } catch (Exception e) {
+                if (_failFast)
+                    return new Exception[] { e };
                 if (exceptions == null)
                     exceptions = new LinkedList();
                 exceptions.add(e);
