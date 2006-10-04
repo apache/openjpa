@@ -666,7 +666,8 @@ public class RowImpl
         if (_action == ACTION_INSERT) {
             if (col.isAutoAssigned())
                 return;
-            if (!overrideDefault && col.getDefaultString() != null)
+            if (!overrideDefault && val == null 
+                && col.getDefaultString() != null)
                 return;
         }
         if (val == null && col.isNotNull())
