@@ -396,7 +396,7 @@ persistent objects for you through a surrogate key in the database.
         <para>
 You can control how your JPA datastore identity value is generated through
 OpenJPA's
-<ulink url="../apidocs/org/apache/openjpa/persistence/DataStoreId.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/DataStoreId.html">
 <classname>org.apache.openjpa.persistence.DataStoreId</classname></ulink> class
 annotation. This annotation has <literal>strategy</literal> and <literal>
 generator</literal> properties that mirror the same-named properties on the
@@ -438,7 +438,7 @@ public class LineItem {
             </indexterm>
             <para>
 Internally, OpenJPA uses the public
-<ulink url="../apidocs/org/apache/openjpa/util/Id.html"><classname>
+<ulink url="../javadoc/org/apache/openjpa/util/Id.html"><classname>
 org.apache.openjpa.util.Id</classname></ulink> class for datastore identity
 objects. When writing OpenJPA plugins, you can manipulate datastore identity
 objects by casting them to this class. You can also create your own <classname>
@@ -499,7 +499,7 @@ class code, you can set the <literal>@IdClass</literal> annotation.
             </para>
             <para>
 The application identity tool can be invoked via its Java class,
-<ulink url="../apidocs/org/apache/openjpa/enhance/ApplicationIdTool">
+<ulink url="../javadoc/org/apache/openjpa/enhance/ApplicationIdTool">
 <classname>org.apache.openjpa.enhance.ApplicationIdTool</classname></ulink>.
             </para>
             <note>
@@ -673,7 +673,7 @@ relations that also share datastore storage in JPA.
         </para>
         <para>
 OpenJPA also allows you to define purely logical bidirectional relations.  The
-<ulink url="../apidocs/org/apache/openjpa/persistence/InverseLogical.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/InverseLogical.html">
 <classname>org.apache.openjpa.persistence.InverseLogical</classname></ulink>
 annotation names a logical inverse in JPA metadata.
         </para>
@@ -1015,7 +1015,7 @@ collection and map methods, and to update the field's database record on commit.
                 </para>
                 <para>
 In order to use large result set proxies in JPA, add the
-<ulink url="../apidocs/org/apache/openjpa/persistence/LRS.html"><classname>
+<ulink url="../javadoc/org/apache/openjpa/persistence/LRS.html"><classname>
 org.apache.openjpa.persistence.LRS</classname></ulink> annotation to the
 persistent field.
                 </para>
@@ -1090,7 +1090,7 @@ public class Company {
                 </indexterm>
                 <para>
 OpenJPA manages proxies through the
-<ulink url="../apidocs/org/apache/openjpa/util/ProxyManager.html"><classname>
+<ulink url="../javadoc/org/apache/openjpa/util/ProxyManager.html"><classname>
 org.apache.openjpa.util.ProxyManager</classname></ulink> interface. OpenJPA
 includes a default proxy manager, the <classname>
 org.apache.openjpa.util.ProxyManagerImpl</classname> (with a plugin alias name
@@ -1109,7 +1109,7 @@ default proxy manager understands the following configuration properties:
                 <para>
 For custom behavior, OpenJPA allows you to define your own proxy classes, and
 your own proxy manager. See the <literal>openjpa.util</literal> package
-<ulink url="../apidocs/">Javadoc</ulink> for details on the interfaces involved,
+<ulink url="../javadoc/">Javadoc</ulink> for details on the interfaces involved,
 and the utility classes OpenJPA provides to assist you.
                 </para>
                 <para>
@@ -1166,14 +1166,14 @@ JPA cannot have externalizers.
             </note>
             <para>
 The OpenJPA
-<ulink url="../apidocs/org/apache/openjpa/persistence/Externalizer.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/Externalizer.html">
 <classname>org.apache.openjpa.persistence.Externalizer</classname></ulink>
 annotation sets the name of a method that will be invoked to convert
 the field into its external form for database storage. You can specify either
 the name of a non-static method, which will be invoked on the field value, or a
 static method, which will be invoked with the field value as a parameter. Each
 method can also take an optional
-<ulink url="../apidocs/org/apache/openjpa/kernel/StoreContext.html"><classname>
+<ulink url="../javadoc/org/apache/openjpa/kernel/StoreContext.html"><classname>
 StoreContext</classname></ulink> parameter for access to a persistence context.
 The return value of the method is the field's external form. By default, OpenJPA
 assumes that all named methods belong to the field value's class (or its
@@ -1258,13 +1258,13 @@ public static String AnyClass.toString(CustomType ct, StoreContext ctx)
             </table>
             <para>
 The OpenJPA
-<ulink url="../apidocs/org/apache/openjpa/persistence/Factory.html"><classname>
+<ulink url="../javadoc/org/apache/openjpa/persistence/Factory.html"><classname>
 org.apache.openjpa.persistence.Factory</classname></ulink> annotation
 contains the name of a method that will be invoked to instantiate the field from
 the external form stored in the database. Specify a static method name. The
 method will will be invoked with the externalized value and must return an
 instance of the field type. The method can also take an optional
-<ulink url="../apidocs/org/apache/openjpa/kernel/StoreContext.html"><classname>
+<ulink url="../javadoc/org/apache/openjpa/kernel/StoreContext.html"><classname>
 StoreContext</classname></ulink> parameter for access to a persistence context.
 If a factory is not specified, OpenJPA will use the constructor of the field
 type that takes a single argument of the external type, or will throw an
@@ -1366,7 +1366,7 @@ If your custom field type is mutable and is not a standard collection, map, or
 date class, OpenJPA will not be able to detect changes to the field. You must
 mark the field dirty manually, or create a custom field proxy.
 See
-<ulink url="../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <methodname>OpenJPAEntityManager.dirty</methodname></ulink> for how to mark a
 field dirty manually in JPA.
 See <xref linkend="ref_guide_pc_scos_proxy"/> for a discussion of proxies.
@@ -1498,7 +1498,7 @@ primitive wrappers, and Strings), to other pre-defined simple values.
                 </para>
                 <para>
 Use the OpenJPA
-<ulink url="../apidocs/org/apache/openjpa/persistence/ExternalValues.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/ExternalValues.html">
 <classname>org.apache.openjpa.persistence.ExternalValues</classname></ulink>
 annotation to define external value translations. The values are
 defined in a format similar to that of <link linkend="ref_guide_conf_plugins">
@@ -1510,7 +1510,7 @@ true=T,false=F</literal>.
                 </para>
                 <para>
 If the type of the datastore value is different from the field's type, use the
-<ulink url="../apidocs/org/apache/openjpa/persistence/Type.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/Type.html">
 <classname>org.apache.openjpa.persistence.Type</classname></ulink> annotation
 to define the datastore type.
                 </para>
@@ -1572,11 +1572,11 @@ active fetch groups when loading objects from the datastore.
             </para>
             <para>
 You create fetch groups with the
-<ulink url="../apidocs/org/apache/openjpa/persistence/FetchGroup.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/FetchGroup.html">
 <classname>org.apache.openjpa.persistence.FetchGroup</classname></ulink>
 annotation. If your class only has one custom fetch group, you can place this
 annotation directly on the class declaration. Otherwise, use the
-<ulink url="../apidocs/org/apache/openjpa/persistence/FetchGroups.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/FetchGroups.html">
 <classname>org.apache.openjpa.persistence.FetchGroups</classname></ulink>
 annotation to declare an array of individual <classname>FetchGroup</classname>
 values. The <classname>FetchGroup</classname> annotation has the following
@@ -1615,7 +1615,7 @@ include in this group.
             </itemizedlist>
             <para>
 As you might expect, listing a
-<ulink url="../apidocs/org/apache/openjpa/persistence/FetchAttribute.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/FetchAttribute.html">
 <classname>org.apache.openjpa.persistence.FetchAttribute</classname></ulink>
 within a <classname>FetchGroup</classname> includes the corresponding persistent
 field or property in the fetch group. Each <classname>FetchAttribute</classname>
@@ -1681,7 +1681,7 @@ accessed.
             </para>
             <para>
 Use OpenJPA's
-<ulink url="../apidocs/org/apache/openjpa/persistence/LoadFetchGroup.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/LoadFetchGroup.html">
 <classname>org.apache.openjpa.persistence.LoadFetchGroup</classname></ulink>
 annotation to specify the load fetch group of any persistent field. The value of
 the annotation is the name of a declared fetch group whose members should be
@@ -1759,7 +1759,7 @@ the fetch depth to something less than the configured maximum.
 OpenJPA's <classname>OpenJPAEntityManager</classname> and <classname>
 OpenJPAQuery</classname> extensions to the standard <classname>EntityManager
 </classname> and <classname>Query</classname> interfaces provide access to a
-<ulink url="../apidocs/org/apache/openjpa/persistence/FetchPlan.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/FetchPlan.html">
 <classname>org.apache.openjpa.persistence.FetchPlan</classname></ulink> object.
 The <classname>FetchPlan</classname> maintains the set of active fetch groups 
 and the maximum fetch depth. It begins with the groups and depth defined in the

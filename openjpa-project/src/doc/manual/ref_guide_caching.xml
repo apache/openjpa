@@ -198,7 +198,7 @@ public class Employee {
 </programlisting>
             </example>
             <para>
-See the <ulink url="../apidocs/org/apache/openjpa/persistence/DataCache.html">
+See the <ulink url="../javadoc/org/apache/openjpa/persistence/DataCache.html">
 <classname>org.apache.openjpa.persistence.DataCache</classname></ulink> Javadoc
 for more information on the <classname>DataCache</classname> annotation.
             </para>
@@ -261,7 +261,7 @@ true(EvictionSchedule='15,45 15 * * 1')
             <para>
 The <literal>org.apache.openjpa.datacache</literal> package defines OpenJPA's
 data caching framework. While you may use this framework directly (see its
-<ulink url="../apidocs/org/apache/openjpa/datacache/package-summary.html">
+<ulink url="../javadoc/org/apache/openjpa/datacache/package-summary.html">
 Javadoc</ulink> for details), its APIs are meant primarily for service
 providers. In fact, <xref linkend="ref_guide_cache_extension"/> below has
 tips on how to use this package to extend OpenJPA's caching service yourself.
@@ -270,7 +270,7 @@ tips on how to use this package to extend OpenJPA's caching service yourself.
 Rather than use the low-level <literal>org.apache.openjpa.datacache</literal>
 package APIs, JPA users should typically access the data cache through OpenJPA's
 high-level 
-<ulink url="../apidocs/org/apache/openjpa/persistence/StoreCache.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/StoreCache.html">
 <classname>org.apache.openjpa.persistence.StoreCache</classname></ulink> facade.
 This facade has methods to pin and unpin records, evict data from the cache, and
 more.
@@ -347,7 +347,7 @@ cache.evict(Magazine.class, changedMag.getId());
             </example>
             <para>
 See the <classname>StoreCache</classname>
-<ulink url="../apidocs/org/apache/openjpa/persistence/StoreCache.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/StoreCache.html">
 Javadoc</ulink> for information on additional functionality it provides. Also,
 <xref linkend="ref_guide_runtime"/> discusses OpenJPA's other extensions
 to the standard set of JPA runtime interfaces.
@@ -411,7 +411,7 @@ execution time is fully traversed.
             </para>
             <para>
 OpenJPA exposes a high-level interface to the query cache through the
-<ulink url="../apidocs/org/apache/openjpa/persistence/QueryResultCache.html">
+<ulink url="../javadoc/org/apache/openjpa/persistence/QueryResultCache.html">
 <classname>org.apache.openjpa.persistence.QueryResultCache</classname></ulink> 
 class. You can access this class through the <classname>
 OpenJPAEntityManagerFactory</classname>.
