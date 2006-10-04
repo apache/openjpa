@@ -24,6 +24,8 @@ import java.util.Set;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PCDataGenerator;
 import org.apache.openjpa.kernel.AbstractPCData;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -72,14 +74,15 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
     protected void decorate(BCClass bc, ClassMetaData meta) {
         enhanceToData(bc);
         enhanceToNestedData(bc);
-        replaceToEmbeddedData(bc);
+        replaceNewEmbeddedPCData(bc);
         addSynchronization(bc);
         addTimeout(bc);
     }
 
     private void enhanceToData(BCClass bc) {
         BCMethod meth = bc.declareMethod("toData", Object.class,
-            new Class []{ FieldMetaData.class, Object.class });
+            new Class []{ FieldMetaData.class, Object.class, 
+            StoreContext.class });
         Code code = meth.getCode(true);
         // if (fmd.isLRS ()))
         // 		return NULL;
@@ -89,12 +92,14 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
         JumpInstruction ifins = code.ifeq();
         code.getstatic().setField(AbstractPCData.class, "NULL", Object.class);
         code.areturn();
-        // super.toData (fmd, val);
+        // super.toData (fmd, val, ctx);
         ifins.setTarget(code.aload().setThis());
         code.aload().setParam(0);
         code.aload().setParam(1);
+        code.aload().setParam(2);
         code.invokespecial().setMethod(AbstractPCData.class, "toData",
-            Object.class, new Class[]{ FieldMetaData.class, Object.class });
+            Object.class, new Class[]{ FieldMetaData.class, Object.class,
+            StoreContext.class });
         code.areturn();
         code.calculateMaxStack();
         code.calculateMaxLocals();
@@ -102,7 +107,8 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
 
     private void enhanceToNestedData(BCClass bc) {
         BCMethod meth = bc.declareMethod("toNestedData", Object.class,
-            new Class []{ ValueMetaData.class, Object.class });
+            new Class []{ ValueMetaData.class, Object.class, 
+            StoreContext.class });
         Code code = meth.getCode(true);
 
         // if (val == null)
@@ -122,7 +128,7 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
         // if (type != JavaTypes.COLLECTION &&
         // 	   type != JavaTypes.MAP &&
         // 	   type != JavaTypes.ARRAY)
-        // 	   return super.toNestedData (type, val, embedded);
+        // 	   return super.toNestedData(type, val, ctx);
         // 	else
         // 		return NULL;
         Collection jumps = new ArrayList(3);
@@ -138,8 +144,10 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
         code.aload().setThis();
         code.aload().setParam(0);
         code.aload().setParam(1);
+        code.aload().setParam(2);
         code.invokespecial().setMethod(AbstractPCData.class, "toNestedData",
-            Object.class, new Class[]{ ValueMetaData.class, Object.class });
+            Object.class, new Class[]{ ValueMetaData.class, Object.class,
+            StoreContext.class });
         code.areturn();
         setTarget(code.getstatic().setField
             (AbstractPCData.class, "NULL", Object.class), jumps);
@@ -148,12 +156,24 @@ public class DataCachePCDataGenerator extends PCDataGenerator {
         code.calculateMaxLocals();
     }
 
-    private void replaceToEmbeddedData(BCClass bc) {
-        BCMethod meth = bc.declareMethod("toEmbeddedData", Object.class,
-            new Class[]{ Object.class });
+    private void replaceNewEmbeddedPCData(BCClass bc) {
+        BCMethod meth = bc.declareMethod("newEmbeddedPCData", 
+            AbstractPCData.class, new Class[]{ OpenJPAStateManager.class });
         Code code = meth.getCode(true);
-        code.getstatic().setField(AbstractPCData.class, "NULL", Object.class);
+
+        // return new DataCachePCDataImpl(sm.getObjectId(), sm.getMetaData());
+        code.anew().setType(DataCachePCDataImpl.class);
+        code.dup();
+        code.aload().setParam(0);
+        code.invokeinterface().setMethod(OpenJPAStateManager.class, "getId", 
+            Object.class, null);
+        code.aload().setParam(0);
+        code.invokeinterface().setMethod(OpenJPAStateManager.class, 
+            "getMetaData", ClassMetaData.class, null);
+        code.invokespecial().setMethod(DataCachePCDataImpl.class, "<init>",
+            void.class, new Class[] { Object.class, ClassMetaData.class });
         code.areturn();
+
         code.calculateMaxLocals();
         code.calculateMaxStack();
     }

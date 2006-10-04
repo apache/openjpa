@@ -18,6 +18,7 @@ package org.apache.openjpa.datacache;
 import java.util.BitSet;
 
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.AbstractPCData;
 import org.apache.openjpa.kernel.PCData;
 import org.apache.openjpa.kernel.PCDataImpl;
 import org.apache.openjpa.kernel.StoreContext;
@@ -138,8 +139,7 @@ public class DataCachePCDataImpl
         }
     }
 
-    protected Object toEmbeddedData(Object val) {
-        // don't try to cache embedded pcs until we do some testing
-        return NULL;
+    public AbstractPCData newEmbeddedPCData(OpenJPAStateManager sm) {
+        return new DataCachePCDataImpl(sm.getId(), sm.getMetaData());
     }
 }
