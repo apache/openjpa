@@ -392,8 +392,10 @@ public class RelationFieldStrategy
      */
     private Joins eagerJoin(Joins joins, ClassMapping cls, boolean forceInner) {
         boolean inverse = field.getJoinDirection() == field.JOIN_INVERSE;
-        if (!inverse)
+        if (!inverse) {
             joins = join(joins, false);
+            joins = setEmbeddedVariable(joins);
+        }
 
         // and join into relation
         ForeignKey fk = field.getForeignKey(cls);
@@ -402,6 +404,17 @@ public class RelationFieldStrategy
                 getTypeMapping(), field.getSelectSubclasses(), inverse, false);
         return joins.joinRelation(field.getName(), fk, field.getTypeMapping(), 
             field.getSelectSubclasses(), inverse, false);
+    }
+
+    /**
+     * If joining from an embedded owner, use variable to create a unique
+     * alias in case owner contains other same-typed embedded relations.
+     */
+    private Joins setEmbeddedVariable(Joins joins) {
+        if (field.getDefiningMetaData().getEmbeddingMetaData() == null)
+            return joins;
+        return joins.setVariable(field.getDefiningMetaData().
+            getEmbeddingMetaData().getFieldMetaData().getName());
     }
 
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
@@ -662,6 +675,8 @@ public class RelationFieldStrategy
                 throw RelationStrategies.unjoinable(field);
             return joins;
         }
+
+        joins = setEmbeddedVariable(joins);
         if (forceOuter)
             return joins.outerJoinRelation(field.getName(), 
                 field.getForeignKey(clss[0]), clss[0], 
