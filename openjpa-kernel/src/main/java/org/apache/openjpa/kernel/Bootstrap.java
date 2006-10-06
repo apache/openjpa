@@ -60,10 +60,10 @@ public class Bootstrap {
             if (cause instanceof OpenJPAException)
                 throw (OpenJPAException) cause;
             throw new InternalException(s_loc.get("new-brokerfactory-excep",
-                getFactoryClass(conf, loader)), cause);
+                getFactoryClassName(conf, loader)), cause);
         } catch (Exception e) {
             throw new UserException(s_loc.get("bad-new-brokerfactory",
-                getFactoryClass(conf, loader)), e).setFatal(true);
+                getFactoryClassName(conf, loader)), e).setFatal(true);
         }
     }
 
@@ -88,10 +88,10 @@ public class Bootstrap {
             if (cause instanceof OpenJPAException)
                 throw (OpenJPAException) cause;
             throw new InternalException(s_loc.get("brokerfactory-excep",
-                getFactoryClass(conf, loader)), cause);
+                getFactoryClassName(conf, loader)), cause);
         } catch (Exception e) {
             throw new UserException(s_loc.get("bad-brokerfactory",
-                getFactoryClass(conf, loader)), e).setFatal(true);
+                getFactoryClassName(conf, loader)), e).setFatal(true);
         }
     }
 
@@ -115,6 +115,15 @@ public class Bootstrap {
         }
 
         return (BrokerFactory) meth.invoke(null, new Object[]{ conf });
+    }
+
+    private static String getFactoryClassName(ConfigurationProvider conf,
+        ClassLoader loader) {
+        try {
+            return getFactoryClass(conf, loader).getName();
+        } catch (Exception e) {
+            return "<" + e.toString() + ">";
+        }
     }
 
     /**
