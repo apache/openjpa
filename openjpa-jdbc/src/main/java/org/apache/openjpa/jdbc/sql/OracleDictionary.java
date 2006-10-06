@@ -536,8 +536,16 @@ public class OracleDictionary
 
     public Timestamp getTimestamp(ResultSet rs, int column, Calendar cal)
         throws SQLException {
-        if (cal == null)
-            return super.getTimestamp(rs, column, cal);
+        if (cal == null) {
+            try {
+                return super.getTimestamp(rs, column, cal);
+            } catch (ArrayIndexOutOfBoundsException ae) {
+                // CR295604: issue a warning this this bug can be gotten
+                // around with SupportsTimestampNanos=false
+                log.warn(_loc.get("oracle-timestamp-bug"), ae);
+                throw ae;
+            }
+        }
 
         // handle Oracle bug where nanos not returned from call with Calendar
         // parameter
