@@ -119,6 +119,7 @@ public class DBDictionary
     protected static final int RANGE_POST_SELECT = 0;
     protected static final int RANGE_PRE_DISTINCT = 1;
     protected static final int RANGE_POST_DISTINCT = 2;
+    protected static final int RANGE_POST_LOCK = 3;
 
     protected static final int NANO = 1;
     protected static final int MICRO = NANO * 1000;
@@ -2142,6 +2143,8 @@ public class DBDictionary
             if (forUpdateClause != null)
                 buf.append(" ").append(forUpdateClause);
         }
+        if (range && rangePosition == RANGE_POST_LOCK)
+            appendSelectRange(buf, start, end);
         return buf;
     }
 
