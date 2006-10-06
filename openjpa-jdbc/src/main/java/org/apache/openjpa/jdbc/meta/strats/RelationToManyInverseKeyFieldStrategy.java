@@ -216,23 +216,32 @@ public abstract class RelationToManyInverseKeyFieldStrategy
 
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.getMappedBy() != null
-            || field.getElementMapping().getUseClassCriteria())
+        if (field.getMappedBy() != null)
             return;
 
+        // if nullable, null any existing inverse columns that refer to this obj
         ValueMapping elem = field.getElementMapping();
         ColumnIO io = elem.getColumnIO();
         ForeignKey fk = elem.getForeignKey();
-        if (!io.isAnyUpdatable(fk, true)) 
+        if (!elem.getUseClassCriteria() && io.isAnyUpdatable(fk, true)) { 
+            assertInversable();
+            Row row = rm.getAllRows(fk.getTable(), Row.ACTION_UPDATE);
+            row.setForeignKey(fk, io, null);
+            row.whereForeignKey(fk, sm);
+            rm.flushAllRows(row);
+            return;
+        }
+
+        if (!sm.getLoaded().get(field.getIndex()))
             return;
 
-        // if the fk doesn't enforce it, null any existing inverse columns 
-        // that refer to this obj
-        assertInversable();
-        Row row = rm.getAllRows(fk.getTable(), Row.ACTION_UPDATE);
-        row.setForeignKey(fk, io, null);
-        row.whereForeignKey(fk, sm);
-        rm.flushAllRows(row);
+        // update fk on each field value row
+        ClassMapping rel = field.getElementMapping().getTypeMapping();
+        StoreContext ctx = store.getContext();
+        Collection objs = toCollection(sm.fetchObject(field.getIndex()));
+        if (objs != null && !objs.isEmpty())
+            for (Iterator itr = objs.iterator(); itr.hasNext();)
+                updateInverse (ctx, itr.next(), rel, rm, sm, 0);
     }
 
     /**
@@ -244,7 +253,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         throws SQLException {
         OpenJPAStateManager invsm = RelationStrategies.getStateManager(inverse,
             ctx);
-        if (invsm == null || invsm.isDeleted())
+        if (invsm == null)
             return;
 
         ValueMapping elem = field.getElementMapping();
@@ -257,12 +266,21 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         boolean orderWriteable;
         if (invsm.isNew() && !invsm.isFlushed()) {
             // no need to null inverse columns of new instance
-            if (sm == null)
+            if (sm == null || sm.isDeleted())
                 return;
             writeable = io.isAnyInsertable(fk, false);
             orderWriteable = _orderInsert;
             action = Row.ACTION_INSERT;
+        } else if (invsm.isDeleted()) {
+            // no need to null inverse columns of deleted instance
+            if (invsm.isFlushed() || sm == null || !sm.isDeleted())
+                return;
+            writeable = true;
+            orderWriteable = false;
+            action = Row.ACTION_DELETE;
         } else {
+            if (sm != null && sm.isDeleted())
+                sm = null;
             writeable = io.isAnyUpdatable(fk, sm == null);
             orderWriteable = field.getOrderColumnIO().isUpdatable
                 (order, sm == null);

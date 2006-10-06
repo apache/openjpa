@@ -390,10 +390,11 @@ public class PCEnhancer {
             setter = _pc.getDeclaredMethod(getSetterName(fmds[i]),
                 new Class[]{ fmds[i].getDeclaredType() });
             if (setter == null) {
-                if (returned == null)
+                if (returned == null) {
                     addViolation("property-no-setter",
                         new Object[]{ fmds[i] }, true);
-                else {
+                    continue;
+                } else {
                     // create synthetic setter
                     setter = _pc.declareMethod(getSetterName(fmds[i]),
                         void.class, new Class[]{ fmds[i].getDeclaredType() });
@@ -419,10 +420,9 @@ public class PCEnhancer {
                     _backingFields.put(setter.getName(), assigned.getName());
 
                 if (assigned != returned)
-                    addViolation("property-setter-getter-mismatch",
-                        new Object[]{ fmds[i], assigned.getName(),
-                            (returned == null) ? null : returned.getName() },
-                        false);
+                    addViolation("property-setter-getter-mismatch", new Object[]
+                        { fmds[i], assigned.getName(), (returned == null) 
+                        ? null : returned.getName() }, false);
             }
         }
     }

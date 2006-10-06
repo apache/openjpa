@@ -194,7 +194,7 @@ public class DetachManager
      * needed. Return true if flushed/stored, false otherwise.
      */
     private static boolean flushDirty(StateManagerImpl sm) {
-        if (!sm.isDirty())
+        if (!sm.isDirty() || !sm.getBroker().isActive())
             return false;
 
         // only flush if there are actually any dirty non-flushed fields

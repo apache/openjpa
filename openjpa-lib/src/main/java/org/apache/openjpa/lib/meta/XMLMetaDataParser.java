@@ -332,7 +332,6 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         // even if we want to validate, specify that it won't happen
         // if we have neither a DocType not a Schema
         Object schemaSource = getSchemaSource();
-
         if (schemaSource != null && _schemaBug) {
             if (_log != null && _log.isInfoEnabled())
                 _log.info(_loc.get("parser-schema-bug"));

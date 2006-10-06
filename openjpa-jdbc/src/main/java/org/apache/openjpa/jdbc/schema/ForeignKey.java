@@ -203,7 +203,7 @@ public class ForeignKey
         seen.add(this);
         for (int i = 0; i < cols.length; i++) {
             for (int j = 0; j < fks.length; j++) {
-                if (fks[j].getPrimaryKeyColumn(cols[i]) == null)
+                if (!fks[j].containsColumn(cols[i]))
                     continue;
                 if (!seen.contains(fks[j])
                     && fks[j].isPrimaryKeyAutoAssigned(seen)) {

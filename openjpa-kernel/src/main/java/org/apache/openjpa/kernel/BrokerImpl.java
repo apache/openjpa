@@ -1928,8 +1928,7 @@ public class BrokerImpl
                 exceps = add(exceps,
                     newFlushException(_store.flush(transactional)));
             }
-        }
-        finally {
+        } finally {
             _flags &= ~FLAG_STORE_FLUSHING;
 
             if (reason == FLUSH_ROLLBACK)
@@ -1942,21 +1941,24 @@ public class BrokerImpl
                 StateManagerImpl sm;
                 for (Iterator itr = transactional.iterator(); itr.hasNext();) {
                     sm = (StateManagerImpl) itr.next();
+                    try {
+                        // the state may have become transient, such as if
+                        // it is embedded and the owner has been deleted during
+                        // this flush process; bug #1100
+                        if (sm.getPCState() == PCState.TRANSIENT)
+                            continue;
 
-                    // the state may have become transient, such as if
-                    // it is embedded and the owner has been deleted during
-                    // this flush process; bug #1100
-                    if (sm.getPCState() == PCState.TRANSIENT)
-                        continue;
-
-                    sm.afterFlush(reason);
-                    if (reason == FLUSH_INC) {
-                        // if not about to clear trans cache for commit anyway,
-                        // re-cache dirty objects with default soft refs; we
-                        // don't need hard refs now that the changes have been
-                        // flushed
-                        sm.proxyFields(true, false);
-                        _transCache.flushed(sm);
+                        sm.afterFlush(reason);
+                        if (reason == FLUSH_INC) {
+                            // if not about to clear trans cache for commit 
+                            // anyway, re-cache dirty objects with default soft
+                            // refs; we don't need hard refs now that the 
+                            // changes have been flushed
+                            sm.proxyFields(true, false);
+                            _transCache.flushed(sm);
+                        }
+                    } catch (Exception e) {
+                        exceps = add(exceps, e);
                     }
                 }
             }
