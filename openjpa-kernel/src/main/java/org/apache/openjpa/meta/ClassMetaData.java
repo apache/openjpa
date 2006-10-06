@@ -2327,7 +2327,8 @@ public class ClassMetaData
             FieldMetaData f2 = (FieldMetaData) o2;
             if (f1.getListingIndex() == f2.getListingIndex()) {
                 if (f1.getIndex() == f2.getIndex())
-                    return f1.getFullName ().compareTo (f2.getFullName ());
+                    return f1.getFullName(false).compareTo
+                        (f2.getFullName(false));
 				if (f1.getIndex () == -1)
 					return 1;
 				if (f2.getIndex () == -1)

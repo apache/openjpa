@@ -156,7 +156,7 @@ public class PropertiesReverseCustomizer
     }
 
     public void customize(FieldMapping field) {
-        String type = getProperty(field.getFullName() + ".type");
+        String type = getProperty(field.getFullName(false) + ".type");
         if (type != null)
             field.setDeclaredType(Strings.toClass(type, null));
     }
@@ -195,7 +195,7 @@ public class PropertiesReverseCustomizer
     }
 
     public String getInitialValue(FieldMapping field) {
-        return getProperty(field.getFullName() + ".value");
+        return getProperty(field.getFullName(false) + ".value");
     }
 
     public String getDeclaration(FieldMapping field) {

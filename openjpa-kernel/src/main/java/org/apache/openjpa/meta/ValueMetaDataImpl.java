@@ -316,7 +316,7 @@ public class ValueMetaDataImpl
     }
 
     public String toString() {
-        String ret = _owner.getFullName();
+        String ret = _owner.getFullName(true);
         if (this == _owner.getKey())
             return ret + "<key:" + _decType + ">";
         if (this == _owner.getElement()) {

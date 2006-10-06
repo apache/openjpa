@@ -179,17 +179,21 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         return new LoggingConnection(conn);
     }
 
+    /**
+     * Include SQL in exception.
+     */
     private SQLException wrap(SQLException sqle, Statement stmnt) {
         if (sqle instanceof ReportingSQLException)
             return (ReportingSQLException) sqle;
-
         return new ReportingSQLException(sqle, stmnt);
     }
 
+    /**
+     * Include SQL in exception.
+     */
     private SQLException wrap(SQLException sqle, String sql) {
         if (sqle instanceof ReportingSQLException)
             return (ReportingSQLException) sqle;
-
         return new ReportingSQLException(sqle, sql);
     }
 
@@ -202,6 +206,9 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         public void handleWarning(SQLWarning warning) throws SQLException;
     }
 
+    /**
+     * Logging connection.
+     */
     private class LoggingConnection extends DelegatingConnection {
 
         public LoggingConnection(Connection conn) throws SQLException {
@@ -242,7 +249,6 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
         public void commit() throws SQLException {
             long start = System.currentTimeMillis();
-
             try {
                 super.commit();
             } finally {
@@ -254,7 +260,6 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
         public void rollback() throws SQLException {
             long start = System.currentTimeMillis();
-
             try {
                 super.rollback();
             } finally {
@@ -266,7 +271,6 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
         public void close() throws SQLException {
             long start = System.currentTimeMillis();
-
             try {
                 super.close();
             } finally {
@@ -398,6 +402,22 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         }
 
         /**
+         * Log time elapsed since given start.
+         */
+        private void logTime(long startTime) throws SQLException {
+            if (_logs.isSQLEnabled())
+                _logs.logSQL("spent", startTime, this); 
+        }
+
+        /**
+         * Log time elapsed since given start.
+         */
+        private void logSQL(Statement stmnt) throws SQLException {
+            if (_logs.isSQLEnabled())
+                _logs.logSQL("executing " + stmnt, this); 
+        }
+
+        /**
          * Handle any {@link SQLWarning}s on the current {@link Connection}.
          *
          * @see #handleSQLWarning(SQLWarning)
@@ -451,7 +471,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
          *
          * @param warning the warning to handle
          */
-        void handleSQLWarning(SQLWarning warning) throws SQLException {
+        private void handleSQLWarning(SQLWarning warning) throws SQLException {
             if (warning == null)
                 return;
             if (_warningAction == WARN_IGNORE)
@@ -490,6 +510,9 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        /**
+         * Metadata wrapper that logs actions.
+         */
         private class LoggingDatabaseMetaData
             extends DelegatingDatabaseMetaData {
 
@@ -698,57 +721,49 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
             public void cancel() throws SQLException {
                 if (_logs.isJDBCEnabled())
-                    _logs.logJDBC("cancel " + this + ": " + _sql,
-                        LoggingConnection.this);
-
+                    _logs.logJDBC("cancel " + this, LoggingConnection.this);
                 super.cancel();
             }
 
             protected ResultSet executeQuery(String sql, boolean wrap)
                 throws SQLException {
-                long start = System.currentTimeMillis();
-
                 _sql = sql;
+                logSQL(this);
+                long start = System.currentTimeMillis();
                 try {
                     return super.executeQuery(sql, wrap);
                 } catch (SQLException se) {
                     throw wrap(se, LoggingStatement.this);
                 } finally {
-                    if (_logs.isSQLEnabled())
-                        _logs.logSQL("executing " + this, start,
-                            LoggingConnection.this);
+                    logTime(start);
                     handleSQLWarning(LoggingStatement.this);
                 }
             }
 
             public int executeUpdate(String sql) throws SQLException {
-                long start = System.currentTimeMillis();
-
                 _sql = sql;
+                logSQL(this);
+                long start = System.currentTimeMillis();
                 try {
                     return super.executeUpdate(sql);
                 } catch (SQLException se) {
                     throw wrap(se, LoggingStatement.this);
                 } finally {
-                    if (_logs.isSQLEnabled())
-                        _logs.logSQL("executing " + this, start,
-                            LoggingConnection.this);
+                    logTime(start);
                     handleSQLWarning(LoggingStatement.this);
                 }
             }
 
             public boolean execute(String sql) throws SQLException {
-                long start = System.currentTimeMillis();
-
                 _sql = sql;
+                logSQL(this);
+                long start = System.currentTimeMillis();
                 try {
                     return super.execute(sql);
                 } catch (SQLException se) {
                     throw wrap(se, LoggingStatement.this);
                 } finally {
-                    if (_logs.isSQLEnabled())
-                        _logs.logSQL("executing " + this, start,
-                            LoggingConnection.this);
+                    logTime(start);
                     handleSQLWarning(LoggingStatement.this);
                 }
             }
@@ -775,78 +790,78 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
             protected ResultSet executeQuery(String sql, boolean wrap)
                 throws SQLException {
+                logSQL(this);
                 long start = System.currentTimeMillis();
-
                 try {
                     return super.executeQuery(sql, wrap);
                 } catch (SQLException se) {
                     throw wrap(se, LoggingPreparedStatement.this);
                 } finally {
-                    log("executing", start);
+                    logTime(start);
                     clearLogParameters(true);
                     handleSQLWarning(LoggingPreparedStatement.this);
                 }
             }
 
             public int executeUpdate(String sql) throws SQLException {
+                logSQL(this);
                 long start = System.currentTimeMillis();
-
                 try {
                     return super.executeUpdate(sql);
                 } catch (SQLException se) {
                     throw wrap(se, LoggingPreparedStatement.this);
                 } finally {
-                    log("executing", start);
+                    logTime(start);
                     clearLogParameters(true);
                     handleSQLWarning(LoggingPreparedStatement.this);
                 }
             }
 
             public boolean execute(String sql) throws SQLException {
+                logSQL(this);
                 long start = System.currentTimeMillis();
-
                 try {
                     return super.execute(sql);
                 } catch (SQLException se) {
                     throw wrap(se, LoggingPreparedStatement.this);
                 } finally {
-                    log("executing", start);
+                    logTime(start);
                     clearLogParameters(true);
                     handleSQLWarning(LoggingPreparedStatement.this);
                 }
             }
 
             protected ResultSet executeQuery(boolean wrap) throws SQLException {
+                logSQL(this);
                 long start = System.currentTimeMillis();
-
                 try {
                     return super.executeQuery(wrap);
                 } catch (SQLException se) {
                     throw wrap(se, LoggingPreparedStatement.this);
                 } finally {
-                    log("executing", start);
+                    logTime(start);
                     clearLogParameters(true);
                     handleSQLWarning(LoggingPreparedStatement.this);
                 }
             }
 
             public int executeUpdate() throws SQLException {
+                logSQL(this);
                 long start = System.currentTimeMillis();
-
                 try {
                     return super.executeUpdate();
                 } catch (SQLException se) {
                     throw wrap(se, LoggingPreparedStatement.this);
                 } finally {
-                    log("executing", start);
+                    logTime(start);
                     clearLogParameters(true);
                     handleSQLWarning(LoggingPreparedStatement.this);
                 }
             }
 
             public int[] executeBatch() throws SQLException {
+                logSQL(this);
                 long start = System.currentTimeMillis();
-
                 try {
                     return super.executeBatch();
                 } catch (SQLException se) {
@@ -884,21 +899,21 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     }
                     throw wrap(se, LoggingPreparedStatement.this);
                 } finally {
-                    log("executing batch", start);
+                    logTime(start);
                     clearLogParameters(true);
                     handleSQLWarning(LoggingPreparedStatement.this);
                 }
             }
 
             public boolean execute() throws SQLException {
+                logSQL(this);
                 long start = System.currentTimeMillis();
-
                 try {
                     return super.execute();
                 } catch (SQLException se) {
                     throw wrap(se, LoggingPreparedStatement.this);
                 } finally {
-                    log("executing", start);
+                    logTime(start);
                     clearLogParameters(true);
                     handleSQLWarning(LoggingPreparedStatement.this);
                 }
@@ -1024,8 +1039,9 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             public void addBatch() throws SQLException {
+                if (_logs.isSQLEnabled())
+                    _logs.logSQL("batching " + this, LoggingConnection.this);
                 long start = System.currentTimeMillis();
-
                 try {
                     super.addBatch();
                     if (shouldTrackParameters()) {
@@ -1040,7 +1056,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     }
                 }
                 finally {
-                    log("batching", start);
+                    logTime(start);
                 }
             }
 
@@ -1124,12 +1140,6 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 super.appendInfo(buf);
             }
 
-            private void log(String msg, long startTime) throws SQLException {
-                if (_logs.isSQLEnabled())
-                    _logs.logSQL(msg + " " + this, startTime,
-                        LoggingConnection.this);
-            }
-
             private void clearLogParameters(boolean batch) {
                 if (_params != null)
                     _params.clear();
@@ -1192,6 +1202,9 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
+        /**
+         * Warning-handling result set.
+         */
         private class LoggingResultSet extends DelegatingResultSet {
 
             public LoggingResultSet(ResultSet rs, Statement stmnt) {

@@ -78,6 +78,13 @@ public class SimpleRegex {
                 if (!mobile && targetPos != target.length() - len)
                     return false;
 
+                // In anycase, the remaining length of the target must be
+                // at least as long as the remaining length of the expression.
+                // (We check now to avoid sending a negative start pos to
+                // indexOf)
+                if (target.length() < len)
+                    return false;
+
                 // Match the end of the target to the remainder of the
                 // expression
                 int match = indexOf(target, target.length() - len, exprPos,

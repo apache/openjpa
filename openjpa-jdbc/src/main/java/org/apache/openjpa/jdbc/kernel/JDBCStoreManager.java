@@ -931,7 +931,7 @@ public class JDBCStoreManager
                 && sel.eagerClone(fms[i], jtype, false, 1) != null)
                 continue;
 
-            boolean hasJoin = fetch.hasJoin(fms[i].getFullName());
+            boolean hasJoin = fetch.hasJoin(fms[i].getFullName(false));
 
             // if the field declares a preferred select mode of join or does not
             // have a preferred mode and we're doing a by-id lookup, try

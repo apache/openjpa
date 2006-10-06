@@ -928,15 +928,16 @@ mag.setPageCount(300);
 oem.setSavepoint("pages");
 
 mag.setPrice(mag.getPageCount() * pricePerPage);
-// we decide to release pages since price depends on pages.
+// we decide to release "pages"...
 oem.releaseSavepoint("pages");
+// ... and set a new savepoint which includes all changes
 oem.setSavepoint("price");
 
 mag.setPrice(testPrice);
-...
-
 // we determine the test price is not good
 oem.rollbackToSavepoint("price");
+// had we chosen to not release "pages", we might have rolled back to
+// "pages" instead
 
 // the price is now restored to mag.getPageCount() * pricePerPage
 oem.getTransaction().commit();
