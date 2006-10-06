@@ -577,8 +577,8 @@ public class PCDataGenerator
 
     private void addLoadWithFieldsMethod(BCClass bc, ClassMetaData meta) {
         Code code = addLoadMethod(bc, true);
-        // public void load(OpenJPAStateManager sm, FetchConfiguration fetch,
-        // 		BitSet fields, Object conn)
+        // public void load(OpenJPAStateManager sm, BitSet fields,
+        // 		FetchConfiguration fetch, Object conn)
         FieldMetaData[] fmds = meta.getFields();
         Collection jumps = new LinkedList();
         Collection jumps2;
@@ -621,6 +621,13 @@ public class PCDataGenerator
                 code.invokevirtual().setMethod("loadImplData", void.class,
                     new Class[]{ OpenJPAStateManager.class, int.class });
             }
+
+            // fields.clear(i);
+            code.aload().setParam(1);
+            code.constant().setValue(i);
+            code.invokevirtual().setMethod(BitSet.class, "clear", void.class,
+                new Class[] { int.class });
+
             jumps2.add(code.go2());
 
             if (intermediate)

@@ -57,6 +57,7 @@ public class TestSimpleRegex extends TestCase {
             "TThe .*brown.*dogg", false));
 
         assertFalse(matchExpr("Yo Hellow", ".*ello", false));
+        assertFalse(matchExpr("Hellow", ".*YoHello", false));
     }
 
     public static void main(String[] args) {
