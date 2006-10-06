@@ -80,7 +80,8 @@ public class ColumnIO {
      * Return true if any columns for the given key are insertable.
      */
     public boolean isAnyInsertable(ForeignKey fk, boolean nullValue) {
-        return isAny(fk, _unInsertable, _unNullInsertable, nullValue);
+        return isAny(fk, _unInsertable, _unNullInsertable, nullValue)
+            && (!nullValue || fk.isLogical() || isNullable(fk));
     }
 
     /**
@@ -101,7 +102,8 @@ public class ColumnIO {
      * Return true if all columns for the given key are insertable.
      */
     public boolean isAllInsertable(ForeignKey fk, boolean nullValue) {
-        return isAll(fk, _unInsertable, _unNullInsertable, nullValue);
+        return isAll(fk, _unInsertable, _unNullInsertable, nullValue)
+            && (!nullValue || fk.isLogical() || isNullable(fk));
     }
 
     /**
@@ -152,7 +154,8 @@ public class ColumnIO {
      * Return true if any columns for the given key are updatable.
      */
     public boolean isAnyUpdatable(ForeignKey fk, boolean nullValue) {
-        return isAny(fk, _unUpdatable, _unNullUpdatable, nullValue);
+        return isAny(fk, _unUpdatable, _unNullUpdatable, nullValue)
+            && (!nullValue || fk.isLogical() || isNullable(fk));
     }
 
     /**
@@ -173,7 +176,8 @@ public class ColumnIO {
      * Return true if all columns for the given key are updatable.
      */
     public boolean isAllUpdatable(ForeignKey fk, boolean nullValue) {
-        return isAll(fk, _unUpdatable, _unNullUpdatable, nullValue);
+        return isAll(fk, _unUpdatable, _unNullUpdatable, nullValue)
+            && (!nullValue || fk.isLogical() || isNullable(fk));
     }
 
     /**
@@ -283,5 +287,16 @@ public class ColumnIO {
         if (is)
             return property & ~(2 << col);
         return property | (2 << col);
+    }
+
+    /**
+     * Whether the given foreign key is nullable.
+     */
+    private boolean isNullable(ForeignKey fk) {
+        Column[] cols = fk.getColumns();
+        for (int i = 0; i < cols.length; i++)
+            if (cols[i].isNotNull() || cols[i].isPrimaryKey())
+                return false;
+        return true;
     }
 }

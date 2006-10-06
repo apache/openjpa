@@ -180,7 +180,7 @@ public class RelationFieldStrategy
         OpenJPAStateManager rel = RelationStrategies.getStateManager
             (sm.fetchObjectField(field.getIndex()), store.getContext());
         if (field.getJoinDirection() == field.JOIN_INVERSE)
-            updateInverse(sm, rel, store, rm, sm);
+            updateInverse(sm, rel, store, rm);
         else {
             Row row = field.getRow(sm, store, rm, Row.ACTION_INSERT);
             if (row != null)
@@ -198,7 +198,7 @@ public class RelationFieldStrategy
 
         if (field.getJoinDirection() == field.JOIN_INVERSE) {
             nullInverse(sm, rm);
-            updateInverse(sm, rel, store, rm, sm);
+            updateInverse(sm, rel, store, rm);
         } else {
             Row row = field.getRow(sm, store, rm, Row.ACTION_UPDATE);
             if (row != null)
@@ -215,7 +215,7 @@ public class RelationFieldStrategy
             if (sm.getLoaded().get(field.getIndex())) {
                 OpenJPAStateManager rel = RelationStrategies.getStateManager(sm.
                     fetchObjectField(field.getIndex()), store.getContext());
-                updateInverse(sm, rel, store, rm, null);
+                updateInverse(sm, rel, store, rm);
             } else
                 nullInverse(sm, rm);
         } else {
@@ -241,6 +241,9 @@ public class RelationFieldStrategy
      */
     private void nullInverse(OpenJPAStateManager sm, RowManager rm)
         throws SQLException {
+        if (field.getUseClassCriteria())
+            return;
+
         ForeignKey fk = field.getForeignKey();
         ColumnIO io = field.getColumnIO();
         if (!io.isAnyUpdatable(fk, true))
@@ -260,11 +263,9 @@ public class RelationFieldStrategy
      * with the given object.
      */
     private void updateInverse(OpenJPAStateManager sm, OpenJPAStateManager rel,
-        JDBCStore store, RowManager rm, OpenJPAStateManager sm2)
+        JDBCStore store, RowManager rm)
         throws SQLException {
-        // nothing to do if inverse is null or about to be deleted
-        //### should we throw an exception if the inverse is null?
-        if (rel == null || rel.isDeleted())
+        if (rel == null)
             return;
 
         ForeignKey fk = field.getForeignKey();
@@ -272,11 +273,17 @@ public class RelationFieldStrategy
 
         int action;
         if (rel.isNew() && !rel.isFlushed()) {
-            if (sm2 == null || !io.isAnyInsertable(fk, false))
+            if (sm.isDeleted() || !io.isAnyInsertable(fk, false))
                 return;
             action = Row.ACTION_INSERT;
+        } else if (rel.isDeleted()) {
+            if (rel.isFlushed() || !sm.isDeleted())
+                return;
+            action = Row.ACTION_DELETE;
         } else {
-            if (!io.isAnyUpdatable(fk, sm2 == null))
+            if (sm.isDeleted())
+                sm = null;
+            if (!io.isAnyUpdatable(fk, sm == null))
                 return;
             action = Row.ACTION_UPDATE;
         }
@@ -306,7 +313,7 @@ public class RelationFieldStrategy
             row.wherePrimaryKey(rel);
 
         // update the inverse pointer with our oid value
-        row.setForeignKey(fk, io, sm2);
+        row.setForeignKey(fk, io, sm);
     }
 
     public int supportsSelect(Select sel, int type, OpenJPAStateManager sm,
