@@ -127,6 +127,7 @@ public class FieldMetaData
     private Class _dec = null;
     private ClassMetaData _decMeta = null;
     private String _fullName = null;
+    private String _embedFullName = null;
     private int _resMode = MODE_NONE;
 
     // load/store info
@@ -275,6 +276,7 @@ public class FieldMetaData
         _dec = cls;
         _decMeta = null;
         _fullName = null;
+        _embedFullName = null;
     }
 
     /**
@@ -297,12 +299,20 @@ public class FieldMetaData
     }
 
     /**
-     * The field name, qualified by the owning class.
+     * The field name, qualified by the owning class and optionally the
+     * embedding owner's name (if any).
      */
-    public String getFullName() {
+    public String getFullName(boolean embedOwner) {
         if (_fullName == null)
             _fullName = getDeclaringType().getName() + "." + _name;
-        return _fullName;
+        if (embedOwner && _embedFullName == null) {
+            if (_owner.getEmbeddingMetaData() == null)
+                _embedFullName = _fullName;
+            else
+                _embedFullName = _owner.getEmbeddingMetaData().
+                    getFieldMetaData().getFullName(true) + "." + _fullName;
+        }
+        return (embedOwner) ? _embedFullName : _fullName;
     }
 
     /**
@@ -1433,7 +1443,7 @@ public class FieldMetaData
     }
 
     public int hashCode() {
-        return getFullName().hashCode();
+        return getFullName(true).hashCode();
     }
 
     public boolean equals(Object other) {
@@ -1441,18 +1451,19 @@ public class FieldMetaData
             return true;
         if (!(other instanceof FieldMetaData))
             return false;
-        return getFullName().equals(((FieldMetaData) other).getFullName());
+        return getFullName(true).equals(((FieldMetaData) other).
+            getFullName(true));
     }
 
     public int compareTo(Object other) {
         if (other == null)
             return 1;
-        return getFullName().compareTo(((FieldMetaData) other).
-            getFullName());
+        return getFullName(true).compareTo(((FieldMetaData) other).
+            getFullName(true));
     }
 
     public String toString() {
-        return getFullName();
+        return getFullName(true);
     }
 
     ////////////////////////

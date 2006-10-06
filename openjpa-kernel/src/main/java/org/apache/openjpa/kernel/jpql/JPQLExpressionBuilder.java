@@ -442,12 +442,12 @@ class JPQLExpressionBuilder
         JPQLNode[] outers = root().findChildrenByID(JJTOUTERFETCHJOIN);
         for (int i = 0; outers != null && i < outers.length; i++)
             (joins == null ? joins = new TreeSet() : joins).
-                add(getPath(onlyChild(outers[i])).last().getFullName());
+                add(getPath(onlyChild(outers[i])).last().getFullName(false));
 
         JPQLNode[] inners = root().findChildrenByID(JJTINNERFETCHJOIN);
         for (int i = 0; inners != null && i < inners.length; i++)
             (joins == null ? joins = new TreeSet() : joins).
-                add(getPath(onlyChild(inners[i])).last().getFullName());
+                add(getPath(onlyChild(inners[i])).last().getFullName(false));
 
         if (joins != null)
             exps.fetchPaths = (String[]) joins.
