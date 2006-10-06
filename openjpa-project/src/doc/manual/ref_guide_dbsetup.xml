@@ -852,6 +852,16 @@ be placed on a single table. Defaults to no limit.
 keys. Defaults to true.
                     </para>
                 </listitem>
+                <listitem id="DBDictionary.SupportsTimestampNanos">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SupportsTimestampNanos
+                        </primary>
+                    </indexterm>
+<literal>SupportsTimestampNanos</literal>: Whether the database supports nanoseconds with TIMESTAMP columns.  Defaults to true.
+                    </para>
+                </listitem>
                 <listitem id="DBDictionary.SupportsUniqueConstraints">
                     <para>
                     <indexterm>
