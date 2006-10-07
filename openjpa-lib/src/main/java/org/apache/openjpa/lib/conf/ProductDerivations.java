@@ -37,7 +37,7 @@ public class ProductDerivations {
     private static final String[] _prefixes;
     static {
         ClassLoader cl = ProductDerivation.class.getClassLoader();
-        String pds = Services.getImplementors(ProductDerivation.class, cl);
+        String[] pds = Services.getImplementors(ProductDerivation.class, cl);
         List derivations = new ArrayList(pds.length);
         for (int i = 0; i < pds.length; i++) {
             try {
