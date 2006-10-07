@@ -31,10 +31,6 @@ import java.util.StringTokenizer;
 public class OpenJPAVersion {
 
     public static final String VERSION_NUMBER;
-    private static final long RELEASE_SECONDS = 1147454303;
-
-    public static final Date RELEASE_DATE = new Date(RELEASE_SECONDS * 1000);
-
     public static final String VERSION_ID;
     public static final String VENDOR_NAME = "OpenJPA";
     public static final int MAJOR_RELEASE;
@@ -103,13 +99,8 @@ public class OpenJPAVersion {
 
     public String toString() {
         StringBuffer buf = new StringBuffer(80 * 30);
-        buf.append("OpenJPA ");
-        buf.append(VERSION_NUMBER);
+        appendOpenJPABanner(buf);
         buf.append("\n");
-        buf.append("version id: ").append(VERSION_ID);
-        buf.append("\n");
-        buf.append("revision: ").append(REVISION_NUMBER);
-        buf.append("\n\n");
 
         getProperty("os.name", buf).append("\n");
         getProperty("os.version", buf).append("\n");
@@ -130,6 +121,16 @@ public class OpenJPAVersion {
         getProperty("user.dir", buf);
 
         return buf.toString();
+    }
+
+    public void appendOpenJPABanner(StringBuffer buf) {
+        buf.append(VENDOR_NAME).append(" ");
+        buf.append(VERSION_NUMBER);
+        buf.append("\n");
+        buf.append("version id: ").append(VERSION_ID);
+        buf.append("\n");
+        buf.append("Apache svn revision: ").append(REVISION_NUMBER);
+        buf.append("\n");
     }
 
     private StringBuffer getProperty(String prop, StringBuffer buf) {

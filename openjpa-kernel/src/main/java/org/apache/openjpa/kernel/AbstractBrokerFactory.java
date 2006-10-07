@@ -501,8 +501,7 @@ public abstract class AbstractBrokerFactory
 
             Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
             if (log.isInfoEnabled())
-                log.info(_loc.get("factory-init",
-                    OpenJPAVersion.VERSION_NUMBER));
+                log.info(getFactoryInitializationBanner());
             if (log.isTraceEnabled()) {
                 Map props = _conf.toProperties(true);
                 String lineSep = System.getProperty("line.separator");
@@ -536,6 +535,14 @@ public abstract class AbstractBrokerFactory
         } finally {
             unlock();
         }
+    }
+
+    /**
+     * Return an object to be written to the log when this broker factory
+     * initializes. This happens after the configuration is fully loaded.
+     */
+    protected Object getFactoryInitializationBanner() {
+        return _loc.get("factory-init", OpenJPAVersion.VERSION_NUMBER);
     }
 
     /**
