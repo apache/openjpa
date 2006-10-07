@@ -707,13 +707,13 @@ method. For example:
 EntityManager em = ...
 Query q = em.createNamedQuery("magsOverPrice");
 q.setParameter(1, 5.0f);
-List&lt;Magazine&gt; results = q.getResultList();
+List&lt;Magazine&gt; results = (List&lt;Magazine&gt;) q.getResultList();
 </programlisting>
 <programlisting>
 EntityManager em = ...
 Query q = em.createNamedQuery("magsByTitle");
 q.setParameter("titleParam", "JDJ");
-List&lt;Magazine&gt; results = q.getResultList();
+List&lt;Magazine&gt; results = (List&lt;Magazine&gt;) q.getResultList();
 </programlisting>
         </section>
         <section id="jpa_overview_query_delete">

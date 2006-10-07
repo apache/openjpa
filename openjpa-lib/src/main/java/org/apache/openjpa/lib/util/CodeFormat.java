@@ -31,7 +31,7 @@ public final class CodeFormat implements Cloneable {
     private boolean _braceOnSameLine = true;
     private boolean _braceAtSameTabLevel = false;
     private boolean _scoreBeforeFieldName = false;
-    private int _linesBetweenSections = 2;
+    private int _linesBetweenSections = 1;
 
     private StringBuffer _buf = new StringBuffer();
 
@@ -135,14 +135,14 @@ public final class CodeFormat implements Cloneable {
     }
 
     /**
-     * The number of empty lines between code sections. Defaults to 2.
+     * The number of empty lines between code sections. Defaults to 1.
      */
     public int getLinesBetweenSections() {
         return _linesBetweenSections;
     }
 
     /**
-     * The number of empty lines between sections. Defaults to 2.
+     * The number of empty lines between sections. Defaults to 1.
      */
     public void setLinesBetweenSections(int linesBetweenSections) {
         _linesBetweenSections = linesBetweenSections;
