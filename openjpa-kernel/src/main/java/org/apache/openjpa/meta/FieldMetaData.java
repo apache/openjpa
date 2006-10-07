@@ -299,6 +299,14 @@ public class FieldMetaData
     }
 
     /**
+     * The field name, qualified by the owning class.
+     * @deprecated Use getFullName(boolean) instead.
+     */
+    public String getFullName() {
+        return getFullName(false);
+    }
+
+    /**
      * The field name, qualified by the owning class and optionally the
      * embedding owner's name (if any).
      */
