@@ -90,7 +90,7 @@ public class OpenJPAVersion {
         PATCH_RELEASE = patch;
         RELEASE_STATUS = tok.hasMoreTokens() ? tok.nextToken("!") : "";
         REVISION_NUMBER = revision;
-        VERSION_ID = VERSION_NUMBER + "-r" + REVISION_NUMBER;
+        VERSION_ID = "openjpa-" + VERSION_NUMBER + "-r" + REVISION_NUMBER;
     }
 
     public static void main(String [] args) {
