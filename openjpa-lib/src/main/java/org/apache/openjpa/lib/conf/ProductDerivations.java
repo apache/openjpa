@@ -36,15 +36,17 @@ public class ProductDerivations {
     private static final ProductDerivation[] _derivations;
     private static final String[] _prefixes;
     static {
-        Class[] pdcls = Services.getImplementorClasses(ProductDerivation.class,
-            ProductDerivation.class.getClassLoader());
-        List derivations = new ArrayList(pdcls.length);
-        for (int i = 0; i < pdcls.length; i++) {
+        ClassLoader cl = ProductDerivation.class.getClassLoader();
+        String pds = Services.getImplementors(ProductDerivation.class, cl);
+        List derivations = new ArrayList(pds.length);
+        for (int i = 0; i < pds.length; i++) {
             try {
-                derivations.add(pdcls[i].newInstance());
+                Class cls = Class.forName(pds[i], true, cl);
+                derivations.add(cls.newInstance());
             } catch (Throwable t) {
-                // invalid service
-                t.printStackTrace();
+                Localizer loc = Localizer.forPackage(ProductDerivations.class);
+                System.err.println(loc.get("bad-product-derivation", pds[i], 
+                    t));
             }
         }
 
