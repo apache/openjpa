@@ -226,7 +226,7 @@ variables. Defaults to <literal>false</literal>.
                 <listitem>
                     <para>
 <literal>-codeFormat./-cf.linesBetweenSections &lt;lines&gt;</literal>: The
-number of lines to skip between sections of code. Defaults to 2.
+number of lines to skip between sections of code. Defaults to 1.
                     </para>
                 </listitem>
             </itemizedlist>
