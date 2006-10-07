@@ -104,7 +104,7 @@
                                 <echo>Revision: ${subversion.revision}</echo>
                                     
                                 <mkdir dir="${outdir}/META-INF"/>
-                                <echo file="${outdir}/META-INF/revision.properties">revision.number=${subversion.revision}</echo>
+                                <echo file="${outdir}/META-INF/org.apache.openjpa.revision.properties">revision.number=${subversion.revision}</echo>
                                 <delete dir="${tmpdir}"/>
                             </tasks>
                         </configuration>

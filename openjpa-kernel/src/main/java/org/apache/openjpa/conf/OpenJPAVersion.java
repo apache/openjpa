@@ -72,7 +72,7 @@ public class OpenJPAVersion {
         String revision = "";
         try {
             InputStream in = OpenJPAVersion.class.
-                getResourceAsStream("/META-INF/revision.properties");
+                getResourceAsStream("/META-INF/org.apache.openjpa.revision.properties");
             if (in != null) {
                 try {
                     Properties props = new Properties();
