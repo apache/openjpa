@@ -124,8 +124,7 @@ public class Services {
                     }
                 }
             }
-        }
-        finally {
+        } finally {
             try {
                 in.close();
             } catch (IOException ioe) {

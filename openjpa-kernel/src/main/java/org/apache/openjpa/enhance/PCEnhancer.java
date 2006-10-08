@@ -109,6 +109,22 @@ public class PCEnhancer {
 
     private static final Localizer _loc = Localizer.forPackage
         (PCEnhancer.class);
+    private static final AuxiliaryEnhancer[] _auxEnhancers;
+    static {
+        Class[] classes = Services.getImplementorClasses(
+            AuxiliaryEnhancer.class, 
+            AuxiliaryEnhancer.class.getClassLoader());
+        List auxEnhancers = new ArrayList(classes.length);
+        for (int i = 0; i < classes.length; i++) {
+            try {
+                auxEnhancers.add(classes[i].newInstance());
+		    } catch (Throwable t) {
+                // aux enhancer may rely on non-existant spec classes, etc
+		    }
+		}
+    	_auxEnhancers = (AuxiliaryEnhancer[]) auxEnhancers.toArray
+            (new AuxiliaryEnhancer[auxEnhancers.size()]);
+    }
 
     private final BCClass _pc;
     private final MetaDataRepository _repos;
@@ -118,7 +134,6 @@ public class PCEnhancer {
 
     private boolean _defCons = true;
     private boolean _fail = false;
-    private AuxiliaryEnhancer[] _auxEnhancers = null;
     private File _dir = null;
     private BytecodeWriter _writer = null;
     private Map _backingFields = null;
@@ -2639,35 +2654,17 @@ public class PCEnhancer {
 
     /**
      * Gets the auxiliary enhancers registered as {@link Services services}.
-     * Multi-call safe -- the first call locates the auxiliary enhancers,
-     * subsequent calls merely returns the existing set.
-     * 
-     * @return array of auxiliary enhancers. empty array if none is registered.
      */
     public AuxiliaryEnhancer[] getAuxiliaryEnhancers() {
-		if (_auxEnhancers == null) {
-		    try {
-                Class[] classes = Services.getImplementorClasses(
-                    AuxiliaryEnhancer.class, 
-                    AuxiliaryEnhancer.class.getClassLoader());
-                _auxEnhancers = new AuxiliaryEnhancer[classes.length];
-                for (int i = 0; i < _auxEnhancers.length; i++)
-                    _auxEnhancers[i] = (AuxiliaryEnhancer) classes[i].
-                        newInstance();
-		    } catch (Throwable t) {
-			    throw new GeneralException(t);
-		    }
-		}
-    	return _auxEnhancers;	
+		return _auxEnhancers;
     }
     
     /**
      * Allow any registered auxiliary code generators to run.
      */
     private void runAuxiliaryEnhancers() {
-    	AuxiliaryEnhancer[] auxEnhancers = getAuxiliaryEnhancers();
-    	for (int i = 0; i < auxEnhancers.length; i++)
-    		auxEnhancers[i].run(_pc, _meta);
+    	for (int i = 0; i < _auxEnhancers.length; i++)
+    		_auxEnhancers[i].run(_pc, _meta);
     }
     
     /**
@@ -2677,9 +2674,8 @@ public class PCEnhancer {
      * @return true if any of the auxiliary enhancers skips the given method
      */
     private boolean skipEnhance(BCMethod method) {
-    	AuxiliaryEnhancer[] auxEnhancers = getAuxiliaryEnhancers();
-    	for (int i = 0; i < auxEnhancers.length; i++)
-    		if (auxEnhancers[i].skipEnhance(method))
+    	for (int i = 0; i < _auxEnhancers.length; i++)
+    		if (_auxEnhancers[i].skipEnhance(method))
     			return true;
     	return false;
     }
