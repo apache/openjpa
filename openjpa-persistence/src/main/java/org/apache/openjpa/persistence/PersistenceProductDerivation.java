@@ -70,7 +70,7 @@ public class PersistenceProductDerivation
     private static final Localizer _loc = Localizer.forPackage
         (PersistenceProductDerivation.class);
 
-    public void initializeBrokerFactoryValueAliases(Map m) {
+    public void putBrokerFactoryAliases(Map m) {
     }
 
     public int getType() {
@@ -326,10 +326,8 @@ public class PersistenceProductDerivation
             loader = Thread.currentThread().getContextClassLoader();
         try {
             if (PersistenceProviderImpl.class.isAssignableFrom
-                (Class.forName(provider, false, loader))) {
-                log(_loc.get("extended-provider", provider).getMessage());
+                (Class.forName(provider, false, loader)))
                 return true;
-            }
         } catch (Throwable t) {
             log(_loc.get("unloadable-provider", provider, t).getMessage());
             return false;

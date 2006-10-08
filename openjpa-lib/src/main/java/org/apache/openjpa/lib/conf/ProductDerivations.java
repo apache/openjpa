@@ -33,6 +33,9 @@ import org.apache.openjpa.lib.util.Services;
  */
 public class ProductDerivations {
 
+    private static final Localizer _loc = Localizer.forPackage
+        (ProductDerivations.class);
+
     private static final ProductDerivation[] _derivations;
     private static final String[] _prefixes;
     static {
@@ -43,9 +46,11 @@ public class ProductDerivations {
             try {
                 Class cls = Class.forName(pds[i], true, cl);
                 derivations.add(cls.newInstance());
+            } catch (UnsupportedClassVersionError ucve) {
+                // ignore so that < 1.5 users don't get errors about
+                // 1.5 products they aren't using
             } catch (Throwable t) {
-                Localizer loc = Localizer.forPackage(ProductDerivations.class);
-                System.err.println(loc.get("bad-product-derivation", pds[i], 
+                System.err.println(_loc.get("bad-product-derivation", pds[i], 
                     t));
             }
         }

@@ -32,9 +32,9 @@ public interface OpenJPAProductDerivation extends ProductDerivation {
     public static final int TYPE_PRODUCT_STORE = 400;
 
     /**
-     * Load default alias options into the BrokerFactoryValue's static data
-     * structures. In the case of multiple ProductDerivations, this will be
-     * invoked in the order defined by the type of the product derivation.
+     * Load default alias options into the given map.  Each entry maps an
+     * alias to a broker factory class name.  Replace anything perviously 
+     * under the desired keys.
      */
-    public void initializeBrokerFactoryValueAliases(Map aliases);
+    public void putBrokerFactoryAliases(Map aliases);
 }

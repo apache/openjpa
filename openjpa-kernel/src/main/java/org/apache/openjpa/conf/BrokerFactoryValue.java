@@ -42,9 +42,7 @@ public class BrokerFactoryValue
 
     public static final String KEY = "BrokerFactory";
 
-    private static final List _aliases = new ArrayList();
-    private static final List _prefixes = new ArrayList(2);
-
+    private static final String[] _aliases;
     static {
         Map aliases = new HashMap();
         aliases.put("abstractstore", 
@@ -52,26 +50,16 @@ public class BrokerFactoryValue
         ProductDerivation[] ds = ProductDerivations.getProductDerivations();
         for (int i = 0; i < ds.length; i++) {
             if (ds[i] instanceof OpenJPAProductDerivation)
-                ((OpenJPAProductDerivation) ds[i])
-                    .initializeBrokerFactoryValueAliases(aliases);
+                ((OpenJPAProductDerivation) ds[i]).putBrokerFactoryAliases
+                    (aliases);
         }
 
+        _aliases = new String[aliases.size() * 2];
+        int i = 0;
         for (Iterator iter = aliases.entrySet().iterator(); iter.hasNext(); ) {
             Map.Entry e = (Map.Entry) iter.next();
-            addDefaultAlias((String) e.getKey(), (String) e.getValue());
-        }
-    }
-
-    /**
-     * Add a mapping from <code>alias</code> to <code>cls</code> to the list
-     * of default aliases for new values created after this invocation.
-     */
-    public static void addDefaultAlias(String alias, String cls) {
-        if (_aliases.contains(alias)) {
-            _aliases.set(_aliases.indexOf(alias) + 1, cls);
-        } else {
-            _aliases.add(alias);
-            _aliases.add(cls);
+            _aliases[i++] = (String) e.getKey();
+            _aliases[i++] = (String) e.getValue();
         }
     }
 
@@ -99,6 +87,6 @@ public class BrokerFactoryValue
 
     public BrokerFactoryValue() {
         super(KEY, false);
-        setAliases((String[]) _aliases.toArray(new String[_aliases.size()]));
+        setAliases(_aliases);
     }
 }
