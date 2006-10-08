@@ -50,8 +50,12 @@ public class BrokerFactoryValue
      * of default aliases for new values created after this invocation.
      */
     public static void addDefaultAlias(String alias, String cls) {
-        _aliases.add(alias);
-        _aliases.add(cls);
+        if (_aliases.contains(alias)) {
+            _aliases.set(_aliases.indexOf(alias), cls);
+        } else {
+            _aliases.add(alias);
+            _aliases.add(cls);
+        }
     }
 
     /**
