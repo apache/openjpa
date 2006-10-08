@@ -21,15 +21,16 @@ import org.apache.openjpa.jdbc.kernel.JDBCBrokerFactory;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 
+import java.util.Map;
+
 /**
  * Sets JDBC as default store.
  */
 public class JDBCProductDerivation extends AbstractProductDerivation
     implements OpenJPAProductDerivation {
 
-    static {
-        BrokerFactoryValue.addDefaultAlias("jdbc",
-            JDBCBrokerFactory.class.getName());
+    public void initializeBrokerFactoryValueAliases(Map m) {
+        m.put("jdbc", JDBCBrokerFactory.class.getName());
     }
 
     public int getType() {
@@ -39,7 +40,7 @@ public class JDBCProductDerivation extends AbstractProductDerivation
     public boolean beforeConfigurationConstruct(ConfigurationProvider cp) {
         // default to JDBC when no broker factory set
         if (BrokerFactoryValue.get(cp) == null) {
-            BrokerFactoryValue.set(cp, JDBCBrokerFactory.class.getName());
+            BrokerFactoryValue.set(cp, "jdbc");
             return true;
         }
         return false;

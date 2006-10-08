@@ -70,6 +70,9 @@ public class PersistenceProductDerivation
     private static final Localizer _loc = Localizer.forPackage
         (PersistenceProductDerivation.class);
 
+    public void initializeBrokerFactoryValueAliases(Map m) {
+    }
+
     public int getType() {
         return TYPE_SPEC;
     }

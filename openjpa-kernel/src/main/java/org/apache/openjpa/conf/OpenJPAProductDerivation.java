@@ -16,6 +16,7 @@
 package org.apache.openjpa.conf;
 
 import org.apache.openjpa.lib.conf.ProductDerivation;
+import java.util.Map;
 
 /**
  * Adds datastore based extension to ProductDerivation.  
@@ -29,4 +30,11 @@ public interface OpenJPAProductDerivation extends ProductDerivation {
     public static final int TYPE_STORE = 200;
     public static final int TYPE_SPEC_STORE = 300;
     public static final int TYPE_PRODUCT_STORE = 400;
+
+    /**
+     * Load default alias options into the BrokerFactoryValue's static data
+     * structures. In the case of multiple ProductDerivations, this will be
+     * invoked in the order defined by the type of the product derivation.
+     */
+    public void initializeBrokerFactoryValueAliases(Map aliases);
 }

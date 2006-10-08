@@ -47,14 +47,14 @@ public interface ProductDerivation {
 
     /**
      * Load globals into the returned ConfigurationProvider, or return null if 
-     * no globals is found.
+     * no globals are found.
      */
     public ConfigurationProvider loadGlobals(ClassLoader loader) 
         throws Exception;
 
     /**
      * Load defaults into the returned ConfigurationProvider, or return null if 
-     * no defaults is found.
+     * no defaults are found.
      */
     public ConfigurationProvider loadDefaults(ClassLoader loader) 
         throws Exception;
