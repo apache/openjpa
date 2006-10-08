@@ -51,7 +51,7 @@ public class BrokerFactoryValue
      */
     public static void addDefaultAlias(String alias, String cls) {
         if (_aliases.contains(alias)) {
-            _aliases.set(_aliases.indexOf(alias), cls);
+            _aliases.set(_aliases.indexOf(alias) + 1, cls);
         } else {
             _aliases.add(alias);
             _aliases.add(cls);
