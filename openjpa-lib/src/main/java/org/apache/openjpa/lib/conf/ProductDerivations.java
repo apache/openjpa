@@ -76,6 +76,13 @@ public class ProductDerivations {
     }
 
     /**
+     * Return all the product derivations registered in the current classloader
+     */
+    public static ProductDerivation[] getProductDerivations() {
+        return _derivations;
+    }
+
+    /**
      * Return the recognized prefixes for configuration properties.
      */
     public static String[] getConfigurationPrefixes() {

@@ -24,6 +24,8 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.PersistenceProductDerivation;
 
+import java.util.Map;
+
 /**
  * Sets JDBC-specific JPA specification defaults.
  *
@@ -34,6 +36,9 @@ public class JDBCPersistenceProductDerivation
     extends AbstractProductDerivation 
     implements OpenJPAProductDerivation {
     
+    public void initializeBrokerFactoryValueAliases(Map m) {
+    }
+
     public int getType() {
         return TYPE_SPEC_STORE;
     }

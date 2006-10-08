@@ -17,13 +17,17 @@ package org.apache.openjpa.conf;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Iterator;
 
 import org.apache.openjpa.abstractstore.AbstractStoreBrokerFactory;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.conf.ProductDerivations;
+import org.apache.openjpa.lib.conf.ProductDerivation;
 
 /**
  * Value type used to represent the {@link BrokerFactory}. This type is
@@ -40,9 +44,22 @@ public class BrokerFactoryValue
 
     private static final List _aliases = new ArrayList();
     private static final List _prefixes = new ArrayList(2);
+
     static {
-        addDefaultAlias("abstractstore",
+        Map aliases = new HashMap();
+        aliases.put("abstractstore", 
             AbstractStoreBrokerFactory.class.getName());
+        ProductDerivation[] ds = ProductDerivations.getProductDerivations();
+        for (int i = 0; i < ds.length; i++) {
+            if (ds[i] instanceof OpenJPAProductDerivation)
+                ((OpenJPAProductDerivation) ds[i])
+                    .initializeBrokerFactoryValueAliases(aliases);
+        }
+
+        for (Iterator iter = aliases.entrySet().iterator(); iter.hasNext(); ) {
+            Map.Entry e = (Map.Entry) iter.next();
+            addDefaultAlias((String) e.getKey(), (String) e.getValue());
+        }
     }
 
     /**
