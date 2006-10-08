@@ -1649,7 +1649,7 @@ manager's manager (depth 3), etc.  Use -1 for unlimited depth.
                 </title>
                 <para>
 Creates a <emphasis>detail</emphasis> fetch group consisting of the
-<literal>publisher</literal> and <literal>articles</literal> relations, use:
+<literal>publisher</literal> and <literal>articles</literal> relations.
                 </para>
 <programlisting>
 import org.apache.openjpa.persistence.*;
