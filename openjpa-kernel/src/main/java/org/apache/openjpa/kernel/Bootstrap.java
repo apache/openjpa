@@ -95,7 +95,7 @@ public class Bootstrap {
         }
     }
 
-    private static BrokerFactory invokeFactory (ConfigurationProvider conf,
+    private static BrokerFactory invokeFactory(ConfigurationProvider conf,
         ClassLoader loader, String methodName)
         throws InvocationTargetException, NoSuchMethodException,
             IllegalAccessException {

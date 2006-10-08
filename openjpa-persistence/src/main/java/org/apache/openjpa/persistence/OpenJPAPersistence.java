@@ -165,7 +165,8 @@ public class OpenJPAPersistence
      * overrides.
      */
     public static OpenJPAEntityManagerFactory getEntityManagerFactory(Map map) {
-        ConfigurationProvider cp = new MapConfigurationProvider(map);
+        ConfigurationProvider cp = new PersistenceProductDerivation.
+            ConfigurationProviderImpl(map);
         try {
             return toEntityManagerFactory(Bootstrap.getBrokerFactory(cp, null));
         } catch (Exception e) {

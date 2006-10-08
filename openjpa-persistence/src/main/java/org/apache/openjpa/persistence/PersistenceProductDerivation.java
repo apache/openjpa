@@ -355,10 +355,17 @@ public class PersistenceProductDerivation
     /**
      * Custom configuration provider.   
      */
-    private static class ConfigurationProviderImpl
+    public static class ConfigurationProviderImpl
         extends MapConfigurationProvider {
 
         private String _source;
+
+        public ConfigurationProviderImpl() {
+        }
+
+        public ConfigurationProviderImpl(Map props) {
+            super(props);
+        }
 
         /**
          * Set the source of information in this provider.
@@ -374,8 +381,10 @@ public class PersistenceProductDerivation
             super.setInto(conf, null);
 
             Log log = conf.getConfigurationLog();
-            if (log.isTraceEnabled())
-                log.trace(_loc.get("conf-load", _source, getProperties()));
+            if (log.isTraceEnabled()) {
+                String src = (_source == null) ? "?" : _source;
+                log.trace(_loc.get("conf-load", src, getProperties()));
+            }
         }
     }
 
