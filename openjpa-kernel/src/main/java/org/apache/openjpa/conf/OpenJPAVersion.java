@@ -44,13 +44,10 @@ public class OpenJPAVersion {
         String vers = pack == null ? null : pack.getImplementationVersion();
         if (vers == null || vers.length() == 0)
             vers = "0.0.0";
-
         VERSION_NUMBER = vers;
 
         StringTokenizer tok = new StringTokenizer(VERSION_NUMBER, ".-");
-
         int major, minor, patch;
-
         try {
             major = tok.hasMoreTokens() ? Integer.parseInt(tok.nextToken()) : 0;
         } catch (Exception e) {
@@ -71,8 +68,8 @@ public class OpenJPAVersion {
 
         String revision = "";
         try {
-            InputStream in = OpenJPAVersion.class.
-                getResourceAsStream("/META-INF/org.apache.openjpa.revision.properties");
+            InputStream in = OpenJPAVersion.class.getResourceAsStream
+                ("/META-INF/org.apache.openjpa.revision.properties");
             if (in != null) {
                 try {
                     Properties props = new Properties();
@@ -102,12 +99,12 @@ public class OpenJPAVersion {
         appendOpenJPABanner(buf);
         buf.append("\n");
 
-        getProperty("os.name", buf).append("\n");
-        getProperty("os.version", buf).append("\n");
-        getProperty("os.arch", buf).append("\n\n");
+        appendProperty("os.name", buf).append("\n");
+        appendProperty("os.version", buf).append("\n");
+        appendProperty("os.arch", buf).append("\n\n");
 
-        getProperty("java.version", buf).append("\n");
-        getProperty("java.vendor", buf).append("\n\n");
+        appendProperty("java.version", buf).append("\n");
+        appendProperty("java.vendor", buf).append("\n\n");
 
         buf.append("java.class.path:\n");
         StringTokenizer tok = new StringTokenizer
@@ -118,8 +115,7 @@ public class OpenJPAVersion {
         }
         buf.append("\n");
 
-        getProperty("user.dir", buf);
-
+        appendProperty("user.dir", buf);
         return buf.toString();
     }
 
@@ -133,8 +129,7 @@ public class OpenJPAVersion {
         buf.append("\n");
     }
 
-    private StringBuffer getProperty(String prop, StringBuffer buf) {
-        buf.append(prop).append(": ").append(System.getProperty(prop));
-        return buf;
+    private StringBuffer appendProperty(String prop, StringBuffer buf) {
+        return buf.append(prop).append(": ").append(System.getProperty(prop));
     }
 }
