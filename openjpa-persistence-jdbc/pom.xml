@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa</artifactId>
-        <version>0.9.0-incubating-SNAPSHOT</version>
+        <version>0.9.0-incubating</version>
     </parent>
     <dependencies>
         <dependency>
