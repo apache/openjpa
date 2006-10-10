@@ -40,6 +40,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ChangeTracker;
+import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.Proxies;
 import org.apache.openjpa.util.Proxy;
@@ -85,8 +86,16 @@ public abstract class RelationToManyInverseKeyFieldStrategy
 
     protected Joins join(Joins joins, ClassMapping elem) {
         ValueMapping vm = field.getElementMapping();
-        return joins.joinRelation(field.getName(), vm.getForeignKey(elem), 
-            elem, vm.getSelectSubclasses(), true, true);
+        ForeignKey fk = vm.getForeignKey(elem);
+        ClassMapping owner = field.getDefiningMapping();
+        while (fk.getPrimaryKeyTable() != owner.getTable()) {
+            joins = owner.joinSuperclass(joins, false);
+            owner = owner.getJoinablePCSuperclassMapping(); 
+            if (owner == null)
+                throw new InternalException();
+        }
+        return joins.joinRelation(field.getName(), fk, elem, 
+            vm.getSelectSubclasses(), true, true);
     }
 
     protected Joins joinElementRelation(Joins joins, ClassMapping elem) {
