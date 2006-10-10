@@ -6,6 +6,10 @@
     <includeBaseDirectory>true</includeBaseDirectory>
     <fileSets>
         <fileSet>
+            <directory>target/aggregate</directory>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+        <fileSet>
             <includes>
                 <include>README*</include>
                 <include>LICENSE*</include>
@@ -88,30 +92,6 @@
                 <exclude>org.apache.openjpa:openjpa-persistence-jdbc</exclude>
                 <exclude>org.apache.openjpa:openjpa-xmlstore</exclude>
             </excludes>
-        </dependencySet>
-
-        <dependencySet>
-            <outputDirectory>/modules</outputDirectory>
-            <unpack>false</unpack>
-            <includes>
-                <include>org.apache.openjpa:openjpa-lib</include>
-                <include>org.apache.openjpa:openjpa-kernel</include>
-                <include>org.apache.openjpa:openjpa-kernel-4</include>
-                <include>org.apache.openjpa:openjpa-kernel-5</include>
-                <include>org.apache.openjpa:openjpa-jdbc</include>
-                <include>org.apache.openjpa:openjpa-jdbc-5</include>
-                <include>org.apache.openjpa:openjpa-persistence</include>
-                <include>org.apache.openjpa:openjpa-persistence-jdbc</include>
-                <include>org.apache.openjpa:openjpa-xmlstore</include>
-            </includes>
-        </dependencySet>
-
-        <dependencySet>
-            <outputDirectory>/</outputDirectory>
-            <unpack>false</unpack>
-            <includes>
-                <include>org.apache.openjpa:openjpa-all</include>
-            </includes>
         </dependencySet>
     </dependencySets>
 </assembly>
