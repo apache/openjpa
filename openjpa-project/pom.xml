@@ -33,6 +33,96 @@
 
         <plugins>
             <plugin>
+
+                <!--
+                    Manually build an aggregate jar of all the other
+                    openjpa-* jars using ant. We cannot use the assembly
+                    plugin, since it doesn't provide support for appending
+                    multiple same-named files to each other (which is
+                    required for correctly aggregating services files).
+                -->
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build-single-jar</id>
+                        <phase>process-classes</phase>
+                        <configuration>
+                            <tasks>
+                                <unjar overwrite="false"
+                                    dest="${basedir}/target/classes">
+                                    <fileset dir="${basedir}/..">
+                                        <include name="*/target/openjpa-*.jar" />
+                                    </fileset>
+                                </unjar>
+
+                                <!--
+                                    need to manually concatenate the services
+                                    resources so they are aggregated
+                                -->
+                                <macrodef name="aggregate-file">
+                                    <attribute name="servicename" />
+                                    <sequential>
+                                        <echo>
+                                            Building service: @{servicename}
+                                        </echo>
+                                        <concat
+                                            destfile="${basedir}/target/classes/META-INF/services/@{servicename}">
+                                            <fileset dir="${basedir}/.."
+                                                includes="*/src/main/resources/META-INF/services/@{servicename}" />
+                                        </concat>
+                                    </sequential>
+                                </macrodef>
+
+                                <aggregate-file
+                                    servicename="org.apache.openjpa.lib.conf.ProductDerivation" />
+                                <aggregate-file
+                                    servicename="javax.persistence.spi.PersistenceProvider" />
+                                <aggregate-file
+                                    servicename="org.apache.openjpa.kernel.exps.ExpressionParser" />
+
+                                <mkdir dir="${basedir}/target/aggregate" />
+
+                                <jar
+                                    destfile="${basedir}/target/aggregate/openjpa-${version}.jar"
+                                    basedir="${basedir}/target/classes">
+
+                                    <manifest>
+                                        <!--  Add roughly the same manifest info that the maven-jar-plugin uses -->
+                                        <attribute name="Built-By"
+                                            value="${user.name}" />
+                                        <attribute name="Build-Jdk"
+                                            value="${java.version}" />
+                                        <attribute name="Specification-Title"
+                                            value="${project.name}" />
+                                        <attribute name="Specification-Version"
+                                            value="${project.version}" />
+                                        <attribute name="Specification-Vendor"
+                                            value="$${project.organization.name}" />
+                                        <attribute name="Implementation-Title"
+                                            value="${project.name}" />
+                                        <attribute name="Implementation-Version"
+                                            value="${project.version}" />
+                                        <attribute
+                                            name="Implementation-Vendor-Id" value="${project.groupId}" />
+                                        <attribute name="Implementation-Vendor"
+                                            value="${project.organization.name}" />
+
+                                        <!-- set premain class -->
+                                        <attribute name="Premain-Class"
+                                            value="org.apache.openjpa.enhance.PCEnhancerAgent" />
+                                    </manifest>
+
+                                </jar>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
@@ -94,7 +184,7 @@
     </build>
 
     <profiles>
-        <!-- 
+        <!--
             Docbook profile. Docs can be built by running:
                 mvn package -Dtest=false -Pjavadoc-profile,docbook-profile
         -->
