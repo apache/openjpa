@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -95,7 +96,7 @@ public class MySQLDictionary
 
     public String[] getCreateTableSQL(Table table) {
         String[] sql = super.getCreateTableSQL(table);
-        if (tableType != null && tableType.length() > 0)
+        if (!StringUtils.isEmpty(tableType))
             sql[0] = sql[0] + " TYPE = " + tableType;
         return sql;
     }

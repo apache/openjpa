@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.datacache.DataCacheManager;
@@ -937,9 +938,9 @@ public class OpenJPAConfigurationImpl
      * Lookup the connection factory at the given name.
      */
     private Object lookupConnectionFactory(String name) {
-        if (name == null || name.trim().length() == 0)
+        name = StringUtils.trimToNull(name);
+        if (name == null)
             return null;
-
         return Configurations.lookup(name);
     }
 

@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
@@ -257,7 +258,7 @@ public class ResultPacker {
      */
     private static Member findSet(String alias, Class type, Field[] fields,
         Method[] methods) {
-        if (alias == null || alias.length() == 0)
+        if (StringUtils.isEmpty(alias))
             return null;
         if (type == Object.class)
             type = null;

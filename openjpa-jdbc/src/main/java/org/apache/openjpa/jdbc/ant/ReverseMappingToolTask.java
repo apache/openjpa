@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
-import org.apache.tools.ant.types.EnumeratedAttribute;
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.PropertiesReverseCustomizer;
@@ -30,6 +30,7 @@ import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.util.CodeFormat;
 import org.apache.openjpa.lib.util.Files;
+import org.apache.tools.ant.types.EnumeratedAttribute;
 
 /**
  * Executes the {@link ReverseMappingTool} on the specified XML files.
@@ -222,9 +223,9 @@ public class ReverseMappingToolTask
     protected void executeOn(String[] files)
         throws Exception {
         ClassLoader loader = getClassLoader();
-        if (dirName != null && dirName.length() > 0)
+        if (!StringUtils.isEmpty(dirName))
             flags.directory = Files.getFile(dirName, loader);
-        if (typeMap != null && typeMap.length() > 0)
+        if (!StringUtils.isEmpty(typeMap))
             flags.typeMap = Configurations.parseProperties(typeMap);
 
         // load customizer properties

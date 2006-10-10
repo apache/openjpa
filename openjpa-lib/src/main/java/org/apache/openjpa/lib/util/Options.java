@@ -103,7 +103,7 @@ public class Options extends TypedProperties {
             if (i == args.length || args[i].startsWith("-")) {
                 key = trimQuote(key);
                 if (key != null) {
-                    if (value != null && value.length() > 0)
+                    if (!StringUtils.isEmpty(value))
                         setProperty(key, trimQuote(value));
                     else
                         setProperty(key, "true");
@@ -291,7 +291,7 @@ public class Options extends TypedProperties {
      */
     private static boolean matchOptionToMember(String key, Object[] match)
         throws Exception {
-        if (key == null || key.length() == 0)
+        if (StringUtils.isEmpty(key))
             return false;
 
         // unfortunately we can't use bean properties for setters; any

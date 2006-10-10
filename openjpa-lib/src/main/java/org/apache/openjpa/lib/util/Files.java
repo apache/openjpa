@@ -28,6 +28,7 @@ import java.io.Writer;
 import java.net.URL;
 import java.net.URLDecoder;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.NestableRuntimeException;
 import serp.util.Strings;
 
@@ -134,7 +135,7 @@ public class Files {
     public static File getPackageFile(File base, String pkg, boolean mkdirs) {
         if (base == null)
             base = new File(System.getProperty("user.dir"));
-        if (pkg == null || pkg.length() == 0) {
+        if (StringUtils.isEmpty(pkg)) {
             if (mkdirs && !base.exists())
                 base.mkdirs();
             return base;

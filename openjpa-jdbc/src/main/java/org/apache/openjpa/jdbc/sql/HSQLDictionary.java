@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 
+import org.apache.commons.lang.StringUtils;
 import org.hsqldb.Trace;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -147,7 +148,7 @@ public class HSQLDictionary
         String pkStr;
         if (pk != null) {
             pkStr = getPrimaryKeyConstraintSQL(pk);
-            if (pkStr != null && pkStr.length() > 0)
+            if (!StringUtils.isEmpty(pkStr))
                 buf.append(", ").append(pkStr);
         }
 

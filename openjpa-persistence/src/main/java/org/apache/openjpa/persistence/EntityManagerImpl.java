@@ -29,6 +29,7 @@ import javax.resource.cci.Interaction;
 import javax.resource.cci.LocalTransaction;
 import javax.resource.cci.ResultSetInfo;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.kernel.Broker;
@@ -729,7 +730,7 @@ public class EntityManagerImpl
      * Validate that the user provided SQL.
      */
     private static void validateSQL(String query) {
-        if (query == null || query.trim().length() == 0)
+        if (StringUtils.trimToNull(query) == null)
             throw new ArgumentException(_loc.get("no-sql"), null, null, false);
     }
 

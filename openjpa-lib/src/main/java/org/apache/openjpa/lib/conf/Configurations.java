@@ -30,6 +30,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.JavaVersions;
@@ -71,7 +72,7 @@ public class Configurations {
     private static String getPluginComponent(String plugin, boolean clsName) {
         if (plugin != null)
             plugin = plugin.trim();
-        if (plugin == null || plugin.length() == 0)
+        if (StringUtils.isEmpty(plugin))
             return null;
 
         int openParen = -1;
@@ -96,9 +97,9 @@ public class Configurations {
      * Combine the given class name and properties into a plugin string.
      */
     public static String getPlugin(String clsName, String props) {
-        if (clsName == null || clsName.length() == 0)
+        if (StringUtils.isEmpty(clsName))
             return props;
-        if (props == null || props.length() == 0)
+        if (StringUtils.isEmpty(props))
             return clsName;
         return clsName + "(" + props + ")";
     }
@@ -129,7 +130,7 @@ public class Configurations {
      */
     static Object newInstance(String clsName, Value val, Configuration conf,
         ClassLoader loader, boolean fatal) {
-        if (clsName == null || clsName.length() == 0)
+        if (StringUtils.isEmpty(clsName))
             return null;
         if (loader == null && conf != null)
             loader = conf.getClass().getClassLoader();
@@ -173,7 +174,7 @@ public class Configurations {
     public static void populateConfiguration(Configuration conf, Options opts) {
         String props = opts.removeProperty("properties", "p", null);
         ConfigurationProvider provider;
-        if (props != null && props.length() > 0) {
+        if (!StringUtils.isEmpty(props)) {
             String path = props;
             String anchor = null;
             int idx = path.lastIndexOf('#');
@@ -279,7 +280,7 @@ public class Configurations {
             return;
 
         Properties props = null;
-        if (properties != null && properties.length() > 0)
+        if (!StringUtils.isEmpty(properties))
             props = parseProperties(properties);
         configureInstance(obj, conf, props, configurationName);
     }
@@ -388,10 +389,8 @@ public class Configurations {
      */
     public static Options parseProperties(String properties) {
         Options opts = new Options();
+        properties = StringUtils.trimToNull(properties);
         if (properties == null)
-            return opts;
-        properties = properties.trim();
-        if (properties.length() == 0)
             return opts;
 
         try {
@@ -453,7 +452,7 @@ public class Configurations {
      * Looks up the given name in JNDI. If the name is null, null is returned.
      */
     public static Object lookup(String name) {
-        if (name == null || name.length() == 0)
+        if (StringUtils.isEmpty(name))
             return null;
 
         Context ctx = null;

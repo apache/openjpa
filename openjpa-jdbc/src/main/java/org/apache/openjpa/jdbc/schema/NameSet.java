@@ -18,6 +18,7 @@ package org.apache.openjpa.jdbc.schema;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
@@ -49,7 +50,7 @@ public class NameSet {
      * @param validate if true, null or empty names will not be accepted
      */
     protected void addName(String name, boolean validate) {
-        if (name == null || name.length() == 0) {
+        if (StringUtils.isEmpty(name)) {
             if (validate)
                 throw new IllegalArgumentException(_loc.get("bad-name", name)
                     .getMessage());
