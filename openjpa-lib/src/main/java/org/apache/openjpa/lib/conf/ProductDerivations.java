@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.MissingResourceException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Services;
 
@@ -148,7 +149,7 @@ public class ProductDerivations {
      */
     public static ConfigurationProvider load(String resource, String anchor, 
         ClassLoader loader) {
-        if (resource == null || resource.length() == 0)
+        if (StringUtils.isEmpty(resource))
             return null;
         if (loader == null)
             loader = Thread.currentThread().getContextClassLoader();

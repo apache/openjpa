@@ -486,9 +486,7 @@ public class SchemaGenerator {
         String tableSchema;
         for (int i = 0; cols != null && i < cols.length; i++) {
             tableName = cols[i].getTableName();
-            tableSchema = cols[i].getSchemaName();
-            if (tableSchema != null && tableSchema.length() == 0)
-                tableSchema = null;
+            tableSchema = StringUtils.trimToNull(cols[i].getSchemaName());
 
             // ignore special tables
             if (!_openjpaTables &&
@@ -600,9 +598,7 @@ public class SchemaGenerator {
         String name;
         String colName;
         for (int i = 0; pks != null && i < pks.length; i++) {
-            schemaName = pks[i].getSchemaName();
-            if (schemaName != null && schemaName.length() == 0)
-                schemaName = null;
+            schemaName = StringUtils.trimToNull(pks[i].getSchemaName());
             schema = group.getSchema(schemaName);
             if (schema == null)
                 continue;
@@ -659,9 +655,7 @@ public class SchemaGenerator {
         String colName;
         String pkName;
         for (int i = 0; idxs != null && i < idxs.length; i++) {
-            schemaName = idxs[i].getSchemaName();
-            if (schemaName != null && schemaName.length() == 0)
-                schemaName = null;
+            schemaName = StringUtils.trimToNull(idxs[i].getSchemaName());
             schema = group.getSchema(schemaName);
             if (schema == null)
                 continue;
@@ -676,7 +670,7 @@ public class SchemaGenerator {
 
             // statistics don't have names; skip them
             name = idxs[i].getName();
-            if (name == null || name.length() == 0
+            if (StringUtils.isEmpty(name)
                 || (pkName != null && name.equalsIgnoreCase(pkName))
                 || _dict.isSystemIndex(name, table))
                 continue;
@@ -741,9 +735,7 @@ public class SchemaGenerator {
         boolean seqWas0 = false; // some drivers incorrectly start at 0
         Collection invalids = null;
         for (int i = 0; fks != null && i < fks.length; i++) {
-            schemaName = fks[i].getSchemaName();
-            if (schemaName != null && schemaName.length() == 0)
-                schemaName = null;
+            schemaName = StringUtils.trimToNull(fks[i].getSchemaName());
             schema = group.getSchema(schemaName);
             if (schema == null)
                 continue;
@@ -767,7 +759,7 @@ public class SchemaGenerator {
                 _log.trace(_loc.get("gen-fk", new Object[]{ name, table,
                     fkColName, pkTableName, pkColName, seq + "" }));
 
-            if (pkSchemaName != null && pkSchemaName.length() > 0)
+            if (!StringUtils.isEmpty(pkSchemaName))
                 pkTableName = pkSchemaName + "." + pkTableName;
             pkTable = group.findTable(pkTableName);
             if (pkTable == null)
@@ -832,9 +824,7 @@ public class SchemaGenerator {
         String sequenceSchema;
         for (int i = 0; seqs != null && i < seqs.length; i++) {
             sequenceName = seqs[i].getName();
-            sequenceSchema = seqs[i].getSchemaName();
-            if (sequenceSchema != null && sequenceSchema.length() == 0)
-                sequenceSchema = null;
+            sequenceSchema = StringUtils.trimToNull(seqs[i].getSchemaName());
 
             // ignore special tables
             if (!_openjpaTables &&

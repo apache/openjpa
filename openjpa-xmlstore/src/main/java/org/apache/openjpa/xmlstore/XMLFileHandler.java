@@ -520,7 +520,7 @@ public class XMLFileHandler {
 
                 case JavaTypes.OBJECT:
                 case JavaTypes.OID:
-                    // convert the characters into bytes, and run them through an
+                    // convert the chars into bytes, and run them through an 
                     // ObjectInputStream in order to get the serialized object
                     byte[] bytes = Base16Encoder.decode(str);
                     ByteArrayInputStream bais = new ByteArrayInputStream(bytes);

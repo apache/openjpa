@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.MappingTool;
@@ -138,7 +139,7 @@ public class JDBCBrokerFactory
     private void synchronizeMappings(ClassLoader loader) {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         String action = conf.getSynchronizeMappings();
-        if (action == null || action.length() == 0)
+        if (StringUtils.isEmpty(action))
             return;
 
         Collection classes = conf.getMetaDataRepositoryInstance().

@@ -26,6 +26,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.commons.collections.map.LinkedMap;
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.exps.AggregateListener;
@@ -540,11 +541,7 @@ public class QueryImpl
         try {
             assertOpen();
             assertNotReadOnly();
-            if (params != null)
-                params = params.trim();
-            if (params != null && params.length() == 0)
-                params = null;
-            _params = params;
+            _params = StringUtils.trimToNull(params);
             invalidateCompilation();
         } finally {
             unlock();
@@ -1110,7 +1107,7 @@ public class QueryImpl
      */
     private void logExecution(int op, Map params) {
         String s = _query;
-        if (s == null || s.length() == 0)
+        if (StringUtils.isEmpty(s))
             s = toString();
 
         String msg = "executing-query";

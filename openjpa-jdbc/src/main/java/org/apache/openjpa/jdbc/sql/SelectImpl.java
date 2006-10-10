@@ -36,6 +36,7 @@ import java.util.Stack;
 import java.util.TreeMap;
 
 import org.apache.commons.collections.iterators.EmptyIterator;
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -1264,7 +1265,7 @@ public class SelectImpl
      */
     private void where(String sql, PathJoins pj) {
         // no need to use joins...
-        if (sql == null || sql.length() == 0)
+        if (StringUtils.isEmpty(sql))
             return;
 
         if (_where == null)
@@ -1310,7 +1311,7 @@ public class SelectImpl
      */
     private void having(String sql, PathJoins pj) {
         // no need to use joins...
-        if (sql == null || sql.length() == 0)
+        if (StringUtils.isEmpty(sql))
             return;
 
         if (_having == null)

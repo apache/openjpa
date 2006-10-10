@@ -88,7 +88,7 @@ public class MappingFactoryValue
         String metaProps = metaPlugin.getProperties();
 
         // if no mapping factory set, check for default for this factory
-        if (clsName == null || clsName.length() == 0) {
+        if (StringUtils.isEmpty(clsName)) {
             String def;
             if (!StringUtils.isEmpty(mapping)) {
                 def = unalias(metaPlugin.alias(metaClsName),
@@ -96,7 +96,7 @@ public class MappingFactoryValue
                 if (def != null)
                     clsName = unalias(def);
             }
-            if (clsName == null) {
+            if (StringUtils.isEmpty(clsName)) {
                 def = unalias(metaPlugin.alias(metaClsName),
                     _metaFactoryDefaults, true);
                 if (def != null)

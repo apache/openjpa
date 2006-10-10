@@ -236,9 +236,7 @@ public class ReverseMappingTool
      * indicate no package.
      */
     public void setPackageName(String packageName) {
-        if (packageName != null && packageName.length() == 0)
-            packageName = null;
-        _package = packageName;
+        _package = StringUtils.trimToNull(packageName);
     }
 
     /**
@@ -1470,7 +1468,7 @@ public class ReverseMappingTool
      * package-private for testing.
      */
     static String replaceInvalidCharacters(String str) {
-        if (str == null || str.length() == 0)
+        if (StringUtils.isEmpty(str))
             return str;
 
         StringBuffer buf = new StringBuffer(str);
@@ -1542,14 +1540,10 @@ public class ReverseMappingTool
                 if (propNames[nameIdx] == null)
                     continue;
 
-                typeSpec = _typeMap.getProperty(propNames[nameIdx]);
-                if (typeSpec != null) {
-                    typeSpec = typeSpec.trim();
-                    if (typeSpec.length() == 0)
-                        typeSpec = null;
-                    else
-                        typeName = propNames[nameIdx];
-                }
+                typeSpec = StringUtils.trimToNull(_typeMap.getProperty
+                    (propNames[nameIdx]));
+                if (typeSpec != null) 
+                    typeName = propNames[nameIdx];
             }
             if (typeSpec != null)
                 _log.info(_loc.get("reverse-type", typeName, typeSpec));

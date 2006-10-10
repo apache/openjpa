@@ -15,9 +15,10 @@
  */
 package org.apache.openjpa.lib.meta;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.lib.util.Localizer;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.apache.openjpa.lib.util.Localizer;
 import serp.util.Strings;
 
 /**
@@ -173,8 +174,7 @@ public class CFMetaDataParser extends XMLMetaDataParser {
         throws SAXException {
         if (getClassAttributeName() != null) {
             _class = attrs.getValue(getClassAttributeName());
-            if (_package != null && _package.length() > 0
-                && _class.indexOf('.') == -1)
+            if (!StringUtils.isEmpty(_package) && _class.indexOf('.') == -1)
                 _class = _package + "." + _class;
         }
         return true;
@@ -188,8 +188,7 @@ public class CFMetaDataParser extends XMLMetaDataParser {
             _class = null;
         else {
             _class = currentText();
-            if (_package != null && _package.length() > 0
-                && _class.indexOf('.') == -1)
+            if (!StringUtils.isEmpty(_package) && _class.indexOf('.') == -1)
                 _class = _package + "." + _class;
         }
     }
@@ -289,13 +288,13 @@ public class CFMetaDataParser extends XMLMetaDataParser {
      */
     public static Class classForName(String name, String pkg,
         boolean resolve, ClassLoader loader) {
-        if (name == null || name.length() == 0)
+        if (StringUtils.isEmpty(name))
             return null;
 
         if (loader == null)
             loader = Thread.currentThread().getContextClassLoader();
         boolean fullName = name.indexOf('.') != -1;
-        boolean noPackage = pkg == null || pkg.length() == 0;
+        boolean noPackage = StringUtils.isEmpty(pkg);
         try {
             if (fullName || noPackage)
                 return Strings.toClass(name, resolve, loader);

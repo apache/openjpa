@@ -23,6 +23,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.meta.JavaTypes;
 import serp.util.Numbers;
@@ -461,9 +462,7 @@ public class Column
      * The name of the column this column joins to, if any. Used for mapping.
      */
     public void setTarget(String target) {
-        if (target != null && target.length() == 0)
-            target = null;
-        _target = target;
+        _target = StringUtils.trimToNull(target);
     }
 
     /**

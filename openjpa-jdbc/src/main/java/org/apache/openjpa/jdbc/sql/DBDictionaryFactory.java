@@ -20,6 +20,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
@@ -158,7 +159,7 @@ public class DBDictionaryFactory {
      * Guess the dictionary class name to use based on the product string.
      */
     private static String dictionaryClassForString(String prod) {
-        if (prod == null || prod.length() == 0)
+        if (StringUtils.isEmpty(prod))
             return null;
         prod = prod.toLowerCase();
 

@@ -18,6 +18,8 @@ package org.apache.openjpa.jdbc.schema;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Represents a database schema.
  *
@@ -87,9 +89,7 @@ public class Schema
     public void setName(String name) {
         if (getSchemaGroup() != null)
             throw new IllegalStateException();
-        if (name != null && name.length() == 0)
-            name = null;
-        _name = name;
+        _name = StringUtils.trimToNull(name);
     }
 
     /**

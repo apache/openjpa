@@ -48,9 +48,12 @@ public class LogOutputStream extends ByteArrayOutputStream {
 
     public void flush() throws IOException {
         super.flush();
+        byte[] bytes = toByteArray();
+        if (bytes.length == 0)
+            return;
 
-        String msg = new String(toByteArray());
-        if (msg != null && msg.length() > 0 && msg.indexOf(_sep) != -1) {
+        String msg = new String(bytes);
+        if (msg.indexOf(_sep) != -1) {
             // break up the message based on the line separator; this
             // may be because the flushed buffer contains mutliple lines
             for (StringTokenizer tok = new StringTokenizer(msg, _sep);

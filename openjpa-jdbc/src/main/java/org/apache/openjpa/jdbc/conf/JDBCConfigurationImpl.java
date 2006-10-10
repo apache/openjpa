@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCBrokerFactory;
@@ -535,7 +536,7 @@ public class JDBCConfigurationImpl
         if (dbdictionary == null) {
             String clsName = dbdictionaryPlugin.getClassName();
             String props = dbdictionaryPlugin.getProperties();
-            if (clsName != null && clsName.length() > 0) {
+            if (!StringUtils.isEmpty(clsName)) {
                 dbdictionary = DBDictionaryFactory.newDBDictionary
                     (this, clsName, props);
             } else {
@@ -754,7 +755,7 @@ public class JDBCConfigurationImpl
                 // the driver name is always required, so if not specified,
                 // then no connection factory 2
                 String driver = getConnection2DriverName();
-                if (driver != null && driver.length() > 0)
+                if (!StringUtils.isEmpty(driver))
                     ds = DataSourceFactory.newDataSource(this, true);
             }
             if (ds != null) {

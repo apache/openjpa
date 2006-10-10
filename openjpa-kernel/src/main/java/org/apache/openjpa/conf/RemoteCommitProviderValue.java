@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.conf;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.RemoteCommitProvider;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -128,12 +129,9 @@ public class RemoteCommitProviderValue
             return;
 
         _opts = Configurations.parseProperties(getProperties());
-        String transmit = _opts.removeProperty("transmitPersistedObjectIds",
-            "TransmitPersistedObjectIds", null);
-        if (transmit != null) {
-            transmit = transmit.trim();
-            if (transmit.length() > 0)
-                _transmitPersIds = Boolean.valueOf (transmit);
-		}
+        String transmit = StringUtils.trimToNull(_opts.removeProperty
+            ("transmitPersistedObjectIds", "TransmitPersistedObjectIds", null));
+        if (transmit != null)
+            _transmitPersIds = Boolean.valueOf (transmit);
 	}
 }

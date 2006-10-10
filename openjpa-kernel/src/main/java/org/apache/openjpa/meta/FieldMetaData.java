@@ -1036,12 +1036,7 @@ public class FieldMetaData
      * the field's elements.
      */
     public void setOrderDeclaration(String dec) {
-        if (dec != null) {
-            dec = dec.trim();
-            if (dec.length() == 0)
-                dec = null;
-        }
-        _orderDec = dec;
+        _orderDec = StringUtils.trimToNull(dec);
         _orders = null;
     }
 
@@ -1398,7 +1393,7 @@ public class FieldMetaData
      * @return the method for invocation
      */
     private Method findMethod(String method) {
-        if (method == null || method.length() == 0)
+        if (StringUtils.isEmpty(method))
             return null;
 
         // get class name and get package name divide on the last '.', so the

@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -535,9 +536,7 @@ public class DBDictionary
             return (char) getInt(rs, column);
 
         String str = getString(rs, column);
-        if (str == null || str.length() == 0)
-            return 0;
-        return str.charAt(0);
+        return (StringUtils.isEmpty(str)) ? 0 : str.charAt(0);
     }
 
     /**
@@ -642,7 +641,7 @@ public class DBDictionary
     public Locale getLocale(ResultSet rs, int column)
         throws SQLException {
         String str = getString(rs, column);
-        if (str == null || str.length() == 0)
+        if (StringUtils.isEmpty(str))
             return null;
 
         String[] params = Strings.split(str, "_", 3);
@@ -1488,7 +1487,7 @@ public class DBDictionary
      * from {@link Types}.
      */
     public String getTypeName(Column col) {
-        if (col.getTypeName() != null && col.getTypeName().length() > 0)
+        if (!StringUtils.isEmpty(col.getTypeName()))
             return appendSize(col, col.getTypeName());
 
         if (col.isAutoAssigned() && autoAssignTypeName != null)
@@ -1623,7 +1622,7 @@ public class DBDictionary
             joinSyntax = SYNTAX_TRADITIONAL;
         else if ("database".equals(syntax))
             joinSyntax = SYNTAX_DATABASE;
-        else if (syntax != null && syntax.length() > 0)
+        else if (!StringUtils.isEmpty(syntax))
             throw new IllegalArgumentException(syntax);
     }
 
@@ -3252,8 +3251,7 @@ public class DBDictionary
             == DatabaseMetaData.columnNoNulls);
 
         String def = colMeta.getString("COLUMN_DEF");
-        if (def != null && def.length() > 0
-            && !"null".equalsIgnoreCase(def))
+        if (!StringUtils.isEmpty(def) && !"null".equalsIgnoreCase(def))
             c.setDefaultString(def);
         return c;
     }
@@ -3661,8 +3659,7 @@ public class DBDictionary
 
         // if user has unset sequence sql, null it out so we know sequences
         // aren't supported
-        if (nextSequenceQuery != null && nextSequenceQuery.length() == 0)
-            nextSequenceQuery = null;
+        nextSequenceQuery = StringUtils.trimToNull(nextSequenceQuery);
     }
 
     //////////////////////////////////////
@@ -3679,7 +3676,7 @@ public class DBDictionary
         throws SQLException {
         if (!connected)
             connectedConfiguration(conn);
-        if (initializationSQL != null && initializationSQL.length() > 0) {
+        if (!StringUtils.isEmpty(initializationSQL)) {
             PreparedStatement stmnt = null;
             try {
                 stmnt = conn.prepareStatement(initializationSQL);

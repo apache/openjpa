@@ -19,6 +19,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * A list of plugins. Defaults and aliases on plugin lists apply only
  * to individual class names.
@@ -117,9 +119,9 @@ public class PluginListValue extends ObjectValue {
      * properties string.
      */
     public void setString(String str) {
-        if (str == null || str.length() == 0)
+        if (StringUtils.isEmpty(str))
             str = getDefault();
-        if (str == null || str.length() == 0) {
+        if (StringUtils.isEmpty(str)) {
             _names = EMPTY;
             _props = EMPTY;
             set(null, true);

@@ -15,6 +15,8 @@
  */
 package org.apache.openjpa.lib.conf;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * An int {@link Value}.
  *
@@ -54,7 +56,7 @@ public class IntValue extends Value {
     }
 
     protected void setInternalString(String val) {
-        if (val == null || val.length() == 0)
+        if (StringUtils.isEmpty(val))
             set(0);
         else
             set(Integer.parseInt(val));

@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.xml.Commentable;
@@ -185,7 +186,7 @@ public class QueryMetaData
     public void setInto(Query query) {
         if (_candidate != null)
             query.setCandidateType(_candidate, true);
-        if (_query != null && _query.length() > 0)
+        if (!StringUtils.isEmpty(_query))
             query.setQuery(_query);
         if (_res != null)
             query.setResultType(_res);
