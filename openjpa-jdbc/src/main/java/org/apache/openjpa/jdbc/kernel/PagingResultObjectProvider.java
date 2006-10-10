@@ -383,10 +383,7 @@ public class PagingResultObjectProvider
                         (_page[j]), store, fetch, res);
             } finally {
                 if (res instanceof Closeable)
-                    try {
-                        ((Closeable) res).close();
-                    } catch (Exception e) {
-                    }
+                    try { ((Closeable) res).close(); } catch (Exception e) {}
             }
         }
     }
