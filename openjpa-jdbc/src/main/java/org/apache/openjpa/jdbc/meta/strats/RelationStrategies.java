@@ -74,7 +74,7 @@ public class RelationStrategies {
     public static Object toDataStoreValue(ValueMapping vm, Object val,
         JDBCStore store) {
         ClassMapping rel;
-        if (val == null || val.getClass() == vm.getType())
+        if (val == null || val.getClass() == vm.getType()) 
             rel = vm.getTypeMapping(); // common case
         else
             rel = vm.getMappingRepository().getMapping(val.getClass(),

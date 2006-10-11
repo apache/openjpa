@@ -27,6 +27,7 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Schemas;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
@@ -352,6 +353,7 @@ class PCPath
         Action action;
         Variable var;
         Iterator itr = (_actions == null) ? null : _actions.iterator();
+        FieldMapping field;
         while (itr != null && itr.hasNext()) {
             action = (Action) itr.next();
 
@@ -369,8 +371,18 @@ class PCPath
                     rel.getTable());
             } else {
                 // move past the previous field, if any
-                if (pstate.field != null)
+                field = (FieldMapping) action.data;
+                if (pstate.field != null) {
+                    // if this is the second-to-last field and the last is
+                    // the related field this field joins to, no need to
+                    // traverse: just use this field's fk columns
+                    if (!itr.hasNext() && (flags & JOIN_REL) == 0
+                        && isJoinedField(pstate.field, key, field)) {
+                        pstate.cmpfield = field;
+                        break;
+                    }
                     rel = traverseField(pstate, key, forceOuter, false);
+                }
 
                 // mark if the next traversal should go through
                 // the key rather than value
@@ -378,7 +390,7 @@ class PCPath
                 forceOuter |= action.op == Action.GET_OUTER;
 
                 // get mapping for the current field
-                pstate.field = (FieldMapping) action.data;
+                pstate.field = field;
                 owner = pstate.field.getDefiningMapping();
                 if (pstate.field.getManagement() 
                     != FieldMapping.MANAGE_PERSISTENT)
@@ -421,14 +433,49 @@ class PCPath
     }
 
     /**
+     * Return whether the given source field joins to the given target field.
+     */
+    private static boolean isJoinedField(FieldMapping src, boolean key, 
+        FieldMapping target) {
+        ValueMapping vm;
+        switch (src.getTypeCode()) {
+            case JavaTypes.ARRAY:
+            case JavaTypes.COLLECTION:
+                vm = src.getElementMapping();
+                break;
+            case JavaTypes.MAP:
+                vm = (key) ? src.getKeyMapping() : src.getElementMapping();
+                break;
+            default:
+                vm = src;
+        }
+        if (vm.getJoinDirection() != ValueMapping.JOIN_FORWARD)
+            return false;
+        ForeignKey fk = vm.getForeignKey();
+        if (fk == null)
+            return false; 
+        
+        // foreign key must join to target columns
+        Column[] rels = fk.getColumns();
+        Column[] pks = target.getColumns(); 
+        if (rels.length != pks.length)
+            return false;
+        for (int i = 0; i < rels.length; i++)
+            if (fk.getPrimaryKeyColumn(rels[i]) != pks[i])
+                return false;
+        return true;
+    }
+
+    /**
      * Expression state.
      */
     private static class PathExpState
         extends ExpState {
 
-        private FieldMapping field = null;
-        private Column[] cols = null;
-        private boolean joinedRel = false;
+        public FieldMapping field = null;
+        public FieldMapping cmpfield = null;
+        public Column[] cols = null;
+        public boolean joinedRel = false;
 
         public PathExpState(Joins joins) {
             super(joins);
@@ -483,15 +530,16 @@ class PCPath
     public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state, 
         Object val) {
         PathExpState pstate = (PathExpState) state;
-        if (pstate.field != null) {
+        FieldMapping field = (pstate.cmpfield != null) ? pstate.cmpfield 
+            : pstate.field;
+        if (field != null) {
             if (_key)
-                return pstate.field.toKeyDataStoreValue(val, ctx.store);
-            if (pstate.field.getElement().getDeclaredTypeCode() 
-                != JavaTypes.OBJECT)
-                return pstate.field.toDataStoreValue(val, ctx.store);
+                return field.toKeyDataStoreValue(val, ctx.store);
+            if (field.getElement().getDeclaredTypeCode() != JavaTypes.OBJECT)
+                return field.toDataStoreValue(val, ctx.store);
 
-            val = pstate.field.getExternalValue(val, ctx.store.getContext());
-            return pstate.field.toDataStoreValue(val, ctx.store);
+            val = field.getExternalValue(val, ctx.store.getContext());
+            return field.toDataStoreValue(val, ctx.store);
         }
         return _class.toDataStoreValue(val, _class.getPrimaryKeyColumns(),
             ctx.store);
