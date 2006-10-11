@@ -2565,19 +2565,9 @@ public class SelectImpl
             // the joins will all be done in the from select
             boolean createJoin = _sel._from == null;
             Table table1 = null;
-            Table table2 = null;
             int alias1 = -1;
             if (createJoin) {
                 table1 = (inverse) ? fk.getPrimaryKeyTable() : fk.getTable();
-                table2 = (inverse) ? fk.getTable() : fk.getPrimaryKeyTable();
-                if (target != null) {
-                    while (target.getTable() != table2) {
-                        target.joinSuperclass(this, false);
-                        target = target.getJoinablePCSuperclassMapping();
-                        if (target == null)
-                            throw new InternalException();
-                    }
-                }
                 alias1 = _sel.getTableIndex(table1, this, true);
             }
 
@@ -2591,6 +2581,8 @@ public class SelectImpl
             _outer = outer;
 
             if (createJoin) {
+                Table table2 = (inverse) ? fk.getTable() 
+                    : fk.getPrimaryKeyTable();
                 int alias2 = _sel.getTableIndex(table2, this, true);
                 Join j = new Join(table1, alias1, table2, alias2, fk, inverse);
                 j.setType((outer) ? Join.TYPE_OUTER : Join.TYPE_INNER);
