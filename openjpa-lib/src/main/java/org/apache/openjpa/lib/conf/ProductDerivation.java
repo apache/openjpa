@@ -46,6 +46,15 @@ public interface ProductDerivation {
     public String getConfigurationPrefix();
 
     /**
+     * Ensure that this derivation is valid.  This action might consist of
+     * loading classes for the product this derivation represents to be sure
+     * they exist.  Throw any throwable to indicate an invalid derivation.
+     * Invalid derivations will not be used.
+     */
+    public void validate()
+        throws Exception;
+
+    /**
      * Load globals into the returned ConfigurationProvider, or return null if 
      * no globals are found.
      */

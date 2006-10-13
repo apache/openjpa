@@ -76,6 +76,13 @@ public class PersistenceProductDerivation
     public int getType() {
         return TYPE_SPEC;
     }
+
+    @Override
+    public void validate()
+        throws Exception {
+        // make sure JPA is available
+        javax.persistence.EntityManagerFactory.class.getClassLoader();
+    }
     
     @Override
     public boolean beforeConfigurationLoad(Configuration c) {

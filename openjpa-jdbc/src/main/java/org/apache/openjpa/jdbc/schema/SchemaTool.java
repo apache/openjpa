@@ -625,44 +625,6 @@ public class SchemaTool {
             }
         }
 
-        // indexes
-        /*
- if (_indexes)
- {
- Index[] idxs;
- Index idx;
- for (int i = 0; i < schemas.length; i++)
- {
- tabs = schemas[i].getTables ();
- for (int j = 0; j < tabs.length; j++)
- {
- if (!isDroppable (tabs[j]))
- continue;
- idxs = tabs[j].getIndexes ();
- reposTable = repos.findTable (tabs[j]);
- if (!tables && reposTable == null)
- continue;
-
- for (int k = 0; k < idxs.length; k++)
- {
- idx = null;
- if (reposTable != null)
- idx = reposTable.getIndex (idxs[k].getName ());
- if (reposTable == null || idx == null
- || !idxs[k].equalsIndex (idx))
- {
- if (dropIndex (idxs[k]))
- tabs[j].removeIndex (idxs[k]);
- else
- _log.warn (_loc.get ("drop-index", idxs[k],
- tabs[j]));
- }
- }
- }
- }
- }
-          */
-
         // primary keys
         if (_pks) {
             PrimaryKey pk;
@@ -830,41 +792,6 @@ public class SchemaTool {
             }
         }
 
-        // indexes
-        /*
- if (_indexes)
- {
- Index[] idxs;
- Index idx;
- for (int i = 0; i < schemas.length; i++)
- {
- tabs = schemas[i].getTables ();
- for (int j = 0; j < tabs.length; j++)
- {
- if (!isDroppable (tabs[j]))
- continue;
- idxs = tabs[j].getIndexes ();
- dbTable = db.findTable (tabs[j]);
- for (int k = 0; k < idxs.length; k++)
- {
- idx = null;
- if (dbTable != null)
- idx = dbTable.getIndex (idxs[k].getName ());
- if (dbTable == null || idx == null)
- continue;
-
- if (dropIndex (idxs[k]))
- if (dbTable != null)
- dbTable.removeIndex (idx);
- else
- _log.warn (_loc.get ("drop-index", idxs[k],
- tabs[j]));
- }
- }
- }
- }
-          */
-
         // drop the tables we calculated above
         dropTables(drops, db);
 
@@ -885,11 +812,12 @@ public class SchemaTool {
                     if (dbTable == null || col == null)
                         continue;
 
-                    if (dropColumn(cols[k]))
+                    if (dropColumn(cols[k])) {
                         if (dbTable != null)
                             dbTable.removeColumn(col);
                         else
                             _log.warn(_loc.get("drop-col", cols[k], tabs[j]));
+                    }
                 }
             }
         }
@@ -948,11 +876,9 @@ public class SchemaTool {
         if (tables.isEmpty())
             return;
 
-        Collection nodes = tables;
-
         Table table;
         Table changeTable;
-        for (Iterator itr = nodes.iterator(); itr.hasNext();) {
+        for (Iterator itr = tables.iterator(); itr.hasNext();) {
             table = (Table) itr.next();
             if (dropTable(table)) {
                 changeTable = change.findTable(table);
@@ -1338,11 +1264,14 @@ public class SchemaTool {
      * <ul>
      * <li>Write a script to stdout to re-create the current database
      * schema:<br />
-     * <code>java org.apache.openjpa.jdbc.schema.SchemaTool -f stdout -a createDB</code>
+     * <code>java org.apache.openjpa.jdbc.schema.SchemaTool -f stdout 
+     * -a createDB</code></li>
      * <li>Drop the current database schema:<br />
-     * <code>java org.apache.openjpa.jdbc.schema.SchemaTool -a dropDB</code></li>
+     * <code>java org.apache.openjpa.jdbc.schema.SchemaTool 
+     * -a dropDB</code></li>
      * <li>Create a schema based on an XML schema definition file:<br />
-     * <code>java org.apache.openjpa.jdbc.schema.SchemaTool myschema.xml</code></li>
+     * <code>java org.apache.openjpa.jdbc.schema.SchemaTool 
+     * myschema.xml</code></li>
      * </ul>
      */
     public static void main(String[] args)

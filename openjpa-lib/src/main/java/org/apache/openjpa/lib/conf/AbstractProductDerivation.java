@@ -31,6 +31,10 @@ public abstract class AbstractProductDerivation
         return null;
     }
 
+    public void validate() 
+        throws Exception {
+    }
+
     public ConfigurationProvider loadGlobals(ClassLoader loader)
         throws Exception {
         return null;
