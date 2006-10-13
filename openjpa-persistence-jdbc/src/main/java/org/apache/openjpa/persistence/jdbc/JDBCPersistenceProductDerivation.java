@@ -44,6 +44,13 @@ public class JDBCPersistenceProductDerivation
     }
 
     @Override
+    public void validate()
+        throws Exception {
+        // make sure JPA is available
+        javax.persistence.EntityManagerFactory.class.getClassLoader();
+    }
+
+    @Override
     public boolean beforeConfigurationLoad(Configuration c) {
         if (c instanceof OpenJPAConfiguration) {
             ((OpenJPAConfiguration) c).getStoreFacadeTypeRegistry().

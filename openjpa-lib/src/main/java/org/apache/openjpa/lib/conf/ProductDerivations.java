@@ -38,31 +38,41 @@ public class ProductDerivations {
         (ProductDerivations.class);
 
     private static final ProductDerivation[] _derivations;
+    private static final String[] _derivationNames;
+    private static final Throwable[] _derivationErrors;
     private static final String[] _prefixes;
     static {
-        ClassLoader cl = ProductDerivation.class.getClassLoader();
-        String[] pds = Services.getImplementors(ProductDerivation.class, cl);
-        List derivations = new ArrayList(pds.length);
-        for (int i = 0; i < pds.length; i++) {
+        ClassLoader l = ProductDerivation.class.getClassLoader();
+        _derivationNames = Services.getImplementors(ProductDerivation.class, l);
+        _derivationErrors = new Throwable[_derivationNames.length];
+        List derivations = new ArrayList(_derivationNames.length);
+        for (int i = 0; i < _derivationNames.length; i++) {
             try {
-                Class cls = Class.forName(pds[i], true, cl);
-                derivations.add(cls.newInstance());
-            } catch (UnsupportedClassVersionError ucve) {
-                // ignore so that < 1.5 users don't get errors about
-                // 1.5 products they aren't using
+                ProductDerivation d = (ProductDerivation) Class.
+                    forName(_derivationNames[i], true, l).newInstance();
+                d.validate();
+                derivations.add(d);
             } catch (Throwable t) {
-                System.err.println(_loc.get("bad-product-derivation", pds[i], 
-                    t));
+                _derivationErrors[i] = t;
             }
         }
 
         // must be at least one product derivation to define metadata factories,
         // etc. 
         if (derivations.isEmpty()) {
-            Localizer loc = Localizer.forPackage(ProductDerivations.class);
-            throw new MissingResourceException(loc.get("no-product-derivations",
-                ProductDerivation.class.getName()).getMessage(),
-                ProductDerivations.class.getName(), "derivations");
+            throw new MissingResourceException(_loc.get
+                ("no-product-derivations", ProductDerivation.class.getName(),
+                derivationErrorsToString()).getMessage(), 
+                ProductDerivations.class.getName(),"derivations");
+        }
+
+        // if some derivations weren't instantiable, warn
+        for (int i = 0; i < _derivationErrors.length; i++) {
+            if (_derivationErrors[i] == null)
+                continue;
+            System.err.println(_loc.get("bad-product-derivations",
+                ProductDerivations.class.getName()));
+            break;
         }
 
         Collections.sort(derivations, new ProductDerivationComparator());
@@ -269,5 +279,29 @@ public class ProductDerivations {
                 getName());
 		}
 	}
+
+    /**
+     * Prints product derivation information.
+     */
+    public static void main(String[] args) {
+        System.err.println(derivationErrorsToString());
+    }
+
+    /**
+     * Return a message about the status of each product derivation.
+     */
+    private static String derivationErrorsToString() {
+        StringBuffer buf = new StringBuffer();
+        buf.append("ProductDerivations: ").append(_derivationNames.length);
+        for (int i = 0; i < _derivationNames.length; i++) {
+            buf.append("\n").append(i + 1).append(". ").
+                append(_derivationNames[i]).append(": ");
+            if (_derivationErrors[i] == null)
+                buf.append("OK");
+            else
+                buf.append(_derivationErrors[i].toString());
+        }
+        return buf.toString();
+    }
 }
 

@@ -3561,14 +3561,8 @@ public class DBDictionary
             return key;
         } finally {
             if (rs != null)
-                try {
-                    rs.close();
-                } catch (SQLException se) {
-                }
-            try {
-                stmnt.close();
-            } catch (SQLException se) {
-            }
+                try { rs.close(); } catch (SQLException se) {}
+            try { stmnt.close(); } catch (SQLException se) {} 
         }
     }
 
