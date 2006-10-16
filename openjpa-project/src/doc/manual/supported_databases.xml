@@ -216,6 +216,20 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
+                        MySQL
+                    </entry>
+                    <entry colname="dbversion">
+                        5.0.26
+                    </entry>
+                    <entry colname="drivname">
+                        MySQL Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        3.0.14
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
                         Oracle
                     </entry>
                     <entry colname="dbversion">
@@ -253,7 +267,21 @@ by OpenJPA.
                         PostgreSQL Native Driver
                     </entry>
                     <entry colname="drivversion">
-                        7.2 (7.2)
+                        8.1
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        PostgreSQL
+                    </entry>
+                    <entry colname="dbversion">
+                        8.1.5
+                    </entry>
+                    <entry colname="drivname">
+                        PostgreSQL Native Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        8.1
                     </entry>
                 </row>
                 <row>
