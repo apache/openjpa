@@ -34,8 +34,6 @@ import serp.util.Numbers;
  * Implementation of {@link OpenJPAStateManager} designed to retrieve
  * values from a detached instance, including when managed by a
  * {@link DetachedStateManager}.
- *
- * @author Abe White
  */
 public class DetachedValueStateManager
     extends TransferFieldManager
@@ -278,8 +276,7 @@ public class DetachedValueStateManager
         StateManager sm = _pc.pcGetStateManager();
         if (sm != null) {
             if (sm instanceof DetachedStateManager)
-                return fetchFromDetachedSM((DetachedStateManager) sm,
-                    field);
+                return fetchFromDetachedSM((DetachedStateManager) sm, field);
             throw new UnsupportedException(_loc.get("detach-val-badsm", _pc));
         }
         provideField(field);
