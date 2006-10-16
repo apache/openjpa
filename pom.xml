@@ -213,6 +213,7 @@
     </build>
     <reporting>
         <plugins>
+
             <plugin>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <reportSets>
@@ -238,6 +239,34 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>taglist-maven-plugin</artifactId>
             </plugin>
+
+            <!--
+                note that findbugs might require a lot of memory; set it with:
+                    export MAVEN_OPTS=-Xmx1000M
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>1.0-beta-1</version>
+                <configuration>
+                    <!-- <threshold>High|Normal|Low|Exp|Ignore</threshold> -->
+                    <threshold>Normal</threshold>
+
+                    <!-- <effort>Min|Default|Max</effort> -->
+                    <effort>Max</effort>
+
+                    <!--
+                    <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
+                    <includeFilterFile>findbugs-include.xml</includeFilterFile>
+                    <visitors>FindDeadLocalStores,UnreadFields</visitors>
+                    <omitVisitors>FindDeadLocalStores,UnreadFields</omitVisitors>
+
+                    <pluginList>/libs/fb-contrib/fb-contrib-2.8.0.jar</pluginList>
+                    -->
+                </configuration>
+            </plugin>
+
+
         </plugins>
     </reporting>
 
