@@ -126,6 +126,10 @@ public class LogicalUnion
         return sels[0].getConfiguration();
     }
 
+    public DBDictionary getDBDictionary() {
+        return dict;
+    }
+
     public SQLBuffer toSelect(boolean forUpdate, JDBCFetchConfiguration fetch) {
         return dict.toSelect(sels[0], forUpdate, fetch);
     }
