@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa</artifactId>
-        <version>0.9.5-incubating-SNAPSHOT</version>
+        <version>0.9.5-incubating</version>
     </parent>
     <build>
         <plugins>
