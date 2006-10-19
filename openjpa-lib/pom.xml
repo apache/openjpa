@@ -76,6 +76,23 @@
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
+                    <!--
+                        delete the sun/misc/Perf.class file, which is 
+                        only there as a compilation stub
+                    -->
+                    <execution>
+                        <id>delete sun.misc.Perf</id>
+                        <phase>process-classes</phase>
+                        <configuration>
+                            <tasks>
+                                <delete failonerror="true"
+                                dir="${project.build.outputDirectory}/sun/"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
                     <execution>
                         <id>set subversion revision</id>
                         <phase>compile</phase>
