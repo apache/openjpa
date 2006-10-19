@@ -97,7 +97,7 @@
                                         <attribute name="Specification-Version"
                                             value="${project.version}" />
                                         <attribute name="Specification-Vendor"
-                                            value="$${project.organization.name}" />
+                                            value="${project.organization.name}" />
                                         <attribute name="Implementation-Title"
                                             value="${project.name}" />
                                         <attribute name="Implementation-Version"
