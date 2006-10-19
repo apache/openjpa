@@ -19,14 +19,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 
 /**
  * Simple test case to test the GenerationType for @Id...
@@ -36,13 +38,24 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 public class TestGenerationType
     extends TestCase {
 
-    private EntityManagerFactory emf;
+    private OpenJPAEntityManagerFactory emf;
 
     public void setUp() {
         Map props = new HashMap();
         props.put("openjpa.MetaDataFactory",
             "jpa(Types=" + IdentityGenerationType.class.getName() + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
+        emf = (OpenJPAEntityManagerFactory) Persistence.
+            createEntityManagerFactory("test", props);
+        /*
+         * If the DBDictionary doesn't support AutoAssign(ment) of column
+         * values, then null out the emf instance to prevent the rest of
+         * the tests from executing.
+         */
+        JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
+        if (!conf.getDBDictionaryInstance().supportsAutoAssign) {
+            emf = null;
+        }
+
     }
 
     public void tearDown() {
@@ -60,6 +73,8 @@ public class TestGenerationType
     }
 
     public void testCreateEntityManager() {
+        if (emf == null)
+            return;
         EntityManager em = emf.createEntityManager();
 
         EntityTransaction t = em.getTransaction();
@@ -77,6 +92,8 @@ public class TestGenerationType
     }
 
     public void testPersist() {
+        if (emf == null)
+            return;
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new IdentityGenerationType());
@@ -85,6 +102,8 @@ public class TestGenerationType
     }
 
     public void testQuery() {
+        if (emf == null)
+            return;
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         IdentityGenerationType igt = new IdentityGenerationType();
