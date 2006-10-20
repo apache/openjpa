@@ -12,8 +12,8 @@
 
             mvn clean deploy -Pjavadoc-profile,docbook-profile,sign-release
 
-        Note that to sign the release, you need to have created a GPG
-        key. See http://apache.org/dev/release-signing.html
+        Note that to sign the release, you need to have "gpg" installed and
+        create a key. See http://apache.org/dev/release-signing.html
     -->
     <modelVersion>4.0.0</modelVersion>
     <artifactId>openjpa-project</artifactId>
