@@ -11,11 +11,16 @@
         </fileSet>
         <fileSet>
             <includes>
-                <include>README*</include>
-                <include>DISCLAIMER*</include>
-                <include>LICENSE*</include>
-                <include>STATUS*</include>
-                <include>NOTICE*</include>
+                <include>README</include>
+                <include>DISCLAIMER</include>
+                <include>LICENSE</include>
+                <include>STATUS</include>
+                <include>NOTICE</include>
+                <include>README.txt</include>
+                <include>DISCLAIMER.txt</include>
+                <include>LICENSE.txt</include>
+                <include>STATUS.txt</include>
+                <include>NOTICE.txt</include>
             </includes>
         </fileSet>
         <!--
