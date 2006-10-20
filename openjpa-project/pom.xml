@@ -7,6 +7,13 @@
         To build the distribution files from project root:
 
         mvn clean compile package -Dtest=false
+
+        To build and deploy a full digned release with docs, run:
+
+            mvn clean deploy -Pjavadoc-profile,docbook-profile,sign-release
+
+        Note that to sign the release, you need to have created a GPG
+        key. See http://apache.org/dev/release-signing.html
     -->
     <modelVersion>4.0.0</modelVersion>
     <artifactId>openjpa-project</artifactId>
@@ -17,6 +24,13 @@
         <artifactId>openjpa</artifactId>
         <version>0.9.6-incubating-SNAPSHOT</version>
     </parent>
+
+    <properties>
+        <openjpa.release.keyAlias>${user.name}@apache.org</openjpa.release.keyAlias>
+        <openjpa.assembly.finalName>openjpa-${version}</openjpa.assembly.finalName>
+        <openjpa.assembly.outputDirectory>${project.basedir}/target/assembly</openjpa.assembly.outputDirectory>
+    </properties>
+
     <build>
         <!-- needed to let maven pass the "compile" phase -->
         <testSourceDirectory>/none/</testSourceDirectory>
@@ -133,8 +147,8 @@
                         </goals>
                         <configuration>
                             <descriptor>assembly.xml</descriptor>
-                            <finalName>openjpa-${version}</finalName>
-                            <outputDirectory>${project.basedir}/target/assembly</outputDirectory>
+                            <finalName>${openjpa.assembly.finalName}</finalName>
+                            <outputDirectory>${openjpa.assembly.outputDirectory}</outputDirectory>
                             <workDirectory>target/work</workDirectory>
                         </configuration>
                     </execution>
@@ -248,6 +262,56 @@
             <activation>
                 <property>
                     <name>builddocs</name>
+                    <value>true</value>
+                </property>
+            </activation>
+        </profile>
+
+        <!-- sign the release files -->
+        <profile>
+            <id>sign-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>deploy</phase>
+                                <configuration>
+                                    <tasks>
+                                    <echo>Signing release files...</echo>
+                                    <macrodef name="sign-file">
+                                        <attribute name="file" />
+                                        <sequential>
+                                        <delete failonerror="false"
+                                            file="@{file}.asc"/>
+                                        <exec executable="gpg"
+                                            failonerror="true">
+                                            <arg value="--batch"/>
+                                            <arg value="--verbose"/>
+                                            <arg value="--default-key"/>
+                                            <arg value="${openjpa.release.keyAlias}"/>
+                                            <arg value="--armor"/>
+                                            <arg value="--detach-sig"/>
+                                            <arg value="@{file}"/>
+                                        </exec>
+                                        </sequential>
+                                    </macrodef>
+                                    <sign-file file="${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}.zip"/>
+                                    <sign-file file="${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-sources.zip"/>
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <activation>
+                <property>
+                    <name>sign</name>
                     <value>true</value>
                 </property>
             </activation>
