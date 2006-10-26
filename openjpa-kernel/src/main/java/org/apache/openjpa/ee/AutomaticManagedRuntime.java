@@ -58,10 +58,6 @@ public class AutomaticManagedRuntime
     private static final String [] METHODS = new String[]{
         "com.arjuna.jta.JTA_TransactionManager.transactionManager", // hp
         "com.bluestone.jta.SaTransactionManagerFactory.SaGetTransactionManager",
-        "com.ibm.ejs.jts.jta.JTSXA.getTransactionManager",
-        "com.ibm.ejs.jts.jta.TransactionManagerFactory.getTransactionManager",
-        "com.ibm.ws.Transaction.TransactionManagerFactory."
-            + "getTransactionManager", // WS 5.1
         "org.openejb.OpenEJB.getTransactionManager",
         "com.sun.jts.jta.TransactionManagerImpl.getTransactionManagerImpl",
         "com.inprise.visitransact.jta.TransactionManagerImpl."
@@ -69,6 +65,7 @@ public class AutomaticManagedRuntime
     };
     private static final ManagedRuntime WLS;
     private static final ManagedRuntime SUNONE;
+    private static final ManagedRuntime WAS;
 
     private static Localizer _loc = Localizer.forPackage
         (AutomaticManagedRuntime.class);
@@ -87,6 +84,16 @@ public class AutomaticManagedRuntime
         } catch (Throwable t) {
         }
         SUNONE = mr;
+
+        mr = null;
+        try {
+            mr = new WASManagedRuntime();
+        }
+        catch(Throwable t) {
+
+        }
+        WAS= mr;
+
     }
 
     private Configuration _conf = null;
@@ -108,6 +115,19 @@ public class AutomaticManagedRuntime
             }
             if (tm != null) {
                 _runtime = WLS;
+                return tm;
+            }
+        }
+
+        if (WAS != null) {
+            try {
+                ((Configurable)WAS).setConfiguration(_conf);
+                tm = WAS.getTransactionManager();
+            } catch (Throwable t) {
+                errors.add(t);
+            }
+            if (tm != null) {
+                _runtime = WAS;
                 return tm;
             }
         }

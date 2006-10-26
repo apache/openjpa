@@ -103,6 +103,19 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
+                    <execution>
+						<id>add-was-interfaces</id>
+						<phase>process-classes</phase>
+						<configuration>
+							<tasks>
+								<java
+									classname="org.apache.openjpa.util.WASTransformer" classpathref="maven.runtime.classpath" />
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
                 </executions>
             </plugin>
         </plugins>
