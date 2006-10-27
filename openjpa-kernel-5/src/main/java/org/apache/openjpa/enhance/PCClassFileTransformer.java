@@ -198,7 +198,7 @@ public class PCClassFileTransformer
             clsEntry = table.readUnsignedShort(idx);
             utfEntry = table.readUnsignedShort(table.get(clsEntry));
             name = table.readString(table.get(utfEntry));
-            if ("openjpa/enhance/PersistenceCapable".equals(name))
+            if ("org/apache/openjpa/enhance/PersistenceCapable".equals(name))
                 return true;
         }
         return false;
