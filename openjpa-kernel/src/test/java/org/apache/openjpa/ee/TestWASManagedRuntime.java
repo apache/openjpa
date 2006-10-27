@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.openjpa.util;
+package org.apache.openjpa.ee;
 
 import junit.framework.TestCase;
 
-import org.apache.openjpa.util.WASTransformer;
 import serp.util.Strings;
 
 /**
- * Test class for WASTransformer.
+ * Test class for build transformation performed by WASManagedRuntime.
  *
  */
-public class TestWASTransformer extends TestCase {
+public class TestWASManagedRuntime extends TestCase {
 
     /**
      * This test will verify that the WASManagedRuntime$WASSynchronization
@@ -41,12 +40,13 @@ public class TestWASTransformer extends TestCase {
         String msg = null;
 
         try {
-            Class.forName(WASTransformer._class);
+            Class.forName(WASManagedRuntime.CLASS);
             fail("expected an exception to be thrown");
         } catch (NoClassDefFoundError e) {
             msg = e.getMessage();
         }
-        String interfaceName = Strings.getClassName(WASTransformer._interface);
+        String interfaceName = Strings.
+            getClassName(WASManagedRuntime.INTERFACE);
         assertTrue("message should have contained "
             + interfaceName + ", but was '" + msg + "'",
             msg.contains(interfaceName));
