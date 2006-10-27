@@ -18,6 +18,7 @@ package org.apache.openjpa.util;
 import junit.framework.TestCase;
 
 import org.apache.openjpa.util.WASTransformer;
+import serp.util.Strings;
 
 /**
  * Test class for WASTransformer.
@@ -35,7 +36,7 @@ public class TestWASTransformer extends TestCase {
      * @throws ClassNotFoundException
      * @author Michael Dick
      */
-    public void testInterfaceAdded()throws ClassNotFoundException {
+    public void testInterfaceAdded() throws ClassNotFoundException {
 
         String msg = null;
 
@@ -45,8 +46,10 @@ public class TestWASTransformer extends TestCase {
         } catch (NoClassDefFoundError e) {
             msg = e.getMessage();
         }
-        assertTrue("message should have contained WASTransformer._interface, "
-            + " but was '" + msg + "'", 
-            msg.contains(WASTransformer._interface));
+        String translatedInterface = Strings.replace(
+            WASTransformer._interface, ".", "/");
+        assertTrue("message should have contained " 
+            + translatedInterface + ", but was '" + msg + "'", 
+            msg.contains(translatedInterface));
     }
 }
