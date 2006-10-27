@@ -46,10 +46,9 @@ public class TestWASTransformer extends TestCase {
         } catch (NoClassDefFoundError e) {
             msg = e.getMessage();
         }
-        String translatedInterface = Strings.replace(
-            WASTransformer._interface, ".", "/");
-        assertTrue("message should have contained " 
-            + translatedInterface + ", but was '" + msg + "'", 
-            msg.contains(translatedInterface));
+        String interfaceName = Strings.getClassName(WASTransformer._interface);
+        assertTrue("message should have contained "
+            + interfaceName + ", but was '" + msg + "'",
+            msg.contains(interfaceName));
     }
 }
