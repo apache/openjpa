@@ -235,7 +235,8 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
                 if (_log != null && _log.isErrorEnabled()) {
                     _log.error(_loc.get("was-no-transaction"));
                 }
-                throw new NoTransactionException(_loc.get("was-no-transaction"));
+                throw new NoTransactionException(_loc
+                    .get("was-no-transaction"));
             }
             return rval;
         }
