@@ -33,7 +33,7 @@ public class DB2Dictionary
             + "SYSIBM.SYSTABLES";
         supportsSelectEndIndex = true;
 
-        nextSequenceQuery = "SELECT NEXTVAL FOR {0}";
+        nextSequenceQuery = "VALUES NEXTVAL FOR {0}";
 
         binaryTypeName = "BLOB(1M)";
         longVarbinaryTypeName = "BLOB(1M)";
