@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.ee;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 
 import javax.naming.Context;
@@ -34,10 +35,11 @@ import javax.transaction.xa.XAResource;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
-import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.NoTransactionException;
+import serp.bytecode.BCClass;
+import serp.bytecode.Project;
 
 /**
  * {@link ManagedRuntime} implementation that allows synchronization with a
@@ -59,60 +61,11 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
     private static Localizer _loc =
         Localizer.forPackage(WASManagedRuntime.class);
 
-    protected Object _extendedTransaction = null;
-
-    protected Method _getGlobalId = null;
-
-    protected Method _getLocalId = null;
-
-    protected Method _registerSync = null;
-
-    OpenJPAConfiguration _conf = null;
-
-    Log _log = null;
-
-    /**
-     * Lookup the extendedTransaction object from JNDI.
-     *
-     * @throws NamingException
-     */
-    private void getExtendedTransaction() throws NamingException {
-
-        if (_extendedTransaction == null) {
-            Context ctx = new InitialContext();
-            try {
-                _extendedTransaction =
-                    ctx.lookup("java:comp/websphere/ExtendedJTATransaction");
-
-            } finally {
-                ctx.close();
-            }
-        }
-    }
-
-    /**
-     * Caches the WebSphere proprietary methods for ExtendedJTATransaction.
-     */
-    private void getWebSphereMethods() throws Exception {
-        ClassLoader loader =
-            _conf.getClassResolverInstance().getClassLoader(getClass(), null);
-
-        Class extendedJTATransaction =
-            Class.forName(
-                "com.ibm.websphere.jtaextensions.ExtendedJTATransaction", true,
-                loader);
-
-        _registerSync =
-            extendedJTATransaction.getMethod(
-                "registerSynchronizationCallbackForCurrentTran",
-                new Class[] { Class.forName(
-                    "com.ibm.websphere.jtaextensions.SynchronizationCallback",
-                    true, loader) });
-
-        _getGlobalId = extendedJTATransaction.getMethod("getGlobalId", null);
-
-        _getLocalId = extendedJTATransaction.getMethod("getLocalId", null);
-    }
+    private Object _extendedTransaction = null;
+    private Method _getGlobalId = null;
+    private Method _getLocalId = null;
+    private Method _registerSync = null;
+    private OpenJPAConfiguration _conf = null;
 
     /**
      * Gets an extendedJTATransaction from JNDI and creates a transaction
@@ -120,7 +73,6 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
      */
     public javax.transaction.TransactionManager getTransactionManager()
         throws Exception {
-        getExtendedTransaction();
         return new WASTransaction();
     }
 
@@ -142,24 +94,14 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
 
         public int getStatus() throws SystemException {
             int rval = Status.STATUS_UNKNOWN;
-
             try {
                 if (getId() != null) {
                     rval = Status.STATUS_ACTIVE;
                 } else {
-
-                    if (_log != null && _log.isErrorEnabled()) {
-                        _log.error(_loc.get("was-no-transaction"));
-                    }
-
                     throw new NoTransactionException(_loc
                         .get("was-no-transaction"));
                 }
             } catch (Exception e) {
-
-                if (_log != null && _log.isErrorEnabled()) {
-                    _log.error(_loc.get("was-no-transaction"), e);
-                }
                 throw new NoTransactionException(_loc.get("was-no-transaction"))
                     .setCause(e);
             }
@@ -183,27 +125,15 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
          */
         public void registerSynchronization(Synchronization arg0)
             throws IllegalStateException, RollbackException, SystemException {
-
             if (_extendedTransaction != null) {
                 try {
-                    if (_registerSync == null) {
-                        getWebSphereMethods();
-                    }
                     _registerSync.invoke(_extendedTransaction,
                         new Object[] { new WASSynchronization(arg0) });
                 } catch (Exception e) {
-                    if (_log != null && _log.isErrorEnabled()) {
-                        _log.error(_loc.get("was-reflection-exception"), e);
-                    }
-
                     throw new InvalidStateException(_loc
                         .get("was-reflection-exception")).setCause(e);
                 }
             } else {
-                if (_log != null && _log.isErrorEnabled()) {
-                    _log.error(_loc.get("was-lookup-error"));
-                }
-
                 throw new InvalidStateException(_loc.get("was-lookup-error"));
             }
         }
@@ -220,9 +150,7 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
          */
         private Object getId() throws Exception {
             Object rval;
-
             rval = getGlobalId();
-
             if (rval == null) {
                 rval = getLocalId();
             }
@@ -232,9 +160,6 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
                  * If there's no globalId or localId we're running outside of a
                  * transaction and need to throw an error.
                  */
-                if (_log != null && _log.isErrorEnabled()) {
-                    _log.error(_loc.get("was-no-transaction"));
-                }
                 throw new NoTransactionException(_loc
                     .get("was-no-transaction"));
             }
@@ -249,23 +174,13 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
          *         occurs. byte[] id if a global transaction is active.
          */
         private byte[] getGlobalId() {
-
             byte[] rval = null;
-
             try {
-                if(_getGlobalId == null) {
-                    getWebSphereMethods();
-                }
                 rval = (byte[]) _getGlobalId.invoke(_extendedTransaction, null);
             } catch (Exception e) {
-                if (_log != null && _log.isErrorEnabled()) {
-                    _log.error(_loc.get("was-reflection-exception"), e);
-                }
-
                 throw new InvalidStateException(_loc
                     .get("was-reflection-exception")).setCause(e);
             }
-
             return rval;
         }
 
@@ -278,16 +193,9 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
          */
         private Integer getLocalId() {
             Integer rval;
-
             try {
-                if(_getLocalId == null)  {
-                    getWebSphereMethods();
-                }
                 rval = (Integer) _getLocalId.invoke(_extendedTransaction, null);
             } catch (Exception e) {
-                if (_log != null && _log.isErrorEnabled()) {
-                    _log.error(_loc.get("was-reflection-exception"), e);
-                }
                 throw new InvalidStateException(_loc
                     .get("was-reflection-exception")).setCause(e);
             }
@@ -402,6 +310,7 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
      * @see org.apache.openjpa.util.WASTransformer
      */
     static class WASSynchronization {
+
         Synchronization _sync = null;
 
         WASSynchronization(Synchronization sync) {
@@ -440,14 +349,41 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
      */
     public void setConfiguration(Configuration conf) {
         _conf = (OpenJPAConfiguration) conf;
-        _log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
     }
 
     /**
      * EndConfiguration stub.
      */
     public void endConfiguration() {
-        // Nothing to do
+        try {
+            Context ctx = new InitialContext();
+            try {
+                _extendedTransaction =
+                    ctx.lookup("java:comp/websphere/ExtendedJTATransaction");
+            } finally {
+                ctx.close();
+            }
+
+            ClassLoader loader = _conf.getClassResolverInstance()
+                .getClassLoader(getClass(), null);
+
+            Class extendedJTATransaction = Class.forName(
+                "com.ibm.websphere.jtaextensions.ExtendedJTATransaction", true,
+                loader);
+
+            _registerSync = extendedJTATransaction.getMethod(
+                "registerSynchronizationCallbackForCurrentTran",
+                new Class[] { Class.forName(
+                    "com.ibm.websphere.jtaextensions.SynchronizationCallback",
+                    true, loader) });
+            _getGlobalId = extendedJTATransaction.
+                getMethod("getGlobalId", null);
+            _getLocalId = extendedJTATransaction.
+                getMethod("getLocalId", null);
+        } catch (Exception e) {
+            throw new InvalidStateException(_loc
+                .get("was-reflection-exception"), e).setFatal(true);
+        }
     }
 
     /**
@@ -455,5 +391,25 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
      */
     public void startConfiguration() {
         // Nothing to do
+    }
+
+    /**
+     * Class that will be modified
+     */
+    static final String CLASS =
+        "org.apache.openjpa.ee.WASManagedRuntime$WASSynchronization";
+
+    /**
+     * Interface which will be added
+     */
+    static final String INTERFACE =
+        "com.ibm.websphere.jtaextensions.SynchronizationCallback";
+
+    public static void main(String[] args) 
+        throws IOException {
+        Project project = new Project();
+        BCClass bcClass = project.loadClass(CLASS);
+        bcClass.declareInterface(INTERFACE);
+        bcClass.write();
     }
 }

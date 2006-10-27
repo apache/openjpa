@@ -109,7 +109,7 @@
 						<configuration>
 							<tasks>
 								<java
-									classname="org.apache.openjpa.util.WASTransformer" classpathref="maven.runtime.classpath" />
+									classname="org.apache.openjpa.ee.WASManagedRuntime" classpathref="maven.runtime.classpath" />
 							</tasks>
 						</configuration>
 						<goals>
