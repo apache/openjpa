@@ -37,18 +37,16 @@ public class TestWASTransformer extends TestCase {
      */
     public void testInterfaceAdded()throws ClassNotFoundException {
 
-        boolean caughtExpectedException = false;
-
-        Class syncClass = null;
+        String msg = null;
 
         try {
-             syncClass = Class.forName(WASTransformer._class);
+            Class.forName(WASTransformer._class);
+            fail("expected an exception to be thrown");
         } catch (NoClassDefFoundError e) {
-            if (e.getMessage().contains(WASTransformer._interface)) {
-                caughtExpectedException = true;
-            }
+            msg = e.getMessage();
         }
-        assertNull(syncClass);
-        assertTrue(caughtExpectedException);
+        assertTrue("message should have contained WASTransformer._interface, "
+            + " but was '" + msg + "'", 
+            msg.contains(WASTransformer._interface));
     }
 }
