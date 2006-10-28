@@ -1,0 +1,4 @@
+<project default="run">
+    <property name="example" value="hellojpa"/>
+    <import file="../build.xml"/>
+</project>

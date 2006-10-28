@@ -52,6 +52,10 @@
             <directory>../target/site/apidocs</directory>
             <outputDirectory>docs/javadoc</outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>../openjpa-examples/src/main/java</directory>
+            <outputDirectory>examples</outputDirectory>
+        </fileSet>
     </fileSets>
     <dependencySets>
         <dependencySet>

@@ -110,6 +110,7 @@
                 <module>openjpa-kernel-4</module>
                 <module>openjpa-kernel-5</module>
                 <module>openjpa-jdbc-5</module>
+                <module>openjpa-examples</module>
             </modules>
         </profile>
         <profile>
@@ -208,12 +209,18 @@
                         </archive>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <useFile>false</useFile>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
     <reporting>
         <plugins>
-
             <plugin>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <reportSets>

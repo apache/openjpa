@@ -370,6 +370,11 @@
             <artifactId>openjpa-xmlstore</artifactId>
             <version>${pom.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa-examples</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
 
         <!-- included so we can include it in the distribution -->
         <dependency>
