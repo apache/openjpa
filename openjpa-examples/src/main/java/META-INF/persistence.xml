@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
+    <!--
+        A persistence unit is a set of listed persistent entities as well
+        the configuration of an EntityManagerFactory. We configure each
+        example in a separate persistence-unit.
+    -->
+    <persistence-unit name="hellojpa" transaction-type="RESOURCE_LOCAL">
+        <!--
+            The default provider can be OpenJPA, or some other product.
+            This element is optional if OpenJPA is the only JPA provider
+            in the current classloading environment.
+        -->
+        <provider>
+            org.apache.openjpa.persistence.PersistenceProviderImpl
+        </provider>
+
+        <!-- We must enumerate each entity in the persistence unit -->
+        <class>hellojpa.Message</class>
+
+        <properties>
+            <!--
+                We can configure the default OpenJPA properties here. They
+                happen to be commented out here since the provided examples
+                all specify the values via System properties.
+            -->
+
+            <!--
+            <property name="openjpa.ConnectionURL" 
+                value="jdbc:derby:openjpa-database;create=true"/>
+            <property name="openjpa.ConnectionDriverName" 
+                value="org.apache.derby.jdbc.EmbeddedDriver"/>
+            <property name="openjpa.ConnectionUserName" 
+                value="user"/>
+            <property name="openjpa.ConnectionPassword" 
+                value="secret"/>
+            -->
+        </properties>
+    </persistence-unit>
+</persistence>

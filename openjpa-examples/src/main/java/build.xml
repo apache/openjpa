@@ -1,0 +1,89 @@
+<project default="usagewarning">
+
+    <property name="parent" value="${basedir}/.."/>
+    <property name="root" value="${parent}/.."/>
+
+    <target name="usagewarning">
+        <fail>
+Please traverse to a sub-directory and run "ant" from there.
+        </fail>
+    </target>
+
+    <path id="classpath"
+        description="The classpath to use for compiling and running">
+        <pathelement path="${parent}"/>
+        <fileset dir="${root}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="javaagent">
+        <fileset dir="${root}">
+            <include name="openjpa-*.jar"/>
+        </fileset>
+    </path>
+    <pathconvert property="javaagent" refid="javaagent"/>
+
+    <target name="clean"
+        description="Clean up compiled files and generated database files">
+        <delete includeemptydirs="true">
+            <fileset dir="${basedir}">
+                <include name="*.class"/>
+                <include name="*.log"/>
+                <include name="${example}-database/**/*"/>
+                <include name="${example}-database"/>
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="compile" description="Compile the example java files">
+        <javac srcdir="${parent}" classpathref="classpath"
+            includes="${example}/**.java"/>
+    </target>
+
+    <target name="run" depends="compile"
+        description="Run the example Main program">
+
+        <java classname="${example}.Main" classpathref="classpath" fork="yes">
+            <!--
+                Specifying the openjpa jar as the javaagent argument is
+                necessary in order for automatic class-enhancement to work.
+            -->
+            <jvmarg value="-javaagent:${javaagent}"/>
+
+            <!--
+                Specify the system properties to use when configuring
+                OpenJPA. Note that these will only be used becuase in the
+                examples, the call to "Persistence.createEntityManagerFactory"
+                is passed "System.getProperties()".
+            -->
+
+            <!--
+                By default, use the stand-alone Derby database (provided).
+                This can easily be changes to use your own database's driver,
+                provided you ensure it is accessible in the classpath.
+            -->
+            <sysproperty key="openjpa.ConnectionDriverName"
+                value="org.apache.derby.jdbc.EmbeddedDriver"/>
+            <sysproperty key="openjpa.ConnectionURL"
+                value="jdbc:derby:${example}-database;create=true"/>
+
+            <!--
+                Tell OpenJPA to automatically create tables in the database
+                for entities. Note that this should be disabled when
+                running against a production database, since you probably
+                don't want to be altering the schema at runtime.
+            -->
+            <sysproperty key="openjpa.jdbc.SynchronizeMappings"
+                value="buildSchema"/>
+
+            <!--
+                Output all the SQL for educational purposes, but set the
+                general logging level to only show warnings.
+            -->
+            <sysproperty key="openjpa.Log"
+                value="DefaultLevel=WARN,SQL=TRACE"/>
+        </java>
+    </target>
+</project>
+
