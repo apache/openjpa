@@ -41,7 +41,7 @@
         <para>
 OpenJPA also includes the
 <ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAPersistence.html">
-<classname>OpenJPAPersistence</classname></ulink> helper class to provide 
+<classname>OpenJPAPersistence</classname></ulink> helper class to provide
 additional utility methods.
         </para>
     </note>
@@ -84,15 +84,15 @@ Document Type Descriptor (DTD):
         </para>
 <programlisting>
 &lt;!ELEMENT persistence (persistence-unit*)&gt;
-&lt;!ELEMENT persistence-unit (description?,provider?,jta-datasource?,
-  non-jta-datasource?,(class|jar-file|mapping-file)*,
+&lt;!ELEMENT persistence-unit (description?,provider?,jta-data-source?,
+  non-jta-data-source?,(class|jar-file|mapping-file)*,
   exclude-unlisted-classes?,properties?)&gt;
 &lt;!ATTLIST persistence-unit name CDATA #REQUIRED&gt;
 &lt;!ATTLIST persistence-unit transaction-type (JTA|RESOURCE_LOCAL) "JTA"&gt;
 &lt;!ELEMENT description (#PCDATA)&gt;
 &lt;!ELEMENT provider (#PCDATA)&gt;
-&lt;!ELEMENT jta-datasource (#PCDATA)&gt;
-&lt;!ELEMENT non-jta-datasource (#PCDATA)&gt;
+&lt;!ELEMENT jta-data-source (#PCDATA)&gt;
+&lt;!ELEMENT non-jta-data-source (#PCDATA)&gt;
 &lt;!ELEMENT mapping-file (#PCDATA)&gt;
 &lt;!ELEMENT jar-file (#PCDATA)&gt;
 &lt;!ELEMENT class (#PCDATA)&gt;
@@ -119,8 +119,8 @@ name attribute is required.
             </listitem>
             <listitem>
                 <para>
-<literal>transaction-type</literal>: Whether to use managed 
-(<literal>JTA</literal>) or local (<literal>RESOURCE_LOCAL</literal>) 
+<literal>transaction-type</literal>: Whether to use managed
+(<literal>JTA</literal>) or local (<literal>RESOURCE_LOCAL</literal>)
 transaction management.
                 </para>
             </listitem>
@@ -232,7 +232,7 @@ EntityManagerFactories</classname> are typically injected.
             </title>
 <programlisting>
 // if your persistence.xml file does not contain all settings already, you
-// can add vendor settings to a map 
+// can add vendor settings to a map
 Properties props = new Properties();
 ...
 
