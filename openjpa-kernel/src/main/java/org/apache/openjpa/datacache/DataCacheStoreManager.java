@@ -38,6 +38,7 @@ import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.util.OptimisticException;
 
 /**
  * StoreManager proxy that delegates to a data cache when possible.
@@ -503,8 +504,16 @@ public class DataCacheStoreManager
 
     public Collection flush(Collection states) {
         Collection exceps = super.flush(states);
-        if (!exceps.isEmpty() || _ctx.isLargeTransaction())
+        if (exceps.isEmpty() && _ctx.isLargeTransaction())
             return exceps;
+        else if (!exceps.isEmpty()) {
+            for (Iterator iter = exceps.iterator(); iter.hasNext(); ) {
+                Exception e = (Exception) iter.next();
+                if (e instanceof OptimisticException)
+                    evictOptimisticLockFailure((OptimisticException) e);
+            }
+            return exceps;
+        }
 
         OpenJPAStateManager sm;
         for (Iterator itr = states.iterator(); itr.hasNext();) {
@@ -533,6 +542,70 @@ public class DataCacheStoreManager
             }
         }
         return Collections.EMPTY_LIST;
+    }
+
+    /**
+     * Evict from the cache the OID (if available) that resulted in an
+     * optimistic lock exception iff the
+     * version information in the cache matches the version
+     * information in the state manager for the failed
+     * instance. This means that we will evict data from the
+     * cache for records that should have successfully
+     * committed according to the data cache but did not. The
+     * only predictable reason that could cause this behavior
+     * is a concurrent out-of-band modification to the
+     * database that was not communicated to the cache. This
+     * logic makes OpenJPA's data cache somewhat tolerant of
+     * such behavior, in that the cache will be cleaned up as
+     * failures occur.
+     */
+    private void evictOptimisticLockFailure(OptimisticException e) {
+        Object o = ((OptimisticException) e).getFailedObject();
+        OpenJPAStateManager sm = _ctx.getStateManager(o);
+        ClassMetaData meta = sm.getMetaData();
+
+        // this logic could be more efficient -- we could aggregate
+        // all the cache->oid changes, and then use
+        // DataCache.removeAll() and less write locks to do the
+        // mutation.
+        DataCache cache = meta.getDataCache();
+        cache.writeLock();
+        try {
+            DataCachePCData data = cache.get(sm.getId());
+            boolean remove;
+            switch (compareVersion(sm, sm.getVersion(), data.getVersion())) {
+                case StoreManager.VERSION_LATER:
+                case StoreManager.VERSION_SAME:
+                    // This tx's current version is later than the data cache 
+                    // version. In this case, the commit should have succeeded. 
+                    // Remove the instance from cache in the hopes that the 
+                    // cache is out of sync.
+                    remove = true;
+                    break;
+                case StoreManager.VERSION_EARLIER:
+                    // This tx's current version is earlier than the data 
+                    // cache version. This is a normal optimistic lock failure. 
+                    // Do not clean up the cache; it probably already has the 
+                    // right values, and if not, it'll get cleaned up by a tx
+                    // that fails in one of the other case statements.
+                    remove = false;
+                    break;
+                case StoreManager.VERSION_DIFFERENT:
+                    // The version strategy for the failed object does not
+                    // store enough information to optimize for expected
+                    // failures. Clean up the cache.
+                    remove = true;
+                    break;
+                default:
+                    // Unexpected return value. Remove to be future-proof.
+                    remove = true;
+                    break;
+            }
+            if (remove)
+                cache.remove(sm.getId());
+        } finally {
+            cache.writeUnlock();
+        }
     }
 
     public StoreQuery newQuery(String language) {
