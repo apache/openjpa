@@ -33,7 +33,6 @@ import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.ReferentialIntegrityException;
-import serp.util.Numbers;
 
 /**
  * Dictionary for Hypersonic SQL database.

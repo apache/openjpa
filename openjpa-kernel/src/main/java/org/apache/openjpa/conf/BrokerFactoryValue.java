@@ -15,11 +15,8 @@
  */
 package org.apache.openjpa.conf;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Iterator;
 
 import org.apache.openjpa.abstractstore.AbstractStoreBrokerFactory;

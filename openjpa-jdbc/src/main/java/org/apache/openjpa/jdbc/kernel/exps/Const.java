@@ -19,15 +19,12 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
-import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.meta.JavaTypes;
 
 /**
  * A literal or parameter in the filter.

@@ -17,7 +17,6 @@ package org.apache.openjpa.conf;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.Properties;
 import java.util.StringTokenizer;
 

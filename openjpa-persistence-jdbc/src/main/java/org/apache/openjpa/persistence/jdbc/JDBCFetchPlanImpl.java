@@ -16,13 +16,9 @@
 package org.apache.openjpa.persistence.jdbc;
 
 import org.apache.openjpa.jdbc.kernel.DelegatingJDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.LRSSizes;
-import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
-import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.FetchPlanImpl;
 import org.apache.openjpa.persistence.PersistenceExceptions;
 

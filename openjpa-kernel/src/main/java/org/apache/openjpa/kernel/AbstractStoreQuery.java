@@ -20,7 +20,6 @@ import java.util.Map;
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
-import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.InternalException;
 

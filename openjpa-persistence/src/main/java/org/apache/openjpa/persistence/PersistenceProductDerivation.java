@@ -36,7 +36,6 @@ import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.MapConfigurationProvider;
-import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.XMLMetaDataParser;
 import org.apache.openjpa.lib.util.Localizer;

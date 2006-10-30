@@ -21,10 +21,8 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -1256,10 +1254,6 @@ class JPQLExpressionBuilder
 
     private Path getPath(JPQLNode node) {
         return getPath(node, false, true);
-    }
-
-    private Path getPCPath(JPQLNode node) {
-        return getPath(node, true, true);
     }
 
     private Path getPath(JPQLNode node, boolean pcOnly, boolean inner) {

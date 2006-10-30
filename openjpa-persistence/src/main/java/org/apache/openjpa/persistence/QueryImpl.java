@@ -31,7 +31,6 @@ import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.collections.map.LinkedMap;
-import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.DelegatingQuery;
 import org.apache.openjpa.kernel.DelegatingResultList;
 import org.apache.openjpa.kernel.Filters;
@@ -56,7 +55,6 @@ public class QueryImpl
         (QueryImpl.class);
 
     private final DelegatingQuery _query;
-    private transient Broker _broker; // for profiling
     private transient EntityManagerImpl _em;
     private transient FetchPlan _fetch;
 
@@ -69,7 +67,6 @@ public class QueryImpl
     public QueryImpl(EntityManagerImpl em,
         org.apache.openjpa.kernel.Query query) {
         _em = em;
-        _broker = em.getBroker();
         _query = new DelegatingQuery(query,
             PersistenceExceptions.getRollbackTranslator(em));
     }

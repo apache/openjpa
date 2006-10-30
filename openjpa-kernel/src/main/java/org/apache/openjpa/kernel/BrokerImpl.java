@@ -52,7 +52,6 @@ import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.event.CallbackModes;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.event.RemoteCommitEventManager;

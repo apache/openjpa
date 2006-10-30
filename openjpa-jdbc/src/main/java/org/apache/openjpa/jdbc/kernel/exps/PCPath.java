@@ -22,7 +22,6 @@ import java.util.ListIterator;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.ValueMapping;

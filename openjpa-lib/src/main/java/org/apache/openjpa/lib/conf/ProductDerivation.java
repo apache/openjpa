@@ -16,7 +16,6 @@
 package org.apache.openjpa.lib.conf;
 
 import java.io.File;
-import java.util.Map;
 
 /**
  * Hooks for deriving products with additional functionality.
