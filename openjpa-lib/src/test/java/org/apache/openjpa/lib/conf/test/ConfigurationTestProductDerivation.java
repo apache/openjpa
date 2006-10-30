@@ -15,7 +15,6 @@
  */
 package org.apache.openjpa.lib.conf.test;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;

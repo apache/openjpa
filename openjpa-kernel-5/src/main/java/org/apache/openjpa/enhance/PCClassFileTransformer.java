@@ -26,7 +26,6 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.MetaDataRepository;
-import org.apache.openjpa.util.ClassResolver;
 import org.apache.openjpa.util.GeneralException;
 import serp.bytecode.Project;
 import serp.bytecode.lowlevel.ConstantPoolTable;

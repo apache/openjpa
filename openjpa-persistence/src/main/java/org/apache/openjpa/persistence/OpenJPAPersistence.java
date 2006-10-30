@@ -15,9 +15,6 @@
  */
 package org.apache.openjpa.persistence;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -31,14 +28,11 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.rmi.PortableRemoteObject;
 
-import org.apache.openjpa.conf.BrokerFactoryValue;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
-import org.apache.openjpa.lib.conf.MapConfigurationProvider;
-import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.*;

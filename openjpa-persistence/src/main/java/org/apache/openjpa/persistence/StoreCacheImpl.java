@@ -21,7 +21,6 @@ import java.util.Collection;
 
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.datacache.DelegatingDataCache;
-import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 

@@ -16,7 +16,6 @@
 package org.apache.openjpa.lib.conf;
 
 import java.io.File;
-import java.util.Map;
 
 /**
  * Abstract no-op product derivation for easy extension.

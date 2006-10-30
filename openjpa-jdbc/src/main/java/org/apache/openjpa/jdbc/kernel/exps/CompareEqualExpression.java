@@ -20,7 +20,6 @@ import java.util.Map;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
-import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
