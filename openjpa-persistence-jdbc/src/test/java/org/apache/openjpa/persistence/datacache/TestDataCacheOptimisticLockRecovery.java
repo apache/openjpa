@@ -20,6 +20,7 @@ public class TestDataCacheOptimisticLockRecovery
     extends TestCase {
 
     private EntityManagerFactory emf;
+    private int pk;
 
     public void setUp() {
         Map options = new HashMap();
@@ -38,7 +39,16 @@ public class TestDataCacheOptimisticLockRecovery
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.createQuery("delete from OptimisticLockInstance");
-        em.getTransaction().commit();
+
+        OptimisticLockInstance oli = new OptimisticLockInstance("foo");
+        try {
+            em.persist(oli);
+            em.getTransaction().commit();
+        } finally {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+        }
+        pk = oli.getPK();
         em.close();
     }
 
@@ -51,26 +61,12 @@ public class TestDataCacheOptimisticLockRecovery
 
         EntityManager em;
         
-        // 1. get the instance into the cache via this insert
-        em = emf.createEntityManager();
-        em.getTransaction().begin();
-        OptimisticLockInstance oli = new OptimisticLockInstance("foo");
-        try {
-            em.persist(oli);
-            em.getTransaction().commit();
-        } finally {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-        }
-        int pk = oli.getPK();
-        em.close();
-        
-        // 2. get the oplock value for the instance after commit and
+        // 1. get the oplock value for the instance after commit and
         // get a read lock to ensure that we check for the optimistic
         // lock column at tx commit.
         em = emf.createEntityManager();
         em.getTransaction().begin();
-        oli = em.find(OptimisticLockInstance.class, pk);
+        OptimisticLockInstance oli = em.find(OptimisticLockInstance.class, pk);
         int firstOpLockValue = oli.getOpLock();
         em.lock(oli, LockModeType.READ);
 
@@ -126,6 +122,33 @@ public class TestDataCacheOptimisticLockRecovery
         } finally {
             if (em.getTransaction().isActive())
                 em.getTransaction().rollback();
+        }
+        em.close();
+    }
+    
+    public void testExpectedOptimisticLockException() {
+        EntityManager em;
+        
+        // 1. start a new tx
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.lock(em.find(OptimisticLockInstance.class, pk), LockModeType.READ);
+        
+        // 2. start another tx, and cause a version increment
+        EntityManager em2 = emf.createEntityManager();
+        em2.getTransaction().begin();
+        em2.lock(em2.find(OptimisticLockInstance.class, pk), 
+            LockModeType.WRITE);
+        em2.getTransaction().commit();
+        em2.close();
+        
+        // 3. try to commit. this should fail, as this is a regular optimistic
+        // lock failure situation.
+        try {
+            em.getTransaction().commit();
+            fail("write lock in em2 should trigger an optimistic lock failure");
+        } catch (RollbackException pe) {
+            // expected
         }
         em.close();
     }

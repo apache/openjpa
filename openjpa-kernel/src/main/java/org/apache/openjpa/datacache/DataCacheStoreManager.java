@@ -578,10 +578,11 @@ public class DataCacheStoreManager
             switch (compareVersion(sm, sm.getVersion(), data.getVersion())) {
                 case StoreManager.VERSION_LATER:
                 case StoreManager.VERSION_SAME:
-                    // This tx's current version is later than the data cache 
-                    // version. In this case, the commit should have succeeded. 
-                    // Remove the instance from cache in the hopes that the 
-                    // cache is out of sync.
+                    // This tx's current version is later than or the same as 
+                    // the data cache version. In this case, the commit should 
+                    // have succeeded from the standpoint of the cache. Remove 
+                    // the instance from cache in the hopes that the cache is 
+                    // out of sync.
                     remove = true;
                     break;
                 case StoreManager.VERSION_EARLIER:

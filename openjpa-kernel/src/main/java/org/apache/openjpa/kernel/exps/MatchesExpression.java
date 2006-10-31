@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.kernel.exps;
 
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.SimpleRegex;
 import serp.util.Strings;
 
@@ -26,9 +27,11 @@ import serp.util.Strings;
 class MatchesExpression
     extends CompareExpression {
 
+    private static final Localizer _loc = Localizer.forPackage(
+        MatchesExpression.class);
+    
     private final String _single;
     private final String _multi;
-    private final String _escape; // ### in-memory queries are not using escapes
     private final boolean _affirmation;
 
     /**
@@ -39,7 +42,9 @@ class MatchesExpression
         super(val1, val2);
         _single = single;
         _multi = multi;
-        _escape = escape;
+        if (escape != null)
+            throw new IllegalArgumentException(_loc.get(
+                "escape-for-inmem-query-not-supported").getMessage());
         _affirmation = affirmation;
     }
 
