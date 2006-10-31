@@ -504,9 +504,9 @@ public class DataCacheStoreManager
 
     public Collection flush(Collection states) {
         Collection exceps = super.flush(states);
-        if (exceps.isEmpty() && _ctx.isLargeTransaction())
-            return exceps;
-        else if (!exceps.isEmpty()) {
+
+        // if there were errors evict bad instances and don't record changes
+        if (!exceps.isEmpty()) {
             for (Iterator iter = exceps.iterator(); iter.hasNext(); ) {
                 Exception e = (Exception) iter.next();
                 if (e instanceof OptimisticException)
@@ -514,6 +514,10 @@ public class DataCacheStoreManager
             }
             return exceps;
         }
+
+        // if large transaction mode don't record individual changes
+        if (_ctx.isLargeTransaction())
+            return exceps;
 
         OpenJPAStateManager sm;
         for (Iterator itr = states.iterator(); itr.hasNext();) {
@@ -546,28 +550,26 @@ public class DataCacheStoreManager
 
     /**
      * Evict from the cache the OID (if available) that resulted in an
-     * optimistic lock exception iff the
-     * version information in the cache matches the version
-     * information in the state manager for the failed
-     * instance. This means that we will evict data from the
-     * cache for records that should have successfully
-     * committed according to the data cache but did not. The
-     * only predictable reason that could cause this behavior
-     * is a concurrent out-of-band modification to the
-     * database that was not communicated to the cache. This
-     * logic makes OpenJPA's data cache somewhat tolerant of
-     * such behavior, in that the cache will be cleaned up as
-     * failures occur.
+     * optimistic lock exception iff the version information in the cache 
+     * matches the version information in the state manager for the failed
+     * instance. This means that we will evict data from the cache for records 
+     * that should have successfully committed according to the data cache but 
+     * did not. The only predictable reason that could cause this behavior
+     * is a concurrent out-of-band modification to the database that was not 
+     * communicated to the cache. This logic makes OpenJPA's data cache 
+     * somewhat tolerant of such behavior, in that the cache will be cleaned 
+     * up as failures occur.
      */
     private void evictOptimisticLockFailure(OptimisticException e) {
         Object o = ((OptimisticException) e).getFailedObject();
         OpenJPAStateManager sm = _ctx.getStateManager(o);
-        ClassMetaData meta = sm.getMetaData();
+        if (sm == null)
+            return;
 
         // this logic could be more efficient -- we could aggregate
-        // all the cache->oid changes, and then use
-        // DataCache.removeAll() and less write locks to do the
-        // mutation.
+        // all the cache->oid changes, and then use DataCache.removeAll() 
+        // and less write locks to do the mutation.
+        ClassMetaData meta = sm.getMetaData();
         DataCache cache = meta.getDataCache();
         cache.writeLock();
         try {
@@ -612,7 +614,7 @@ public class DataCacheStoreManager
         StoreQuery q = super.newQuery(language);
 
         // if the query can't be parsed or it's using a non-parsed language
-        // (one for which there is no OpenJPA ExpressionParser), we can't cache it.
+        // (one for which there is no ExpressionParser), we can't cache it.
         if (q == null || QueryLanguages.parserForLanguage(language) == null)
             return q;
 
