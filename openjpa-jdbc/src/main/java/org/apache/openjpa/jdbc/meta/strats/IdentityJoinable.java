@@ -50,7 +50,7 @@ class IdentityJoinable
     }
 
     public Object getPrimaryKeyValue(Result res, Column[] cols, ForeignKey fk,
-        Joins joins)
+        JDBCStore store, Joins joins)
         throws SQLException {
         Column col = cols[0];
         if (fk != null)

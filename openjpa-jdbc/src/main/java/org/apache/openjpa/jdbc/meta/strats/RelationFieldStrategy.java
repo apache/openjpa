@@ -24,12 +24,14 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Embeddable;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.meta.Joinable;
 import org.apache.openjpa.jdbc.meta.MappingInfo;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
+import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
@@ -45,8 +47,12 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ApplicationIds;
+import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAId;
+import org.apache.openjpa.util.UnsupportedException;
+import serp.util.Numbers;
 
 /**
  * Mapping for a single-valued relation to another entity.
@@ -56,7 +62,7 @@ import org.apache.openjpa.util.OpenJPAId;
  */
 public class RelationFieldStrategy
     extends AbstractFieldStrategy
-    implements Embeddable {
+    implements Joinable, Embeddable {
 
     private static final Localizer _loc = Localizer.forPackage
         (RelationFieldStrategy.class);
@@ -146,8 +152,19 @@ public class RelationFieldStrategy
                 adapt);
 
         field.setUseClassCriteria(criteria);
-        field.mapConstraints(field.getName(), adapt);
         field.mapPrimaryKey(adapt);
+        PrimaryKey pk = field.getTable().getPrimaryKey();
+        if (field.isPrimaryKey()) {
+            Column[] cols = field.getColumns();
+            if (pk != null && (adapt || pk.isLogical()))
+                for (int i = 0; i < cols.length; i++)
+                    pk.addColumn(cols[i]);
+            for (int i = 0; i < cols.length; i++)
+                field.getDefiningMapping().setJoinable(cols[i], this);
+        }
+
+        // map constraints after pk so we don't re-index / re-unique pk col
+        field.mapConstraints(field.getName(), adapt);
     }
 
     /**
@@ -690,6 +707,96 @@ public class RelationFieldStrategy
                 field.getSelectSubclasses(), false, false);
         return joins.joinRelation(field.getName(), field.getForeignKey(clss[0]),
             clss[0], field.getSelectSubclasses(), false, false);
+    }
+
+    ///////////////////////////
+    // Joinable implementation
+    ///////////////////////////
+
+    public int getFieldIndex() {
+        return field.getIndex();
+    }
+
+    public Object getPrimaryKeyValue(Result res, Column[] cols, ForeignKey fk,
+        JDBCStore store, Joins joins)
+        throws SQLException {
+        ClassMapping relmapping = field.getTypeMapping();
+        if (relmapping.getIdentityType() == ClassMapping.ID_DATASTORE) {
+            Column col = cols[0];
+            if (fk != null)
+                col = fk.getColumn(col);   
+            long id = res.getLong(col, joins);
+            if (field.getObjectIdFieldTypeCode() == JavaTypes.LONG)
+                return Numbers.valueOf(id);
+            return store.newDataStoreId(id, relmapping, field.getPolymorphic() 
+                != ValueMapping.POLY_FALSE);
+        }
+
+        if (relmapping.isOpenJPAIdentity())
+            return ((Joinable) relmapping.getPrimaryKeyFieldMappings()[0].
+                getStrategy()).getPrimaryKeyValue(res, cols, fk, store, joins);
+
+        if (cols == getColumns() && fk == null)
+            fk = field.getForeignKey();
+        else
+            fk = createTranslatingForeignKey(relmapping, cols, fk); 
+        return relmapping.getObjectId(store, res, fk,
+            field.getPolymorphic() != ValueMapping.POLY_FALSE, joins);
+    }
+
+    /**
+     * Create a faux foreign key that translates between the columns to pull
+     * the data from and our related type's primary key columns.
+     */
+    private ForeignKey createTranslatingForeignKey(ClassMapping relmapping,
+        Column[] gcols, ForeignKey gfk) {
+        ForeignKey fk = field.getForeignKey(); 
+        Column[] cols = fk.getColumns();
+
+        ForeignKey tfk = null;
+        Column tcol;
+        for (int i = 0; i < gcols.length; i++) {
+            tcol = gcols[i];
+            if (gfk != null)
+                tcol = gfk.getColumn(tcol);
+            if (tfk == null)
+                tfk = new ForeignKey(null, tcol.getTable());
+            tfk.join(tcol, fk.getPrimaryKeyColumn(cols[i]));
+        }
+        return tfk;
+    }
+
+    public Object getJoinValue(Object fieldVal, Column col, JDBCStore store) {
+        Object o = field.getForeignKey().getConstant(col);
+        if (o != null)
+            return o;
+        col = field.getForeignKey().getPrimaryKeyColumn(col);
+        if (col == null)
+            throw new InternalException();
+
+        ClassMapping relmapping = field.getTypeMapping();
+        Joinable j = field.getTypeMapping().assertJoinable(col);
+        if (ImplHelper.isManageable(fieldVal))
+            fieldVal = store.getContext().getObjectId(fieldVal);
+        if (fieldVal instanceof OpenJPAId)
+            fieldVal = ((OpenJPAId) fieldVal).getIdObject();
+        else if (relmapping.getObjectIdType() != null
+            && relmapping.getObjectIdType().isInstance(fieldVal)) {
+            Object[] pks = ApplicationIds.toPKValues(fieldVal, relmapping);
+            fieldVal = pks[relmapping.getField(j.getFieldIndex()).
+                getPrimaryKeyIndex()];
+        }
+        return j.getJoinValue(fieldVal, col, store);
+    }
+
+    public Object getJoinValue(OpenJPAStateManager sm, Column col,
+        JDBCStore store) {
+        return getJoinValue(sm.fetch(field.getIndex()), col, store);
+    }
+
+    public void setAutoAssignedValue(OpenJPAStateManager sm, JDBCStore store,
+        Column col, Object autoInc) {
+        throw new UnsupportedException();
     }
 
     /////////////////////////////

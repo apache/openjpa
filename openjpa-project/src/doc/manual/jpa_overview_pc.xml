@@ -684,15 +684,16 @@ other entites of the same type.
         <para>
 Identity fields must be primitives, primitive wrappers, <classname>
 String</classname>s, <classname>Date</classname>s, <classname>
-Timestamp</classname>s, or embeddable types. Notably, other entities instances 
-can <emphasis>not</emphasis> be used as identity fields.
+Timestamp</classname>s, or embeddable types.
         </para>
         <note>
             <para>
-For legacy schemas with binary primary key columns, OpenJPA also supports using
-identity fields of type <classname>byte[]</classname>. When you use a
-<classname>byte[]</classname> identity field, you must create an identity class.
-Identity classes are covered below.
+OpenJPA supports entities as identity fields, as the Reference Guide discusses
+in <xref linkend="ref_guide_pc_oid_entitypk"/>.  For legacy schemas with binary
+primary key columns, OpenJPA also supports using identity fields of type 
+<classname>byte[]</classname>. When you use a <classname>byte[]</classname> 
+identity field, you must create an identity class.  Identity classes are 
+covered below.
             </para>
         </note>
         <warning>

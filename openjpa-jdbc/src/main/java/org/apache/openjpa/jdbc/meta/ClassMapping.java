@@ -180,7 +180,7 @@ public class ClassMapping
             if (vals[pkIdx] == null) {
                 res.startDataRequest(fm);
                 vals[pkIdx] = join.getPrimaryKeyValue(res, join.getColumns(),
-                    fk, joins);
+                    fk, store, joins);
                 res.endDataRequest();
                 if (vals[pkIdx] == null)
                     return null;

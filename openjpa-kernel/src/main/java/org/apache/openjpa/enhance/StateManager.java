@@ -34,6 +34,13 @@ public interface StateManager {
     public Object getGenericContext();
 
     /**
+     * Return the persistence-capable primary key object by extracting the 
+     * identity value of the related instance stored in the given field from 
+     * the given object id.
+     */
+    public Object getPCPrimaryKey(Object oid, int field);
+
+    /**
      * Change internal flags.
      */
     public byte replaceFlags();

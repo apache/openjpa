@@ -49,18 +49,25 @@ public interface MetaDataDefaults
      * event type. Defaults to false.
      */
     public boolean getCallbacksBeforeListeners(int type);
-    
-    /**
-     * Whether to ignore members which are not persistent by default
-     * during metadata population. Defaults to true.
-     */
-    public void setIgnoreNonPersistent(boolean ignore);
-
+   
     /**
      * Whether declared interfaces of a class are treated as persistent
      * types. Defaults to true.
      */
     public boolean isDeclaredInterfacePersistent();
+
+    /**
+     * Whether the field in the object id class corresponding to a 
+     * datastore id persistence-capable primary key field is the simple 
+     * datastore id value of the related instance.  Defaults to false.
+     */
+    public boolean isDataStoreObjectIdFieldUnwrapped();
+ 
+    /**
+     * Whether to ignore members which are not persistent by default
+     * during metadata population. Defaults to true.
+     */
+    public void setIgnoreNonPersistent(boolean ignore);
 
     /**
      * Populate the given metadata with default settings.

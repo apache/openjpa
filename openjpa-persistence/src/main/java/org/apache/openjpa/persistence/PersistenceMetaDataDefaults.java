@@ -95,6 +95,7 @@ public class PersistenceMetaDataDefaults
     public PersistenceMetaDataDefaults() {
         setCallbackMode(CALLBACK_RETHROW | CALLBACK_ROLLBACK |
             CALLBACK_FAIL_FAST);
+        setDataStoreObjectIdFieldUnwrapped(true);
     }
 
     /**

@@ -3800,7 +3800,7 @@ definitions in XML.
 &lt;!ATTLIST sequence increment CDATA #IMPLIED&gt;
 &lt;!ATTLIST sequence allocate CDATA #IMPLIED&gt;
 
-&lt;!ELEMENT table (column|index|pk|fk)+&gt;
+&lt;!ELEMENT table (column|index|pk|fk|unique)+&gt;
 &lt;!ATTLIST table name CDATA #REQUIRED&gt;
 
 &lt;!ELEMENT column EMPTY&gt;

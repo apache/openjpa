@@ -81,6 +81,10 @@ class ProxySetupStateManager
         }
     }
 
+    public Object getPCPrimaryKey(Object oid, int field) {
+        throw new UnsupportedOperationException();
+    }
+
     public byte replaceFlags() {
         throw new InternalException();
     }

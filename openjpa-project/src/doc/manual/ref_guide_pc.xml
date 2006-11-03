@@ -386,14 +386,29 @@ for details.
             </primary>
         </indexterm>
         <para>
+OpenJPA makes several enhancements to JPA's standard entity identity.
+        </para>
+        <section id="ref_guide_pc_oid_datastore">
+            <title>
+                Datastore Identity
+            </title>
+            <indexterm zone="ref_guide_pc_oid_datastore">
+                <primary>
+                    identity
+                </primary>
+                <secondary>
+                    datastore
+                </secondary>
+            </indexterm>
+            <para>
 The JPA specification requires you to declare one or more identity fields in
 your persistent classes. OpenJPA fully supports this form of object identity,
 called <emphasis>application</emphasis> identity. OpenJPA, however, also
 supports <emphasis>datastore</emphasis> identity. In datastore identity, you do
 not declare any primary key fields. OpenJPA manages the identity of your
 persistent objects for you through a surrogate key in the database.
-        </para>
-        <para>
+            </para>
+            <para>
 You can control how your JPA datastore identity value is generated through
 OpenJPA's
 <ulink url="../javadoc/org/apache/openjpa/persistence/DataStoreId.html">
@@ -402,17 +417,17 @@ annotation. This annotation has <literal>strategy</literal> and <literal>
 generator</literal> properties that mirror the same-named properties on the
 standard <classname>javax.persistence.GeneratedValue</classname> annotation
 described in <xref linkend="jpa_overview_meta_id"/> of the JPA Overview.
-        </para>
-        <para>
+            </para>
+            <para>
 To retrieve the identity value of a datastore identity entity, use the
 <methodname>OpenJPAEntityManager.getObjectId(Object entity)</methodname>
 method. See <xref linkend="ref_guide_runtime_em"/> for more information on
 the <classname>OpenJPAEntityManager</classname>.
-        </para>
-        <example id="ref_guide_pc_oid_datastoreentityex">
-            <title>
-                JPA Datastore Identity Metadata
-            </title>
+            </para>
+            <example id="ref_guide_pc_oid_datastoreentityex">
+                <title>
+                    JPA Datastore Identity Metadata
+                </title>
 <programlisting>
 import org.apache.openjpa.persistence.*;
 
@@ -423,19 +438,7 @@ public class LineItem {
     ... no @Id fields declared ...
 }
 </programlisting>
-        </example>
-        <section id="ref_guide_pc_oid_datastore">
-            <title>
-                Datastore Identity Objects
-            </title>
-            <indexterm zone="ref_guide_pc_oid">
-                <primary>
-                    identity
-                </primary>
-                <secondary>
-                    datastore
-                </secondary>
-            </indexterm>
+            </example>
             <para>
 Internally, OpenJPA uses the public
 <ulink url="../javadoc/org/apache/openjpa/util/Id.html"><classname>
@@ -452,6 +455,104 @@ datastore identity object will return the <classname>Long</classname> surrogate
 primary key value for that object. You can then use this value in calls to
 <classname>EntityManager.find</classname> for subsequent lookups of the same
 record.
+            </para>
+        </section>
+        <section id="ref_guide_pc_oid_entitypk">
+            <title>
+                Entities as Identity Fields
+            </title>
+            <indexterm zone="ref_guide_pc_oid_entitypk">
+                <primary>
+                    identity
+                </primary>
+                <secondary>
+                    application
+                </secondary>
+                <tertiary>
+                    entity id fields
+                </tertiary>
+            </indexterm>
+            <para>
+The JPA specification limits identity fields to simple types.  OpenJPA, however,
+also allows <literal>ManyToOne</literal> and <literal>OneToOne</literal> 
+relations to be identity fields.  To identify a relation field as an identity
+field, simply annotate it with both the <literal>@ManyToOne</literal> or
+<literal>@OneToOne</literal> relation annotation and the <literal>@Id</literal>
+identity annotation.
+            </para>
+            <para>
+When finding an entity identified by a relation, pass the id of the 
+<emphasis>relation</emphasis> to the <methodname>EntityManager.find</methodname>
+method:
+            </para>
+            <example id="ref_guide_pc_oid_entitypk_simplefind">
+                <title>
+                    Finding an Entity with an Entity Identity Field
+                </title>
+<programlisting>
+public Delivery createDelivery(EntityManager em, Order order) {
+    Delivery delivery = new Delivery();
+    delivery.setId(o);
+    delivery.setDelivered(new Date());
+    return delivery;
+}
+
+public Delivery findDelivery(EntityManager em, Order order) {
+    // use the identity of the related instance 
+    return em.find(Delivery.class, order.getId());
+}
+</programlisting>    
+            </example>
+            <para>
+When your entity has multiple identity fields, at least one of which is a 
+relation to another entity, you must use an identity class (see 
+<xref linkend="jpa_overview_pc_identitycls"/> in the JPA Overview).  You cannot
+use an embedded identity object.  Identity class fields corresponding to
+entity identity fields should be of the same type as the related entity's 
+identity.  
+            </para>
+            <example id="ref_guide_pc_oid_entitypk_idcls">
+                <title>
+                    Id Class for Entity Identity Fields
+                </title>
+<programlisting>
+@Entity
+public class Order {
+
+    @Id
+    private long id;
+
+    ... 
+}
+
+@Entity
+@IdClass(LineItemId.class)
+public class LineItem {
+    
+    @Id
+    private int index;
+
+    @Id
+    @ManyToOne
+    private Order order;
+
+    ...
+}
+
+public class LineItemId {
+
+    public int index;
+    public long order; // same type as order's identity
+
+    ...
+}
+</programlisting>    
+            </example>
+            <para>
+In the example above, if <classname>Order</classname> had used an identity 
+class <classname>OrderId</classname> in place of a simple <classname>long
+</classname> value, then the <literal>LineItemId.order</literal> field would
+have been of type <classname>OrderId</classname>.
             </para>
         </section>
         <section id="ref_guide_pc_oid_application">

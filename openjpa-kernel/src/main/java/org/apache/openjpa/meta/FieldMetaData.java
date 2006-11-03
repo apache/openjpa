@@ -506,6 +506,48 @@ public class FieldMetaData
     }
 
     /**
+     * For a primary key field, return the type of the corresponding object id 
+     * class field.
+     */
+    public int getObjectIdFieldTypeCode() {
+        ClassMetaData relmeta = getDeclaredTypeMetaData();
+        if (relmeta == null)
+            return getDeclaredTypeCode();
+        if (relmeta.getIdentityType() == ClassMetaData.ID_DATASTORE) {
+            boolean unwrap = getRepository().getMetaDataFactory().getDefaults().
+                isDataStoreObjectIdFieldUnwrapped();
+            return (unwrap) ? JavaTypes.LONG : JavaTypes.OBJECT;
+        }
+        if (relmeta.isOpenJPAIdentity())
+            return relmeta.getPrimaryKeyFields()[0].getObjectIdFieldTypeCode();
+        return JavaTypes.OBJECT;
+    }
+
+    /**
+     * For a primary key field, return the type of the corresponding object id 
+     * class field.
+     */
+    public Class getObjectIdFieldType() {
+        ClassMetaData relmeta = getDeclaredTypeMetaData();
+        if (relmeta == null)
+            return getDeclaredType();
+        switch (relmeta.getIdentityType()) {
+            case ClassMetaData.ID_DATASTORE:
+                boolean unwrap = getRepository().getMetaDataFactory().
+                    getDefaults().isDataStoreObjectIdFieldUnwrapped();
+                return (unwrap) ? long.class : Object.class;
+            case ClassMetaData.ID_APPLICATION:
+                if (relmeta.isOpenJPAIdentity())
+                    return relmeta.getPrimaryKeyFields()[0].
+                        getObjectIdFieldType();
+                return (relmeta.getObjectIdType() == null) ? Object.class
+                    : relmeta.getObjectIdType();
+            default:
+                return Object.class;
+        } 
+    }
+
+    /**
      * Whether this field holds optimistic version information.
      */
     public boolean isVersion() {

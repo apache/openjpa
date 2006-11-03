@@ -112,6 +112,10 @@ public class NoneMetaDataFactory
         return false;
     }
 
+    public boolean isDataStoreObjectIdFieldUnwrapped() {
+        return false;
+    }
+
     public void populate(ClassMetaData meta, int access) {
     }
 

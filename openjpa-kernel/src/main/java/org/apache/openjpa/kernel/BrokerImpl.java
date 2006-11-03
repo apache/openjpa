@@ -2761,7 +2761,7 @@ public class BrokerImpl
             // refresh all
             if (load != null) {
                 Collection failed = _store.loadAll(load, null,
-                    _store.FORCE_LOAD_REFRESH, _fc, null);
+                    StoreManager.FORCE_LOAD_REFRESH, _fc, null);
                 if (failed != null && !failed.isEmpty())
                     exceps = add(exceps, newObjectNotFoundException(failed));
 
