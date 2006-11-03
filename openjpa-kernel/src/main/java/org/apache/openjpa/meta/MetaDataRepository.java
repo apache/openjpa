@@ -1461,9 +1461,36 @@ public class MetaDataRepository
     public synchronized QueryMetaData getQueryMetaData(Class cls, String name,
         ClassLoader envLoader, boolean mustExist) {
         QueryMetaData meta = getQueryMetaDataInternal(cls, name, envLoader);
-        if (meta == null && mustExist)
-            throw new MetaDataException(_loc.get("no-named-query", cls, name));
+        if (meta == null) {
+            // load all the metadatas for all the known classes so that
+            // query names are seen and registered
+            resolveAll(envLoader);
+            meta = getQueryMetaDataInternal(cls, name, envLoader);
+        }
+
+        if (meta == null && mustExist) {
+            if (cls == null) {
+                throw new MetaDataException(_loc.get
+                    ("no-named-query-null-class",
+                        getPersistentTypeNames(false, envLoader), name));
+            } else {
+                throw new MetaDataException(_loc.get("no-named-query",
+                    cls, name));
+            }
+        }
+
         return meta;
+    }
+
+    /** 
+     * Resolve all known metadata classes. 
+     */
+    private void resolveAll(ClassLoader envLoader) {
+        Collection types = loadPersistentTypes(false, envLoader);
+        for (Iterator i = types.iterator(); i.hasNext(); ) {
+            Class c = (Class) i.next();
+            getMetaData(c, envLoader, false);
+        }
     }
 
     /**
