@@ -428,7 +428,7 @@ public class ClassMetaData
         FieldMetaData[] pks = getPrimaryKeyFields();
         if (pks.length != 1)
             return null;
-        switch (pks[0].getDeclaredTypeCode()) {
+        switch (pks[0].getObjectIdFieldTypeCode()) {
             case JavaTypes.BYTE:
             case JavaTypes.BYTE_OBJ:
                 _objectId = ByteId.class;
@@ -456,6 +456,7 @@ public class ClassMetaData
                 _objectId = DateId.class;
                 break;
             case JavaTypes.OID:
+            case JavaTypes.OBJECT:
                 _objectId = ObjectId.class;
                 break;
         }
@@ -1898,29 +1899,32 @@ public class ClassMetaData
             Method m;
             String cap;
             int type;
-            Class comp;
+            Class c;
+            ClassMetaData idmeta;
             int access = meta.getAccessType();
             for (int i = 0; i < fmds.length; i++) {
                 switch (fmds[i].getDeclaredTypeCode()) {
                     case JavaTypes.ARRAY:
-                        comp = fmds[i].getDeclaredType().getComponentType();
-                        if (comp == byte.class || comp == Byte.class
-                            || comp == char.class || comp == Character.class)
+                        c = fmds[i].getDeclaredType().getComponentType();
+                        if (c == byte.class || c == Byte.class
+                            || c == char.class || c == Character.class) {
+                            c = fmds[i].getDeclaredType();
                             break;
+                        }
                         // else no break
+                    case JavaTypes.PC_UNTYPED:
                     case JavaTypes.COLLECTION:
                     case JavaTypes.MAP:
-                    case JavaTypes.PC:
-                    case JavaTypes.PC_UNTYPED:
                     case JavaTypes.OID: // we're validating embedded fields
                         throw new MetaDataException(_loc.get("bad-pk-type",
                             fmds[i]));
+                    default:
+                        c = fmds[i].getObjectIdFieldType();
                 }
 
                 if (access == ACCESS_FIELD) {
                     f = findField(oid, fmds[i].getName(), runtime);
-                    if (f == null || !f.getType().isAssignableFrom(fmds[i].
-                        getDeclaredType()))
+                    if (f == null || !f.getType().isAssignableFrom(c))
                         throw new MetaDataException(_loc.get("invalid-id",
                             _type)).setFailedObject(fmds[i].getName());
                 } else if (access == ACCESS_PROPERTY) {
@@ -1931,8 +1935,7 @@ public class ClassMetaData
                     if (m == null && (type == JavaTypes.BOOLEAN
                         || type == JavaTypes.BOOLEAN_OBJ))
                         m = findMethod(oid, "is" + cap, null, runtime);
-                    if (m == null || !m.getReturnType().
-                        isAssignableFrom(fmds[i].getDeclaredType()))
+                    if (m == null || !m.getReturnType().isAssignableFrom(c))
                         throw new MetaDataException(_loc.get("invalid-id",
                             _type)).setFailedObject("get" + cap);
 

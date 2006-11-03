@@ -287,12 +287,13 @@ public class PrimitiveFieldStrategy
     }
 
     public Object getPrimaryKeyValue(Result res, Column[] cols, ForeignKey fk,
-        Joins joins)
+        JDBCStore store, Joins joins)
         throws SQLException {
         Column col = cols[0];
         if (fk != null)
             col = fk.getColumn(col);
-        return res.getObject(col, null, joins);
+        return JavaTypes.convert(res.getObject(col, null, joins),
+            field.getTypeCode());
     }
 
     public Column[] getColumns() {

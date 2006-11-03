@@ -287,7 +287,7 @@ public class HandlerFieldStrategy
     }
 
     public Object getPrimaryKeyValue(Result res, Column[] cols, ForeignKey fk,
-        Joins joins)
+        JDBCStore store, Joins joins)
         throws SQLException {
         Column col;
         Object val = null;

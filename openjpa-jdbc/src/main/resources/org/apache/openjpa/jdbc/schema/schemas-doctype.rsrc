@@ -2,7 +2,7 @@
 	<!ELEMENT schemas (schema)*>
 	<!ELEMENT schema (table|sequence)*>
 	<!ATTLIST schema name CDATA #IMPLIED>
-	<!ELEMENT table (column|index|pk|fk)+>
+	<!ELEMENT table (column|index|pk|fk|unique)+>
 	<!ATTLIST table name CDATA #REQUIRED>
 	<!ELEMENT column EMPTY>
 	<!ATTLIST column name CDATA #REQUIRED> 

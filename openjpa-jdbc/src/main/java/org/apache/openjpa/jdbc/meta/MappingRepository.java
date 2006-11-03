@@ -303,8 +303,8 @@ public class MappingRepository
         // define superclass fields after mapping class, so we can tell whether
         // the class is mapped and needs to redefine abstract superclass fields
         getStrategyInstaller().installStrategy(mapping);
-        mapping.defineSuperclassFields(mapping.
-            getJoinablePCSuperclassMapping() == null);
+        mapping.defineSuperclassFields(mapping.getJoinablePCSuperclassMapping()
+            == null);
 
         // resolve everything that doesn't involve relations to allow relation
         // mappings to use the others as joinables

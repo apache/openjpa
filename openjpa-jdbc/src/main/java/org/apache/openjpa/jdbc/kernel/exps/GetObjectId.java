@@ -114,16 +114,16 @@ class GetObjectId
         while (!mapping.isPrimaryKeyObjectId(false))
             mapping = mapping.getJoinablePCSuperclassMapping();
 
-        // relies on single-column primary key field mappings
         Column[] cols = mapping.getPrimaryKeyColumns();
-        Object[] ordered = new Object[cols.length];
+        Object[] vals = new Object[cols.length];
         Joinable join;
         for (int i = 0; i < cols.length; i++) {
             join = mapping.assertJoinable(cols[i]);
-            ordered[i] = pks[mapping.getField(join.getFieldIndex()).
+            vals[i] = pks[mapping.getField(join.getFieldIndex()).
                 getPrimaryKeyIndex()];
+            vals[i] = join.getJoinValue(vals[i], cols[i], ctx.store);
         }
-        return ordered;
+        return vals;
     }
 
     public void select(Select sel, ExpContext ctx, ExpState state, 

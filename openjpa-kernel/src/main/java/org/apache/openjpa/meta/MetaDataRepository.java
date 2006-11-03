@@ -483,6 +483,8 @@ public class MetaDataRepository
         // load mapping data
         for (int i = 0; i < resolved.size(); i++)
             loadMapping((ClassMetaData) resolved.get(i));
+        for (int i = 0; i < resolved.size(); i++)
+            preMapping((ClassMetaData) resolved.get(i));
 
         // resolve mappings
         boolean err = true;
@@ -499,7 +501,6 @@ public class MetaDataRepository
                 re = new MetaDataException(_loc.get("resolve-errs")).
                     setNestedThrowables((Throwable[]) _errs.toArray
                         (new Exception[_errs.size()]));
-            ;
             _errs.clear();
             throw re;
         }
@@ -540,6 +541,13 @@ public class MetaDataRepository
                     meta.getPCSuperclass()));
         }
 
+        // resolve relation primary key fields for mapping dependencies
+        FieldMetaData[] fmds = meta.getDeclaredFields();
+        for (int i = 0; i < fmds.length; i++)
+            if (fmds[i].isPrimaryKey())
+                getMetaData(fmds[i].getDeclaredType(), 
+                    meta.getEnvClassLoader(), false);
+
         // resolve metadata; if we're not in the process of resolving
         // others, this will return the set of interrelated metas that
         // resolved
@@ -571,10 +579,17 @@ public class MetaDataRepository
                 } catch (RuntimeException re) {
                     removeMetaData(meta);
                     _errs.add(re);
-                    return;
                 }
             }
         }
+    }
+
+    /**
+     * Pre-mapping preparation.
+     */
+    private void preMapping(ClassMetaData meta) {
+        if ((meta.getResolve() & MODE_MAPPING) != 0)
+            return;
 
         // prepare mappings for resolve; if not resolving mappings, then
         // make sure any superclass fields defined in metadata are resolved

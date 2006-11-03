@@ -66,6 +66,10 @@ public class ObjectIdStateManager
         return (_owner == null) ? null : _owner.getGenericContext();
     }
 
+    public Object getPCPrimaryKey(Object oid, int field) {
+        throw new UnsupportedOperationException();
+    }
+
     public byte replaceFlags() {
         throw new UnsupportedOperationException();
     }

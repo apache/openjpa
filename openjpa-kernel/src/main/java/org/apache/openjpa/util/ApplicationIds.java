@@ -44,6 +44,9 @@ public class ApplicationIds {
     /**
      * Return the primary key values for the given object id. The values
      * will be returned in the same order as the metadata primary key fields.
+     * Values for PC primary key fields will be the primarky key value or
+     * oid value of the related instance (depending on 
+     * {@link FieldMetaData#isObjectIdFieldIdOfPC}).
      */
     public static Object[] toPKValues(Object oid, ClassMetaData meta) {
         if (meta == null)
@@ -88,8 +91,7 @@ public class ApplicationIds {
                 if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD) {
                     field = oidType.getField(fmds[i].getName());
                     pks[i] = field.get(oid);
-                } else // property
-                {
+                } else { // property
                     meth = ImplHelper.getGetter(oidType, fmds[i].getName());
                     pks[i] = meth.invoke(oid, (Object[]) null);
                 }
@@ -104,6 +106,9 @@ public class ApplicationIds {
 
     /**
      * Return a new object id constructed from the given primary key values.
+     * Values for PC primary key fields should be the primarky key value or
+     * oid value of the related instance (depending on 
+     * {@link FieldMetaData#isObjectIdFieldIdOfPC}).
      */
     public static Object fromPKValues(Object[] pks, ClassMetaData meta) {
         if (meta == null || pks == null)
@@ -112,7 +117,7 @@ public class ApplicationIds {
         boolean convert = !meta.getRepository().getConfiguration().
             getCompatibilityInstance().getStrictIdentityValues();
         if (meta.isOpenJPAIdentity()) {
-            int type = meta.getPrimaryKeyFields()[0].getDeclaredTypeCode();
+            int type = meta.getPrimaryKeyFields()[0].getObjectIdFieldTypeCode();
             Object val = (convert) ? JavaTypes.convert(pks[0], type) : pks[0];
             switch (type) {
                 case JavaTypes.BYTE:
@@ -148,6 +153,7 @@ public class ApplicationIds {
                 case JavaTypes.DATE:
                     return new DateId(meta.getDescribedType(), (Date) val);
                 case JavaTypes.OID:
+                case JavaTypes.OBJECT:
                     return new ObjectId(meta.getDescribedType(), val);
                 default:
                     throw new InternalException();
@@ -182,9 +188,8 @@ public class ApplicationIds {
                 if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD) {
                     field = oidType.getField(fmds[i].getName());
                     field.set(copy, (convert) ? JavaTypes.convert(pks[i],
-                        fmds[i].getDeclaredTypeCode()) : pks[i]);
-                } else // property
-                {
+                        fmds[i].getObjectIdFieldTypeCode()) : pks[i]);
+                } else { // property
                     if (paramTypes == null)
                         paramTypes = new Class[1];
                     paramTypes[0] = fmds[i].getDeclaredType();
@@ -193,7 +198,7 @@ public class ApplicationIds {
                     if (params == null)
                         params = new Object[1];
                     params[0] = (convert) ? JavaTypes.convert(pks[i],
-                        fmds[i].getDeclaredTypeCode()) : pks[i];
+                        fmds[i].getObjectIdFieldTypeCode()) : pks[i];
                     meth.invoke(copy, params);
                 }
             }
@@ -218,7 +223,7 @@ public class ApplicationIds {
             Class cls = meta.getDescribedType();
             OpenJPAId koid = (OpenJPAId) oid;
             FieldMetaData pk = meta.getPrimaryKeyFields()[0];
-            switch (pk.getDeclaredTypeCode()) {
+            switch (pk.getObjectIdFieldTypeCode()) {
                 case JavaTypes.BYTE:
                 case JavaTypes.BYTE_OBJ:
                     return new ByteId(cls, ((ByteId) oid).getId(),
@@ -248,6 +253,9 @@ public class ApplicationIds {
                     if (embed != null)
                         inner = copy(inner, embed, embed.getFields());
                     return new ObjectId(cls, inner, koid.hasSubclasses());
+                case JavaTypes.OBJECT:
+                    return new ObjectId(cls, koid.getIdObject(), 
+                        koid.hasSubclasses());
                 default:
                     throw new InternalException();
             }
@@ -256,10 +264,11 @@ public class ApplicationIds {
         // create a new pc instance of the right type, set its key fields
         // to the original oid values, then copy its key fields to a new
         // oid instance
-        if (!Modifier.isAbstract(meta.getDescribedType().getModifiers())) {
-            Class type = meta.getDescribedType();
-            if (meta.getInterfaceImpl() != null)
-                type = meta.getInterfaceImpl();
+        if (!Modifier.isAbstract(meta.getDescribedType().getModifiers())
+            && !hasPCPrimaryKeyFields(meta)) {
+            Class type = meta.getInterfaceImpl();
+            if (type == null)
+                type = meta.getDescribedType();
             PersistenceCapable pc = PCRegistry.newInstance(type, null, oid, 
                  false);
             Object copy = pc.pcNewObjectIdInstance();
@@ -277,6 +286,18 @@ public class ApplicationIds {
     }
 
     /**
+     * Return true if any of the given type's primary key fields are 
+     * persistent objects.
+     */
+    private static boolean hasPCPrimaryKeyFields(ClassMetaData meta) {
+        FieldMetaData[] fmds = meta.getPrimaryKeyFields();
+        for (int i = 0; i < fmds.length; i++)
+            if (fmds[i].getDeclaredTypeCode() == JavaTypes.PC)
+                return true;
+        return false;
+    }
+
+    /**
      * Copy the given identity object using reflection.
      */
     private static Object copy(Object oid, ClassMetaData meta,
@@ -284,7 +305,6 @@ public class ApplicationIds {
         if (oid == null)
             return null;
 
-        // default to using reflection
         Class oidType = oid.getClass();
         try {
             Object copy = oidType.newInstance();
@@ -300,11 +320,10 @@ public class ApplicationIds {
                 if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD) {
                     field = oidType.getField(fmds[i].getName());
                     field.set(copy, field.get(oid));
-                } else // property
-                {
+                } else { // property
                     if (paramTypes == null)
                         paramTypes = new Class[1];
-                    paramTypes[0] = fmds[i].getDeclaredType();
+                    paramTypes[0] = fmds[i].getObjectIdFieldType();
                     cap = StringUtils.capitalize(fmds[i].getName());
                     meth = oidType.getMethod("set" + cap, paramTypes);
                     if (params == null)
@@ -315,6 +334,32 @@ public class ApplicationIds {
                 }
             }
             return copy;
+        } catch (OpenJPAException ke) {
+            throw ke;
+        } catch (Throwable t) {
+            throw new GeneralException(t);
+        }
+    }
+
+    /**
+     * Return the given primary key field value from the given oid.
+     */
+    public static Object get(Object oid, FieldMetaData fmd) {
+        if (oid == null)
+            return null;
+        if (oid instanceof OpenJPAId)
+            return ((OpenJPAId) oid).getIdObject();
+
+        ClassMetaData meta = fmd.getDefiningMetaData();
+        Class oidType = oid.getClass();
+        try {
+            if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
+                return oidType.getField(fmd.getName()).get(oid);
+
+            // property
+            String cap = StringUtils.capitalize(fmd.getName());
+            return ImplHelper.getGetter(oidType, cap).
+                invoke(oid, (Object[]) null);
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (Throwable t) {
@@ -502,9 +547,14 @@ public class ApplicationIds {
 
         private Object retrieve(int field) {
             Object val = _store[_index++];
-            if (_meta != null)
-                val = JavaTypes.convert(val, _meta.getField(field).
-                    getDeclaredTypeCode());
+            if (_meta != null) {
+                FieldMetaData fmd = _meta.getField(field);
+                if (fmd.getDeclaredTypeCode() != JavaTypes.PC)
+                    val = JavaTypes.convert(val, fmd.getDeclaredTypeCode());
+                else
+                    val = JavaTypes.convert(val, JavaTypes.getTypeCode(fmd.
+                        getObjectIdFieldType()));
+            }
             return val;
 		}
 	}

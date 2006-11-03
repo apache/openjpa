@@ -88,10 +88,10 @@ public class DelegatingJoinable
         return _join.getFieldIndex();
     }
 
-    public Object getPrimaryKeyValue(Result res, Column[] cols, ForeignKey fk,
-        Joins joins)
+    public Object getPrimaryKeyValue(Result res, Column[] cols, ForeignKey fk, 
+        JDBCStore store, Joins joins)
         throws SQLException {
-        return _join.getPrimaryKeyValue(res, cols, fk, joins);
+        return _join.getPrimaryKeyValue(res, cols, fk, store, joins);
     }
 
     public Column[] getColumns() {

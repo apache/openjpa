@@ -215,9 +215,9 @@ public class StateManagerImpl
         }
     }
 
-    ///////////////////////////////////
+    //////////////////////////////////////
     // OpenJPAStateManager implementation
-    ///////////////////////////////////
+    //////////////////////////////////////
 
     public void initialize(Class cls, PCState state) {
         // check to see if our current object id instance is the
@@ -1302,6 +1302,22 @@ public class StateManagerImpl
         } catch (RuntimeException re) {
             throw translate(re);
         }
+    }
+
+    public Object getPCPrimaryKey(Object oid, int field) {
+        FieldMetaData fmd = _meta.getField(field);
+        Object pk = ApplicationIds.get(oid, fmd);
+        if (pk == null)
+            return null;
+
+        ClassMetaData relmeta = fmd.getDeclaredTypeMetaData();
+        if (relmeta.getIdentityType() == ClassMetaData.ID_DATASTORE
+            && fmd.getObjectIdFieldTypeCode() == JavaTypes.LONG)
+            pk = _broker.getStoreManager().newDataStoreId(pk, relmeta);
+        else if (relmeta.getIdentityType() == ClassMetaData.ID_APPLICATION 
+            && fmd.getObjectIdFieldType() != relmeta.getObjectIdType())
+            pk = ApplicationIds.fromPKValues(new Object[] { pk }, relmeta);
+        return _broker.find(pk, false, null);
     }
 
     public byte replaceFlags() {

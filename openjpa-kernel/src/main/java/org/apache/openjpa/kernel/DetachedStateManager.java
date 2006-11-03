@@ -323,6 +323,10 @@ public class DetachedStateManager
         return PersistenceCapable.MEDIATE_WRITE;
     }
 
+    public Object getPCPrimaryKey(Object oid, int field) {
+        throw new UnsupportedOperationException();
+    }
+
     public StateManager replaceStateManager(StateManager sm) {
         return sm;
     }

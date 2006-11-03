@@ -949,6 +949,10 @@ public class EmbedFieldStrategy
             throw new InternalException();
         }
 
+        public Object getPCPrimaryKey(Object oid, int field) {
+            throw new InternalException();
+        }
+
         public StateManager replaceStateManager(StateManager sm) {
             throw new InternalException();
         }

@@ -312,7 +312,6 @@ public class ApplicationIdTool {
 
         // collect info on id type
         String className = getClassName();
-
         String packageName = Strings.getPackageName(oidClass);
         String packageDec = "";
         if (packageName.length() > 0)
@@ -502,13 +501,12 @@ public class ApplicationIdTool {
 
         pkgs.add("java.io");
         pkgs.add("java.util");
+        Class type;
         for (int i = 0; i < _fields.length; i++) {
-            if (_fields[i].getDeclaredType() != byte[].class
-                && _fields[i].getDeclaredType() != char[].class
-                && !_fields[i].getDeclaredType().getName().
-                startsWith("java.sql.")) {
-                pkgs.add(Strings.getPackageName
-                    (_fields[i].getDeclaredType()));
+            type = _fields[i].getObjectIdFieldType();
+            if (type != byte[].class && type != char[].class
+                && !type.getName().startsWith("java.sql.")) {
+                pkgs.add(Strings.getPackageName(type));
             }
         }
         return pkgs;
@@ -532,13 +530,14 @@ public class ApplicationIdTool {
      * Return the type name to declare the given field as.
      */
     private String getTypeName(FieldMetaData fmd) {
-        if (fmd.getDeclaredType() == byte[].class)
+        Class type = fmd.getObjectIdFieldType();
+        if (type == byte[].class)
             return "byte[]";
-        if (fmd.getDeclaredType() == char[].class)
+        if (type == char[].class)
             return "char[]";
-        if (fmd.getDeclaredType().getName().startsWith("java.sql."))
-            return fmd.getDeclaredType().getName();
-        return Strings.getClassName(fmd.getDeclaredType());
+        if (type.getName().startsWith("java.sql."))
+            return type.getName();
+        return Strings.getClassName(type);
     }
 
     /**
@@ -626,6 +625,16 @@ public class ApplicationIdTool {
         code.openParen(true).append("String str").closeParen();
         code.openBrace(2).endl();
 
+        // if we have any Object-type fields, die immediately 
+        for (int i = 0; i < _fields.length; i++) {
+            if (_fields[i].getObjectIdFieldType() != Object.class)
+                continue;
+            code.tab(2).append("throw new UnsupportedOperationException").
+                parens().append(";").endl();
+            code.closeBrace(2); 
+            return code.toString();
+        } 
+
         if (toke != null) {
             code.tab(2).append(toke).append(" toke = ");
             if (hasSuperclass) {
@@ -677,7 +686,7 @@ public class ApplicationIdTool {
             parse.append("this.");
         parse.append(field.getName()).append(" = ");
 
-        Class type = field.getDeclaredType();
+        Class type = field.getObjectIdFieldType();
         if (type == Date.class) {
             parse.append("new Date").openParen(true).
                 append("Long.parseLong").openParen(true).
@@ -788,6 +797,7 @@ public class ApplicationIdTool {
         }
 
         String name;
+        Class type;
         for (int i = 0; i < _fields.length; i++) {
             if (i == 0) {
                 code.endl().tab(2).append(className).append(" other = ").
@@ -802,14 +812,15 @@ public class ApplicationIdTool {
                 code.endl().tab(3).append("&& ");
 
             name = _fields[i].getName();
-            if (_fields[i].getDeclaredType().isPrimitive()) {
+            type = _fields[i].getObjectIdFieldType();
+            if (type.isPrimitive()) {
                 code.openParen(false).append(name).append(" == ").
                     append("other.").append(name).closeParen();
-            } else if (_fields[i].getDeclaredType() == byte[].class) {
+            } else if (type == byte[].class) {
                 code.openParen(false).append("equals").openParen(true).
                     append(name).append(", ").append("other.").
                     append(name).closeParen().closeParen();
-            } else if (_fields[i].getDeclaredType() == char[].class) {
+            } else if (type == char[].class) {
                 // ((name == null && other.name == null)
                 //	|| (name != null && String.valueOf (name).
                 //	equals (String.valueOf (other.name))))
@@ -908,18 +919,19 @@ public class ApplicationIdTool {
         String name = field.getName();
         if ("rs".equals(name))
             name = "this." + name;
-        if (field.getDeclaredType().isPrimitive()) {
-            if (field.getDeclaredType() == boolean.class) {
+        Class type = field.getObjectIdFieldType();
+        if (type.isPrimitive()) {
+            if (type == boolean.class) {
                 // ((name) ? 1 : 0)
                 code.append("(").openParen(false).append(name).closeParen().
                     append(" ? 1 : 0").append(")");
-            } else if (field.getDeclaredType() == long.class) {
+            } else if (type == long.class) {
                 // (int) (name ^ (name >>> 32))
                 code.openParen(false).append("int").closeParen().
                     append(" ").openParen(false).append(name).
                     append(" ^ ").openParen(false).append(name).
                     append(" >>> 32").closeParen().closeParen();
-            } else if (field.getDeclaredType() == double.class) {
+            } else if (type == double.class) {
                 // (int) (Double.doubleToLongBits (name)
                 //     ^ (Double.doubleToLongBits (name) >>> 32))
                 code.openParen(false).append("int").closeParen().
@@ -930,22 +942,22 @@ public class ApplicationIdTool {
                     append("Double.doubleToLongBits").openParen(true).
                     append(name).closeParen().append(" >>> 32").
                     closeParen().closeParen();
-            } else if (field.getDeclaredType() == float.class) {
+            } else if (type == float.class) {
                 // Float.floatToIntBits (name)
                 code.append("Float.floatToIntBits").openParen(true).
                     append(name).closeParen();
-            } else if (field.getDeclaredType() == int.class)
+            } else if (type == int.class)
                 code.append(name);
             else {
                 // (int) name
                 code.openParen(false).append("int").closeParen().
                     append(" ").append(name);
             }
-        } else if (field.getDeclaredType() == byte[].class) {
+        } else if (type == byte[].class) {
             // hashCode (name);
             code.append("hashCode").openParen(true).append(name).
                 closeParen();
-        } else if (field.getDeclaredType() == char[].class) {
+        } else if (type == char[].class) {
             // ((name == null) ? 0 : String.valueOf (name).hashCode ())
             code.append("(").openParen(false).append(name).
                 append(" == null").closeParen().append(" ? 0 : ").
@@ -974,6 +986,7 @@ public class ApplicationIdTool {
             openBrace(2).endl();
 
         String name;
+        Class type;
         String appendDelimiter = "+ \"" + _token + "\" + ";
         for (int i = 0; i < _fields.length; i++) {
             // if this is not the first field, add a +
@@ -990,17 +1003,18 @@ public class ApplicationIdTool {
                 code.endl().tab(3).append(appendDelimiter);
 
             name = _fields[i].getName();
-            if (_fields[i].getDeclaredType() == String.class)
+            type = _fields[i].getObjectIdFieldType();
+            if (type == String.class)
                 code.append(name);
-            else if (_fields[i].getDeclaredType() == byte[].class)
+            else if (type == byte[].class)
                 code.append("toString").openParen(true).
                     append(name).closeParen();
-            else if (_fields[i].getDeclaredType() == char[].class)
+            else if (type == char[].class)
                 code.openParen(true).openParen(true).append(name).
                     append(" == null").closeParen().append(" ? \"null\"").
                     append(": String.valueOf").openParen(true).
                     append(name).closeParen().closeParen();
-            else if (_fields[i].getDeclaredType() == Date.class)
+            else if (type == Date.class)
                 code.openParen(true).openParen(true).append(name).
                     append(" == null").closeParen().append(" ? \"null\"").
                     endl().tab(4).append(": String.valueOf").
@@ -1448,7 +1462,8 @@ public class ApplicationIdTool {
     public static interface ObjectIdLoader
 	{
 		/**
-		 * Turn on the loading of all identity classes, even if they don't exist.
+		 * Turn on the loading of all identity classes, even if they don't 
+         * exist.
 	 	 */
 		public void setLoadObjectIds ();
 	}

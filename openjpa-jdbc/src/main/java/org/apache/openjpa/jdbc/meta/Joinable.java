@@ -52,7 +52,7 @@ public interface Joinable {
      * {@link ForeignKey#getColumn}.
      */
     public Object getPrimaryKeyValue(Result res, Column[] cols, ForeignKey fk,
-        Joins joins)
+        JDBCStore store, Joins joins)
         throws SQLException;
 
     /**

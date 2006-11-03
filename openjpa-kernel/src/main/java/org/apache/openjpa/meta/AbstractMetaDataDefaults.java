@@ -45,6 +45,7 @@ public abstract class AbstractMetaDataDefaults
     private boolean _interface = true;
     private boolean _pcRegistry = true;
     private int _callback = CALLBACK_RETHROW;
+    private boolean _unwrapped = false;
 
     /**
      * Whether to attempt to use the information from registered classes
@@ -111,6 +112,22 @@ public abstract class AbstractMetaDataDefaults
 
     public boolean getCallbacksBeforeListeners(int type) {
         return false;
+    }
+
+    public boolean isDeclaredInterfacePersistent() {
+        return _interface;
+    }
+
+    public void setDeclaredInterfacePersistent(boolean pers) {
+        _interface = pers;
+    }
+
+    public boolean isDataStoreObjectIdFieldUnwrapped() {
+        return _unwrapped;
+    }
+
+    public void setDataStoreObjectIdFieldUnwrapped(boolean unwrapped) {
+        _unwrapped = unwrapped;
     }
 
     public boolean getIgnoreNonPersistent() {
@@ -281,14 +298,6 @@ public abstract class AbstractMetaDataDefaults
      */
     protected abstract boolean isDefaultPersistent(ClassMetaData meta,
         Member member, String name);
-
-    public void setDeclaredInterfacePersistent(boolean pers) {
-        _interface = pers;
-    }
-
-    public boolean isDeclaredInterfacePersistent() {
-        return _interface;
-    }
 
     public Member getBackingMember(FieldMetaData fmd) {
         if (fmd == null)

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -59,7 +60,15 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.util.ByteId;
+import org.apache.openjpa.util.CharId;
+import org.apache.openjpa.util.DateId;
+import org.apache.openjpa.util.Id;
+import org.apache.openjpa.util.IntId;
+import org.apache.openjpa.util.LongId;
 import org.apache.openjpa.util.ObjectId;
+import org.apache.openjpa.util.ShortId;
+import org.apache.openjpa.util.StringId;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 import serp.bytecode.BCClass;
@@ -131,7 +140,6 @@ public class PCEnhancer {
     private final ClassMetaData _meta;
     private final Log _log;
     private Collection _oids = null;
-
     private boolean _defCons = true;
     private boolean _fail = false;
     private File _dir = null;
@@ -1285,14 +1293,14 @@ public class PCEnhancer {
             code.constant().setNull(); // return null;
         else {
             // return <versionField>;
-            Class wrapper = unwrapVersionField(versionField);
-            if (wrapper != null) {
+            Class wrapper = toPrimitiveWrapper(versionField);
+            if (wrapper != versionField.getDeclaredType()) {
                 code.anew().setType(wrapper);
                 code.dup();
             }
             loadManagedInstance(code, false);
             addGetManagedValueCode(code, versionField);
-            if (wrapper != null)
+            if (wrapper != versionField.getDeclaredType())
                 code.invokespecial().setMethod(wrapper, "<init>", void.class,
                     new Class[]{ versionField.getDeclaredType() });
         }
@@ -1313,20 +1321,26 @@ public class PCEnhancer {
      * Return the version field type as a primitive wrapper, or null if
      * the version field is not primitive.
      */
-    private Class unwrapVersionField(FieldMetaData fmd) {
+    private Class toPrimitiveWrapper(FieldMetaData fmd) {
         switch (fmd.getDeclaredTypeCode()) {
+            case JavaTypes.BOOLEAN:
+                return Boolean.class;
             case JavaTypes.BYTE:
                 return Byte.class;
             case JavaTypes.CHAR:
                 return Character.class;
+            case JavaTypes.DOUBLE:
+                return Double.class;
+            case JavaTypes.FLOAT:
+                return Float.class;
             case JavaTypes.INT:
                 return Integer.class;
-            case JavaTypes.SHORT:
-                return Short.class;
             case JavaTypes.LONG:
                 return Long.class;
+            case JavaTypes.SHORT:
+                return Short.class;
         }
-        return null;
+        return fmd.getDeclaredType();
     }
 
     /**
@@ -1495,7 +1509,7 @@ public class PCEnhancer {
         else
             code.aload().setParam(0);
 
-        if (!_meta.isOpenJPAIdentity() && _meta.isObjectIdTypeShared()) {
+        if (_meta.isObjectIdTypeShared()) {
             // oid = ((ObjectId) id).getId ();
             code.checkcast().setType(ObjectId.class);
             code.invokevirtual().setMethod(ObjectId.class, "getId",
@@ -1509,9 +1523,12 @@ public class PCEnhancer {
         code.astore().setLocal(id);
 
         // int inherited = pcInheritedFieldCount;
-        code.getstatic().setField(INHERIT, int.class);
-        int inherited = code.getNextLocalsIndex();
-        code.istore().setLocal(inherited);
+        int inherited = 0;
+        if (fieldManager) {
+            code.getstatic().setField(INHERIT, int.class);
+            inherited = code.getNextLocalsIndex();
+            code.istore().setLocal(inherited);
+        }
 
         // id.<field> = fs.fetch<type>Field (<index>); or...
         // id.<field> = pc.<field>;
@@ -1522,8 +1539,9 @@ public class PCEnhancer {
             if (!fmds[i].isPrimaryKey())
                 continue;
 
-            type = fmds[i].getDeclaredType();
             name = fmds[i].getName();
+            type = fmds[i].getObjectIdFieldType();
+
             code.aload().setLocal(id);
             if (fieldManager) {
                 code.aload().setParam(0);
@@ -1542,11 +1560,14 @@ public class PCEnhancer {
             } else {
                 loadManagedInstance(code, false);
                 addGetManagedValueCode(code, fmds[i]);
+
+                // get id/pk from pc instance
+                if (fmds[i].getDeclaredTypeCode() == JavaTypes.PC)
+                    addExtractObjectIdFieldValueCode(code, fmds[i]);
             }
 
             if (_meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
-                code.putfield().setField(findDeclaredField(oidType,
-                    name));
+                code.putfield().setField(findDeclaredField(oidType, name));
             else
                 code.invokevirtual().setMethod(findDeclaredMethod
                     (oidType, "set" + StringUtils.capitalize(name),
@@ -1559,6 +1580,168 @@ public class PCEnhancer {
     }
 
     /**
+     * Add code to extract the id of the given primary key relation field for
+     * setting into an objectid instance.
+     */
+    private void addExtractObjectIdFieldValueCode(Code code, FieldMetaData pk) {
+        // if (val != null) 
+        //  val = ((PersistenceCapable) val).pcFetchObjectId();
+        int pc = code.getNextLocalsIndex();
+        code.astore().setLocal(pc);
+        code.aload().setLocal(pc);
+        JumpInstruction ifnull1 = code.ifnull();
+        code.aload().setLocal(pc);
+        code.checkcast().setType(PersistenceCapable.class); 
+        code.invokeinterface().setMethod(PersistenceCapable.class,
+            PRE + "FetchObjectId", Object.class, null);
+        int oid = code.getNextLocalsIndex();
+        code.astore().setLocal(oid);
+        code.aload().setLocal(oid);
+        JumpInstruction ifnull2 = code.ifnull(); 
+
+        // for datastore / single-field identity:
+        // if (val != null)
+        //   val = ((OpenJPAId) val).getId();
+        ClassMetaData pkmeta = pk.getDeclaredTypeMetaData();
+        int pkcode = pk.getObjectIdFieldTypeCode();
+        Class pktype = pk.getObjectIdFieldType();
+        if (pkmeta.getIdentityType() == ClassMetaData.ID_DATASTORE 
+            && pkcode == JavaTypes.LONG) {
+            code.aload().setLocal(oid);
+            code.checkcast().setType(Id.class);
+            code.invokevirtual().setMethod(Id.class, "getId", 
+                long.class, null);
+        } else if (pkmeta.getIdentityType() == ClassMetaData.ID_DATASTORE) {
+            code.aload().setLocal(oid);
+        } else if (pkmeta.isOpenJPAIdentity()) {
+            switch (pkcode) {
+                case JavaTypes.BYTE_OBJ:
+                    code.anew().setType(Byte.class);
+                    code.dup();
+                    // no break
+                case JavaTypes.BYTE:
+                    code.aload().setLocal(oid);
+                    code.checkcast().setType(ByteId.class);
+                    code.invokevirtual().setMethod(ByteId.class, "getId",
+                        byte.class, null);
+                    if (pkcode == JavaTypes.BYTE_OBJ)
+                        code.invokespecial().setMethod(Byte.class, "<init>",
+                            void.class, new Class[] {byte.class});
+                    break;
+                case JavaTypes.CHAR_OBJ:
+                    code.anew().setType(Character.class);
+                    code.dup();
+                    // no break
+                case JavaTypes.CHAR:
+                    code.aload().setLocal(oid);
+                    code.checkcast().setType(CharId.class);
+                    code.invokevirtual().setMethod(CharId.class, "getId",
+                        char.class, null);
+                    if (pkcode == JavaTypes.CHAR_OBJ)
+                        code.invokespecial().setMethod(Character.class, 
+                            "<init>", void.class, new Class[] {char.class});
+                    break;
+                case JavaTypes.INT_OBJ:
+                    code.anew().setType(Integer.class);
+                    code.dup();
+                    // no break
+                case JavaTypes.INT:
+                    code.aload().setLocal(oid);
+                    code.checkcast().setType(IntId.class);
+                    code.invokevirtual().setMethod(IntId.class, "getId",
+                        int.class, null);
+                    if (pkcode == JavaTypes.INT_OBJ)
+                        code.invokespecial().setMethod(Integer.class, "<init>",
+                            void.class, new Class[] {int.class});
+                    break;
+                case JavaTypes.LONG_OBJ:
+                    code.anew().setType(Long.class);
+                    code.dup();
+                    // no break
+                case JavaTypes.LONG:
+                    code.aload().setLocal(oid);
+                    code.checkcast().setType(LongId.class);
+                    code.invokevirtual().setMethod(LongId.class, "getId",
+                        long.class, null);
+                    if (pkcode == JavaTypes.LONG_OBJ)
+                        code.invokespecial().setMethod(Long.class, "<init>",
+                            void.class, new Class[] {long.class});
+                    break;
+                case JavaTypes.SHORT_OBJ:
+                    code.anew().setType(Short.class);
+                    code.dup();
+                    // no break
+                case JavaTypes.SHORT:
+                    code.aload().setLocal(oid);
+                    code.checkcast().setType(ShortId.class);
+                    code.invokevirtual().setMethod(ShortId.class, "getId",
+                        short.class, null);
+                    if (pkcode == JavaTypes.SHORT_OBJ)
+                        code.invokespecial().setMethod(Short.class, "<init>", 
+                            void.class, new Class[]{short.class});
+                    break;
+                case JavaTypes.DATE:
+                    code.aload().setLocal(oid);
+                    code.checkcast().setType(DateId.class);
+                    code.invokevirtual().setMethod(DateId.class, "getId",
+                        Date.class, null);
+                    break;
+                case JavaTypes.STRING:
+                    code.aload().setLocal(oid);
+                    code.checkcast().setType(StringId.class);
+                    code.invokevirtual().setMethod(StringId.class, "getId",
+                        String.class, null);
+                    break;
+                default:
+                    code.aload().setLocal(oid);
+                    code.checkcast().setType(ObjectId.class);
+                    code.invokevirtual().setMethod(ObjectId.class, "getId",
+                        Object.class, null);
+            }
+        } else if (pkmeta.getObjectIdType() != null) {
+            code.aload().setLocal(oid);
+            code.checkcast().setType(pktype);
+        } else
+            code.aload().setLocal(oid);
+        JumpInstruction go2 = code.go2();
+
+        // if (val == null)
+        //   val = <default>;
+        Instruction def;
+        switch (pkcode) {
+            case JavaTypes.BOOLEAN:
+                def = code.constant().setValue(false);
+                break;
+            case JavaTypes.BYTE:
+                def = code.constant().setValue((byte) 0);
+                break;
+            case JavaTypes.CHAR:
+                def = code.constant().setValue((char) 0);
+                break;
+            case JavaTypes.DOUBLE:
+                def = code.constant().setValue(0D);
+                break;
+            case JavaTypes.FLOAT:
+                def = code.constant().setValue(0F);
+                break;
+            case JavaTypes.INT:
+                def = code.constant().setValue(0);
+                break;
+            case JavaTypes.LONG:
+                def = code.constant().setValue(0L);
+                break;
+            case JavaTypes.SHORT:
+                def = code.constant().setValue((short) 0);
+                break;
+            default:
+                def = code.constant().setNull();
+        }
+        ifnull1.setTarget(def);
+        ifnull2.setTarget(def);
+        go2.setTarget(code.nop());
+    }
+
+    /**
      * Adds the <code>pcCopyKeyFieldsFromObjectId</code> methods
      * to classes using application identity.
      */
@@ -1566,8 +1749,8 @@ public class PCEnhancer {
         throws NoSuchMethodException {
         // public void pcCopyKeyFieldsFromObjectId (ObjectIdFieldConsumer fc,
         //	Object oid)
-        String[] args = (fieldManager) ?
-            new String[]{ OIDFCTYPE.getName(), Object.class.getName() }
+        String[] args = (fieldManager) 
+            ?  new String[]{ OIDFCTYPE.getName(), Object.class.getName() }
             : new String[]{ Object.class.getName() };
         BCMethod method = _pc.declareMethod(PRE + "CopyKeyFieldsFromObjectId",
             void.class.getName(), args);
@@ -1601,14 +1784,6 @@ public class PCEnhancer {
         code.checkcast().setType(oidType);
         code.astore().setLocal(id);
 
-        // int inherited = pcInheritedFieldCount;
-        int inherited = 0;
-        if (fieldManager) {
-            code.getstatic().setField(INHERIT, int.class);
-            inherited = code.getNextLocalsIndex();
-            code.istore().setLocal(inherited);
-        }
-
         // fs.store<type>Field (<index>, id.<field>); or...
         // this.<field> = id.<field>
         // or for single field identity: id.getId ()
@@ -1621,41 +1796,56 @@ public class PCEnhancer {
                 continue;
 
             name = fmds[i].getName();
-            type = fmds[i].getDeclaredType();
-            unwrapped = unwrapSingleFieldIdentity(fmds[i]);
-
-            if (fieldManager) {
-                code.aload().setParam(0);
-                code.constant().setValue(i);
-                code.iload().setLocal(inherited);
-                code.iadd();
-            } else
+            type = fmds[i].getObjectIdFieldType();
+            if (!fieldManager 
+                && fmds[i].getDeclaredTypeCode() == JavaTypes.PC) {
+                // sm.getPCPrimaryKey(oid, i + pcInheritedFieldCount); 
                 loadManagedInstance(code, false);
+                code.dup(); // leave orig on stack to set value into
+                code.getfield().setField(SM, SMTYPE);
+                code.aload().setLocal(id);
+                code.constant().setValue(i);
+                code.getstatic().setField(INHERIT, int.class);
+                code.iadd();
+                code.invokeinterface().setMethod(StateManager.class, 
+                    "getPCPrimaryKey", Object.class, 
+                    new Class[] { Object.class, int.class });
+                code.checkcast().setType(fmds[i].getDeclaredType());
+            } else { 
+                unwrapped = (fmds[i].getDeclaredTypeCode() == JavaTypes.PC) 
+                    ? type : unwrapSingleFieldIdentity(fmds[i]);
+                if (fieldManager) {
+                    code.aload().setParam(0);
+                    code.constant().setValue(i);
+                    code.getstatic().setField(INHERIT, int.class);
+                    code.iadd();
+                } else
+                    loadManagedInstance(code, false);
 
-            if (unwrapped != type) {
-                code.anew().setType(type);
-                code.dup();
-            }
-            code.aload().setLocal(id);
-            if (_meta.isOpenJPAIdentity()) {
-                if (oidType == ObjectId.class) {
-                    code.invokevirtual().setMethod(oidType, "getId",
-                        Object.class, null);
-                    if (!fieldManager && fmds[i].getDeclaredType()
-                        != Object.class)
-                        code.checkcast().setType(fmds[i].getDeclaredType());
-                } else {
-                    code.invokevirtual().setMethod(oidType, "getId",
-                        unwrapped, null);
-                    if (unwrapped != type)
-                        code.invokespecial().setMethod(type, "<init>",
-                            void.class, new Class[]{ unwrapped });
+                if (unwrapped != type) {
+                    code.anew().setType(type);
+                    code.dup();
                 }
-            } else if (_meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
-                code.getfield().setField(findDeclaredField(oidType, name));
-            else // property
-                code.invokevirtual().setMethod(findDeclaredGetterMethod
-                    (oidType, StringUtils.capitalize(name)));
+                code.aload().setLocal(id);
+                if (_meta.isOpenJPAIdentity()) {
+                    if (oidType == ObjectId.class) {
+                        code.invokevirtual().setMethod(oidType, "getId",
+                            Object.class, null);
+                        if (!fieldManager && type != Object.class)
+                            code.checkcast().setType(fmds[i].getDeclaredType());
+                    } else {
+                        code.invokevirtual().setMethod(oidType, "getId", 
+                            unwrapped, null);
+                        if (unwrapped != type)
+                            code.invokespecial().setMethod(type, "<init>",
+                                void.class, new Class[]{ unwrapped });
+                    }
+                } else if (_meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
+                    code.getfield().setField(findDeclaredField(oidType, name));
+                else // property
+                    code.invokevirtual().setMethod(findDeclaredGetterMethod
+                        (oidType, StringUtils.capitalize(name)));
+            }
 
             if (fieldManager)
                 code.invokeinterface().setMethod(getFieldConsumerMethod(type));
@@ -1793,10 +1983,12 @@ public class PCEnhancer {
             loadManagedInstance(code, false);
             FieldMetaData pk = _meta.getPrimaryKeyFields()[0];
             addGetManagedValueCode(code, pk);
+            if (pk.getDeclaredTypeCode() == JavaTypes.PC)
+                addExtractObjectIdFieldValueCode(code, pk);
             if (_meta.getObjectIdType() == ObjectId.class)
                 args = new Class[]{ Class.class, Object.class };
             else
-                args = new Class[]{ Class.class, pk.getDeclaredType() };
+                args = new Class[]{ Class.class, pk.getObjectIdFieldType() };
         }
 
         code.invokespecial().setMethod(oidType, "<init>", void.class, args);

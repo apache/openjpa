@@ -399,6 +399,10 @@ public class DetachedValueStateManager
         return _ctx;
     }
 
+    public Object getPCPrimaryKey(Object oid, int field) {
+        throw new UnsupportedOperationException();
+    }
+
     public byte replaceFlags() {
         throw new UnsupportedOperationException();
     }
