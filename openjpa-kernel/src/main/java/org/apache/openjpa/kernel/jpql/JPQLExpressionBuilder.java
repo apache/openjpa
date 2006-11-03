@@ -1628,6 +1628,9 @@ class JPQLExpressionBuilder
         }
 
         private static final JPQLNode parse(String jpql) {
+            if (jpql == null)
+                jpql = "";
+
             try {
                 return (JPQLNode) new JPQL(jpql).parseQuery();
             } catch (Error e) {

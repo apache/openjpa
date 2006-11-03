@@ -42,6 +42,7 @@ public enum MetaDataTag {
     MAP_KEY,
     NATIVE_QUERIES,
     NATIVE_QUERY,
+    QUERY_STRING,
     ORDER_BY,
     QUERIES,
     QUERY,

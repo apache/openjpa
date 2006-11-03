@@ -119,6 +119,7 @@ public class XMLPersistenceMetaDataParser
         _elems.put("named-query", QUERY);
         _elems.put("named-native-query", NATIVE_QUERY);
         _elems.put("query-hint", QUERY_HINT);
+        _elems.put("query", QUERY_STRING);
 
         _elems.put("flush-mode", FLUSH_MODE);
         _elems.put("sequence-generator", SEQ_GENERATOR);
@@ -442,6 +443,9 @@ public class XMLPersistenceMetaDataParser
                 case NATIVE_QUERY:
                     ret = startNamedNativeQuery(attrs);
                     break;
+                case QUERY_STRING:
+                    ret = startQueryString(attrs);
+                    break;
                 case SEQ_GENERATOR:
                     ret = startSequenceGenerator(attrs);
                     break;
@@ -488,6 +492,9 @@ public class XMLPersistenceMetaDataParser
                     break;
                 case NATIVE_QUERY:
                     endNamedNativeQuery();
+                    break;
+                case QUERY_STRING:
+                    endQueryString();
                     break;
                 case SEQ_GENERATOR:
                     endSequenceGenerator();
@@ -552,6 +559,9 @@ public class XMLPersistenceMetaDataParser
                     break;
                 case NATIVE_QUERY:
                     ret = startNamedNativeQuery(attrs);
+                    break;
+                case QUERY_STRING:
+                    ret = startQueryString(attrs);
                     break;
                 case SEQ_GENERATOR:
                     ret = startSequenceGenerator(attrs);
@@ -639,6 +649,9 @@ public class XMLPersistenceMetaDataParser
                     break;
                 case NATIVE_QUERY:
                     endNamedNativeQuery();
+                    break;
+                case QUERY_STRING:
+                    endQueryString();
                     break;
                 case SEQ_GENERATOR:
                     endSequenceGenerator();
@@ -1366,6 +1379,17 @@ public class XMLPersistenceMetaDataParser
     protected void endNamedQuery()
         throws SAXException {
         popElement();
+    }
+
+    protected boolean startQueryString(Attributes attrs)
+        throws SAXException {
+        return true;
+    }
+
+    protected void endQueryString()
+        throws SAXException {
+        QueryMetaData meta = (QueryMetaData) currentElement();
+        meta.setQueryString(currentText());
     }
 
     /**
