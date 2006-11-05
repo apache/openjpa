@@ -83,8 +83,11 @@ public class OpenJPAPersistence
      * factory facade.
      */
     public static BrokerFactory toBrokerFactory(EntityManagerFactory emf) {
-        return (emf == null) ? null
-            : ((EntityManagerFactoryImpl) emf).getBrokerFactory();
+        if (emf == null)
+            return null;
+        emf = (EntityManagerFactory) 
+            ((OpenJPAEntityManagerFactory) emf).getUserObject(EMF_KEY);        
+        return ((EntityManagerFactoryImpl) emf).getBrokerFactory();
     }
 
     /**
@@ -117,6 +120,9 @@ public class OpenJPAPersistence
      * Return the underlying broker for the given entity manager facade.
      */
     public static Broker toBroker(EntityManager em) {
+        if (em == null)
+            return null;
+        em = (EntityManager) ((OpenJPAEntityManager) em).getUserObject(EM_KEY);
         return (em == null) ? null : ((EntityManagerImpl) em).getBroker();
     }
 
