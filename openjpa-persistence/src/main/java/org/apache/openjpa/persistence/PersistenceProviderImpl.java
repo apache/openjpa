@@ -127,7 +127,6 @@ public class PersistenceProviderImpl
                 }
             });
             conf.setReadOnly(true);
-            conf.instantiateAll();
 
             MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
             repos.setResolve(MetaDataModes.MODE_MAPPING, false);
