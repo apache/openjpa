@@ -571,9 +571,15 @@ public class DataCacheStoreManager
         // and less write locks to do the mutation.
         ClassMetaData meta = sm.getMetaData();
         DataCache cache = meta.getDataCache();
+        if (cache == null)
+            return;
+
         cache.writeLock();
         try {
             DataCachePCData data = cache.get(sm.getId());
+            if (data == null)
+                return;
+
             boolean remove;
             switch (compareVersion(sm, sm.getVersion(), data.getVersion())) {
                 case StoreManager.VERSION_LATER:
