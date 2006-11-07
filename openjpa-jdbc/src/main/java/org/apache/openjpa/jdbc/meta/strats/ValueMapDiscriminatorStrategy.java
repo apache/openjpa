@@ -93,9 +93,8 @@ public class ValueMapDiscriminatorStrategy
         if (cls != null)
             return cls;
         throw new ClassNotFoundException(_loc.get("unknown-discrim-value",
-            new Object[]{ str,
-                disc.getClassMapping().getDescribedType().getName(),
-                new TreeSet(_vals.keySet()) }).getMessage());
+            new Object[]{ str, disc.getClassMapping().getDescribedType().
+            getName(), new TreeSet(_vals.keySet()) }).getMessage());
     }
 
     /**
@@ -123,6 +122,8 @@ public class ValueMapDiscriminatorStrategy
             throw new MetaDataException(_loc.get("no-discrim-value",
                 disc.getClassMapping()));
 
+        // we set the value before mapping to use to calculate the template
+        // column's java type
         disc.setValue(val);
         super.map(adapt);
     }
