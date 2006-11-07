@@ -85,8 +85,17 @@ public class OpenJPAPersistence
     public static BrokerFactory toBrokerFactory(EntityManagerFactory emf) {
         if (emf == null)
             return null;
-        emf = (EntityManagerFactory) 
-            ((OpenJPAEntityManagerFactory) emf).getUserObject(EMF_KEY);        
+        if (!(emf instanceof EntityManagerFactoryImpl)) {
+            Class c = emf.getClass();
+            try {
+                // either cast here may fail
+                emf = (EntityManagerFactoryImpl) ((OpenJPAEntityManagerFactory)
+                    emf).getUserObject(EMF_KEY);
+            } catch (ClassCastException cce) {
+                throw new ArgumentException(_loc.get
+                    ("cant-convert-brokerfactory", c), null, null, false);
+            }
+        }
         return ((EntityManagerFactoryImpl) emf).getBrokerFactory();
     }
 
@@ -122,8 +131,18 @@ public class OpenJPAPersistence
     public static Broker toBroker(EntityManager em) {
         if (em == null)
             return null;
-        em = (EntityManager) ((OpenJPAEntityManager) em).getUserObject(EM_KEY);
-        return (em == null) ? null : ((EntityManagerImpl) em).getBroker();
+        if (!(em instanceof EntityManagerImpl)) {
+            Class c = em.getClass();
+            try {
+                // either cast here may fail
+                em = (EntityManagerImpl) ((OpenJPAEntityManager) em).
+                    getUserObject(EM_KEY);
+            } catch (ClassCastException cce) {
+                throw new ArgumentException(_loc.get("cant-convert-broker", c),
+                    null, null, false);
+            }
+        }
+        return ((EntityManagerImpl) em).getBroker();
     }
 
     /**

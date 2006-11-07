@@ -79,7 +79,7 @@ public class DiscriminatorMappingInfo
             }
         }
         if ("null".equalsIgnoreCase(_value))
-            return (Discriminator.NULL);
+            return Discriminator.NULL;
 
         // strip quotes
         if (_value.length() > 0 && _value.charAt(0) == '\'')
