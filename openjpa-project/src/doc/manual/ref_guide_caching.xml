@@ -789,25 +789,31 @@ Iterator cachedIterator = extentQuery.getResultList().iterator();
         </section>
     </section>
 	<section id="ref_guide_cache_querycomp">
-		<title>Query Compilation Cache</title>
+		<title>
+            Query Compilation Cache
+        </title>
 		<indexterm zone="ref_guide_cache_querycomp">
-			<primary>caching</primary>
-			<secondary>query compilation cache</secondary>
+			<primary>
+                caching
+            </primary>
+			<secondary>
+                query compilation cache
+            </secondary>
 		</indexterm>
 		<para>
-		The query compilation cache is a <classname>Map</classname> used to
-		cache parsed query strings.  As a result, most queries are
-		only parsed once in OpenJPA, and cached thereafter.  You can control the
-		compilation cache through the 
-		<link linkend="openjpa.QueryCompilationCache"><literal>
-		openjpa.QueryCompilationCache</literal></link> configuration property.
-		This property accepts a plugin string (see 
-		<xref linkend="ref_guide_conf_plugins"/>) describing the
-		<classname>Map</classname> used to associate query strings and their 
-		parsed form.  This property accepts the following aliases:
+The query compilation cache is a <classname>Map</classname> used to cache 
+parsed query strings.  As a result, most queries are only parsed once in 
+OpenJPA, and cached thereafter.  You can control the compilation cache through 
+the <link linkend="openjpa.QueryCompilationCache"><literal>
+openjpa.QueryCompilationCache</literal></link> configuration property.  This 
+property accepts a plugin string (see <xref linkend="ref_guide_conf_plugins"/>)
+describing the <classname>Map</classname> used to associate query strings and 
+their parsed form.  This property accepts the following aliases:
 		</para>
 		<table>
-			<title>Pre-defined aliases</title>
+			<title>
+                Pre-defined aliases
+            </title>
 			<tgroup cols="2" align="left" colsep="1" rowsep="1">
 				<colspec colname="alias"/>
 				<colspec colname="value"/>
@@ -822,44 +828,39 @@ Iterator cachedIterator = extentQuery.getResultList().iterator();
 				<tbody>
 					<row>
 						<entry colname="alias">
-							<literal>true</literal>
+<literal>true</literal>
 						</entry>
 						<entry colname="value">
-							<literal>org.apache.openjpa.util.CacheMap</literal>
+<literal>org.apache.openjpa.util.CacheMap</literal>
 						</entry>
 						<entry colname="notes">
-							The default option.  Uses a 
-							<ulink url="&javadoc-dir;/org/apache/openjpa/util/CacheMap.html">
-							<literal>CacheMap</literal></ulink> to store 
-							compilation data.  <literal>CacheMap</literal> uses
-							a least-recently-used strategy for a fixed number 
-							of cache entries, and an optional soft reference 
-							map for entries that are moved out of the LRU 
-							space. So, for applications that have a 
-							monotonically increasing number of distinct queries,
-							this option can be used to ensure that a fixed 
-							amount of memory is used by the cache.
+The default option.  Uses a 
+<ulink url="../javadoc/org/apache/openjpa/util/CacheMap.html"> 
+<literal>CacheMap</literal></ulink> to store compilation data.  
+<literal>CacheMap</literal> maintains a fixed number of cache entries, and an 
+optional soft reference map for entries that are moved out of the LRU space. 
+So, for applications that have a monotonically increasing number of distinct 
+queries, this option can be used to ensure that a fixed amount of memory is 
+used by the cache.
 						</entry>
 					</row>
 					<row>
 						<entry colname="alias"><literal>all</literal></entry>
 						<entry colname="value">
-							<literal>org.apache.openjpa.lib.util.ConcurrentHashMap</literal>
+<literal>org.apache.openjpa.lib.util.ConcurrentHashMap</literal>
 						</entry>
 						<entry colname="notes">
-							This is the fastest option, but compilation data is
-							never dropped from the cache, so if you use a large 
-							number of dynamic queries, this option may result in
-							ever-increasing memory usage. Note that if your 
-							queries only differ in the values of the parameters,
-							this should not be an issue.
+This is the fastest option, but compilation data is never dropped from the 
+cache, so if you use a large number of dynamic queries, this option may result 
+in ever-increasing memory usage. Note that if your queries only differ in the 
+values of the parameters, this should not be an issue.
 						</entry>
 					</row>
 					<row>
 						<entry colname="alias"><literal>false</literal></entry>
 						<entry colname="value"><emphasis>none</emphasis></entry>
 						<entry colname="notes">
-							Disables the compilation cache.
+Disables the compilation cache.
 						</entry>
 					</row>
 				</tbody>

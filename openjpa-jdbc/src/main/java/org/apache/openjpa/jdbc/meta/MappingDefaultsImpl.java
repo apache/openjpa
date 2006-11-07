@@ -447,7 +447,8 @@ public class MappingDefaultsImpl
             return UntypedPCValueHandler.getInstance();
         if (_ordinalEnum && !vm.isSerialized()
             && JavaVersions.isEnumeration(type))
-            return "org.apache.openjpa.jdbc.meta.strats.EnumValueHandler(StoreOrdinal=true)";
+            return "org.apache.openjpa.jdbc.meta.strats.EnumValueHandler"
+                + "(StoreOrdinal=true)";
         return null;
     }
 
