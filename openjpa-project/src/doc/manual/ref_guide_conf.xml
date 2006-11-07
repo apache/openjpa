@@ -2454,6 +2454,34 @@ implementation to use for caching of queries loaded from the data store. See
 <xref linkend="ref_guide_cache_query"/> for details.
             </para>
         </section>
+		<section id="openjpa.QueryCompilationCache">
+			<title>openjpa.QueryCompilationCache</title>
+			<indexterm zone="openjpa.QueryCompilationCache">
+				<primary>QueryCompilationCache</primary>
+			</indexterm>
+			<indexterm zone="openjpa.QueryCompilationCache">
+				<primary>caching</primary>
+				<secondary>QueryCompilationCache</secondary>
+			</indexterm>
+			<para>
+			<emphasis role="bold">Property name:</emphasis>
+			<literal>openjpa.QueryCompilationCache</literal>
+			</para>
+			<para>
+			<emphasis role="bold">Resource adaptor config-property:</emphasis> 
+			<literal>QueryCompilationCache</literal>
+			</para>
+			<para>
+			<emphasis role="bold">Default:</emphasis> <literal>true</literal>.
+			</para>
+			<para>
+			<emphasis role="bold">Description:</emphasis> A plugin
+			string (see <xref linkend="ref_guide_conf_plugins"/>)
+			describing the <literal>java.util.Map</literal> to use for
+			caching of data used during query compilation.
+			See <xref linkend="ref_guide_cache_querycomp"/> for details.
+			</para>
+		</section>
         <section id="openjpa.ReadLockLevel">
             <title>
                 openjpa.ReadLockLevel
