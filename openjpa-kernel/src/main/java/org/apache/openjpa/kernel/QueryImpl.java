@@ -527,6 +527,7 @@ public class QueryImpl
                 || _broker == null)
                 return _params;
 
+            // check again after compilation; maybe encoded in string
             compileForCompilation();
             return _params;
         } finally {
@@ -562,6 +563,15 @@ public class QueryImpl
         }
     }
 
+    public Object getCompilation() {
+        lock();
+        try {
+            return compileForCompilation().storeData;
+        } finally {
+            unlock();
+        }
+    }
+
     /**
      * Compile query properties.
      */
@@ -589,7 +599,8 @@ public class QueryImpl
     }
 
     /**
-     * Create and initialize a query compilation based on current data.
+     * Find the cached compilation for the current query, creating one if it
+     * does not exist.
      */
     protected Compilation compilationFromCache() {
         Map compCache =
@@ -622,6 +633,9 @@ public class QueryImpl
         }
     }
     
+    /**
+     * Create and populate a new compilation.
+     */
     private Compilation newCompilation() {
         Compilation comp = new Compilation();
         comp.storeData = _storeQuery.newCompilation();
@@ -1510,15 +1524,6 @@ public class QueryImpl
             _lock.unlock();
     }
 
-    public Object getCompilation() {
-        lock();
-        try {
-            return compileForCompilation().storeData;
-        } finally {
-            unlock();
-        }
-    }
-
     /////////
     // Utils
     /////////
@@ -1670,6 +1675,54 @@ public class QueryImpl
         public StoreQuery.Executor memory = null;
         public StoreQuery.Executor datastore = null;
         public Object storeData = null;
+    }
+
+    /**
+     * Struct to hold the unparsed properties associated with a query.
+     */
+    private static class CompilationKey
+        implements Serializable {
+
+        public Class queryType = null;
+        public Class candidateType = null;
+        public boolean subclasses = true;
+        public String query = null;
+        public String language = null;
+        public Object storeKey = null;
+
+        public int hashCode() {
+            int rs = 17;
+            rs = 37 * rs + ((queryType == null) ? 0 : queryType.hashCode());
+            rs = 37 * rs + ((query == null) ? 0 : query.hashCode());
+            rs = 37 * rs + ((language == null) ? 0 : language.hashCode());
+            rs = 37 * rs + ((storeKey == null) ? 0 : storeKey.hashCode());
+            return rs;
+        }
+
+        public boolean equals(Object other) {
+            if (other == this)
+                return true;
+            if (other == null || other.getClass() != getClass())
+                return false;
+
+            CompilationKey key = (CompilationKey) other;
+            if (key.queryType != queryType
+                || !StringUtils.equals(key.query, query)
+                || !StringUtils.equals(key.language, language))
+                return false;
+
+            if (!ObjectUtils.equals(key.storeKey, storeKey))
+                return false;
+
+            // allow either candidate type to be null because it might be
+            // encoded in the query string, but if both are set then they
+            // must be equal
+            if (candidateType != null && key.candidateType != null)
+                return candidateType == key.candidateType
+                    && subclasses == key.subclasses;
+
+            return true;
+        }
     }
 
     /**
@@ -2077,52 +2130,4 @@ public class QueryImpl
 			return _res;
 		}
 	}
-
-    /**
-     * Struct to hold the unparsed properties associated with a query.
-     */
-    private static class CompilationKey
-        implements Serializable {
-
-        public Class queryType = null;
-        public Class candidateType = null;
-        public boolean subclasses = true;
-        public String query = null;
-        public String language = null;
-        public Object storeKey = null;
-
-        public int hashCode() {
-            int rs = 17;
-            rs = 37 * rs + ((queryType == null) ? 0 : queryType.hashCode());
-            rs = 37 * rs + ((query == null) ? 0 : query.hashCode());
-            rs = 37 * rs + ((language == null) ? 0 : language.hashCode());
-            rs = 37 * rs + ((storeKey == null) ? 0 : storeKey.hashCode());
-            return rs;
-        }
-
-        public boolean equals(Object other) {
-            if (other == this)
-                return true;
-            if (other == null || other.getClass() != getClass())
-                return false;
-
-            CompilationKey key = (CompilationKey) other;
-            if (key.queryType != queryType
-                || !StringUtils.equals(key.query, query)
-                || !StringUtils.equals(key.language, language))
-                return false;
-
-            if (!ObjectUtils.equals(key.storeKey, storeKey))
-                return false;
-
-            // allow either candidate type to be null because it might be
-            // encoded in the query string, but if both are set then they
-            // must be equal
-            if (candidateType != null && key.candidateType != null)
-                return candidateType == key.candidateType
-                    && subclasses == key.subclasses;
-
-            return true;
-        }
-    }
 }

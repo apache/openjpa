@@ -460,7 +460,10 @@ public class OpenJPAConfigurationImpl
         compatibilityPlugin.setString(aliases[0]);
         compatibilityPlugin.setInstantiatingGetter("getCompatibilityInstance");
         
-        queryCompilationCachePlugin = new QueryCompilationCacheValue(this);
+        queryCompilationCachePlugin = new QueryCompilationCacheValue(
+            "QueryCompilationCache");
+        queryCompilationCachePlugin.setInstantiatingGetter(
+            "getQueryCompilationCacheInstance");
         addValue(queryCompilationCachePlugin);
 
         // initialize supported options that some runtimes may not support
@@ -1388,14 +1391,13 @@ public class OpenJPAConfigurationImpl
         return queryCompilationCachePlugin.getString();
     }
 
-    public void setQueryCompilationCache(String conf) {
-        queryCompilationCachePlugin.setString(conf);
+    public void setQueryCompilationCache(String queryCompilationCache) {
+        queryCompilationCachePlugin.setString(queryCompilationCache);
     }
     
     public Map getQueryCompilationCacheInstance() {
         if (queryCompilationCachePlugin.get() == null)
-            queryCompilationCachePlugin.instantiate(
-                QueryCompilationCacheValue.class, this);
+            queryCompilationCachePlugin.instantiate(Map.class, this);
         return (Map) queryCompilationCachePlugin.get();
     }
 

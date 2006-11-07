@@ -42,7 +42,6 @@ public class MappingRepositoryValue
         // we need to manually perform the instantiation
         try {
             Class cls = Strings.toClass(clsName, type.getClassLoader());
-
             return cls.getConstructor(new Class[]{ JDBCConfiguration.class }).
                 newInstance(new Object[]{ conf });
         } catch (RuntimeException e) {

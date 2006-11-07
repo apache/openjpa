@@ -34,10 +34,18 @@ public class SuperclassDiscriminatorStrategy
     extends AbstractDiscriminatorStrategy {
 
     public void map(boolean adapt) {
-        // if the superclass maps the discriminator value, so should we
-        if (disc.getClassMapping().getJoinablePCSuperclassMapping().
-            getDiscriminator().getValue() != null)
-            disc.setValue(disc.getMappingInfo().getValue(disc, adapt));
+        // if a superclass maps the discriminator value, so should we.
+        // otherwise assume it's calculated
+        ClassMapping sup = disc.getClassMapping().
+            getJoinablePCSuperclassMapping();
+        for (; sup != null; sup = sup.getJoinablePCSuperclassMapping()) {
+            if (sup.getDiscriminator().getValue() != null
+                || sup.getDiscriminator().getStrategy() instanceof
+                ValueMapDiscriminatorStrategy) {
+                disc.setValue(disc.getMappingInfo().getValue(disc, adapt));
+                break;
+            }
+        }
     }
 
     public void loadSubclasses(JDBCStore store)
