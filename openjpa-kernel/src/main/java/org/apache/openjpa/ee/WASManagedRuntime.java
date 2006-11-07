@@ -16,6 +16,7 @@
 package org.apache.openjpa.ee;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 
 import javax.naming.Context;
@@ -37,6 +38,7 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.NoTransactionException;
+
 import serp.bytecode.BCClass;
 import serp.bytecode.Project;
 
@@ -397,7 +399,7 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
      */
     static final String CLASS =
         "org.apache.openjpa.ee.WASManagedRuntime$WASSynchronization";
-
+    
     /**
      * Interface which will be added
      */
@@ -407,7 +409,20 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
     public static void main(String[] args) 
         throws IOException {
         Project project = new Project();
-        BCClass bcClass = project.loadClass(CLASS);
+        
+        InputStream in = WASManagedRuntime.class.getClassLoader()
+            .getResourceAsStream(CLASS.replace('.', '/') + ".class");
+        BCClass bcClass = project.loadClass(in);
+        
+        String [] interfaces = bcClass.getInterfaceNames();
+        
+        if(interfaces != null) {
+        	for(int i = 0; i < interfaces.length; i++) { 
+        		if(interfaces[i].equals(INTERFACE)) {
+        			return; 
+        		}
+        	}
+        }
         bcClass.declareInterface(INTERFACE);
         bcClass.write();
     }
