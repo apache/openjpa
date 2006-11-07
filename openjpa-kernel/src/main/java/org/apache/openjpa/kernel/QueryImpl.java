@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,6 +27,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.commons.collections.map.LinkedMap;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -574,7 +576,7 @@ public class QueryImpl
         _readOnly = false;
         _compiling = true;
         try {
-            _compiled = newCompilation();
+            _compiled = compilationFromCache();
             return _compiled;
         } catch (OpenJPAException ke) {
             throw ke;
@@ -589,7 +591,38 @@ public class QueryImpl
     /**
      * Create and initialize a query compilation based on current data.
      */
-    protected Compilation newCompilation() {
+    protected Compilation compilationFromCache() {
+        Map compCache =
+            _broker.getConfiguration().getQueryCompilationCacheInstance();
+        if (compCache == null) {
+            return newCompilation();
+        } else {
+            CompilationKey key = new CompilationKey();
+            key.queryType = _storeQuery.getClass();
+            key.candidateType = getCandidateType();
+            key.subclasses = hasSubclasses();
+            key.query = getQueryString();
+            key.language = getLanguage();
+            key.storeKey = _storeQuery.newCompilationKey();
+            Compilation comp = (Compilation) compCache.get(key);
+
+            // parse declarations if needed
+            boolean cache = false;
+            if (comp == null) {
+                comp = newCompilation();
+                // only cache those queries that can be compiled
+                cache = comp.storeData != null;
+            } else
+                _storeQuery.populateFromCompilation(comp.storeData);
+
+            // cache parsed state if needed
+            if (cache)
+                compCache.put(key, comp);
+            return comp;
+        }
+    }
+    
+    private Compilation newCompilation() {
         Compilation comp = new Compilation();
         comp.storeData = _storeQuery.newCompilation();
         _storeQuery.populateFromCompilation(comp.storeData);
@@ -2044,4 +2077,52 @@ public class QueryImpl
 			return _res;
 		}
 	}
+
+    /**
+     * Struct to hold the unparsed properties associated with a query.
+     */
+    private static class CompilationKey
+        implements Serializable {
+
+        public Class queryType = null;
+        public Class candidateType = null;
+        public boolean subclasses = true;
+        public String query = null;
+        public String language = null;
+        public Object storeKey = null;
+
+        public int hashCode() {
+            int rs = 17;
+            rs = 37 * rs + ((queryType == null) ? 0 : queryType.hashCode());
+            rs = 37 * rs + ((query == null) ? 0 : query.hashCode());
+            rs = 37 * rs + ((language == null) ? 0 : language.hashCode());
+            rs = 37 * rs + ((storeKey == null) ? 0 : storeKey.hashCode());
+            return rs;
+        }
+
+        public boolean equals(Object other) {
+            if (other == this)
+                return true;
+            if (other == null || other.getClass() != getClass())
+                return false;
+
+            CompilationKey key = (CompilationKey) other;
+            if (key.queryType != queryType
+                || !StringUtils.equals(key.query, query)
+                || !StringUtils.equals(key.language, language))
+                return false;
+
+            if (!ObjectUtils.equals(key.storeKey, storeKey))
+                return false;
+
+            // allow either candidate type to be null because it might be
+            // encoded in the query string, but if both are set then they
+            // must be equal
+            if (candidateType != null && key.candidateType != null)
+                return candidateType == key.candidateType
+                    && subclasses == key.subclasses;
+
+            return true;
+        }
+    }
 }

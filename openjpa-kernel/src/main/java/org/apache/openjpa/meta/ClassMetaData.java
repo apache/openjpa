@@ -1900,7 +1900,6 @@ public class ClassMetaData
             String cap;
             int type;
             Class c;
-            ClassMetaData idmeta;
             int access = meta.getAccessType();
             for (int i = 0; i < fmds.length; i++) {
                 switch (fmds[i].getDeclaredTypeCode()) {

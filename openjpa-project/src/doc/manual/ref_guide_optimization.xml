@@ -489,6 +489,22 @@ fields to be of type <classname>Set, SortedSet, HashSet,</classname> or
 <classname>TreeSet</classname>.
                     </entry>
                 </row>
+				<row>
+					<entry colname="name">
+					<emphasis role="bold">Use query parameters instead of
+					encoding search data in filter strings</emphasis>
+					<para><emphasis>performance</emphasis></para>
+					</entry>
+					<entry colname="desc">
+					If your queries depend on parameter data only known at
+					runtime, you should use query parameters rather than
+					dynamically building different query strings. OpenJPA
+					performs aggressive caching of query compilation
+					data, and the effectiveness of this cache is diminished if
+					multiple query filters are used where a single one could
+					have sufficed.
+					</entry>
+				</row>
                 <row>
                     <entry colname="name">
                         <emphasis role="bold">

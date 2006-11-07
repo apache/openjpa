@@ -16,6 +16,7 @@
 package org.apache.openjpa.conf;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.datacache.DataCacheManager;
@@ -1355,6 +1356,27 @@ public interface OpenJPAConfiguration
 	 * Backwards compatibility options.
 	 */
 	public Compatibility getCompatibilityInstance ();
+
+    /**
+     * Configuration settings for the query compilation cache to use. 
+     * @see QueryCompilationCacheValue
+     * @since 0.9.6
+     */
+    public String getQueryCompilationCache();
+
+    /**
+     * Configuration settings for the query compilation cache to use. 
+     * @see QueryCompilationCacheValue
+     * @since 0.9.6
+     */
+    public void setQueryCompilationCache(String conf);
+    
+    /**
+     * Configuration settings for the query compilation cache to use. 
+     * @see QueryCompilationCacheValue
+     * @since 0.9.6
+     */
+    public Map getQueryCompilationCacheInstance();
     
     /**
      * Return the {@link StoreFacadeTypeRegistry} instance associated with this
