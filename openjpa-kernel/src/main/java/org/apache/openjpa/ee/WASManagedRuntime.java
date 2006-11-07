@@ -35,6 +35,7 @@ import javax.transaction.xa.XAResource;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.NoTransactionException;
@@ -64,9 +65,9 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
 
     private Object _extendedTransaction = null;
     private Method _getGlobalId = null;
-    private Method _getLocalId = null;
     private Method _registerSync = null;
     private OpenJPAConfiguration _conf = null;
+    private Log _log = null;
 
     /**
      * Gets an extendedJTATransaction from JNDI and creates a transaction
@@ -84,7 +85,7 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
      * IllegalStateException to the caller.
      *
      * <P>
-     * Methods supporded by WAS are
+     * Methods supported by WAS are
      * <UL>
      * <LI>RegisterSynchronization </LI>
      * <LI>GetStatus</LI>
@@ -96,15 +97,14 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
         public int getStatus() throws SystemException {
             int rval = Status.STATUS_UNKNOWN;
             try {
-                if (getId() != null) {
+                if (getGlobalId() != null) {
                     rval = Status.STATUS_ACTIVE;
                 } else {
-                    throw new NoTransactionException(_loc
-                        .get("was-no-transaction"));
+                    rval = Status.STATUS_NO_TRANSACTION;
                 }
             } catch (Exception e) {
-                throw new NoTransactionException(_loc.get("was-no-transaction"))
-                    .setCause(e);
+                throw new NoTransactionException(_loc
+                        .get("was-transaction-id-exception")).setCause(e);
             }
             return rval;
         }
@@ -140,34 +140,6 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
         }
 
         /**
-         * Determines the ID of the current WebSphere managed transaction using
-         * the extendedJTATransaction interface
-         *
-         * @return If a GlobalTransaction is active a byte[] ID will be
-         *         returned. If a LocalTransaction is active an int ID will be
-         *         returned.
-         *
-         * @throws Exception
-         */
-        private Object getId() throws Exception {
-            Object rval;
-            rval = getGlobalId();
-            if (rval == null) {
-                rval = getLocalId();
-            }
-
-            if (rval instanceof Integer && ((Integer) rval).intValue() == 0) {
-                /*
-                 * If there's no globalId or localId we're running outside of a
-                 * transaction and need to throw an error.
-                 */
-                throw new NoTransactionException(_loc
-                    .get("was-no-transaction"));
-            }
-            return rval;
-        }
-
-        /**
          * Gets the GlobalTransaction ID of the WebSphere managed transaction.
          * If no Global Transaction is active null will be returned.
          *
@@ -178,24 +150,6 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
             byte[] rval = null;
             try {
                 rval = (byte[]) _getGlobalId.invoke(_extendedTransaction, null);
-            } catch (Exception e) {
-                throw new InvalidStateException(_loc
-                    .get("was-reflection-exception")).setCause(e);
-            }
-            return rval;
-        }
-
-        /**
-         * Gets the LocalTransaction ID of the WebSphere managed transaction. If
-         * a LocalTransaction is not active 0 will be returned.
-         *
-         * @return LocalTransaction ID. 0 if a LocalTransaction is not active or
-         *         if an error occurs.
-         */
-        private Integer getLocalId() {
-            Integer rval;
-            try {
-                rval = (Integer) _getLocalId.invoke(_extendedTransaction, null);
             } catch (Exception e) {
                 throw new InvalidStateException(_loc
                     .get("was-reflection-exception")).setCause(e);
@@ -234,23 +188,29 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
         }
 
         /**
-         * Unimplemented, WAS does not provide this level of control. Throws an
-         * IllegalStateException
+         * Unimplemented, WAS does not provide this level of control. Log a
+         * trace instead of throwing an exception. Rollback may be used in
+         * some error paths, throwing another exception may result in the
+         * original exception being lost.
          */
         public void rollback() throws IllegalStateException, SecurityException,
             SystemException {
-            throw new InvalidStateException(_loc.get("was-unsupported-op",
-                "rollback"));
+            if (_log.isTraceEnabled()) {
+                _log.trace(_loc.get("was-unsupported-op", "rollback"));
+            }
         }
 
         /**
-         * Unimplemented, WAS does not provide this level of control. Throws an
-         * IllegalStateException
+         * Unimplemented, WAS does not provide this level of control. Log a
+         * trace instead of throwing an exception. SetRollbackOnly may be used
+         * in some error paths, throwing another exception may result in the
+         * original exception being lost.
          */
         public void setRollbackOnly() throws IllegalStateException,
             SystemException {
-            throw new InvalidStateException(_loc.get("was-unsupported-op",
-                "setRollbackOnly"));
+            if (_log.isTraceEnabled()) {
+                _log.trace(_loc.get("was-unsupported-op", "setRollbackOnly"));
+            }
         }
 
         /**
@@ -350,6 +310,7 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
      */
     public void setConfiguration(Configuration conf) {
         _conf = (OpenJPAConfiguration) conf;
+        _log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
     }
 
     /**
@@ -379,8 +340,6 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
                     true, loader) });
             _getGlobalId = extendedJTATransaction.
                 getMethod("getGlobalId", null);
-            _getLocalId = extendedJTATransaction.
-                getMethod("getLocalId", null);
         } catch (Exception e) {
             throw new InvalidStateException(_loc
                 .get("was-reflection-exception"), e).setFatal(true);
@@ -399,14 +358,14 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
      */
     static final String CLASS =
         "org.apache.openjpa.ee.WASManagedRuntime$WASSynchronization";
-    
+
     /**
      * Interface which will be added
      */
     static final String INTERFACE =
         "com.ibm.websphere.jtaextensions.SynchronizationCallback";
 
-    public static void main(String[] args) 
+    public static void main(String[] args)
         throws IOException {
         Project project = new Project();
         
