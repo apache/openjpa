@@ -40,16 +40,17 @@ public class TestQueryIdOfRelationDoesNotJoin
 
     public void setUp() {
         Map props = new HashMap();
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" 
-            + ManyOneEntity.class.getName() + ")");
+        props.put("openjpa.MetaDataFactory", "jpa(Types="
+                + ManyOneEntity.class.getName() + ";"
+                + ManyOneEntitySub.class.getName() + ")");
         emf = Persistence.createEntityManagerFactory("test", props);
 
         ManyOneEntity e1 = new ManyOneEntity();
-        e1.setName("e1"); 
+        e1.setName("e1");
         ManyOneEntity e2 = new ManyOneEntity();
-        e2.setName("e2"); 
+        e2.setName("e2");
         ManyOneEntity e3 = new ManyOneEntity();
-        e3.setName("e3"); 
+        e3.setName("e3");
         e1.setRel(e3);
         e2.setRel(e1);
 
