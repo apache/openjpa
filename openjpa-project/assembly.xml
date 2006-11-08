@@ -102,6 +102,7 @@
                 <exclude>org.apache.openjpa:openjpa-persistence</exclude>
                 <exclude>org.apache.openjpa:openjpa-persistence-jdbc</exclude>
                 <exclude>org.apache.openjpa:openjpa-xmlstore</exclude>
+                <exclude>org.apache.openjpa:openjpa-examples</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>
