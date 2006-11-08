@@ -129,7 +129,7 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
-                                <phase>package</phase>
+                                <phase>process-resources</phase>
                                 <configuration>
                                  <!-- destdir="${project.build.directory}/site/manual" -->
                                     <tasks>
@@ -137,11 +137,18 @@
 
                                     <!-- download stylesheets -->
                                     <property name="stylesheet" value="1.69.1.tar.bz2"/>
-                                    <property name="stylesheet.dir" value="${project.basedir}/target/stylesheets"/>
+                                    <!--
+                                    For some reason, this variable will not
+                                    currectly evaluated at runtime: it 
+                                    creates a directory called
+                                    '${stylesheet-dir}', rather than
+                                    resolving the property
+                                    <property name="stylesheet-dir" value="${project.basedir}/target/stylesheets"/>
+                                    -->
 
-                                    <mkdir dir="${stylesheet.dir}"/>
-                                    <get src="http://docbook.sourceforge.net/release/xsl/${stylesheet}" usetimestamp="true" dest="${stylesheet.dir}/${stylesheet}"/>
-                                    <untar src="${stylesheet.dir}/${stylesheet}" dest="${stylesheet.dir}/" compression="bzip2" overwrite="false"/>
+                                    <mkdir dir="${project.basedir}/target/stylesheets"/>
+                                    <get src="http://docbook.sourceforge.net/release/xsl/${stylesheet}" usetimestamp="true" dest="${project.basedir}/target/stylesheets/${stylesheet}"/>
+                                    <untar src="${project.basedir}/target/stylesheets/${stylesheet}" dest="${project.basedir}/target/stylesheets/" compression="bzip2" overwrite="false"/>
 
 
                                     <style includes="**/manual.xml"
