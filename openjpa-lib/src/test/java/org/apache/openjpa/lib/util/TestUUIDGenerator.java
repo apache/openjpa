@@ -26,13 +26,13 @@ public class TestUUIDGenerator extends TestCase {
 
     public void testUniqueString() {
         Set seen = new HashSet();
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < 10000; i++)
             assertTrue(seen.add(UUIDGenerator.nextString()));
     }
 
     public void testUniqueHex() {
         Set seen = new HashSet();
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < 10000; i++)
             assertTrue(seen.add(UUIDGenerator.nextHex()));
     }
 }

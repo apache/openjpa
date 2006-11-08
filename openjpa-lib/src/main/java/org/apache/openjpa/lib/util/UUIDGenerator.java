@@ -23,18 +23,18 @@ import java.util.Random;
 import org.apache.commons.lang.exception.NestableRuntimeException;
 
 /**
- * UUID value generator. Based on the time-based generator in the LGPL
- * project:<br /> 
- * http://www.doomdark.org/doomdark/proj/jug/<br />
+ * UUID value generator.  Based on the time-based generator in the Apache
+ * Commons Id project:  http://jakarta.apache.org/commons/sandbox/id/uuid.html
+ *
  * The code has been vastly simplified and modified to replace the ethernet
  * address of the host machine with the IP, since we do not want to require
  * native libs and Java cannot access the MAC address directly.
- * Aside from the above modification, implements the IETF UUID draft
- * specification, found here:<br />
+ *
+ * In spirit, implements the IETF UUID draft specification, found here:<br />
  * http://www1.ics.uci.edu/~ejw/authoring/uuid-guid/draft-leach-uuids-guids-01
  * .txt
  *
- * @author Abe White
+ * @author Abe White, Kevin Sutter
  * @nojavadoc
  * @since 0.3.3
  */
@@ -48,13 +48,21 @@ public class UUIDGenerator {
     private static final byte IDX_TIME_SEQ = 8;
     private static final byte IDX_VARIATION = 8; // multiplexed
 
+    // indexes and lengths within the timestamp for certain boundaries
+    private static final byte TS_TIME_LO_IDX = 4;
+    private static final byte TS_TIME_LO_LEN = 4;
+    private static final byte TS_TIME_MID_IDX = 2;
+    private static final byte TS_TIME_MID_LEN = 2;
+    private static final byte TS_TIME_HI_IDX = 0;
+    private static final byte TS_TIME_HI_LEN = 2;
+
     // offset to move from 1/1/1970, which is 0-time for Java, to gregorian
     // 0-time 10/15/1582, and multiplier to go from 100nsec to msec units
     private static final long GREG_OFFSET = 0x01b21dd213814000L;
     private static final long MILLI_MULT = 10000L;
 
-    // type of UUID; is this part of the spec?
-    private final static byte TYPE_TIME_BASED = 1;
+    // type of UUID -- time based
+    private final static byte TYPE_TIME_BASED = 0x10;
 
     // random number generator used to reduce conflicts with other JVMs, and
     // hasher for strings.  note that secure random is very slow the first time
@@ -65,18 +73,23 @@ public class UUIDGenerator {
     // the MAC address is usually 6 bytes
     private static final byte[] IP;
 
-    // counter is initialized not to 0 but to a random 8-bit number, and each
-    // time clock changes, lowest 8-bits of counter are preserved. the purpose
-    // is to reduce chances of multi-JVM collisions without reducing perf
-    // awhite: I don't really understand this precaution, but it was in the
-    // original algo
+    // counter is initialized to 0 and is incremented for each uuid request
+    // within the same timestamp window.
     private static int _counter;
 
-    // last used millis time, and a randomized sequence that gets reset
-    // whenever the time is reset
-    private static long _last = 0L;
-    private static byte[] _seq = new byte[2];
+    // current timestamp (used to detect multiple uuid requests within same
+    // timestamp)
+    private static long _currentMillis;
 
+    // last used millis time, and a semi-random sequence that gets reset
+    // when it overflows
+    private static long _lastMillis = 0L;
+    private static final int MAX_14BIT = 0x3FFF;
+    private static short _seq = (short)RANDOM.nextInt(MAX_14BIT);
+
+    /*
+     * Static initializer to get the IP address of the host machine.
+     */
     static {
         byte[] ip = null;
         try {
@@ -88,8 +101,6 @@ public class UUIDGenerator {
         IP = new byte[6];
         RANDOM.nextBytes(IP);
         System.arraycopy(ip, 0, IP, 2, ip.length);
-
-        resetTime();
     }
 
     /**
@@ -100,54 +111,35 @@ public class UUIDGenerator {
         byte[] uuid = new byte[16];
         System.arraycopy(IP, 0, uuid, 10, IP.length);
 
-        // set time info
-        long now = System.currentTimeMillis();
+        // Set time info.  Have to do this processing within a synchronized
+        // block because of the statics...
+        long now = 0;
         synchronized (UUIDGenerator.class) {
-            // if time moves backwards somehow, spec says to reset randomization
-            if (now < _last)
-                resetTime();
-            else if (now == _last && _counter == MILLI_MULT) {
-                // if we run out of slots in this milli, increment
-                now++;
-                _last = now;
-                _counter &= 0xFF; // rest counter?
-            } else if (now > _last) {
-                _last = now;
-                _counter &= 0xFF; // rest counter?
-            }
+            // Get the time to use for this uuid.  This method has the side
+            // effect of modifying the clock sequence, as well.
+            now = getTime();
 
-            // translate timestamp to 100ns slot since beginning of gregorian
-            now *= MILLI_MULT;
-            now += GREG_OFFSET;
+            // Insert the resulting clock sequence into the uuid
+            uuid[IDX_TIME_SEQ] = (byte) ((_seq & 0x3F00) >>> 8);
+            uuid[IDX_VARIATION] |= 0x80;
+            uuid[IDX_TIME_SEQ+1] = (byte) (_seq & 0xFF);
 
-            // add nano slot
-            now += _counter;
-            _counter++; // increment counter
-
-            // set random info
-            for (int i = 0; i < _seq.length; i++)
-                uuid[IDX_TIME_SEQ + i] = _seq[i];
         }
 
         // have to break up time because bytes are spread through uuid
-        int timeHi = (int) (now >>> 32);
-        int timeLo = (int) now;
+        byte[] timeBytes = Bytes.toBytes(now);
 
-        uuid[IDX_TIME_HI] = (byte) (timeHi >>> 24);
-        uuid[IDX_TIME_HI + 1] = (byte) (timeHi >>> 16);
-        uuid[IDX_TIME_MID] = (byte) (timeHi >>> 8);
-        uuid[IDX_TIME_MID + 1] = (byte) timeHi;
-
-        uuid[IDX_TIME_LO] = (byte) (timeLo >>> 24);
-        uuid[IDX_TIME_LO + 1] = (byte) (timeLo >>> 16);
-        uuid[IDX_TIME_LO + 2] = (byte) (timeLo >>> 8);
-        uuid[IDX_TIME_LO + 3] = (byte) timeLo;
-
-        // set type info
-        uuid[IDX_TYPE] &= (byte) 0x0F;
-        uuid[IDX_TYPE] |= (byte) (TYPE_TIME_BASED << 4);
-        uuid[IDX_VARIATION] &= 0x3F;
-        uuid[IDX_VARIATION] |= 0x80;
+        // Copy time low
+        System.arraycopy(timeBytes, TS_TIME_LO_IDX, uuid, IDX_TIME_LO,
+                TS_TIME_LO_LEN);
+        // Copy time mid
+        System.arraycopy(timeBytes, TS_TIME_MID_IDX, uuid, IDX_TIME_MID,
+                TS_TIME_MID_LEN);
+        // Copy time hi
+        System.arraycopy(timeBytes, TS_TIME_HI_IDX, uuid, IDX_TIME_HI,
+                TS_TIME_HI_LEN);
+        //Set version (time-based)
+        uuid[IDX_TYPE] |= TYPE_TIME_BASED; // 0001 0000
 
         return uuid;
     }
@@ -172,16 +164,58 @@ public class UUIDGenerator {
     }
 
     /**
-     * Reset the random time sequence and counter. Must be called from
-     * synchronized code.
+     * Get the timestamp to be used for this uuid.  Must be called from
+     * a synchronized block.
+     *
+     * @return long timestamp
      */
-    private static void resetTime() {
-        _last = 0L;
-        RANDOM.nextBytes(_seq);
-
-        // awhite: I don't understand this; copied from original algo
-        byte[] tmp = new byte[1];
-        RANDOM.nextBytes(tmp);
-        _counter = tmp[0] & 0xFF;
+    private static long getTime() {
+        long newTime = getUUIDTime();
+        if (newTime <= _lastMillis) {
+            incrementSequence();
+        }
+        _lastMillis = newTime;
+        return newTime;
     }
+
+    /**
+     * Gets the appropriately modified timestamep for the UUID.  Must be called
+     * from a synchronized block.
+     *
+     * @return long timestamp in 100ns intervals since the Gregorian change
+     * offset
+     */
+    private static long getUUIDTime() {
+        if (_currentMillis != System.currentTimeMillis()) {
+            _currentMillis = System.currentTimeMillis();
+            _counter = 0;  // reset counter
+        }
+
+        // check to see if we have created too many uuid's for this timestamp
+        if (_counter + 1 >= MILLI_MULT) {
+            // Original algorithm threw exception.  Seemed like overkill.
+            // Let's just increment the timestamp instead and start over...
+            _currentMillis++;
+            _counter = 0;
+        }
+
+        // calculate time as current millis plus offset times 100 ns ticks
+        long currentTime = (_currentMillis + GREG_OFFSET) * MILLI_MULT;
+
+        // return the uuid time plus the artificial tick counter incremented
+        return currentTime + _counter++;
+    }
+
+    /**
+     * Increments the clock sequence for this uuid.  Must be called from a
+     * synchronized block.
+     */
+    private static void incrementSequence() {
+        // increment, but if it's greater than its 14-bits, reset it
+        if (++_seq > MAX_14BIT) {
+            _seq = (short)RANDOM.nextInt(MAX_14BIT);  // semi-random
+        }
+    }
+
+
 }
