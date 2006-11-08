@@ -29,6 +29,14 @@
         <openjpa.release.keyAlias>${user.name}@apache.org</openjpa.release.keyAlias>
         <openjpa.assembly.finalName>openjpa-${version}</openjpa.assembly.finalName>
         <openjpa.assembly.outputDirectory>${project.basedir}/target/assembly</openjpa.assembly.outputDirectory>
+
+        <openjpa.assembly.binarySuffix>binary</openjpa.assembly.binarySuffix>
+        <openjpa.assembly.binaryBase>${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.binarySuffix}</openjpa.assembly.binaryBase>
+        <openjpa.assembly.binaryFile>${openjpa.assembly.binaryBase}.zip</openjpa.assembly.binaryFile>
+
+        <openjpa.assembly.sourceSuffix>source</openjpa.assembly.sourceSuffix>
+        <openjpa.assembly.sourceBase>${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.sourceSuffix}</openjpa.assembly.sourceBase>
+        <openjpa.assembly.sourceFile>${openjpa.assembly.sourceBase}.zip</openjpa.assembly.sourceFile>
     </properties>
 
     <build>
@@ -46,96 +54,6 @@
         </resources>
 
         <plugins>
-            <plugin>
-
-                <!--
-                    Manually build an aggregate jar of all the other
-                    openjpa-* jars using ant. We cannot use the assembly
-                    plugin, since it doesn't provide support for appending
-                    multiple same-named files to each other (which is
-                    required for correctly aggregating services files).
-                -->
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>build-single-jar</id>
-                        <phase>process-classes</phase>
-                        <configuration>
-                            <tasks>
-                                <unjar overwrite="false"
-                                    dest="${basedir}/target/classes">
-                                    <fileset dir="${basedir}/..">
-                                        <include name="*/target/openjpa-*.jar" />
-                                    </fileset>
-                                </unjar>
-
-                                <!--
-                                    need to manually concatenate the services
-                                    resources so they are aggregated
-                                -->
-                                <macrodef name="aggregate-file">
-                                    <attribute name="servicename" />
-                                    <sequential>
-                                        <echo>
-                                            Building service: @{servicename}
-                                        </echo>
-                                        <concat
-                                            destfile="${basedir}/target/classes/META-INF/services/@{servicename}">
-                                            <fileset dir="${basedir}/.."
-                                                includes="*/src/main/resources/META-INF/services/@{servicename}" />
-                                        </concat>
-                                    </sequential>
-                                </macrodef>
-
-                                <aggregate-file
-                                    servicename="org.apache.openjpa.lib.conf.ProductDerivation" />
-                                <aggregate-file
-                                    servicename="javax.persistence.spi.PersistenceProvider" />
-                                <aggregate-file
-                                    servicename="org.apache.openjpa.kernel.exps.ExpressionParser" />
-
-                                <mkdir dir="${basedir}/target/aggregate" />
-
-                                <jar
-                                    destfile="${basedir}/target/aggregate/openjpa-${version}.jar"
-                                    basedir="${basedir}/target/classes">
-
-                                    <manifest>
-                                        <!--  Add roughly the same manifest info that the maven-jar-plugin uses -->
-                                        <attribute name="Built-By"
-                                            value="${user.name}" />
-                                        <attribute name="Build-Jdk"
-                                            value="${java.version}" />
-                                        <attribute name="Specification-Title"
-                                            value="${project.name}" />
-                                        <attribute name="Specification-Version"
-                                            value="${project.version}" />
-                                        <attribute name="Specification-Vendor"
-                                            value="${project.organization.name}" />
-                                        <attribute name="Implementation-Title"
-                                            value="${project.name}" />
-                                        <attribute name="Implementation-Version"
-                                            value="${project.version}" />
-                                        <attribute
-                                            name="Implementation-Vendor-Id" value="${project.groupId}" />
-                                        <attribute name="Implementation-Vendor"
-                                            value="${project.organization.name}" />
-
-                                        <!-- set premain class -->
-                                        <attribute name="Premain-Class"
-                                            value="org.apache.openjpa.enhance.PCEnhancerAgent" />
-                                    </manifest>
-
-                                </jar>
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
@@ -223,7 +141,7 @@
 
                                     <mkdir dir="${stylesheet.dir}"/>
                                     <get src="http://docbook.sourceforge.net/release/xsl/${stylesheet}" usetimestamp="true" dest="${stylesheet.dir}/${stylesheet}"/>
-                                    <untar src="${stylesheet.dir}/${stylesheet}" dest="${stylesheet.dir}" compression="bzip2" overwrite="false"/>
+                                    <untar src="${stylesheet.dir}/${stylesheet}" dest="${stylesheet.dir}/" compression="bzip2" overwrite="false"/>
 
 
                                     <style includes="**/manual.xml"
@@ -276,7 +194,7 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
-                                <phase>deploy</phase>
+                                <phase>verify</phase>
                                 <configuration>
                                     <tasks>
                                     <echo>Signing release files...</echo>
@@ -297,13 +215,41 @@
                                         </exec>
                                         </sequential>
                                     </macrodef>
-                                    <sign-file file="${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}.zip"/>
-                                    <sign-file file="${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-sources.zip"/>
+                                    <sign-file file="${openjpa.assembly.binaryFile}"/>
+                                    <sign-file file="${openjpa.assembly.sourceFile}"/>
                                     </tasks>
                                 </configuration>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-signature-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>attach-artifact</goal>
+                                </goals>
+                                <configuration>
+                                    <artifacts>
+                                        <artifact>
+                                            <file>${openjpa.assembly.binaryFile}.asc</file>
+                                            <classifier>${openjpa.assembly.binarySuffix}.zip</classifier>
+                                            <type>asc</type>
+                                        </artifact>
+                                        <artifact>
+                                            <file>${openjpa.assembly.sourceFile}.asc</file>
+                                            <classifier>${openjpa.assembly.sourceSuffix}.zip</classifier>
+                                            <type>asc</type>
+                                        </artifact>
+                                    </artifacts>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
