@@ -59,6 +59,14 @@
     </fileSets>
     <dependencySets>
         <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <unpack>false</unpack>
+            <scope>runtime</scope>
+            <includes>
+                <include>org.apache.openjpa:openjpa-all</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
             <outputDirectory>/lib</outputDirectory>
             <unpack>false</unpack>
             <scope>runtime</scope>
