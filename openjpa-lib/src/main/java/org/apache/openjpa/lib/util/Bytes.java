@@ -21,7 +21,6 @@ package org.apache.openjpa.lib.util;
  *
  * <p>Static methods for managing byte arrays (all methods follow Big
  * Endian order where most significant bits are in front).</p>
- *
  */
 public final class Bytes {
 
@@ -126,8 +125,9 @@ public final class Bytes {
      *
      * @param lhs - left hand value in the comparison operation.
      * @param rhs - right hand value in the comparison operation.
-     * @return  a negative integer, zero, or a positive integer as <code>lhs</code>
-     *  is less than, equal to, or greater than <code>rhs</code>.
+     * @return  a negative integer, zero, or a positive integer as 
+     * <code>lhs</code> is less than, equal to, or greater than 
+     * <code>rhs</code>.
      */
     public static int compareTo(byte[] lhs, byte[] rhs) {
         if (lhs == rhs) {
