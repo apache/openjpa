@@ -86,7 +86,6 @@ public class Localizer {
         String key = file + locale.toString();
 
         // no locking; ok if bundle created multiple times
-
         // check for cached version
         Localizer loc = (Localizer) _localizers.get(key);
         if (loc != null)

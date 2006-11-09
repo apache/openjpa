@@ -374,7 +374,7 @@ public final class SQLBuffer
     public String getSQL() {
         return getSQL(false);
     }
-
+    
     /**
      * Returns the SQL for this buffer.
      *
@@ -382,22 +382,7 @@ public final class SQLBuffer
      * actual parameter values
      */
     public String getSQL(boolean replaceParams) {
-        if (_subsels != null && !_subsels.isEmpty()) {
-            // add subsels backwards so that the stored insertion points of
-            // later subsels remain valid
-            Subselect sub;
-            SQLBuffer buf;
-            for (int i = _subsels.size() - 1; i >= 0; i--) {
-                sub = (Subselect) _subsels.get(i);
-                if (sub.count)
-                    buf = sub.select.toSelectCount();
-                else
-                    buf = sub.select.toSelect(false, sub.fetch);
-                append(buf, sub.sqlIndex, sub.paramIndex, false);
-            }
-            _subsels.clear();
-        }
-
+        resolveSubselects();
         String sql = _sql.toString();
         if (!replaceParams || _params == null || _params.isEmpty())
             return sql;
@@ -421,6 +406,29 @@ public final class SQLBuffer
                 buf.append("?");
         }
         return buf.toString();
+    }
+
+    /**
+     * Resolve our delayed subselects.
+     */
+    private void resolveSubselects() {
+        if (_subsels == null || _subsels.isEmpty())
+            return;
+
+        // add subsels backwards so that the stored insertion points of
+        // later subsels remain valid
+        Subselect sub;
+        SQLBuffer buf;
+        for (int i = _subsels.size() - 1; i >= 0; i--) {
+            sub = (Subselect) _subsels.get(i);
+            if (sub.count)
+                buf = sub.select.toSelectCount();
+            else
+                buf = sub.select.toSelect(false, sub.fetch);
+            buf.resolveSubselects();
+            append(buf, sub.sqlIndex, sub.paramIndex, false);
+        }
+        _subsels.clear();
     }
 
     /**
@@ -606,4 +614,3 @@ public final class SQLBuffer
         }
     }
 }
-
