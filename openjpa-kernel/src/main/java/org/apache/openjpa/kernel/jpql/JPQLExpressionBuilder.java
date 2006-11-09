@@ -821,10 +821,14 @@ class JPQLExpressionBuilder
 
                 while (inIterator.hasNext()) {
                     val2 = getValue((JPQLNode) inIterator.next());
-                    setImplicitTypes(val1, val2, null);
+
+                    // special case for <value> IN (<subquery>)
+                    if (val2 instanceof Subquery && node.getChildCount() == 2)
+                        return factory.contains(val2, val1); 
 
                     // this is currently a sequence of OR expressions, since we
                     // do not have support for IN expressions
+                    setImplicitTypes(val1, val2, null);
                     if (inExp == null)
                         inExp = factory.equal(val1, val2);
                     else
