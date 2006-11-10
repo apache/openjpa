@@ -123,16 +123,12 @@ public class ProxyGregorianCalendar
         }
     }
 
-    /* This is "final" in JDK 1.3 (not in 1.4 or 1.5)
- public void set (int field, int value)
- {
- if (get (field) != value)
- {
- Proxies.dirty (this);
- super.set (field, value);
- }
- }
-     */
+    public void set(int field, int value) {
+        if (get(field) != value) {
+            Proxies.dirty(this);
+            super.set(field, value);
+        }
+    }
 
     public void add(int field, int amount) {
         if (amount != 0) {

@@ -91,15 +91,6 @@
     </modules>
     <profiles>
         <profile>
-            <id>jdk1.4</id>
-            <activation>
-                <jdk>1.4</jdk>
-            </activation>
-            <modules>
-                <module>openjpa-kernel-4</module>
-            </modules>
-        </profile>
-        <profile>
             <id>jdk1.5</id>
             <activation>
                 <jdk>1.5</jdk>
@@ -107,7 +98,6 @@
             <modules>
                 <module>openjpa-persistence</module>
                 <module>openjpa-persistence-jdbc</module>
-                <module>openjpa-kernel-4</module>
                 <module>openjpa-kernel-5</module>
                 <module>openjpa-jdbc-5</module>
                 <module>openjpa-examples</module>
