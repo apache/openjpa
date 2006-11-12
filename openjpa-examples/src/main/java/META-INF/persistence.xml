@@ -14,7 +14,9 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    version="1.0">
     <!--
         A persistence unit is a set of listed persistent entities as well
         the configuration of an EntityManagerFactory. We configure each
