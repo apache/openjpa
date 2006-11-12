@@ -59,7 +59,8 @@ Please traverse to a sub-directory and run "ant" from there.
     <target name="run" depends="compile"
         description="Run the example Main program">
 
-        <java classname="${example}.Main" classpathref="classpath" fork="yes">
+        <java classname="${example}.Main" classpathref="classpath" fork="yes"
+            failonerror="yes">
             <!--
                 Specifying the openjpa jar as the javaagent argument is
                 necessary in order for automatic class-enhancement to work.
