@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -38,7 +39,8 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
  *
  * @author Abe White
  */
-public interface Joinable {
+public interface Joinable 
+    extends Serializable {
 
     /**
      * Return the field index of this joinable, or -1 if not a field.

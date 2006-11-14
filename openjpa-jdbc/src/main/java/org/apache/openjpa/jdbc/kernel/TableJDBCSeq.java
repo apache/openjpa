@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -69,8 +70,8 @@ public class TableJDBCSeq
     private static final Localizer _loc = Localizer.forPackage
         (TableJDBCSeq.class);
 
-    private JDBCConfiguration _conf = null;
-    private Log _log = null;
+    private transient JDBCConfiguration _conf = null;
+    private transient Log _log = null;
     private int _alloc = 50;
     private final Status _stat = new Status();
 
@@ -188,7 +189,7 @@ public class TableJDBCSeq
     public void endConfiguration() {
         buildTable();
     }
-
+    
     public void addSchema(ClassMapping mapping, SchemaGroup group) {
         // table already exists?
         if (group.isKnownTable(_table))
@@ -624,7 +625,8 @@ public class TableJDBCSeq
     /**
      * Helper struct to hold status information.
      */
-    protected static class Status {
+    protected static class Status
+        implements Serializable {
 
         public long seq = 1L;
         public long max = 0L;

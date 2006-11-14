@@ -15,7 +15,7 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import java.io.Serializable;
 
 /**
  * Installs mapping strategies.
@@ -24,9 +24,9 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
  * @nojavadoc
  * @since 0.4.0
  */
-public abstract class StrategyInstaller {
+public abstract class StrategyInstaller 
+    implements Serializable {
 
-    protected final JDBCConfiguration conf;
     protected final MappingRepository repos;
 
     /**
@@ -34,7 +34,6 @@ public abstract class StrategyInstaller {
      */
     public StrategyInstaller(MappingRepository repos) {
         this.repos = repos;
-        this.conf = (JDBCConfiguration) repos.getConfiguration();
     }
 
     /**

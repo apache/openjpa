@@ -35,7 +35,7 @@ public class DynamicSchemaFactory
     extends SchemaGroup
     implements SchemaFactory, Configurable {
 
-    private DBDictionary _dict = null;
+    private transient DBDictionary _dict = null;
     private String _schema = null;
 
     public void setConfiguration(Configuration conf) {
@@ -49,7 +49,7 @@ public class DynamicSchemaFactory
 
     public void endConfiguration() {
     }
-
+    
     public SchemaGroup readSchema() {
         return this;
     }

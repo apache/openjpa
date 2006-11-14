@@ -36,7 +36,7 @@ public class ValueMetaDataImpl
     // embedded metadata, make sure to add it to the copy() method
     ///////////////////////////////////////////////////////////////
 
-    private final FieldMetaData _owner;
+    private FieldMetaData _owner;
     private Class _decType = Object.class;
     private int _decCode = JavaTypes.OBJECT;
     private ClassMetaData _decTypeMeta = null;
@@ -57,6 +57,12 @@ public class ValueMetaDataImpl
 
     protected ValueMetaDataImpl(FieldMetaData owner) {
         _owner = owner;
+    }
+    
+    /**
+     * Constructor for serialization.
+     */
+    protected ValueMetaDataImpl() {
     }
 
     public FieldMetaData getFieldMetaData() {

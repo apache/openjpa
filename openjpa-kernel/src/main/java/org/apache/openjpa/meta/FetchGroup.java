@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.meta;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,7 +31,8 @@ import serp.util.Numbers;
 /**
  * Captures fetch group metadata.
  */
-public class FetchGroup {
+public class FetchGroup 
+    implements Serializable {
 
     /**
      * Name of the default fetch group.

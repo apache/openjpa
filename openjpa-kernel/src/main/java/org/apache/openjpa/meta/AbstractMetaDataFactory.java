@@ -38,11 +38,12 @@ public abstract class AbstractMetaDataFactory
     implements MetaDataFactory {
 
     protected MetaDataRepository repos = null;
-    protected Log log = null;
+    protected transient Log log = null;
     protected File dir = null;
     protected int store = STORE_DEFAULT;
     protected boolean strict = false;
     protected Set types = null;
+
 
     /**
      * Set of persistent type names supplied by user.

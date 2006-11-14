@@ -15,6 +15,10 @@
  */
 package org.apache.openjpa.event;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -27,12 +31,12 @@ import org.apache.openjpa.util.UserException;
  * @author Steve Kim
  */
 public class MethodLifecycleCallbacks
-    implements LifecycleCallbacks {
+    implements LifecycleCallbacks, Externalizable {
 
     private static final Localizer _loc = Localizer.forPackage
         (MethodLifecycleCallbacks.class);
 
-    private Method _callback;
+    private transient Method _callback;
     private boolean _arg;
 
     /**
@@ -137,5 +141,22 @@ public class MethodLifecycleCallbacks
         }
 
         return true;
+    }
+
+    public void readExternal(ObjectInput in)
+        throws IOException, ClassNotFoundException {
+        Class cls = (Class) in.readObject();
+        String methName = (String) in.readObject();
+        _arg = in.readBoolean();
+
+        Class[] args = _arg ? new Class[]{ Object.class } : null;
+        _callback = getMethod(cls, methName, args);
+    }
+
+    public void writeExternal(ObjectOutput out)
+        throws IOException {
+        out.writeObject(_callback.getClass());
+        out.writeObject(_callback.getName());
+        out.writeBoolean(_arg);
     } 
 }

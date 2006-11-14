@@ -16,6 +16,7 @@
 package org.apache.openjpa.meta;
 
 import java.io.File;
+import java.io.Serializable;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.SeqValue;
@@ -36,7 +37,8 @@ import org.apache.openjpa.util.OpenJPAException;
  * @since 0.4.0
  */
 public class SequenceMetaData
-    implements SourceTracker, MetaDataContext, Closeable, Commentable {
+    implements SourceTracker, MetaDataContext, Closeable, Commentable,
+    Serializable {
 
     /**
      * Sequence name that means to use the system default sequence.
@@ -63,11 +65,12 @@ public class SequenceMetaData
     private static final Localizer _loc = Localizer.forPackage
         (SequenceMetaData.class);
 
-    private final MetaDataRepository _repos;
+    private MetaDataRepository _repos;
+    private SequenceFactory _factory = null;
+    
     private final String _name;
     private int _type = Seq.TYPE_DEFAULT;
     private String _plugin = IMPL_NATIVE;
-    private SequenceFactory _factory = null;
     private File _source = null;
     private Object _scope = null;
     private int _srcType = SRC_OTHER;
@@ -78,7 +81,7 @@ public class SequenceMetaData
     private int _initial = -1;
 
     // instantiated lazily
-    private Seq _instance = null;
+    private transient Seq _instance = null;
 
     /**
      * Constructor; supply sequence name.
@@ -341,12 +344,13 @@ public class SequenceMetaData
     public void setComments(String[] comments) {
         _comments = comments;
     }
-
+    
     /**
      * Allow facades to supply adapters from a spec sequence type to the
      * OpenJPA sequence type.
      */
-    public static interface SequenceFactory {
+    public static interface SequenceFactory 
+        extends Serializable {
 
         /**
          * Transform the given class named in metadata into a sequence.

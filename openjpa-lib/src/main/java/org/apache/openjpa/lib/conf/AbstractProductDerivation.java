@@ -66,4 +66,7 @@ public abstract class AbstractProductDerivation
     public boolean afterSpecificationSet(Configuration conf) {
         return false;
     }
+    
+    public void beforeConfigurationClose(Configuration conf) {
+    }
 }

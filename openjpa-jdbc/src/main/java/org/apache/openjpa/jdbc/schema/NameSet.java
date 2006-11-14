@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,7 +29,8 @@ import org.apache.openjpa.lib.util.Localizer;
  *
  * @author Abe White
  */
-public class NameSet {
+public class NameSet
+    implements Serializable {
 
     private static final Localizer _loc = Localizer.forPackage(NameSet.class);
 

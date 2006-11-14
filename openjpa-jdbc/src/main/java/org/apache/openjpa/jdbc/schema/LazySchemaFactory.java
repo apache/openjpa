@@ -36,10 +36,11 @@ public class LazySchemaFactory
     extends SchemaGroup
     implements SchemaFactory, Configurable {
 
-    private JDBCConfiguration _conf = null;
-    private SchemaGenerator _gen = null;
-    private Connection _conn = null;
-    private DatabaseMetaData _meta = null;
+    private transient JDBCConfiguration _conf = null;
+    private transient Connection _conn = null;
+    private transient DatabaseMetaData _meta = null;
+    private transient SchemaGenerator _gen = null;
+    
     private boolean _indexes = false;
     private boolean _pks = false;
     private boolean _fks = false;

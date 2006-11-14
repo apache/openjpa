@@ -15,6 +15,10 @@
  */
 package org.apache.openjpa.meta;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -62,7 +66,7 @@ import serp.util.Strings;
 public class FieldMetaData
     extends Extensions
     implements ValueMetaData, MetaDataContext, MetaDataModes, Commentable {
-
+    
     /**
      * Constant specifying that no null-value was given.
      */
@@ -156,13 +160,19 @@ public class FieldMetaData
     private String   _lfg = null;
     private Boolean _lrs = null;
     private String _extName = null;
-    private Method _extMethod = DEFAULT_METHOD;
     private String _factName = null;
-    private Member _factMethod = DEFAULT_METHOD;
     private String _extString = null;
     private Map _extValues = Collections.EMPTY_MAP;
     private Map _fieldValues = Collections.EMPTY_MAP;
-    private Member _backingMember = null;
+
+    // Members aren't serializable. Use a proxy that can provide a Member
+    // to avoid writing the full Externalizable implementation.
+    private transient MemberProvider _backingMember = null;
+    
+    // Members aren't serializable. Initializing _extMethod and _factMethod to 
+    // DEFAULT_METHOD is sufficient to trigger lazy population of these fields.
+    private transient Method _extMethod = DEFAULT_METHOD;
+    private transient Member _factMethod = DEFAULT_METHOD;
 
     // intermediate and impl data
     private boolean _intermediate = true;
@@ -213,7 +223,7 @@ public class FieldMetaData
         if (Modifier.isTransient(member.getModifiers()))
             _transient = true;
 
-        _backingMember = member;
+        _backingMember = new MemberProvider(member);
 
         Class type;
         Class[] types;
@@ -245,7 +255,7 @@ public class FieldMetaData
      * Return the backing member supplied in {@link #backingMember}.
      */
     public Member getBackingMember() {
-        return _backingMember;
+        return _backingMember.getMember();
     }
 
     /**
@@ -782,7 +792,7 @@ public class FieldMetaData
      * Logical inverse field.
      */
     public String getInverse() {
-        if (_inverse == ClassMetaData.DEFAULT_STRING)
+        if (ClassMetaData.DEFAULT_STRING.equals(_inverse))
             _inverse = null;
         return _inverse;
     }
@@ -906,7 +916,7 @@ public class FieldMetaData
      * The value sequence name, or null for none.
      */
     public String getValueSequenceName() {
-        if (_seqName == ClassMetaData.DEFAULT_STRING)
+        if (ClassMetaData.DEFAULT_STRING.equals(_seqName))
             _seqName = null;
         return _seqName;
     }
@@ -1487,10 +1497,6 @@ public class FieldMetaData
         return StoreContext.class.getName().equals(type.getName());
     }
 
-    public int hashCode() {
-        return getFullName(true).hashCode();
-    }
-
     public boolean equals(Object other) {
         if (other == this)
             return true;
@@ -1713,7 +1719,7 @@ public class FieldMetaData
         _extValues = Collections.EMPTY_MAP;
         _fieldValues = Collections.EMPTY_MAP;
         _primKey = field.isPrimaryKey();
-        _backingMember = field.getBackingMember();
+        _backingMember = field._backingMember;
 
         // embedded fields can't be versions
         if (_owner.getEmbeddingMetaData() == null && _version == null)
@@ -1735,11 +1741,11 @@ public class FieldMetaData
             _valStrategy = field.getValueStrategy();
         if (_upStrategy == -1)
             _upStrategy = field.getUpdateStrategy();
-        if (_seqName == ClassMetaData.DEFAULT_STRING) {
+        if (ClassMetaData.DEFAULT_STRING.equals(_seqName)) {
             _seqName = field.getValueSequenceName();
             _seqMeta = null;
         }
-        if (_inverse == ClassMetaData.DEFAULT_STRING)
+        if (ClassMetaData.DEFAULT_STRING.equals(_inverse))
             _inverse = field.getInverse();
 
         // copy value metadata
@@ -1919,4 +1925,62 @@ public class FieldMetaData
 	{
 		_val.copy (vmd);
 	}
+
+    /**
+     * Serializable wrapper around a {@link Method} or {@link Field}. For 
+     * space considerations, this does not support {@link Constructor}s.
+     */
+	private static class MemberProvider 
+        implements Externalizable {
+
+        private transient Member _member;
+        
+        private MemberProvider(Member member) {
+            if (_member instanceof Constructor)
+                throw new IllegalArgumentException();
+
+            _member = member;
+        }
+        
+        public Member getMember() {
+            return _member;
+        }
+
+        public void readExternal(ObjectInput in)
+            throws IOException, ClassNotFoundException {
+            boolean isField = in.readBoolean();
+            Class cls = _member.getDeclaringClass();
+            String memberName = (String) in.readObject();
+            try {
+                if (isField)
+                    _member = cls.getDeclaredField(memberName);
+                else {
+                    Class[] parameterTypes = (Class[]) in.readObject();
+                    _member = cls.getDeclaredMethod(memberName, parameterTypes);
+                }
+            } catch (SecurityException e) {
+                IOException ioe = new IOException(e.getMessage());
+                ioe.initCause(e);
+                throw ioe;
+            } catch (NoSuchFieldException e) {
+                IOException ioe = new IOException(e.getMessage());
+                ioe.initCause(e);
+                throw ioe;
+            } catch (NoSuchMethodException e) {
+                IOException ioe = new IOException(e.getMessage());
+                ioe.initCause(e);
+                throw ioe;
+            }
+        }
+
+        public void writeExternal(ObjectOutput out)
+            throws IOException {
+            boolean isField = _member instanceof Field;
+            out.writeBoolean(isField);
+            out.writeObject(_member.getDeclaringClass());
+            out.writeObject(_member.getName());
+            if (!isField)
+                out.writeObject(((Method) _member).getParameterTypes());
+        }
+    }
 }

@@ -111,11 +111,11 @@ public class ClassMetaData
     private static final Localizer _loc = Localizer.forPackage
         (ClassMetaData.class);
 
-    // the repository this class belongs to, if any, and source file
-    private final MetaDataRepository _repos;
+    private MetaDataRepository _repos;
+    private transient ClassLoader _loader = null;
+
     private final ValueMetaData _owner;
     private final LifecycleMetaData _lifeMeta = new LifecycleMetaData(this);
-    private ClassLoader _loader = null;
     private File _srcFile = null;
     private int _srcType = SRC_OTHER;
     private String[] _comments = null;
@@ -537,7 +537,7 @@ public class ClassMetaData
      * The datastore identity sequence name, or null for none.
      */
     public String getIdentitySequenceName() {
-        if (_seqName == DEFAULT_STRING) {
+        if (DEFAULT_STRING.equals(_seqName)) {
             if (_super != null)
                 _seqName = getPCSuperclassMetaData().getIdentitySequenceName();
             else
@@ -1279,7 +1279,7 @@ public class ClassMetaData
      * The name of the datacache to use for this class, or null if none.
      */
     public String getDataCacheName() {
-        if (_cacheName == DEFAULT_STRING) {
+        if (DEFAULT_STRING.equals(_cacheName)) {
             if (_super != null)
                 _cacheName = getPCSuperclassMetaData().getDataCacheName();
             else
@@ -1353,7 +1353,7 @@ public class ClassMetaData
      * The name of the detach state field, or null if none.
      */
     public String getDetachedState() {
-        if (_detachState == DEFAULT_STRING) {
+        if (DEFAULT_STRING.equals(_detachState)) {
             ClassMetaData sup = getPCSuperclassMetaData();
             if (sup != null && sup.isDetachable() == isDetachable())
                 _detachState = sup.getDetachedState();
@@ -2246,13 +2246,13 @@ public class ClassMetaData
 
         // only copy this information if it wasn't set explicitly for this
         // instance
-        if (_cacheName == DEFAULT_STRING)
+        if (DEFAULT_STRING.equals(_cacheName))
             _cacheName = meta.getDataCacheName();
         if (_cacheTimeout == Integer.MIN_VALUE)
             _cacheTimeout = meta.getDataCacheTimeout();
         if (_detachable == null)
             _detachable = meta._detachable;
-        if (_detachState == DEFAULT_STRING)
+        if (DEFAULT_STRING.equals(_detachState))
             _detachState = meta.getDetachedState();
 
         // synch field information; first remove extra fields

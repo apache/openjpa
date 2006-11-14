@@ -21,8 +21,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.LinkedHashMap;
 
-import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.meta.SourceTracker;
 
@@ -269,7 +269,7 @@ public class Table
         else
             col = new Column(name, this);
         if (_colMap == null)
-            _colMap = new LinkedMap();
+            _colMap = new LinkedHashMap();
         _colMap.put(name.toUpperCase(), col);
         _cols = null;
         return col;

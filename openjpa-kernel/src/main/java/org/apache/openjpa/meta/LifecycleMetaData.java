@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.meta;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.apache.openjpa.event.LifecycleCallbacks;
@@ -28,7 +29,8 @@ import org.apache.openjpa.util.InternalException;
  * @author Steve Kim
  * @author Abe White
  */
-public class LifecycleMetaData {
+public class LifecycleMetaData
+    implements Serializable {
 
     public static final int IGNORE_NONE = 0;
     public static final int IGNORE_HIGH = 2 << 0;

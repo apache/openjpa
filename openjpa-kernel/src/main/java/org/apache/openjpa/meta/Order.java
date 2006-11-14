@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.meta;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -22,7 +23,8 @@ import java.util.Comparator;
  *
  * @author Abe White
  */
-public interface Order {
+public interface Order
+    extends Serializable {
 
     /**
      * Token denoting to order by the element value.

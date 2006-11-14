@@ -15,12 +15,15 @@
  */
 package org.apache.openjpa.event;
 
+import java.io.Serializable;
+
 /**
  * A lifecycle listener that responds to callbacks rather than events.
  *
  * @author Steve Kim
  */
-public interface LifecycleCallbacks {
+public interface LifecycleCallbacks
+    extends Serializable {
 
     /**
      * Return whether the given instance has a callback for the given
