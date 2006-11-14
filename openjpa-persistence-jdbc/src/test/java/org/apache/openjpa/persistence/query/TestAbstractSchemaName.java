@@ -16,7 +16,6 @@
 package org.apache.openjpa.persistence.query;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -25,7 +24,6 @@ import javax.persistence.Query;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
-import org.apache.openjpa.persistence.OpenJPAQuery;
 
 /**
  * Test that we can query by an entity's abstract schema name.

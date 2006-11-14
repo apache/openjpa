@@ -16,7 +16,6 @@
 package org.apache.openjpa.persistence.relations;
 
 import java.io.*;
-import java.util.*;
 
 /**
  * Application identity class for: org.apache.openjpa.persistence.relations.ManyOneCompoundIdOwner
