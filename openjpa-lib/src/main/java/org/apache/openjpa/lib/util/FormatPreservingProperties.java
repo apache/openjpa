@@ -30,13 +30,12 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
-import org.apache.commons.collections.set.ListOrderedSet;
 
 /*
  * ### things to add: - should probably be a SourceTracker
@@ -85,7 +84,7 @@ public class FormatPreservingProperties extends Properties {
     private boolean insertTimestamp = false;
 
     private PropertySource source;
-    private ListOrderedSet newKeys = new ListOrderedSet();
+    private LinkedHashSet newKeys = new LinkedHashSet();
     private HashSet modifiedKeys = new HashSet();
 
     // marker that indicates that we're not deserializing
@@ -237,7 +236,7 @@ public class FormatPreservingProperties extends Properties {
             c.modifiedKeys = (HashSet) modifiedKeys.clone();
 
         if (newKeys != null) {
-            c.newKeys = new ListOrderedSet();
+            c.newKeys = new LinkedHashSet();
             c.newKeys.addAll(newKeys);
         }
 
@@ -444,7 +443,7 @@ public class FormatPreservingProperties extends Properties {
             lines.addAll(source);
 
         // next write out new keys, then the rest of the keys
-        ListOrderedSet keys = new ListOrderedSet();
+        LinkedHashSet keys = new LinkedHashSet();
         keys.addAll(newKeys);
         keys.addAll(keySet());
 
