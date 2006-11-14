@@ -19,8 +19,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.LinkedHashMap;
 
-import org.apache.commons.collections.map.LinkedMap;
 import org.xml.sax.SAXException;
 
 /**
@@ -55,7 +55,7 @@ public abstract class CFMetaDataSerializer extends XMLMetaDataSerializer {
      * that package
      */
     protected Map groupByPackage(Collection objs) throws SAXException {
-        Map packages = new LinkedMap();
+        Map packages = new LinkedHashMap();
         String packageName;
         Collection packageObjs;
         Object obj;
