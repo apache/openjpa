@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -30,7 +31,8 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
  * @author Abe White
  * @since 0.4.0
  */
-public interface ValueHandler {
+public interface ValueHandler
+    extends Serializable {
 
     /**
      * Map the given value and return all mapped columns, or simply return an

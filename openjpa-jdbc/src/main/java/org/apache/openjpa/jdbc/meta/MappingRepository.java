@@ -65,6 +65,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
+import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -94,8 +95,9 @@ public class MappingRepository
             "org.apache.openjpa.jdbc.meta.strats.EnumValueHandler");
     }
 
-    private DBDictionary _dict = null;
-    private MappingDefaults _defaults = null;
+    private transient DBDictionary _dict = null;
+    private transient MappingDefaults _defaults = null;
+    
     private Map _results = new HashMap(); // object->queryresultmapping
     private SchemaGroup _schema = null;
     private StrategyInstaller _installer = null;
@@ -1158,7 +1160,7 @@ public class MappingRepository
                 return NoneVersionStrategy.getInstance();
         }
     }
-
+    
     public void endConfiguration()
     {
         super.endConfiguration();
@@ -1167,5 +1169,10 @@ public class MappingRepository
         _dict = conf.getDBDictionaryInstance();
         if (_defaults == null)
             _defaults = conf.getMappingDefaultsInstance();
+        if (_schema != null && _schema instanceof Configurable) {
+            ((Configurable) _schema).setConfiguration(conf);
+            ((Configurable) _schema).startConfiguration();
+            ((Configurable) _schema).endConfiguration();
+        }            
     }
 }

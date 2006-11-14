@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import java.io.Serializable;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,7 +48,8 @@ import serp.util.Strings;
  *
  * @author Abe White
  */
-public abstract class MappingInfo {
+public abstract class MappingInfo
+    implements Serializable {
 
     public static final int JOIN_NONE = 0;
     public static final int JOIN_FORWARD = 1;

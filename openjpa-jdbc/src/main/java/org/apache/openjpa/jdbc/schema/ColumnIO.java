@@ -15,6 +15,8 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
+import java.io.Serializable;
+
 /**
  * Metadata about column I/O in a specific context. In the context of
  * a foreign key, the standard foreign key columns are indexed first, then
@@ -22,7 +24,8 @@ package org.apache.openjpa.jdbc.schema;
  *
  * @author Abe White
  */
-public class ColumnIO {
+public class ColumnIO
+    implements Serializable {
 
     public static final ColumnIO UNRESTRICTED = new ColumnIO() {
         public void setInsertable(int col, boolean insertable) {

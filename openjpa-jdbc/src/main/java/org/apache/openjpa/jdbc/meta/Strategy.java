@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -28,7 +29,8 @@ import org.apache.openjpa.util.MetaDataException;
  * @author Abe White
  * @since 0.4.0
  */
-public interface Strategy {
+public interface Strategy 
+    extends Serializable {
 
     /**
      * Return the alias of this strategy. For custom strategies, return the

@@ -44,7 +44,7 @@ import serp.util.Strings;
 public class MappingDefaultsImpl
     implements MappingDefaults, Configurable {
 
-    protected DBDictionary dict = null;
+    protected transient DBDictionary dict = null;
     private String _baseClassStrategy = null;
     private String _subclassStrategy = null;
     private String _versionStrategy = null;

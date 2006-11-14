@@ -15,13 +15,16 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
+import java.io.Serializable;
+
 /**
  * Some schema components count references so that unused components
  * can be detected.
  *
  * @author Abe White
  */
-class ReferenceCounter {
+class ReferenceCounter 
+    implements Serializable {
 
     private int _count = 0;
 

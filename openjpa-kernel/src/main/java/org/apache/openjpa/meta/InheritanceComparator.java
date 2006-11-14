@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.meta;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -24,7 +25,7 @@ import java.util.Comparator;
  * @nojavadoc
  */
 public class InheritanceComparator
-    implements Comparator {
+    implements Comparator, Serializable {
 
     private Class _base = Object.class;
 

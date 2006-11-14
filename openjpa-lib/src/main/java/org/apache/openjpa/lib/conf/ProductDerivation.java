@@ -112,4 +112,11 @@ public interface ProductDerivation {
      * @return true if given Configuration has been mutated.
      */
     public boolean afterSpecificationSet(Configuration conf);
+    
+    /**
+     * Called before the given Configuration is closed.
+     * 
+     * @since 0.9.7
+     */
+    public void beforeConfigurationClose(Configuration conf);
 }

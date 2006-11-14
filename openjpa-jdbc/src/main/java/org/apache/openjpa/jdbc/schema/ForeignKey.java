@@ -19,8 +19,8 @@ import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.LinkedHashMap;
 
-import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringDistance;
@@ -65,17 +65,18 @@ public class ForeignKey
      */
     public static final int ACTION_DEFAULT = 5;
 
-    private static Localizer _loc = Localizer.forPackage(ForeignKey.class);
+    private static final Localizer _loc = 
+        Localizer.forPackage(ForeignKey.class);
 
     private String _pkTableName = null;
     private String _pkSchemaName = null;
     private String _pkColumnName = null;
     private int _seq = 0;
 
-    private LinkedMap _joins = null;
-    private LinkedMap _joinsPK = null;
-    private LinkedMap _consts = null;
-    public LinkedMap _constsPK = null;
+    private LinkedHashMap _joins = null;
+    private LinkedHashMap _joinsPK = null;
+    private LinkedHashMap _consts = null;
+    private LinkedHashMap _constsPK = null;
     private int _delAction = ACTION_NONE;
     private int _upAction = ACTION_NONE;
     private int _index = 0;
@@ -525,10 +526,10 @@ public class ForeignKey
 
         _pkTable = pkTable;
         if (_joins == null)
-            _joins = new LinkedMap();
+            _joins = new LinkedHashMap();
         _joins.put(local, toPK);
         if (_joinsPK == null)
-            _joinsPK = new LinkedMap();
+            _joinsPK = new LinkedHashMap();
         _joinsPK.put(toPK, local);
 
         // force re-cache
@@ -550,7 +551,7 @@ public class ForeignKey
 
         _pkTable = pkTable;
         if (_constsPK == null)
-            _constsPK = new LinkedMap();
+            _constsPK = new LinkedHashMap();
         _constsPK.put(toPK, val);
 
         // force re-cache
@@ -564,7 +565,7 @@ public class ForeignKey
      */
     public void joinConstant(Column col, Object val) {
         if (_consts == null)
-            _consts = new LinkedMap();
+            _consts = new LinkedHashMap();
         _consts.put(col, val);
 
         // force re-cache

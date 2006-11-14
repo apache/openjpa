@@ -21,13 +21,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.set.ListOrderedSet;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -621,8 +620,7 @@ public class ClassMapping
                     _assignMaps = subs;
             } else {
                 int size = (int) (subs.length * 1.33 + 2);
-                Set independent = ListOrderedSet.decorate(new HashSet(size),
-                    new ArrayList(subs.length + 1));
+                Set independent = new LinkedHashSet(size);
                 if (isMapped())
                     independent.add(this);
                 independent.addAll(Arrays.asList(subs));

@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.meta;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,7 +36,8 @@ import serp.util.Strings;
  *
  * @author Abe White
  */
-public abstract class Extensions {
+public abstract class Extensions
+    implements Serializable {
 
     public static final String OPENJPA = "openjpa";
 
@@ -412,7 +414,8 @@ public abstract class Extensions {
     /**
      * Key class.
      */
-    private static class HashKey {
+    private static class HashKey 
+        implements Serializable {
 
         public final String vendor;
         public final String key;

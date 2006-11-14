@@ -15,6 +15,8 @@
  */
 package org.apache.openjpa.meta;
 
+import java.io.Serializable;
+
 /**
  * Holds metadata on a value; this could be a field value, key value, or
  * element value.
@@ -23,7 +25,7 @@ package org.apache.openjpa.meta;
  * @author Abe White
  */
 public interface ValueMetaData
-    extends MetaDataContext, MetaDataModes {
+    extends MetaDataContext, MetaDataModes, Serializable {
 
     /**
      * The operation is not cascaded to this field.

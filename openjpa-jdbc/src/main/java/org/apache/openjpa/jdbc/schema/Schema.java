@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -26,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
  * @author Abe White
  */
 public class Schema
-    implements Comparable {
+    implements Comparable, Serializable {
 
     private String _name = null;
     private SchemaGroup _group = null;

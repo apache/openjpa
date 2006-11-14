@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.meta;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,7 +54,7 @@ import serp.util.Strings;
  */
 public class MetaDataRepository
     implements PCRegistry.RegisterClassListener, Configurable, Closeable, 
-    MetaDataModes {
+    MetaDataModes, Serializable {
 
     /**
      * Constant to not validate any metadata.
@@ -109,10 +110,11 @@ public class MetaDataRepository
     // map of classes to lists of their subclasses
     private final Map _subs = Collections.synchronizedMap(new HashMap());
 
-    private OpenJPAConfiguration _conf = null;
-    private Log _log = null;
-    private MetaDataFactory _factory = null;
-    private InterfaceImplGenerator _implGen = null;
+    private transient OpenJPAConfiguration _conf = null;
+    private transient Log _log = null;
+    private transient InterfaceImplGenerator _implGen = null;
+    private transient MetaDataFactory _factory = null;
+
     private int _resMode = MODE_META | MODE_MAPPING;
     private int _sourceMode = MODE_META | MODE_MAPPING | MODE_QUERY;
     private int _validate = VALIDATE_META | VALIDATE_UNENHANCED;
@@ -1458,6 +1460,10 @@ public class MetaDataRepository
     }
 
     public void endConfiguration() {
+        initializeMetaDataFactory();
+    }
+
+    private void initializeMetaDataFactory() {
         if (_factory == null) {
             MetaDataFactory mdf = _conf.newMetaDataFactoryInstance();
             if (mdf == null)
@@ -1789,7 +1795,8 @@ public class MetaDataRepository
     /**
      * Query key struct.
      */
-    private static class QueryKey {
+    private static class QueryKey
+        implements Serializable {
 
         public String clsName;
         public String name;

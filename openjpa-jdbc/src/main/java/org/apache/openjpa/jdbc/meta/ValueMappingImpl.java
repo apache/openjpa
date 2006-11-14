@@ -48,7 +48,7 @@ public class ValueMappingImpl
     private static final Localizer _loc = Localizer.forPackage
         (ValueMappingImpl.class);
 
-    private final ValueMappingInfo _info;
+    private ValueMappingInfo _info;
     private ValueHandler _handler = null;
     private ClassMapping[] _typeArr = null;
 
@@ -70,6 +70,13 @@ public class ValueMappingImpl
         _info = owner.getMappingRepository().newMappingInfo(this);
         _info.setUseClassCriteria(owner.getMappingRepository().
             getMappingDefaults().useClassCriteria());
+    }
+    
+    /**
+     * Constructor for deserialization.
+     */
+    protected ValueMappingImpl() {
+        super();
     }
 
     public ValueMappingInfo getValueInfo() {
