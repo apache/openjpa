@@ -59,15 +59,6 @@ import javax.persistence.OneToOne;
         + "and sibling1.mother = sibling2.mother)) "
         + "and sibling2 = ?1 and sibling1 <> ?1"),
 
-    // a half-siling shares a mother or a father, but not both
-    @NamedQuery(name="half-siblings", query="select distinct sibling1 "
-        + "from Deity sibling1, Deity sibling2 where "
-        + "((sibling1.father = sibling2.father "
-        + "and sibling1.mother <> sibling2.mother) "
-        + "or (sibling1.father <> sibling2.father "
-        + "and sibling1.mother = sibling2.mother)) "
-        + "and sibling2 = ?1 and sibling1 <> ?1"),
-
     // a cousin shares a grandparent, but is not a sibling
     @NamedQuery(name="cousins", query="select distinct cousin1 "
         + "from Deity cousin1, Deity cousin2 where "
