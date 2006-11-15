@@ -1411,10 +1411,10 @@ public class OpenJPAConfigurationImpl
         getRemoteCommitEventManager();
     }
 
-    public void close() {
+    protected void preClose() {
         ImplHelper.close(metaRepository);
         ImplHelper.close(remoteEventManager);
-        super.close();
+        super.preClose();
     }
 
     public Log getConfigurationLog() {

@@ -853,7 +853,7 @@ public class JDBCConfigurationImpl
     /**
      * Free the data sources.
      */
-    public void close() {
+    protected void preClose() {
         if (dataSource != null) {
             getDBDictionaryInstance().closeDataSource(dataSource);
             connectionFactory.set(null, true); // so super doesn't close it
@@ -862,7 +862,7 @@ public class JDBCConfigurationImpl
             getDBDictionaryInstance().closeDataSource(dataSource);
             connectionFactory2.set(null, true); // so super doesn't close it
         }
-        super.close();
+        super.preClose();
     }
 
     protected boolean isInvalidProperty(String propName) {

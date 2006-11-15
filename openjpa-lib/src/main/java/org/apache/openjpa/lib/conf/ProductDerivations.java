@@ -151,6 +151,22 @@ public class ProductDerivations {
     }
 
     /**
+     * Called as the first step of a Configuration's close() method. 
+     * Exceptions are swallowed.
+     * 
+     * @since 0.9.7
+     */
+    public static void beforeClose(Configuration conf) {
+        for (int i = 0; i < _derivations.length; i++) {
+            try {
+                _derivations[i].beforeConfigurationClose(conf);
+            } catch (Exception e) {
+                conf.getConfigurationLog().warn(_loc.get("before-close-ex"), e);
+            }
+        }
+    }
+
+    /**
      * Load the given given resource, or return false if it is not a resource
      * this provider understands. The given class loader may be null.
      *

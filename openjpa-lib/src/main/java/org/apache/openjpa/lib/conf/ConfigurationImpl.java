@@ -329,7 +329,11 @@ public class ConfigurationImpl
     /**
      * Closes all closeable values and plugins.
      */
-    public void close() {
+    public final void close() {
+        ProductDerivations.beforeClose(this);
+        
+        preClose();
+        
         ObjectValue val;
         for (int i = 0; i < _vals.size(); i++) {
             if (_vals.get(i) instanceof Closeable) {
@@ -349,6 +353,16 @@ public class ConfigurationImpl
                 }
             }
         }
+    }
+    
+    /**
+     * Invoked by final method {@link #close} after invoking the 
+     * {@link ProductDerivation#beforeConfigurationClose} callbacks
+     * but before performing internal close operations.
+     * 
+     * @since 0.9.7
+     */
+    protected void preClose() {
     }
 
     ///////////////////////////
