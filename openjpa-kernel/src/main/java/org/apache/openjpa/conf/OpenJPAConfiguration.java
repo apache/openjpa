@@ -1383,4 +1383,22 @@ public interface OpenJPAConfiguration
      * configuration.
      */
     public StoreFacadeTypeRegistry getStoreFacadeTypeRegistry();
+    
+    /**
+     * An environment-specific identifier for this configuration. This 
+     * might correspond to a JPA persistence-unit name, or to some other
+     * more-unique value available in the current environment.
+     * 
+     * @since 0.9.7
+     */
+    public String getId();
+
+    /**
+     * An environment-specific identifier for this configuration. This 
+     * might correspond to a JPA persistence-unit name, or to some other
+     * more-unique value available in the current environment.
+     * 
+     * @since 0.9.7
+     */
+    public void setId(String id);
 }
