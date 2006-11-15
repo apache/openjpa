@@ -17,6 +17,16 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     version="1.0">
+
+    <!--
+        We need to enumerate each persistent class first in the persistence.xml
+        See: http://issues.apache.org/jira/browse/OPENJPA-78
+    -->
+    <persistence-unit name="none" transaction-type="RESOURCE_LOCAL">
+        <class>hellojpa.Message</class>
+        <class>relations.Deity</class>
+    </persistence-unit>
+
     <!--
         A persistence unit is a set of listed persistent entities as well
         the configuration of an EntityManagerFactory. We configure each
@@ -26,11 +36,14 @@
         <!--
             The default provider can be OpenJPA, or some other product.
             This element is optional if OpenJPA is the only JPA provider
-            in the current classloading environment.
+            in the current classloading environment, but can be specified
+            in cases where there are multiple JPA implementations available.
         -->
+        <!--
         <provider>
             org.apache.openjpa.persistence.PersistenceProviderImpl
         </provider>
+        -->
 
         <!-- We must enumerate each entity in the persistence unit -->
         <class>hellojpa.Message</class>
@@ -53,5 +66,10 @@
                 value="secret"/>
             -->
         </properties>
+    </persistence-unit>
+
+    <!-- persistence unit for the "relations" example -->
+    <persistence-unit name="relations" transaction-type="RESOURCE_LOCAL">
+        <class>relations.Deity</class>
     </persistence-unit>
 </persistence>
