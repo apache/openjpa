@@ -234,6 +234,13 @@ public class TestConfigurationImpl extends AbstractTestCase {
         assertEquals("java.lang.StringBuffer", copy2.getPluginKey());
         assertEquals("", copy2.getPluginKeyInstance().toString());
     }
+    
+    public void testProductDerivationCloseCallback() {
+        // toggle the static. This will be reset by the close invocation.
+        ConfigurationTestProductDerivation.closed = false;
+        _conf.close();
+        assertTrue(ConfigurationTestProductDerivation.closed);
+    }
 
     public static void main(String[] args) {
         main();

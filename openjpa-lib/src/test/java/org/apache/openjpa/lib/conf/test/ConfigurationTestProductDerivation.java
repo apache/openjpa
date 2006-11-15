@@ -22,6 +22,7 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.MapConfigurationProvider;
 import org.apache.openjpa.lib.conf.ProductDerivation;
@@ -37,8 +38,14 @@ import org.apache.openjpa.lib.conf.ProductDerivation;
 public class ConfigurationTestProductDerivation 
     extends AbstractProductDerivation {
     
+    public static boolean closed = false;
+
     public int getType() {
         return ProductDerivation.TYPE_PRODUCT;
+    }
+    
+    public void beforeConfigurationClose(Configuration conf) {
+        closed = true;
     }
 
     public ConfigurationProvider loadGlobals(ClassLoader loader)
