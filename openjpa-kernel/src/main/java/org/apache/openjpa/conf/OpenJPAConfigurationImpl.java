@@ -127,7 +127,6 @@ public class OpenJPAConfigurationImpl
     public ObjectValue orphanedKeyPlugin;
     public ObjectValue compatibilityPlugin;
     public QueryCompilationCacheValue queryCompilationCachePlugin;
-    public StringValue id;
 
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -467,8 +466,6 @@ public class OpenJPAConfigurationImpl
             "getQueryCompilationCacheInstance");
         addValue(queryCompilationCachePlugin);
         
-        addString("Id");
-
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
         supportedOptions.add(OPTION_OPTIMISTIC);
@@ -1408,15 +1405,6 @@ public class OpenJPAConfigurationImpl
         return _storeFacadeRegistry;
     }
     
-    public String getId() {
-        return id.get();
-    }
-    
-    public void setId(String id) {
-        assertNotReadOnly();
-        this.id.set(id);
-    }
-
     public void instantiateAll() {
         super.instantiateAll();
         getMetaDataRepositoryInstance();

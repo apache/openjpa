@@ -101,6 +101,7 @@ public class ConfigurationImpl
         (ConfigurationImpl.class);
 
     public ObjectValue logFactoryPlugin;
+    public StringValue id;
 
     private String _product = null;
     private boolean _readOnly = false;
@@ -146,6 +147,8 @@ public class ConfigurationImpl
         logFactoryPlugin.setString(aliases[0]);
         logFactoryPlugin.setInstantiatingGetter("getLogFactory");
 
+        id = addString("Id");
+        
         if (loadGlobals)
             loadGlobals();
     }
@@ -207,6 +210,15 @@ public class ConfigurationImpl
 
     public Log getLog(String category) {
         return getLogFactory().getLog(category);
+    }
+
+    public String getId() {
+        return id.get();
+    }
+    
+    public void setId(String id) {
+        assertNotReadOnly();
+        this.id.set(id);
     }
 
     /**
