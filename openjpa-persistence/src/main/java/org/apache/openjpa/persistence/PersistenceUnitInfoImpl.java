@@ -357,6 +357,9 @@ public class PersistenceUnitInfoImpl
             map.remove(PersistenceProviderImpl.CLASS_TRANSFORMER_OPTIONS);
         }
 
+        if (!map.containsKey("openjpa.Id"))
+            map.put("openjpa.Id", info.getPersistenceUnitName());
+        
         Properties metaFactoryProps = new Properties();
         if (info.getManagedClassNames() != null 
             && !info.getManagedClassNames().isEmpty()) {
@@ -416,7 +419,7 @@ public class PersistenceUnitInfoImpl
             }
             map.put("openjpa.MetaDataFactory", factory);
         }
-
+        
         // always record provider name for product derivations to access
         if (info.getPersistenceProviderClassName() != null)
             map.put(KEY_PROVIDER, info.getPersistenceProviderClassName());
