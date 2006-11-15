@@ -413,8 +413,6 @@ public class MappingRepository
      */
     protected ClassStrategy namedStrategy(ClassMapping cls) {
         String name = cls.getMappingInfo().getStrategy();
-        if (name == null)
-            return null;
         return instantiateClassStrategy(name, cls);
     }
 
@@ -423,6 +421,8 @@ public class MappingRepository
      */
     protected ClassStrategy instantiateClassStrategy(String name,
         ClassMapping cls) {
+        if (name == null)
+            return null;
         if (NoneClassStrategy.ALIAS.equals(name))
             return NoneClassStrategy.getInstance();
 
@@ -650,17 +650,27 @@ public class MappingRepository
             return instantiateClassStrategy((String) strat, cls);
         if (strat != null)
             return (ClassStrategy) strat;
+        
+        // see if there is a declared hierarchy strategy
+        ClassStrategy hstrat = null;
+        for (ClassMapping base = cls; base != null && hstrat == null;) {
+            hstrat = instantiateClassStrategy(base.getMappingInfo().
+                getHierarchyStrategy(), cls);
+            base = base.getMappedPCSuperclassMapping();
+        }
 
+        // the full strategy as applied to a hierarchy is a
+        // table-per-concrete-class strategy, so don't map abstract types
+        if (hstrat instanceof FullClassStrategy
+            && !cls.isManagedInterface()
+            && Modifier.isAbstract(cls.getDescribedType().getModifiers()))
+            return NoneClassStrategy.getInstance();
+        
         ClassMapping sup = cls.getMappedPCSuperclassMapping();
         if (sup == null)
             return new FullClassStrategy();
-
-        while (sup.getMappedPCSuperclassMapping() != null)
-            sup = sup.getMappedPCSuperclassMapping();
-        String subStrat = sup.getMappingInfo().getHierarchyStrategy();
-        if (subStrat != null)
-            return instantiateClassStrategy(subStrat, cls);
-
+        if (hstrat != null)
+            return hstrat;
         return new FlatClassStrategy();
     }
 
