@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.openjpa.lib.conf.Configurable;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.GenericConfigurable;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer;
@@ -38,7 +40,8 @@ import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
  *
  * @author Patrick Linskey
  */
-public class LogFactoryImpl implements LogFactory, GenericConfigurable {
+public class LogFactoryImpl 
+    implements LogFactory, GenericConfigurable, Configurable {
 
     private static Localizer _loc = Localizer.forPackage(LogFactoryImpl.class);
 
@@ -78,7 +81,15 @@ public class LogFactoryImpl implements LogFactory, GenericConfigurable {
      */
     private PrintStream _out = System.err;
 
+    /**
+     * A token to add to all log messages. If <code>null</code>, the 
+     * configuration's id will be used.
+     */
     private String _diagContext = null;
+    private boolean _diagContextComputed = false;
+    
+    private Configuration _conf;
+
 
     public LogFactoryImpl() {
         initializationMillis = System.currentTimeMillis();
@@ -128,7 +139,7 @@ public class LogFactoryImpl implements LogFactory, GenericConfigurable {
 
     /**
      * A string to prefix all log messages with. Set to
-     * <code>null</code> for no prefix.
+     * <code>null</code> to use the configuration's Id property setting.
      */
     public void setDiagnosticContext(String val) {
         _diagContext = val;
@@ -136,9 +147,20 @@ public class LogFactoryImpl implements LogFactory, GenericConfigurable {
 
     /**
      * A string to prefix all log messages with. Set to
-     * <code>null</code> for no prefix.
+     * <code>null</code> to use the configuration's Id property setting.
      */
     public String getDiagnosticContext() {
+        if (!_diagContextComputed) {
+            // this initialization has to happen lazily because there is no
+            // guarantee that conf.getId() will be populated by the time that
+            // endConfiguration() is called.
+            if (_diagContext == null) {
+                _diagContext = _conf.getId();
+            }
+            if ("".equals(_diagContext))
+                _diagContext = null;
+            _diagContextComputed = true;
+        }
         return _diagContext;
     }
 
@@ -217,6 +239,18 @@ public class LogFactoryImpl implements LogFactory, GenericConfigurable {
         return val;
     }
 
+    // ---------- Configurable implementation ----------
+    
+    public void setConfiguration(Configuration conf) {
+        _conf = conf;
+    }
+    
+    public void startConfiguration() {
+    }
+
+    public void endConfiguration() {
+    }
+
     // ---------- GenericConfigurable implementation ----------
 
     public void setInto(Options opts) {
@@ -272,8 +306,8 @@ public class LogFactoryImpl implements LogFactory, GenericConfigurable {
 
             buf.append(getOffset());
             buf.append("  ");
-            if (_diagContext != null)
-                buf.append(_diagContext).append("  ");
+            if (getDiagnosticContext() != null)
+                buf.append(getDiagnosticContext()).append("  ");
             buf.append(getLevelName(level));
             if (level == INFO || level == WARN)
                 buf.append(" ");
