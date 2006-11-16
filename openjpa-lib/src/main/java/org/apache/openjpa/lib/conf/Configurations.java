@@ -334,7 +334,7 @@ public class Configurations {
 				first.indexOf('.') == -1) {
 				// if there's just one misspelling and this is not a
 				// path traversal, check for near misses.
-				Collection options = Options.findOptionsFor(obj.getClass());
+				Collection options = findOptionsFor(obj.getClass());
 				String close = StringDistance.getClosestLevenshteinDistance
 					(first, options, 0.75f);
 				if (close != null)
@@ -347,12 +347,25 @@ public class Configurations {
                 msg = _loc.get("invalid-config-params", new String[]{
                     configurationName, obj.getClass().getName(),
                     invalidEntries.keySet().toString(),
-                    Options.findOptionsFor(obj.getClass()).toString(), });
+                    findOptionsFor(obj.getClass()).toString(), });
             }
             throw new ParseException(msg);
         }
         if (configurable != null)
             configurable.endConfiguration();
+    }
+
+    private static Collection findOptionsFor(Class cls) {
+        Collection c = Options.findOptionsFor(cls);
+        
+        // remove Configurable.setConfiguration() and 
+        // GenericConfigurable.setInto() from the set, if applicable.
+        if (Configurable.class.isAssignableFrom(cls))
+            c.remove("Configuration");
+        if (GenericConfigurable.class.isAssignableFrom(cls))
+            c.remove("Into");
+        
+        return c;
     }
 
     /**
