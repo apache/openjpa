@@ -28,5 +28,28 @@
                 <exclude>**/target/**</exclude>
             </excludes>
         </fileSet>
+
+        <!--
+            Also put the standard license and notice files at the top
+            of the zip. Even those these will be included in the
+            openjpa-project sub-directory, the Apache rules say that
+            it needs to be in the top-level of the artifact. See:
+
+                http://www.apache.org/legal/src-headers.html#notice
+        -->
+        <fileSet>
+            <includes>
+                <include>README</include>
+                <include>DISCLAIMER</include>
+                <include>LICENSE</include>
+                <include>STATUS</include>
+                <include>NOTICE</include>
+                <include>README.txt</include>
+                <include>DISCLAIMER.txt</include>
+                <include>LICENSE.txt</include>
+                <include>STATUS.txt</include>
+                <include>NOTICE.txt</include>
+            </includes>
+        </fileSet>
     </fileSets>
 </assembly>
