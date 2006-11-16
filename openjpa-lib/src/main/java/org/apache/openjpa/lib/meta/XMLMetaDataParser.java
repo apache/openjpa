@@ -667,7 +667,9 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         if (cause != null && _log != null && _log.isTraceEnabled())
             _log.trace(_loc.get("sax-exception",
                 getSourceName(), _location.getLocation()), cause);
-        return new SAXException(getSourceName() + currentLocation() +
+        SAXException e = new SAXException(getSourceName() + currentLocation() +
             ": " + msg + " [" + cause + "]");
+        e.initCause(cause);
+        return e;
     }
 }

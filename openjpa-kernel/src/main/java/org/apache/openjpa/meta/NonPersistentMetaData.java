@@ -16,6 +16,7 @@
 package org.apache.openjpa.meta;
 
 import java.io.File;
+import java.io.Serializable;
 
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.xml.Commentable;
@@ -26,7 +27,8 @@ import org.apache.openjpa.lib.xml.Commentable;
  * @author Pinaki Poddar
  */
 public class NonPersistentMetaData 
-	implements Comparable, SourceTracker, Commentable, MetaDataContext {
+	implements Comparable, SourceTracker, Commentable, MetaDataContext,
+        Serializable {
     public static final int TYPE_PERSISTENCE_AWARE = 1;
     public static final int TYPE_NON_MAPPED_INTERFACE = 2;
 
