@@ -19,11 +19,17 @@
     <formats>
         <format>zip</format>
     </formats>
-    <includeBaseDirectory>true</includeBaseDirectory>
+    <!--
+        rather than including the base directory (which would cause this
+        archive to unpack into the same directory as the binary
+        distribution), we specify the directory into which to put
+        sources below, in the <outputDirectory> tags
+    -->
+    <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
             <directory>..</directory>
-            <outputDirectory></outputDirectory>
+            <outputDirectory>${artifactId}-${version}-source</outputDirectory>
             <excludes>
                 <exclude>**/target/**</exclude>
             </excludes>
@@ -38,6 +44,7 @@
                 http://www.apache.org/legal/src-headers.html#notice
         -->
         <fileSet>
+            <outputDirectory>${artifactId}-${version}-source</outputDirectory>
             <includes>
                 <include>README</include>
                 <include>DISCLAIMER</include>
