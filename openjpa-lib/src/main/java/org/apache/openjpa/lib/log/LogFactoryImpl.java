@@ -154,7 +154,7 @@ public class LogFactoryImpl
             // this initialization has to happen lazily because there is no
             // guarantee that conf.getId() will be populated by the time that
             // endConfiguration() is called.
-            if (_diagContext == null) {
+            if (_diagContext == null && _conf != null) {
                 _diagContext = _conf.getId();
             }
             if ("".equals(_diagContext))
