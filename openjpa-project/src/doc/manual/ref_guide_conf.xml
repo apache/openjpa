@@ -1853,6 +1853,29 @@ transaction affect the query, and if so to either evaluate the query in-memory
 or flush before running it against the datastore.
             </para>
         </section>
+        <section id="openjpa.Id">
+            <title>openjpa.Id</title>
+            <indexterm zone="openjpa.Id">
+                <primary>Id</primary>
+            </indexterm>
+            <para>
+            <emphasis role="bold">Property name:</emphasis>
+            <literal>openjpa.Id</literal>
+            </para>
+            <para>
+            <emphasis role="bold">Resource adaptor config-property:</emphasis>
+            <literal>Id</literal>
+            </para>
+            <para>
+            <emphasis role="bold">Default:</emphasis> none
+            </para>
+            <para>
+            <emphasis role="bold">Description:</emphasis> An
+            environment-specific identifier for this configuration. This
+            might correspond to a JPA persistence-unit name, or to some other
+            more-unique value available in the current environment.
+            </para>
+        </section>
         <section id="openjpa.InverseManager">
             <title>
                 openjpa.InverseManager
