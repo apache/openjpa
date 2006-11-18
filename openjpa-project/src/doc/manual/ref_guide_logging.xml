@@ -248,15 +248,14 @@ By default, OpenJPA uses a basic logging framework with the following output
 format:
         </para>
         <para>
-<literal>millis</literal><literal>level</literal> [<literal>thread 
-name</literal>] <literal>channel</literal> - <literal>message</literal>
+<literal>millis</literal>&nbsp;&nbsp;<literal>diagnostic context</literal>&nbsp;&nbsp;<literal>level</literal>&nbsp;&nbsp;[<literal>thread name</literal>]&nbsp;&nbsp;<literal>channel</literal> - <literal>message</literal>
         </para>
         <para>
 For example, when loading an application that uses OpenJPA, a message like the
 following will be sent to the <literal>openjpa.Runtime</literal> channel:
         </para>
 <programlisting>
-2107  INFO   [main] openjpa.Runtime - Starting OpenJPA 4.0.0
+2107  INFO   [main] openjpa.Runtime - Starting OpenJPA 0.9.7
 </programlisting>
         <para>
 The default logging system accepts the following parameters:
@@ -280,7 +279,8 @@ and <literal>ERROR</literal>. Defaults to <literal>INFO</literal>.
             <listitem>
                 <para>
 <literal>DiagnosticContext</literal>: A string that will be prepended to all
-log messages.
+log messages. If this is not supplied and a <literal>openjpa.Id</literal>
+property value is available, that value will be used.
                 </para>
             </listitem>
             <listitem>
