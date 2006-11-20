@@ -424,12 +424,10 @@ public class ConfigurationImpl
             try {
                 _pds[i] = getPropertyDescriptor(val);
             } catch (MissingResourceException mre) {
-mre.printStackTrace();
                 if (failures == null)
                     failures = new ArrayList();
                 failures.add(val.getProperty());
             } catch (IntrospectionException ie) {
-ie.printStackTrace();
                 if (failures == null)
                     failures = new ArrayList();
                 failures.add(val.getProperty());
