@@ -20,8 +20,6 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * This class contains version information for OpenJPA. It uses
  * Ant's filter tokens to convert the template into a java
@@ -43,7 +41,7 @@ public class OpenJPAVersion {
     static {
         Package pack = OpenJPAVersion.class.getPackage();
         String vers = pack == null ? null : pack.getImplementationVersion();
-        if (StringUtils.isEmpty(vers))
+        if (vers == null || "".equals(vers.trim()))
             vers = "0.0.0";
         VERSION_NUMBER = vers;
 
