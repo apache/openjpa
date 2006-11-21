@@ -208,14 +208,16 @@
 
 All the source code for the OpenJPA project is released under the
 license above. Additionally, the OpenJPA binary distribution
-includes a number of third-party jar files that are required in
+includes a number of third-party files that are required in
 order to the software to function. Unless noted below, these jars
-are also released under the ASF license above.
+and resource files are also released under the ASF license above.
 
 The exceptions are as follows:
 
 ===========================
   persistence-api-1.0.jar
+  orm-xsd.rsrc (included in the openjpa jar)
+  persistence-xsd.rsrc (included in the openjpa jar)
 ===========================
 
 COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
