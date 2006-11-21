@@ -204,6 +204,7 @@
                 <includes>
                     <include>NOTICE.txt</include>
                     <include>LICENSE.txt</include>
+                    <include>DISCLAIMER.txt</include>
                 </includes>
                 <targetPath>META-INF</targetPath>
             </resource>
