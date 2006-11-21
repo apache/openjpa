@@ -216,8 +216,10 @@ The exceptions are as follows:
 
 ===========================
   persistence-api-1.0.jar
-  orm-xsd.rsrc (included in the openjpa jar)
-  persistence-xsd.rsrc (included in the openjpa jar)
+  orm-xsd.rsrc - included in the openjpa jar, taken from:
+    http://java.sun.com/xml/ns/persistence/orm_1_0.xsd)
+  persistence-xsd.rsrc - included in the openjpa jar, taken from:
+    http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd)
 ===========================
 
 COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
