@@ -194,6 +194,21 @@
         </dependency>
     </dependencies>
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <!-- also include license and notice files in all the jars -->
+            <resource>
+                <directory>${basedir}/../openjpa-project/</directory>
+                <includes>
+                    <include>NOTICE.txt</include>
+                    <include>LICENSE.txt</include>
+                    <include>DISCLAIMER.txt</include>
+                </includes>
+                <targetPath>META-INF</targetPath>
+            </resource>
+        </resources>
         <pluginManagement>
             <plugins>
                 <plugin>
