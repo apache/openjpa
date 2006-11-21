@@ -77,12 +77,12 @@ public class Localizer {
         if (locale == null)
             locale = Locale.getDefault();
 
-        Package pkg = cls == null ? null : cls.getPackage();
+        int dot = (cls == null) ? -1 : cls.getName().lastIndexOf('.');
         String file;
-        if (pkg == null)
+        if (dot == -1)
             file = "localizer";
         else
-            file = pkg.getName() + ".localizer";
+            file = cls.getName().substring(0, dot + 1) + "localizer";
         String key = file + locale.toString();
 
         // no locking; ok if bundle created multiple times
@@ -91,7 +91,7 @@ public class Localizer {
         if (loc != null)
             return loc;
         else {
-            loc = new Localizer(pkg, file, locale, 
+            loc = new Localizer(cls, file, locale, 
                 cls == null ? null : cls.getClassLoader());
             _localizers.put(key, loc);
             return loc;
@@ -114,12 +114,12 @@ public class Localizer {
 
     private String _file;
     private ResourceBundle _bundle = null;
-    private Package _package;
+    private Class _cls;
     private Locale _locale;
     private ClassLoader _loader;
 
-    private Localizer(Package p, String f, Locale locale, ClassLoader loader) {
-        _package = p;
+    private Localizer(Class c, String f, Locale locale, ClassLoader loader) {
+        _cls = c;
         _file = f;
         _locale = locale;
         _loader = loader;
@@ -212,7 +212,7 @@ public class Localizer {
      * @see #get(String)
      */
     public Message get(String key, Object[] subs) {
-        return new Message(_package, getBundle(), key, subs, false);
+        return new Message(_cls, getBundle(), key, subs, false);
     }
 
     /**
@@ -224,7 +224,7 @@ public class Localizer {
      * @see #getFatal(String)
      */
     public Message getFatal(String key, Object[] subs) {
-        return new Message(_package, getBundle(), key, subs, true);
+        return new Message(_cls, getBundle(), key, subs, true);
     }
 
     /**
@@ -234,17 +234,17 @@ public class Localizer {
      */
     public static class Message {
 
-        private final Package _package;
+        private final Class _cls;
         private final String _key;
         private final Object[] _subs;
         private final String _localizedMessage;
 
-        private Message(Package pkg, ResourceBundle bundle, String key, 
+        private Message(Class cls, ResourceBundle bundle, String key, 
             Object[] subs, boolean fatal) {
             if (bundle == null && fatal)
                 throw new MissingResourceException(key, key, key);
 
-            _package = pkg;
+            _cls = cls;
             _key = key;
             _subs = subs;
             if (bundle == null) {
@@ -282,13 +282,6 @@ public class Localizer {
             return _subs;
         }
 
-        /**
-         * Package containing localized resource for this message.
-         */
-        public Package getPackage() {
-            return _package;
-        }
-        
         public String toString() {
             return getMessage();
         }
