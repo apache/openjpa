@@ -52,13 +52,13 @@ import serp.util.Numbers;
 /**
  * Builder for JPQL expressions. This class takes the query parsed
  * in {@link JPQL} and converts it to an expression tree using
- * an {@link ExpressionFactory}.
+ * an {@link ExpressionFactory}. Public for unit testing purposes.
  *
  * @author Marc Prud'hommeaux
  * @author Patrick Linskey
  * @nojavadoc
  */
-class JPQLExpressionBuilder
+public class JPQLExpressionBuilder
     extends AbstractExpressionBuilder
     implements JPQLTreeConstants {
 
@@ -1616,11 +1616,20 @@ class JPQLExpressionBuilder
         }
     }
 
-    static class ParsedJPQL
+    /**
+     * Public for unit testing purposes.
+     * @nojavadoc
+     */
+    public static class ParsedJPQL
         implements Serializable {
 
         protected final JPQLNode root;
         protected final String query;
+        
+        // cache of candidate type data. This is stored here in case this  
+        // parse tree is reused in a context that does not know what the 
+        // candidate type is already. 
+        private Class _candidateType;
 
         ParsedJPQL(String jpql) {
             this(jpql, parse(jpql));
@@ -1653,9 +1662,19 @@ class JPQLExpressionBuilder
 
             // if the owning query's context does not have
             // any candidate class, then set it here
-            if (ctx.getCandidateType() == null)
-                ctx.setCandidateType(new JPQLExpressionBuilder
-                    (null, query, this).getCandidateType(), true);
+            if (ctx.getCandidateType() == null) {
+                if (_candidateType == null)
+                    _candidateType = new JPQLExpressionBuilder
+                        (null, query, this).getCandidateType();
+                ctx.setCandidateType(_candidateType, true);
+            }
+        }
+        
+        /**
+         * Public for unit testing purposes.
+         */
+        public Class getCandidateType() {
+            return _candidateType;
         }
 
         public String toString ()
