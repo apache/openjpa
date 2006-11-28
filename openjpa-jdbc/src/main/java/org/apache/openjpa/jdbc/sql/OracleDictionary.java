@@ -557,7 +557,7 @@ public class OracleDictionary
 
     public Object getObject(ResultSet rs, int column, Map map)
         throws SQLException {
-        // recent oracle dirvers return oracle-specific types for timestamps
+        // recent oracle drivers return oracle-specific types for timestamps
         // and dates
         Object obj = super.getObject(rs, column, map);
         if (obj == null)
