@@ -1351,7 +1351,7 @@ public class BrokerImpl
         lock();
         try {
             if ((_flags & FLAG_ACTIVE) != 0)
-                throw new InvalidStateException(_loc.get("active"));
+                return true;
             if (!_managed)
                 throw new InvalidStateException(_loc.get("trans-not-managed"));
             if (_factory.syncWithManagedTransaction(this, false)) {
