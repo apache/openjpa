@@ -83,7 +83,9 @@ public class ClassAnnotationMetaDataFilter implements MetaDataFilter {
                 idx += 4 + table.readInt(idx);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new ClassFormatError(rsrc.getName());
+            Error cfe = new ClassFormatError(rsrc.getName());
+            cfe.initCause(e);
+            throw cfe;
         }
         return false;
     }
