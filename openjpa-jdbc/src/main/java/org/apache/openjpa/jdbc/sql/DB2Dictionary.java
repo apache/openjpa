@@ -16,6 +16,7 @@
 package org.apache.openjpa.jdbc.sql;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -140,5 +141,22 @@ public class DB2Dictionary
             conn.setTransactionIsolation(conn.TRANSACTION_READ_COMMITTED);
 
         return conn;
+    }
+
+    public void connectedConfiguration(Connection conn) throws SQLException {
+    	super.connectedConfiguration(conn);
+
+    	DatabaseMetaData metaData = conn.getMetaData();
+    	if (metaData.getJDBCMajorVersion() >= 3) {
+			int maj = metaData.getDatabaseMajorVersion();
+	    	int min = metaData.getDatabaseMinorVersion();
+
+	    	if (maj >= 9 || (maj == 8 && min >= 2)) {
+	    		supportsLockingWithMultipleTables = true;
+	    		supportsLockingWithInnerJoin = true;
+	    		supportsLockingWithOuterJoin = true;
+	    		forUpdateClause = "WITH RR USE AND KEEP UPDATE LOCKS";
+	    	}
+    	}
     }
 }

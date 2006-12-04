@@ -740,15 +740,15 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
     }
 
     public int getDatabaseMajorVersion() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.getDatabaseMajorVersion();
     }
 
     public int getDatabaseMinorVersion() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.getDatabaseMinorVersion();
     }
 
     public int getJDBCMajorVersion() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.getJDBCMajorVersion();
     }
 
     public int getJDBCMinorVersion() throws SQLException {

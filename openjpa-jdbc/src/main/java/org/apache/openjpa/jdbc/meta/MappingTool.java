@@ -816,7 +816,7 @@ public class MappingTool
      * this option to write the planned schema to an XML document rather
      * than modify the data store.</li>
      * <li><i>-sqlFile/-sql &lt;stdout | output file or resource&gt;</i>: Use
-     * this option rather to write the planned schema changes as a SQL
+     * this option to write the planned schema changes as a SQL
      * script rather than modifying the data store.</li>
      * <li><i>-dropTables/-dt &lt;true/t | false/f&gt;</i>: Corresponds to the
      * same-named option in the {@link SchemaTool}.</li>
