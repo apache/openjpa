@@ -66,7 +66,11 @@ public class ProxyTimestamp
     }
 
     public Object copy(Object orig) {
-        return new Timestamp(((Timestamp) orig).getTime());
+        Timestamp origTimestamp = (Timestamp)orig;
+        Timestamp copy = new Timestamp(origTimestamp.getTime());
+        copy.setNanos(origTimestamp.getNanos());
+        return copy;
+
     }
 
     public void setYear(int val) {
