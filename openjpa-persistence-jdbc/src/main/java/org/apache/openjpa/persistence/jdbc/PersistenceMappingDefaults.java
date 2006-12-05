@@ -44,12 +44,32 @@ import serp.util.Strings;
 public class PersistenceMappingDefaults
     extends MappingDefaultsImpl {
 
+    private boolean _prependFieldNameToJoinTableInverseJoinColumns = true;
+
     public PersistenceMappingDefaults() {
         setDefaultMissingInfo(true);
         setStoreEnumOrdinal(true);
         setOrderLists(false);
         setAddNullIndicator(false);
         setDiscriminatorColumnName("DTYPE");
+    }
+
+    /**
+     * Whether to prepend the field name to the default name of inverse join
+     * columns within join tables.  Defaults to true per spec, but set to false
+     * for compatibility with older versions of OpenJPA.
+     */
+    public boolean getPrependFieldNameToJoinTableInverseJoinColumns() {
+        return _prependFieldNameToJoinTableInverseJoinColumns;
+    }
+
+    /**
+     * Whether to prepend the field name to the default name of inverse join
+     * columns within join tables.  Defaults to true per spec, but set to false
+     * for compatibility with older versions of OpenJPA.
+     */
+    public void setPrependFieldNameToJoinTableInverseJoinColumns(boolean val) {
+        _prependFieldNameToJoinTableInverseJoinColumns = val;
     }
 
     @Override
@@ -141,9 +161,10 @@ public class PersistenceMappingDefaults
         Table local, Table foreign, Column col, Object target, boolean inverse,
         int pos, int cols) {
         // if this is a non-inverse collection element key, it must be in
-        // a join table; jpa says to use the target column name,
-        // which is the default
-        if (!inverse && vm == vm.getFieldMapping().getElement()
+        // a join table: if we're not prepending the field name, leave the
+        // default
+        if (!_prependFieldNameToJoinTableInverseJoinColumns && !inverse 
+            && vm == vm.getFieldMapping().getElement()
             && vm.getFieldMapping().getTypeCode() != JavaTypes.MAP)
             return;
 
