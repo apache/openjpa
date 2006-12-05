@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import java.util.zip.ZipEntry;
@@ -37,7 +38,6 @@ public class ZipFileMetaDataIterator
     private final ZipFile _file;
     private final MetaDataFilter _filter;
     private final Enumeration _entries;
-    private final boolean _close;
     private ZipEntry _entry = null;
     private ZipEntry _last = null;
 
@@ -46,10 +46,15 @@ public class ZipFileMetaDataIterator
      */
     public ZipFileMetaDataIterator(URL url, MetaDataFilter filter)
         throws IOException {
-        _file = (url == null) ? null : (ZipFile) url.getContent();
+        if (url == null) {
+            _file = null;
+        } else {
+            URLConnection con = url.openConnection();
+            con.setDefaultUseCaches(false);
+            _file = (ZipFile) con.getContent();
+        }
         _filter = filter;
         _entries = (_file == null) ? null : _file.entries();
-        _close = false;
     }
 
     /**
@@ -59,7 +64,6 @@ public class ZipFileMetaDataIterator
         _file = file;
         _filter = filter;
         _entries = (file == null) ? null : file.entries();
-        _close = true;
     }
 
     public boolean hasNext() throws IOException {
@@ -97,11 +101,11 @@ public class ZipFileMetaDataIterator
     }
 
     public void close() {
-        if (_close)
-            try {
-                _file.close();
-            } catch (IOException ioe) {
-            }
+        try {
+           if (_file != null)
+               _file.close();
+        } catch (IOException ioe) {
+        }
     }
 
     //////////////////////////////////////////
