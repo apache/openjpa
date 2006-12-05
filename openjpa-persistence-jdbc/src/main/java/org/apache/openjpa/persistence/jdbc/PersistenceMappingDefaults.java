@@ -160,18 +160,22 @@ public class PersistenceMappingDefaults
     public void populateForeignKeyColumn(ValueMapping vm, String name,
         Table local, Table foreign, Column col, Object target, boolean inverse,
         int pos, int cols) {
+        boolean elem = vm == vm.getFieldMapping().getElement()
+            && vm.getFieldMapping().getTypeCode() != JavaTypes.MAP;
+
         // if this is a non-inverse collection element key, it must be in
         // a join table: if we're not prepending the field name, leave the
         // default
-        if (!_prependFieldNameToJoinTableInverseJoinColumns && !inverse 
-            && vm == vm.getFieldMapping().getElement()
-            && vm.getFieldMapping().getTypeCode() != JavaTypes.MAP)
+        if (!_prependFieldNameToJoinTableInverseJoinColumns && !inverse && elem)
             return;
 
         // otherwise jpa always uses <field>_<pkcol> for column name, even
         // when only one col
-        if (target instanceof Column)
+        if (target instanceof Column) {
+            if (elem)
+                name = vm.getFieldMapping().getName();
             col.setName(name + "_" + ((Column) target).getName());
+        }
     }
 
     @Override
