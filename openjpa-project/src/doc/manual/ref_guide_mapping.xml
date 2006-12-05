@@ -961,8 +961,18 @@ This is an alias for the
 <classname>org.apache.openjpa.persistence.jdbc.PersistenceMappingDefaults
 </classname></ulink> class. This class extends the <classname>
 MappingDefaultsImpl</classname> class described below, so it has all the same
-properties (though with different default values).
+properties (though with different default values), as well as:
                 </para>
+                <itemizedlist>
+                    <listitem>
+                        <para>
+<literal>PrependFieldNameToJoinTableInverseJoinColumns</literal>: Whether to
+prepend the owning field name to the names of inverse join columns in join 
+tables.  Defaults to true per the JPA specification.  Set to false for
+compatibility with older OpenJPA versions which did not prepend the field name.
+                        </para>
+                    </listitem>
+                </itemizedlist>
             </listitem>
             <listitem>
                 <para>
