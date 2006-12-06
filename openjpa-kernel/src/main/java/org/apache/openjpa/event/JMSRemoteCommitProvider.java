@@ -244,7 +244,7 @@ public class JMSRemoteCommitProvider
 
         close();
         boolean connected = false;
-        for (int i = 0; i < _reconnectAttempts; i++) {
+        for (int i = 0; !connected && i < _reconnectAttempts; i++) {
             try {
                 if (log.isInfoEnabled())
                     log.info(s_loc.get("jms-reconnect-attempt", _topicName,
