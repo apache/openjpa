@@ -431,7 +431,7 @@ public class ProxyManagerImpl
      */
     private static void assertNotFinal(Class type) {
         if (Modifier.isFinal(type.getModifiers()))
-            throw new UnsupportedException(_loc.get("proxy-final", type));
+            throw new UnsupportedException(_loc.get("no-proxy-final", type));
     }
 
     /**
