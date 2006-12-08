@@ -18,23 +18,22 @@ package org.apache.openjpa.util;
 import java.util.Collection;
 import java.util.Comparator;
 
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-
 /**
- * Interface implemented by all built-in proxies on {@link Collection} types.
+ * Interface implemented by all proxy collection types.
  *
  * @author Abe White
  */
-public interface ProxyCollection
-    extends Proxy {
+public interface ProxyCollection 
+    extends Proxy, Collection {
 
     /**
-     * This method should return a new proxy of the same concrete type as the
-     * implementing class. Used by the {@link ProxyManager} factories: one
-     * template instance of each type is created for the purpose of producing
-     * new instances via this method. Overcomes the performance penalties of
-     * reflection.
+     * The collection element type.
      */
-    public ProxyCollection newInstance(Class elementType, Comparator compare,
-        boolean trackChanges, OpenJPAConfiguration conf);
+    public Class getElementType();
+
+    /**
+     * Create a new instance of this proxy type.
+     */
+    public ProxyCollection newInstance(Class elementType, Comparator comp,
+        boolean trackChanges);
 }

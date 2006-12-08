@@ -18,23 +18,27 @@ package org.apache.openjpa.util;
 import java.util.Comparator;
 import java.util.Map;
 
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-
 /**
- * Interface implemented by all built-in proxies on {@link Map} types.
+ * Interface implemented by proxies on {@link Map} types.
  *
  * @author Abe White
  */
 public interface ProxyMap
-    extends Proxy {
+    extends Proxy, Map {
 
     /**
-     * This method should return a new proxy of the same concrete type as the
-     * implementing class. Used by the {@link ProxyManager} factories: one
-     * template instance of each type is created for the purpose of producing
-     * new instances via this method. Overcomes the performance
-     * penalties of reflection.
+     * The map key type.
+     */
+    public Class getKeyType();
+
+    /**
+     * The map value type.
+     */
+    public Class getValueType();
+
+    /**
+     * Create a new instance of this proxy type.
      */
     public ProxyMap newInstance(Class keyType, Class valueType,
-        Comparator compare, boolean trackChanges, OpenJPAConfiguration conf);
+        Comparator compare, boolean trackChanges);
 }

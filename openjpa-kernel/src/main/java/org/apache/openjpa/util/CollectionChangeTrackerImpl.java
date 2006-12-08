@@ -18,8 +18,6 @@ package org.apache.openjpa.util;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-
 /**
  * Default {@link CollectionChangeTracker}.
  *
@@ -42,11 +40,25 @@ public class CollectionChangeTrackerImpl
      * @param order true if the collection is ordered, false otherwise
      */
     public CollectionChangeTrackerImpl(Collection coll, boolean dups,
-        boolean order, OpenJPAConfiguration conf) {
+        boolean order) {
         _coll = coll;
         _dups = dups;
         _order = order;
     }
+
+    /**
+     * Whether the underlying collection allows duplicates.
+     */
+    public boolean allowsDuplicates() {
+        return _dups;
+    }
+
+    /**
+     * Whether the underlying collection is ordered.
+     */
+    public boolean isOrdered() {
+        return _order;
+    } 
 
     public void added(Object elem) {
         super.added(elem);

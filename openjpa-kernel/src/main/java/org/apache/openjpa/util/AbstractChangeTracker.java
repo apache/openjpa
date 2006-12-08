@@ -18,9 +18,9 @@ package org.apache.openjpa.util;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Set;
 
-import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.collections.set.MapBackedSet;
 
 /**
@@ -184,7 +184,7 @@ public abstract class AbstractChangeTracker
      */
     protected Set newSet() {
         if (_identity == Boolean.TRUE)
-            return MapBackedSet.decorate(new IdentityMap());
+            return MapBackedSet.decorate(new IdentityHashMap());
         return new HashSet();
     }
 
@@ -218,14 +218,14 @@ public abstract class AbstractChangeTracker
         if (identity && cur instanceof HashSet) {
             if (cur.isEmpty())
                 return null;
-            Set replace = MapBackedSet.decorate(new IdentityMap());
+            Set replace = MapBackedSet.decorate(new IdentityHashMap());
             replace.addAll(cur);
             return replace;
         }
         if (!identity && !(cur instanceof HashSet) && cur instanceof Set) {
             if (cur.isEmpty())
                 return null;
-            return new HashSet (cur);
+            return new HashSet(cur);
 		}
 		return cur;
 	}

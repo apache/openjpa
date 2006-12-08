@@ -17,8 +17,6 @@ package org.apache.openjpa.util;
 
 import java.util.Map;
 
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-
 /**
  * Default {@link MapChangeTracker}.
  *
@@ -35,7 +33,7 @@ public class MapChangeTrackerImpl
     /**
      * Constructor; supply delegate map.
      */
-    public MapChangeTrackerImpl(Map map, OpenJPAConfiguration conf) {
+    public MapChangeTrackerImpl(Map map) {
         _map = map;
     }
 

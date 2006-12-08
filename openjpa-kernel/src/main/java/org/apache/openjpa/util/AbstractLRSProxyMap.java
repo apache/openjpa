@@ -68,11 +68,10 @@ public abstract class AbstractLRSProxyMap
     private int _count = -1;
     private boolean _iterated = false;
 
-    public AbstractLRSProxyMap(Class keyType, Class valueType,
-        OpenJPAConfiguration conf) {
+    public AbstractLRSProxyMap(Class keyType, Class valueType) {
         _keyType = keyType;
         _valueType = valueType;
-        _ct = new MapChangeTrackerImpl(this, conf);
+        _ct = new MapChangeTrackerImpl(this);
         _ct.setAutoOff(false);
     }
 
@@ -196,7 +195,7 @@ public abstract class AbstractLRSProxyMap
     public Object put(Object key, Object value) {
         Proxies.assertAllowedType(key, _keyType);
         Proxies.assertAllowedType(value, _valueType);
-        Proxies.dirty(this);
+        Proxies.dirty(this, false);
         if (_map == null)
             _map = new HashMap();
         Object old = _map.put(key, value);
@@ -220,7 +219,7 @@ public abstract class AbstractLRSProxyMap
     }
 
     public Object remove(Object key) {
-        Proxies.dirty(this);
+        Proxies.dirty(this, false);
         Object old = (_map == null) ? null : _map.remove(key);
         if (old == null && (!_ct.getTrackKeys()
             || !_ct.getRemoved().contains(key)))
@@ -234,7 +233,7 @@ public abstract class AbstractLRSProxyMap
     }
 
     public void clear() {
-        Proxies.dirty(this);
+        Proxies.dirty(this, false);
         Itr itr = iterator(MODE_ENTRY);
         try {
             Map.Entry entry;
@@ -482,7 +481,7 @@ public abstract class AbstractLRSProxyMap
             if (_state == CLOSED || _last == null)
                 throw new NoSuchElementException();
 
-            Proxies.dirty(AbstractLRSProxyMap.this);
+            Proxies.dirty(AbstractLRSProxyMap.this, false);
             Proxies.removed(AbstractLRSProxyMap.this, _last.getKey(), true);
             Proxies.removed(AbstractLRSProxyMap.this, _last.getValue(), false);
 

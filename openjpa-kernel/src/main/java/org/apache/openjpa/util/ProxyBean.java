@@ -16,16 +16,17 @@
 package org.apache.openjpa.util;
 
 /**
- * Interface implemented by all generated proxies on {@link java.util.Date}
- * types.
+ * Interface implemented by all generated custom types, which use JavaBean
+ * conventions for copying state.
  *
  * @author Abe White
  */
-public interface ProxyDate
+public interface ProxyBean 
     extends Proxy {
 
     /**
-     * Return a new instance of this date type.
+     * Create a new instance of this proxy type with the same state as the
+     * given instance.
      */
-    public ProxyDate newInstance();
+    public ProxyBean newInstance(Object orig);
 }
