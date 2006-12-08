@@ -20,7 +20,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 /**
  * Interface implemented by all proxy types to allow setting and nulling
  * of their owning instance.
- *  All concrete proxy classes should be public and have publc no-args
+ * All concrete proxy classes should be public and have publc no-args
  * constructors so that tools that work via reflection on persistent instances
  * can manipulate them.
  *

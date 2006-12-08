@@ -123,6 +123,7 @@ class SingleFieldManager
                     proxy = getProxyManager().newCustomProxy(objval);
                     ret = proxy != null;
                 }
+                break;
         }
 
         if (proxy != null) {

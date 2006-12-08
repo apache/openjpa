@@ -18,8 +18,8 @@ package org.apache.openjpa.util;
 import java.util.TimeZone;
 
 /**
- * Interface implemented by all built-in proxies on
- * {@link java.util.Calendar} types.
+ * Interface implemented by all generated proxies on {@link java.util.Calendar}
+ * types.
  *
  * @author Marc Prud'hommeaux
  */
@@ -29,6 +29,5 @@ public interface ProxyCalendar
     /**
      * Return a new instance of this calendar type.
      */
-    public ProxyCalendar newInstance(TimeZone timeZone);
+    public ProxyCalendar newInstance();
 }
-

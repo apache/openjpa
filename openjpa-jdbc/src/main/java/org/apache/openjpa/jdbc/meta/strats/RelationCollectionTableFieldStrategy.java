@@ -80,8 +80,8 @@ public class RelationCollectionTableFieldStrategy
         return super.joinElementRelation(joins, elem);
     }
 
-    protected Proxy newLRSProxy(OpenJPAConfiguration conf) {
-        return new LRSProxyCollection(this, conf);
+    protected Proxy newLRSProxy() {
+        return new LRSProxyCollection(this);
     }
 
     public void map(boolean adapt) {

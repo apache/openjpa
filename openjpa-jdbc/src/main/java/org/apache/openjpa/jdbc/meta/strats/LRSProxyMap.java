@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -53,9 +52,9 @@ class LRSProxyMap
 
     private final LRSMapFieldStrategy _strat;
 
-    public LRSProxyMap(LRSMapFieldStrategy strat, OpenJPAConfiguration conf) {
+    public LRSProxyMap(LRSMapFieldStrategy strat) {
         super(strat.getFieldMapping().getKey().getDeclaredType(),
-            strat.getFieldMapping().getElement().getDeclaredType(), conf);
+            strat.getFieldMapping().getElement().getDeclaredType());
         _strat = strat;
     }
 

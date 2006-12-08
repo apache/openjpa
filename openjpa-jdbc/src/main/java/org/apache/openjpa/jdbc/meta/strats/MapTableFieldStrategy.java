@@ -116,8 +116,7 @@ public abstract class MapTableFieldStrategy
         JDBCFetchConfiguration fetch)
         throws SQLException {
         if (field.isLRS()) {
-            sm.storeObjectField(field.getIndex(), new LRSProxyMap(this,
-                store.getConfiguration()));
+            sm.storeObjectField(field.getIndex(), new LRSProxyMap(this));
             return;
         }
 

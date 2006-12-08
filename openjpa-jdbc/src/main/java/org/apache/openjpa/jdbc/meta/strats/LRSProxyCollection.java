@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -50,10 +49,9 @@ public class LRSProxyCollection
 
     private final LRSCollectionFieldStrategy _strat;
 
-    public LRSProxyCollection(LRSCollectionFieldStrategy strat,
-        OpenJPAConfiguration conf) {
+    public LRSProxyCollection(LRSCollectionFieldStrategy strat) {
         super(strat.getFieldMapping().getElement().getDeclaredType(),
-            strat.getFieldMapping().getOrderColumn() != null, conf);
+            strat.getFieldMapping().getOrderColumn() != null);
         _strat = strat;
     }
 

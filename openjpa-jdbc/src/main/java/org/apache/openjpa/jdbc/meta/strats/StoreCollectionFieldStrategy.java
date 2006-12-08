@@ -96,7 +96,7 @@ public abstract class StoreCollectionFieldStrategy
     /**
      * Return a large result set proxy for this field.
      */
-    protected abstract Proxy newLRSProxy(OpenJPAConfiguration conf);
+    protected abstract Proxy newLRSProxy();
 
     /**
      * Convert the field value to a collection. Handles collections and
@@ -409,7 +409,7 @@ public abstract class StoreCollectionFieldStrategy
         final JDBCFetchConfiguration fetch)
         throws SQLException {
         if (field.isLRS()) {
-            Proxy coll = newLRSProxy(store.getConfiguration());
+            Proxy coll = newLRSProxy();
 
             // if this is ordered we need to know the next seq to use in case
             // objects are added to the collection

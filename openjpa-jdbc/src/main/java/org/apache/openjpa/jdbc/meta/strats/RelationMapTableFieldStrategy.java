@@ -140,8 +140,8 @@ public class RelationMapTableFieldStrategy
         return joinElementRelation(joins, val);
     }
 
-    protected Proxy newLRSProxy(OpenJPAConfiguration conf) {
-        return new LRSProxyMap(this, conf);
+    protected Proxy newLRSProxy() {
+        return new LRSProxyMap(this);
     }
 
     protected void add(JDBCStore store, Object coll, Object obj) {
