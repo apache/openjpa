@@ -408,6 +408,7 @@ public class ProxyManagerImpl
      * Generate the bytecode for a collection proxy for the given type.
      */
     protected BCClass generateProxyCollectionBytecode(Class type) {
+        assertNotFinal(type);
         Project project = new Project(); 
         BCClass bc = project.loadClass(Strings.getPackageName
             (ProxyManagerImpl.class) + "." + type.getName().replace('.', '$')
@@ -426,9 +427,18 @@ public class ProxyManagerImpl
     }
 
     /**
+     * Throw appropriate exception if the given type is final.
+     */
+    private static void assertNotFinal(Class type) {
+        if (Modifier.isFinal(type.getModifiers()))
+            throw new UnsupportedException(_loc.get("proxy-final", type));
+    }
+
+    /**
      * Generate the bytecode for a map proxy for the given type.
      */
     protected BCClass generateProxyMapBytecode(Class type) {
+        assertNotFinal(type);
         Project project = new Project(); 
         BCClass bc = project.loadClass(Strings.getPackageName
             (ProxyManagerImpl.class) + "." + type.getName().replace('.', '$')
@@ -449,6 +459,7 @@ public class ProxyManagerImpl
      * Generate the bytecode for a date proxy for the given type.
      */
     protected BCClass generateProxyDateBytecode(Class type) {
+        assertNotFinal(type);
         Project project = new Project(); 
         BCClass bc = project.loadClass(Strings.getPackageName
             (ProxyManagerImpl.class) + "." + type.getName().replace('.', '$')
@@ -468,6 +479,7 @@ public class ProxyManagerImpl
      * Generate the bytecode for a calendar proxy for the given type.
      */
     protected BCClass generateProxyCalendarBytecode(Class type) {
+        assertNotFinal(type);
         Project project = new Project(); 
         BCClass bc = project.loadClass(Strings.getPackageName
             (ProxyManagerImpl.class) + "." + type.getName().replace('.', '$')
@@ -487,6 +499,9 @@ public class ProxyManagerImpl
      * Generate the bytecode for a bean proxy for the given type.
      */
     protected BCClass generateProxyBeanBytecode(Class type) {
+        if (Modifier.isFinal(type.getModifiers()))
+            return null;
+
         // we can only generate a valid proxy if there is a copy constructor
         // or a default constructor
         Constructor cons = findCopyConstructor(type);
