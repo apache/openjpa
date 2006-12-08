@@ -1056,9 +1056,9 @@ When designing your persistent classes, keep in mind that you can optimize for
 OpenJPA smart proxies by using fields of type <classname>java.util.Set
 </classname>, <classname>java.util.TreeSet</classname>, and <classname>
 java.util.HashSet</classname> for your collections whenever possible. Smart
-proxies for these types are more efficient than proxies for <classname>List
-</classname>s. You can also design your own smart proxies to further optimize
-OpenJPA for your usage patterns. See the section on
+proxies for these types are more efficient than proxies for <classname>
+List</classname>s. You can also design your own smart proxies to further 
+optimize OpenJPA for your usage patterns. See the section on
 <link linkend="ref_guide_pc_scos_proxy_custom">custom proxies</link> for
 details.
                 </para>
@@ -1222,9 +1222,49 @@ default proxy manager understands the following configuration properties:
 <literal>true</literal>.
                         </para>
                     </listitem>
+                    <listitem>
+                        <para>
+<literal>AssertAllowedType</literal>: Whether to immediately throw an exception
+if you attempt to add an element to a collection or map that is not assignable
+to the element type declared in metadata.  Defaults to <literal>false</literal>.
+                        </para>
+                    </listitem>
                 </itemizedlist>
                 <para>
-For custom behavior, OpenJPA allows you to define your own proxy classes, and
+The default proxy manager can proxy the standard methods of any 
+<classname>Collection</classname>, <classname>List</classname>, 
+<classname>Map</classname>, <classname>Queue</classname>, 
+<classname>Date</classname>, or <classname>Calendar</classname> class, 
+including custom implementations.  It can also proxy custom classes whose 
+accessor and mutator methods follow JavaBean naming conventions.  Your custom
+types must, however, meet the following criteria:
+                </para>
+                <itemizedlist>
+                    <listitem>
+                        <para>
+Custom container types must have a public no-arg constructor or a public
+constructor that takes a single <classname>Comparator</classname> parameter.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+Custom date types must have a public no-arg constructor or a public
+constructor that takes a single <classname>long</classname> parameter 
+representing the current time.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+Other custom types must have a public no-arg constructor or a public copy
+constructor.  If a custom types does not have a copy constructor, it must be 
+possible to fully copy an instance A by creating a new instance B and calling 
+each of B's setters with the value from the corresponding getter on A.
+                        </para>
+                    </listitem>
+                </itemizedlist>
+                <para>
+If you have custom classes that must be proxied and do not meet these 
+requirements, OpenJPA allows you to define your own proxy classes and
 your own proxy manager. See the <literal>openjpa.util</literal> package
 <ulink url="../javadoc/">Javadoc</ulink> for details on the interfaces involved,
 and the utility classes OpenJPA provides to assist you.
