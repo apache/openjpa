@@ -223,6 +223,16 @@ public class ProxyManagerImpl
             return null;
         if (orig instanceof Proxy)
             return ((Proxy) orig).copy(orig);
+        if (ImplHelper.isManageable(orig))
+            return null;
+        if (orig instanceof Collection)
+            return copyCollection((Collection) orig);
+        if (orig instanceof Map)
+            return copyMap((Map) orig);
+        if (orig instanceof Date)
+            return copyDate((Date) orig);
+        if (orig instanceof Calendar)
+            return copyCalendar((Calendar) orig);
         ProxyBean proxy = getFactoryProxyBean(orig);
         return (proxy == null) ? null : proxy.copy(orig); 
     }
@@ -232,6 +242,36 @@ public class ProxyManagerImpl
             return null;
         if (orig instanceof Proxy)
             return (Proxy) orig;
+        if (ImplHelper.isManageable(orig))
+            return null;
+        if (orig instanceof Collection) {
+            Comparator comp = (orig instanceof SortedSet) 
+                ? ((SortedSet) orig).comparator() : null;
+            Collection c = (Collection) newCollectionProxy(orig.getClass(), 
+                null, comp); 
+            c.addAll((Collection) orig);
+            return (Proxy) c;
+        }
+        if (orig instanceof Map) {
+            Comparator comp = (orig instanceof SortedMap) 
+                ? ((SortedMap) orig).comparator() : null;
+            Map m = (Map) newMapProxy(orig.getClass(), null, null, comp);
+            m.putAll((Map) orig);
+            return (Proxy) m;
+        }
+        if (orig instanceof Date) {
+            Date d = (Date) newDateProxy(orig.getClass());
+            d.setTime(((Date) orig).getTime());
+            if (orig instanceof Timestamp)
+                ((Timestamp) d).setNanos(((Timestamp) orig).getNanos());
+            return (Proxy) d;
+        }
+        if (orig instanceof Calendar) {
+            Calendar c = (Calendar) newCalendarProxy(orig.getClass(),
+                ((Calendar) orig).getTimeZone());
+            c.setTimeInMillis(((Calendar) orig).getTimeInMillis());
+            return (Proxy) c;
+        }
 
         ProxyBean proxy = getFactoryProxyBean(orig);
         return (proxy == null) ? null : proxy.newInstance(orig);
@@ -501,6 +541,8 @@ public class ProxyManagerImpl
     protected BCClass generateProxyBeanBytecode(Class type) {
         if (Modifier.isFinal(type.getModifiers()))
             return null;
+        if (ImplHelper.isManagedType(type))
+            return null;
 
         // we can only generate a valid proxy if there is a copy constructor
         // or a default constructor
@@ -524,7 +566,8 @@ public class ProxyManagerImpl
         delegateConstructors(bc, type);
         addProxyMethods(bc, type, true);
         addProxyBeanMethods(bc, type, cons);
-        proxySetters(bc, type);
+        if (!proxySetters(bc, type))
+            return null;
         addWriteReplaceMethod(bc);
         return bc;
     }
@@ -563,7 +606,9 @@ public class ProxyManagerImpl
     private void addProxyMethods(BCClass bc, Class type, 
         boolean changeTracker) {
         BCField sm = bc.declareField("sm", OpenJPAStateManager.class);
+        sm.setTransient(true);
         BCField field = bc.declareField("field", int.class);
+        field.setTransient(true);
 
         BCMethod m = bc.declareMethod("setOwner", void.class, new Class[] {
             OpenJPAStateManager.class, int.class });
@@ -615,6 +660,7 @@ public class ProxyManagerImpl
         // change tracker
         BCField changeTracker = bc.declareField("changeTracker", 
             CollectionChangeTracker.class);
+        changeTracker.setTransient(true);
         BCMethod m = bc.declareMethod("getChangeTracker", ChangeTracker.class, 
             null);
         m.makePublic();
@@ -662,6 +708,7 @@ public class ProxyManagerImpl
 
         // element type
         BCField elementType = bc.declareField("elementType", Class.class);
+        elementType.setTransient(true);
         m = bc.declareMethod("getElementType", Class.class, null);
         m.makePublic();
         code = m.getCode(true);
@@ -735,6 +782,7 @@ public class ProxyManagerImpl
         // change tracker
         BCField changeTracker = bc.declareField("changeTracker", 
             MapChangeTracker.class);
+        changeTracker.setTransient(true);
         BCMethod m = bc.declareMethod("getChangeTracker", ChangeTracker.class, 
             null);
         m.makePublic();
@@ -781,6 +829,7 @@ public class ProxyManagerImpl
 
         // key type
         BCField keyType = bc.declareField("keyType", Class.class);
+        keyType.setTransient(true);
         m = bc.declareMethod("getKeyType", Class.class, null);
         m.makePublic();
         code = m.getCode(true);
@@ -792,6 +841,7 @@ public class ProxyManagerImpl
 
         // value type
         BCField valueType = bc.declareField("valueType", Class.class);
+        valueType.setTransient(true);
         m = bc.declareMethod("getValueType", Class.class, null);
         m.makePublic();
         code = m.getCode(true);
@@ -1056,7 +1106,11 @@ public class ProxyManagerImpl
         
         Method[] meths = type.getMethods();
         Method getter;
+        int mods;
         for (int i = 0; i < meths.length; i++) {
+            mods = meths[i].getModifiers(); 
+            if (!Modifier.isPublic(mods) || Modifier.isStatic(mods))
+                continue;
             if (!startsWith(meths[i].getName(), "set")
                 || meths[i].getParameterTypes().length != 1)
                 continue;
@@ -1121,7 +1175,7 @@ public class ProxyManagerImpl
                 throw new GeneralException(e);
             }
             if (match != null || after != null)
-                proxyBeforeAfterMethod(bc, meths[i], match, params, after,
+                proxyBeforeAfterMethod(bc, type, meths[i], match, params, after,
                     afterParams);
         }
     }
@@ -1161,16 +1215,21 @@ public class ProxyManagerImpl
 
     /**
      * Proxy setter methods of the given type.
+     * 
+     * @return true if we find any setters, false otherwise
      */
-    private void proxySetters(BCClass bc, Class type) {
+    private boolean proxySetters(BCClass bc, Class type) {
         Method[] meths = type.getMethods();
+        int setters = 0;
         for (int i = 0; i < meths.length; i++) {
             if (isSetter(meths[i]) && !Modifier.isFinal(meths[i].getModifiers())
                 && bc.getDeclaredMethod(meths[i].getName(),
                 meths[i].getParameterTypes()) == null) {
-                proxySetter(bc, meths[i]);
+                setters++;
+                proxySetter(bc, type, meths[i]);
             }
         } 
+        return setters > 0;
     }
 
     /**
@@ -1198,7 +1257,7 @@ public class ProxyManagerImpl
      * Proxy the given method with one that overrides it by calling into the
      * given helper.
      */
-    private void proxyBeforeAfterMethod(BCClass bc, Method meth, 
+    private void proxyBeforeAfterMethod(BCClass bc, Class type, Method meth, 
         Method before, Class[] params, Method after, Class[] afterParams) {
         BCMethod m = bc.declareMethod(meth.getName(), meth.getReturnType(),
             meth.getParameterTypes());
@@ -1223,7 +1282,8 @@ public class ProxyManagerImpl
         code.aload().setThis();
         for (int i = 1; i < params.length; i++)
             code.xload().setParam(i - 1).setType(params[i]);
-        code.invokespecial().setMethod(meth);
+        code.invokespecial().setMethod(type, meth.getName(), 
+            meth.getReturnType(), meth.getParameterTypes());
 
         // invoke after 
         if (after != null) {
@@ -1303,9 +1363,10 @@ public class ProxyManagerImpl
     /**
      * Proxy the given setter method to dirty the proxy owner.
      */
-    private void proxySetter(BCClass bc, Method meth) {
-        BCMethod m = bc.declareMethod(meth.getName(), meth.getReturnType(), 
-            meth.getParameterTypes());
+    private void proxySetter(BCClass bc, Class type, Method meth) {
+        Class[] params = meth.getParameterTypes();
+        Class ret = meth.getReturnType();
+        BCMethod m = bc.declareMethod(meth.getName(), ret, params);
         m.makePublic();
         Code code = m.getCode(true);
         code.aload().setThis();
@@ -1313,11 +1374,10 @@ public class ProxyManagerImpl
         code.invokestatic().setMethod(Proxies.class, "dirty", void.class,
             new Class[] { Proxy.class, boolean.class });
         code.aload().setThis();
-        Class[] params = meth.getParameterTypes();
         for (int i = 0; i < params.length; i++)
             code.xload().setParam(i).setType(params[i]);
-        code.invokespecial().setMethod(meth);
-        code.xreturn().setType(meth.getReturnType());
+        code.invokespecial().setMethod(type, meth.getName(), ret, params);
+        code.xreturn().setType(ret);
         code.calculateMaxStack();
         code.calculateMaxLocals();
     }
