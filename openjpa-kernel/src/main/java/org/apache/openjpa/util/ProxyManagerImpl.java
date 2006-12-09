@@ -214,7 +214,8 @@ public class ProxyManagerImpl
             type = GregorianCalendar.class;
         ProxyCalendar proxy = getFactoryProxyCalendar(type);
         ProxyCalendar cal = proxy.newInstance();
-        ((Calendar) cal).setTimeZone(zone);
+        if (zone != null)
+            ((Calendar) cal).setTimeZone(zone);
         return cal;
     }
 
