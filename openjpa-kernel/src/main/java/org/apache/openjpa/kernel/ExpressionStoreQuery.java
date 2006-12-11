@@ -638,8 +638,10 @@ public class ExpressionStoreQuery
         public DataStoreExecutor(ExpressionStoreQuery q,
             ClassMetaData meta, boolean subclasses,
             ExpressionParser parser, Object parsed) {
-            _meta = meta;
             _metas = q.getIndependentExpressionCandidates(meta, subclasses);
+            if (_metas.length == 0)
+                throw new UserException(_loc.get("query-unmapped", meta));
+            _meta = meta;
             _subs = subclasses;
             _parser = parser;
 
