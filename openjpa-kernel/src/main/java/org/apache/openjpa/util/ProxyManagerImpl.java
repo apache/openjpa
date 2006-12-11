@@ -1018,6 +1018,30 @@ public class ProxyManagerImpl
             code.dup();
             code.aload().setParam(0);
             code.checkcast().setType(Calendar.class);
+            code.invokevirtual().setMethod(Calendar.class, "isLenient", 
+                boolean.class, null);
+            code.invokevirtual().setMethod(type, "setLenient", void.class,
+                new Class[] { boolean.class });
+
+            code.dup();
+            code.aload().setParam(0);
+            code.checkcast().setType(Calendar.class);
+            code.invokevirtual().setMethod(Calendar.class, "getFirstDayOfWeek", 
+                int.class, null);
+            code.invokevirtual().setMethod(type, "setFirstDayOfWeek", 
+                void.class, new Class[] { int.class });
+
+            code.dup();
+            code.aload().setParam(0);
+            code.checkcast().setType(Calendar.class);
+            code.invokevirtual().setMethod(Calendar.class, 
+                "getMinimalDaysInFirstWeek", int.class, null);
+            code.invokevirtual().setMethod(type, "setMinimalDaysInFirstWeek", 
+                void.class, new Class[] { int.class });
+
+            code.dup();
+            code.aload().setParam(0);
+            code.checkcast().setType(Calendar.class);
             code.invokevirtual().setMethod(Calendar.class, "getTimeZone", 
                 TimeZone.class, null);
             code.invokevirtual().setMethod(type, "setTimeZone", void.class,
