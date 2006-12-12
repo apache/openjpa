@@ -822,8 +822,9 @@ public class JPQLExpressionBuilder
                 while (inIterator.hasNext()) {
                     val2 = getValue((JPQLNode) inIterator.next());
 
-                    // special case for <value> IN (<subquery>)
-                    if (val2 instanceof Subquery && node.getChildCount() == 2)
+                    // special case for <value> IN (<subquery>) or
+                    // <value> IN (<single value>)
+                    if (!(val2 instanceof Literal) && node.getChildCount() == 2)
                         return factory.contains(val2, val1); 
 
                     // this is currently a sequence of OR expressions, since we
