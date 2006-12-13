@@ -127,12 +127,10 @@ public class Configurations {
         ClassLoader loader, boolean fatal) {
         if (StringUtils.isEmpty(clsName))
             return null;
-        if (loader == null && conf != null)
-            loader = conf.getClass().getClassLoader();
 
         Class cls = null;
         try {
-            cls = Strings.toClass(clsName, loader);
+            cls = Strings.toClass(clsName, findDerivedLoader(conf, loader));
         } catch (RuntimeException re) {
             if (val != null)
                 re = getCreateException(clsName, val, re);
@@ -156,6 +154,40 @@ public class Configurations {
                 log.error(_loc.get("plugin-creation-exception", val), re);
             return null;
         }
+    }
+
+    /**
+     * Attempt to find a derived loader that delegates to our target loader.
+     * This allows application loaders that delegate appropriately for known
+     * classes first crack at class names.
+     */
+    private static ClassLoader findDerivedLoader(Configuration conf,
+        ClassLoader loader) {
+        // we always prefer the thread loader, because it's the only thing we
+        // can access that isn't bound to the OpenJPA classloader, unless
+        // the conf object is of a custom class
+        ClassLoader ctxLoader = Thread.currentThread().getContextClassLoader();
+        if (loader == null) {
+            if (ctxLoader != null)
+                return ctxLoader;
+            if (conf != null)
+                return conf.getClass().getClassLoader();
+            return Configurations.class.getClassLoader();
+        }
+
+        for (ClassLoader parent = ctxLoader; parent != null; 
+            parent = parent.getParent()) {
+            if (parent == loader)
+                return ctxLoader;
+        }
+        if (conf != null) {
+            for (ClassLoader parent = conf.getClass().getClassLoader(); 
+                parent != null; parent = parent.getParent()) {
+                if (parent == loader)
+                    return conf.getClass().getClassLoader();
+            }
+        }
+        return loader;
     }
 
     /**
