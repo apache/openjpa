@@ -72,7 +72,7 @@ import org.apache.openjpa.util.UnsupportedException;
 public class XMLPersistenceMetaDataParser
     extends CFMetaDataParser
     implements PersistenceMetaDataFactory.Parser {
-
+    
     // parse constants
     protected static final String ELEM_PKG = "package";
     protected static final String ELEM_ACCESS = "access";
@@ -86,6 +86,7 @@ public class XMLPersistenceMetaDataParser
     protected static final String ELEM_CASCADE_REF = "cascade-refresh";
     protected static final String ELEM_PU_META = "persistence-unit-metadata";
     protected static final String ELEM_PU_DEF = "persistence-unit-defaults";
+    protected static final String ELEM_XML_MAP_META_COMPLETE = "xml-mapping-metadata-complete";
 
     private static final Map<String, Object> _elems =
         new HashMap<String, Object>();
@@ -103,7 +104,8 @@ public class XMLPersistenceMetaDataParser
         _elems.put(ELEM_CASCADE_REF, ELEM_CASCADE_REF);
         _elems.put(ELEM_PU_META, ELEM_PU_META);
         _elems.put(ELEM_PU_DEF, ELEM_PU_DEF);
-
+        _elems.put(ELEM_XML_MAP_META_COMPLETE, ELEM_XML_MAP_META_COMPLETE);
+        
         _elems.put("entity-listeners", ENTITY_LISTENERS);
         _elems.put("pre-persist", PRE_PERSIST);
         _elems.put("post-persist", POST_PERSIST);
@@ -458,8 +460,10 @@ public class XMLPersistenceMetaDataParser
                 default:
                     warnUnsupportedTag(name);
             }
-        } else if (tag == ELEM_PU_META || tag == ELEM_PU_DEF)
+        } else if (tag == ELEM_PU_META || tag == ELEM_PU_DEF) 
             ret = isMetaDataMode();
+        else if (tag == ELEM_XML_MAP_META_COMPLETE) 
+            setAnnotationParser(null);
         else if (tag == ELEM_ACCESS)
             ret = _mode != MODE_QUERY;
         else if (tag == ELEM_LISTENER)
@@ -703,11 +707,11 @@ public class XMLPersistenceMetaDataParser
     protected boolean startClass(String elem, Attributes attrs)
         throws SAXException {
         super.startClass(elem, attrs);
-
+        
         // query mode only?
         _cls = classForName(currentClassName());
         if (_mode == MODE_QUERY) {
-            if (_parser != null)
+            if (_parser != null && !"true".equals(attrs.getValue("metadata-complete")))
                 _parser.parse(_cls);
             return true;
         }
@@ -736,7 +740,7 @@ public class XMLPersistenceMetaDataParser
             meta.setSourceMode(MODE_NONE);
 
             // parse annotations first so XML overrides them
-            if (_parser != null)
+            if (_parser != null && !"true".equals(attrs.getValue("metadata-complete")))
                 _parser.parse(_cls);
         }
 
