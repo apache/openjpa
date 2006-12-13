@@ -17,6 +17,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -178,7 +179,14 @@ class InExpression
      * Return the collection to test for containment with.
      */
     protected Collection getCollection(ExpContext ctx, ExpState state) {
-        return (Collection) _const.getValue(ctx, state);
+        Object val = _const.getValue(ctx, state);
+
+        // wrap non-Collection parameters in a Collections so the query
+        // lanuage can permit varargs "in" clauses
+        if (!(val instanceof Collection))
+            val = Collections.singleton(val);
+
+        return (Collection) val;
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {
