@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
@@ -46,6 +47,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
@@ -331,9 +333,11 @@ public class ProxyManagerImpl
         // we don't lock here; ok if two proxies get generated for same type
         ProxyCollection proxy = (ProxyCollection) _proxies.get(type);
         if (proxy == null) {
-            proxy = (ProxyCollection) instantiateProxy
-                (generateProxyCollectionBytecode(type), type, 
-                ProxyCollection.class, null, null);
+            ClassLoader l = getMostDerivedLoader(type, ProxyCollection.class);
+            Class pcls = loadBuildTimeProxy(type, l);
+            if (pcls == null)
+                pcls = loadProxy(generateProxyCollectionBytecode(type, true),l);
+            proxy = (ProxyCollection) instantiateProxy(pcls, null, null);
             _proxies.put(type, proxy);
         }
         return proxy;
@@ -346,8 +350,11 @@ public class ProxyManagerImpl
         // we don't lock here; ok if two proxies get generated for same type
         ProxyMap proxy = (ProxyMap) _proxies.get(type);
         if (proxy == null) {
-            proxy = (ProxyMap) instantiateProxy(generateProxyMapBytecode(type), 
-                type, ProxyMap.class, null, null);
+            ClassLoader l = getMostDerivedLoader(type, ProxyMap.class);
+            Class pcls = loadBuildTimeProxy(type, l);
+            if (pcls == null)
+                pcls = loadProxy(generateProxyMapBytecode(type, true), l);
+            proxy = (ProxyMap) instantiateProxy(pcls, null, null);
             _proxies.put(type, proxy);
         }
         return proxy;
@@ -360,9 +367,11 @@ public class ProxyManagerImpl
         // we don't lock here; ok if two proxies get generated for same type
         ProxyDate proxy = (ProxyDate) _proxies.get(type);
         if (proxy == null) {
-            proxy = (ProxyDate) instantiateProxy
-                (generateProxyDateBytecode(type), type, ProxyDate.class, null, 
-                null);
+            ClassLoader l = getMostDerivedLoader(type, ProxyDate.class);
+            Class pcls = loadBuildTimeProxy(type, l);
+            if (pcls == null)
+                pcls = loadProxy(generateProxyDateBytecode(type, true), l);
+            proxy = (ProxyDate) instantiateProxy(pcls, null, null);
             _proxies.put(type, proxy);
         }
         return proxy;
@@ -375,9 +384,11 @@ public class ProxyManagerImpl
         // we don't lock here; ok if two proxies get generated for same type
         ProxyCalendar proxy = (ProxyCalendar) _proxies.get(type);
         if (proxy == null) {
-            proxy = (ProxyCalendar) instantiateProxy
-                (generateProxyCalendarBytecode(type), type, ProxyCalendar.class,
-                null, null);
+            ClassLoader l = getMostDerivedLoader(type, ProxyCalendar.class);
+            Class pcls = loadBuildTimeProxy(type, l);
+            if (pcls == null)
+                pcls = loadProxy(generateProxyCalendarBytecode(type, true), l);
+            proxy = (ProxyCalendar) instantiateProxy(pcls, null, null);
             _proxies.put(type, proxy);
         }
         return proxy;
@@ -388,40 +399,62 @@ public class ProxyManagerImpl
      */
     private ProxyBean getFactoryProxyBean(Object orig) {
         // we don't lock here; ok if two proxies get generated for same type
-        ProxyBean proxy = (ProxyBean) _proxies.get(orig.getClass());
-        if (proxy == null && !_proxies.containsKey(orig.getClass())) {
-            BCClass bc = generateProxyBeanBytecode(orig.getClass());
-            if (bc == null)
-                _proxies.put(orig.getClass(), null);
-            else {
-                BCMethod m = bc.getDeclaredMethod("<init>", (Class[]) null);
-                proxy = (ProxyBean) instantiateProxy(bc, orig.getClass(), 
-                    ProxyBean.class, findCopyConstructor(orig.getClass()), 
-                    new Object[] {orig});
-                _proxies.put(orig.getClass(), proxy);
+        Class type = orig.getClass();
+        ProxyBean proxy = (ProxyBean) _proxies.get(type);
+        if (proxy == null && !_proxies.containsKey(type)) {
+            ClassLoader l = getMostDerivedLoader(type, ProxyBean.class);
+            Class pcls = loadBuildTimeProxy(type, l);
+            if (pcls == null) {
+                BCClass bc = generateProxyBeanBytecode(type, true);
+                if (bc != null)
+                    pcls = loadProxy(bc, l);
             }
+            if (pcls != null)
+                proxy = (ProxyBean) instantiateProxy(pcls, 
+                    findCopyConstructor(type), new Object[] {orig});
+            _proxies.put(type, proxy);
         }
         return proxy;
     }
 
     /**
-     * Instantiate the given proxy bytecode.
+     * Load the proxy class generated at build time for the given type,
+     * returning null if none exists.
      */
-    private Proxy instantiateProxy(BCClass bc, Class type, Class proxy, 
-        Constructor cons, Object[] args) {
-        BCClassLoader loader = new BCClassLoader(bc.getProject(),
-            getMostDerivedClassLoader(type, proxy));
+    private static Class loadBuildTimeProxy(Class type, ClassLoader loader) {
         try {
-            Class cls = Class.forName(bc.getName(), true, loader);
+            return Class.forName(getProxyClassName(type, false), true, loader);
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    /**
+     * Load the proxy class represented by the given bytecode.
+     */
+    private Class loadProxy(BCClass bc, ClassLoader loader) {
+        BCClassLoader bcloader = new BCClassLoader(bc.getProject(), loader);
+        try {
+            return Class.forName(bc.getName(), true, bcloader);
+        } catch (Throwable t) {
+            throw new GeneralException(bc.getName()).setCause(t);
+        }
+    }
+
+    /**
+     * Instantiate the given proxy class.
+     */
+    private Proxy instantiateProxy(Class cls, Constructor cons, Object[] args) {
+        try {
             if (cons != null)
                 return (Proxy) cls.getConstructor(cons.getParameterTypes()).
                     newInstance(args);
             return (Proxy) cls.newInstance();
         } catch (InstantiationException ie) {
-            throw new UnsupportedException(_loc.get("cant-classforname", 
-                bc.getSuperclassName()));
+            throw new UnsupportedException(_loc.get("cant-newinstance", 
+                cls.getSuperclass().getName()));
         } catch (Throwable t) {
-            throw new GeneralException(t);
+            throw new GeneralException(cls.getName()).setCause(t);
         }
     }
 
@@ -429,7 +462,7 @@ public class ProxyManagerImpl
      * Return the more derived loader of the class laoders for the given 
      * classes.
      */
-    private static ClassLoader getMostDerivedClassLoader(Class c1, Class c2) {
+    private static ClassLoader getMostDerivedLoader(Class c1, Class c2) {
         ClassLoader l1 = c1.getClassLoader();
         ClassLoader l2 = c2.getClassLoader();
         if (l1 == l2)
@@ -448,12 +481,11 @@ public class ProxyManagerImpl
     /**
      * Generate the bytecode for a collection proxy for the given type.
      */
-    protected BCClass generateProxyCollectionBytecode(Class type) {
+    protected BCClass generateProxyCollectionBytecode(Class type, 
+        boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = project.loadClass(Strings.getPackageName
-            (ProxyManagerImpl.class) + "." + type.getName().replace('.', '$')
-            + "$" + nextProxyId() + PROXY_SUFFIX);
+        BCClass bc = project.loadClass(getProxyClassName(type, runtime));
         bc.setSuperclass(type);
         bc.declareInterface(ProxyCollection.class);
  
@@ -463,8 +495,17 @@ public class ProxyManagerImpl
         proxyRecognizedMethods(bc, type, ProxyCollections.class, 
             ProxyCollection.class);
         proxySetters(bc, type);
-        addWriteReplaceMethod(bc);
+        addWriteReplaceMethod(bc, runtime);
         return bc;
+    }
+
+    /**
+     * Return the name of the proxy class to generate for the given type.   
+     */
+    private static String getProxyClassName(Class type, boolean runtime) {
+        String id = (runtime) ? "$" + nextProxyId() : "";
+        return Strings.getPackageName(ProxyManagerImpl.class) + "." 
+            + type.getName().replace('.', '$') + id + PROXY_SUFFIX;
     }
 
     /**
@@ -478,12 +519,10 @@ public class ProxyManagerImpl
     /**
      * Generate the bytecode for a map proxy for the given type.
      */
-    protected BCClass generateProxyMapBytecode(Class type) {
+    protected BCClass generateProxyMapBytecode(Class type, boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = project.loadClass(Strings.getPackageName
-            (ProxyManagerImpl.class) + "." + type.getName().replace('.', '$')
-            + "$" + nextProxyId() + PROXY_SUFFIX);
+        BCClass bc = project.loadClass(getProxyClassName(type, runtime));
         bc.setSuperclass(type);
         bc.declareInterface(ProxyMap.class);
  
@@ -492,19 +531,17 @@ public class ProxyManagerImpl
         addProxyMapMethods(bc, type);
         proxyRecognizedMethods(bc, type, ProxyMaps.class, ProxyMap.class);
         proxySetters(bc, type);
-        addWriteReplaceMethod(bc);
+        addWriteReplaceMethod(bc, runtime);
         return bc;
     }
 
     /**
      * Generate the bytecode for a date proxy for the given type.
      */
-    protected BCClass generateProxyDateBytecode(Class type) {
+    protected BCClass generateProxyDateBytecode(Class type, boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = project.loadClass(Strings.getPackageName
-            (ProxyManagerImpl.class) + "." + type.getName().replace('.', '$')
-            + "$" + nextProxyId() + PROXY_SUFFIX);
+        BCClass bc = project.loadClass(getProxyClassName(type, runtime));
         bc.setSuperclass(type);
         bc.declareInterface(ProxyDate.class);
  
@@ -512,19 +549,18 @@ public class ProxyManagerImpl
         addProxyMethods(bc, type, true);
         addProxyDateMethods(bc, type);
         proxySetters(bc, type);
-        addWriteReplaceMethod(bc);
+        addWriteReplaceMethod(bc, runtime);
         return bc;
     }
 
     /**
      * Generate the bytecode for a calendar proxy for the given type.
      */
-    protected BCClass generateProxyCalendarBytecode(Class type) {
+    protected BCClass generateProxyCalendarBytecode(Class type, 
+        boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = project.loadClass(Strings.getPackageName
-            (ProxyManagerImpl.class) + "." + type.getName().replace('.', '$')
-            + "$" + nextProxyId() + PROXY_SUFFIX);
+        BCClass bc = project.loadClass(getProxyClassName(type, runtime));
         bc.setSuperclass(type);
         bc.declareInterface(ProxyCalendar.class);
  
@@ -532,14 +568,14 @@ public class ProxyManagerImpl
         addProxyMethods(bc, type, true);
         addProxyCalendarMethods(bc, type);
         proxySetters(bc, type);
-        addWriteReplaceMethod(bc);
+        addWriteReplaceMethod(bc, runtime);
         return bc;
     }
 
     /**
      * Generate the bytecode for a bean proxy for the given type.
      */
-    protected BCClass generateProxyBeanBytecode(Class type) {
+    protected BCClass generateProxyBeanBytecode(Class type, boolean runtime) {
         if (Modifier.isFinal(type.getModifiers()))
             return null;
         if (ImplHelper.isManagedType(type))
@@ -558,9 +594,7 @@ public class ProxyManagerImpl
         }
 
         Project project = new Project(); 
-        BCClass bc = project.loadClass(Strings.getPackageName
-            (ProxyManagerImpl.class) + "." + type.getName().replace('.', '$')
-            + "$" + nextProxyId() + PROXY_SUFFIX);
+        BCClass bc = project.loadClass(getProxyClassName(type, runtime));
         bc.setSuperclass(type);
         bc.declareInterface(ProxyBean.class);
  
@@ -569,7 +603,7 @@ public class ProxyManagerImpl
         addProxyBeanMethods(bc, type, cons);
         if (!proxySetters(bc, type))
             return null;
-        addWriteReplaceMethod(bc);
+        addWriteReplaceMethod(bc, runtime);
         return bc;
     }
 
@@ -1409,16 +1443,17 @@ public class ProxyManagerImpl
 
     /**
      * Add a writeReplace implementation that serializes to a non-proxy type
-     * unless detached.
+     * unless detached and this is a build-time generated class.
      */
-    private void addWriteReplaceMethod(BCClass bc) {
+    private void addWriteReplaceMethod(BCClass bc, boolean runtime) {
         BCMethod m = bc.declareMethod("writeReplace", Object.class, null);
         m.makeProtected();
         m.getExceptions(true).addException(ObjectStreamException.class);
         Code code = m.getCode(true);
         code.aload().setThis();
+        code.constant().setValue(!runtime);
         code.invokestatic().setMethod(Proxies.class, "writeReplace", 
-            Object.class, new Class[] { Proxy.class });
+            Object.class, new Class[] { Proxy.class, boolean.class });
         code.areturn();
         code.calculateMaxLocals();
         code.calculateMaxStack();
@@ -1474,13 +1509,20 @@ public class ProxyManagerImpl
     }
 
     /**
-     * Usage: java org.apache.openjpa.util.proxy.ProxyManagerImpl
-     * &lt;class name&gt;+
+     * Usage: java org.apache.openjpa.util.proxy.ProxyManagerImpl [option]*
+     * &lt;class name&gt;+<br />
+     * Where the following options are recognized:
+     * <ul> 
+     * <li><i>-utils/-u &lt;number&gt;</i>: Generate proxies for the standard
+     * java.util collection, map, date, and calendar classes of the given Java
+     * version.  Use 4 for Java 1.4, 5 for Java 5, etc.</li>
+     * </ul>
      *
      * The main method generates .class files for the proxies to the classes    
-     * given on the command line.  The .class files are placed in the same
-     * package as this class, or the current directory if the directory for this
-     * class cannot be accessed.
+     * given on the command line.  It writes the generated classes to beside the
+     * ProxyManagerImpl.class file if possible; otherwise it writes to the 
+     * current directory.  The proxy manager looks for these classes 
+     * before generating its own proxies at runtime.
      */
     public static void main(String[] args) 
         throws ClassNotFoundException, IOException {
@@ -1488,21 +1530,59 @@ public class ProxyManagerImpl
         dir = (dir == null) ? new File(System.getProperty("user.dir"))
             : dir.getParentFile();
 
+        Options opts = new Options();
+        args = opts.setFromCmdLine(args);
+
+        List types = new ArrayList();
+        types.addAll(Arrays.asList(args));
+        int utils = opts.removeIntProperty("utils", "u", 0);
+        if (utils >= 4) {
+            types.addAll(Arrays.asList(new String[] {
+                java.sql.Date.class.getName(),
+                java.sql.Time.class.getName(),
+                java.sql.Timestamp.class.getName(),
+                java.util.ArrayList.class.getName(),
+                java.util.Date.class.getName(),
+                java.util.GregorianCalendar.class.getName(),
+                java.util.HashMap.class.getName(),
+                java.util.HashSet.class.getName(),
+                java.util.Hashtable.class.getName(),
+                java.util.LinkedList.class.getName(),
+                java.util.Properties.class.getName(),
+                java.util.TreeMap.class.getName(),
+                java.util.TreeSet.class.getName(),
+                java.util.Vector.class.getName(),
+            })); 
+        }
+        if (utils >= 5) {
+            types.addAll(Arrays.asList(new String[] {
+                "java.util.EnumMap",
+                "java.util.IdentityHashMap",
+                "java.util.LinkedHashMap",
+                "java.util.LinkedHashSet",
+                "java.util.PriorityQueue",
+            })); 
+        }
+
         ProxyManagerImpl mgr = new ProxyManagerImpl();
         Class cls;
         BCClass bc;
-        for (int i = 0; i < args.length; i++) {
-            cls = Class.forName(args[i]);
+        for (int i = 0; i < types.size(); i++) {
+            cls = Class.forName((String) types.get(i));
+            if (loadBuildTimeProxy(cls, getMostDerivedLoader(cls, Proxy.class))
+                != null)
+                continue;
+
             if (Collection.class.isAssignableFrom(cls))
-                bc = mgr.generateProxyCollectionBytecode(cls);         
+                bc = mgr.generateProxyCollectionBytecode(cls, false);         
             else if (Map.class.isAssignableFrom(cls))
-                bc = mgr.generateProxyMapBytecode(cls);         
+                bc = mgr.generateProxyMapBytecode(cls, false);         
             else if (Date.class.isAssignableFrom(cls))
-                bc = mgr.generateProxyDateBytecode(cls);
+                bc = mgr.generateProxyDateBytecode(cls, false);
             else if (Calendar.class.isAssignableFrom(cls))
-                bc = mgr.generateProxyCalendarBytecode(cls);
+                bc = mgr.generateProxyCalendarBytecode(cls, false);
             else
-                bc = mgr.generateProxyBeanBytecode(cls);
+                bc = mgr.generateProxyBeanBytecode(cls, false);
 
             System.out.println(bc.getName());
             bc.write(new File(dir, bc.getClassName() + ".class"));
