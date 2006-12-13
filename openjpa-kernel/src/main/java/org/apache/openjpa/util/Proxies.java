@@ -78,13 +78,10 @@ public class Proxies {
     /**
      * Used by proxy types to serialize non-proxy versions.
      */
-    public static Object writeReplace(Proxy proxy) {
-        // we can't send dynamically-created classes to another JVM
-        /*
-        if (proxy == null || proxy.getOwner() == null 
-            || proxy.getOwner().isDetached())
+    public static Object writeReplace(Proxy proxy, boolean detachable) {
+        if (detachable && (proxy == null || proxy.getOwner() == null 
+            || proxy.getOwner().isDetached()))
             return proxy;
-        */
         return proxy.copy(proxy);
     }
 }
