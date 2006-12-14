@@ -1271,6 +1271,14 @@ public class DelegatingBroker
         }
     }
 
+    public boolean isCloseInvoked() {
+        try {
+            return _broker.isCloseInvoked();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
     public void assertOpen() {
         try {
             _broker.assertOpen();
