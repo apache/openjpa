@@ -651,6 +651,12 @@ public interface Broker
     public boolean isClosed();
 
     /**
+     * Whether {@link #close} has been invoked, though the broker might 
+     * remain open until the current managed transaction completes.
+     */
+    public boolean isCloseInvoked();
+
+    /**
      * Close the broker.
      */
     public void close();

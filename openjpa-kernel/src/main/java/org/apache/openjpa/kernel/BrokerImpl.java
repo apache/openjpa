@@ -3955,6 +3955,10 @@ public class BrokerImpl
         return _closed != null;
     }
 
+    public boolean isCloseInvoked() {
+        return _closed != null || (_flags & FLAG_CLOSE_INVOKED) != 0;
+    }
+
     public void close() {
         beginOperation(false);
         try {
