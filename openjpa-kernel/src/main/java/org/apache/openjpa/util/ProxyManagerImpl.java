@@ -421,7 +421,7 @@ public class ProxyManagerImpl
      * Load the proxy class generated at build time for the given type,
      * returning null if none exists.
      */
-    private static Class loadBuildTimeProxy(Class type, ClassLoader loader) {
+    protected Class loadBuildTimeProxy(Class type, ClassLoader loader) {
         try {
             return Class.forName(getProxyClassName(type, false), true, loader);
         } catch (Throwable t) {
@@ -1569,8 +1569,8 @@ public class ProxyManagerImpl
         BCClass bc;
         for (int i = 0; i < types.size(); i++) {
             cls = Class.forName((String) types.get(i));
-            if (loadBuildTimeProxy(cls, getMostDerivedLoader(cls, Proxy.class))
-                != null)
+            if (mgr.loadBuildTimeProxy(cls, getMostDerivedLoader(cls, 
+                Proxy.class)) != null)
                 continue;
 
             if (Collection.class.isAssignableFrom(cls))
