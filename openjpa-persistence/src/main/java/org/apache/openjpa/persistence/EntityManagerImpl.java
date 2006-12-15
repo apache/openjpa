@@ -977,11 +977,11 @@ public class EntityManagerImpl
     }
 
     public void close() {
+        assertOpen();
         _broker.close();
     }
 
     public boolean isOpen() {
-        assertOpen();
         return !_broker.isCloseInvoked();
     }
 
