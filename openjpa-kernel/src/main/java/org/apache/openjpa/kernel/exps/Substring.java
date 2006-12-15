@@ -50,8 +50,10 @@ class Substring
         Object arg = _args.eval(candidate, orig, ctx, params);
         if (arg instanceof Object[]) {
             Object[] args = (Object[]) arg;
-            return str.toString().substring(((Number) args[0]).intValue(),
-                ((Number) args[1]).intValue());
+            int start = ((Number) args[0]).intValue();
+            int end = Math.min(((Number) args[1]).intValue(),
+                str.toString().length() - start + 1);
+            return str.toString().substring(start, end);
         }
         return str.toString().substring(((Number) arg).intValue());
     }
