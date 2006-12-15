@@ -93,9 +93,14 @@ public class ProxyManagerImpl
         _stdMaps.put(SortedMap.class, TreeMap.class);
     }
 
+    private final Set _unproxyable = new HashSet();
     private final Map _proxies = new ConcurrentHashMap();
     private boolean _trackChanges = true;
     private boolean _assertType = false;
+
+    public ProxyManagerImpl() {
+        _unproxyable.add(TimeZone.class.getName());
+    }
 
     /**
      * Whether proxies produced by this factory will use {@link ChangeTracker}s
@@ -131,6 +136,24 @@ public class ProxyManagerImpl
      */
     public void setAssertAllowedType(boolean assertType) {
         _assertType = assertType;
+    }
+
+    /**
+     * Return a mutable view of class names we know cannot be proxied  
+     * correctly by this manager.
+     */
+    public Collection getUnproxyable() {
+        return _unproxyable;
+    }
+
+    /**
+     * Provided for auto-configuration.  Add the given semicolon-separated
+     * class names to the set of class names we know cannot be proxied correctly
+     * by this manager.
+     */
+    public void setUnproxyable(String clsNames) {
+        if (clsNames != null)
+            _unproxyable.addAll(Arrays.asList(Strings.split(clsNames, ";", 0)));
     }
 
     public Object copyArray(Object orig) {
@@ -398,8 +421,11 @@ public class ProxyManagerImpl
      * Return the cached factory proxy for the given bean type.
      */
     private ProxyBean getFactoryProxyBean(Object orig) {
-        // we don't lock here; ok if two proxies get generated for same type
         Class type = orig.getClass();
+        if (isUnproxyable(type))
+            return null;
+
+        // we don't lock here; ok if two proxies get generated for same type
         ProxyBean proxy = (ProxyBean) _proxies.get(type);
         if (proxy == null && !_proxies.containsKey(type)) {
             ClassLoader l = getMostDerivedLoader(type, ProxyBean.class);
@@ -415,6 +441,18 @@ public class ProxyManagerImpl
             _proxies.put(type, proxy);
         }
         return proxy;
+    }
+
+    /**
+     * Return whether the given type is known to be unproxyable.
+     */
+    protected boolean isUnproxyable(Class type) {
+        for (; type != null && type != Object.class; 
+            type = type.getSuperclass()) {
+            if (_unproxyable.contains(type.getName()))
+                return true;
+        }
+        return false;
     }
 
     /**
