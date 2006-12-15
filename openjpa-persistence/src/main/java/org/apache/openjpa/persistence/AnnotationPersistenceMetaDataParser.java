@@ -815,9 +815,9 @@ public class AnnotationPersistenceMetaDataParser
                     int e = events[i];
                     if (callbacks[e] == null)
                         callbacks[e] = new ArrayList(3);
+                    MetaDataParsers.validateMethodsForSameCallback(cls, 
+                        callbacks[e], m, tag, def, repos.getLog());
                     if (listener) {
-                        MetaDataParsers.validateMethodsForSameCallback(cls, 
-                            callbacks[e], m, tag, def, repos.getLog());
                         callbacks[e].add(new BeanLifecycleCallbacks(cls, m,
                             false));
                     } else {

@@ -61,7 +61,7 @@ import org.apache.openjpa.util.MetaDataException;
 public class PersistenceMetaDataDefaults
     extends AbstractMetaDataDefaults {
 
-    private boolean _allowsMultipleMethodsForSameCallback = true;
+    private boolean _allowsMultipleMethodsForSameCallback = false;
 
     private static Localizer _loc = Localizer.forPackage
         (PersistenceMetaDataDefaults.class);
