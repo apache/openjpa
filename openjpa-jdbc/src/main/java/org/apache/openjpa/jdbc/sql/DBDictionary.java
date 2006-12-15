@@ -2920,8 +2920,8 @@ public class DBDictionary
 
         int delActionId = fk.getDeleteAction();
         if (delActionId == ForeignKey.ACTION_NULL) {
-            for (int i = 0; i < foreigns.length; i++) {
-                if (foreigns[i].isNotNull())
+            for (int i = 0; i < locals.length; i++) {
+                if (locals[i].isNotNull())
                     delActionId = ForeignKey.ACTION_NONE;
             }
         }
