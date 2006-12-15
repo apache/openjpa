@@ -32,8 +32,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.exps.AggregateListener;
-import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.FilterListener;
+import org.apache.openjpa.kernel.exps.Val;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.rop.EagerResultList;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
@@ -1057,10 +1057,9 @@ public class QueryImpl
             it.hasNext();) {
             Map.Entry e = (Map.Entry) it.next();
             FieldMetaData fmd = (FieldMetaData) e.getKey();
-            if (!(e.getValue() instanceof Constant))
-                throw new UserException(_loc.get("only-update-constants"));
-            Constant value = (Constant) e.getValue();
-            Object val = value.getValue(params);
+
+            Val value = (Val) e.getValue();
+            Object val = value.evaluate(ob, null, getStoreContext(), params);
 
             OpenJPAStateManager sm = _broker.getStateManager(ob);
             int i = fmd.getIndex();
