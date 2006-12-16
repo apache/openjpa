@@ -141,7 +141,7 @@ public interface StoreManager
     /**
      * Load the given state manager.
      * Note that any collection or map types loaded into the state manager
-     * will be proxied with the correct type; therefore the stroe manager
+     * will be proxied with the correct type; therefore the store manager
      * does not have to load the same concrete collection/map types as the
      * instance declares. However, array types must be consistent with the
      * array type stored by the persistence capable instance. If this method

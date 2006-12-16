@@ -513,30 +513,22 @@ public class Configurations {
      * configuration prefix.
      */
     public static boolean containsProperty(String key, Map props) {
-        if (key == null || props == null)
+        if (key == null || props == null || props.isEmpty())
             return false;
-        String[] prefixes = ProductDerivations.getConfigurationPrefixes();
-        for (int i = 0; i < prefixes.length; i++)
-            if (props.containsKey(prefixes[i] + "." + key))
-                return true;
-        return false;
+        else
+            return props.containsKey(
+                ProductDerivations.getConfigurationKey(key, props));
     }
 
     /**
      * Get the property under the given key, prefixed with any possible
      * configuration prefix.
      */
-    public static Object getProperty(String key, Map props) {
-        if (key == null || props == null)
+    public static Object getProperty(String key, Map m) {
+        if (key == null || m == null || m.isEmpty())
             return null;
-        String[] prefixes = ProductDerivations.getConfigurationPrefixes();
-        Object val;
-        for (int i = 0; i < prefixes.length; i++) {
-            val = props.get(prefixes[i] + "." + key);
-            if (val != null)
-                return val;
-        }
-        return null;
+        else 
+            return m.get(ProductDerivations.getConfigurationKey(key, m));
     }
 
     /**
@@ -544,16 +536,8 @@ public class Configurations {
      * configuration prefix.
      */
     public static Object removeProperty(String key, Map props) {
-        if (key == null || props == null)
+        if (key == null || props == null || props.isEmpty())
             return null;
-        String[] prefixes = ProductDerivations.getConfigurationPrefixes();
-        Object val = null;
-        Object cur;
-        for (int i = 0; i < prefixes.length; i++) {
-            cur = props.remove(prefixes[i] + "." + key);
-            if (cur != null && val == null)
-                val = cur;
-        }
-        return val;
+        return props.remove(ProductDerivations.getConfigurationKey(key, props));
     }
 }

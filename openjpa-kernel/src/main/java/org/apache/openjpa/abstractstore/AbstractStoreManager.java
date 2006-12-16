@@ -187,7 +187,7 @@ public abstract class AbstractStoreManager
      * Since this store manager does not provide optimistic locking
      * support, this method always returns <code>true</code>.
      */
-    public boolean syncVersion(OpenJPAStateManager sm, Object context) {
+    public boolean syncVersion(OpenJPAStateManager sm, Object edata) {
         return true;
     }
 
@@ -210,7 +210,7 @@ public abstract class AbstractStoreManager
      * data into the object.
      */
     public abstract boolean initialize(OpenJPAStateManager sm, PCState state,
-        FetchConfiguration fetch, Object context);
+        FetchConfiguration fetch, Object edata);
 
     /**
      * This method is invoked when OpenJPA needs to load additional data
@@ -222,7 +222,7 @@ public abstract class AbstractStoreManager
      * data into the object.
      */
     public abstract boolean load(OpenJPAStateManager sm, BitSet fields,
-        FetchConfiguration fetch, int lockLevel, Object context);
+        FetchConfiguration fetch, int lockLevel, Object edata);
 
     /**
      * This implementation just delegates to the proper singular
@@ -232,8 +232,8 @@ public abstract class AbstractStoreManager
      * advantageous.
      */
     public Collection loadAll(Collection sms, PCState state, int load,
-        FetchConfiguration fetch, Object context) {
-        return ImplHelper.loadAll(sms, this, state, load, fetch, context);
+        FetchConfiguration fetch, Object edata) {
+        return ImplHelper.loadAll(sms, this, state, load, fetch, edata);
     }
 
     /**
@@ -362,19 +362,18 @@ public abstract class AbstractStoreManager
      * by <code>subclasses</code>.
      *  The implementation of the result provider will typically execute
      * some sort of data store query to find all the applicable objects, loop
-     * through the returned data, extracting object IDs from the data, and
-     * invoking 
+     * through the results, extracting object IDs from the data, and invoke
      * {@link StoreContext#find(Object,FetchConfiguration,BitSet,Object,int)}
      * on each OID. When invoking this method, the first argument is the OID.
      * The second is the given fetch configuration. The
      * third argument is a mask of fields to exclude from loading; it will
-     * typically be null. The last argument is an object that will be passed
+     * typically be null. The fourth argument is an object that will be passed
      * through to {@link #initialize} or {@link #load}, and typically will
      * contain the actual data to load. For example, for a JDBC-based store
      * manager, this might be the result set that is being iterated over. If
      * this argument is <code>null</code>, then the {@link #initialize} or
      * {@link #load} method will have to issue another command to the data
-     * store in order to fetch the data to be loaded.
+     * store in order to fetch the data to be loaded. 
      */
     public abstract ResultObjectProvider executeExtent(ClassMetaData meta,
         boolean subs, FetchConfiguration fetch);
