@@ -296,7 +296,7 @@ public interface ValueMetaData
 
     /**
      * Copy state from the given value to this one. Do not copy mapping
-      * information.
+     * information.
      */
-    public void copy (ValueMetaData vmd);
+    public void copy(ValueMetaData vmd);
 }

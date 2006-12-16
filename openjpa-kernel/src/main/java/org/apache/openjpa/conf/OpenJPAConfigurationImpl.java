@@ -193,10 +193,11 @@ public class OpenJPAConfigurationImpl
         dataCacheManagerPlugin.setInstantiatingGetter("getDataCacheManager");
 
         dataCachePlugin = addPlugin("DataCache", false);
-        aliases =
-            new String[] { "false", null, "true",
-                ConcurrentDataCache.class.getName(), "concurrent",
-                ConcurrentDataCache.class.getName(), };
+        aliases = new String[] { 
+            "false", null, 
+            "true", ConcurrentDataCache.class.getName(), 
+            "concurrent", ConcurrentDataCache.class.getName(), 
+        };
         dataCachePlugin.setAliases(aliases);
         dataCachePlugin.setDefault(aliases[0]);
         dataCachePlugin.setString(aliases[0]);
@@ -206,10 +207,11 @@ public class OpenJPAConfigurationImpl
         dataCacheTimeout.set(-1);
 
         queryCachePlugin = addPlugin("QueryCache", true);
-        aliases =
-            new String[] { "true", ConcurrentQueryCache.class.getName(),
-                "concurrent", ConcurrentQueryCache.class.getName(), "false",
-                null, };
+        aliases = new String[] { 
+            "true", ConcurrentQueryCache.class.getName(),
+            "concurrent", ConcurrentQueryCache.class.getName(), 
+            "false", null, 
+        };
         queryCachePlugin.setAliases(aliases);
         queryCachePlugin.setDefault(aliases[0]);
         queryCachePlugin.setString(aliases[0]);

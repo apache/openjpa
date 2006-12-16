@@ -33,7 +33,7 @@ public interface OpenJPAProductDerivation extends ProductDerivation {
 
     /**
      * Load default alias options into the given map.  Each entry maps an
-     * alias to a broker factory class name.  Replace anything perviously 
+     * alias to a broker factory class name.  Replace anything previously 
      * under the desired keys.
      */
     public void putBrokerFactoryAliases(Map aliases);

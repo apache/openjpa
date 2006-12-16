@@ -64,22 +64,17 @@ public class BrokerFactoryValue
      * Extract the value of this property if set in the given provider.
      */
     public static Object get(ConfigurationProvider cp) {
-        String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         Map props = cp.getProperties();
-        Object bf;
-        for (int i = 0; i < prefixes.length; i++) {
-            bf = props.get(prefixes[i] + "." + KEY);
-            if (bf != null)
-                return  bf;
-        }
-        return null;
+        return props.get(ProductDerivations.getConfigurationKey(KEY, props));
     }
 
     /**
      * Set the value of this property in the given provider.
      */
     public static void set(ConfigurationProvider cp, String value) {
-        cp.addProperty("openjpa." + KEY, value);
+        String key = ProductDerivations.getConfigurationKey(KEY, 
+            cp.getProperties());
+        cp.addProperty(key, value);
     }
 
     public BrokerFactoryValue() {

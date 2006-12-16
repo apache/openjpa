@@ -665,27 +665,11 @@ public class ConfigurationImpl
      * Look up the given value, testing all available prefixes.
      */
     private Object get(Map map, Value val, boolean setLoadKey) {
-        String[] prefixes = ProductDerivations.getConfigurationPrefixes();
-        String firstKey = null;
-        String key;
-        Object o = null;
-        for (int i = 0; i < prefixes.length; i++) {
-            key = prefixes[i] + "." + val.getProperty();
-            if (firstKey == null) {
-                o = map.get(key);
-                if (o != null)
-                    firstKey = key;
-            } else if (map.containsKey(key)) {
-                // if we've already found a property with a previous prefix,
-                // then this is a collision.
-                throw new IllegalStateException(
-                    _loc.get("dup-with-different-prefixes", firstKey, key)
-                        .getMessage());
-            }
-        }
-        if (firstKey != null && setLoadKey)
-            val.setLoadKey(firstKey);
-        return o;
+        String key = ProductDerivations.getConfigurationKey(
+            val.getProperty(), map);
+        if (map.containsKey(key) && setLoadKey)
+            val.setLoadKey(key);
+        return map.get(key);
     }
 
     /**
