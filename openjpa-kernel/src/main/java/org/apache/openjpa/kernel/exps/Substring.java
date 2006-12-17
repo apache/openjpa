@@ -51,9 +51,9 @@ class Substring
         if (arg instanceof Object[]) {
             Object[] args = (Object[]) arg;
             int start = ((Number) args[0]).intValue();
-            int end = Math.min(((Number) args[1]).intValue(),
-                str.toString().length() - start + 1);
-            return str.toString().substring(start, end);
+            int end = ((Number) args[1]).intValue();
+            String string = str == null ? "" : str.toString();
+            return string.substring(start, Math.min(end, string.length()));
         }
         return str.toString().substring(((Number) arg).intValue());
     }
