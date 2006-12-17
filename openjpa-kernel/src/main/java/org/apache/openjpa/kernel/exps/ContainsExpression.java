@@ -16,6 +16,7 @@
 package org.apache.openjpa.kernel.exps;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.openjpa.kernel.StoreContext;
 
@@ -68,7 +69,8 @@ class ContainsExpression
      * Return the container collection for the given value.
      */
     protected Collection getCollection(Object obj) {
-        return (Collection) obj;
+        return obj instanceof Collection ?
+            (Collection) obj : Collections.singleton(obj);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {
