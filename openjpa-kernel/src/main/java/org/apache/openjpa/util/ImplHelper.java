@@ -15,7 +15,6 @@
  */
 package org.apache.openjpa.util;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -50,38 +49,6 @@ public class ImplHelper {
 
     private static final Localizer _loc = Localizer.forPackage
         (ImplHelper.class);
-
-    /**
-     * Return the getter method matching the given property name.
-     */
-    public static Method getGetter(Class cls, String prop) {
-        prop = StringUtils.capitalize(prop);
-        try {
-            return cls.getMethod("get" + prop, (Class[]) null);
-        } catch (Exception e) {
-            try {
-                return cls.getMethod("is" + prop, (Class[]) null);
-            } catch (Exception e2) {
-                throw new UserException(_loc.get("bad-getter", cls,
-                    prop)).setCause(e);
-            }
-        }
-    }
-
-    /**
-     * Return the setter method matching the given property name.
-     */
-    public static Method getSetter(Class cls, String prop) {
-        Method getter = getGetter(cls, prop);
-        prop = StringUtils.capitalize(prop);
-        try {
-            return cls.getMethod("set" + prop,
-                new Class[]{ getter.getReturnType() });
-        } catch (Exception e) {
-            throw new UserException(_loc.get("bad-setter", cls, prop)).
-                setCause(e);
-        }
-    }
 
     /**
      * Helper for store manager implementations. This method simply delegates

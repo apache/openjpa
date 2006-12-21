@@ -101,7 +101,6 @@ public class PCEnhancer {
     public static final int ENHANCE_AWARE = 2 << 0;
     public static final int ENHANCE_INTERFACE = 2 << 1;
     public static final int ENHANCE_PC = 2 << 2;
-    public static final int ENHANCE_OID = 2 << 3;
 
     private static final String PRE = "pc";
     private static final Class PCTYPE = PersistenceCapable.class;
@@ -206,14 +205,6 @@ public class PCEnhancer {
     }
 
     /**
-     * Return the bytecode representations of any oid classes that must be
-     * manipulated.
-     */
-    public Collection getObjectIdBytecode() {
-        return (_oids == null) ? Collections.EMPTY_LIST : _oids;
-    }
-
-    /**
      * Return the metadata for the class being manipulated, or null if not
      * a persistent type.
      */
@@ -311,8 +302,6 @@ public class PCEnhancer {
                 if (interfaces[i].getName().equals(PCTYPE.getName())) {
                     if (_log.isTraceEnabled())
                         _log.trace(_loc.get("pc-type", _pc.getType()));
-                    if (_meta != null && enhanceObjectId())
-                        return ENHANCE_OID;
                     return ENHANCE_NONE;
                 }
             }
@@ -335,8 +324,6 @@ public class PCEnhancer {
                 addAttachDetachCode();
                 addSerializationCode();
                 addCloningCode();
-                if (enhanceObjectId())
-                    ret |= ENHANCE_OID;
                 runAuxiliaryEnhancers();
                 return ret;
             }
@@ -1535,14 +1522,43 @@ public class PCEnhancer {
         FieldMetaData[] fmds = _meta.getDeclaredFields();
         Class type;
         String name;
+        Field field;
+        Method setter;
+        boolean reflect;
         for (int i = 0; i < fmds.length; i++) {
             if (!fmds[i].isPrimaryKey())
                 continue;
+            code.aload().setLocal(id);
 
             name = fmds[i].getName();
             type = fmds[i].getObjectIdFieldType();
+            if (_meta.getAccessType() == ClassMetaData.ACCESS_FIELD) {
+                setter = null;
+                field = Reflection.findField(oidType, name, true);
+                reflect = !Modifier.isPublic(field.getModifiers());
+                if (reflect) {
+                    code.constant().setValue(oidType);
+                    code.constant().setValue(name);
+                    code.constant().setValue(true);
+                    code.invokestatic().setMethod(Reflection.class, 
+                        "findField", Field.class, new Class[] { Class.class,
+                        String.class, boolean.class });
+                }
+            } else {
+                field = null;
+                setter = Reflection.findSetter(oidType, name, type, true);
+                reflect = !Modifier.isPublic(setter.getModifiers());
+                if (reflect) {
+                    code.constant().setValue(oidType);
+                    code.constant().setValue(name);
+                    setClassConstant(code, type);
+                    code.constant().setValue(true);
+                    code.invokestatic().setMethod(Reflection.class, 
+                        "findSetter", Method.class, new Class[] { Class.class,
+                        String.class, Class.class, boolean.class });
+                }
+            }
 
-            code.aload().setLocal(id);
             if (fieldManager) {
                 code.aload().setParam(0);
                 code.constant().setValue(i);
@@ -1554,7 +1570,7 @@ public class PCEnhancer {
                 // if the type of this field meta data is
                 // non-primitive and non-string, be sure to cast
                 // to the appropriate type.
-                if (!type.isPrimitive()
+                if (!reflect && !type.isPrimitive()
                     && !type.getName().equals(String.class.getName()))
                     code.checkcast().setType(type);
             } else {
@@ -1566,17 +1582,47 @@ public class PCEnhancer {
                     addExtractObjectIdFieldValueCode(code, fmds[i]);
             }
 
-            if (_meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
-                code.putfield().setField(findDeclaredField(oidType, name));
+            if (reflect && field != null) {
+                code.invokestatic().setMethod(Reflection.class, "set", 
+                    void.class, new Class[] { Object.class, Field.class,
+                    (type.isPrimitive()) ? type : Object.class });
+            } else if (reflect) { 
+                code.invokestatic().setMethod(Reflection.class, "set", 
+                    void.class, new Class[] { Object.class, Method.class,
+                    (type.isPrimitive()) ? type : Object.class });
+            } else if (field != null)
+                code.putfield().setField(field);
             else
-                code.invokevirtual().setMethod(findDeclaredMethod
-                    (oidType, "set" + StringUtils.capitalize(name),
-                        new Class[]{ type }));
+                code.invokevirtual().setMethod(setter);
         }
         code.vreturn();
 
         code.calculateMaxStack();
         code.calculateMaxLocals();
+    }
+
+    /**
+     * Works around a bug in serp when primitive type constants. 
+     */
+    private static void setClassConstant(Code code, Class type) {
+        if (type == boolean.class) 
+            code.getstatic().setField(Boolean.class, "TYPE", Class.class);
+        else if (type == byte.class) 
+            code.getstatic().setField(Byte.class, "TYPE", Class.class);
+        else if (type == char.class) 
+            code.getstatic().setField(Character.class, "TYPE", Class.class);
+        else if (type == double.class) 
+            code.getstatic().setField(Double.class, "TYPE", Class.class);
+        else if (type == float.class) 
+            code.getstatic().setField(Float.class, "TYPE", Class.class);
+        else if (type == int.class) 
+            code.getstatic().setField(Integer.class, "TYPE", Class.class);
+        else if (type == long.class) 
+            code.getstatic().setField(Long.class, "TYPE", Class.class);
+        else if (type == short.class) 
+            code.getstatic().setField(Short.class, "TYPE", Class.class);
+        else
+            code.constant().setValue(type);
     }
 
     /**
@@ -1788,9 +1834,11 @@ public class PCEnhancer {
         // this.<field> = id.<field>
         // or for single field identity: id.getId ()
         FieldMetaData[] fmds = _meta.getDeclaredFields();
+        String name;
         Class type;
         Class unwrapped;
-        String name;
+        Field field;
+        Method getter;
         for (int i = 0; i < fmds.length; i++) {
             if (!fmds[i].isPrimaryKey())
                 continue;
@@ -1840,11 +1888,41 @@ public class PCEnhancer {
                             code.invokespecial().setMethod(type, "<init>",
                                 void.class, new Class[]{ unwrapped });
                     }
-                } else if (_meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
-                    code.getfield().setField(findDeclaredField(oidType, name));
-                else // property
-                    code.invokevirtual().setMethod(findDeclaredGetterMethod
-                        (oidType, StringUtils.capitalize(name)));
+                } else if (_meta.getAccessType() == ClassMetaData.ACCESS_FIELD){
+                    field = Reflection.findField(oidType, name, true);
+                    if (Modifier.isPublic(field.getModifiers()))
+                        code.getfield().setField(field);
+                    else {
+                        // Reflection.getXXX(oid, Reflection.findField(...));
+                        code.constant().setValue(oidType);
+                        code.constant().setValue(name);
+                        code.constant().setValue(true);
+                        code.invokestatic().setMethod(Reflection.class,
+                            "findField", Field.class, new Class[] { 
+                            Class.class, String.class, boolean.class });
+                        code.invokestatic().setMethod
+                            (getReflectionGetterMethod(type, Field.class));
+                        if (!type.isPrimitive() && type != Object.class)
+                            code.checkcast().setType(type);
+                    }
+                } else {
+                    getter = Reflection.findGetter(oidType, name, true);
+                    if (Modifier.isPublic(getter.getModifiers()))
+                        code.invokevirtual().setMethod(getter);
+                    else {
+                        // Reflection.getXXX(oid, Reflection.findGetter(...));
+                        code.constant().setValue(oidType);
+                        code.constant().setValue(name);
+                        code.constant().setValue(true);
+                        code.invokestatic().setMethod(Reflection.class,
+                            "findGetter", Method.class, new Class[] { 
+                            Class.class, String.class, boolean.class });
+                        code.invokestatic().setMethod
+                            (getReflectionGetterMethod(type, Method.class));
+                        if (!type.isPrimitive() && type != Object.class)
+                            code.checkcast().setType(type);
+                    }
+                }
             }
 
             if (fieldManager)
@@ -1908,6 +1986,19 @@ public class PCEnhancer {
             default:
                 return fmd.getDeclaredType();
         }
+    }
+
+    /**
+     * Return the proper getter method of the {@link Reflection} helper for
+     * a field or getter method of the given type.
+     */
+    private Method getReflectionGetterMethod(Class type, Class argType)
+        throws NoSuchMethodException {
+        String name = "get";
+        if (type.isPrimitive())
+            name += StringUtils.capitalize(type.getName());
+        return Reflection.class.getMethod(name, new Class[] { Object.class, 
+            argType }); 
     }
 
     /**
@@ -2725,123 +2816,6 @@ public class PCEnhancer {
             code.calculateMaxStack();
             code.calculateMaxLocals();
         }
-    }
-
-    /**
-     * Enhance the PC's object id class.
-     */
-    private boolean enhanceObjectId()
-        throws IOException {
-        Class cls = _meta.getObjectIdType();
-        if (cls == null)
-            return false;
-
-        FieldMetaData[] pks = _meta.getPrimaryKeyFields();
-        int access = _meta.getAccessType();
-        if (_meta.isOpenJPAIdentity()) {
-            if (pks[0].getDeclaredTypeCode() != JavaTypes.OID)
-                return false;
-            cls = pks[0].getDeclaredType();
-            access = pks[0].getEmbeddedMetaData().getAccessType();
-            pks = pks[0].getEmbeddedMetaData().getFields();
-        }
-
-        String cap;
-        for (int i = 0; i < pks.length; i++) {
-            if (access == ClassMetaData.ACCESS_FIELD)
-                makeObjectIdFieldPublic(findDeclaredField(cls,
-                    pks[i].getName()));
-            else // property
-            {
-                cap = StringUtils.capitalize(pks[i].getName());
-                makeObjectIdMethodPublic(findDeclaredGetterMethod(cls, cap));
-                makeObjectIdMethodPublic(findDeclaredMethod(cls, "set" + cap,
-                    new Class[]{ pks[i].getDeclaredType() }));
-            }
-        }
-        return _oids != null;
-    }
-
-    /**
-     * Find the given (possibly private) field.
-     */
-    private Field findDeclaredField(Class cls, String name) {
-        if (cls == null || cls == Object.class)
-            return null;
-
-        try {
-            return cls.getDeclaredField(name);
-        } catch (NoSuchFieldException nsfe) {
-            return findDeclaredField(cls.getSuperclass(), name);
-        } catch (Exception e) {
-            throw new GeneralException(e);
-        }
-    }
-
-    /**
-     * Return the getter method for the given capitalized property name.
-     */
-    private Method findDeclaredGetterMethod(Class cls, String baseName) {
-        Method meth = findDeclaredMethod(cls, "get" + baseName, null);
-        if (meth != null)
-            return meth;
-        return findDeclaredMethod(_meta.getObjectIdType(), "is" + baseName,
-            null);
-    }
-
-    /**
-     * Find the given (possibly private) method.
-     */
-    private Method findDeclaredMethod(Class cls, String name, Class[] params) {
-        if (cls == null || cls == Object.class)
-            return null;
-
-        try {
-            return cls.getDeclaredMethod(name, params);
-        } catch (NoSuchMethodException nsme) {
-            return findDeclaredMethod(cls.getSuperclass(), name, params);
-        } catch (Exception e) {
-            throw new GeneralException(e);
-        }
-    }
-
-    /**
-     * Ensure that the given oid field is public.
-     */
-    private void makeObjectIdFieldPublic(Field field) {
-        if (Modifier.isPublic(field.getModifiers()))
-            return;
-
-        BCClass bc = getObjectIdBytecode(field.getDeclaringClass());
-        bc.getDeclaredField(field.getName()).makePublic();
-    }
-
-    /**
-     * Ensure that the given oid method is public.
-     */
-    private void makeObjectIdMethodPublic(Method meth) {
-        if (Modifier.isPublic(meth.getModifiers()))
-            return;
-
-        BCClass bc = getObjectIdBytecode(meth.getDeclaringClass());
-        bc.getDeclaredMethod(meth.getName(), meth.getParameterTypes()).
-            makePublic();
-    }
-
-    /**
-     * Return the bytecode for the given oid class, creating and caching it
-     * if necessary.
-     */
-    private BCClass getObjectIdBytecode(Class cls) {
-        BCClass bc = _pc.getProject().loadClass(cls);
-        if (_oids == null)
-            _oids = new ArrayList(3);
-        if (!_oids.contains(bc)) {
-            if (_log.isTraceEnabled())
-                _log.trace(_loc.get("enhance-oid", bc.getName()));
-            _oids.add(bc);
-        }
-        return bc;
     }
 
     /**
@@ -3716,22 +3690,8 @@ public class PCEnhancer {
             else if (status == ENHANCE_AWARE) {
                 log.info(_loc.get("enhance-aware"));
                 enhancer.record();
-            } else {
+            } else
                 enhancer.record();
-                if ((status & ENHANCE_OID) != 0) {
-                    if (log.isInfoEnabled()) {
-                        Collection oids = enhancer.getObjectIdBytecode();
-                        StringBuffer buf = new StringBuffer();
-                        for (Iterator oiditr = oids.iterator();
-                            oiditr.hasNext();) {
-                            buf.append(((BCClass) oiditr.next()).getName());
-                            if (oiditr.hasNext())
-                                buf.append(", ");
-                        }
-                        log.info(_loc.get("enhance-running-oids", buf));
-                    }
-                }
-            }
             project.clear();
         }
         return true;

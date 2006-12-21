@@ -36,6 +36,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.Localizer;
@@ -1894,95 +1895,45 @@ public class ClassMetaData
             throw new MetaDataException(_loc.get("no-pk", _type));
 
         // check that the oid type contains all pk fields
-        try {
-            Field f;
-            Method m;
-            String cap;
-            int type;
-            Class c;
-            int access = meta.getAccessType();
-            for (int i = 0; i < fmds.length; i++) {
-                switch (fmds[i].getDeclaredTypeCode()) {
-                    case JavaTypes.ARRAY:
-                        c = fmds[i].getDeclaredType().getComponentType();
-                        if (c == byte.class || c == Byte.class
-                            || c == char.class || c == Character.class) {
-                            c = fmds[i].getDeclaredType();
-                            break;
-                        }
-                        // else no break
-                    case JavaTypes.PC_UNTYPED:
-                    case JavaTypes.COLLECTION:
-                    case JavaTypes.MAP:
-                    case JavaTypes.OID: // we're validating embedded fields
-                        throw new MetaDataException(_loc.get("bad-pk-type",
-                            fmds[i]));
-                    default:
-                        c = fmds[i].getObjectIdFieldType();
-                }
-
-                if (access == ACCESS_FIELD) {
-                    f = findField(oid, fmds[i].getName(), runtime);
-                    if (f == null || !f.getType().isAssignableFrom(c))
-                        throw new MetaDataException(_loc.get("invalid-id",
-                            _type)).setFailedObject(fmds[i].getName());
-                } else if (access == ACCESS_PROPERTY) {
-                    cap = StringUtils.capitalize(fmds[i].getName());
-                    type = fmds[i].getDeclaredTypeCode();
-
-                    m = findMethod(oid, "get" + cap, null, runtime);
-                    if (m == null && (type == JavaTypes.BOOLEAN
-                        || type == JavaTypes.BOOLEAN_OBJ))
-                        m = findMethod(oid, "is" + cap, null, runtime);
-                    if (m == null || !m.getReturnType().isAssignableFrom(c))
-                        throw new MetaDataException(_loc.get("invalid-id",
-                            _type)).setFailedObject("get" + cap);
-
-                    m = findMethod(oid, "set" + cap,
-                        new Class[]{ fmds[i].getDeclaredType() }, runtime);
-                    if (m == null || m.getReturnType() != void.class)
-                        throw new MetaDataException(_loc.get("invalid-id",
-                            _type)).setFailedObject("set" + cap);
-                }
+        Field f;
+        Method m;
+        Class c;
+        for (int i = 0; i < fmds.length; i++) {
+            switch (fmds[i].getDeclaredTypeCode()) {
+                case JavaTypes.ARRAY:
+                    c = fmds[i].getDeclaredType().getComponentType();
+                    if (c == byte.class || c == Byte.class
+                        || c == char.class || c == Character.class) {
+                        c = fmds[i].getDeclaredType();
+                        break;
+                    }
+                    // else no break
+                case JavaTypes.PC_UNTYPED:
+                case JavaTypes.COLLECTION:
+                case JavaTypes.MAP:
+                case JavaTypes.OID: // we're validating embedded fields
+                    throw new MetaDataException(_loc.get("bad-pk-type",
+                        fmds[i]));
+                default:
+                    c = fmds[i].getObjectIdFieldType();
             }
-        } catch (OpenJPAException ke) {
-            throw ke;
-        } catch (Throwable t) {
-            throw new MetaDataException(_loc.get("invalid-id", _type)).
-                setCause(t);
-        }
-    }
 
-    /**
-     * Find the named field, recursing to superclasses if necessary.
-     */
-    private static Field findField(Class c, String name, boolean pub)
-        throws Exception {
-        if (c == null || c == Object.class)
-            return null;
-
-        try {
-            return (pub) ? c.getField(name) : c.getDeclaredField(name);
-        } catch (NoSuchFieldException nsfe) {
-            return (pub) ? null : findField(c.getSuperclass(), name, false);
-        }
-    }
-
-    /**
-     * Find the named method, recursing to superclasses if necessary.
-     */
-    private static Method findMethod(Class c, String name, Class[] params,
-        boolean pub)
-        throws Exception {
-        if (c == null || c == Object.class)
-            return null;
-
-        try {
-            return (pub) ? c.getMethod(name, params)
-                : c.getDeclaredMethod(name, params);
-        } catch (NoSuchMethodException nsfe) {
-            return (pub) ? null : findMethod(c.getSuperclass(), name, params,
-                false);
+            if (meta.getAccessType() == ACCESS_FIELD) {
+                f = Reflection.findField(oid, fmds[i].getName(), false);
+                if (f == null || !f.getType().isAssignableFrom(c))
+                    throw new MetaDataException(_loc.get("invalid-id",
+                        _type, fmds[i].getName()));
+            } else if (meta.getAccessType() == ACCESS_PROPERTY) {
+                m = Reflection.findGetter(oid, fmds[i].getName(), false);
+                if (m == null || !m.getReturnType().isAssignableFrom(c))
+                    throw new MetaDataException(_loc.get("invalid-id",
+                        _type, fmds[i].getName()));
+                m = Reflection.findSetter(oid, fmds[i].getName(),
+                    fmds[i].getDeclaredType(), false);
+                if (m == null || m.getReturnType() != void.class)
+                    throw new MetaDataException(_loc.get("invalid-id",
+                        _type, fmds[i].getName()));
+            }
         }
     }
 

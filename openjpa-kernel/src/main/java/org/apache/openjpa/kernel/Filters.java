@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.util.Localizer;
@@ -854,16 +855,8 @@ public class Filters {
         if (target == null || hintKey == null)
             return null;
 
-        Method getter = ImplHelper.getGetter(target.getClass(), hintKey);
-        try {
-            return getter.invoke(target, (Object[]) null);
-        } catch (Exception e) {
-            Throwable t = e;
-            if (e instanceof InvocationTargetException)
-                t = ((InvocationTargetException) e).getTargetException();
-            throw new UserException(_loc.get("bad-getter-hint",
-                target.getClass(), hintKey)).setCause(t);
-        }
+        Method getter = Reflection.findGetter(target.getClass(), hintKey, true);
+        return Reflection.get(target, getter);
     }
 
     /**
@@ -874,22 +867,21 @@ public class Filters {
         if (target == null || hintKey == null)
             return;
 
-        Method setter = ImplHelper.getSetter(target.getClass(), hintKey);
-        try {
-            if (value instanceof String) {
-                if ("null".equals(value))
-                    value = null;
-                else
+        Method setter = Reflection.findSetter(target.getClass(), hintKey, true);
+        if (value instanceof String) {
+            if ("null".equals(value))
+                value = null;
+            else {
+                try {
                     value = Strings.parse((String) value,
                         setter.getParameterTypes()[0]);
+                } catch (Exception e) {
+                    throw new UserException(_loc.get("bad-setter-hint-arg",
+                        hintKey, value, setter.getParameterTypes()[0])).
+                        setCause(e);
+                }
             }
-            setter.invoke(target, new Object[]{ value });
-        } catch (Exception e) {
-            Throwable t = e;
-            if (e instanceof InvocationTargetException)
-                t = ((InvocationTargetException) e).getTargetException();
-            throw new UserException(_loc.get("bad-setter-hint",
-				target.getClass (), hintKey, value)).setCause (t);
-		}
+        }
+        Reflection.set(target, setter, value);
 	}
 }

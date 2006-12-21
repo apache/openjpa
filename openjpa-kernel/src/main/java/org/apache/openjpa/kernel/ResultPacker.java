@@ -285,10 +285,7 @@ public class ResultPacker {
         }
 
         // check setter methods
-        String setName = "set" + Character.toUpperCase(alias.charAt(0));
-        if (alias.length() > 1)
-            setName = setName + alias.substring(1);
-
+        String setName = "set" + StringUtils.capitalize(alias);
         Method method = null;
         boolean eqName = false;
         Class[] params;
