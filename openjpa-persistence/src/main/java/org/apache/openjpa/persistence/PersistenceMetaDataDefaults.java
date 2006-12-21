@@ -43,6 +43,7 @@ import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.AbstractMetaDataDefaults;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -282,8 +283,8 @@ public class PersistenceMetaDataDefaults
             try {
                 // check for setters for methods
                 Method setter = meta.getDescribedType().getDeclaredMethod("set"
-                    + name.substring(0, 1).toUpperCase() + name.substring(1),
-                    new Class[] { ((Method) member).getReturnType() });
+                    + StringUtils.capitalize(name), new Class[] { 
+                    ((Method) member).getReturnType() });
                 if (setter == null)
                     return false;
             } catch (Exception e) {

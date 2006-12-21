@@ -24,6 +24,7 @@ import java.util.BitSet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
+import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -689,30 +690,17 @@ public class ObjectIdStateManager
             return null;
 
         FieldMetaData fmd = getMetaData().getField(field);
-        try {
-            if (fmd.getBackingMember() instanceof Field)
-                return ((Field) fmd.getBackingMember()).get(_oid);
-            if (fmd.getBackingMember() instanceof Method)
-                return ((Method) fmd.getBackingMember()).
-                    invoke(_oid, (Object[]) null);
+        if (fmd.getBackingMember() instanceof Field)
+            return Reflection.get(_oid, (Field) fmd.getBackingMember());
+        if (fmd.getBackingMember() instanceof Method)
+            return Reflection.get(_oid, (Method) fmd.getBackingMember());
 
-            if (fmd.getDefiningMetaData().getAccessType()
-                == ClassMetaData.ACCESS_FIELD)
-                return _oid.getClass().getField(fmd.getName()).get(_oid);
-
-            // property
-            Method meth;
-            try {
-                meth = _oid.getClass().getMethod("get"
-                    + StringUtils.capitalize(fmd.getName()), (Class[]) null);
-            } catch (NoSuchMethodException nsme) {
-                meth = _oid.getClass().getMethod("is"
-                    + StringUtils.capitalize(fmd.getName()), (Class[]) null);
-            }
-            return meth.invoke(_oid, (Object[]) null);
-        } catch (Exception e) {
-            throw new GeneralException(e);
-        }
+        if (fmd.getDefiningMetaData().getAccessType()
+            == ClassMetaData.ACCESS_FIELD)
+            return Reflection.get(_oid, Reflection.findField(_oid.getClass(), 
+                fmd.getName(), true));
+        return Reflection.get(_oid, Reflection.findGetter(_oid.getClass(),
+            fmd.getName(), true));
     }
 
     /**
@@ -731,18 +719,14 @@ public class ObjectIdStateManager
             return;
 
         FieldMetaData fmd = getMetaData().getField(field);
-        try {
-            if (fmd.getBackingMember() instanceof Field)
-                ((Field) fmd.getBackingMember()).set(_oid, val);
-            else if (fmd.getDefiningMetaData().getAccessType()
-                == ClassMetaData.ACCESS_FIELD)
-                _oid.getClass().getField(fmd.getName()).set(_oid, val);
-            else // property
-                _oid.getClass().getMethod("set" + StringUtils.capitalize
-                    (fmd.getName()), new Class[]{ fmd.getDeclaredType() }).
-                    invoke(_oid, new Object[]{ val });
-        } catch (Exception e) {
-            throw new GeneralException(e);
-        }
+        if (fmd.getBackingMember() instanceof Field)
+            Reflection.set(_oid, (Field) fmd.getBackingMember(), val);
+        else if (fmd.getDefiningMetaData().getAccessType()
+            == ClassMetaData.ACCESS_FIELD) {
+            Reflection.set(_oid, Reflection.findField(_oid.getClass(), 
+                fmd.getName(), true), val);
+        } else
+            Reflection.set(_oid, Reflection.findSetter(_oid.getClass(),
+                fmd.getName(), fmd.getDeclaredType(), true), val);
 	}
 }

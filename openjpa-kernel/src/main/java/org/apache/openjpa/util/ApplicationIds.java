@@ -16,7 +16,6 @@
 package org.apache.openjpa.util;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Date;
 
@@ -24,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.FieldManager;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.ObjectIdStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreManager;
@@ -84,24 +84,15 @@ public class ApplicationIds {
         if (meta.isObjectIdTypeShared())
             oid = ((ObjectId) oid).getId();
         Class oidType = oid.getClass();
-        try {
-            Field field;
-            Method meth;
-            for (int i = 0; i < fmds.length; i++) {
-                if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD) {
-                    field = oidType.getField(fmds[i].getName());
-                    pks[i] = field.get(oid);
-                } else { // property
-                    meth = ImplHelper.getGetter(oidType, fmds[i].getName());
-                    pks[i] = meth.invoke(oid, (Object[]) null);
-                }
-            }
-            return pks;
-        } catch (OpenJPAException ke) {
-            throw ke;
-        } catch (Throwable t) {
-            throw new GeneralException(t);
+        for (int i = 0; i < fmds.length; i++) {
+            if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
+                pks[i] = Reflection.get(oid, Reflection.findField(oidType, 
+                    fmds[i].getName(), true));
+            else
+                pks[i] = Reflection.get(oid, Reflection.findGetter(oidType,
+                    fmds[i].getName(), true));
         }
+        return pks;
     }
 
     /**
@@ -133,19 +124,19 @@ public class ApplicationIds {
                 case JavaTypes.INT:
                 case JavaTypes.INT_OBJ:
                     if (!convert && !(val instanceof Integer))
-                        throw new ClassCastException("!(x instanceof Byte)");
+                        throw new ClassCastException("!(x instanceof Integer)");
                     return new IntId(meta.getDescribedType(),
                         ((Number) val).intValue());
                 case JavaTypes.LONG:
                 case JavaTypes.LONG_OBJ:
                     if (!convert && !(val instanceof Long))
-                        throw new ClassCastException("!(x instanceof Byte)");
+                        throw new ClassCastException("!(x instanceof Long)");
                     return new LongId(meta.getDescribedType(),
                         ((Number) val).longValue());
                 case JavaTypes.SHORT:
                 case JavaTypes.SHORT_OBJ:
                     if (!convert && !(val instanceof Short))
-                        throw new ClassCastException("!(x instanceof Byte)");
+                        throw new ClassCastException("!(x instanceof Short)");
                     return new ShortId(meta.getDescribedType(),
                         ((Number) val).shortValue());
                 case JavaTypes.STRING:
@@ -174,41 +165,29 @@ public class ApplicationIds {
 
         // default to reflection
         Class oidType = meta.getObjectIdType();
+        Object copy = null;
         try {
-            // create a new id
-            Object copy = oidType.newInstance();
-
-            // set each field
-            FieldMetaData[] fmds = meta.getPrimaryKeyFields();
-            Field field;
-            Method meth;
-            Class[] paramTypes = null;
-            Object[] params = null;
-            for (int i = 0; i < fmds.length; i++) {
-                if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD) {
-                    field = oidType.getField(fmds[i].getName());
-                    field.set(copy, (convert) ? JavaTypes.convert(pks[i],
-                        fmds[i].getObjectIdFieldTypeCode()) : pks[i]);
-                } else { // property
-                    if (paramTypes == null)
-                        paramTypes = new Class[1];
-                    paramTypes[0] = fmds[i].getDeclaredType();
-                    meth = oidType.getMethod("set" + StringUtils.capitalize
-                        (fmds[i].getName()), paramTypes);
-                    if (params == null)
-                        params = new Object[1];
-                    params[0] = (convert) ? JavaTypes.convert(pks[i],
-                        fmds[i].getObjectIdFieldTypeCode()) : pks[i];
-                    meth.invoke(copy, params);
-                }
-            }
-
-            if (meta.isObjectIdTypeShared())
-                copy = new ObjectId(meta.getDescribedType(), copy);
-            return copy;
+            copy = oidType.newInstance();
         } catch (Throwable t) {
             throw new GeneralException(t);
         }
+
+        FieldMetaData[] fmds = meta.getPrimaryKeyFields();
+        Object val;
+        for (int i = 0; i < fmds.length; i++) {
+            val = (convert) ? JavaTypes.convert(pks[i],
+                fmds[i].getObjectIdFieldTypeCode()) : pks[i];
+            if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
+                Reflection.set(copy, Reflection.findField(oidType, 
+                    fmds[i].getName(), true), val); 
+            else
+                Reflection.set(copy, Reflection.findSetter(oidType, 
+                    fmds[i].getName(), fmds[i].getDeclaredType(), true), val);
+        }
+
+        if (meta.isObjectIdTypeShared())
+            copy = new ObjectId(meta.getDescribedType(), copy);
+        return copy;
     }
 
     /**
@@ -306,39 +285,31 @@ public class ApplicationIds {
             return null;
 
         Class oidType = oid.getClass();
+        Object copy = null;
         try {
-            Object copy = oidType.newInstance();
-            Field field;
-            Method meth;
-            String cap;
-            Class[] paramTypes = null;
-            Object[] params = null;
-            for (int i = 0; i < fmds.length; i++) {
-                if (fmds[i].getManagement() != FieldMetaData.MANAGE_PERSISTENT)
-                    continue;
-
-                if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD) {
-                    field = oidType.getField(fmds[i].getName());
-                    field.set(copy, field.get(oid));
-                } else { // property
-                    if (paramTypes == null)
-                        paramTypes = new Class[1];
-                    paramTypes[0] = fmds[i].getObjectIdFieldType();
-                    cap = StringUtils.capitalize(fmds[i].getName());
-                    meth = oidType.getMethod("set" + cap, paramTypes);
-                    if (params == null)
-                        params = new Object[1];
-                    params[0] = ImplHelper.getGetter(oidType, cap).
-                        invoke(oid, (Object[]) null);
-                    meth.invoke(copy, params);
-                }
-            }
-            return copy;
-        } catch (OpenJPAException ke) {
-            throw ke;
+            copy = oidType.newInstance();
         } catch (Throwable t) {
             throw new GeneralException(t);
         }
+
+        Field field;
+        Object val;
+        for (int i = 0; i < fmds.length; i++) {
+            if (fmds[i].getManagement() != FieldMetaData.MANAGE_PERSISTENT)
+                continue;
+
+            if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD) {
+                    field = Reflection.findField(oidType, fmds[i].getName(),
+                        true);
+                    Reflection.set(copy, field, Reflection.get(oid, field));
+                } else { // property
+                    val = Reflection.get(oid, Reflection.findGetter(oidType,
+                        fmds[i].getName(), true));
+                    Reflection.set(copy, Reflection.findSetter(oidType, fmds[i].
+                        getName(), fmds[i].getObjectIdFieldType(), true), val);
+                }
+            }
+            return copy;
     }
 
     /**
@@ -352,19 +323,11 @@ public class ApplicationIds {
 
         ClassMetaData meta = fmd.getDefiningMetaData();
         Class oidType = oid.getClass();
-        try {
-            if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
-                return oidType.getField(fmd.getName()).get(oid);
-
-            // property
-            String cap = StringUtils.capitalize(fmd.getName());
-            return ImplHelper.getGetter(oidType, cap).
-                invoke(oid, (Object[]) null);
-        } catch (OpenJPAException ke) {
-            throw ke;
-        } catch (Throwable t) {
-            throw new GeneralException(t);
-        }
+        if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
+            return Reflection.get(oid, Reflection.findField(oidType, 
+                fmd.getName(), true));
+        return Reflection.get(oid, Reflection.findGetter(oidType, fmd.getName(),
+            true));
     }
 
     /**

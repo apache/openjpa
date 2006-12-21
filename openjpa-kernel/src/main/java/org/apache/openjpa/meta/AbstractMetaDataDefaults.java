@@ -22,6 +22,7 @@ import java.lang.reflect.Modifier;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PCRegistry;
+import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InternalException;
@@ -183,8 +184,8 @@ public abstract class AbstractMetaDataDefaults
                 if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
                     member = cls.getDeclaredField(fieldNames[i]);
                 else
-                    member = getBackingMethod(meta.getDescribedType(),
-                        fieldNames[i], fieldTypes[i]);
+                    member = Reflection.findGetter(meta.getDescribedType(),
+                        fieldNames[i], true);
                 fmd = meta.addDeclaredField(fieldNames[i], fieldTypes[i]);
                 fmd.backingMember(member);
                 populate(fmd);
@@ -310,51 +311,13 @@ public abstract class AbstractMetaDataDefaults
             if (fmd.getDefiningMetaData().getAccessType() ==
                 ClassMetaData.ACCESS_FIELD)
                 return fmd.getDeclaringType().getDeclaredField(fmd.getName());
-            return getBackingMethod(fmd.getDeclaringType(), fmd.getName(),
-                fmd.getDeclaredType());
+            return Reflection.findGetter(fmd.getDeclaringType(), fmd.getName(),
+                true);
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (Exception e) {
             throw new InternalException(e);
         }
-    }
-
-    /**
-     * Return the method backing the given field metadata. Looks for
-     * "get" and "is" methods with no parameters by default. This looks
-     * for elements defined in <code>cls</code> and its superclasses.
-     */
-    private Method getBackingMethod(Class cls, String name,
-        Class methReturnType)
-        throws NoSuchMethodException {
-        String clsName = cls.getName();
-        String capName = StringUtils.capitalize(name);
-        boolean isBoolean = methReturnType == boolean.class
-            || methReturnType == Boolean.class;
-        do {
-            try {
-                return cls.getDeclaredMethod("get" + capName, (Class[]) null);
-            } catch (NoSuchMethodException e) {
-            }
-
-            if (isBoolean) {
-                try {
-                    return cls.getDeclaredMethod("is" + capName,
-                        (Class[]) null);
-                } catch (NoSuchMethodException e) {
-                }
-            }
-            // ### EJB3: recursion should be limited to manageable types,
-            // ### including embeddable and embeddable superclass
-            cls = cls.getSuperclass();
-        }
-        while (cls != null);
-
-        if (!isBoolean)
-            throw new UserException(_loc.get("pc-registry-no-method",
-                name, clsName, "get" + capName));
-        throw new UserException(_loc.get("pc-registry-no-boolean-method",
-            new String[]{ name, clsName, "get" + capName, "is" + capName }));
     }
 
     public Class getUnimplementedExceptionType() {

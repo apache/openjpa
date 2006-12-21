@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
@@ -38,7 +39,6 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.OpenJPAException;
 import serp.util.Strings;
 
@@ -211,7 +211,7 @@ public class EntityManagerFactoryImpl
                 continue; 
             prop = prop.substring(prefix.length());
             try {
-                setter = ImplHelper.getSetter(em.getClass(), prop);
+                setter = Reflection.findSetter(em.getClass(), prop, true);
             } catch (OpenJPAException ke) {
                 if (errs == null)
                     errs = new LinkedList<RuntimeException>();
@@ -228,11 +228,13 @@ public class EntityManagerFactoryImpl
                         val = Strings.parse((String) val,
                             setter.getParameterTypes()[0]);
                 }
-                setter.invoke(em, new Object[]{ val });
-            } catch (Exception e) {
+                Reflection.set(em, setter, val);
+            } catch (Throwable t) {
+                while (t.getCause() != null)
+                    t = t.getCause();
                 ArgumentException err = new ArgumentException(_loc.get
                     ("bad-em-prop", prop, entry.getValue()),
-                    new Throwable[]{ e }, null, true);
+                    new Throwable[]{ t }, null, true);
                 if (errs == null)
                     errs = new LinkedList<RuntimeException>();
                 errs.add(err);

@@ -1,0 +1,537 @@
+package org.apache.openjpa.enhance;
+
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.GeneralException; 
+import org.apache.openjpa.util.UserException; 
+
+/**
+ * Reflection utilities used to support and augment enhancement.  Used both
+ * at enhancement time and at runtime.
+ *
+ * @author Abe White
+ */
+public class Reflection {
+
+    private static final Localizer _loc = Localizer.forPackage
+        (Reflection.class);
+
+    /**
+     * Return the getter method matching the given property name, optionally
+     * throwing an exception if none.
+     */
+    public static Method findGetter(Class cls, String prop, boolean mustExist) {
+        prop = StringUtils.capitalize(prop);
+        String name = "get" + prop;
+        try {
+            for (Class c = cls; c != null && c != Object.class; 
+                c = c.getSuperclass()) {
+                try {
+                    return c.getDeclaredMethod(name, (Class[]) null);
+                } catch (NoSuchMethodException nsme) {
+                    try {
+                        Method m = c.getDeclaredMethod("is" + prop, 
+                            (Class[]) null);
+                        if (m != null && (m.getReturnType() == boolean.class
+                            || m.getReturnType() == Boolean.class))
+                            return m;
+                    } catch (NoSuchMethodException nsme2) {
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new GeneralException(e);
+        }
+
+        if (mustExist)
+            throw new UserException(_loc.get("bad-getter", cls, prop));
+        return null;
+    }
+
+    /**
+     * Return the setter method matching the given property name, optionally
+     * throwing an exception if none.  The property must also have a getter.
+     */
+    public static Method findSetter(Class cls, String prop, boolean mustExist) {
+        Method getter = findGetter(cls, prop, mustExist);
+        return (getter == null) ? null 
+            : findSetter(cls, prop, getter.getReturnType(), mustExist);
+    }
+
+    /**
+     * Return the setter method matching the given property name, optionally
+     * throwing an exception if none.
+     */
+    public static Method findSetter(Class cls, String prop, Class param,
+        boolean mustExist) {
+        String name = "set" + StringUtils.capitalize(prop);
+        Class[] params = new Class[] { param };
+        try {
+            for (Class c = cls; c != null && c != Object.class; 
+                c = c.getSuperclass()) {
+                try {
+                    return c.getDeclaredMethod(name, params);
+                } catch (NoSuchMethodException nsme) {
+                }
+            }
+        } catch (Exception e) {
+            throw new GeneralException(e);
+        }
+
+        if (mustExist)
+            throw new UserException(_loc.get("bad-setter", cls, prop));
+        return null;
+    }
+
+    /**
+     * Return the field with the given name, optionally throwing an exception 
+     * if none.
+     */
+    public static Field findField(Class cls, String name, boolean mustExist) {
+        try {
+            for (Class c = cls; c != null && c != Object.class; 
+                c = c.getSuperclass()) {
+                try {
+                    return c.getDeclaredField(name);
+                } catch (NoSuchFieldException nsfe) {
+                }
+            }
+        } catch (Exception e) {
+            throw new GeneralException(e);
+        }
+
+        if (mustExist)
+            throw new UserException(_loc.get("bad-field", cls, name));
+        return null;
+    }
+
+    /**
+     * Return the value of the given field in the given object.
+     */
+    public static Object get(Object target, Field field) {
+        if (target == null || field == null)
+            return null;
+        makeAccessible(field, field.getModifiers());
+        try {
+            return field.get(target);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Make the given member accessible if it isn't already.
+     */
+    private static void makeAccessible(AccessibleObject ao, int mods) {
+        try {
+            if (!Modifier.isPublic(mods) && !ao.isAccessible())
+                ao.setAccessible(true);
+        } catch (SecurityException se) {
+            throw new UserException(_loc.get("reflect-security", ao)).
+                setFatal(true);
+        }
+    }
+
+    /**
+     * Wrap the given reflection exception as a runtime exception.
+     */
+    private static RuntimeException wrapReflectionException(Throwable t) {
+        if (t instanceof InvocationTargetException)
+            t = ((InvocationTargetException) t).getTargetException();    
+        if (t instanceof RuntimeException)
+            return (RuntimeException) t;
+        return new GeneralException(t);
+    }
+
+    /**
+     * Return the value of the given field in the given object.
+     */
+    public static boolean getBoolean(Object target, Field field) {
+        if (target == null || field == null)
+            return false;
+        makeAccessible(field, field.getModifiers());
+        try {
+            return field.getBoolean(target);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Return the value of the given field in the given object.
+     */
+    public static byte getByte(Object target, Field field) {
+        if (target == null || field == null)
+            return (byte) 0;
+        makeAccessible(field, field.getModifiers());
+        try {
+            return field.getByte(target);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Return the value of the given field in the given object.
+     */
+    public static char getChar(Object target, Field field) {
+        if (target == null || field == null)
+            return (char) 0;
+        makeAccessible(field, field.getModifiers());
+        try {
+            return field.getChar(target);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Return the value of the given field in the given object.
+     */
+    public static double getDouble(Object target, Field field) {
+        if (target == null || field == null)
+            return 0D;
+        makeAccessible(field, field.getModifiers());
+        try {
+            return field.getDouble(target);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Return the value of the given field in the given object.
+     */
+    public static float getFloat(Object target, Field field) {
+        if (target == null || field == null)
+            return 0F;
+        makeAccessible(field, field.getModifiers());
+        try {
+            return field.getFloat(target);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Return the value of the given field in the given object.
+     */
+    public static int getInt(Object target, Field field) {
+        if (target == null || field == null)
+            return 0;
+        makeAccessible(field, field.getModifiers());
+        try {
+            return field.getInt(target);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Return the value of the given field in the given object.
+     */
+    public static long getLong(Object target, Field field) {
+        if (target == null || field == null)
+            return 0L;
+        makeAccessible(field, field.getModifiers());
+        try {
+            return field.getLong(target);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Return the value of the given field in the given object.
+     */
+    public static short getShort(Object target, Field field) {
+        if (target == null || field == null)
+            return (short) 0;
+        makeAccessible(field, field.getModifiers());
+        try {
+            return field.getShort(target);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Return the return value of the given getter in the given object.
+     */
+    public static Object get(Object target, Method getter) {
+        if (target == null || getter == null)
+            return null;
+        makeAccessible(getter, getter.getModifiers());
+        try {
+            return getter.invoke(target, (Object[]) null);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Return the return value of the given getter in the given object.
+     */
+    public static boolean getBoolean(Object target, Method getter) {
+        Object o = get(target, getter);
+        return (o == null) ? false : ((Boolean) o).booleanValue();
+    }
+
+    /**
+     * Return the return value of the given getter in the given object.
+     */
+    public static byte getByte(Object target, Method getter) {
+        Object o = get(target, getter);
+        return (o == null) ? (byte) 0 : ((Number) o).byteValue();
+    }
+
+    /**
+     * Return the return value of the given getter in the given object.
+     */
+    public static char getChar(Object target, Method getter) {
+        Object o = get(target, getter);
+        return (o == null) ? (char) 0 : ((Character) o).charValue();
+    }
+
+    /**
+     * Return the return value of the given getter in the given object.
+     */
+    public static double getDouble(Object target, Method getter) {
+        Object o = get(target, getter);
+        return (o == null) ? 0D : ((Number) o).doubleValue();
+    }
+
+    /**
+     * Return the return value of the given getter in the given object.
+     */
+    public static float getFloat(Object target, Method getter) {
+        Object o = get(target, getter);
+        return (o == null) ? 0F : ((Number) o).floatValue();
+    }
+
+    /**
+     * Return the return value of the given getter in the given object.
+     */
+    public static int getInt(Object target, Method getter) {
+        Object o = get(target, getter);
+        return (o == null) ? 0 : ((Number) o).intValue();
+    }
+
+    /**
+     * Return the return value of the given getter in the given object.
+     */
+    public static long getLong(Object target, Method getter) {
+        Object o = get(target, getter);
+        return (o == null) ? 0L : ((Number) o).longValue();
+    }
+
+    /**
+     * Return the return value of the given getter in the given object.
+     */
+    public static short getShort(Object target, Method getter) {
+        Object o = get(target, getter);
+        return (o == null) ? (short) 0 : ((Number) o).shortValue();
+    }
+
+    /**
+     * Set the value of the given field in the given object.
+     */
+    public static void set(Object target, Field field, Object value) {
+        if (target == null || field == null)
+            return;
+        makeAccessible(field, field.getModifiers());
+        try {
+            field.set(target, value);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Set the value of the given field in the given object.
+     */
+    public static void set(Object target, Field field, boolean value) {
+        if (target == null || field == null)
+            return;
+        makeAccessible(field, field.getModifiers());
+        try {
+            field.setBoolean(target, value);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Set the value of the given field in the given object.
+     */
+    public static void set(Object target, Field field, byte value) {
+        if (target == null || field == null)
+            return;
+        makeAccessible(field, field.getModifiers());
+        try {
+            field.setByte(target, value);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Set the value of the given field in the given object.
+     */
+    public static void set(Object target, Field field, char value) {
+        if (target == null || field == null)
+            return;
+        makeAccessible(field, field.getModifiers());
+        try {
+            field.setChar(target, value);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Set the value of the given field in the given object.
+     */
+    public static void set(Object target, Field field, double value) {
+        if (target == null || field == null)
+            return;
+        makeAccessible(field, field.getModifiers());
+        try {
+            field.setDouble(target, value);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Set the value of the given field in the given object.
+     */
+    public static void set(Object target, Field field, float value) {
+        if (target == null || field == null)
+            return;
+        makeAccessible(field, field.getModifiers());
+        try {
+            field.setFloat(target, value);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Set the value of the given field in the given object.
+     */
+    public static void set(Object target, Field field, int value) {
+        if (target == null || field == null)
+            return;
+        makeAccessible(field, field.getModifiers());
+        try {
+            field.setInt(target, value);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Set the value of the given field in the given object.
+     */
+    public static void set(Object target, Field field, long value) {
+        if (target == null || field == null)
+            return;
+        makeAccessible(field, field.getModifiers());
+        try {
+            field.setLong(target, value);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Set the value of the given field in the given object.
+     */
+    public static void set(Object target, Field field, short value) {
+        if (target == null || field == null)
+            return;
+        makeAccessible(field, field.getModifiers());
+        try {
+            field.setShort(target, value);
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Invoke the given setter on the given object.
+     */
+    public static void set(Object target, Method setter, Object value) {
+        if (target == null || setter == null)
+            return;
+        makeAccessible(setter, setter.getModifiers());
+        try {
+            setter.invoke(target, new Object[] { value });
+        } catch (Throwable t) {
+            throw wrapReflectionException(t);
+        }
+    }
+
+    /**
+     * Invoke the given setter on the given object.
+     */
+    public static void set(Object target, Method setter, boolean value) {
+        set(target, setter, (value) ? Boolean.TRUE : Boolean.FALSE);
+    }
+
+    /**
+     * Invoke the given setter on the given object.
+     */
+    public static void set(Object target, Method setter, byte value) {
+        set(target, setter, new Byte(value));
+    }
+
+    /**
+     * Invoke the given setter on the given object.
+     */
+    public static void set(Object target, Method setter, char value) {
+        set(target, setter, new Character(value));
+    }
+
+    /**
+     * Invoke the given setter on the given object.
+     */
+    public static void set(Object target, Method setter, double value) {
+        set(target, setter, new Double(value));
+    }
+
+    /**
+     * Invoke the given setter on the given object.
+     */
+    public static void set(Object target, Method setter, float value) {
+        set(target, setter, new Float(value));
+    }
+
+    /**
+     * Invoke the given setter on the given object.
+     */
+    public static void set(Object target, Method setter, int value) {
+        set(target, setter, new Integer(value));
+    }
+
+    /**
+     * Invoke the given setter on the given object.
+     */
+    public static void set(Object target, Method setter, long value) {
+        set(target, setter, new Long(value));
+    }
+
+    /**
+     * Invoke the given setter on the given object.
+     */
+    public static void set(Object target, Method setter, short value) {
+        set(target, setter, new Short(value));
+    }
+}
