@@ -91,6 +91,8 @@ public class DetachedStateManager
         BrokerImpl broker = manager.getBroker();
         StateManagerImpl sm = null;
         if (_embedded) {
+            if (_dirty.length () > 0)
+                owner.dirty(ownerMeta.getFieldMetaData().getIndex());
             sm = (StateManagerImpl) broker.embed(_pc, _oid, owner, ownerMeta);
             ((PersistenceCapable) toAttach).pcReplaceStateManager(this);
         } else {
