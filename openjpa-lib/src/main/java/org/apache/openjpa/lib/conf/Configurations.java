@@ -100,6 +100,41 @@ public class Configurations {
     }
 
     /**
+     * Return a plugin string that combines the properties of the given plugin
+     * strings, where properties of <code>override</code> will override the
+     * same properties of <code>orig</code>.
+     */
+    public static String combinePlugins(String orig, String override) {
+        if (StringUtils.isEmpty(orig))
+            return override;
+        if (StringUtils.isEmpty(override))
+            return orig;
+
+        String origCls = getClassName(orig);
+        String overrideCls = getClassName(override);
+        String cls;
+        if (StringUtils.isEmpty(origCls))
+            cls = overrideCls;
+        else if (StringUtils.isEmpty(overrideCls))
+            cls = origCls;
+        else if (!origCls.equals(overrideCls))
+            return override; // completely different plugin
+        else
+            cls = origCls;
+
+        String origProps = getProperties(orig);
+        String overrideProps = getProperties(override);
+        if (StringUtils.isEmpty(origProps))
+            return getPlugin(cls, overrideProps);
+        if (StringUtils.isEmpty(overrideProps))
+            return getPlugin(cls, origProps);
+
+        Properties props = parseProperties(origProps);
+        props.putAll(parseProperties(overrideProps));
+        return getPlugin(cls, serializeProperties(props)); 
+    }
+
+    /**
      * Create the instance with the given class name, using the given
      * class loader. No configuration of the instance is performed by
      * this method.

@@ -12,6 +12,9 @@
  */
 package org.apache.openjpa.lib.conf;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.openjpa.lib.test.AbstractTestCase;
 import org.apache.openjpa.lib.util.Options;
 
@@ -75,6 +78,62 @@ public class TestConfigurations extends AbstractTestCase {
         assertEquals(2, opts.size());
         assertEquals("bar bar,10", opts.getProperty("foo"));
         assertEquals("baz baz", opts.getProperty("biz"));
+    }
+
+    public void testCombinePlugins() {
+        assertPluginsCombined("jpa", null, 
+            null, null,
+            "jpa", null);
+        assertPluginsCombined("jpa", null,
+            "jpa", null,
+            "jpa", null);
+        assertPluginsCombined("jdo", null,
+            "jpa", null,
+            "jpa", null);
+        assertPluginsCombined("jdo", new String[] { "foo", "bar" },
+            "jpa", null,
+            "jpa", null);
+        assertPluginsCombined("jdo", new String[] { "foo", "bar" },
+            "jpa", new String[] { "biz", "baz" },
+            "jpa", new String[] { "biz", "baz" }); 
+        assertPluginsCombined("jdo", new String[] { "foo", "bar" },
+            null, new String[] { "biz", "baz" },
+            "jdo", new String[] { "foo", "bar", "biz", "baz" }); 
+        assertPluginsCombined(null, new String[] { "foo", "bar" },
+            null, new String[] { "biz", "baz" },
+            null, new String[] { "foo", "bar", "biz", "baz" }); 
+        assertPluginsCombined(null, new String[] { "foo", "bar" },
+            "jpa", new String[] { "biz", "baz" },
+            "jpa", new String[] { "foo", "bar", "biz", "baz" }); 
+        assertPluginsCombined("jpa", new String[] { "foo", "bar" },
+            "jpa", new String[] { "biz", "baz" },
+            "jpa", new String[] { "foo", "bar", "biz", "baz" }); 
+        assertPluginsCombined("jpa", new String[] { "foo", "bar" },
+            "jpa", new String[] { "foo", "baz" },
+            "jpa", new String[] { "foo", "baz" }); 
+    }
+
+    private void assertPluginsCombined(String cls1, String[] props1,
+        String cls2, String[] props2, String expCls, String[] expProps) {
+        String plugin1 = Configurations.getPlugin(cls1, 
+            Configurations.serializeProperties(toProperties(props1)));
+        String plugin2 = Configurations.getPlugin(cls2, 
+            Configurations.serializeProperties(toProperties(props2)));
+
+        String res = Configurations.combinePlugins(plugin1, plugin2);
+        String resCls = Configurations.getClassName(res);
+        Map resProps = Configurations.parseProperties(Configurations.
+            getProperties(res));
+        assertEquals(expCls, resCls);
+        assertEquals(toProperties(expProps), resProps);
+    }
+
+    private static Map toProperties(String[] props) {
+        Map map = new HashMap();
+        if (props != null)
+            for (int i = 0; i < props.length; i++)
+                map.put(props[i], props[++i]);
+        return map;
     }
 
     public static void main(String[] args) {
