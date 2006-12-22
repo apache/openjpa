@@ -150,7 +150,7 @@ public class ClassMappingInfo
             // immediately return an exact match with schema
             join = fullJoin.substring(idx + 1);
             if (join.equals(tableName))
-                return join;
+                return fullJoin;
 
             // caseless match with schema worth 1 point
             if (pts < 1 && join.equalsIgnoreCase(tableName)) {
