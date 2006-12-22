@@ -119,6 +119,7 @@ class VersionAttachStrategy
 
         // assign the detached pc the same state manager as the object we're
         // copying into during the attach process
+        StateManager smBefore = pc.pcGetStateManager();
         pc.pcReplaceStateManager(sm);
         int detach = (isNew) ? DETACH_ALL : broker.getDetachState();
         FetchConfiguration fetch = broker.getFetchConfiguration();
@@ -139,7 +140,7 @@ class VersionAttachStrategy
                 }
             }
         } finally {
-            pc.pcReplaceStateManager(null);
+            pc.pcReplaceStateManager(smBefore);
         }
         if (!embedded && !isNew)
             compareVersion(sm, pc);
