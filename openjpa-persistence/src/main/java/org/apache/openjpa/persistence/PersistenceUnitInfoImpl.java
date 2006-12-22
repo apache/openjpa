@@ -33,6 +33,7 @@ import javax.sql.DataSource;
 
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
@@ -404,20 +405,14 @@ public class PersistenceUnitInfoImpl
             }
             metaFactoryProps.put("Resources", rsrcs.toString());
         }
+
+        // set persistent class locations as properties of metadata factory,
+        // combining them with any existing metadata factory props
         if (!metaFactoryProps.isEmpty()) {
-            // set persistent class locations as properties of metadata factory
-            String factory = (String) Configurations.getProperty
+            String key = ProductDerivations.getConfigurationKey
                 ("MetaDataFactory", map);
-            if (factory == null)
-                factory = Configurations.serializeProperties(metaFactoryProps);
-            else {
-                String clsName = Configurations.getClassName(factory);
-                metaFactoryProps.putAll(Configurations.parseProperties
-                    (Configurations.getProperties(factory)));
-                factory = Configurations.getPlugin(clsName,
-                    Configurations.serializeProperties(metaFactoryProps));
-            }
-            map.put("openjpa.MetaDataFactory", factory);
+            map.put(key, Configurations.combinePlugins((String) map.get(key),
+                Configurations.serializeProperties(metaFactoryProps)));
         }
         
         // always record provider name for product derivations to access

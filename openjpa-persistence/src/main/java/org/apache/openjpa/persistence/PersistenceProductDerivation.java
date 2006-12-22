@@ -32,10 +32,11 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
-import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
+import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.MapConfigurationProvider;
+import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.XMLMetaDataParser;
 import org.apache.openjpa.lib.util.Localizer;
@@ -382,10 +383,27 @@ public class PersistenceProductDerivation
 
         @Override
         public void setInto(Configuration conf) {
-            if (conf instanceof OpenJPAConfiguration)
-                ((OpenJPAConfiguration) conf).setSpecification(SPEC_JPA);
-            super.setInto(conf, null);
+            if (conf instanceof OpenJPAConfiguration) {
+                OpenJPAConfiguration oconf = (OpenJPAConfiguration) conf;
+                oconf.setSpecification(SPEC_JPA);
 
+                // we merge several persistence.xml elements into the 
+                // MetaDataFactory property implicitly.  if the user has a
+                // global openjpa.xml with this property set, its value will
+                // get overwritten by our implicit setting.  so instead, combine
+                // the global value with our settings
+                String orig = oconf.getMetaDataFactory();
+                if (!StringUtils.isEmpty(orig)) {
+                    String key = ProductDerivations.getConfigurationKey
+                        ("MetaDataFactory", getProperties());
+                    Object override = getProperties().get(key);
+                    if (override instanceof String)
+                        addProperty(key, Configurations.combinePlugins(orig, 
+                            (String) override));
+                }
+            }
+
+            super.setInto(conf, null);
             Log log = conf.getConfigurationLog();
             if (log.isTraceEnabled()) {
                 String src = (_source == null) ? "?" : _source;
