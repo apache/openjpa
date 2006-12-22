@@ -215,6 +215,9 @@ public class MultiClassLoader extends ClassLoader {
             if (loader == THREAD_LOADER)
                 loader = Thread.currentThread().getContextClassLoader();
 
+            if (loader == null) // skip 
+                continue;
+
             rsrc = loader.getResource(name);
             if (rsrc != null)
                 return rsrc;
