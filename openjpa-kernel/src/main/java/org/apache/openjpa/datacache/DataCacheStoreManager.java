@@ -641,7 +641,7 @@ public class DataCacheStoreManager
         if (_gen != null)
             return (DataCachePCData) _gen.generatePCData
                 (sm.getObjectId(), meta);
-        return new DataCachePCDataImpl(sm.getObjectId(), meta);
+        return new DataCachePCDataImpl(sm.fetchObjectId(), meta);
     }
 
     /**
