@@ -16,6 +16,9 @@
 package org.apache.openjpa.persistence;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,13 +31,13 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.xml.sax.SAXException;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.CFMetaDataSerializer;
 import org.apache.openjpa.lib.meta.SourceTracker;
+import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -47,6 +50,7 @@ import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.InternalException;
+import org.xml.sax.SAXException;
 import serp.util.Strings;
 
 /**
@@ -1113,6 +1117,7 @@ public class XMLPersistenceMetaDataSerializer
         throws SAXException {
         if (fmd.isInDefaultFetchGroup())
             addAttribute("fetch", "EAGER");
+        addTargetEntityAttribute(fmd);
     }
 
     /**
@@ -1122,6 +1127,36 @@ public class XMLPersistenceMetaDataSerializer
         throws SAXException {
         if (fmd.isInDefaultFetchGroup())
             addAttribute("fetch", "EAGER");
+        addTargetEntityAttribute(fmd);
+    }
+
+    /**
+     * Add a target-entity attribute to collection and map fields that do
+     * not use generics.
+     */
+    private void addTargetEntityAttribute(FieldMetaData fmd) 
+        throws SAXException {
+        Member member = fmd.getBackingMember();
+        Class[] types;
+        if (member instanceof Field)
+            types = JavaVersions.getParameterizedTypes((Field) member);
+        else if (member instanceof Method)
+            types = JavaVersions.getParameterizedTypes((Method) member);
+        else
+            types = new Class[0];
+
+        switch (fmd.getDeclaredTypeCode()) {
+            case JavaTypes.COLLECTION:
+                if (types.length != 1)
+                    addAttribute("target-entity", fmd.getElement().
+                        getDeclaredType().getName());
+                break;
+            case JavaTypes.MAP:
+                if (types.length != 2)
+                    addAttribute("target-entity", fmd.getElement().
+                        getDeclaredType().getName());
+                break;
+        }
     }
 
     /**
@@ -1378,8 +1413,6 @@ public class XMLPersistenceMetaDataSerializer
         public int compare(Object o1, Object o2) {
             FieldMetaData fmd1 = (FieldMetaData) o1;
             FieldMetaData fmd2 = (FieldMetaData) o2;
-            if (fmd1.getListingIndex() != fmd2.getListingIndex())
-                return fmd1.getListingIndex() - fmd2.getListingIndex();
             if (fmd1.isPrimaryKey()) {
                 if (fmd2.isPrimaryKey())
                     return fmd1.compareTo(fmd2);
@@ -1388,18 +1421,25 @@ public class XMLPersistenceMetaDataSerializer
             if (fmd2.isPrimaryKey())
                 return 1;
 
-            PersistenceStrategy st1 = fmd1.isVersion() ? null :
-                getStrategy(fmd1);
-            PersistenceStrategy st2 = fmd2.isVersion() ? null :
-                getStrategy(fmd2);
             if (fmd1.isVersion()) {
                 if (fmd2.isVersion())
-                    return fmd1.compareTo (fmd2);
-				return st2 == PersistenceStrategy.BASIC ? 1 : -1;
+                    return compareListingOrder(fmd1, fmd2);
+				return getStrategy(fmd2) == PersistenceStrategy.BASIC ? 1 : -1;
 			}
-			if (fmd2.isVersion ())
-				return st1 == PersistenceStrategy.BASIC ? -1 : 1;
-			return st1.compareTo (st2);
+			if (fmd2.isVersion())
+				return getStrategy(fmd1) == PersistenceStrategy.BASIC ? -1 : 1;
+
+			int stcmp = getStrategy(fmd1).compareTo(getStrategy(fmd2));
+            if (stcmp != 0)
+                return stcmp;
+            return compareListingOrder(fmd1, fmd2);
+        }
+
+        private int compareListingOrder(FieldMetaData fmd1, FieldMetaData fmd2){
+            int lcmp = fmd1.getListingIndex() - fmd2.getListingIndex();
+            if (lcmp != 0)
+                return lcmp;
+            return fmd1.compareTo(fmd2);
 		}
 	}
 }
