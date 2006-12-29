@@ -287,6 +287,9 @@ public class DBDictionary
     public boolean supportsAutoAssign = false;
     public String lastGeneratedKeyQuery = null;
     public String nextSequenceQuery = null;
+    public String sequenceSQL = null;
+    public String sequenceSchemaSQL = null;
+    public String sequenceNameSQL = null;
 
     protected JDBCConfiguration conf = null;
     protected Log log = null;

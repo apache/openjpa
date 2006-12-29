@@ -36,6 +36,12 @@ public class DB2Dictionary
 
         nextSequenceQuery = "VALUES NEXTVAL FOR {0}";
 
+        sequenceSQL = "SELECT SEQSCHEMA AS SEQUENCE_SCHEMA, "
+            + "SEQNAME AS SEQUENCE_NAME FROM SYSCAT.SEQUENCES";
+        sequenceSchemaSQL = "SEQSCHEMA = ?";
+        sequenceNameSQL = "SEQNAME = ?";
+        characterColumnSize = 254;
+
         binaryTypeName = "BLOB(1M)";
         longVarbinaryTypeName = "BLOB(1M)";
         varbinaryTypeName = "BLOB(1M)";
@@ -112,17 +118,16 @@ public class DB2Dictionary
 
     protected String getSequencesSQL(String schemaName, String sequenceName) {
         StringBuffer buf = new StringBuffer();
-        buf.append("SELECT SEQSCHEMA AS SEQUENCE_SCHEMA, ").
-            append("SEQNAME AS SEQUENCE_NAME FROM SYSCAT.SEQUENCES");
+        buf.append(sequenceSQL);
         if (schemaName != null || sequenceName != null)
             buf.append(" WHERE ");
         if (schemaName != null) {
-            buf.append("SEQSCHEMA = ?");
+            buf.append(sequenceSchemaSQL);
             if (sequenceName != null)
                 buf.append(" AND ");
         }
         if (sequenceName != null)
-            buf.append("SEQNAME = ?");
+            buf.append(sequenceNameSQL);
         return buf.toString();
     }
 
@@ -157,6 +162,24 @@ public class DB2Dictionary
 	    		supportsLockingWithOuterJoin = true;
 	    		forUpdateClause = "WITH RR USE AND KEEP UPDATE LOCKS";
 	    	}
+
+            if (metaData.getDatabaseProductVersion().indexOf("DSN") != -1) {
+                // DB2 Z/OS
+                characterColumnSize = 255;
+                lastGeneratedKeyQuery = "SELECT IDENTITY_VAL_LOCAL() FROM "
+                    + "SYSIBM.SYSDUMMY1";
+                nextSequenceQuery = "SELECT NEXTVAL FOR {0} FROM "
+                    + "SYSIBM.SYSDUMMY1";
+                sequenceSQL = "SELECT SCHEMA AS SEQUENCE_SCHEMA, "
+                    + "NAME AS SEQUENCE_NAME FROM SYSIBM.SYSSEQUENCES";
+                sequenceSchemaSQL = "SCHEMA = ?";
+                sequenceNameSQL = "NAME = ?";
+                if (maj == 8) {
+                    // DB2 Z/OS Version 8: no bigint support, hence map Java
+                    // long to decimal
+                    bigintTypeName = "DECIMAL(31,0)";
+                }
+            }
     	}
     }
 }
