@@ -134,6 +134,20 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
+                        H2 Database Engine
+                    </entry>
+                    <entry colname="dbversion">
+                        1.0
+                    </entry>
+                    <entry colname="drivname">
+                        H2
+                    </entry>
+                    <entry colname="drivversion">
+                        1.0
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
                         Hypersonic Database Engine
                     </entry>
                     <entry colname="dbversion">
@@ -443,6 +457,32 @@ bypasses row locking) for <classname>EmpressDictionary</classname>.
                 <listitem>
                     <para>
 Only the category 2 non-local driver is supported.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_h2">
+        <title>
+            H2 Database Engine
+        </title>
+        <example id="example_props_h2">
+            <title>
+                Example properties for H2 Database Engine
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: org.h2.Driver
+openjpa.ConnectionURL: jdbc:h2:DB_NAME
+</programlisting>
+        </example>
+        <section id="dbsupport_h2_issues">
+            <title>
+                Known issues with H2 Database Engine
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+H2 does not support cross joins
                     </para>
                 </listitem>
             </itemizedlist>
