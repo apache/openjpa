@@ -172,6 +172,10 @@ public class NativeJDBCSeq
         schema.importSequence(_seq);
     }
 
+    public JDBCConfiguration getConfiguration() {
+        return _conf;
+    }
+    
     public void setConfiguration(Configuration conf) {
         _conf = (JDBCConfiguration) conf;
     }

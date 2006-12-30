@@ -330,7 +330,8 @@ public class TableJDBCSeq
         try {
             // possible that we might get errors when inserting if
             // another thread/process is inserting same pk at same time
-            SQLException err = null;
+            SQLException err = null; 
+            // ### why does this not call getConnection() / closeConnection()?
             conn = _conf.getDataSource2(store.getContext()).getConnection();
             try {
                 insertSequence(mapping, conn);
@@ -377,7 +378,7 @@ public class TableJDBCSeq
             appendValue(Numbers.valueOf(1), _seqColumn).append(")");
 
         boolean wasAuto = conn.getAutoCommit();
-        if (!wasAuto)
+        if (!wasAuto && !suspendInJTA())
             conn.setAutoCommit(true);
 
         PreparedStatement stmnt = null;
@@ -387,7 +388,7 @@ public class TableJDBCSeq
         } finally {
             if (stmnt != null)
                 try { stmnt.close(); } catch (SQLException se) {}
-            if (!wasAuto)
+            if (!wasAuto && !suspendInJTA())
                 conn.setAutoCommit(false);
         }
     }
