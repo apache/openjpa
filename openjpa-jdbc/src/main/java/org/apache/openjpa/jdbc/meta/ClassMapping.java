@@ -36,6 +36,8 @@ import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Schemas;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.jdbc.schema.Unique;
+import org.apache.openjpa.jdbc.schema.XMLSchemaParser;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.RowManager;
@@ -791,6 +793,44 @@ public class ClassMapping
                     _cols[i].setFlag(Column.FLAG_DIRECT_INSERT, true);
                 if (io.isUpdatable(i, false))
                     _cols[i].setFlag(Column.FLAG_DIRECT_UPDATE, true);
+            }
+        }
+        mapUniqueConstraints();
+    }
+    
+    /**
+     * Adds unique constraints to the mapped table.
+     *
+     */
+    void mapUniqueConstraints() {
+        Log log = getRepository().getLog();
+        Collection uniqueInfos = _info.getUniqueConstraints();
+        if (uniqueInfos == null || uniqueInfos.isEmpty())
+            return;
+        Iterator iter = uniqueInfos.iterator();
+        Table table = getTable();
+        int i = 1;
+        while (iter.hasNext()) {
+            XMLSchemaParser.UniqueInfo uniqueInfo = 
+                (XMLSchemaParser.UniqueInfo)iter.next();
+            if (uniqueInfo.cols == null || uniqueInfo.cols.isEmpty())
+                continue;
+            String constraintName = table.getName() + "_UNIQUE_" + i;
+            i++;
+            Unique uniqueConstraint = table.addUnique(constraintName);
+            Iterator uniqueColumnNames = uniqueInfo.cols.iterator();
+            while (uniqueColumnNames.hasNext()) {
+                String uniqueColumnName = (String)uniqueColumnNames.next();
+                Column uniqueColumn = table.getColumn(uniqueColumnName);
+                if (uniqueColumn != null) {
+                    uniqueConstraint.addColumn(uniqueColumn);
+                } else {
+                    table.removeUnique(uniqueConstraint);
+                    if (log.isWarnEnabled())
+                        log.warn(_loc.get("missing-unique-column", this, 
+                            table.getName(), uniqueColumnName));
+                    break;
+                }
             }
         }
     }

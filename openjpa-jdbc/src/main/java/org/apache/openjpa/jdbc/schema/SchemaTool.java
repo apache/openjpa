@@ -560,6 +560,27 @@ public class SchemaTool {
             }
         }
 
+        // Unique Constraints on group of columns
+        Unique[] uniques;
+        for (int i = 0; i < schemas.length; i++) {
+            tabs = schemas[i].getTables();
+            for (int j = 0; j < tabs.length; j++) {
+                // create unique constraints only on new tables 
+                if (!newTables.contains(tabs[j]))
+                    continue;
+
+                uniques = tabs[j].getUniques();
+                if (uniques == null || uniques.length == 0)
+                    continue;
+                dbTable = db.findTable(tabs[j]);
+                if (dbTable == null)
+                    continue;
+                for (int k = 0; k < uniques.length; k++) {
+                    dbTable.importUnique(uniques[k]);
+                }
+            }
+        }
+        
         // foreign keys
         ForeignKey[] fks;
         ForeignKey fk;

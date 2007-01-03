@@ -47,6 +47,7 @@ import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
+import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -459,10 +460,9 @@ public class AnnotationPersistenceMappingParser
         if (tableName != null)
             cm.getMappingInfo().setTableName(tableName);
 
-        //### EJB3
-        Log log = getLog();
-        if (table.uniqueConstraints().length > 0 && log.isWarnEnabled())
-            log.warn(_loc.get("unique-constraints", cm));
+        for (UniqueConstraint unique:table.uniqueConstraints()) {
+            ((ClassMappingInfo)cm.getMappingInfo()).addUniqueConstaint(unique.columnNames());
+        }
     }
 
     /**

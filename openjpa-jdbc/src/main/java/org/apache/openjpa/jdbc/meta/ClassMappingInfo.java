@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -28,6 +31,7 @@ import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.jdbc.schema.XMLSchemaParser;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.xml.Commentable;
 
@@ -51,6 +55,7 @@ public class ClassMappingInfo
     private File _file = null;
     private int _srcType = SRC_OTHER;
     private String[] _comments = null;
+    private Collection _uniqueConstraints = null;//XMLSchemaParser.UniqueInfo
 
     /**
      * The described class name.
@@ -275,7 +280,7 @@ public class ClassMappingInfo
             : cls.getStrategy().getAlias();
         if (strat != null && (cls.getPCSuperclass() != null
             || !FullClassStrategy.ALIAS.equals(strat)))
-            setStrategy(strat);
+            setStrategy(strat);        
     }
 
     public boolean hasSchemaComponents() {
@@ -308,8 +313,22 @@ public class ClassMappingInfo
                     _seconds.put(key, cinfo._seconds.get(key));
             }
         }
+        if (cinfo._uniqueConstraints != null)
+           _uniqueConstraints = new ArrayList(cinfo._uniqueConstraints);
     }
 
+    public void addUniqueConstaint(String[] columnNames) {
+        if (_uniqueConstraints == null)
+            _uniqueConstraints = new ArrayList();
+        XMLSchemaParser.UniqueInfo uniqueInfo = new XMLSchemaParser.UniqueInfo();
+        uniqueInfo.cols = Arrays.asList(columnNames);
+        _uniqueConstraints.add(uniqueInfo);
+    }
+    
+    public Collection getUniqueConstraints() {
+        return _uniqueConstraints;
+    }
+    
     public File getSourceFile() {
         return _file;
     }

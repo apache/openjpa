@@ -579,7 +579,7 @@ public class XMLSchemaParser
     /**
      * Used to hold unique constraint info before it is resolved.
      */
-    private static class UniqueInfo {
+    public static class UniqueInfo {
 
         public Unique unq = null;
         public Collection cols = new LinkedList();
