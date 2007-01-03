@@ -50,6 +50,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1742,9 +1743,8 @@ public class DBDictionary
      * cases where a subselect is required and the database doesn't support
      * subselects), this method should return null.
      */
-    public SQLBuffer toDelete(ClassMapping mapping, Select sel,
-        JDBCStore store, Object[] params) {
-        return toBulkOperation(mapping, sel, store, params, null);
+    public SQLBuffer toDelete(ClassMapping mapping, Select sel, Object[] params) {
+        return toBulkOperation(mapping, sel, null, params, null);
     }
 
     public SQLBuffer toUpdate(ClassMapping mapping, Select sel,
@@ -1893,6 +1893,47 @@ public class DBDictionary
             if (i.hasNext())
                 sql.append(", ");
         }
+    }
+    
+    /**
+     * Create SQL to delete the contents of the specified tables. 
+     * The default implementation drops all non-deferred RESTRICT foreign key 
+     * constraints involving the specified tables, issues DELETE statements 
+     * against the tables, and then adds the dropped constraints back in. 
+     * Databases with more optimal ways of deleting the contents of several 
+     * tables should override this method.
+     */
+    public String[] getDeleteTableContentsSQL(Table[] tables) {
+        Collection sql = new ArrayList();
+        
+        // collect and drop non-deferred physical restrict constraints, and
+        // collect the DELETE FROM statements
+        Collection deleteSQL = new ArrayList(tables.length);
+        Collection restrictConstraints = new LinkedHashSet();
+        for (int i = 0; i < tables.length; i++) {
+            ForeignKey[] fks = tables[i].getForeignKeys();
+            for (int j = 0; j < fks.length; j++) {
+                if (!fks[j].isLogical() && !fks[j].isDeferred() 
+                    && fks[j].getDeleteAction() == ForeignKey.ACTION_RESTRICT)
+                restrictConstraints.add(fks[j]);
+                String[] constraintSQL = getDropForeignKeySQL(fks[j]);
+                sql.addAll(Arrays.asList(constraintSQL));
+            }
+            
+            deleteSQL.add("DELETE FROM " + tables[i].getFullName());
+        }
+        
+        // add the delete statements after all the constraint mutations
+        sql.addAll(deleteSQL);
+        
+        // add the deleted constraints back to the schema
+        for (Iterator iter = restrictConstraints.iterator(); iter.hasNext(); ) {
+            String[] constraintSQL = 
+                getAddForeignKeySQL((ForeignKey) iter.next());
+            sql.addAll(Arrays.asList(constraintSQL));
+        }
+        
+        return (String[]) sql.toArray(new String[sql.size()]);
     }
 
     /**
