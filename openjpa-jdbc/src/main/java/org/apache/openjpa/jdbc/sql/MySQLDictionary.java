@@ -50,6 +50,15 @@ public class MySQLDictionary
      */
     public boolean driverDeserializesBlobs = true;
 
+    /**
+     * Whether to inline multi-table bulk-delete operations into MySQL's 
+     * combined <code>DELETE FROM foo, bar, baz</code> syntax. 
+     * Defaults to false, since this may fail in the presence of InnoDB tables
+     * with foreign keys.
+     * @see http://dev.mysql.com/doc/refman/5.0/en/delete.html
+     */
+    public boolean optimizeMultiTableDeletes = false;
+
     public MySQLDictionary() {
         platform = "MySQL";
         validationSQL = "SELECT NOW()";
@@ -129,6 +138,22 @@ public class MySQLDictionary
         if (fk.getColumns().length > 1)
             return null;
         return super.getForeignKeyConstraintSQL(fk);
+    }
+    
+    public String[] getDeleteTableContentsSQL(Table[] tables) {
+        // mysql >= 4 supports more-optimal delete syntax
+        if (!optimizeMultiTableDeletes)
+            return super.getDeleteTableContentsSQL(tables);
+        else {
+            StringBuffer buf = new StringBuffer(tables.length * 8);
+            buf.append("DELETE FROM ");
+            for (int i = 0; i < tables.length; i++) {
+                buf.append(tables[i].getFullName());
+                if (i < tables.length - 1)
+                    buf.append(", ");
+            }
+            return new String[] { buf.toString() };
+        }
     }
 
     protected void appendSelectRange(SQLBuffer buf, long start, long end) {
