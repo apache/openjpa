@@ -48,7 +48,7 @@ public class PersistenceExceptions
      * and {@link NonUniqueResultException} in accordance with
      * section 3.7 of the EJB 3.0 specification.
      */
-    static RuntimeExceptionTranslator getRollbackTranslator
+    public static RuntimeExceptionTranslator getRollbackTranslator
         (final OpenJPAEntityManager em) {
         return new RuntimeExceptionTranslator() {
             private boolean throwing = false;

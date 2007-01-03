@@ -1757,11 +1757,11 @@ public class BrokerImpl
         } catch (OpenJPAException ke) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), ke);
-            throw ke;
+            throw translateManagedCompletionException(ke);
         } catch (RuntimeException re) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), re);
-            throw new StoreException(re);
+            throw translateManagedCompletionException(new StoreException(re));
         } finally {
             endOperation();
         }
@@ -1789,11 +1789,11 @@ public class BrokerImpl
         } catch (OpenJPAException ke) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), ke);
-            throw ke;
+            throw translateManagedCompletionException(ke);
         } catch (RuntimeException re) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("end-trans-error"), re);
-            throw new StoreException(re);
+            throw translateManagedCompletionException(new StoreException(re));
         } finally {
             _flags &= ~FLAG_ACTIVE;
             _flags &= ~FLAG_FLUSHED;
@@ -1811,6 +1811,15 @@ public class BrokerImpl
 
             endOperation();
         }
+    }
+
+    /**
+     * If we're in a managed transaction, use our implicit behavior exception
+     * translator to translate before/afterCompletion callback errors.
+     */
+    private RuntimeException translateManagedCompletionException
+        (RuntimeException re) {
+        return (!_managed || _extrans == null) ? re : _extrans.translate(re);
     }
 
     /**
