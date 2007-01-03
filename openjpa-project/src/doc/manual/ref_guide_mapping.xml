@@ -88,15 +88,16 @@ mapping tool accepts the following command line arguments:
         <itemizedlist>
             <listitem>
                 <para>
-<literal>-schemaAction/-sa &lt;add | refresh | drop | build | retain | none&gt;
+<literal>-schemaAction/-sa &lt;add | refresh | drop | build | retain | reflect | createDB | dropDB | import | export | none&gt;
 </literal>: The action to take on the schema. These options correspond to the
 same-named actions on the schema tool described in
-<xref linkend="ref_guide_schema_schematool"/>. Unless you are running the
-mapping tool on all of your persistent types at once or dropping a mapping, we
-strongly recommend you use the default <literal>add</literal> action or the
-<literal>build</literal> action. Otherwise you may end up inadvertently dropping
-schema components that are used by classes you are not currently running the
-tool over.
+<xref linkend="ref_guide_schema_schematool"/>. Actions can be composed in a
+comma-separated list. Unless you are running the mapping tool on all of
+your persistent types at once or dropping a mapping, we strongly
+recommend you use the default <literal>add</literal> action or the
+<literal>build</literal> action. Otherwise you may end up inadvertently
+dropping schema components that are used by classes you are not
+currently running the tool over.
                 </para>
             </listitem>
             <listitem>
@@ -277,6 +278,22 @@ java org.apache.openjpa.jdbc.meta.MappingTool Magazine.java
 To drop the schema for a persistent class, set the mapping tool's <literal>
 schemaAction</literal> to <literal>drop</literal>.
             </para>
+            <example id="ref_guide_mapping_mappingtool_cleanup_tables">
+                <title>
+                    Refreshing entire schema and cleaning out tables
+                </title>
+	            <indexterm zone="ref_guide_mapping_mappingtool_cleanup_tables">
+    	            <primary>
+        	            testing
+            	    </primary>
+                	<secondary>
+                    	Rebuild mappings and clean tables
+	                </secondary>
+    	        </indexterm>
+<programlisting>
+java org.apache.openjpa.jdbc.meta.MappingTool -sa add,deleteTableContents
+</programlisting>
+            </example>
             <example id="ref_guide_mapping_mappingtool_dropschema">
                 <title>
                     Dropping Mappings and Association Schema

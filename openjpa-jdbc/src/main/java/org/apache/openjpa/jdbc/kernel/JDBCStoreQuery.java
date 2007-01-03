@@ -468,7 +468,7 @@ public class JDBCStoreQuery
             // this case, we need to perform the query in-memory and
             // manually delete the instances
             if (updates == null)
-                sql[i] = dict.toDelete(mappings[i], sel, _store, params);
+                sql[i] = dict.toDelete(mappings[i], sel, params);
             else
                 sql[i] = dict.toUpdate(mappings[i], sel, _store, params,
                     updates);

@@ -3626,7 +3626,8 @@ openjpa.jdbc.Schemas</link> property for a single run.
         </itemizedlist>
         <para>
 The schema tool also accepts an <literal>-action</literal> or <literal>-a
-</literal> flag. The available actions are:
+</literal> flag. Multiple actions can be composed in a comma-separated list. 
+The available actions are:
         </para>
         <itemizedlist>
             <listitem>
@@ -3701,6 +3702,12 @@ definition to XML. May produce an empty file if the factory does not store a
 record of the schema.
                 </para>
             </listitem>
+            <listitem>
+                <para>
+<literal>deleteTableContents</literal>: Execute SQL to delete all rows from 
+all tables that OpenJPA knows about.
+                </para>
+            </listitem>
         </itemizedlist>
         <note>
             <para>
@@ -3749,6 +3756,34 @@ Write a SQL script that will re-create the current database:
             </para>
 <programlisting>
 java org.apache.openjpa.jdbc.schema.SchemaTool -a createDB -f script.sql
+</programlisting>
+        </example>
+        <example id="ref_guide_schema_schematool_table_cleanup">
+            <title>
+                Table Cleanup
+            </title>
+            <indexterm zone="ref_guide_schema_schematool_table_cleanup">
+                <primary>
+                    schema
+                </primary>
+                <secondary>
+                    refresh schema and delete all contents of all tables
+                </secondary>
+            </indexterm>
+            <indexterm zone="ref_guide_schema_schematool_table_cleanup">
+                <primary>
+                    testing
+                </primary>
+                <secondary>
+                    refresh schema and delete all contents of all tables
+                </secondary>
+            </indexterm>
+            <para>
+Refresh the schema and delete all contents of all tables that OpenJPA 
+knows about:
+            </para>
+<programlisting>
+java org.apache.openjpa.jdbc.schema.SchemaTool -a refresh,deleteTableContents
 </programlisting>
         </example>
         <example id="ref_guide_schema_schematool_drop">
