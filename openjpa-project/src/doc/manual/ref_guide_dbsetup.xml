@@ -2447,6 +2447,27 @@ correctly. To enable clob functionality, set this to true. Defaults to <literal>
 false</literal>.
                     </para>
                 </listitem>
+                <listitem id="MySQLDictionary.OptimizeMultiTableDeletes">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            MySQL
+                        </primary>
+                        <secondary>
+                            OptimizeMultiTableDeletes
+                        </secondary>
+                    </indexterm>
+<literal>OptimizeMultiTableDeletes</literal>: MySQL as of version 4.0.0
+supports multiple tables in <literal>DELETE</literal> statements. When
+this option is set, OpenJPA will use that syntax when doing bulk deletes
+from multiple tables. This can happen when the
+<literal>deleteTableContents</literal> <literal>SchemaTool</literal>
+action is used. (See <xref linkend="ref_guide_schema_schematool"/> for
+more info about <literal>deleteTableContents</literal>.) Defaults to
+<literal>false</literal>, since the statement may fail if using InnoDB
+tables and delete constraints.
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
         <section id="ref_guide_dbsetup_dbsupport_oracle">
