@@ -633,7 +633,8 @@ public class ConfigurationImpl
         // <prefix>.properties System property; remove that property so we
         // we don't warn about it
         Configurations.removeProperty("properties", remaining);
-
+        Configurations.removeProperty("Id", remaining);
+        
         // now warn if there are any remaining properties that there
         // is an unhandled prop
         Map.Entry entry;
