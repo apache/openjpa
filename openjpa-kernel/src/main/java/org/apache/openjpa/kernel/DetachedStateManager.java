@@ -110,9 +110,9 @@ public class DetachedStateManager
         FieldMetaData[] fields = meta.getFields();
         int restore = broker.getRestoreState();
         if (_dirty.length() > 0) {
-            BitSet load = (BitSet) _dirty.clone();
+            BitSet load = new BitSet(fields.length);
             for (int i = 0; i < fields.length; i++) {
-                if (!load.get(i))
+                if (!_dirty.get(i))
                     continue;
 
                 switch (fields[i].getDeclaredTypeCode()) {
@@ -140,7 +140,8 @@ public class DetachedStateManager
             }
             FetchConfiguration fc = broker.getFetchConfiguration();
             sm.loadFields(load, fc, fc.getWriteLockLevel(), null, true);
-        }
+        }        
+        Object origVersion = sm.getVersion();
         sm.setVersion(_version);
 
         BitSet loaded = sm.getLoaded();
@@ -269,6 +270,17 @@ public class DetachedStateManager
             }
         }
         pc.pcReplaceStateManager(sm);
+
+        // if we were clean at least make sure a version check is done to
+        // prevent using old state
+        if (!sm.isVersionCheckRequired() && broker.isActive()
+            && _version != origVersion && (origVersion == null 
+            || broker.getStoreManager().compareVersion(sm, _version, 
+            origVersion) != StoreManager.VERSION_SAME)) {
+            broker.transactional(sm.getManagedInstance(), false, 
+                manager.getBehavior());
+        }
+
         return sm.getManagedInstance();
     }
 
