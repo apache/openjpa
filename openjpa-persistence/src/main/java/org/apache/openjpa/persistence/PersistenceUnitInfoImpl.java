@@ -292,8 +292,8 @@ public class PersistenceUnitInfoImpl
                     setNonJtaDataSourceName((String) val);
                 else
                     setNonJtaDataSource((DataSource) val);
-            } else if (key instanceof String && val instanceof String)
-                setProperty((String) key, (String) val);
+            } else
+                _props.put(key, val);
         }
     }
 
