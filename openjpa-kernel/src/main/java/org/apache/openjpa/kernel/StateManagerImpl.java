@@ -1063,8 +1063,11 @@ public class StateManagerImpl
         // note: all logic placed here rather than in the states for
         // optimization; this method public b/c used by remote package
 
-        // nothing to do for non persistent or new instances
-        if (!isPersistent() || isNew())
+        // nothing to do for non persistent or new unflushed instances
+        // (we allow new flushed instances to pass through in case of 
+        // uncommitted read, and because it allows ordered fields to be re-read
+        // and therefore re-ordered from the store)
+        if (!isPersistent() || (isNew() && !isFlushed()))
             return false;
 
         lock();
