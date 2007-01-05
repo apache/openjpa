@@ -2844,9 +2844,11 @@ public class StateManagerImpl
      * field manager.
      */
     void provideField(PersistenceCapable pc, FieldManager store, int field) {
+        FieldManager beforeFM = _fm;
         _fm = store;
         pc.pcProvideField(field);
-        _fm = null;
+        // Retaining original FM because of the possibility of reentrant calls
+        _fm = beforeFM;
     }
 
     /**
@@ -2854,9 +2856,11 @@ public class StateManagerImpl
      * field manager.
      */
     void replaceField(PersistenceCapable pc, FieldManager load, int field) {
+        FieldManager beforeFM = _fm;
         _fm = load;
         pc.pcReplaceField(field);
-        _fm = null;
+        // Retaining original FM because of the possibility of reentrant calls
+        _fm = beforeFM;
     }
 
     /**
