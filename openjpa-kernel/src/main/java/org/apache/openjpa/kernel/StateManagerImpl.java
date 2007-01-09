@@ -575,17 +575,20 @@ public class StateManagerImpl
     }
 
     public void setVersion(Object version) {
-        _version = version;
         _loadVersion = version;
+        assignVersionField(version);
+    }
 
+    public void setNextVersion(Object version) {
+        assignVersionField(version);
+    }
+
+    private void assignVersionField(Object version) {
+        _version = version;
         FieldMetaData vfield = _meta.getVersionField();
         if (vfield != null)
             store(vfield.getIndex(), JavaTypes.convert(version,
                 vfield.getTypeCode()));
-    }
-
-    public void setNextVersion(Object version) {
-        _version = version;
     }
 
     public PCState getPCState() {
@@ -879,7 +882,7 @@ public class StateManagerImpl
                 fireLifecycleEvent(LifecycleEvent.AFTER_STORE);
         } else if (reason == BrokerImpl.FLUSH_ROLLBACK) {
             // revert to last loaded version and original oid
-            _version = _loadVersion;
+            assignVersionField(_loadVersion);
             if (isNew() && (_flags & FLAG_OID_ASSIGNED) == 0)
                 _oid = null;
         }
@@ -2492,7 +2495,7 @@ public class StateManagerImpl
 
             // forget version info and impl data so we re-read next time
             setLoaded(false);
-            _version = null;
+            assignVersionField(null);
             _loadVersion = null;
             if (_fieldImpl != null)
                 Arrays.fill(_fieldImpl, null);
