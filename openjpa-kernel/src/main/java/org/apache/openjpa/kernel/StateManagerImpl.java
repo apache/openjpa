@@ -2495,7 +2495,7 @@ public class StateManagerImpl
 
             // forget version info and impl data so we re-read next time
             setLoaded(false);
-            assignVersionField(null);
+            _version = null;
             _loadVersion = null;
             if (_fieldImpl != null)
                 Arrays.fill(_fieldImpl, null);
