@@ -604,12 +604,18 @@ public abstract class AbstractCFMetaDataFactory
             for (Iterator itr = files.iterator(); itr.hasNext();) {
                 file = (File) itr.next();
                 if (file.isDirectory()) {
+                    if (log.isTraceEnabled())
+                        log.trace(_loc.get("scanning-directory", file));
                     scan(new FileMetaDataIterator(dir, newMetaDataFilter()),
                         cparser, names, true);
                 } else if (file.getName().endsWith(".jar")) {
+                    if (log.isTraceEnabled())
+                        log.trace(_loc.get("scanning-jar", file));
                     scan(new ZipFileMetaDataIterator(new ZipFile(file),
                         newMetaDataFilter()), cparser, names, true);
                 } else {
+                    if (log.isTraceEnabled())
+                        log.trace(_loc.get("scanning-file", file));
                     clss = cparser.parseTypeNames(new FileMetaDataIterator
                         (file));
                     names.addAll(Arrays.asList(clss));
@@ -624,9 +630,19 @@ public abstract class AbstractCFMetaDataFactory
                 url = (URL) itr.next();
                 if ("jar".equals(url.getProtocol())
                     && url.getPath().endsWith("!/")) {
+                    if (log.isTraceEnabled())
+                        log.trace(_loc.get("scanning-jar-url", url));
                     scan(new ZipFileMetaDataIterator(url,
                         newMetaDataFilter()), cparser, names, true);
+                } else if (url.getPath().endsWith(".jar")) {
+                    if (log.isTraceEnabled())
+                        log.trace(_loc.get("scanning-jar-at-url", url));
+                    scan(new ZipStreamMetaDataIterator(
+                        new ZipInputStream(url.openStream()),
+                        newMetaDataFilter()), cparser, names, true);
                 } else {
+                    if (log.isTraceEnabled())
+                        log.trace(_loc.get("scanning-url", url));
                     clss = cparser.parseTypeNames(new URLMetaDataIterator
                         (url));
                     names.addAll(Arrays.asList(clss));
@@ -642,11 +658,15 @@ public abstract class AbstractCFMetaDataFactory
                 if (rsrc.endsWith(".jar")) {
                     url = loader.getResource(rsrc);
                     if (url != null) {
+                        if (log.isTraceEnabled())
+                            log.trace(_loc.get("scanning-jar-stream-url", url));
                         scan(new ZipStreamMetaDataIterator
                             (new ZipInputStream(url.openStream()),
                                 newMetaDataFilter()), cparser, names, true);
                     }
                 } else {
+                    if (log.isTraceEnabled())
+                        log.trace(_loc.get("scanning-resource", rsrc));
                     mitr = new ResourceMetaDataIterator(rsrc, loader);
                     while (mitr.hasNext()) {
                         url = (URL) mitr.next();
