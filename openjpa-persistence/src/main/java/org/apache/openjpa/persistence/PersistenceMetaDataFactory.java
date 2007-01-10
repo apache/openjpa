@@ -245,9 +245,22 @@ public class PersistenceMetaDataFactory
 
     @Override
     protected void mapPersistentTypeNames(Object rsrc, String[] names) {
-        if (!(rsrc instanceof URL) || rsrc.toString().endsWith(".class"))
+        if (!(rsrc instanceof URL)) {
+            if (log.isTraceEnabled())
+                log.trace(
+                    _loc.get("map-persistent-types-skipping-non-url", rsrc));
             return;
+        } else if (rsrc.toString().endsWith(".class")) {
+            if (log.isTraceEnabled())
+                log.trace(
+                    _loc.get("map-persistent-types-skipping-class", rsrc));
+            return;
+        }
 
+        if (log.isTraceEnabled())
+            log.trace(_loc.get(
+                "map-persistent-type-names", rsrc, Arrays.asList(names)));
+        
         if (_xml == null)
             _xml = new HashMap<URL, Set>();
         _xml.put((URL) rsrc, new HashSet(Arrays.asList(names)));
