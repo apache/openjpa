@@ -53,7 +53,7 @@ public class TestDataCacheOptimisticLockRecovery
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        em.createQuery("delete from OptimisticLockInstance");
+        em.createQuery("delete from OptimisticLockInstance").executeUpdate();
 
         OptimisticLockInstance oli = new OptimisticLockInstance("foo");
         try {
