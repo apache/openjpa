@@ -23,17 +23,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Collection;
 import java.util.ArrayList;
-import java.util.Arrays;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
-import org.apache.openjpa.jdbc.schema.XMLSchemaParser;
+import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.meta.SourceTracker;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.xml.Commentable;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Information about the mapping from a class to the schema, in raw form.
@@ -47,6 +49,9 @@ public class ClassMappingInfo
     extends MappingInfo
     implements SourceTracker, Commentable {
 
+    private static final Localizer _loc = Localizer.forPackage
+        (ClassMappingInfo.class);
+
     private String _className = Object.class.getName();
     private String _tableName = null;
     private boolean _joined = false;
@@ -55,7 +60,7 @@ public class ClassMappingInfo
     private File _file = null;
     private int _srcType = SRC_OTHER;
     private String[] _comments = null;
-    private Collection _uniqueConstraints = null;//XMLSchemaParser.UniqueInfo
+    private Collection _uniques = null;//Unique
 
     /**
      * The described class name.
@@ -313,21 +318,56 @@ public class ClassMappingInfo
                     _seconds.put(key, cinfo._seconds.get(key));
             }
         }
-        if (cinfo._uniqueConstraints != null)
-           _uniqueConstraints = new ArrayList(cinfo._uniqueConstraints);
+        if (cinfo._uniques != null) 
+           _uniques = new ArrayList(cinfo._uniques);
     }
 
-    public void addUniqueConstaint(String[] columnNames) {
-        if (_uniqueConstraints == null)
-            _uniqueConstraints = new ArrayList();
-        XMLSchemaParser.UniqueInfo uniqueInfo = new XMLSchemaParser.UniqueInfo();
-        uniqueInfo.cols = Arrays.asList(columnNames);
-        _uniqueConstraints.add(uniqueInfo);
+    public void addUnique(String name, String[] columnNames) {
+        if (columnNames == null || columnNames.length == 0)
+            return;
+        if (_uniques == null)
+            _uniques = new ArrayList();
+        Unique uniqueConstraint = new Unique();
+        uniqueConstraint.setName(name);
+        for (int i=0; i<columnNames.length; i++) {
+            if (StringUtils.isEmpty(columnNames[i]))
+                throw new UserException(_loc.get("empty-unique-column", 
+                    getClassName()));
+            Column column = new Column();
+            column.setName(columnNames[i]);
+            uniqueConstraint.addColumn(column);
+         }
+        _uniques.add(uniqueConstraint);
     }
     
-    public Collection getUniqueConstraints() {
-        return _uniqueConstraints;
-    }
+    public Unique[] getUniques(ClassMapping cm, boolean adapt) {
+        if (_uniques == null || _uniques.isEmpty())
+            return new Unique[0];
+        Iterator uniqueConstraints = _uniques.iterator();
+        Table table = cm.getTable();
+        Collection result = new ArrayList();
+        while (uniqueConstraints.hasNext()) {
+            Unique template = (Unique)uniqueConstraints.next();
+            Column[] templateColumns = template.getColumns();
+            Column[] uniqueColumns = new Column[templateColumns.length];
+            boolean missingColumn = true;
+            for (int i=0; i<uniqueColumns.length; i++) {
+                String columnName = templateColumns[i].getName();
+                Column uniqueColumn = table.getColumn(columnName);
+                missingColumn = (uniqueColumn == null);
+                if (missingColumn) {
+                    throw new UserException(_loc.get("missing-unique-column", 
+                        cm, table, columnName));
+                }
+                uniqueColumns[i] = uniqueColumn;
+            }
+            Unique unique = super.createUnique(cm, "unique", template, 
+                uniqueColumns, adapt);
+            if (unique != null)
+                result.add(unique);
+        }
+        return (Unique[])result.toArray(new Unique[result.size()]);
+    }   
     
     public File getSourceFile() {
         return _file;
