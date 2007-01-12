@@ -461,7 +461,8 @@ public class AnnotationPersistenceMappingParser
             cm.getMappingInfo().setTableName(tableName);
 
         for (UniqueConstraint unique:table.uniqueConstraints()) {
-            ((ClassMappingInfo)cm.getMappingInfo()).addUniqueConstaint(unique.columnNames());
+            ((ClassMappingInfo)cm.getMappingInfo())
+                .addUnique(null, unique.columnNames());
         }
     }
 
