@@ -1536,7 +1536,7 @@ public class PCEnhancer {
                 field = Reflection.findField(oidType, name, true);
                 reflect = !Modifier.isPublic(field.getModifiers());
                 if (reflect) {
-                    code.constant().setValue(oidType);
+                    code.classconstant().setClass(oidType);
                     code.constant().setValue(name);
                     code.constant().setValue(true);
                     code.invokestatic().setMethod(Reflection.class, 
@@ -1548,9 +1548,9 @@ public class PCEnhancer {
                 setter = Reflection.findSetter(oidType, name, type, true);
                 reflect = !Modifier.isPublic(setter.getModifiers());
                 if (reflect) {
-                    code.constant().setValue(oidType);
+                    code.classconstant().setClass(oidType);
                     code.constant().setValue(name);
-                    setClassConstant(_pc, code, type);
+                    code.classconstant().setClass(type);
                     code.constant().setValue(true);
                     code.invokestatic().setMethod(Reflection.class, 
                         "findSetter", Method.class, new Class[] { Class.class,
@@ -1598,18 +1598,6 @@ public class PCEnhancer {
 
         code.calculateMaxStack();
         code.calculateMaxLocals();
-    }
-
-    /**
-     * Works around a bug in serp with primitive type constants, and chooses
-     * Java 5 construct when available (serp will eventually do all this
-     * automatically). 
-     */
-    private static void setClassConstant(BCClass bc, Code code, Class type) {
-        if (type.isPrimitive() || bc.getMajorVersion() < 49) // 49 = Java 5
-            code.classconstant().setClass(type);
-        else
-            code.constant().setValue(type);
     }
 
     /**
@@ -1881,7 +1869,7 @@ public class PCEnhancer {
                         code.getfield().setField(field);
                     else {
                         // Reflection.getXXX(oid, Reflection.findField(...));
-                        code.constant().setValue(oidType);
+                        code.classconstant().setClass(oidType);
                         code.constant().setValue(name);
                         code.constant().setValue(true);
                         code.invokestatic().setMethod(Reflection.class,
@@ -1898,7 +1886,7 @@ public class PCEnhancer {
                         code.invokevirtual().setMethod(getter);
                     else {
                         // Reflection.getXXX(oid, Reflection.findGetter(...));
-                        code.constant().setValue(oidType);
+                        code.classconstant().setClass(oidType);
                         code.constant().setValue(name);
                         code.constant().setValue(true);
                         code.invokestatic().setMethod(Reflection.class,
