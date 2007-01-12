@@ -643,8 +643,7 @@ public abstract class AbstractCFMetaDataFactory
                 } else {
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scanning-url", url));
-                    clss = cparser.parseTypeNames(new URLMetaDataIterator
-                        (url));
+                    clss = cparser.parseTypeNames(new URLMetaDataIterator(url));
                     names.addAll(Arrays.asList(clss));
                     mapPersistentTypeNames(url, clss);
                 }
