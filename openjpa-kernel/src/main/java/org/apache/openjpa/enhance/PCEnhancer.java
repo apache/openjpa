@@ -1550,7 +1550,7 @@ public class PCEnhancer {
                 if (reflect) {
                     code.constant().setValue(oidType);
                     code.constant().setValue(name);
-                    setClassConstant(code, type);
+                    setClassConstant(_pc, code, type);
                     code.constant().setValue(true);
                     code.invokestatic().setMethod(Reflection.class, 
                         "findSetter", Method.class, new Class[] { Class.class,
@@ -1601,25 +1601,13 @@ public class PCEnhancer {
     }
 
     /**
-     * Works around a bug in serp when primitive type constants. 
+     * Works around a bug in serp with primitive type constants, and chooses
+     * Java 5 construct when available (serp will eventually do all this
+     * automatically). 
      */
-    private static void setClassConstant(Code code, Class type) {
-        if (type == boolean.class) 
-            code.getstatic().setField(Boolean.class, "TYPE", Class.class);
-        else if (type == byte.class) 
-            code.getstatic().setField(Byte.class, "TYPE", Class.class);
-        else if (type == char.class) 
-            code.getstatic().setField(Character.class, "TYPE", Class.class);
-        else if (type == double.class) 
-            code.getstatic().setField(Double.class, "TYPE", Class.class);
-        else if (type == float.class) 
-            code.getstatic().setField(Float.class, "TYPE", Class.class);
-        else if (type == int.class) 
-            code.getstatic().setField(Integer.class, "TYPE", Class.class);
-        else if (type == long.class) 
-            code.getstatic().setField(Long.class, "TYPE", Class.class);
-        else if (type == short.class) 
-            code.getstatic().setField(Short.class, "TYPE", Class.class);
+    private static void setClassConstant(BCClass bc, Code code, Class type) {
+        if (type.isPrimitive() || bc.getMajorVersion() < 49) // 49 = Java 5
+            code.classconstant().setClass(type);
         else
             code.constant().setValue(type);
     }
