@@ -322,22 +322,12 @@ public class ClassMappingInfo
            _uniques = new ArrayList(cinfo._uniques);
     }
 
-    public void addUnique(String name, String[] columnNames) {
-        if (columnNames == null || columnNames.length == 0)
+    public void addUnique(Unique unique) {
+        if (unique == null)
             return;
         if (_uniques == null)
             _uniques = new ArrayList();
-        Unique uniqueConstraint = new Unique();
-        uniqueConstraint.setName(name);
-        for (int i=0; i<columnNames.length; i++) {
-            if (StringUtils.isEmpty(columnNames[i]))
-                throw new UserException(_loc.get("empty-unique-column", 
-                    getClassName()));
-            Column column = new Column();
-            column.setName(columnNames[i]);
-            uniqueConstraint.addColumn(column);
-         }
-        _uniques.add(uniqueConstraint);
+        _uniques.add(unique);
     }
     
     public Unique[] getUniques(ClassMapping cm, boolean adapt) {
