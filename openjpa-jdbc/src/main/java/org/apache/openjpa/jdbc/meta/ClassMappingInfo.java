@@ -330,9 +330,15 @@ public class ClassMappingInfo
         _uniques.add(unique);
     }
     
+    public Unique[] getUniques() {
+        return (_uniques == null) ? new Unique[0] :
+            (Unique[])_uniques.toArray(new Unique[_uniques.size()]);
+    }
+    
     public Unique[] getUniques(ClassMapping cm, boolean adapt) {
         if (_uniques == null || _uniques.isEmpty())
             return new Unique[0];
+        
         Iterator uniqueConstraints = _uniques.iterator();
         Table table = cm.getTable();
         Collection result = new ArrayList();

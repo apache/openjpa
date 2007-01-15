@@ -32,6 +32,7 @@ enum MappingTag {
     ATTR_OVERRIDE,
     ATTR_OVERRIDES,
     COL,
+    COLUMN_NAME,
     COLUMN_RESULT,
     DISCRIM_COL,
     DISCRIM_VAL,

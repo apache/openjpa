@@ -42,6 +42,7 @@ import org.apache.openjpa.jdbc.meta.strats.FlatClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -181,9 +182,10 @@ public class XMLPersistenceMappingSerializer
         ClassMapping cls = (ClassMapping) mapping;
         ClassMappingInfo info = cls.getMappingInfo();
         serializeTable(info.getTableName(), "table", Strings
-            .getClassName(mapping.getDescribedType()), null);
+            .getClassName(mapping.getDescribedType()), null, 
+            info.getUniques());
         for (String second : info.getSecondaryTableNames())
-            serializeTable(second, "secondary-table", null, info);
+            serializeTable(second, "secondary-table", null, info, null);
         serializeColumns(info, ColType.PK_JOIN, null);
     }
 
@@ -218,14 +220,15 @@ public class XMLPersistenceMappingSerializer
      * in the given {@link ClassMappingInfo}.
      */
     private void serializeTable(String table, String elementName,
-        String defaultName, ClassMappingInfo secondaryInfo)
+        String defaultName, ClassMappingInfo secondaryInfo, Unique[] uniques)
         throws SAXException {
         List<Column> cols = null;
         if (secondaryInfo != null)
             cols = (List<Column>) secondaryInfo.getSecondaryTableJoinColumns
                 (table);
 
-        boolean print = cols != null && cols.size() > 0;
+        boolean print = (cols != null && cols.size() > 0) || 
+            (uniques !=null || uniques.length > 0);
         if (table != null
             && (defaultName == null || !defaultName.equals(table))) {
             print = true;
@@ -243,6 +246,9 @@ public class XMLPersistenceMappingSerializer
                 for (Column col : cols)
                     serializeColumn(col, ColType.PK_JOIN, null, false);
             }
+            if (uniques != null)
+                for (Unique unique: uniques)
+                    serializeUniqueConstraint(unique);
             endElement(elementName);
         }
     }
@@ -509,6 +515,17 @@ public class XMLPersistenceMappingSerializer
         }
     }
 
+    private void serializeUniqueConstraint(Unique unique) throws SAXException {
+        startElement("unique-constraint");
+        Column[] columns = unique.getColumns();
+        for (Column column:columns) {
+            startElement("column-name");
+            addText(column.getName());
+            endElement("column-name");
+        }
+        endElement("unique-constraint");
+    }
+    
     @Override
     protected SerializationComparator newSerializationComparator() {
         return new MappingSerializationComparator();
