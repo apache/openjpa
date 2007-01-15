@@ -69,6 +69,7 @@ public class XMLPersistenceMappingParser
         _elems.put("association-override", ASSOC_OVERRIDE);
         _elems.put("attribute-override", ATTR_OVERRIDE);
         _elems.put("column", COL);
+        _elems.put("column-name", COLUMN_NAME);
         _elems.put("column-result", COLUMN_RESULT);
         _elems.put("discriminator-column", DISCRIM_COL);
         _elems.put("discriminator-value", DISCRIM_VAL);
@@ -85,6 +86,7 @@ public class XMLPersistenceMappingParser
         _elems.put("table", TABLE);
         _elems.put("table-generator", TABLE_GEN);
         _elems.put("temporal", TEMPORAL);
+        _elems.put("unique-constraint", UNIQUE);
     }
 
     private static final Localizer _loc = Localizer.forPackage
@@ -220,8 +222,7 @@ public class XMLPersistenceMappingParser
                 ret = startTableGenerator(attrs);
                 break;
             case UNIQUE:
-                getLog().warn(_loc.get("unique-constraints", currentElement()));
-                ret = false;
+                ret = startUniqueConstraint(attrs);
                 break;
             case TEMPORAL:
             case ENUMERATED:
@@ -238,6 +239,9 @@ public class XMLPersistenceMappingParser
                 break;
             case COLUMN_RESULT:
                 ret = startColumnResult(attrs);
+                break;
+            case COLUMN_NAME:
+                ret = true;
                 break;
             default:
                 ret = false;
@@ -276,6 +280,12 @@ public class XMLPersistenceMappingParser
                 break;
             case ENTITY_RESULT:
                 endEntityResult();
+                break;
+            case UNIQUE:
+                endUniqueConstraint();
+                break;
+            case COLUMN_NAME:
+                endColumnName();
                 break;
         }
     }
@@ -846,6 +856,52 @@ public class XMLPersistenceMappingParser
         return true;
     }
 
+    /** 
+     * Starts processing &lt;unique-constraint&gt; provided the tag occurs
+     * within a ClassMapping element and <em>not</em> within a secondary
+     * table. 
+     * Pushes the Unique element in the stack.
+     */
+    private boolean startUniqueConstraint(Attributes attrs) 
+        throws SAXException {
+        Object current = currentElement();
+        if (current instanceof ClassMapping && _secondaryTable == null) {
+            Unique unique = new Unique();
+            pushElement(unique);
+            return true;
+        } 
+        return false;
+    }
+    
+    /**
+     * Ends processing &lt;unique-constraint&gt; provided the tag occurs
+     * within a ClassMapping element and <em>not</em> within a secondary
+     * table. The stack is popped and the Unique element is added to the
+     * ClassMappingInfo. 
+     */
+    private void endUniqueConstraint() {
+        Unique unique = (Unique)popElement();
+        Object current = currentElement();
+        if (current instanceof ClassMapping && _secondaryTable == null)
+            ((ClassMapping)current).getMappingInfo().addUnique(unique);
+    }
+    
+    /**
+     * Ends processing &lt;column-name&gt; tag by adding the column name in
+     * the current Unique element that resides in the top of the stack.
+     */
+    private boolean endColumnName() {
+        Object current = currentElement();
+        if (current instanceof Unique) {
+            Unique unique = (Unique)current;
+            Column column = new Column();
+            column.setName(this.currentText());
+            unique.addColumn(column);
+            return true;
+        }
+        return false;
+    }
+    
     /**
      * Track unique column settings.
 	 */
