@@ -38,7 +38,7 @@ public class TestMultipleSameTypedEmbeddedWithEagerRelations
     private EntityManagerFactory emf;
 
     public void setUp() {
-        Map props = new HashMap();
+        Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types=" 
             + EmbeddableWithRelation.class.getName() + ";"
             + MultipleSameTypedEmbedded.class.getName() + ")");

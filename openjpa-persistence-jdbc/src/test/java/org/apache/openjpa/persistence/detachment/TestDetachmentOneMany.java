@@ -40,7 +40,7 @@ public class TestDetachmentOneMany
     public void setUp() {
         String types = DetachmentOneManyParent.class.getName() + ";"
             + DetachmentOneManyChild.class.getName(); 
-        Map props = new HashMap();
+        Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types=" + types + ")");
         emf = (OpenJPAEntityManagerFactory) Persistence.
             createEntityManagerFactory("test", props);

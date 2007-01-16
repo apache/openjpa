@@ -24,7 +24,7 @@ public class TestMappingToolAutoDelete
     private OpenJPAEntityManagerFactory emf;
 
     public void setUp() {
-        Map props = new HashMap();
+        Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory",
             "jpa(Types=" + AllFieldTypes.class.getName() + ")");
         emf = OpenJPAPersistence.cast( 

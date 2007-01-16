@@ -41,7 +41,7 @@ public class TestGenerationType
     private OpenJPAEntityManagerFactory emf;
 
     public void setUp() {
-        Map props = new HashMap();
+        Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory",
             "jpa(Types=" + IdentityGenerationType.class.getName() + ")");
         emf = (OpenJPAEntityManagerFactory) Persistence.

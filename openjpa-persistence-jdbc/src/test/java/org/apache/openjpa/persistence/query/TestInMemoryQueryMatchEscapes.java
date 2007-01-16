@@ -34,7 +34,7 @@ public class TestInMemoryQueryMatchEscapes
     private EntityManagerFactory emf;
 
     public void setUp() {
-        Map options = new HashMap();
+        Map options = new HashMap(System.getProperties());
 
         // ensure that OpenJPA knows about our type, so that 
         // auto-schema-creation works

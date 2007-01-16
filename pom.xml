@@ -237,6 +237,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <configuration>
                         <useFile>false</useFile>
+                        <trimStackTrace>false</trimStackTrace>
                     </configuration>
                 </plugin>
             </plugins>

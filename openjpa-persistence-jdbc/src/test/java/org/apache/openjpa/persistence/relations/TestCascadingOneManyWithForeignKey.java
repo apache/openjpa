@@ -40,7 +40,7 @@ public class TestCascadingOneManyWithForeignKey
     public void setUp() {
         String types = CascadingOneManyParent.class.getName() + ";"
             + CascadingOneManyChild.class.getName(); 
-        Map props = new HashMap();
+        Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types=" + types + ")");
         emf = (OpenJPAEntityManagerFactory) Persistence.
             createEntityManagerFactory("test", props);

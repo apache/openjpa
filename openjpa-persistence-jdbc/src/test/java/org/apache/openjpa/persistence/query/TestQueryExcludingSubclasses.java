@@ -38,7 +38,7 @@ public class TestQueryExcludingSubclasses
     private EntityManagerFactory emf;
 
     public void setUp() {
-        Map props = new HashMap();
+        Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types=" 
             + ManyOneEntity.class.getName() + ";"
             + ManyOneEntitySub.class.getName() + ")");
