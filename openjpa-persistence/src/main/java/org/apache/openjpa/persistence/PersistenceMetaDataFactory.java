@@ -245,15 +245,15 @@ public class PersistenceMetaDataFactory
 
     @Override
     protected void mapPersistentTypeNames(Object rsrc, String[] names) {
-        if (!(rsrc instanceof URL)) {
-            if (log.isTraceEnabled())
-                log.trace(
-                    _loc.get("map-persistent-types-skipping-non-url", rsrc));
-            return;
-        } else if (rsrc.toString().endsWith(".class")) {
+        if (rsrc.toString().endsWith(".class")) {
             if (log.isTraceEnabled())
                 log.trace(
                     _loc.get("map-persistent-types-skipping-class", rsrc));
+            return;
+        } else if (!(rsrc instanceof URL)) {
+            if (log.isTraceEnabled())
+                log.trace(
+                    _loc.get("map-persistent-types-skipping-non-url", rsrc));
             return;
         }
 
@@ -412,7 +412,7 @@ public class PersistenceMetaDataFactory
         if (rsrcs == null)
             rsrcs = Collections.singleton("META-INF/orm.xml");
         else
-			rsrcs.add ("META-INF/orm.xml");
+			rsrcs.add("META-INF/orm.xml");
 	}
 
     public void setInto(Options opts) {
