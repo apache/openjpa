@@ -101,6 +101,10 @@
                             <configuration>
                                 <systemProperties>
                                     <property>
+                                        <name>openjpa.Log</name>
+                                        <value>DefaultLevel=${openjpa.loglevel}</value>
+                                    </property>
+                                    <property>
                                         <name>openjpa.ConnectionDriverName</name>
                                         <value>org.apache.commons.dbcp.BasicDataSource</value>
                                     </property>
@@ -137,6 +141,10 @@
                             <artifactId>maven-surefire-plugin</artifactId>
                             <configuration>
                                 <systemProperties>
+                                    <property>
+                                        <name>openjpa.Log</name>
+                                        <value>DefaultLevel=${openjpa.loglevel}</value>
+                                    </property>
                                     <property>
                                         <name>openjpa.ConnectionDriverName</name>
                                         <value>org.apache.commons.dbcp.BasicDataSource</value>
@@ -175,6 +183,10 @@
                             <configuration>
                                 <systemProperties>
                                     <property>
+                                        <name>openjpa.Log</name>
+                                        <value>DefaultLevel=${openjpa.loglevel}</value>
+                                    </property>
+                                    <property>
                                         <name>openjpa.ConnectionDriverName</name>
                                         <value>org.apache.commons.dbcp.BasicDataSource</value>
                                     </property>
@@ -212,6 +224,10 @@
                             <configuration>
                                 <systemProperties>
                                     <property>
+                                        <name>openjpa.Log</name>
+                                        <value>DefaultLevel=${openjpa.loglevel}</value>
+                                    </property>
+                                    <property>
                                         <name>openjpa.ConnectionDriverName</name>
                                         <value>org.apache.commons.dbcp.BasicDataSource</value>
                                     </property>
@@ -248,6 +264,10 @@
                             <artifactId>maven-surefire-plugin</artifactId>
                             <configuration>
                                 <systemProperties>
+                                    <property>
+                                        <name>openjpa.Log</name>
+                                        <value>DefaultLevel=${openjpa.loglevel}</value>
+                                    </property>
                                     <property>
                                         <name>openjpa.ConnectionDriverName</name>
                                         <value>org.apache.commons.dbcp.BasicDataSource</value>
@@ -294,6 +314,10 @@
                             <artifactId>maven-surefire-plugin</artifactId>
                             <configuration>
                                 <systemProperties>
+                                    <property>
+                                        <name>openjpa.Log</name>
+                                        <value>DefaultLevel=${openjpa.loglevel}</value>
+                                    </property>
                                     <property>
                                         <name>openjpa.ConnectionDriverName</name>
                                         <value>org.apache.commons.dbcp.BasicDataSource</value>
