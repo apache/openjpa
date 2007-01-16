@@ -39,7 +39,7 @@ public class TestQueryIdOfRelationDoesNotJoin
     private long e3Id;
 
     public void setUp() {
-        Map props = new HashMap();
+        Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types="
                 + ManyOneEntity.class.getName() + ";"
                 + ManyOneEntitySub.class.getName() + ")");

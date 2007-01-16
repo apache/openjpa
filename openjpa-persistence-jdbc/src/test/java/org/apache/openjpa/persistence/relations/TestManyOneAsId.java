@@ -41,7 +41,7 @@ public class TestManyOneAsId
     private long cid;
 
     public void setUp() {
-        Map props = new HashMap();
+        Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types=" 
             + BasicEntity.class.getName() + ";"
             + DataStoreBasicEntity.class.getName() + ";"

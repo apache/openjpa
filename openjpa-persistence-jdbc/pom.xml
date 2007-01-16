@@ -29,6 +29,291 @@
         <artifactId>openjpa</artifactId>
         <version>0.9.7-incubating-SNAPSHOT</version>
     </parent>
+
+    <properties>
+        <openjpa.loglevel>INFO</openjpa.loglevel>
+    </properties>
+
+    <profiles>
+        <!-- Profile for testing with Apache Derby -->
+        <profile>
+            <id>test-derby</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property><name>test-derby</name></property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.derby</groupId>
+                    <artifactId>derby</artifactId>
+                    <version>10.2.1.6</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <configuration>
+                                <systemProperties>
+                                    <property>
+                                        <name>openjpa.Log</name>
+                                        <value>DefaultLevel=${openjpa.loglevel}</value>
+                                    </property>
+                                    <property>
+                                        <name>openjpa.ConnectionDriverName</name>
+                                        <value>org.apache.commons.dbcp.BasicDataSource</value>
+                                    </property>
+                                    <property>
+                                        <name>openjpa.ConnectionProperties</name>
+                                        <value>DriverClassName=org.apache.derby.jdbc.EmbeddedDriver,Url=jdbc:derby:target/database/openjpa-derby-database;create=true,MaxActive=100,MaxWait=10000,TestOnBorrow=true</value>
+                                    </property>
+                                </systemProperties>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
+
+        <!-- Profile for testing with HSQL DB -->
+        <profile>
+            <id>test-hsqldb</id>
+            <activation><property><name>test-hsqldb</name></property></activation>
+            <dependencies>
+                <dependency>
+                    <groupId>hsqldb</groupId>
+                    <artifactId>hsqldb</artifactId>
+                    <version>1.8.0.7</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <configuration>
+                                <systemProperties>
+                                    <property>
+                                        <name>openjpa.ConnectionDriverName</name>
+                                        <value>org.apache.commons.dbcp.BasicDataSource</value>
+                                    </property>
+                                    <property>
+                                        <name>openjpa.ConnectionProperties</name>
+                                        <value>DriverClassName=org.hsqldb.jdbcDriver,Url=jdbc:hsqldb:target/database/openjpa-hsqldb-database;create=true,MaxActive=100,MaxWait=10000,TestOnBorrow=true</value>
+                                    </property>
+                                </systemProperties>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
+
+        <!-- Profile for testing with MySQL DB -->
+        <profile>
+            <id>test-mysql</id>
+            <activation><property><name>test-mysql</name></property></activation>
+            <dependencies>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <version>5.0.4</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <configuration>
+                                <systemProperties>
+                                    <property>
+                                        <name>openjpa.ConnectionDriverName</name>
+                                        <value>org.apache.commons.dbcp.BasicDataSource</value>
+                                    </property>
+                                    <property>
+                                        <name>openjpa.ConnectionProperties</name>
+                                        <value>DriverClassName=com.mysql.jdbc.Driver,Url=${openjpa.mysql.url},MaxActive=100,MaxWait=10000,TestOnBorrow=true,Username=${openjpa.mysql.username},Password=${openjpa.mysql.password}</value>
+                                    </property>
+                                </systemProperties>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
+
+        <!-- Profile for testing with PostgreSQL DB -->
+        <profile>
+            <id>test-postgresql</id>
+            <activation><property><name>test-postgresql</name></property></activation>
+            <dependencies>
+                <dependency>
+                    <groupId>postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                    <version>8.1-407.jdbc3</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <configuration>
+                                <systemProperties>
+                                    <property>
+                                        <name>openjpa.ConnectionDriverName</name>
+                                        <value>org.apache.commons.dbcp.BasicDataSource</value>
+                                    </property>
+                                    <property>
+                                        <name>openjpa.ConnectionProperties</name>
+                                        <value>DriverClassName=org.postgresql.Driver,Url=${openjpa.postgresql.url},MaxActive=100,MaxWait=10000,TestOnBorrow=true,Username=${openjpa.postgresql.username},Password=${openjpa.postgresql.password}</value>
+                                    </property>
+                                </systemProperties>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
+
+        <!-- Profile for testing with SQLServer DB using the jTDS driver -->
+        <profile>
+            <id>test-sqlserver</id>
+            <activation><property><name>test-sqlserver</name></property></activation>
+            <dependencies>
+                <dependency>
+                    <groupId>net.sourceforge.jtds</groupId>
+                    <artifactId>jtds</artifactId>
+                    <version>1.2</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <configuration>
+                                <systemProperties>
+                                    <property>
+                                        <name>openjpa.ConnectionDriverName</name>
+                                        <value>org.apache.commons.dbcp.BasicDataSource</value>
+                                    </property>
+                                    <property>
+                                        <name>openjpa.ConnectionProperties</name>
+                                        <value>DriverClassName=net.sourceforge.jtds.jdbc.Driver,Url=${openjpa.sqlserver.url},MaxActive=100,MaxWait=10000,TestOnBorrow=true,Username=${openjpa.sqlserver.username},Password=${openjpa.sqlserver.password}</value>
+                                    </property>
+                                </systemProperties>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
+
+        <!-- Profile for testing with Sybase DB using the jTDS driver -->
+        <profile>
+            <id>test-sybase</id>
+            <activation><property><name>test-sybase</name></property></activation>
+            <dependencies>
+                <dependency>
+                    <groupId>net.sourceforge.jtds</groupId>
+                    <artifactId>jtds</artifactId>
+                    <version>1.2</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <configuration>
+                                <systemProperties>
+                                    <property>
+                                        <name>openjpa.ConnectionDriverName</name>
+                                        <value>org.apache.commons.dbcp.BasicDataSource</value>
+                                    </property>
+                                    <property>
+                                        <name>openjpa.ConnectionProperties</name>
+                                        <value>DriverClassName=net.sourceforge.jtds.jdbc.Driver,Url=${openjpa.sybase.url},MaxActive=100,MaxWait=10000,TestOnBorrow=true,Username=${openjpa.sybase.username},Password=${openjpa.sybase.password}</value>
+                                    </property>
+                                </systemProperties>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
+        <!-- Profile for testing with a custom DB using a system jar -->
+        <!--
+            For example, to test with Oracle, you might run:
+        mvn test -Dtest=TestPersistence -Ptest-custom \
+          -Dopenjpa.custom.driverjar=$(pwd)/drivers/jdbc-oracle-10_2_0_1_0.jar \
+          -Dopenjpa.custom.driverclass=oracle.jdbc.driver.OracleDriver \
+          -Dopenjpa.custom.url=jdbc:oracle:thin:@HOST:PORT:DBNAME \
+          -Dopenjpa.custom.username=USERNAME \
+          -Dopenjpa.custom.password=PASSWORD
+        -->
+        <profile>
+            <id>test-custom</id>
+            <activation><property><name>test-custom</name></property></activation>
+            <dependencies>
+                <dependency>
+                    <groupId>openjpa.customdriver</groupId>
+                    <artifactId>openjpa.customdriver</artifactId>
+                    <version>1.0</version>
+                    <scope>system</scope>
+                    <systemPath>${openjpa.custom.driverjar}</systemPath>
+                </dependency>
+            </dependencies>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <configuration>
+                                <systemProperties>
+                                    <property>
+                                        <name>openjpa.ConnectionDriverName</name>
+                                        <value>org.apache.commons.dbcp.BasicDataSource</value>
+                                    </property>
+                                    <property>
+                                        <name>openjpa.ConnectionProperties</name>
+                                        <value>DriverClassName=${openjpa.custom.driverclass},Url=${openjpa.custom.url},MaxActive=100,MaxWait=10000,TestOnBorrow=true,Username=${openjpa.custom.username},Password=${openjpa.custom.password}</value>
+                                    </property>
+                                </systemProperties>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
+    </profiles>
+
+
+
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
@@ -41,12 +326,6 @@
             <artifactId>openjpa-persistence</artifactId>
             <version>${pom.version}</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>10.2.1.6</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-dbcp</groupId>

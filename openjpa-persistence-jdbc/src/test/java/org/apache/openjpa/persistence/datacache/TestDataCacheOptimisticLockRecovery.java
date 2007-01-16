@@ -38,7 +38,7 @@ public class TestDataCacheOptimisticLockRecovery
     private int pk;
 
     public void setUp() {
-        Map options = new HashMap();
+        Map options = new HashMap(System.getProperties());
 
         // turn on caching
         options.put("openjpa.DataCache", "true");

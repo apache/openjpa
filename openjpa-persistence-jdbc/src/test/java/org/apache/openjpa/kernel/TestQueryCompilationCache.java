@@ -35,7 +35,7 @@ public class TestQueryCompilationCache
     extends TestCase {
     
     public void testDynamicJPQLWithNamedEntity() {
-        Map props = new HashMap();
+        Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types=" 
             + NamedEntity.class.getName() + ")");
         OpenJPAEntityManagerFactory emf = OpenJPAPersistence.cast(
