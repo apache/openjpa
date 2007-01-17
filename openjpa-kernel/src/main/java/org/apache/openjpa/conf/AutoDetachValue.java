@@ -30,11 +30,13 @@ class AutoDetachValue
 
     public static final String DETACH_CLOSE = "close";
     public static final String DETACH_COMMIT = "commit";
+    public static final String DETACH_ROLLBACK= "rollback";
     public static final String DETACH_NONTXREAD = "nontx-read";
 
     private static String[] ALIASES = new String[]{
         DETACH_CLOSE, String.valueOf(AutoDetach.DETACH_CLOSE),
         DETACH_COMMIT, String.valueOf(AutoDetach.DETACH_COMMIT),
+        DETACH_ROLLBACK, String.valueOf(AutoDetach.DETACH_ROLLBACK),
         DETACH_NONTXREAD, String.valueOf(AutoDetach.DETACH_NONTXREAD),
         // for compatibility with JDO DetachAllOnCommit
         "true", String.valueOf(AutoDetach.DETACH_COMMIT),

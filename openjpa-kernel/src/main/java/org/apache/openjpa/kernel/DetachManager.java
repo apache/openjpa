@@ -40,6 +40,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.CallbackException;
+import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.Proxy;
 import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.UserException;
@@ -148,7 +149,12 @@ public class DetachManager
             exclude = StoreContext.EXCLUDE_ALL;
         else if (detachMode == DETACH_ALL)
             loadMode = StateManagerImpl.LOAD_ALL;
-        sm.load(broker.getFetchConfiguration(), loadMode, exclude, null, false);
+        try {
+            sm.load(broker.getFetchConfiguration(), loadMode, exclude, null, 
+                false);
+        } catch (ObjectNotFoundException onfe) {
+            // consume the exception
+        }
 
         // create bitset of fields to detach; if mode is all we can use
         // currently loaded bitset clone, since we know all fields are loaded
