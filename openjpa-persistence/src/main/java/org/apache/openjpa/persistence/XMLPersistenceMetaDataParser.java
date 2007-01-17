@@ -72,7 +72,7 @@ import org.apache.openjpa.util.UnsupportedException;
 public class XMLPersistenceMetaDataParser
     extends CFMetaDataParser
     implements PersistenceMetaDataFactory.Parser {
-    
+
     // parse constants
     protected static final String ELEM_PKG = "package";
     protected static final String ELEM_ACCESS = "access";
@@ -86,7 +86,7 @@ public class XMLPersistenceMetaDataParser
     protected static final String ELEM_CASCADE_REF = "cascade-refresh";
     protected static final String ELEM_PU_META = "persistence-unit-metadata";
     protected static final String ELEM_PU_DEF = "persistence-unit-defaults";
-    protected static final String ELEM_XML_MAP_META_COMPLETE = 
+    protected static final String ELEM_XML_MAP_META_COMPLETE =
         "xml-mapping-metadata-complete";
 
     private static final Map<String, Object> _elems =
@@ -106,7 +106,7 @@ public class XMLPersistenceMetaDataParser
         _elems.put(ELEM_PU_META, ELEM_PU_META);
         _elems.put(ELEM_PU_DEF, ELEM_PU_DEF);
         _elems.put(ELEM_XML_MAP_META_COMPLETE, ELEM_XML_MAP_META_COMPLETE);
-        
+
         _elems.put("entity-listeners", ENTITY_LISTENERS);
         _elems.put("pre-persist", PRE_PERSIST);
         _elems.put("post-persist", POST_PERSIST);
@@ -458,12 +458,21 @@ public class XMLPersistenceMetaDataParser
                 case ENTITY_LISTENERS:
                     ret = startEntityListeners(attrs);
                     break;
+                case PRE_PERSIST:
+                case POST_PERSIST:
+                case PRE_REMOVE:
+                case POST_REMOVE:
+                case PRE_UPDATE:
+                case POST_UPDATE:
+                case POST_LOAD:
+                    ret = startCallback((MetaDataTag) tag, attrs);
+                    break;
                 default:
                     warnUnsupportedTag(name);
             }
-        } else if (tag == ELEM_PU_META || tag == ELEM_PU_DEF) 
+        } else if (tag == ELEM_PU_META || tag == ELEM_PU_DEF)
             ret = isMetaDataMode();
-        else if (tag == ELEM_XML_MAP_META_COMPLETE) 
+        else if (tag == ELEM_XML_MAP_META_COMPLETE)
             setAnnotationParser(null);
         else if (tag == ELEM_ACCESS)
             ret = _mode != MODE_QUERY;
@@ -708,7 +717,7 @@ public class XMLPersistenceMetaDataParser
     protected boolean startClass(String elem, Attributes attrs)
         throws SAXException {
         super.startClass(elem, attrs);
-        
+
         // query mode only?
         _cls = classForName(currentClassName());
         if (_mode == MODE_QUERY) {
@@ -1510,7 +1519,7 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
         _listener = classForName(attrs.getValue("class"));
         boolean system = currentElement() == null;
-        Collection<LifecycleCallbacks>[] parsed = 
+        Collection<LifecycleCallbacks>[] parsed =
             AnnotationPersistenceMetaDataParser.parseCallbackMethods(_listener,
                 null, true, true, _repos);
         if (parsed == null)
@@ -1580,14 +1589,14 @@ public class XMLPersistenceMetaDataParser
         for (int i = 0; i < events.length; i++) {
             int event = events[i];
             if (_listener != null) {
-                MetaDataParsers.validateMethodsForSameCallback(_listener, 
+                MetaDataParsers.validateMethodsForSameCallback(_listener,
                     _callbacks[event], ((BeanLifecycleCallbacks) adapter).
                     getCallbackMethod(), callback, def, getLog());
             } else {
-                MetaDataParsers.validateMethodsForSameCallback(_cls, 
+                MetaDataParsers.validateMethodsForSameCallback(_cls,
                     _callbacks[event], ((MethodLifecycleCallbacks) adapter).
                     getCallbackMethod(), callback, def, getLog());
-                
+
             }
             if (_callbacks[event] == null)
                 _callbacks[event] = new ArrayList<LifecycleCallbacks>(3);
