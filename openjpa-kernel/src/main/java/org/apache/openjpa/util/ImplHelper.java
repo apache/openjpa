@@ -30,7 +30,6 @@ import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.lib.util.Closeable;
-import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.UUIDGenerator;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -46,9 +45,6 @@ import org.apache.openjpa.meta.ValueStrategies;
  * @nojavadoc
  */
 public class ImplHelper {
-
-    private static final Localizer _loc = Localizer.forPackage
-        (ImplHelper.class);
 
     /**
      * Helper for store manager implementations. This method simply delegates
