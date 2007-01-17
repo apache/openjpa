@@ -112,16 +112,10 @@ public class ZipStreamMetaDataIterator
     public byte[] getContent() throws IOException {
         // buffer content so that future calls to getInputStream can read
         // the same data
-        int size = (int) _entry.getSize();
-        if (size < 0) {
-            ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            byte[] buf = new byte[1024];
-            for (int r; (r = _stream.read(buf)) != -1; bout.write(buf, 0, r)) ;
-            _buf = bout.toByteArray();
-        } else {
-            _buf = new byte[size];
-            _stream.read(_buf);
-        }
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024];
+        for (int r; (r = _stream.read(buf)) != -1; bout.write(buf, 0, r)) ;
+        _buf = bout.toByteArray();
         _stream.closeEntry();
         return _buf;
     }
