@@ -1710,7 +1710,7 @@ public class BrokerImpl
 
     /**
      * Mark the operation over. If outermost caller of stack, returns true
-     * and will detach manageed instances if necessary.
+     * and will detach managed instances if necessary.
      */
     public boolean endOperation() {
         try {
@@ -1779,6 +1779,10 @@ public class BrokerImpl
 
             if ((_autoDetach & DETACH_COMMIT) != 0)
                 detachAllInternal(null);
+            else if (status == Status.STATUS_ROLLEDBACK 
+                && (_autoDetach & DETACH_ROLLBACK) != 0) {
+                detachAllInternal(null);
+            }
 
             // in an ee context, it's possible that the user tried to close
             // us but we didn't actually close because we were waiting on this

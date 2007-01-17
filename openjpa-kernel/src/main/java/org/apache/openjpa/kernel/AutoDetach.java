@@ -35,4 +35,9 @@ public interface AutoDetach {
      * nontransactional operation uses a new persistence context in essence.
      */
     public static final int DETACH_NONTXREAD = 2 << 2;
+
+    /**
+     * Detach context on failed transaction commit / rollback.
+     */
+    public static final int DETACH_ROLLBACK = 2 << 3;
 }
