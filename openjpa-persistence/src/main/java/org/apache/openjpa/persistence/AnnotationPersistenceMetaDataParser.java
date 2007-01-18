@@ -656,9 +656,14 @@ public class AnnotationPersistenceMetaDataParser
             cls = cls.getEnclosingClass();
 
         String rsrc = StringUtils.replace(cls.getName(), ".", "/");
-        URL url = cls.getClassLoader().getResource(rsrc + ".java");
+        ClassLoader loader = cls.getClassLoader();
+        if (loader == null)
+            loader = ClassLoader.getSystemClassLoader();
+        if (loader == null)
+            return null;
+        URL url = loader.getResource(rsrc + ".java");
         if (url == null) {
-            url = cls.getClassLoader().getResource(rsrc + ".class");
+            url = loader.getResource(rsrc + ".class");
             if (url == null)
                 return null;
         }
