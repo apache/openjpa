@@ -171,19 +171,20 @@ public class JMSRemoteCommitProvider
             // create a subscriber.
             TopicSubscriber s = _session.createSubscriber(topic, null,
                 /* noLocal: */ true);
- MessageListener l = getMessageListener();
- s.setMessageListener(l);
- _connection.start();
- _connection.setExceptionListener(this);
- if (log.isInfoEnabled())
- log.info(s_loc.get("jms-start-listener", _topicName));
- } catch (OpenJPAException ke) {
- throw ke;
- } catch (Exception e) {
- throw new UserException(s_loc.get("jms-provider-config",
- _topicName, _tcfName), e).setFatal(true);
- }
- }
+            
+            MessageListener l = getMessageListener();
+            s.setMessageListener(l);
+            _connection.start();
+            _connection.setExceptionListener(this);
+            if (log.isInfoEnabled())
+                log.info(s_loc.get("jms-start-listener", _topicName));
+        } catch (OpenJPAException ke) {
+            throw ke;
+        } catch (Exception e) {
+            throw new UserException(s_loc.get("jms-provider-config",
+                _topicName, _tcfName), e).setFatal(true);
+        }
+    }
 
     /* *
      * Returns a {@link javax.jms.MessageListener} capable of
