@@ -55,6 +55,7 @@ import org.apache.openjpa.lib.log.LogFactoryImpl;
 import org.apache.openjpa.lib.log.NoneLogFactory;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.lib.util.Services;
 import org.apache.openjpa.lib.util.StringDistance;
@@ -158,8 +159,10 @@ public class ConfigurationImpl
      * {@link ProductDerivation}s, and from System properties.
      */
     public boolean loadGlobals() {
-        ConfigurationProvider provider = ProductDerivations.loadGlobals
-            (getClass().getClassLoader());
+        MultiClassLoader loader = new MultiClassLoader();
+        loader.addClassLoader(Thread.currentThread().getContextClassLoader());
+        loader.addClassLoader(getClass().getClassLoader());
+        ConfigurationProvider provider = ProductDerivations.loadGlobals(loader);
         if (provider != null)
             provider.setInto(this);
 
