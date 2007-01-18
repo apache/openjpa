@@ -43,6 +43,7 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.UserException;
+import serp.util.Numbers;
 
 /**
  * A SQL query.
@@ -158,6 +159,7 @@ public class SQLStoreQuery
 
         private final ClassMetaData _meta;
         private final boolean _select;
+        private final boolean _call;   // native call stored procedure
         private final QueryResultMapping _resultMapping;
 
         public SQLExecutor(SQLStoreQuery q, ClassMetaData candidate) {
@@ -180,6 +182,63 @@ public class SQLStoreQuery
                 throw new UserException(_loc.get("no-sql"));
             _select = sql.length() > 6
                 && sql.substring(0, 6).equalsIgnoreCase("select");
+            _call = sql.length() > 4
+                && sql.substring(0, 4).equalsIgnoreCase("call");
+        }
+
+        public int getOperation(StoreQuery q) {
+           return _select ? OP_SELECT : 
+                (q.getContext().getCandidateType() != null
+                        || q.getContext().getResultType() != null
+                        || q.getContext().getResultMappingName() != null 
+                        || q.getContext().getResultMappingScope() != null)
+                        ? OP_SELECT : OP_UPDATE;
+        }
+
+        public Number executeUpdate(StoreQuery q, Object[] params) {
+            JDBCStore store = ((SQLStoreQuery) q).getStore();
+            DBDictionary dict = store.getDBDictionary();
+            String sql = q.getContext().getQueryString();
+
+            List paramList;
+            if (params.length > 0) {
+                paramList = new ArrayList(Arrays.asList(params));
+                try {
+                    sql = substituteParams(sql, paramList);
+                } catch (IOException ioe) {
+                    throw new UserException(ioe);
+                }
+            } else
+                paramList = Collections.EMPTY_LIST;
+
+            SQLBuffer buf = new SQLBuffer(dict).append(sql);
+            Connection conn = store.getConnection();
+            JDBCFetchConfiguration fetch = (JDBCFetchConfiguration)
+                q.getContext().getFetchConfiguration();
+
+            PreparedStatement stmnt = null;
+            try {
+                stmnt = buf.prepareCall(conn);
+
+                int index = 0;
+                for (Iterator i = paramList.iterator(); i.hasNext();)
+                    dict.setUnknown(stmnt, ++index, i.next(), null);
+                
+                int count = 0;
+                if (_call && stmnt.execute() == false) {
+                    count = stmnt.getUpdateCount();
+                }
+                else {
+                    // native insert, update, delete
+                    count = stmnt.executeUpdate();
+                }
+                return Numbers.valueOf(count);
+            } catch (SQLException se) {
+                if (stmnt != null)
+                    try { stmnt.close(); } catch (SQLException se2) {}
+                try { conn.close(); } catch (SQLException se2) {}
+                throw SQLExceptions.getStore(se, dict);
+            }
         }
 
         public ResultObjectProvider executeQuery(StoreQuery q,
