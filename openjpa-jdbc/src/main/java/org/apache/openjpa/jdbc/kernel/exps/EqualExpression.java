@@ -36,7 +36,7 @@ class EqualExpression
     public void appendTo(Select sel, ExpContext ctx, BinaryOpExpState bstate, 
         SQLBuffer buf, boolean val1Null, boolean val2Null) {
         if (val1Null && val2Null)
-            buf.appendValue(null).append(" IS ").appendValue(null);
+            buf.append("1 = 1");
         else if (val1Null || val2Null) {
             Val val = (val1Null) ? getValue2() : getValue1();
             ExpState state = (val1Null) ? bstate.state2 : bstate.state1;
