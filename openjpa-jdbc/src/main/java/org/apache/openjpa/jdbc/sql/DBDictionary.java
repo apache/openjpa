@@ -215,9 +215,9 @@ public class DBDictionary
     public String toUpperCaseFunction = "UPPER({0})";
     public String stringLengthFunction = "CHAR_LENGTH({0})";
     public String bitLengthFunction = "(OCTET_LENGTH({0}) * 8)";
-    public String trimLeadingFunction = "TRIM(LEADING '{1}' FROM {0})";
-    public String trimTrailingFunction = "TRIM(TRAILING '{1}' FROM {0})";
-    public String trimBothFunction = "TRIM(BOTH '{1}' FROM {0})";
+    public String trimLeadingFunction = "TRIM(LEADING {1} FROM {0})";
+    public String trimTrailingFunction = "TRIM(TRAILING {1} FROM {0})";
+    public String trimBothFunction = "TRIM(BOTH {1} FROM {0})";
     public String concatenateFunction = "({0}||{1})";
     public String concatenateDelimiter = "'OPENJPATOKEN'";
     public String substringFunctionName = "SUBSTRING";
