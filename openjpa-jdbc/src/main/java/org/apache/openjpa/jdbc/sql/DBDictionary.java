@@ -2381,7 +2381,7 @@ public class DBDictionary
         else
             lhs.appendTo(buf);
 
-        if (mod)
+        if (mod && !supportsModOperator)
             buf.append(", ");
         else
             buf.append(" ").append(op).append(" ");
