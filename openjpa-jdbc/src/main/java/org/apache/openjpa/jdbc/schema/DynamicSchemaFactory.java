@@ -129,14 +129,19 @@ public class DynamicSchemaFactory
             super(name, table);
         }
 
-        public boolean isCompatible(int type, int size) {
+        public boolean isCompatible(int type, String typeName, int size,
+            int decimals) {
             if (getType() != Types.OTHER)
-                return super.isCompatible(type, size);
+                return super.isCompatible(type, typeName, size, decimals);
 
             if (type == Types.VARCHAR && size <= 0)
                 size = _dict.characterColumnSize;
             setType(type);
             setSize(size);
+            if (typeName != null)
+                setTypeName(typeName);
+            if (decimals >= 0)
+                setDecimalDigits(decimals);
             return true;
         }
     }

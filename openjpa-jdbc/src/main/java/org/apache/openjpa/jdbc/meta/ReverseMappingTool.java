@@ -1085,7 +1085,7 @@ public class ReverseMappingTool
         Column[] pks = table.getPrimaryKey().getColumns();
         cls.setPrimaryKeyColumns(pks);
         if (pks.length == 1 && _datastore
-            && pks[0].isCompatible(Types.BIGINT, 0)) {
+            && pks[0].isCompatible(Types.BIGINT, null, 0, 0)) {
             cls.setObjectIdType(null, false);
             cls.setIdentityType(ClassMapping.ID_DATASTORE);
         } else if (pks.length == 1 && _builtin)

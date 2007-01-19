@@ -548,7 +548,8 @@ public class Column
      * Return true if this column is compatible with the given JDBC type
      * from {@link Types} and size.
      */
-    public boolean isCompatible(int type, int size) {
+    public boolean isCompatible(int type, String typeName, int size, 
+        int decimals) {
         if (type == Types.OTHER || getType() == Types.OTHER)
             return true;
 
@@ -662,7 +663,8 @@ public class Column
 
         if (!getFullName().equalsIgnoreCase(col.getFullName()))
             return false;
-        if (!isCompatible(col.getType(), col.getSize()))
+        if (!isCompatible(col.getType(), col.getTypeName(), col.getSize(),
+            col.getDecimalDigits()))
             return false;
         if (getType() == Types.VARCHAR && getSize() > 0 && col.getSize() > 0
             && getSize() != col.getSize())
