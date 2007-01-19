@@ -228,7 +228,7 @@ public class XMLPersistenceMappingSerializer
                 (table);
 
         boolean print = (cols != null && cols.size() > 0) || 
-            (uniques !=null || uniques.length > 0);
+            (uniques != null && uniques.length > 0);
         if (table != null
             && (defaultName == null || !defaultName.equals(table))) {
             print = true;
