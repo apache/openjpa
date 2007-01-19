@@ -504,6 +504,9 @@ public class OracleDictionary
             // setNull with DATE; see bug #1171
         else if (colType == Types.DATE)
             super.setNull(stmnt, idx, Types.TIMESTAMP, col);
+        // the Oracle driver does not support Types.OTHER with setNull
+        else if (colType == Types.OTHER)
+            super.setNull(stmnt, idx, Types.NULL, col);
         else
             super.setNull(stmnt, idx, colType, col);
     }
