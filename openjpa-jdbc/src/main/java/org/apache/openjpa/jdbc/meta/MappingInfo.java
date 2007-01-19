@@ -608,7 +608,8 @@ public abstract class MappingInfo
             // the expected column type
             if (given.getType() != Types.OTHER) {
                 ttype = false;
-                if (compat && !given.isCompatible(type, size)) {
+                if (compat && !given.isCompatible(type, typeName, size, 
+                    decimals)) {
                     Log log = repos.getLog();
                     if (log.isWarnEnabled())
                         log.warn(_loc.get(prefix + "-incompat-col",
@@ -643,7 +644,8 @@ public abstract class MappingInfo
         if (col == null) {
             col = table.addColumn(colName);
             col.setType(type);
-        } else if ((compat || !ttype) && !col.isCompatible(type, size)) {
+        } else if ((compat || !ttype) && !col.isCompatible(type, typeName, 
+            size, decimals)) {
             // if existing column isn't compatible with desired type, die if
             // can't adapt, else warn and change the existing column type
             Message msg = _loc.get(prefix + "-bad-col", context,

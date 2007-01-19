@@ -751,7 +751,7 @@ public class DBDictionary
     public void setBigDecimal(PreparedStatement stmnt, int idx, BigDecimal val,
         Column col)
         throws SQLException {
-        if ((col != null && col.isCompatible(Types.VARCHAR, 0))
+        if ((col != null && col.isCompatible(Types.VARCHAR, null, 0, 0))
             || (col == null && storeLargeNumbersAsStrings))
             setString(stmnt, idx, val.toString(), col);
         else
@@ -764,7 +764,7 @@ public class DBDictionary
     public void setBigInteger(PreparedStatement stmnt, int idx, BigInteger val,
         Column col)
         throws SQLException {
-        if ((col != null && col.isCompatible(Types.VARCHAR, 0))
+        if ((col != null && col.isCompatible(Types.VARCHAR, null, 0, 0))
             || (col == null && storeLargeNumbersAsStrings))
             setString(stmnt, idx, val.toString(), col);
         else
@@ -833,7 +833,7 @@ public class DBDictionary
      */
     public void setChar(PreparedStatement stmnt, int idx, char val, Column col)
         throws SQLException {
-        if ((col != null && col.isCompatible(Types.INTEGER, 0))
+        if ((col != null && col.isCompatible(Types.INTEGER, null, 0, 0))
             || (col == null && storeCharsAsNumbers))
             setInt(stmnt, idx, (int) val, col);
         else
