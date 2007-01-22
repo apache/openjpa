@@ -199,8 +199,11 @@ public class MappingRepository
         if ((getSourceMode() & MODE_QUERY) == 0)
             return null;
 
+        if (cls == null)
+            cls = getMetaDataFactory()
+                    .getResultSetMappingScope(name, envLoader);
         // not in cache; load
-        getMetaDataFactory().load(cls, MODE_QUERY, envLoader);
+        getMetaDataFactory().load(cls, MODE_META | MODE_MAPPING, envLoader);
         return (QueryResultMapping) _results.get(key);
     }
 

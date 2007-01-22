@@ -116,6 +116,12 @@ public interface MetaDataFactory
     public Class getQueryScope(String queryName, ClassLoader loader);
 
     /**
+     * Return the type defining the given result set mapping name, if any.
+     */
+    public Class getResultSetMappingScope(String resultSetMappingName,
+        ClassLoader loader);
+    
+    /**
      * Return a properly-configured class arg parser for our expected
      * metadata format.
      */

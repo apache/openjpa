@@ -76,6 +76,11 @@ public class NoneMetaDataFactory
         return null;
     }
 
+    public Class getResultSetMappingScope(String resultSetMappingName,
+        ClassLoader loader) {
+        return null;
+    }
+
     public ClassArgParser newClassArgParser() {
         return new ClassArgParser();
     }

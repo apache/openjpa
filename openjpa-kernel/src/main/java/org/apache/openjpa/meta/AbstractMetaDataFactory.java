@@ -97,6 +97,11 @@ public abstract class AbstractMetaDataFactory
         return null;
     }
 
+    public Class getResultSetMappingScope(String resultSetMappingName,
+        ClassLoader loader) {
+        return null;
+    }
+
     public ClassArgParser newClassArgParser() {
         return new ClassArgParser();
     }
