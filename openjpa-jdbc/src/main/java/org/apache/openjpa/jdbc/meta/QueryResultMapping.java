@@ -409,9 +409,12 @@ public class QueryResultMapping
                 if (last == null)
                     throw new MetaDataException(_loc.get("untraversable-path",
                         QueryResultMapping.this, _candidate, path));
-                assertSingleColumn(last.getColumns(), path);
-                Column col = last.getColumns()[0];
-
+                Column[] cols = last.getColumns();
+                if (last.isVersion())
+                    cols = candidate.getVersion().getColumns();
+                assertSingleColumn(cols, path);
+                Column col = cols[0];
+                
                 // special-case oid fields, since path lists supplied for
                 // them at runtime don't include the embedded fields
                 if (fm != null && fm.getDeclaredTypeCode() == JavaTypes.OID) {

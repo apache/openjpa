@@ -52,7 +52,7 @@ public class QueryMetaData
     private String[] _comments;
     private List _hintKeys;
     private List _hintVals;
-
+    private String _resultSetMappingName;
     /**
      * Construct with the given name.
      */
@@ -178,6 +178,14 @@ public class QueryMetaData
         _hintVals.add(value);
     }
 
+    public String getResultSetMappingName() {
+        return _resultSetMappingName;
+    }
+
+    public void setResultSetMappingName(String setMappingName) {
+        _resultSetMappingName = setMappingName;
+    }
+    
     /**
      * Set query template information into the given concrete
      * query instance. However, the language, query string, and
@@ -193,6 +201,8 @@ public class QueryMetaData
             query.setResultType(_res);
         if (_readOnly != null)
             query.setReadOnly(_readOnly.booleanValue());
+        if (_resultSetMappingName != null)
+            query.setResultMapping(null, _resultSetMappingName);
     }
 
     /**

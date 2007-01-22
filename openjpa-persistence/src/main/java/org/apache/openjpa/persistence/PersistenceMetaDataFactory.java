@@ -32,6 +32,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
 
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -294,9 +296,40 @@ public class PersistenceMetaDataFactory
         return null;
     }
 
+    @Override
+    public Class getResultSetMappingScope(String rsMappingName,
+        ClassLoader loader) {
+        if (rsMappingName == null)
+            return null;
+        
+        Collection classes = repos.loadPersistentTypes(false, loader);
+        for (Class cls : (Collection<Class>) classes) {
+            
+            if (cls.isAnnotationPresent(SqlResultSetMapping.class) && 
+                hasRSMapping(rsMappingName, (SqlResultSetMapping) cls.
+                getAnnotation(SqlResultSetMapping.class)))
+                return cls;
+            
+            if (cls.isAnnotationPresent(SqlResultSetMappings.class) && 
+                hasRSMapping(rsMappingName, ((SqlResultSetMappings) cls.
+                getAnnotation(SqlResultSetMappings.class)).value()))
+                return cls;
+        }
+        return null;
+    }
+
     private boolean hasNamedQuery(String query, NamedQuery... queries) {
         for (NamedQuery q : queries) {
             if (query.equals(q.name()))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean hasRSMapping(String rsMapping,
+        SqlResultSetMapping... mappings) {
+        for (SqlResultSetMapping m : mappings) {
+            if (rsMapping.equals(m.name()))
                 return true;
         }
         return false;

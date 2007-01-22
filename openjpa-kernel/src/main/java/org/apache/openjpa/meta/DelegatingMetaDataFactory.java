@@ -103,6 +103,11 @@ public class DelegatingMetaDataFactory
         return _delegate.getQueryScope(queryName, loader);
     }
 
+    public Class getResultSetMappingScope(String resultSetMappingName,
+        ClassLoader loader) {
+        return _delegate.getResultSetMappingScope(resultSetMappingName, loader);
+    }
+
     public void clear() {
         _delegate.clear();
     }
@@ -113,5 +118,5 @@ public class DelegatingMetaDataFactory
 
     public void addFieldExtensionKeys(Collection exts) {
         _delegate.addFieldExtensionKeys(exts);
-	}
+    }
 }
