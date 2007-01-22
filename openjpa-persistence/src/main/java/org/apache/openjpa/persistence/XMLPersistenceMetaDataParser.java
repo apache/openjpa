@@ -1450,6 +1450,10 @@ public class XMLPersistenceMetaDataParser
                 meta.setResultType(type);
         }
 
+        val = attrs.getValue("result-set-mapping");
+        if (val != null)
+            meta.setResultSetMappingName(val);
+
         Object cur = currentElement();
         Object scope = (cur instanceof ClassMetaData)
             ? ((ClassMetaData) cur).getDescribedType() : null;
