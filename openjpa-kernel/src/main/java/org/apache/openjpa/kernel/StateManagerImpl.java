@@ -658,8 +658,7 @@ public class StateManagerImpl
         boolean loaded) {
         int idx = _meta.getExtraFieldDataIndex(field);
         if (idx == -1)
-            throw new InternalException(String.valueOf(_meta.getField
-                (field)));
+            throw new InternalException(String.valueOf(_meta.getField(field)));
 
         Object old = (_fieldImpl == null) ? null : _fieldImpl[idx];
         if (data != null) {
