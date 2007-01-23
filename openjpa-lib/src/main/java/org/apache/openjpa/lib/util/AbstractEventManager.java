@@ -45,9 +45,10 @@ public abstract class AbstractEventManager implements EventManager {
         if (listener == null)
             return;
         if (_firing) {
-            if (_newListeners == null)
+            if (_newListeners == null) {
                 _newListeners = newListenerCollection();
-            _newListeners.addAll(_listeners);
+                _newListeners.addAll(_listeners);
+            }
             _newListeners.add(listener);
         } else {
             if (_listeners == null)
@@ -63,9 +64,10 @@ public abstract class AbstractEventManager implements EventManager {
         if (listener == null)
             return false;
         if (_firing && _listeners.contains(listener)) {
-            if (_newListeners == null)
+            if (_newListeners == null) {
                 _newListeners = newListenerCollection();
-            _newListeners.addAll(_listeners);
+                _newListeners.addAll(_listeners);
+            }
             return _newListeners.remove(listener);
         }
         return _listeners != null && _listeners.remove(listener);
