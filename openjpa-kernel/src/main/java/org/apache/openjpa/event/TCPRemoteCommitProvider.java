@@ -45,6 +45,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.util.Serialization;
 import org.apache.openjpa.lib.util.concurrent.ReentrantLock;
 
 import serp.util.Strings;
@@ -660,7 +661,8 @@ public class TCPRemoteCommitProvider
                 throws IOException, ClassNotFoundException,
                 OptionalDataException {
                 // This will block waiting for the next
-                ObjectInputStream ois = new ObjectInputStream(in);
+                ObjectInputStream ois = 
+                    new Serialization.ClassResolvingObjectInputStream(in);
 
                 long protocolVersion = ois.readLong();
                 if (protocolVersion != PROTOCOL_VERSION) {
