@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 import java.io.Serializable;
 
@@ -28,6 +29,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.MultiClassLoader;
 
 /**
  * Helper class to serialize and deserialize persistent objects,
@@ -74,7 +76,7 @@ public class Serialization {
     public static Object deserialize(InputStream in, StoreContext ctx) {
         try {
             if (ctx == null)
-                return new ObjectInputStream(in).readObject();
+                return new ClassResolvingObjectInputStream(in).readObject();
             return new PersistentObjectInputStream(in, ctx).readObject();
         } catch (Exception e) {
             throw new StoreException(e);
@@ -106,11 +108,34 @@ public class Serialization {
         }
     }
 
+    private static class ClassResolvingObjectInputStream
+        extends ObjectInputStream {
+
+        public ClassResolvingObjectInputStream(InputStream delegate)
+            throws IOException {
+            super(delegate);
+        }
+
+        protected Class resolveClass(ObjectStreamClass desc) 
+            throws IOException, ClassNotFoundException {
+            MultiClassLoader loader = new MultiClassLoader();
+            addContextClassLoaders(loader);
+            loader.addClassLoader(getClass().getClassLoader());
+            loader.addClassLoader(MultiClassLoader.SYSTEM_LOADER);
+            return Class.forName(desc.getName(), true, loader);
+        }
+
+        protected void addContextClassLoaders(MultiClassLoader loader) {
+            loader.addClassLoader(Thread.currentThread().
+                getContextClassLoader());
+        }
+    }
+
     /**
      * Object input stream that replaces oids with their objects.
      */
     private static class PersistentObjectInputStream
-        extends ObjectInputStream {
+        extends ClassResolvingObjectInputStream {
 
         private final StoreContext _ctx;
 
@@ -124,6 +149,11 @@ public class Serialization {
             super(delegate);
             _ctx = ctx;
             enableResolveObject(true);
+        }
+
+        protected void addContextClassLoaders(MultiClassLoader loader) {
+            super.addContextClassLoaders(loader);
+            loader.addClassLoader(_ctx.getClassLoader());
         }
 
         protected Object resolveObject(Object obj) {
