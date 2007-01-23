@@ -86,7 +86,7 @@ public class Serialization {
     /**
      * Object output stream that replaces persistent objects with their oids.
      */
-    private static class PersistentObjectOutputStream
+    public static class PersistentObjectOutputStream
         extends ObjectOutputStream {
 
         private StoreContext _ctx;
@@ -108,7 +108,7 @@ public class Serialization {
         }
     }
 
-    private static class ClassResolvingObjectInputStream
+    public static class ClassResolvingObjectInputStream
         extends ObjectInputStream {
 
         public ClassResolvingObjectInputStream(InputStream delegate)
@@ -134,7 +134,7 @@ public class Serialization {
     /**
      * Object input stream that replaces oids with their objects.
      */
-    private static class PersistentObjectInputStream
+    public static class PersistentObjectInputStream
         extends ClassResolvingObjectInputStream {
 
         private final StoreContext _ctx;
