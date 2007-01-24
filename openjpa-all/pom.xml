@@ -48,6 +48,7 @@
                                     dest="${basedir}/target/classes">
                                     <fileset dir="${basedir}/..">
                                         <include name="*/target/openjpa-*.jar"/>
+                                        <exclude name="*/target/openjpa-examples-*.jar"/>
                                     </fileset>
                                 </unjar>
 
