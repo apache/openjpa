@@ -1070,7 +1070,7 @@ public class QueryImpl
             } else if (value instanceof Constant) {
                 val = ((Constant) value).getValue(params);
             } else {
-                val = null;
+                throw new UserException(_loc.get("only-update-primitives"));
             }
 
             OpenJPAStateManager sm = _broker.getStateManager(ob);
