@@ -33,6 +33,8 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
+import org.apache.openjpa.kernel.exps.Constant;
+import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.Val;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.rop.EagerResultList;
@@ -1058,8 +1060,18 @@ public class QueryImpl
             Map.Entry e = (Map.Entry) it.next();
             FieldMetaData fmd = (FieldMetaData) e.getKey();
 
-            Val value = (Val) e.getValue();
-            Object val = value.evaluate(ob, null, getStoreContext(), params);
+            Object val;
+            Object value = e.getValue();
+            if (value instanceof Val) {
+                val = ((Val) value).
+                    evaluate(ob, null, getStoreContext(), params);
+            } else if (value instanceof Literal) {
+                val = ((Literal) value).getValue();
+            } else if (value instanceof Constant) {
+                val = ((Constant) value).getValue(params);
+            } else {
+                val = null;
+            }
 
             OpenJPAStateManager sm = _broker.getStateManager(ob);
             int i = fmd.getIndex();
