@@ -175,11 +175,11 @@ public class PCClassFileTransformer
             return null;
         } catch (ClassNotFoundException cnfe) {
             // cannot load the class: this might mean that it is a proxy
-            // or otherwise inaccessible class
+            // or otherwise inaccessible class which can't be an entity
             return Boolean.FALSE;
         } catch (ClassCircularityError cce) {
-            // this can happen if we are loading classes what this
-            // class already depends on
+            // this can happen if we are loading classes that this
+            // class depends on; these will never be enhanced anyway
             return Boolean.FALSE;
         } catch (RuntimeException re) {
             throw re;
