@@ -780,17 +780,15 @@ public class BrokerImpl
                     // after making instance transactional for locking
                     if (!sm.isTransactional() && useTransactionalState(fetch))
                         sm.transactional();
-                    boolean loaded = sm.isLoading();
-                    if (!loaded) {
-                        try {
-                            loaded = sm.load(fetch, StateManagerImpl.LOAD_FGS, 
-                                exclude, edata, false);
-                        } catch (ObjectNotFoundException onfe) {
-                            if ((flags & OID_NODELETED) != 0
-                                || (flags & OID_NOVALIDATE) != 0)
-                                throw onfe;
-                            return call.processReturn(oid, null);
-                        }
+                    boolean loaded = false;
+                    try {
+                        loaded = sm.load(fetch, StateManagerImpl.LOAD_FGS, 
+                            exclude, edata, false);
+                    } catch (ObjectNotFoundException onfe) {
+                        if ((flags & OID_NODELETED) != 0
+                            || (flags & OID_NOVALIDATE) != 0)
+                            throw onfe;
+                        return call.processReturn(oid, null);
                     }
 
                     // if no data needed to be loaded and the user wants to
