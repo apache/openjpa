@@ -1955,18 +1955,20 @@ for managing bidirectional relations upon a flush. See
 LockManager</literal>
             </para>
             <para>
-<emphasis role="bold">Default: </emphasis><literal>pessimistic</literal>
+<emphasis role="bold">Default: </emphasis><literal>version</literal>
             </para>
             <para>
 <emphasis role="bold">Possible values: </emphasis><literal>none</literal>,
-<literal>sjvm</literal>, <literal>pessimistic</literal>
+<literal>sjvm</literal>, <literal>pessimistic</literal>, 
+<literal>version</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
 <xref linkend="ref_guide_conf_plugins"/>) describing a
 <ulink url="../javadoc/org/apache/openjpa/kernel/LockManager.html"><classname>
 org.apache.openjpa.kernel.LockManager</classname></ulink> to use for acquiring
-locks on persistent instances during transactions.
+locks on persistent instances during transactions.  See 
+<xref linkend="ref_guide_locking_lockmgr"/> for more information.
             </para>
         </section>
         <section id="openjpa.LockTimeout">
