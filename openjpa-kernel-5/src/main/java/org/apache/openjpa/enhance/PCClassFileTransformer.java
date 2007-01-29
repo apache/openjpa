@@ -173,6 +173,14 @@ public class PCClassFileTransformer
             if (_repos.getMetaData(c, null, false) != null)
                 return Boolean.TRUE;
             return null;
+        } catch (ClassNotFoundException cnfe) {
+            // cannot load the class: this might mean that it is a proxy
+            // or otherwise inaccessible class
+            return Boolean.FALSE;
+        } catch (ClassCircularityError cce) {
+            // this can happen if we are loading classes what this
+            // class already depends on
+            return Boolean.FALSE;
         } catch (RuntimeException re) {
             throw re;
         } catch (Throwable t) {
