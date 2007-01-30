@@ -682,6 +682,14 @@ Floats and doubles may lose precision when stored.
 <literal>TEXT</literal> columns cannot be used in queries.
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+When using a SQL Server instance that has been configured to be case-sensitive
+in schema names, you need to set the "schemaCase=preserve" parameter in the 
+<link linkend="openjpa.jdbc.DBDictionary">openjpa.jdbc.DBDictionary</link>
+property.
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
     </section>
