@@ -61,7 +61,7 @@ public class ExtentImpl<T>
     }
 
     public FetchPlan getFetchPlan() {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         _extent.lock();
         try {
             if (_fetch == null)
@@ -79,17 +79,17 @@ public class ExtentImpl<T>
     }
 
     public void setIgnoreChanges(boolean ignoreChanges) {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         _extent.setIgnoreChanges(ignoreChanges);
     }
 
     public List<T> list() {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         return _extent.list();
     }
 
     public Iterator<T> iterator() {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         return _extent.iterator();
     }
 

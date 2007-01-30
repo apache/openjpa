@@ -88,6 +88,7 @@ public class ExtentImpl
     }
 
     public void setIgnoreChanges(boolean ignoreChanges) {
+        _broker.assertOpen();
         _ignore = ignoreChanges;
     }
 

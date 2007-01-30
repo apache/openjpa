@@ -91,7 +91,7 @@ public class QueryImpl
     }
 
     public FetchPlan getFetchPlan() {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         _query.assertNotSerialized();
         _query.lock();
         try {
@@ -114,31 +114,31 @@ public class QueryImpl
     }
 
     public OpenJPAQuery setIgnoreChanges(boolean ignore) {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         _query.setIgnoreChanges(ignore);
         return this;
     }
 
     public OpenJPAQuery addFilterListener(FilterListener listener) {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         _query.addFilterListener(listener);
         return this;
     }
 
     public OpenJPAQuery removeFilterListener(FilterListener listener) {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         _query.removeFilterListener(listener);
         return this;
     }
 
     public OpenJPAQuery addAggregateListener(AggregateListener listener) {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         _query.addAggregateListener(listener);
         return this;
     }
 
     public OpenJPAQuery removeAggregateListener(AggregateListener listener) {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         _query.removeAggregateListener(listener);
         return this;
     }
@@ -148,7 +148,7 @@ public class QueryImpl
     }
 
     public OpenJPAQuery setCandidateCollection(Collection coll) {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         _query.setCandidateCollection(coll);
         return this;
     }
@@ -161,7 +161,7 @@ public class QueryImpl
     }
 
     public OpenJPAQuery setResultClass(Class cls) {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         if (OpenJPAPersistence.isManagedType(_em, cls))
             _query.setCandidateType(cls, true);
         else
@@ -174,7 +174,7 @@ public class QueryImpl
     }
 
     public OpenJPAQuery setSubclasses(boolean subs) {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         Class cls = _query.getCandidateType();
         _query.setCandidateExtent(_query.getBroker().newExtent(cls, subs));
         return this;
@@ -185,7 +185,7 @@ public class QueryImpl
     }
 
     public OpenJPAQuery setFirstResult(int startPosition) {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         _query.setRange(startPosition, _query.getEndRange());
         return this;
     }
@@ -195,7 +195,7 @@ public class QueryImpl
     }
 
     public OpenJPAQuery setMaxResults(int max) {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         long start = _query.getStartRange();
         if (max == Integer.MAX_VALUE)
             _query.setRange(start, Long.MAX_VALUE);
@@ -205,7 +205,7 @@ public class QueryImpl
     }
 
     public OpenJPAQuery compile() {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         _query.compile();
         return this;
     }
@@ -260,7 +260,7 @@ public class QueryImpl
     }
 
     public List getResultList() {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         Object ob = execute();
         if (ob instanceof List) {
             List ret = (List) ob;
@@ -278,7 +278,7 @@ public class QueryImpl
      * Execute a query that returns a single result.
      */
     public Object getSingleResult() {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         Object ob = execute();
         if (!(ob instanceof List))
             return ob;
@@ -301,7 +301,7 @@ public class QueryImpl
     }
 
     public int executeUpdate() {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         if (_query.getOperation() == OP_DELETE) {
             // handle which types of parameters we are using, if any
             if (_positional != null)
@@ -339,14 +339,14 @@ public class QueryImpl
     }
 
     public OpenJPAQuery setFlushMode(FlushModeType flushMode) {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         _query.getFetchConfiguration().setFlushBeforeQueries
             (EntityManagerImpl.toFlushBeforeQueries(flushMode));
         return this;
     }
 
     public OpenJPAQuery setHint(String key, Object value) {
-        _em.assertOpen();
+        _em.assertNotCloseInvoked();
         if (key == null || !key.startsWith("openjpa."))
             return this;
         String k = key.substring("openjpa.".length());
@@ -397,7 +397,8 @@ public class QueryImpl
     }
 
     public OpenJPAQuery setParameter(int position, Object value) {
-        _em.assertOpen();
+        _query.assertOpen();
+        _em.assertNotCloseInvoked();
         _query.lock();
         try {
             // not allowed to mix positional and named parameters (EDR2 3.6.4)
@@ -437,7 +438,8 @@ public class QueryImpl
     }
 
     public OpenJPAQuery setParameter(String name, Object value) {
-        _em.assertOpen();
+        _query.assertOpen();
+        _em.assertNotCloseInvoked();
         _query.lock();
         try {
             // not allowed to mix positional and named parameters (EDR2 3.6.4)
@@ -460,7 +462,6 @@ public class QueryImpl
     }
 
     public Object[] getPositionalParameters() {
-        _em.assertOpen();
         _query.lock();
         try {
             return (_positional == null) ? EMPTY_ARRAY : _positional.toArray();
@@ -470,7 +471,8 @@ public class QueryImpl
     }
 
     public OpenJPAQuery setParameters(Object... params) {
-        _em.assertOpen();
+        _query.assertOpen();
+        _em.assertNotCloseInvoked();
         _query.lock();
         try {
             _positional = null;
@@ -495,7 +497,8 @@ public class QueryImpl
     }
 
     public OpenJPAQuery setParameters(Map params) {
-        _em.assertOpen();
+        _query.assertOpen();
+        _em.assertNotCloseInvoked();
         _query.lock();
         try {
             _positional = null;
