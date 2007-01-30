@@ -742,9 +742,17 @@ public class XMLPersistenceMetaDataParser
             return false;
         }
 
+        // if we don't know the access type, check for a superclass
+        int defaultAccess = _access;
+        if (defaultAccess == ClassMetaData.ACCESS_UNKNOWN) {
+            ClassMetaData sup = repos.getCachedMetaData(_cls.getSuperclass());
+            if (sup != null)
+                defaultAccess = sup.getAccessType();
+        }
+
         if (meta == null) {
             // add metadata for this type
-            int access = toAccessType(attrs.getValue("access"), _access);
+            int access = toAccessType(attrs.getValue("access"), defaultAccess);
             meta = repos.addMetaData(_cls, access);
             meta.setEnvClassLoader(_envLoader);
             meta.setSourceMode(MODE_NONE);
