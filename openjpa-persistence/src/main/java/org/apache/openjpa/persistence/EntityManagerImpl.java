@@ -122,7 +122,7 @@ public class EntityManagerImpl
         _broker.lock();
         try {
             if (_fetch == null)
-                _fetch = _emf.toFetchPlan(_broker, 
+                _fetch = _emf.toFetchPlan(_broker,
                     _broker.getFetchConfiguration());
             return _fetch;
         } finally {
@@ -853,6 +853,7 @@ public class EntityManagerImpl
     }
 
     public Object getDelegate() {
+        _broker.assertOpen();
         return this;
     }
 
@@ -1104,5 +1105,5 @@ public class EntityManagerImpl
         if (!(other instanceof EntityManagerImpl))
             return false;
         return _broker.equals(((EntityManagerImpl) other)._broker);
-	}
+    }
 }
