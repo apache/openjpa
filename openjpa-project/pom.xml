@@ -52,6 +52,9 @@
         <openjpa.assembly.sourceSuffix>source</openjpa.assembly.sourceSuffix>
         <openjpa.assembly.sourceBase>${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.sourceSuffix}</openjpa.assembly.sourceBase>
         <openjpa.assembly.sourceFile>${openjpa.assembly.sourceBase}.zip</openjpa.assembly.sourceFile>
+
+        <docbook.version>1.67.2</docbook.version>
+        <local.repository>${settings.localRepository}</local.repository>
     </properties>
 
     <build>
@@ -150,20 +153,11 @@
                                     <tasks>
                                     <echo>Building docbook manual</echo>
 
-                                    <!-- download stylesheets -->
-                                    <property name="stylesheet" value="1.69.1.tar.bz2"/>
-                                    <!--
-                                    For some reason, this variable will not
-                                    currectly evaluated at runtime: it 
-                                    creates a directory called
-                                    '${stylesheet-dir}', rather than
-                                    resolving the property
-                                    <property name="stylesheet-dir" value="${project.basedir}/target/stylesheets"/>
-                                    -->
-
                                     <mkdir dir="${project.basedir}/target/stylesheets"/>
-                                    <get src="http://docbook.sourceforge.net/release/xsl/${stylesheet}" usetimestamp="true" dest="${project.basedir}/target/stylesheets/${stylesheet}"/>
-                                    <untar src="${project.basedir}/target/stylesheets/${stylesheet}" dest="${project.basedir}/target/stylesheets/" compression="bzip2" overwrite="false"/>
+                                    <available file="${local.repository}/docbook/docbook-xsl/${docbook.version}/docbook-xsl-${docbook.version}.zip" property="docbook.available"/>
+                                    <fail unless="docbook.available">Could not find docbook file: ${local.repository}/docbook/docbook-xsl/${docbook.version}/docbook-xsl-${docbook.version}.zip</fail>
+
+                                    <unzip src="${local.repository}/docbook/docbook-xsl/${docbook.version}/docbook-xsl-${docbook.version}.zip" dest="${project.basedir}/target/stylesheets/" overwrite="false"/>
 
 
                                     <style includes="**/manual.xml"
@@ -370,6 +364,13 @@
             <artifactId>bcel</artifactId>
             <version>5.1</version>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>docbook</groupId>
+            <artifactId>docbook-xsl</artifactId>
+            <version>${docbook.version}</version>
+            <scope>runtime</scope>
+            <type>zip</type>
         </dependency>
     </dependencies>
 </project>
