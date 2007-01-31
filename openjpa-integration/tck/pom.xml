@@ -66,11 +66,11 @@
                         <echo>Running Sun JPA TCK</echo>
 
                         <property name="tck.zip" value=
-                            "${user.home}/.m2/privaterepos/jpa-1_0a-tck.zip"/>
+                            "${settings.localRepository}/../privaterepos/jpa-1_0a-tck.zip"/>
 
                         <!-- patch from Anderson for mappedBy bug -->
                         <property name="tck.patch" value=
-                            "${user.home}/.m2/privaterepos/jpa-tck-inheritance-mappedBy.jar"/>
+                            "${settings.localRepository}/../privaterepos/jpa-tck-inheritance-mappedBy.jar"/>
 
                         <available property="tck.available" file="${tck.zip}"/>
                         <fail unless="tck.available">The TCK file ${tck.zip} does not exist. This file must be downloaded separately in order to be able to run the JPA TCK</fail>
