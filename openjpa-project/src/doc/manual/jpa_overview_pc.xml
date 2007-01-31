@@ -507,6 +507,11 @@ the following mutable field types:
                 </listitem>
                 <listitem>
                     <para>
+<classname>java.sql.Time</classname>
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
 Enums
                     </para>
                 </listitem>
