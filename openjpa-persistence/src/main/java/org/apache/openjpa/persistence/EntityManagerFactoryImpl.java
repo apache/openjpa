@@ -186,10 +186,11 @@ public class EntityManagerFactoryImpl
 
         Broker broker = _factory.newBroker(user, pass, managed, retainMode,
             false);
-        // we should allow the user to specify these settings in conf
-        // regardless of PersistenceContextType
-        broker.setAutoDetach(AutoDetach.DETACH_CLOSE 
-            | AutoDetach.DETACH_ROLLBACK);
+            
+        // add autodetach for close and rollback conditions to the configuration
+        broker.setAutoDetach(AutoDetach.DETACH_CLOSE, true);
+        broker.setAutoDetach(AutoDetach.DETACH_ROLLBACK, true);
+        
         broker.setDetachedNew(false);
         OpenJPAEntityManager em = newEntityManagerImpl(broker);
 

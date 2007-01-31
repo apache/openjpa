@@ -15,6 +15,9 @@
  */
 package org.apache.openjpa.conf;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.lib.conf.StringListValue;
 
@@ -36,13 +39,13 @@ class AutoDetachValue
     private static String[] ALIASES = new String[]{
         DETACH_CLOSE, String.valueOf(AutoDetach.DETACH_CLOSE),
         DETACH_COMMIT, String.valueOf(AutoDetach.DETACH_COMMIT),
-        DETACH_ROLLBACK, String.valueOf(AutoDetach.DETACH_ROLLBACK),
         DETACH_NONTXREAD, String.valueOf(AutoDetach.DETACH_NONTXREAD),
+        DETACH_ROLLBACK, String.valueOf(AutoDetach.DETACH_ROLLBACK),
         // for compatibility with JDO DetachAllOnCommit
         "true", String.valueOf(AutoDetach.DETACH_COMMIT),
         "false", "0",
     };
-
+    
     private int _flags;
     private boolean _flagsSet;
 
@@ -69,5 +72,14 @@ class AutoDetachValue
         }
             
         return _flags;
+    }
+
+    protected List getAliasList() {
+        // We do not document the numeric values and they are not
+        // helpful to someone trying to understand the error message
+        ArrayList list = new ArrayList();
+        for (int x = 0; x < ALIASES.length; x += 2)
+            list.add(ALIASES[x]);
+        return list;
     }
 }
