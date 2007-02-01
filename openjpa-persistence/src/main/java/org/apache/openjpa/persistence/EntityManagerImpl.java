@@ -469,6 +469,7 @@ public class EntityManagerImpl
 
     public void flush() {
         assertNotCloseInvoked();
+        _broker.assertOpen();
         _broker.assertActiveTransaction();
         _broker.flush();
     }
@@ -761,6 +762,7 @@ public class EntityManagerImpl
 
     public OpenJPAQuery createNamedQuery(String name) {
         assertNotCloseInvoked();
+        _broker.assertOpen();
         try {
             QueryMetaData meta = _broker.getConfiguration().
                 getMetaDataRepositoryInstance().getQueryMetaData(null, name,
@@ -809,12 +811,14 @@ public class EntityManagerImpl
 
     public void setFlushMode(FlushModeType flushMode) {
         assertNotCloseInvoked();
+        _broker.assertOpen();
         _broker.getFetchConfiguration().setFlushBeforeQueries
             (toFlushBeforeQueries(flushMode));
     }
 
     public FlushModeType getFlushMode() {
         assertNotCloseInvoked();
+        _broker.assertOpen();
         return fromFlushBeforeQueries(_broker.getFetchConfiguration().
             getFlushBeforeQueries());
     }
