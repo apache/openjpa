@@ -37,6 +37,7 @@ import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 import org.apache.openjpa.lib.util.concurrent.ReentrantLock;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
@@ -73,8 +74,8 @@ public abstract class AbstractBrokerFactory
     private transient Map _transactional = new HashMap();
 
     // weak-ref tracking of open brokers
-    private transient Collection _brokers = new ReferenceHashSet
-        (ReferenceHashSet.WEAK);
+    private transient Collection _brokers = new ConcurrentReferenceHashSet
+        (ConcurrentReferenceHashSet.WEAK);
 
     // cache the class names loaded from the persistent classes property so
     // that we can re-load them for each new broker
@@ -141,7 +142,6 @@ public abstract class AbstractBrokerFactory
 
     public Broker newBroker(String user, String pass, boolean managed,
         int connRetainMode, boolean findExisting) {
-        lock();
         try {
             assertOpen();
             makeReadOnly();
@@ -181,8 +181,6 @@ public abstract class AbstractBrokerFactory
             throw ke;
         } catch (RuntimeException re) {
             throw new GeneralException(re);
-        } finally {
-            unlock();
         }
     }
 
@@ -289,7 +287,7 @@ public abstract class AbstractBrokerFactory
             Broker broker;
             for (Iterator itr = _brokers.iterator(); itr.hasNext();) {
                 broker = (Broker) itr.next();
-                if (!broker.isClosed())
+                if ((broker != null) && (!broker.isClosed()))
                     broker.close();
             }
 
@@ -363,7 +361,8 @@ public abstract class AbstractBrokerFactory
 
         // reset these transient fields to empty values
         _transactional = new HashMap();
-        _brokers = new ReferenceHashSet(ReferenceHashSet.WEAK);
+        _brokers = new ConcurrentReferenceHashSet(
+                ConcurrentReferenceHashSet.WEAK);
 
         makeReadOnly();
         return this;
