@@ -473,7 +473,9 @@ public class ProxyManagerImpl
     private Class loadProxy(BCClass bc, ClassLoader loader) {
         BCClassLoader bcloader = new BCClassLoader(bc.getProject(), loader);
         try {
-            return Class.forName(bc.getName(), true, bcloader);
+            Class c = Class.forName(bc.getName(), true, bcloader);
+            bc.getProject().clear();
+            return c;
         } catch (Throwable t) {
             throw new GeneralException(bc.getName()).setCause(t);
         }
