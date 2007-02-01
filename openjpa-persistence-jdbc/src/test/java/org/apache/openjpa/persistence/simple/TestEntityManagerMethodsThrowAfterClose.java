@@ -25,7 +25,6 @@ import javax.persistence.Persistence;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 /**
  * Negative test case to verify that EntityManager throws required exceptions
