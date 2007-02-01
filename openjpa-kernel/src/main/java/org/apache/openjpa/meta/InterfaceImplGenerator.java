@@ -48,11 +48,9 @@ class InterfaceImplGenerator {
     private final MetaDataRepository _repos;
     private final Map _impls = new WeakHashMap();
     private final Project _project = new Project();
-    private final BCClassLoader _loader = new BCClassLoader(_project);
-
+ 
     // distinct project / loader for enhanced version of class
     private final Project _enhProject = new Project();
-    private final BCClassLoader _enhLoader = new BCClassLoader(_enhProject);
 
     /**
      * Constructor.  Supply repository.
@@ -73,6 +71,8 @@ class InterfaceImplGenerator {
         if (impl != null)
             return impl;
 
+        ClassLoader parentLoader = iface.getClassLoader();
+        BCClassLoader loader = new BCClassLoader(_project, parentLoader);
         BCClass bc = _project.loadClass(getClassName(meta));
         bc.declareInterface(iface);
         ClassMetaData sup = meta.getPCSuperclassMetaData();
@@ -88,14 +88,14 @@ class InterfaceImplGenerator {
         // first load the base class as the enhancer requires the class
         // to be available
         try {
-            meta.setInterfaceImpl(Class.forName(bc.getName(), true, _loader));
+            meta.setInterfaceImpl(Class.forName(bc.getName(), true, loader));
         } catch (Throwable t) {
-            throw new InternalException(_loc.get("interface-load"), t).
-                setFatal(true);
+            throw new InternalException(_loc.get("interface-load", iface, 
+                loader), t).setFatal(true);
         }
         // copy the BCClass into the enhancer project.
         bc = _enhProject.loadClass(new ByteArrayInputStream(bc.toByteArray()), 
-            _loader);
+            loader);
         PCEnhancer enhancer = new PCEnhancer(_repos.getConfiguration(), bc, 
             meta);
 
@@ -103,12 +103,13 @@ class InterfaceImplGenerator {
         if (result != PCEnhancer.ENHANCE_PC)
             throw new InternalException(_loc.get("interface-badenhance", 
                 iface)).setFatal(true);
+        BCClassLoader enhLoader = new BCClassLoader(_enhProject, parentLoader);
         try{
             // load the class for real.
-            impl = Class.forName(bc.getName(), true, _enhLoader);
+            impl = Class.forName(bc.getName(), true, enhLoader);
         } catch (Throwable t) {
-            throw new InternalException(_loc.get("interface-load2"), t).
-                setFatal(true);
+            throw new InternalException(_loc.get("interface-load2", iface, 
+                enhLoader), t).setFatal(true);
         }
         // cache the generated impl.
         _impls.put(iface, impl);
