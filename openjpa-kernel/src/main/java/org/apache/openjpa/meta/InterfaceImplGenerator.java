@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.util.InternalException;
@@ -34,7 +33,6 @@ import serp.bytecode.BCMethod;
 import serp.bytecode.Code;
 import serp.bytecode.Constants;
 import serp.bytecode.Project;
-
 
 /**
  * Creates implementations of managed interfaces.  Will throw exceptions

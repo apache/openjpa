@@ -3517,7 +3517,6 @@ public class PCEnhancer {
         return meta.getDescribedType();
     }
 
-
     /**
      * Move code-related attributes from one method to another.
      */

@@ -1380,6 +1380,7 @@ public class ApplicationIdTool {
             } else
                 log.info(_loc.get("appid-norun"));
         }
+        bc.getProject().clear();
         return true;
     }
 
