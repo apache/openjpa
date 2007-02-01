@@ -255,7 +255,7 @@ public class FieldMetaData
      * Return the backing member supplied in {@link #backingMember}.
      */
     public Member getBackingMember() {
-        return _backingMember.getMember();
+        return (_backingMember == null) ? null : _backingMember.getMember();
     }
 
     /**
