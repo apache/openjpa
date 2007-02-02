@@ -15,7 +15,7 @@
 	limitations under the License.
 -->
 <antlib>
-	<taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask"/>
+	<taskdef name="enhance" classname="org.apache.openjpa.ant.PCEnhancerTask"/>
 	<taskdef name="appidtool" 
    		classname="org.apache.openjpa.ant.ApplicationIdToolTask"/>
 	<taskdef name="metadatatool" 
