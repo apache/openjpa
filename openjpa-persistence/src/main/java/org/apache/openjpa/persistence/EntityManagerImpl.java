@@ -853,7 +853,7 @@ public class EntityManagerImpl
 
     public void clear() {
         assertNotCloseInvoked();
-        _broker.detachAll(this);
+        _broker.detachAll(this, false);
     }
 
     public Object getDelegate() {

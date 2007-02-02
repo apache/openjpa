@@ -473,9 +473,20 @@ public interface Broker
     public void evictAll(Extent extent, OpCallbacks call);
 
     /**
-     * Detach all objects in place.
+     * Detach all objects in place.  A flush will be performed before
+     * detaching the entities.
      */
     public void detachAll(OpCallbacks call);
+
+    /**
+     * Detach all objects in place, with the option of performing a
+     * flush before doing the detachment.
+     * @param call Persistence operation callbacks
+     * @param flush boolean value to indicate whether to perform a
+     * flush before detaching the entities (true, do the flush;
+     * false, don't do the flush)
+     */
+    public void detachAll(OpCallbacks call, boolean flush);
 
     /**
      * Detach the specified object from the broker.

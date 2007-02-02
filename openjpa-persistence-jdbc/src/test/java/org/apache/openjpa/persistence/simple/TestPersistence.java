@@ -107,26 +107,6 @@ public class TestPersistence
         em.close();
     }
 
-    /**
-     * Ensures that an IllegalStateException is thrown if getDelegate is called
-     * after closing the EntityManager.
-     */
-    public void testGetDelegateAfterClose() {
-        EntityManager em = emf.createEntityManager();
-
-        em.close();
-
-        try {
-            Object o = em.getDelegate();
-            fail();
-        }
-        catch(IllegalStateException ise) {
-            /*
-             * An IllegalStateException is expected. Nothing to do here.
-             */
-        }
-    }
-
     public static void main(String[] args) {
         TestRunner.run(TestPersistence.class);
     }

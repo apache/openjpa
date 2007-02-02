@@ -1115,6 +1115,14 @@ public class DelegatingBroker
         }
     }
 
+    public void detachAll(OpCallbacks call, boolean flush) {
+        try {
+            _broker.detachAll(call, flush);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
     public Object attach(Object obj, boolean copyNew, OpCallbacks call) {
         try {
             return _broker.attach(obj, copyNew, call);
