@@ -3088,9 +3088,16 @@ public class BrokerImpl
     }
 
     public void detachAll(OpCallbacks call) {
+        detachAll(call, true);
+    }
+
+    public void detachAll(OpCallbacks call, boolean flush) {
         beginOperation(true);
         try {
-            if ((_flags & FLAG_FLUSH_REQUIRED) != 0)
+            /* If a flush is desired (based on input parm), then check if the
+             * "dirty" flag is set before calling flush().
+             */
+            if ((flush) && ((_flags & FLAG_FLUSH_REQUIRED) != 0))
                 flush();
             detachAllInternal(call);
         } catch (OpenJPAException ke) {

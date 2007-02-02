@@ -271,7 +271,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     public static void main(String[] args) {
-        TestRunner.run(TestPersistence.class);
+        TestRunner.run(TestEntityManagerMethodsThrowAfterClose.class);
     }
 }
 
