@@ -3094,9 +3094,8 @@ public class BrokerImpl
     public void detachAll(OpCallbacks call, boolean flush) {
         beginOperation(true);
         try {
-            /* If a flush is desired (based on input parm), then check if the
-             * "dirty" flag is set before calling flush().
-             */
+            // If a flush is desired (based on input parm), then check if the
+            //   "dirty" flag is set before calling flush().
             if ((flush) && ((_flags & FLAG_FLUSH_REQUIRED) != 0))
                 flush();
             detachAllInternal(call);
@@ -3486,7 +3485,7 @@ public class BrokerImpl
             default:
                 // use store manager for native sequence
                 if (fmd == null) {
-                    // this will return a sequence even for app id classes, 
+                    // this will return a sequence even for app id classes,
                     // which is what we want for backwards-compatibility
                     return _store.getDataStoreIdSequence(meta);
                 }
