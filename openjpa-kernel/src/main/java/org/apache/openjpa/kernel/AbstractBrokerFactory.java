@@ -287,8 +287,7 @@ public abstract class AbstractBrokerFactory
             Broker broker;
             for (Iterator itr = _brokers.iterator(); itr.hasNext();) {
                 broker = (Broker) itr.next();
-                /* Check for null here because _brokers is a weak reference
-                collection */
+                // Check for null because _brokers contains weak references
                 if ((broker != null) && (!broker.isClosed()))
                     broker.close();
             }
