@@ -73,11 +73,15 @@ class InterfaceImplGenerator {
 
         ClassLoader parentLoader = iface.getClassLoader();
         BCClassLoader loader = new BCClassLoader(_project, parentLoader);
+        BCClassLoader enhLoader = new BCClassLoader(_enhProject, parentLoader);
         BCClass bc = _project.loadClass(getClassName(meta));
         bc.declareInterface(iface);
         ClassMetaData sup = meta.getPCSuperclassMetaData();
-        if (sup != null)
+        if (sup != null) {
             bc.setSuperclass(sup.getInterfaceImpl());
+            enhLoader = new BCClassLoader(_enhProject, 
+            		sup.getInterfaceImpl().getClassLoader());
+        }
 
         FieldMetaData[] fields = meta.getDeclaredFields();
         Set methods = new HashSet();
@@ -103,7 +107,6 @@ class InterfaceImplGenerator {
         if (result != PCEnhancer.ENHANCE_PC)
             throw new InternalException(_loc.get("interface-badenhance", 
                 iface)).setFatal(true);
-        BCClassLoader enhLoader = new BCClassLoader(_enhProject, parentLoader);
         try{
             // load the class for real.
             impl = Class.forName(bc.getName(), true, enhLoader);
