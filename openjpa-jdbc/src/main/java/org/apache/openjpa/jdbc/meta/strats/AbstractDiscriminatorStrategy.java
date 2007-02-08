@@ -82,6 +82,10 @@ public abstract class AbstractDiscriminatorStrategy
         return base.getDescribedType();
     }
 
+    public boolean hasClassConditions(ClassMapping base, boolean subs) {
+        return false;
+    }
+
     public SQLBuffer getClassConditions(Select sel, Joins joins, 
         ClassMapping base, boolean subs) {
         return null;

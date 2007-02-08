@@ -87,7 +87,7 @@ class InstanceofExpression
                 getClassLoader(), false);
 
             // if not looking for a PC, don't bother with indicator
-            if (mapping == null)
+            if (mapping == null || !discrim.hasClassConditions(mapping, true))
                 discrim = null;
             else {
                 ClassMapping owner = discrim.getClassMapping();
@@ -144,10 +144,7 @@ class InstanceofExpression
             ctx.store.loadSubclasses(istate.discrim.getClassMapping());
             SQLBuffer buf = istate.discrim.getClassConditions(sel,
                 istate.joins, istate.mapping, true);
-            if (buf == null)
-                sql.append("1 = 1");
-            else
-                sql.append(buf);
+            sql.append(buf);
         }
         sel.append(sql, istate.joins);
     }

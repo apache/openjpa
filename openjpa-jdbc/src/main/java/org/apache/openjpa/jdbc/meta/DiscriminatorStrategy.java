@@ -59,10 +59,16 @@ public interface DiscriminatorStrategy
         throws SQLException, ClassNotFoundException;
 
     /**
+     * Whether any class conditions are necessary.
+     *
+     * @see #getClassConditions
+     */
+    public boolean hasClassConditions(ClassMapping base, boolean subs);
+
+    /**
      * Return SQL to limit the classes selected as much as possible to the
-     * given base class, and optionally its subclasses. Return null if
-     * no conditions needed. The select and joins instances are supplied
-     * in order to get column aliases.
+     * given base class, and optionally its subclasses. The select and joins 
+     * instances are supplied in order to get column aliases.
      */
     public SQLBuffer getClassConditions(Select sel, Joins joins, 
         ClassMapping base, boolean subs);

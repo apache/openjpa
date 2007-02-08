@@ -1743,7 +1743,8 @@ public class DBDictionary
      * cases where a subselect is required and the database doesn't support
      * subselects), this method should return null.
      */
-    public SQLBuffer toDelete(ClassMapping mapping, Select sel, Object[] params) {
+    public SQLBuffer toDelete(ClassMapping mapping, Select sel, 
+        Object[] params) {
         return toBulkOperation(mapping, sel, null, params, null);
     }
 
