@@ -96,8 +96,9 @@ public class MethodLifecycleCallbacks
      * the proper exception on error.
      */
     protected static Method getMethod(Class cls, String method, Class[] args) {
-        try {
-            Method[] methods = cls.getMethods();
+        Class currentClass = cls;
+        do {
+            Method[] methods = currentClass.getDeclaredMethods();
             for (int i = 0; i < methods.length; i++) {
                 if (!method.equals(methods[i].getName()))
                     continue;
@@ -105,23 +106,11 @@ public class MethodLifecycleCallbacks
                 if (isAssignable(methods[i].getParameterTypes(), args))
                     return methods[i];
             }
+        } while ((currentClass = currentClass.getSuperclass()) != null);
 
-            return cls.getMethod(method, args);
-
-        } catch (Throwable t) {
-            try {
-                // try again with the declared methods, which will
-                // check private and protected methods
-                Method m = cls.getDeclaredMethod(method, args);
-                if (!m.isAccessible())
-                    m.setAccessible(true);
-                return m;
-            } catch (Throwable t2) {
-                throw new UserException(_loc.get("method-notfound",
-                    cls.getName(), method,
-                        args == null ? null : Arrays.asList(args)), t);
-            }
-		}
+        // if we get here, no suitable method was found
+        throw new UserException(_loc.get("method-notfound", cls.getName(),
+                method, args == null ? null : Arrays.asList(args)));
 	}
 
     /** 
