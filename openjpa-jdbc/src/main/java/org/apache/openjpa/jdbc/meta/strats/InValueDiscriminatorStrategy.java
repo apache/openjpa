@@ -113,19 +113,23 @@ public abstract class InValueDiscriminatorStrategy
         return getClass(cls, store);
     }
 
-    public SQLBuffer getClassConditions(Select sel, Joins joins, 
-        ClassMapping base, boolean subclasses) {
+    public boolean hasClassConditions(ClassMapping base, boolean subclasses) {
         // if selecting the first mapped class and all subclasses, no need
         // to limit the query
         if (isFinal || (base.getJoinablePCSuperclassMapping() == null
             && subclasses))
-            return null;
+            return false;
 
         // if no subclasses or superclass, no need for conditions
         ClassMapping[] subs = base.getJoinablePCSubclassMappings();
         if (subs.length == 0 && base.getJoinablePCSuperclassMapping() == null)
-            return null;
+            return false;
 
+        return true;
+    }
+
+    public SQLBuffer getClassConditions(Select sel, Joins joins, 
+        ClassMapping base, boolean subclasses) {
         Column col = disc.getColumns()[0];
         SQLBuffer sql = new SQLBuffer(sel.getConfiguration().
             getDBDictionaryInstance());
@@ -136,6 +140,7 @@ public abstract class InValueDiscriminatorStrategy
         sql.append(alias);
 
         // if not selecting subclasses, limit to just the given class
+        ClassMapping[] subs = base.getJoinablePCSubclassMappings();
         if (!outer && (!subclasses || subs.length == 0))
             return sql.append(" = ").appendValue(getDiscriminatorValue(base),
                 col);

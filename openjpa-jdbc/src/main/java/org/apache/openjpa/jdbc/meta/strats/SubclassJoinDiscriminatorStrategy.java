@@ -130,16 +130,20 @@ public class SubclassJoinDiscriminatorStrategy
         return derived;
     }
 
-    public SQLBuffer getClassConditions(Select sel, Joins joins, 
-        ClassMapping base, boolean subclasses) {
+    public boolean hasClassConditions(ClassMapping base, boolean subclasses) {
         if (isFinal || subclasses)
-            return null;
+            return false;
         ClassMapping[] subs = base.getJoinablePCSubclassMappings();
         if (subs.length == 0)
-            return null;
+            return false;
+        return true;
+    }
 
+    public SQLBuffer getClassConditions(Select sel, Joins joins, 
+        ClassMapping base, boolean subclasses) {
         // add conditions making sure no subclass tables have records for
         // this instance
+        ClassMapping[] subs = base.getJoinablePCSubclassMappings();
         SQLBuffer buf = null;
         Column[] pks;
         for (int i = 0; i < subs.length; i++) {
