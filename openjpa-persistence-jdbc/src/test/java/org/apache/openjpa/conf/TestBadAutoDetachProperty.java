@@ -18,12 +18,12 @@ package org.apache.openjpa.conf;
 import java.util.*;
 
 import javax.persistence.*;
+import javax.persistence.PersistenceException;
 
 import junit.framework.*;
 
 import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.persistence.*;
-import org.apache.openjpa.persistence.PersistenceException;
 
 public class TestBadAutoDetachProperty extends TestCase {
     public void testEmptyValue() {
@@ -47,6 +47,8 @@ public class TestBadAutoDetachProperty extends TestCase {
             emf.close();
         } catch (PersistenceException e) {
             Throwable cause = e.getCause();
+            while (cause instanceof PersistenceException)
+                cause = ((PersistenceException) cause).getCause();
             if (!(cause instanceof ParseException)) {
                 fail("Should have caught PersistenceException whose cause was "
                         + "a ParseException. " + "Instead the cause was: "
@@ -69,6 +71,8 @@ public class TestBadAutoDetachProperty extends TestCase {
             emf.close();
         } catch (PersistenceException e) {
             Throwable cause = e.getCause();
+            while (cause instanceof PersistenceException)
+                cause = ((PersistenceException) cause).getCause();
             if (!(cause instanceof ParseException)) {
                 fail("Should have caught PersistenceException whose cause was "
                         + "a ParseException. " + "Instead the cause was: "
