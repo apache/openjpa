@@ -67,6 +67,16 @@
 
                         <property name="tck.zip" value=
                             "${settings.localRepository}/../privaterepos/jpa-1_0a-tck.zip"/>
+                        <!-- patch from Anderson for mappedBy bug -->
+                        <property name="tck.patch" value=
+                            "${settings.localRepository}/../privaterepos/jpa-tck-inheritance-mappedBy.jar"/>
+
+                         <available property="tck.available" file="${tck.zip}"/>
+                        <fail unless="tck.available">The TCK file ${tck.zip} does not exist. This file must be downloaded separately in order to be able to run the JPA TCK</fail>
+
+                        <available property="tck.patch.available" file="${tck.patch}"/>
+                        <fail unless="tck.patch.available">The TCK patch ${tck.patch} does not exist. This file must be downloaded separately in order to be able to run the JPA TCK</fail>
+
 
                         <available property="tck.available" file="${tck.zip}"/>
                         <fail unless="tck.available">The TCK file specific in the "tck.zip" system property (${tck.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA TCK</fail>
@@ -83,6 +93,10 @@
 
                         <unzip overwrite="false"
                             src="${tck.zip}" dest="${tck.base}"/>
+
+                        <!-- unpack the patch over the TCK -->
+                        <unzip overwrite="true"
+                            src="${tck.patch}" dest="${tck.dir}"/>
 
                         <property name="db.driver"
                             value="org.apache.derby.jdbc.EmbeddedDriver"/>
