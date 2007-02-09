@@ -155,6 +155,7 @@ abstract class AttachStrategy
                     set);
                 break;
             case JavaTypes.DATE:
+            case JavaTypes.CALENDAR:
             case JavaTypes.NUMBER:
             case JavaTypes.BOOLEAN_OBJ:
             case JavaTypes.BYTE_OBJ:
