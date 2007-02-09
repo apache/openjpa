@@ -118,8 +118,10 @@ public class MethodLifecycleCallbacks
      * from the corresponding parameters of the to array. 
      */
     private static boolean isAssignable(Class[] from, Class[] to) {
-        if (from == null || to == null)
-            return to == from;
+        if (from == null)
+            return to == null || to.length == 0;
+        if (to == null)
+            return from == null || from.length == 0;
 
         if (from.length != to.length)
             return false;
