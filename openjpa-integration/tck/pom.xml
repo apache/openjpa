@@ -68,15 +68,8 @@
                         <property name="tck.zip" value=
                             "${settings.localRepository}/../privaterepos/jpa-1_0a-tck.zip"/>
 
-                        <!-- patch from Anderson for mappedBy bug -->
-                        <property name="tck.patch" value=
-                            "${settings.localRepository}/../privaterepos/jpa-tck-inheritance-mappedBy.jar"/>
-
                         <available property="tck.available" file="${tck.zip}"/>
-                        <fail unless="tck.available">The TCK file ${tck.zip} does not exist. This file must be downloaded separately in order to be able to run the JPA TCK</fail>
-
-                        <available property="tck.patch.available" file="${tck.patch}"/>
-                        <fail unless="tck.patch.available">The TCK patch ${tck.patch} does not exist. This file must be downloaded separately in order to be able to run the JPA TCK</fail>
+                        <fail unless="tck.available">The TCK file specific in the "tck.zip" system property (${tck.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA TCK</fail>
 
                         <property name="tck.base"
                             value="${basedir}/target/tck"/>
@@ -84,15 +77,12 @@
 
                         <path id="cp">
                             <path refid="maven.compile.classpath"/>
+                            <pathelement path="${java.class.path}"/>
                         </path>
                         <pathconvert property="cp.property" refid="cp"/>
 
                         <unzip overwrite="false"
                             src="${tck.zip}" dest="${tck.base}"/>
-
-                        <!-- unpack the patch over the TCK -->
-                        <unzip overwrite="true"
-                            src="${tck.patch}" dest="${tck.dir}"/>
 
                         <property name="db.driver"
                             value="org.apache.derby.jdbc.EmbeddedDriver"/>
@@ -129,6 +119,8 @@ openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
                             value="${tck.dir}/bin/ts.jte"/>
 
                         <echo append="true" file="${jpatck.config}">
+
+
 #########################################################################
 ## OpenJPA specific properties follow
 #########################################################################
@@ -137,12 +129,15 @@ jpa.home=${tck.dir}
 work.dir=${jpatck.work.dir}
 report.dir=${tck.dir}/../reports
 jpa.classes=${cp.property}
-database.classes=${cp.property}
+database.classes=$${jpa.classes}
+# Need to specify java.* classes, both in Windows/UNIX locations as well as Mac
+sigTestClasspath=$${JAVA_HOME}/lib/rt.jar:$${JAVA_HOME}/../Classes/classes.jar:$${jpa.classes}
 persistence.unit.properties.file.full.path=${openjpa.properties}
 database.user=${db.username}
 database.passwd=${db.password}
 database.url=${db.url}
 database.driver=${db.driver}
+
                         </echo>
 
                         <path id="agent.path">
