@@ -180,9 +180,19 @@ public abstract class CompanyModelTest extends SingleEMTest {
             // the classes statically
             factoryClasses = impls;
             try {
-                Collection obs = (Collection) new XMLDecoder
-                    (CompanyModelTest.class.
-                        getResourceAsStream("companies.xml")).readObject();
+                final List<Exception> exceptions = new LinkedList<Exception>();
+                XMLDecoder decoder = new XMLDecoder(CompanyModelTest.class.
+                    getResourceAsStream("companies.xml"));
+                decoder.setExceptionListener(new ExceptionListener() {
+                    public void exceptionThrown(Exception e) {
+                        exceptions.add(e);
+                    }
+                });
+                Collection obs = (Collection) decoder.readObject();
+
+                if (exceptions.size() > 0) {
+                    throw new IllegalStateException(exceptions.get(0));
+                }
 
                 assertNotNull(obs);
 
