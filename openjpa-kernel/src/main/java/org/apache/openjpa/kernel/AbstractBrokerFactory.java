@@ -64,7 +64,8 @@ public abstract class AbstractBrokerFactory
     // configuration
     private final OpenJPAConfiguration _conf;
     private transient boolean _readOnly = false;
-    private transient RuntimeException _closed = null;
+    private transient boolean _closed = false;
+    private transient RuntimeException _closedException = null;
     private Map _userObjects = null;
 
     // internal lock: spec forbids synchronization on this object
@@ -267,7 +268,7 @@ public abstract class AbstractBrokerFactory
      * Returns true if this broker factory is closed.
      */
     public boolean isClosed() {
-        return _closed != null;
+        return _closed;
     }
 
     public void close() {
@@ -297,7 +298,10 @@ public abstract class AbstractBrokerFactory
                 (_conf.getMetaDataRepositoryInstance());
 
             _conf.close();
-            _closed = new IllegalStateException();
+            _closed = true;
+            Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
+            if (log.isTraceEnabled())
+                _closedException = new IllegalStateException();
         } finally {
             unlock();
         }
@@ -546,12 +550,18 @@ public abstract class AbstractBrokerFactory
     }
 
     /**
-     * Throw an exception if the factory is closed.
+     * Throw an exception if the factory is closed.  The exact message and
+     * content of the exception varies whether TRACE is enabled or not.
      */
     private void assertOpen() {
-        if (_closed != null)
-            throw new InvalidStateException(_loc.get("closed-factory")).
-                setCause(_closed);
+        if (_closed) {
+            if (_closedException == null)  // TRACE not enabled
+                throw new InvalidStateException(_loc
+                        .get("closed-factory-notrace"));
+            else
+                throw new InvalidStateException(_loc.get("closed-factory"))
+                        .setCause(_closedException);
+        }
     }
 
     ////////////////////

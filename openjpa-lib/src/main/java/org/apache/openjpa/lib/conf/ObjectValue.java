@@ -17,6 +17,8 @@ package org.apache.openjpa.lib.conf;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.ReferenceMap;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
 /**
  * An object {@link Value}.
@@ -27,6 +29,10 @@ public class ObjectValue extends Value {
 
     private static final Localizer _loc = Localizer.forPackage
         (ObjectValue.class);
+
+    // cache the types' classloader
+    private static ConcurrentReferenceHashMap _classloaderCache =
+        new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.WEAK);
 
     private Object _value = null;
 
@@ -81,10 +87,16 @@ public class ObjectValue extends Value {
      * Allow subclasses to instantiate additional plugins. This method does
      * not perform configuration.
      */
-    public Object newInstance(String clsName, Class type,
-        Configuration conf, boolean fatal) {
-        return Configurations.newInstance(clsName, this, conf,
-            type.getClassLoader(), fatal);
+    public Object newInstance(String clsName, Class type, Configuration conf,
+            boolean fatal) {
+        ClassLoader cl = (ClassLoader) _classloaderCache.get(type);
+        if (cl == null) {
+            cl = type.getClassLoader();
+            if (cl != null) {  // System classloader is returned as null
+                _classloaderCache.put(type, cl);
+            }
+        }
+        return Configurations.newInstance(clsName, this, conf, cl, fatal);
     }
 
     public Class getValueType() {

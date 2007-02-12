@@ -17,6 +17,10 @@ package org.apache.openjpa.util;
 
 import java.io.Serializable;
 
+import org.apache.openjpa.lib.util.ReferenceHashSet;
+import org.apache.openjpa.lib.util.ReferenceMap;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
+
 /**
  * Identity class extended by builtin OpenJPA identity objects.
  *
@@ -31,6 +35,9 @@ public abstract class OpenJPAId
     // type has his based on the least-derived non-object class so that
     // user-given ids with non-exact types match ids with exact types
     private transient int _typeHash = 0;
+    // cache the types' generated hashcodes
+    private static ConcurrentReferenceHashMap _typeCache =
+        new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.WEAK);
 
     protected OpenJPAId() {
     }
@@ -82,13 +89,25 @@ public abstract class OpenJPAId
      */
     protected abstract boolean idEquals(OpenJPAId other);
 
+    /**
+     * Generate the hashcode for this Id.  Cache the type's generated hashcode
+     * so that it doesn't have to be generated each time.
+     */
     public int hashCode() {
         if (_typeHash == 0) {
-            Class base = type;
-            while (base.getSuperclass() != null
-                && base.getSuperclass() != Object.class)
-                base = base.getSuperclass();
-            _typeHash = base.hashCode();
+            Integer typeHashInt = (Integer) _typeCache.get(type);
+            if (typeHashInt == null) {
+                Class base = type;
+                Class superclass = base.getSuperclass();
+                while (superclass != null && superclass != Object.class) {
+                    base = base.getSuperclass();
+                    superclass = base.getSuperclass();
+                }
+                _typeHash = base.hashCode();
+                _typeCache.put(type, new Integer(_typeHash));
+            } else {
+                _typeHash = typeHashInt.intValue();
+            }
         }
         return _typeHash ^ idHash();
     }
