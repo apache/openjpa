@@ -20,7 +20,7 @@ import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="JI_Address")
 @Table(name="JI_Address") // OPENJPA-121
-public final class Address implements IAddress {
+public class Address implements IAddress {
     private static long idCounter = System.currentTimeMillis();
 
     @Id

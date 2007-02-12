@@ -21,7 +21,7 @@ import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="IDC_Product")
 @Table(name="IDC_Product") // OPENJPA-121
-public final class Product implements IProduct {
+public class Product implements IProduct {
     private static int ids = 1;
 
     @Id

@@ -20,7 +20,7 @@ import javax.persistence.*;
 import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="PRP_Customer")
-public final class Customer extends Person implements ICustomer {
+public class Customer extends Person implements ICustomer {
     private Collection<ProductOrder> orders = new ArrayList<ProductOrder>();
     private Address shippingAddress;
     private Address billingAddress;

@@ -20,7 +20,7 @@ import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="JI_LineItem")
 @Table(name="JI_LineItem") // OPENJPA-121
-public final class LineItem implements ILineItem {
+public class LineItem implements ILineItem {
     private static long idCounter = System.currentTimeMillis();
 
     @Id
