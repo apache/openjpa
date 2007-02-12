@@ -21,7 +21,7 @@ import org.apache.openjpa.persistence.models.company.*;
 @Entity(name="JI_PartTimeEmployee")
 @Table(name="JI_PartTimeEmployee") // OPENJPA-121
 @Inheritance(strategy=InheritanceType.JOINED)
-public final class PartTimeEmployee extends Employee
+public class PartTimeEmployee extends Employee
     implements IPartTimeEmployee {
     @Basic
     private float wage;

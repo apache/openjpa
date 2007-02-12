@@ -19,7 +19,7 @@ import javax.persistence.*;
 import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="LAZ_FullTimeEmployee")
-public final class FullTimeEmployee extends Employee
+public class FullTimeEmployee extends Employee
     implements IFullTimeEmployee {
     @Basic(fetch=FetchType.LAZY)
     private float salary;

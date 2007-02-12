@@ -20,7 +20,7 @@ import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="IDC_LineItem")
 @Table(name="IDC_LineItem") // OPENJPA-121
-public final class LineItem implements ILineItem {
+public class LineItem implements ILineItem {
     private static int ids = 1;
 
     @Id

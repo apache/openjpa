@@ -20,7 +20,7 @@ import javax.persistence.*;
 import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="IDC_Customer")
-public final class Customer extends Person implements ICustomer {
+public class Customer extends Person implements ICustomer {
 
     @OneToMany(mappedBy="customer")
     private Collection<ProductOrder> orders = new ArrayList<ProductOrder>();

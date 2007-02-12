@@ -20,7 +20,7 @@ import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="IDC_Address")
 @Table(name="IDC_Address") // OPENJPA-121
-public final class Address implements IAddress {
+public class Address implements IAddress {
     private static int ids = 1;
 
     @Id

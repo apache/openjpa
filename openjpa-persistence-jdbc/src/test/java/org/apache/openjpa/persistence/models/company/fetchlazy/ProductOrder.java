@@ -21,7 +21,7 @@ import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="LAZ_ProductOrder")
 @Table(name="LAZ_ProductOrder") // OPENJPA-121
-public final class ProductOrder implements IProductOrder {
+public class ProductOrder implements IProductOrder {
     private static long idCounter = System.currentTimeMillis();
 
     @Id

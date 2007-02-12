@@ -22,7 +22,7 @@ import org.apache.openjpa.persistence.models.company.*;
 @Entity(name="JI_Customer")
 @Table(name="JI_Customer") // OPENJPA-121
 @Inheritance(strategy=InheritanceType.JOINED)
-public final class Customer extends Person implements ICustomer {
+public class Customer extends Person implements ICustomer {
     @OneToMany(mappedBy="customer")
     private Collection<ProductOrder> orders = new ArrayList<ProductOrder>();
 

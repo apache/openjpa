@@ -19,7 +19,7 @@ import javax.persistence.*;
 import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="PRP_PartTimeEmployee")
-public final class PartTimeEmployee extends Employee
+public class PartTimeEmployee extends Employee
     implements IPartTimeEmployee {
     private float wage;
     private int weeklyHours;
