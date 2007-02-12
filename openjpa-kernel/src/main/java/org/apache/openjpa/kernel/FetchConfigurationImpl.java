@@ -36,6 +36,8 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.rop.SimpleResultList;
 import org.apache.openjpa.lib.rop.WindowResultList;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.ReferenceMap;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FetchGroup;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -57,6 +59,10 @@ public class FetchConfigurationImpl
 
     private static final Localizer _loc = Localizer.forPackage
         (FetchConfigurationImpl.class);
+
+    // Cache the from/to isAssignable invocations
+    private static ConcurrentReferenceHashMap _assignableTypes =
+        new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.WEAK);
 
     /**
      * Configurable state shared throughout a traversal chain.
@@ -613,11 +619,37 @@ public class FetchConfigurationImpl
     }
 
     /**
-     * Whether either of the two types is assignable from the other.
+     * Whether either of the two types is assignable from the other.  Optimize
+     * for the repeat calls with similar parameters by caching the from/to
+     * type parameters.
      */
-    private static boolean isAssignable(Class c1, Class c2) {
-        return c1 != null && c2 != null 
-            && (c1.isAssignableFrom(c2) || c2.isAssignableFrom(c1));
+    private static boolean isAssignable(Class from, Class to) {
+        boolean isAssignable;
+
+        if (from == null || to == null)
+            return false;
+        ConcurrentReferenceHashMap assignableTo =
+            (ConcurrentReferenceHashMap) _assignableTypes.get(from);
+
+        if (assignableTo != null) { // "to" cache exists...
+            isAssignable = (assignableTo.get(to) != null);
+            if (!isAssignable) {  // not in the map yet...
+                isAssignable = from.isAssignableFrom(to);
+                if (isAssignable) {
+                    assignableTo.put(to, new Object());
+                }
+            }
+        } else {  // no "to" cache yet...
+            isAssignable = from.isAssignableFrom(to);
+            if (isAssignable) {
+                assignableTo = new ConcurrentReferenceHashMap(
+                        ReferenceMap.HARD, ReferenceMap.WEAK);
+                _assignableTypes.put(from, assignableTo);
+                assignableTo.put(to, new Object());
+            }
+        }
+
+        return isAssignable;
     }
 
     /**
