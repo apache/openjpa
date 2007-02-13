@@ -826,12 +826,12 @@ your application.
 Typically, during optimistic transactions OpenJPA does not start an actual
 database transaction until you flush or the optimistic transaction commits. This
 allows for very long-lived transactions without consuming database resources.
-When using the default lock manager, however, OpenJPA must begin a database
+When using the pessimistic lock manager, however, OpenJPA must begin a database
 transaction whenever you decide to lock an object during an optimistic
-transaction. This is because the default lock manager uses database locks, and
-databases cannot lock rows without a transaction in progress. OpenJPA will log
-an INFO message to the <literal>openjpa.Runtime</literal> logging channel when
-it begins a datastore transaction just to lock an object.
+transaction. This is because the pessimistic lock manager uses database locks, 
+and databases cannot lock rows without a transaction in progress. OpenJPA will 
+log an INFO message to the <literal>openjpa.Runtime</literal> logging channel 
+when it begins a datastore transaction just to lock an object.
                     </para>
                 </listitem>
                 <listitem>
