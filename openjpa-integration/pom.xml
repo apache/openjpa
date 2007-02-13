@@ -28,6 +28,7 @@
         <version>0.9.7-incubating-SNAPSHOT</version>
     </parent>
     <modules>
+        <module>examples</module>
         <module>tck</module>
     </modules>
 </project>
