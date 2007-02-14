@@ -58,8 +58,7 @@ public abstract class AbstractBrokerFactory
         (AbstractBrokerFactory.class);
 
     // static mapping of configurations to pooled broker factories
-    private static final Map _pool = Collections.synchronizedMap
-        (new HashMap());
+    private static final Map _pool = Collections.synchronizedMap(new HashMap());
 
     // configuration
     private final OpenJPAConfiguration _conf;
@@ -95,6 +94,11 @@ public abstract class AbstractBrokerFactory
         return (AbstractBrokerFactory) _pool.get(toPoolKey(conf));
     }
 
+    /**
+     * Return an internal factory pool key for the given configuration.
+     * We use the conf properties as given by the user because that is what's
+     * passed to {@link #getPooledFactory} when looking for an existing factory.
+     */
     private static Map toPoolKey(OpenJPAConfiguration conf) {
         return conf.toProperties(false);
     }
