@@ -36,11 +36,10 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.rop.SimpleResultList;
 import org.apache.openjpa.lib.rop.WindowResultList;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.ReferenceMap;
-import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FetchGroup;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.NoTransactionException;
 import org.apache.openjpa.util.UserException;
@@ -59,10 +58,6 @@ public class FetchConfigurationImpl
 
     private static final Localizer _loc = Localizer.forPackage
         (FetchConfigurationImpl.class);
-
-    // Cache the from/to isAssignable invocations
-    private static ConcurrentReferenceHashMap _assignableTypes =
-        new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.WEAK);
 
     /**
      * Configurable state shared throughout a traversal chain.
@@ -563,7 +558,7 @@ public class FetchConfigurationImpl
         // see if there's a previous limit
         int avail = Integer.MIN_VALUE;
         for (FetchConfigurationImpl f = this; f != null; f = f._parent) {
-            if (isAssignable(type, f._fromType)) {
+            if (ImplHelper.isAssignable(type, f._fromType)) {
                 avail = f._availableRecursion;
                 if (traverse)
                     avail = reduce(avail);
@@ -588,15 +583,15 @@ public class FetchConfigurationImpl
                 max = cur;
         }
         // reduce max if we're traversing a self-type relation
-        if (traverse && max != Integer.MIN_VALUE 
-            && isAssignable(meta.getDescribedType(), type))
+        if (traverse && max != Integer.MIN_VALUE
+            && ImplHelper.isAssignable(meta.getDescribedType(), type))
             max = reduce(max);
 
         // take min/defined of previous avail and fetch group max
         if (avail == Integer.MIN_VALUE && max == Integer.MIN_VALUE) {
             int def = FetchGroup.RECURSION_DEPTH_DEFAULT;
-            return (traverse && isAssignable(meta.getDescribedType(), type))
-                ? def - 1 : def;
+            return (traverse && ImplHelper.isAssignable(
+                    meta.getDescribedType(), type)) ? def - 1 : def;
         }
         if (avail == Integer.MIN_VALUE || avail == FetchGroup.DEPTH_INFINITE)
             return max;
@@ -616,40 +611,6 @@ public class FetchConfigurationImpl
         if (fm.getKey().isDeclaredTypePC())
             return fm.getKey().getDeclaredType();
         return null;
-    }
-
-    /**
-     * Whether either of the two types is assignable from the other.  Optimize
-     * for the repeat calls with similar parameters by caching the from/to
-     * type parameters.
-     */
-    private static boolean isAssignable(Class from, Class to) {
-        boolean isAssignable;
-
-        if (from == null || to == null)
-            return false;
-        ConcurrentReferenceHashMap assignableTo =
-            (ConcurrentReferenceHashMap) _assignableTypes.get(from);
-
-        if (assignableTo != null) { // "to" cache exists...
-            isAssignable = (assignableTo.get(to) != null);
-            if (!isAssignable) {  // not in the map yet...
-                isAssignable = from.isAssignableFrom(to);
-                if (isAssignable) {
-                    assignableTo.put(to, new Object());
-                }
-            }
-        } else {  // no "to" cache yet...
-            isAssignable = from.isAssignableFrom(to);
-            if (isAssignable) {
-                assignableTo = new ConcurrentReferenceHashMap(
-                        ReferenceMap.HARD, ReferenceMap.WEAK);
-                _assignableTypes.put(from, assignableTo);
-                assignableTo.put(to, new Object());
-            }
-        }
-
-        return isAssignable;
     }
 
     /**

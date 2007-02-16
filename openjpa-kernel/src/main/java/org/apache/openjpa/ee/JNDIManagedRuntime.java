@@ -29,7 +29,7 @@ public class JNDIManagedRuntime
     implements ManagedRuntime {
 
     private String _tmLoc = "java:/TransactionManager";
-    private static TransactionManager _tm;
+    private TransactionManager _tm = null;
 
     /**
      * Return the location of the {@link TransactionManager} in JNDI.
@@ -43,12 +43,14 @@ public class JNDIManagedRuntime
      */
     public void setTransactionManagerName(String name) {
         _tmLoc = name;
+        _tm = null;  // reset the cached TM
     }
 
     /**
      * Return the cached TransactionManager instance.
      */
     public TransactionManager getTransactionManager() throws Exception {
+
         if (_tm == null) {
             Context ctx = new InitialContext();
             try {
