@@ -100,7 +100,7 @@ public interface FetchPlan {
     /**
      * Returns the names of the fetch groups that this component will use
      * when loading objects. Defaults to the
-     * <code>org.apache.openjpa.FetchGroups</code> setting.
+     * <code>openjpa.FetchGroups</code> setting.
      */
     public Collection<String> getFetchGroups();
 
