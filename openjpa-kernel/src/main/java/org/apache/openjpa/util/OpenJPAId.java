@@ -17,7 +17,6 @@ package org.apache.openjpa.util;
 
 import java.io.Serializable;
 
-import org.apache.openjpa.lib.util.ReferenceHashSet;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
@@ -37,7 +36,7 @@ public abstract class OpenJPAId
     private transient int _typeHash = 0;
     // cache the types' generated hashcodes
     private static ConcurrentReferenceHashMap _typeCache =
-        new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.WEAK);
+        new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
 
     protected OpenJPAId() {
     }

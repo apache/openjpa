@@ -63,7 +63,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashMap;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
 import org.apache.openjpa.lib.util.ReferenceMap;
-import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 import org.apache.openjpa.lib.util.concurrent.ReentrantLock;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -75,6 +74,7 @@ import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.CallbackException;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.GeneralException;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.NoTransactionException;
@@ -139,9 +139,6 @@ public class BrokerImpl
 
     private static final Localizer _loc =
         Localizer.forPackage(BrokerImpl.class);
-    // Cache for from/to type assignments
-    private static ConcurrentReferenceHashMap _assignableTypes =
-        new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.WEAK);
 
     //	the store manager in use; this may be a decorator such as a
     //	data cache store manager around the native store manager
@@ -1101,7 +1098,8 @@ public class BrokerImpl
                         cls));
                 return PCRegistry.newObjectId(cls, (String) val);
             }
-            if (isAssignable(meta.getObjectIdType(), val.getClass())) {
+            if (ImplHelper.isAssignable(meta.getObjectIdType(), val.getClass()))
+            {
                 if (!meta.isOpenJPAIdentity() && meta.isObjectIdTypeShared())
                     return new ObjectId(cls, val);
                 return val;
@@ -1120,37 +1118,6 @@ public class BrokerImpl
         } finally {
             endOperation();
         }
-    }
-
-    /**
-     * Cache from/to assignments to avoid Class.isAssignableFrom overhead
-     * @param from the target Class
-     * @param to the Class to test
-     * @return true if the "to" class could be assigned to "from" class
-     */
-    private boolean isAssignable(Class from, Class to) {
-      boolean isAssignable;
-      ConcurrentReferenceHashMap assignableTo =
-          (ConcurrentReferenceHashMap) _assignableTypes.get(from);
-
-      if (assignableTo != null) { // "to" cache exists...
-          isAssignable = (assignableTo.get(to) != null);
-          if (!isAssignable) { // not in the map yet...
-              isAssignable = from.isAssignableFrom(to);
-              if (isAssignable) {
-                  assignableTo.put(to, new Object());
-              }
-          }
-      } else { // no "to" cache yet...
-          isAssignable = from.isAssignableFrom(to);
-          if (isAssignable) {
-              assignableTo = new ConcurrentReferenceHashMap(
-                      ReferenceMap.HARD, ReferenceMap.WEAK);
-              _assignableTypes.put(from, assignableTo);
-              assignableTo.put(to, new Object());
-          }
-      }
-      return isAssignable;
     }
 
     /**
