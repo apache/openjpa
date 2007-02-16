@@ -107,7 +107,6 @@ public class ConfigurationImpl
     private String _product = null;
     private boolean _readOnly = false;
     private Map _props = null;
-    private Map _fullProps = null;
     private boolean _globals = false;
     private String _auto = null;
     private final List _vals = new ArrayList();
@@ -311,7 +310,7 @@ public class ConfigurationImpl
     }
 
     public void valueChanged(Value val) {
-        if (_changeSupport == null && _props == null && _fullProps == null)
+        if (_changeSupport == null && _props == null)
             return;
 
         String newString = val.getString();
@@ -320,15 +319,12 @@ public class ConfigurationImpl
                 newString);
 
         // keep cached props up to date
-        if (newString == null) {
-            Configurations.removeProperty(val.getProperty(), _props);
-            Configurations.removeProperty(val.getProperty(), _fullProps);
-        } else { 
-            put(_fullProps, val, newString); 
-            if (_props != null && _props != _fullProps 
-                && (val.getDefault() == null 
+        if (_props != null) {
+            if (newString == null)
+                Configurations.removeProperty(val.getProperty(), _props);
+            else if (Configurations.containsProperty(val.getProperty(), _props)
+                || val.getDefault() == null
                 || !val.getDefault().equals(newString))
-                || Configurations.containsProperty(val.getProperty(), _props))
                 put(_props, val, newString);
         }
     }
@@ -570,30 +566,33 @@ public class ConfigurationImpl
         // clone properties before making any modifications; we need to keep
         // the internal properties instance consistent to maintain equals and
         // hashcode contracts
-        Map map = (storeDefaults) ? _fullProps : _props;
         Map clone;
-        if (map == null)
+        if (_props == null)
             clone = new HashMap();
-        else if (map instanceof Properties)
-            clone = (Map) ((Properties) map).clone();
+        else if (_props instanceof Properties)
+            clone = (Map) ((Properties) _props).clone();
         else
-            clone = new HashMap(map);
+            clone = new HashMap(_props);
 
-        if (map == null) {
+        // if no existing properties or the properties should contain entries
+        // with default values, add values to properties
+        if (_props == null || storeDefaults) {
             Value val;
             String str;
             for (int i = 0; i < _vals.size(); i++) {
+                // if key in existing properties, we already know value is up
+                // to date
                 val = (Value) _vals.get(i);
+                if (_props != null && Configurations.containsProperty
+                    (val.getProperty(), _props))
+                    continue;
+
                 str = val.getString();
                 if (str != null && (storeDefaults
                     || !str.equals(val.getDefault())))
                     put(clone, val, str);
             }
-            if (storeDefaults) {
-                _fullProps = new HashMap(clone);
-                if (_props == null)
-                    _props = _fullProps;
-            } else
+            if (_props == null)
                 _props = new HashMap(clone);
         }
         return clone;
@@ -606,13 +605,15 @@ public class ConfigurationImpl
 
         // if the only previous call was to load defaults, forget them.
         // this way we preserve the original formatting of the user's props
-        // instead of the defaults.
+        // instead of the defaults.  this is important for caching on
+        // configuration objects
         if (_globals) {
             _props = null;
             _globals = false;
         }
 
         Map remaining = new HashMap(map);
+        boolean ser = true;
         Value val;
         Object o;
         for (int i = 0; i < _vals.size(); i++) {
@@ -624,8 +625,10 @@ public class ConfigurationImpl
             if (o instanceof String) {
                 if (!StringUtils.equals((String) o, val.getString()))
                     val.setString((String) o);
-            } else
+            } else {
+                ser &= o instanceof Serializable;
                 val.setObject(o);
+            }
             Configurations.removeProperty(val.getProperty(), remaining);
         }
         
@@ -636,15 +639,16 @@ public class ConfigurationImpl
         
         // now warn if there are any remaining properties that there
         // is an unhandled prop
-        String key;
-        for (Iterator itr = remaining.keySet().iterator(); itr.hasNext();) {
-            key = (String) itr.next();
-            if (key != null)
-                warnInvalidProperty(key);
+        Map.Entry entry;
+        for (Iterator itr = remaining.entrySet().iterator(); itr.hasNext();) {
+            entry = (Map.Entry) itr.next();
+            if (entry.getKey() != null)
+                warnInvalidProperty((String) entry.getKey());
+            ser &= entry.getValue() instanceof Serializable;
         }
 
-        // cache user-formatted properties
-        if (_props == null || _props == _fullProps)
+        // cache properties
+        if (_props == null && ser)
             _props = map;
     }
 
@@ -654,8 +658,6 @@ public class ConfigurationImpl
      * this will account for the property prefix.
      */
     private void put(Map map, Value val, Object o) {
-        if (map == null)
-            return;
         Object key = val.getLoadKey();
         if (key == null)
             key = "openjpa." + val.getProperty();
@@ -666,8 +668,6 @@ public class ConfigurationImpl
      * Look up the given value, testing all available prefixes.
      */
     private Object get(Map map, Value val, boolean setLoadKey) {
-        if (map == null)
-            return null;
         String key = ProductDerivations.getConfigurationKey(
             val.getProperty(), map);
         if (map.containsKey(key) && setLoadKey)
@@ -791,9 +791,8 @@ public class ConfigurationImpl
 
         // compare properties
         ConfigurationImpl conf = (ConfigurationImpl) other;
-        Map p1 = (_fullProps == null) ? toProperties(true) : _fullProps;
-        Map p2 = (conf._fullProps == null) ? conf.toProperties(true) 
-            : conf._fullProps;
+        Map p1 = (_props == null) ? toProperties(false) : _props;
+        Map p2 = (conf._props == null) ? conf.toProperties(false) : conf._props;
         return p1.equals(p2);
     }
 
@@ -802,9 +801,9 @@ public class ConfigurationImpl
      * {@link #toProperties}.
      */
     public int hashCode() {
-        if (_fullProps != null)
-            return _fullProps.hashCode();
-        return toProperties(true).hashCode();
+        if (_props != null)
+            return _props.hashCode();
+        return toProperties(false).hashCode();
     }
 
     /**
@@ -850,11 +849,7 @@ public class ConfigurationImpl
      */
     public void readExternal(ObjectInput in)
         throws IOException, ClassNotFoundException {
-        Map fullProps = (Map) in.readObject();
-        Map props = (Map) in.readObject();
-        fromProperties(fullProps);
-        _fullProps = fullProps;
-        _props = props;
+        fromProperties((Map) in.readObject());
         _globals = in.readBoolean();
     }
 
@@ -863,11 +858,10 @@ public class ConfigurationImpl
      * the properties returned by {@link #toProperties}.
      */
     public void writeExternal(ObjectOutput out) throws IOException {
-        if (_fullProps != null)
-            out.writeObject(_fullProps);
+        if (_props != null)
+            out.writeObject(_props);
         else
-            out.writeObject(toProperties(true));
-        out.writeObject(_props);
+            out.writeObject(toProperties(false));
         out.writeBoolean(_globals);
     }
 
@@ -882,9 +876,7 @@ public class ConfigurationImpl
             ConfigurationImpl clone = (ConfigurationImpl) cons.newInstance
                 (new Object[]{ Boolean.FALSE });
             clone._globals = _globals;
-            Map map = new HashMap(toProperties(true));
-            clone.fromProperties(map);
-            clone._fullProps = map;
+            clone.fromProperties(toProperties(true));
             return clone;
         } catch (RuntimeException re) {
             throw re;
