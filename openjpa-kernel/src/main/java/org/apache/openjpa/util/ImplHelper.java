@@ -205,11 +205,11 @@ public class ImplHelper {
      * @return true if the "to" class is assignable to the "from" class
      */
     public static boolean isAssignable(Class from, Class to) {
-        Boolean isAssignable = null;
         if (from == null || to == null)
             return false;
-        Map assignableTo = (Map) _assignableTypes.get(from);
 
+        Boolean isAssignable = null;
+        Map assignableTo = (Map) _assignableTypes.get(from);
         if (assignableTo == null) { // "to" cache doesn't exist, so create it...
             assignableTo = new ConcurrentHashMap();
             _assignableTypes.put(from, assignableTo);
@@ -218,7 +218,7 @@ public class ImplHelper {
         }
 
         if (isAssignable == null) {// we don't have a record of this pair...
-            isAssignable = new Boolean(from.isAssignableFrom(to));
+            isAssignable = Boolean.valueOf(from.isAssignableFrom(to));
             assignableTo.put(to, isAssignable);
         }
 

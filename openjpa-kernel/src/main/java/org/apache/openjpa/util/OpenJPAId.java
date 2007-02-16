@@ -28,15 +28,16 @@ import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 public abstract class OpenJPAId
     implements Comparable, Serializable {
 
+    // cache the types' generated hashcodes
+    private static ConcurrentReferenceHashMap _typeCache =
+        new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
+
     protected Class type;
     protected boolean subs = true;
 
     // type has his based on the least-derived non-object class so that
     // user-given ids with non-exact types match ids with exact types
     private transient int _typeHash = 0;
-    // cache the types' generated hashcodes
-    private static ConcurrentReferenceHashMap _typeCache =
-        new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
 
     protected OpenJPAId() {
     }

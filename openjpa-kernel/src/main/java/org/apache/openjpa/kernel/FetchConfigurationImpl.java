@@ -558,7 +558,7 @@ public class FetchConfigurationImpl
         // see if there's a previous limit
         int avail = Integer.MIN_VALUE;
         for (FetchConfigurationImpl f = this; f != null; f = f._parent) {
-            if (ImplHelper.isAssignable(type, f._fromType)) {
+            if (ImplHelper.isAssignable(f._fromType, type)) {
                 avail = f._availableRecursion;
                 if (traverse)
                     avail = reduce(avail);
