@@ -579,6 +579,10 @@ public class StateManagerImpl
         assignVersionField(version);
     }
 
+    Object getLoadVersion() {
+        return _loadVersion;
+    }
+
     public void setNextVersion(Object version) {
         assignVersionField(version);
     }
@@ -953,6 +957,8 @@ public class StateManagerImpl
         _loaded = loaded;
         _dirty = savepoint.getDirty();
         _flush = savepoint.getFlushed();
+        _version = savepoint.getVersion();
+        _loadVersion = savepoint.getLoadVersion();
     }
 
     /**
