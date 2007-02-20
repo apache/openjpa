@@ -378,8 +378,6 @@ public class AnnotationPersistenceMappingParser
     private void parseAttributeOverrides(ClassMapping cm,
         AttributeOverride... attrs) {
         FieldMapping sup;
-        javax.persistence.Column scol;
-        int unique;
         for (AttributeOverride attr : attrs) {
             if (StringUtils.isEmpty(attr.name()))
                 throw new MetaDataException(_loc.get("no-override-name", cm));
@@ -387,13 +385,8 @@ public class AnnotationPersistenceMappingParser
             if (sup == null)
                 sup = (FieldMapping) cm.addDefinedSuperclassField(attr.name(),
                     Object.class, Object.class);
-            scol = attr.column();
-            if (scol == null)
-                continue;
-
-            unique = (scol.unique()) ? TRUE : FALSE;
-            setColumns(sup, sup.getValueInfo(), Arrays.asList
-                (new Column[]{ newColumn(scol) }), unique);
+            if (attr.column() != null)
+                parseColumns(sup, attr.column());
         }
     }
 
@@ -967,20 +960,13 @@ public class AnnotationPersistenceMappingParser
             throw new MetaDataException(_loc.get("not-embedded", fm));
 
         FieldMapping efm;
-        javax.persistence.Column ecol;
-        int unique;
         for (AttributeOverride attr : attrs) {
             efm = embed.getFieldMapping(attr.name());
             if (efm == null)
                 throw new MetaDataException(_loc.get("embed-override-name",
                     fm, attr.name()));
-            ecol = attr.column();
-            if (ecol == null)
-                continue;
-
-            unique = (ecol.unique()) ? TRUE : FALSE;
-            setColumns(efm, efm.getValueInfo(), Arrays.asList
-                (new Column[]{ newColumn(ecol) }), unique);
+            if (attr.column() != null)
+                parseColumns(efm, attr.column());
         }
     }
 
