@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.TreeSet;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -34,6 +35,9 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.lib.util.StringDistance;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
+
 import serp.util.Strings;
 
 /**
@@ -46,6 +50,12 @@ public class Configurations {
 
     private static final Localizer _loc = Localizer.forPackage
         (Configurations.class);
+    
+    private static ConcurrentReferenceHashMap _loaders = new 
+        ConcurrentReferenceHashMap(ConcurrentReferenceHashMap.WEAK, 
+                ConcurrentReferenceHashMap.HARD);
+
+    private static final Object NULL_LOADER = "null-loader";
 
     /**
      * Return the class name from the given plugin string, or null if none.
@@ -163,18 +173,33 @@ public class Configurations {
         if (StringUtils.isEmpty(clsName))
             return null;
 
-        Class cls = null;
-        try {
-            cls = Strings.toClass(clsName, findDerivedLoader(conf, loader));
-        } catch (RuntimeException re) {
-            if (val != null)
-                re = getCreateException(clsName, val, re);
-            if (fatal)
-                throw re;
-            Log log = (conf == null) ? null : conf.getConfigurationLog();
-            if (log != null && log.isErrorEnabled())
-                log.error(_loc.get("plugin-creation-exception", val), re);
-            return null;
+        Class cls = null; 
+
+        // can't have a null reference in the map, so use symbolic 
+        // constant as key
+        Object key = loader == null ? NULL_LOADER : loader;
+        Map loaderCache = (Map) _loaders.get(key);
+        if (loaderCache == null) { // We don't have a cache for this loader.
+            loaderCache = new ConcurrentHashMap();
+            _loaders.put(key, loaderCache);
+        } else {  // We have a cache for this loader.
+            cls = (Class) loaderCache.get(clsName);
+        }
+
+        if (cls == null) { // we haven't cached this.
+            try {
+                cls = Strings.toClass(clsName, findDerivedLoader(conf, loader));
+                loaderCache.put(clsName, cls);
+            } catch (RuntimeException re) {
+                if (val != null)
+                    re = getCreateException(clsName, val, re);
+                if (fatal)
+                    throw re;
+                Log log = (conf == null) ? null : conf.getConfigurationLog();
+                if (log != null && log.isErrorEnabled())
+                    log.error(_loc.get("plugin-creation-exception", val), re);
+                return null;
+            }
         }
 
         try {
