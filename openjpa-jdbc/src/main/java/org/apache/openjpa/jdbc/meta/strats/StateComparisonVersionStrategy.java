@@ -223,7 +223,11 @@ public class StateComparisonVersionStrategy
         implements RowManager {
 
         private CustomUpdate(Table table) {
-            super(table, Row.ACTION_UPDATE);
+            this(table.getColumns());
+        }
+
+        private CustomUpdate(Column[] cols) {
+            super(cols, Row.ACTION_UPDATE);
         }
 
         /**
@@ -252,8 +256,8 @@ public class StateComparisonVersionStrategy
             return buf.toString();
         }
 
-        protected RowImpl newInstance(Table table, int action) {
-            return new CustomUpdate(table);
+        protected RowImpl newInstance(Column[] cols, int action) {
+            return new CustomUpdate(cols);
         }
 
         /////////////////////////////
