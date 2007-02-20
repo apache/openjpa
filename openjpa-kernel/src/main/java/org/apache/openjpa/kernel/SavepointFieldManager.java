@@ -46,6 +46,9 @@ class SavepointFieldManager
     private final PCState _state;
     private PersistenceCapable _copy;
 
+    private final Object _version;
+    private final Object _loadVersion;
+
     // used to track field value during store/fetch cycle
     private Object _field = null;
     private int[] _copyField = null;
@@ -81,6 +84,9 @@ class SavepointFieldManager
         // we need to proxy the fields so that we can track future changes
         // from this savepoint forward for PNew instances' mutable fields
         _sm.proxyFields(false, false);
+
+        _version = _sm.getVersion ();
+        _loadVersion = _sm.getLoadVersion ();
     }
 
     /**
@@ -88,6 +94,14 @@ class SavepointFieldManager
      */
     public StateManagerImpl getStateManager() {
         return _sm;
+    }
+
+    public Object getVersion() {
+        return _version;
+    }
+
+    public Object getLoadVersion() {
+        return _loadVersion;
     }
 
     /**
