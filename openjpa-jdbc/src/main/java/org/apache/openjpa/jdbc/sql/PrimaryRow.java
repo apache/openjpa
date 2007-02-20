@@ -59,7 +59,11 @@ public class PrimaryRow
      * Constructor; supply table and action.
      */
     public PrimaryRow(Table table, int action, OpenJPAStateManager owner) {
-        super(table, action);
+        this(table.getColumns(), action, owner);
+    }
+
+    protected PrimaryRow(Column[] cols, int action, OpenJPAStateManager owner) {
+        super(cols, action);
         _pk = owner;
     }
 
@@ -385,8 +389,8 @@ public class PrimaryRow
         return super.generateSQL(dict);
     }
 
-    protected RowImpl newInstance(Table table, int action) {
-        return new PrimaryRow(table, action, _pk);
+    protected RowImpl newInstance(Column[] cols, int action) {
+        return new PrimaryRow(cols, action, _pk);
     }
 
     public void copyInto(RowImpl row, boolean whereOnly) {

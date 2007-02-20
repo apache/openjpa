@@ -43,7 +43,11 @@ public class SecondaryRow
      * Constructor; supply table and action.
      */
     public SecondaryRow(Table table, int action) {
-        super(table, action);
+        this(table.getColumns(), action);
+    }
+
+    protected SecondaryRow(Column[] cols, int action) {
+        super(cols, action);
     }
 
     public void setForeignKey(ForeignKey fk, OpenJPAStateManager sm)
@@ -161,8 +165,8 @@ public class SecondaryRow
         return super.generateSQL(dict);
     }
 
-    protected RowImpl newInstance(Table table, int action) {
-        return new SecondaryRow(table, action);
+    protected RowImpl newInstance(Column[] cols, int action) {
+        return new SecondaryRow(cols, action);
     }
 
     public void copyInto(RowImpl row, boolean whereOnly) {
