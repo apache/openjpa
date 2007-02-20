@@ -30,6 +30,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
+import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.Proxy;
 import org.apache.openjpa.util.UnsupportedException;
 
@@ -399,7 +400,7 @@ public class DetachedStateManager
         	// do not access the pc fields by implictly invoking _pc.toString()
         	// may cause infinite loop if again tries to access unloaded field 
             throw new IllegalStateException(_loc.get("unloaded-detached",
-                _pc.getClass()+"@"+System.identityHashCode(_pc)).getMessage());
+               Exceptions.toString(_pc)).getMessage());
     }
 
     public boolean serializing() {
