@@ -888,7 +888,8 @@ public class MappingTool
      * <ul>
      * <li>Refresh the mappings for given package, without dropping any
      * schema components:<br />
-     * <code>java org.apache.openjpa.jdbc.meta.MappingTool mypackage.jdo</code></li>
+     * <code>java org.apache.openjpa.jdbc.meta.MappingTool 
+     *      mypackage.jdo</code></li>
      * <li>Refresh the mappings for all persistent classes in the classpath,
      * dropping any unused columns and even tables:<br />
      * <code>java org.apache.openjpa.jdbc.meta.MappingTool -sa refresh

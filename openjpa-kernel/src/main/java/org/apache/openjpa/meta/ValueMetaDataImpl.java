@@ -201,8 +201,8 @@ public class ValueMetaDataImpl
 
         switch (_delete) {
             case CASCADE_NONE:
-                // if the user marks the owning field dependent and we externalize
-                // to a pc type, then become dependent
+                // if the user marks the owning field dependent and we 
+                // externalize to a pc type, then become dependent
                 if (this != _owner.getValue() && isTypePC()
                     && ((ValueMetaDataImpl) _owner.getValue())._delete
                     == CASCADE_AUTO)
@@ -432,8 +432,13 @@ public class ValueMetaDataImpl
     }
 
     public void copy(ValueMetaData vmd) {
+        // copy declared types, but if OID revert to PC until we resolve
+        // to OID ourselves
         _decType = vmd.getDeclaredType();
         _decCode = vmd.getDeclaredTypeCode();
+        if (_decCode == JavaTypes.OID)
+            _decCode = JavaTypes.PC;
+
         _delete = vmd.getCascadeDelete();
         _persist = vmd.getCascadePersist();
         _attach = vmd.getCascadeAttach();
