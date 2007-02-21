@@ -279,6 +279,8 @@ public class QueryImpl
      */
     public Object getSingleResult() {
         _em.assertNotCloseInvoked();
+    	_query.getFetchConfiguration().
+    		setHint("openjpa.hint.optimize", new Integer(1));
         Object ob = execute();
         if (!(ob instanceof List))
             return ob;
