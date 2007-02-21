@@ -31,6 +31,7 @@ import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.MetaDataException;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Helper methods for relation mappings.
@@ -74,11 +75,18 @@ public class RelationStrategies {
     public static Object toDataStoreValue(ValueMapping vm, Object val,
         JDBCStore store) {
         ClassMapping rel;
-        if (val == null || val.getClass() == vm.getType()) 
+        if (val == null) {
+            ClassMapping[] clss = vm.getIndependentTypeMappings();
+            rel = (clss.length > 0) ? clss[0] : vm.getTypeMapping();
+        } else if (val.getClass() == vm.getType())
             rel = vm.getTypeMapping(); // common case
         else
             rel = vm.getMappingRepository().getMapping(val.getClass(),
                 store.getContext().getClassLoader(), true);
+
+        if (!rel.isMapped())
+            throw new UserException(_loc.get("unmapped-datastore-value", 
+                rel.getDescribedType()));
 
         Column[] cols;
         if (vm.getJoinDirection() == ValueMapping.JOIN_INVERSE)
