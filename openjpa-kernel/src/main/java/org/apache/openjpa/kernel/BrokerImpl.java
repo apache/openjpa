@@ -765,7 +765,7 @@ public class BrokerImpl
         }
         if (fetch == null)
             fetch = _fc;
-
+        fetch.setHint("openjpa.hint.optimize", new Integer(1));
         beginOperation(true);
         try {
             assertNontransactionalRead();
