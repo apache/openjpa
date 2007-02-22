@@ -850,6 +850,7 @@ public class ConfigurationImpl
     public void readExternal(ObjectInput in)
         throws IOException, ClassNotFoundException {
         fromProperties((Map) in.readObject());
+        _props = (Map) in.readObject();
         _globals = in.readBoolean();
     }
 
@@ -858,10 +859,8 @@ public class ConfigurationImpl
      * the properties returned by {@link #toProperties}.
      */
     public void writeExternal(ObjectOutput out) throws IOException {
-        if (_props != null)
-            out.writeObject(_props);
-        else
-            out.writeObject(toProperties(false));
+        out.writeObject(toProperties(true));
+        out.writeObject(_props);
         out.writeBoolean(_globals);
     }
 
@@ -875,8 +874,9 @@ public class ConfigurationImpl
                 (new Class[]{ boolean.class });
             ConfigurationImpl clone = (ConfigurationImpl) cons.newInstance
                 (new Object[]{ Boolean.FALSE });
-            clone._globals = _globals;
             clone.fromProperties(toProperties(true));
+            clone._props = (_props == null) ? null : new HashMap(_props);
+            clone._globals = _globals;
             return clone;
         } catch (RuntimeException re) {
             throw re;
