@@ -192,20 +192,19 @@ public class DB2Dictionary
             }
     	}
     }
-    
+
     public String getOptimizeClause(JDBCFetchConfiguration fetch) {
         Integer rows = null;
-        StringBuffer optimizeString = null;
+        StringBuffer optimizeString = new StringBuffer();
         if (fetch.getHint("openjpa.hint.optimize") != null) {
-            optimizeString = new StringBuffer();
             rows = (Integer)fetch.getHint("openjpa.hint.optimize");
             optimizeString.append(" ").append(optimizeClause).append(" ")
                 .append(rows).append(" ");
-            if(rows.intValue() > 1)
-    		    optimizeString.append(rowsClause).append(" ");
+            if (rows.intValue() > 1)
+                optimizeString.append(rowsClause).append(" ");
             else
-    		    optimizeString.append(rowClause).append(" ");
-        }
+                optimizeString.append(rowClause).append(" ");
+        }        
         return optimizeString.toString();    
     }
 }
