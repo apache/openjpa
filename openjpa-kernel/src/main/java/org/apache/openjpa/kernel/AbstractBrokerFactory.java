@@ -37,6 +37,7 @@ import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 import org.apache.openjpa.lib.util.concurrent.ReentrantLock;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -71,7 +72,8 @@ public abstract class AbstractBrokerFactory
     private final ReentrantLock _lock = new ReentrantLock();
 
     // maps global transactions to associated brokers
-    private transient Map _transactional = new HashMap();
+    private transient ConcurrentHashMap _transactional
+        = new ConcurrentHashMap();
 
     // weak-ref tracking of open brokers
     private transient Collection _brokers = new ConcurrentReferenceHashSet
@@ -369,7 +371,7 @@ public abstract class AbstractBrokerFactory
             return factory;
 
         // reset these transient fields to empty values
-        _transactional = new HashMap();
+        _transactional = new ConcurrentHashMap();
         _brokers = new ConcurrentReferenceHashSet(
                 ConcurrentReferenceHashSet.WEAK);
 
@@ -450,20 +452,20 @@ public abstract class AbstractBrokerFactory
             throw new GeneralException(e);
         }
 
-        synchronized (_transactional) {
-            Collection brokers = (Collection) _transactional.get(trans);
-            if (brokers != null) {
-                BrokerImpl broker;
-                for (Iterator itr = brokers.iterator(); itr.hasNext();) {
-                    broker = (BrokerImpl) itr.next();
-                    if (StringUtils.equals(broker.getConnectionUserName(),
-                        user) && StringUtils.equals
-                        (broker.getConnectionPassword(), pass))
-                        return broker;
-                }
+        Collection brokers = (Collection) _transactional.get(trans);
+        if (brokers != null) {
+            // we don't need to synchronize on brokers since one JTA transaction
+            // can never be active on multiple concurrent threads.
+            BrokerImpl broker;
+            for (Iterator itr = brokers.iterator(); itr.hasNext();) {
+                broker = (BrokerImpl) itr.next();
+                if (StringUtils.equals(broker.getConnectionUserName(),
+                    user) && StringUtils.equals
+                    (broker.getConnectionPassword(), pass))
+                    return broker;
             }
-            return null;
         }
+        return null;
     }
 
     /**
@@ -579,18 +581,16 @@ public abstract class AbstractBrokerFactory
      */
     private void assertNoActiveTransaction() {
         Collection excs = null;
-        synchronized (_transactional) {
-            if (_transactional.isEmpty())
-                return;
+        if (_transactional.isEmpty())
+            return;
 
-            excs = new ArrayList(_transactional.size());
-            for (Iterator trans = _transactional.values().iterator();
-                trans.hasNext();) {
-                Collection brokers = (Collection) trans.next();
-                for (Iterator itr = brokers.iterator(); itr.hasNext();) {
-                    excs.add(new InvalidStateException(_loc.get("active")).
-                        setFailedObject(itr.next()));
-                }
+        excs = new ArrayList(_transactional.size());
+        for (Iterator trans = _transactional.values().iterator();
+            trans.hasNext();) {
+            Collection brokers = (Collection) trans.next();
+            for (Iterator itr = brokers.iterator(); itr.hasNext();) {
+                excs.add(new InvalidStateException(_loc.get("active")).
+                    setFailedObject(itr.next()));
             }
         }
 
@@ -626,20 +626,17 @@ public abstract class AbstractBrokerFactory
             // synch broker and trans
             trans.registerSynchronization(broker);
 
-            synchronized (_transactional) {
-                Collection brokers = (Collection) _transactional.get(trans);
-                if (brokers == null) {
-                    brokers = new ArrayList(2);
-                    _transactional.put(trans, brokers);
-
-                    // register a callback to remove the trans from the
-                    // cache when it ends
-                    trans.registerSynchronization
-                        (new RemoveTransactionSync(trans));
-                }
-                brokers.add(broker);
+            // we don't need to synchronize on brokers or guard against multiple
+            // threads using the same trans since one JTA transaction can never
+            // be active on multiple concurrent threads.
+            Collection brokers = (Collection) _transactional.get(trans);
+            if (brokers == null) {
+                brokers = new ArrayList(2);
+                _transactional.put(trans, brokers);
+                trans.registerSynchronization(new RemoveTransactionSync(trans));
             }
-
+            brokers.add(broker);
+            
             return true;
         } catch (OpenJPAException ke) {
             throw ke;
@@ -665,10 +662,7 @@ public abstract class AbstractBrokerFactory
         }
 
         public void afterCompletion(int status) {
-            synchronized (_transactional)
-			{
-				_transactional.remove (_trans);
-			}
+            _transactional.remove (_trans);
 		}
 	}
 }
