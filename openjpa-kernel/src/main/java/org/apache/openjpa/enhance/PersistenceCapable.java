@@ -34,6 +34,8 @@ public interface PersistenceCapable {
 
     public static final Object DESERIALIZED = new Object();
 
+    int pcGetEnhancementContractVersion();
+
     Object pcGetGenericContext();
 
     StateManager pcGetStateManager();
@@ -47,8 +49,6 @@ public interface PersistenceCapable {
     void pcReplaceField(int fieldIndex);
 
     void pcReplaceFields(int[] fieldIndex);
-
-    void pcReplaceFlags();
 
     void pcCopyFields(Object fromObject, int[] fields);
 

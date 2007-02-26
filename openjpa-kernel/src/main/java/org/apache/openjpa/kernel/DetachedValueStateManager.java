@@ -403,10 +403,6 @@ public class DetachedValueStateManager
         throw new UnsupportedOperationException();
     }
 
-    public byte replaceFlags() {
-        throw new UnsupportedOperationException();
-    }
-
     public StateManager replaceStateManager(StateManager sm) {
         return sm;
     }

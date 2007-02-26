@@ -71,10 +71,6 @@ public class ObjectIdStateManager
         throw new UnsupportedOperationException();
     }
 
-    public byte replaceFlags() {
-        throw new UnsupportedOperationException();
-    }
-
     public StateManager replaceStateManager(StateManager sm) {
         throw new UnsupportedOperationException();
     }

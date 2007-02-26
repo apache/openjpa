@@ -945,10 +945,6 @@ public class EmbedFieldStrategy
         // StateManager implementation
         ///////////////////////////////
 
-        public byte replaceFlags() {
-            throw new InternalException();
-        }
-
         public Object getPCPrimaryKey(Object oid, int field) {
             throw new InternalException();
         }

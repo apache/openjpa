@@ -95,6 +95,11 @@ import serp.util.Numbers;
  * @author Abe White
  */
 public class PCEnhancer {
+    // Designates a version for maintaining compatbility when PCEnhancer
+    // modifies enhancement that can break serialization or other contracts
+    // Each enhanced class will return the value of this field via
+    // public int getEnhancementContractVersion()
+    public static final int ENHANCER_VERSION = 2;
 
     public static final int ENHANCE_NONE = 0;
     public static final int ENHANCE_AWARE = 2 << 0;
@@ -716,7 +721,6 @@ public class PCEnhancer {
         if (_meta.getPCSuperclass() == null) {
             addStockMethods();
             addGetVersionMethod();
-            addReplaceFlagsMethod();
             addReplaceStateManagerMethod();
 
             if (_meta.getIdentityType() != ClassMetaData.ID_APPLICATION)
@@ -840,11 +844,6 @@ public class PCEnhancer {
         noclear.setTarget(code.aload().setLocal(inst));
         code.aload().setParam(0);
         code.putfield().setField(SM, SMTYPE);
-
-        // pc.pcFlags = LOAD_REQUIRED
-        code.aload().setLocal(inst);
-        code.constant().setValue(PersistenceCapable.LOAD_REQUIRED);
-        code.putfield().setField(PRE + "Flags", byte.class);
 
         // copy key fields from oid
         if (oid) {
@@ -1327,35 +1326,6 @@ public class PCEnhancer {
                 return Short.class;
         }
         return fmd.getDeclaredType();
-    }
-
-    /**
-     * Adds the {@link PersistenceCapable#pcReplaceFlags}
-     * method to the bytecode.
-     */
-    private void addReplaceFlagsMethod() {
-        // public final void pcReplaceFlags ()
-        BCMethod method = _pc.declareMethod(PRE + "ReplaceFlags",
-            void.class, null);
-        Code code = method.getCode(true);
-
-        // if (pcStateManager != null)
-        loadManagedInstance(code, false);
-        code.getfield().setField(SM, SMTYPE);
-        JumpInstruction ifins = code.ifnonnull();
-        code.vreturn();
-
-        // pcFlags = pcStateManager.replaceFlags ();
-        ifins.setTarget(loadManagedInstance(code, false));
-        loadManagedInstance(code, false);
-        code.getfield().setField(SM, SMTYPE);
-        code.invokeinterface().setMethod(SMTYPE, "replaceFlags",
-            byte.class, null);
-        code.putfield().setField(PRE + "Flags", byte.class);
-        code.vreturn();
-
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
     }
 
     /**
@@ -2157,6 +2127,9 @@ public class PCEnhancer {
         // make the class implement PersistenceCapable
         _pc.declareInterface(PCTYPE);
 
+        // add a version stamp
+        addGetEnhancementContractVersionMethod();
+
         // find the default constructor
         BCMethod method = _pc.getDeclaredMethod("<init>", (String[]) null);
 
@@ -2197,8 +2170,6 @@ public class PCEnhancer {
      * <li><code>private static byte[] pcFieldFlags</code></li>
      * <li><code>protected transient StateManager pcStateManager</code>
      * if no PersistenceCapable superclass present)</li>
-     * <li><code>protected transient byte pcFlags</code>
-     * if no PersistenceCapable superclass present)</li>
      * </ul>
      */
     private void addFields() {
@@ -2210,10 +2181,6 @@ public class PCEnhancer {
 
         if (_meta.getPCSuperclass() == null) {
             BCField field = _pc.declareField(SM, SMTYPE);
-            field.makeProtected();
-            field.setTransient(true);
-
-            field = _pc.declareField(PRE + "Flags", byte.class);
             field.makeProtected();
             field.setTransient(true);
         }
@@ -2724,10 +2691,10 @@ public class PCEnhancer {
 
     /**
      * Adds bytecode modifying the cloning behavior of the class being
-     * enhanced to correctly replace the <code>pcFlags</code> and
-     * <code>pcStateManager</code> instance fields of any clone created with
-     * their default values. Also, if this class is the base PC type
-     * and does not declared a clone method, one will be added.
+     * enhanced to correctly replace the <code>pcStateManager</code> 
+     * instance fields of any clone created with their default values. 
+     * Also, if this class is the base PC type and does not declared 
+     * a clone method, one will be added.
      */
     private void addCloningCode() {
         if (_meta.getPCSuperclass() != null)
@@ -2780,12 +2747,6 @@ public class PCEnhancer {
             code.checkcast().setType(_pc);
             code.constant().setNull();
             code.putfield().setField(SM, SMTYPE);
-
-            // ((<type>) clone).pcFlags = 0;
-            code.dup();
-            code.checkcast().setType(_pc);
-            code.constant().setValue(PersistenceCapable.READ_WRITE_OK);
-            code.putfield().setField(PRE + "Flags", byte.class);
 
             // if modified, increase stack
             code.calculateMaxStack();
@@ -2860,23 +2821,10 @@ public class PCEnhancer {
             return;
         }
 
-        // dfg: if (inst.pcFlags <= 0) return inst.<field>;
-        JumpInstruction ifins = null;
-        if ((fieldFlag & PersistenceCapable.CHECK_READ) > 0) {
-            loadManagedInstance(code, true);
-            code.getfield().setField(PRE + "Flags", byte.class);
-            ifins = code.ifgt();
-            loadManagedInstance(code, true);
-            addGetManagedValueCode(code, fmd);
-            code.xreturn().setType(fmd.getDeclaredType());
-        }
-
         // if (inst.pcStateManager == null) return inst.<field>;
         Instruction ins = loadManagedInstance(code, true);
-        if (ifins != null)
-            ifins.setTarget(ins);
         code.getfield().setField(SM, SMTYPE);
-        ifins = code.ifnonnull();
+        JumpInstruction ifins = code.ifnonnull();
         loadManagedInstance(code, true);
         addGetManagedValueCode(code, fmd);
         code.xreturn().setType(fmd.getDeclaredType());
@@ -2919,25 +2867,10 @@ public class PCEnhancer {
         // PCEnhancer uses static methods; PCSubclasser does not.
         int firstParamOffset = getAccessorParameterOffset();
 
-        // dfg: if (inst.pcFlags == 0) inst.<field> = value;
-        JumpInstruction ifins = null;
-        byte fieldFlag = getFieldFlag(fmd);
-        if ((fieldFlag & PersistenceCapable.CHECK_WRITE) > 0) {
-            loadManagedInstance(code, true);
-            code.getfield().setField(PRE + "Flags", byte.class);
-            ifins = code.ifne();
-            loadManagedInstance(code, true);
-            code.xload().setParam(firstParamOffset);
-            addSetManagedValueCode(code, fmd);
-            code.vreturn();
-        }
-
         // if (inst.pcStateManager == null) inst.<field> = value;
         Instruction ins = loadManagedInstance(code, true);
-        if (ifins != null)
-            ifins.setTarget(ins);
         code.getfield().setField(SM, SMTYPE);
-        ifins = code.ifnonnull();
+        JumpInstruction ifins = code.ifnonnull();
         loadManagedInstance(code, true);
         code.xload().setParam(firstParamOffset);
         addSetManagedValueCode(code, fmd);
@@ -3505,6 +3438,19 @@ public class PCEnhancer {
         newsetter.makePrivate();
         transferCodeAttributes(setter, newsetter);
         return setter;
+    }
+
+    private void addGetEnhancementContractVersionMethod() {
+        // public int getEnhancementContractVersion()
+        BCMethod method = _pc.declareMethod(PRE + 
+                "GetEnhancementContractVersion", int.class, null);
+        method.makePublic();
+        Code code = method.getCode(true);
+        code.constant().setValue(ENHANCER_VERSION);
+        code.ireturn();
+        code.calculateMaxStack();
+        code.calculateMaxLocals();
+        return;
     }
 
     /**

@@ -41,11 +41,6 @@ public interface StateManager {
     public Object getPCPrimaryKey(Object oid, int field);
 
     /**
-     * Change internal flags.
-     */
-    public byte replaceFlags();
-
-    /**
      * Change state manager.
      */
     public StateManager replaceStateManager(StateManager sm);

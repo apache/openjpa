@@ -334,10 +334,6 @@ public class DetachedStateManager
         return null;
     }
 
-    public byte replaceFlags() {
-        return PersistenceCapable.MEDIATE_WRITE;
-    }
-
     public Object getPCPrimaryKey(Object oid, int field) {
         throw new UnsupportedOperationException();
     }
@@ -939,5 +935,5 @@ public class DetachedStateManager
     public void unlock() {
         if (_lock != null)
             _lock.unlock();
-	}
+    }
 }
