@@ -287,7 +287,6 @@ public class StateManagerImpl
         }
 
         pc.pcSetDetachedState(null);
-        pc.pcReplaceFlags();
         _pc = pc;
 
         if (_oid instanceof OpenJPAId)

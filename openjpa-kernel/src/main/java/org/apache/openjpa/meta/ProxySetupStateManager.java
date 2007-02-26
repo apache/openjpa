@@ -85,10 +85,6 @@ class ProxySetupStateManager
         throw new UnsupportedOperationException();
     }
 
-    public byte replaceFlags() {
-        throw new InternalException();
-    }
-
     public StateManager replaceStateManager(StateManager sm) {
         throw new InternalException();
     }
