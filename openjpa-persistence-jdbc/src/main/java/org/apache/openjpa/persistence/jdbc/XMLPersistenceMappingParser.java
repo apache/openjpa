@@ -370,8 +370,8 @@ public class XMLPersistenceMappingParser
     private boolean startTableGenerator(Attributes attrs) {
         String name = attrs.getValue("name");
         Log log = getLog();
-        if (log.isInfoEnabled())
-            log.info(_loc.get("parse-gen", name));
+        if (log.isTraceEnabled())
+            log.trace(_loc.get("parse-gen", name));
         if (getRepository().getCachedSequenceMetaData(name) != null
             && log.isWarnEnabled())
             log.warn(_loc.get("override-gen", name));
@@ -781,8 +781,8 @@ public class XMLPersistenceMappingParser
     private boolean startSQLResultSetMapping(Attributes attrs) {
         String name = attrs.getValue("name");
         Log log = getLog();
-        if (log.isInfoEnabled())
-            log.info(_loc.get("parse-sqlrsmapping", name));
+        if (log.isTraceEnabled())
+            log.trace(_loc.get("parse-sqlrsmapping", name));
 
         MappingRepository repos = (MappingRepository) getRepository();
         QueryResultMapping result = repos.getCachedQueryResultMapping

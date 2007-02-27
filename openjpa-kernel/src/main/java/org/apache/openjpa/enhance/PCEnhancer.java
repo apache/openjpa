@@ -2822,7 +2822,7 @@ public class PCEnhancer {
         }
 
         // if (inst.pcStateManager == null) return inst.<field>;
-        Instruction ins = loadManagedInstance(code, true);
+        loadManagedInstance(code, true);
         code.getfield().setField(SM, SMTYPE);
         JumpInstruction ifins = code.ifnonnull();
         loadManagedInstance(code, true);
@@ -2868,7 +2868,7 @@ public class PCEnhancer {
         int firstParamOffset = getAccessorParameterOffset();
 
         // if (inst.pcStateManager == null) inst.<field> = value;
-        Instruction ins = loadManagedInstance(code, true);
+        loadManagedInstance(code, true);
         code.getfield().setField(SM, SMTYPE);
         JumpInstruction ifins = code.ifnonnull();
         loadManagedInstance(code, true);
@@ -3594,7 +3594,8 @@ public class PCEnhancer {
         Class cls;
         for (Iterator itr = classes.iterator(); itr.hasNext();) {
             cls = (Class) itr.next();
-            log.info(_loc.get("enhance-running", cls));
+            if (log.isTraceEnabled())
+                log.trace(_loc.get("enhance-running", cls));
 
             bc = project.loadClass(cls);
             enhancer = new PCEnhancer(conf, bc, repos);
@@ -3603,12 +3604,15 @@ public class PCEnhancer {
             enhancer.setDirectory(flags.directory);
             enhancer.setAddDefaultConstructor(flags.addDefaultConstructor);
             status = enhancer.run();
-            if (status == ENHANCE_NONE)
-                log.info(_loc.get("enhance-norun"));
-            else if (status == ENHANCE_INTERFACE)
-                log.info(_loc.get("enhance-interface"));
-            else if (status == ENHANCE_AWARE) {
-                log.info(_loc.get("enhance-aware"));
+            if (status == ENHANCE_NONE) {
+                if (log.isTraceEnabled())
+                    log.trace(_loc.get("enhance-norun"));
+            } else if (status == ENHANCE_INTERFACE) {
+                if (log.isTraceEnabled())
+                    log.trace(_loc.get("enhance-interface"));
+            } else if (status == ENHANCE_AWARE) {
+                if (log.isTraceEnabled())
+                    log.trace(_loc.get("enhance-aware"));
                 enhancer.record();
             } else
                 enhancer.record();

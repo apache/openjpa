@@ -197,8 +197,8 @@ public class AnnotationPersistenceMappingParser
             throw new MetaDataException(_loc.get("no-gen-name", el));
 
         Log log = getLog();
-        if (log.isInfoEnabled())
-            log.info(_loc.get("parse-gen", name));
+        if (log.isTraceEnabled())
+            log.trace(_loc.get("parse-gen", name));
 
         SequenceMapping meta = (SequenceMapping) getRepository().
             getCachedSequenceMetaData(name);
@@ -481,8 +481,8 @@ public class AnnotationPersistenceMappingParser
         MappingRepository repos = (MappingRepository) getRepository();
         Log log = getLog();
         for (SqlResultSetMapping anno : annos) {
-            if (log.isInfoEnabled())
-                log.info(_loc.get("parse-sqlrsmapping", anno.name()));
+            if (log.isTraceEnabled())
+                log.trace(_loc.get("parse-sqlrsmapping", anno.name()));
 
             QueryResultMapping result = repos.getCachedQueryResultMapping
                 (null, anno.name());

@@ -582,8 +582,8 @@ public abstract class AbstractCFMetaDataFactory
             else // we don't cache a full dev cp scan
                 _typeNames = names;
 
-            if (log.isInfoEnabled())
-                log.info(_loc.get("found-pcs", String.valueOf(names.size()),
+            if (log.isTraceEnabled())
+                log.trace(_loc.get("found-pcs", String.valueOf(names.size()),
                     String.valueOf(System.currentTimeMillis() - start)));
             return (names.isEmpty()) ? null : names;
         } catch (IOException ioe) {
