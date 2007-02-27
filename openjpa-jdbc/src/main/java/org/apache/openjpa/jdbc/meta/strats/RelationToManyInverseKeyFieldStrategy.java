@@ -119,7 +119,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         boolean criteria = vinfo.getUseClassCriteria();
         if (mapped != null) {
             mapped.resolve(mapped.MODE_META | mapped.MODE_MAPPING);
-            if (!(mapped.getStrategy()instanceof RelationFieldStrategy))
+            if (!(mapped.getStrategy() instanceof RelationFieldStrategy))
                 throw new MetaDataException(_loc.get("not-inv-relation",
                     field, mapped));
             vinfo.assertNoSchemaComponents(elem, !adapt);

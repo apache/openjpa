@@ -25,6 +25,10 @@ package org.apache.openjpa.kernel;
 class PDeletedState
     extends PCState {
 
+    void initialize(StateManagerImpl context) {
+        context.saveFields(false);
+    }
+
     PCState flush(StateManagerImpl context) {
         return PDELETEDFLUSHED;
     }
