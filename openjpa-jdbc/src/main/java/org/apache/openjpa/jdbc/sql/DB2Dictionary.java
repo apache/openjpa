@@ -20,7 +20,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.schema.Sequence;
 
 /**
@@ -34,7 +33,7 @@ public class DB2Dictionary
         validationSQL = "SELECT DISTINCT(CURRENT TIMESTAMP) FROM "
             + "SYSIBM.SYSTABLES";
         supportsSelectEndIndex = true;
-        optimizeClause ="optimize for";
+
         nextSequenceQuery = "VALUES NEXTVAL FOR {0}";
 
         sequenceSQL = "SELECT SEQSCHEMA AS SEQUENCE_SCHEMA, "
@@ -191,20 +190,5 @@ public class DB2Dictionary
                 }
             }
     	}
-    }
-
-    public String getOptimizeClause(JDBCFetchConfiguration fetch) {
-        Integer rows = null;
-        StringBuffer optimizeString = new StringBuffer();
-        if (fetch.getHint("openjpa.hint.optimize") != null) {
-            rows = (Integer)fetch.getHint("openjpa.hint.optimize");
-            optimizeString.append(" ").append(optimizeClause).append(" ")
-                .append(rows).append(" ");
-            if (rows.intValue() > 1)
-                optimizeString.append(rowsClause).append(" ");
-            else
-                optimizeString.append(rowClause).append(" ");
-        }        
-        return optimizeString.toString();    
     }
 }
