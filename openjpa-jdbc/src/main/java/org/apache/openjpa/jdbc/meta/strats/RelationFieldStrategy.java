@@ -86,7 +86,7 @@ public class RelationFieldStrategy
             field.getValueInfo().assertNoSchemaComponents(field, !adapt);
             mapped.resolve(mapped.MODE_META | mapped.MODE_MAPPING);
 
-            if (!mapped.getDefiningMapping().isMapped())
+            if (!mapped.isMapped() || mapped.isSerialized())
                 throw new MetaDataException(_loc.get("mapped-by-unmapped",
                     field, mapped));
 

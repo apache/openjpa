@@ -243,6 +243,8 @@ public class ValueMetaDataImpl
         if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT
             || !isDeclaredTypePC()) // attach acts on declared type
             return CASCADE_NONE;
+        if (isEmbeddedPC())
+            return CASCADE_IMMEDIATE;
         return _attach;
     }
 
