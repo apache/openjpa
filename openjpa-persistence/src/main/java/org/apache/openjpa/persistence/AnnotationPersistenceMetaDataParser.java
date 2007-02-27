@@ -335,8 +335,8 @@ public class AnnotationPersistenceMetaDataParser
      * Parse persistence metadata for the given class.
      */
     public void parse(Class cls) {
-        if (_log.isInfoEnabled())
-            _log.info(_loc.get("parse-class", cls.getName()));
+        if (_log.isTraceEnabled())
+            _log.trace(_loc.get("parse-class", cls.getName()));
 
         _cls = cls;
         try {
@@ -369,8 +369,8 @@ public class AnnotationPersistenceMetaDataParser
             return;
 
         int pkgMode = getSourceMode(pkg);
-        if (pkgMode == 0 && _log.isInfoEnabled())
-            _log.info(_loc.get("parse-package", _cls.getName()));
+        if (pkgMode == 0 && _log.isTraceEnabled())
+            _log.trace(_loc.get("parse-package", _cls.getName()));
         if ((pkgMode & _mode) == _mode) // already visited
             return;
 
@@ -1440,8 +1440,8 @@ public class AnnotationPersistenceMetaDataParser
         if (StringUtils.isEmpty(name))
             throw new MetaDataException(_loc.get("no-seq-name", el));
 
-        if (_log.isInfoEnabled())
-            _log.info(_loc.get("parse-sequence", name));
+        if (_log.isTraceEnabled())
+            _log.trace(_loc.get("parse-sequence", name));
 
         SequenceMetaData meta = getRepository().getCachedSequenceMetaData
             (name);
@@ -1495,8 +1495,8 @@ public class AnnotationPersistenceMetaDataParser
                 throw new MetaDataException(_loc.get("no-query-string",
                     query.name(), el));
 
-            if (_log.isInfoEnabled())
-                _log.info(_loc.get("parse-query", query.name()));
+            if (_log.isTraceEnabled())
+                _log.trace(_loc.get("parse-query", query.name()));
 
             meta = getRepository().getCachedQueryMetaData(null, query.name());
             if (meta != null) {
@@ -1536,8 +1536,8 @@ public class AnnotationPersistenceMetaDataParser
                 throw new MetaDataException(_loc.get("no-native-query-string",
                     query.name(), el));
 
-            if (_log.isInfoEnabled())
-                _log.info(_loc.get("parse-native-query", query.name()));
+            if (_log.isTraceEnabled())
+                _log.trace(_loc.get("parse-native-query", query.name()));
 
             meta = getRepository().getCachedQueryMetaData(null, query.name());
             if (meta != null) {

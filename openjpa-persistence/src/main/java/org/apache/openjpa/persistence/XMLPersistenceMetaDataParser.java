@@ -727,8 +727,8 @@ public class XMLPersistenceMetaDataParser
         }
 
         Log log = getLog();
-        if (log.isInfoEnabled())
-            log.info(_loc.get("parse-class", _cls.getName()));
+        if (log.isTraceEnabled())
+            log.trace(_loc.get("parse-class", _cls.getName()));
 
         MetaDataRepository repos = getRepository();
         ClassMetaData meta = repos.getCachedMetaData(_cls);
@@ -853,8 +853,8 @@ public class XMLPersistenceMetaDataParser
 
         String name = attrs.getValue("name");
         Log log = getLog();
-        if (log.isInfoEnabled())
-            log.info(_loc.get("parse-sequence", name));
+        if (log.isTraceEnabled())
+            log.trace(_loc.get("parse-sequence", name));
 
         SequenceMetaData meta = getRepository().getCachedSequenceMetaData(name);
         if (meta != null && log.isWarnEnabled())
@@ -1373,8 +1373,8 @@ public class XMLPersistenceMetaDataParser
 
         String name = attrs.getValue("name");
         Log log = getLog();
-        if (log.isInfoEnabled())
-            log.info(_loc.get("parse-query", name));
+        if (log.isTraceEnabled())
+            log.trace(_loc.get("parse-query", name));
 
         QueryMetaData meta = getRepository().getCachedQueryMetaData(null, name);
         if (meta != null && log.isWarnEnabled())
@@ -1439,8 +1439,8 @@ public class XMLPersistenceMetaDataParser
 
         String name = attrs.getValue("name");
         Log log = getLog();
-        if (log.isInfoEnabled())
-            log.info(_loc.get("parse-native-query", name));
+        if (log.isTraceEnabled())
+            log.trace(_loc.get("parse-native-query", name));
 
         QueryMetaData meta = getRepository().getCachedQueryMetaData(null, name);
         if (meta != null && log.isWarnEnabled())

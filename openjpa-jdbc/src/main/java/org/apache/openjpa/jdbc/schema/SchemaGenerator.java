@@ -450,8 +450,8 @@ public class SchemaGenerator {
         throws SQLException {
         fireGenerationEvent(_loc.get("generating-columns", schemaName,
             tableName));
-        if (_log.isInfoEnabled())
-            _log.info(_loc.get("gen-tables", schemaName, tableName));
+        if (_log.isTraceEnabled())
+            _log.trace(_loc.get("gen-tables", schemaName, tableName));
 
         Column[] cols = _dict.getColumns(meta, conn.getCatalog(), schemaName,
             tableName, null, conn);
@@ -813,8 +813,8 @@ public class SchemaGenerator {
         Connection conn, DatabaseMetaData meta)
         throws SQLException {
         fireGenerationEvent(_loc.get("generating-sequences", schemaName));
-        if (_log.isInfoEnabled())
-            _log.info(_loc.get("gen-seqs", schemaName, sequenceName));
+        if (_log.isTraceEnabled())
+            _log.trace(_loc.get("gen-seqs", schemaName, sequenceName));
 
         Sequence[] seqs = _dict.getSequences(meta, conn.getCatalog(),
             schemaName, sequenceName, conn);

@@ -326,15 +326,15 @@ public abstract class XMLMetaDataParser extends DefaultHandler
      */
     protected void parseNewResource(Reader xml, String sourceName)
         throws IOException {
-        if (_log != null && _log.isInfoEnabled())
-            _log.info(_loc.get("start-parse", sourceName));
+        if (_log != null && _log.isTraceEnabled())
+            _log.trace(_loc.get("start-parse", sourceName));
 
         // even if we want to validate, specify that it won't happen
         // if we have neither a DocType not a Schema
         Object schemaSource = getSchemaSource();
         if (schemaSource != null && _schemaBug) {
-            if (_log != null && _log.isInfoEnabled())
-                _log.info(_loc.get("parser-schema-bug"));
+            if (_log != null && _log.isTraceEnabled())
+                _log.trace(_loc.get("parser-schema-bug"));
             schemaSource = null;
         }
         boolean validating = _validating && (getDocType() != null 
