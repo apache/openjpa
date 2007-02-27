@@ -184,9 +184,6 @@ public class DBDictionary
     public String crossJoinClause = "CROSS JOIN";
     public boolean requiresConditionForCrossJoin = false;
     public String forUpdateClause = "FOR UPDATE";
-    public String optimizeClause = null;
-    public String rowClause = "row";
-    public String rowsClause = "rows";
     public String tableForUpdateClause = null;
     public String distinctCountColumnSeparator = null;
     public boolean supportsSelectForUpdate = true;
@@ -2146,22 +2143,10 @@ public class DBDictionary
         SQLBuffer from, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
         boolean distinct, boolean forUpdate, long start, long end) {
-    	
-        String optimizeString = null;
-        SQLBuffer selString = toOperation(getSelectOperation(fetch), 
-            selects, from, where,
+        return toOperation(getSelectOperation(fetch), selects, from, where,
             group, having, order, distinct, forUpdate, start, end);
-        if (fetch != null)
-            optimizeString = getOptimizeClause(fetch);
-        if (optimizeString != null)
-            selString.append(optimizeString);
-        return selString;    	
     }
 
-    public String getOptimizeClause(JDBCFetchConfiguration fetch) {
-        return null;    	
-    }
-    
     /**
      * Return the "SELECT" operation clause, adding any available hints, etc.
      */
