@@ -92,9 +92,10 @@ public class ObjectValue extends Value {
         ClassLoader cl = (ClassLoader) _classloaderCache.get(type);
         if (cl == null) {
             cl = type.getClassLoader();
-            if (cl != null) {  // System classloader is returned as null
-                _classloaderCache.put(type, cl);
+            if (cl == null) {  // System classloader is returned as null
+                cl = ClassLoader.getSystemClassLoader();
             }
+            _classloaderCache.put(type, cl);
         }
         return Configurations.newInstance(clsName, this, conf, cl, fatal);
     }
