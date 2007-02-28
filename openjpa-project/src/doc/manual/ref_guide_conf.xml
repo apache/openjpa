@@ -585,7 +585,7 @@ BrokerImpl</literal>
 <xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../javadoc/org/apache/openjpa/kernel/Broker.html"><classname>
 org.apache.openjpa.kernel.Broker</classname></ulink> type to use at runtime. See
-<xref linkend="ref_guide_runtime_pmextension"/> on for details.
+<xref linkend="ref_guide_runtime_broker_extension"/> on for details.
             </para>
         </section>
         <section id="openjpa.ClassResolver">

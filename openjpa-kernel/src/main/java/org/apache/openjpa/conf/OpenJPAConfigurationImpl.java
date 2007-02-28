@@ -71,7 +71,7 @@ public class OpenJPAConfigurationImpl
 
     // openjpa properties
     public ObjectValue classResolverPlugin;
-    public ObjectValue brokerPlugin;
+    public BrokerValue brokerPlugin;
     public ObjectValue dataCachePlugin;
     public ObjectValue dataCacheManagerPlugin;
     public IntValue dataCacheTimeout;
@@ -178,11 +178,8 @@ public class OpenJPAConfigurationImpl
         brokerFactoryPlugin = new BrokerFactoryValue();
         addValue(brokerFactoryPlugin);
 
-        brokerPlugin = addPlugin("BrokerImpl", false);
-        aliases = new String[] { "default", BrokerImpl.class.getName() };
-        brokerPlugin.setAliases(aliases);
-        brokerPlugin.setDefault(aliases[0]);
-        brokerPlugin.setString(aliases[0]);
+        brokerPlugin = new BrokerValue("BrokerImpl");
+        addValue(brokerPlugin);
 
         dataCacheManagerPlugin = addPlugin("DataCacheManager", true);
         aliases =
