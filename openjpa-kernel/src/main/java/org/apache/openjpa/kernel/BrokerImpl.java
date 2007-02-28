@@ -96,7 +96,7 @@ import org.apache.openjpa.util.UserException;
  * @author Abe White
  */
 public class BrokerImpl
-    implements Broker, FindCallbacks {
+    implements Broker, FindCallbacks, Cloneable {
 
     /**
      * Incremental flush.
@@ -155,14 +155,13 @@ public class BrokerImpl
     private ManagedRuntime _runtime = null;
     private LockManager _lm = null;
     private InverseManager _im = null;
-    private final JCAHelper _jca = new JCAHelper();
+    private JCAHelper _jca = null;
     private ReentrantLock _lock = null;
     private OpCallbacks _call = null;
     private RuntimeExceptionTranslator _extrans = null;
 
     // cache class loader associated with the broker
-    private ClassLoader _loader = Thread.currentThread().
-        getContextClassLoader();
+    private ClassLoader _loader = null;
 
     // user state
     private Synchronization _sync = null;
@@ -225,6 +224,8 @@ public class BrokerImpl
     private LifecycleEventManager _lifeEventManager = null;
     private int _lifeCallbackMode = 0;
 
+    private boolean _initializeWasInvoked = false;
+    
     /**
      * Set the persistence manager's authentication. This is the first
      * method called after construction.
@@ -251,6 +252,9 @@ public class BrokerImpl
      */
     public void initialize(AbstractBrokerFactory factory,
         DelegatingStoreManager sm, boolean managed, int connMode) {
+        _initializeWasInvoked = true;
+        _loader = Thread.currentThread().getContextClassLoader();
+        _jca = new JCAHelper();
         _conf = factory.getConfiguration();
         _compat = _conf.getCompatibilityInstance();
         _factory = factory;
@@ -295,14 +299,13 @@ public class BrokerImpl
             beginInternal();
     }
 
-    /**
-     * Close on finalize.
-     */
-    protected void finalize()
-        throws Throwable {
-        super.finalize();
-        if (!isClosed())
-            free();
+    public Object clone()
+        throws CloneNotSupportedException {
+        if (_initializeWasInvoked)
+            throw new CloneNotSupportedException();
+        else {
+            return super.clone();
+        }
     }
 
     /**

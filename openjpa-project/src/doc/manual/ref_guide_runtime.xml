@@ -103,11 +103,37 @@ allows you to convert between <classname>EntityManagerFactories</classname> and
 <classname>BrokerFactories</classname>, <classname>EntityManager</classname>s
 and <classname>Broker</classname>s.
         </para>
-        <section id="ref_guide_runtime_pmextension">
+        <section id="ref_guide_runtime_broker_finalization">
             <title>
-                Broker Customization
+                Broker Finalization
             </title>
-            <indexterm zone="ref_guide_runtime_pmextension">
+            <indexterm zone="ref_guide_runtime_broker_finalization">
+                <primary>
+                    EntityManager
+                </primary>
+                <secondary>
+                    finalizing
+                </secondary>
+                <secondary>
+                    clean-up
+                </secondary>
+            </indexterm>
+            <para>
+The default OpenJPAEntityManager implementation automatically closes itself 
+during instance finalization. This guards against accidental resource leaks
+that may occur if a developer fails to explicitly close EntityManagers when
+finished with them, but it also incurs a scalability bottleneck, since the 
+JVM must perform synchronization during instance creation, and since the 
+finalizer thread will have more instances to monitor. To avoid this overhead,
+set the <link linkend="openjpa.BrokerImpl"><literal>openjpa.BrokerImpl</literal>
+</link> configuration property to <literal>non-finalizing</literal>.
+            </para>
+        </section>
+        <section id="ref_guide_runtime_broker_extension">
+            <title>
+                Broker Customization and Finalization
+            </title>
+            <indexterm zone="ref_guide_runtime_broker_extension">
                 <primary>
                     OpenJPAEntityManager
                 </primary>
@@ -116,17 +142,8 @@ and <classname>Broker</classname>s.
                 </secondary>
             </indexterm>
             <para>
-Some advanced users may want to add capabilities to OpenJPA's internal
-<ulink url="../javadoc/org/apache/openjpa/kernel/BrokerImpl.html"><classname>
-org.apache.openjpa.kernel.BrokerImpl</classname></ulink>. You can configure
-OpenJPA to use a custom subclass of <classname>BrokerImpl</classname> through
-the <link linkend="openjpa.BrokerImpl"><literal>openjpa.BrokerImpl</literal>
-</link> configuration property. Set this property to the full class name of your
-custom subclass.
-            </para>
-            <para>
-As a <link linkend="ref_guide_conf_plugins">plugin string</link>, you can also
-use this property to configure the <classname> BrokerImpl</classname> with the
+As a <link linkend="ref_guide_conf_plugins">plugin string</link>, this property
+can be used to configure the <classname> BrokerImpl</classname> with the
 following properties:
             </para>
             <itemizedlist>
@@ -147,6 +164,22 @@ Defaults to <literal>false</literal>.
 &lt;property name="openjpa.BrokerImpl" value="EvictFromDataCache=true"/&gt;
 </programlisting>
             </example>
+            <para>
+Additionally, some advanced users may want to add capabilities to OpenJPA's
+internal <ulink url="../javadoc/org/apache/openjpa/kernel/BrokerImpl.html">
+<classname>org.apache.openjpa.kernel.BrokerImpl</classname></ulink>. You can 
+configure OpenJPA to use a custom subclass of <classname>BrokerImpl</classname> 
+with the <link linkend="openjpa.BrokerImpl"><literal>openjpa.BrokerImpl
+</literal></link> configuration property. Set this property to the full class 
+name of your custom subclass. When implementing your subclass, consider the
+finalization issues mentioned in 
+<link linkend="ref_guide_runtime_broker_finalization"/>. It may be appropriate
+to create a subtype of both 
+<ulink url="../javadoc/org/apache/openjpa/kernel/BrokerImpl.html">
+<classname>org.apache.openjpa.kernel.BrokerImpl</classname></ulink> and
+<ulink url="../javadoc/org/apache/openjpa/kernel/FinalizingBrokerImpl.html">
+<classname>org.apache.openjpa.kernel.FinalizingBrokerImpl</classname></ulink>.
+            </para>
         </section>
     </section>
     <section id="ref_guide_runtime_jpa">
