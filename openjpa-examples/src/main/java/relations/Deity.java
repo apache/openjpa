@@ -105,7 +105,7 @@ public class Deity implements Serializable {
     /** 
      * She's having a baby... 
      *  
-     * @param  firstName  the baby name
+     * @param  childName  the baby name
      * @return the new child
      *
      * @throws IllegalArgumentException if the person is not a woman, or
