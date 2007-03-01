@@ -119,14 +119,16 @@ and <classname>Broker</classname>s.
                 </secondary>
             </indexterm>
             <para>
-The default OpenJPAEntityManager implementation automatically closes itself 
-during instance finalization. This guards against accidental resource leaks
-that may occur if a developer fails to explicitly close EntityManagers when
-finished with them, but it also incurs a scalability bottleneck, since the 
-JVM must perform synchronization during instance creation, and since the 
-finalizer thread will have more instances to monitor. To avoid this overhead,
-set the <link linkend="openjpa.BrokerImpl"><literal>openjpa.BrokerImpl</literal>
-</link> configuration property to <literal>non-finalizing</literal>.
+Outside of a Java EE 5 application server or other JPA persistence container
+environment, the default OpenJPAEntityManager implementation automatically
+closes itself during instance finalization. This guards against accidental
+resource leaks that may occur if a developer fails to explicitly close
+EntityManagers when finished with them, but it also incurs a scalability
+bottleneck, since the JVM must perform synchronization during instance creation,
+and since the finalizer thread will have more instances to monitor. To avoid
+this overhead, set the
+<link linkend="openjpa.BrokerImpl"><literal>openjpa.BrokerImpl</literal></link>
+configuration property to <literal>non-finalizing</literal>.
             </para>
         </section>
         <section id="ref_guide_runtime_broker_extension">
