@@ -572,10 +572,9 @@ qcache.evict (q);
             <para>
 When using one of OpenJPA's distributed cache implementations, it is necessary
 to perform this in every JVM - the change notification is not propagated
-automatically. When using a coherent cache implementation such as OpenJPA's
-Tangosol cache implementation, it is not necessary to do this in every JVM
-(although it won't hurt to do so), as the cache results are stored directly in
-the coherent cache.
+automatically. When using a third-party coherent caching solution,
+it is not necessary to do this in every JVM (although it won't hurt to do so),
+as the cache results are stored directly in the coherent cache.
             </para>
             <para>
 Queries can also be pinned and unpinned through the <classname>
