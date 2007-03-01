@@ -178,7 +178,7 @@ public class OpenJPAConfigurationImpl
         brokerFactoryPlugin = new BrokerFactoryValue();
         addValue(brokerFactoryPlugin);
 
-        brokerPlugin = new BrokerValue("BrokerImpl");
+        brokerPlugin = new BrokerValue();
         addValue(brokerPlugin);
 
         dataCacheManagerPlugin = addPlugin("DataCacheManager", true);
