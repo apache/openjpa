@@ -28,6 +28,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
+import org.apache.openjpa.conf.BrokerValue;
 import org.apache.openjpa.enhance.PCClassFileTransformer;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.BrokerFactory;
@@ -82,6 +83,15 @@ public class PersistenceProviderImpl
         PersistenceUnitInfo pui, Map m) {
         PersistenceProductDerivation pd = new PersistenceProductDerivation();
         try {
+            // if the BrokerImpl hasn't been specified, switch to the
+            // non-finalizing one, since anything claiming to be a container
+            // should be doing proper resource management.
+            if (!Configurations.containsProperty(BrokerValue.KEY,
+                pui.getProperties())
+                && !Configurations.containsProperty(BrokerValue.KEY, m)) {
+                m.put(BrokerValue.KEY, BrokerValue.NON_FINALIZING_ALIAS);
+            }
+
             ConfigurationProvider cp = pd.load(pui, m);
             if (cp == null)
                 return null;

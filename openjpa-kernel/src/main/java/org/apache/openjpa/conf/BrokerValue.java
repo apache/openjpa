@@ -15,13 +15,17 @@ import org.apache.openjpa.util.InternalException;
 public class BrokerValue 
     extends PluginValue {
 
+    public static final String KEY = "BrokerImpl";
+    public static final String NON_FINALIZING_ALIAS = "non-finalizing";
+    public static final String DEFAULT_ALIAS = "default";
+
     private BrokerImpl _templateBroker;
 
-    public BrokerValue(String prop) {
-        super(prop, false);
+    public BrokerValue() {
+        super(KEY, false);
         String[] aliases = new String[] {
-            "default", FinalizingBrokerImpl.class.getName(),
-            "non-finalizing", BrokerImpl.class.getName(), 
+            DEFAULT_ALIAS, FinalizingBrokerImpl.class.getName(),
+            NON_FINALIZING_ALIAS, BrokerImpl.class.getName(), 
         };
         setAliases(aliases);
         setDefault(aliases[0]);
