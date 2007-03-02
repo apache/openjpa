@@ -83,15 +83,6 @@ public class PersistenceProviderImpl
         PersistenceUnitInfo pui, Map m) {
         PersistenceProductDerivation pd = new PersistenceProductDerivation();
         try {
-            // if the BrokerImpl hasn't been specified, switch to the
-            // non-finalizing one, since anything claiming to be a container
-            // should be doing proper resource management.
-            if (!Configurations.containsProperty(BrokerValue.KEY,
-                pui.getProperties())
-                && !Configurations.containsProperty(BrokerValue.KEY, m)) {
-                m.put(BrokerValue.KEY, BrokerValue.NON_FINALIZING_ALIAS);
-            }
-
             ConfigurationProvider cp = pd.load(pui, m);
             if (cp == null)
                 return null;
@@ -101,6 +92,15 @@ public class PersistenceProviderImpl
                 (CLASS_TRANSFORMER_OPTIONS, pui.getProperties());
             pui.addTransformer(new ClassTransformerImpl(cp, ctOpts, 
                 pui.getNewTempClassLoader()));
+
+            // if the BrokerImpl hasn't been specified, switch to the
+            // non-finalizing one, since anything claiming to be a container
+            // should be doing proper resource management.
+            if (!Configurations.containsProperty(BrokerValue.KEY,
+                cp.getProperties())) {
+                cp.addProperty("openjpa." + BrokerValue.KEY, 
+                    BrokerValue.NON_FINALIZING_ALIAS);
+            }
 
             BrokerFactory factory = Bootstrap.newBrokerFactory(cp, 
                 pui.getClassLoader());
