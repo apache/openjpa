@@ -38,7 +38,7 @@ class JDBCRelatedFieldOrder
 
     public JDBCRelatedFieldOrder(FieldMapping owner, FieldMapping rel,
         boolean asc) {
-        if (!rel.isInDefaultFetchGroup())
+        if (!rel.isInDefaultFetchGroup() && !rel.isPrimaryKey())
             throw new MetaDataException(_loc.get("nondfg-field-orderable",
                 owner, rel.getName()));
 
