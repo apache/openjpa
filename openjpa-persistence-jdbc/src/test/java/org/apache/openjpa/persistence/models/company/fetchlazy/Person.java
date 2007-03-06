@@ -19,7 +19,6 @@ import javax.persistence.*;
 import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="LAZ_Person")
-@Table(name="LAZ_Person") // OPENJPA-121
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public abstract class Person implements IPerson {
     private static long idCounter = System.currentTimeMillis();

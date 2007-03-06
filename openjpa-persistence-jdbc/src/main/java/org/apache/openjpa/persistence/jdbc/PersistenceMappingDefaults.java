@@ -114,7 +114,11 @@ public class PersistenceMappingDefaults
 
     @Override
     public String getTableName(ClassMapping cls, Schema schema) {
-        return Strings.getClassName(cls.getDescribedType()).replace('$', '_');
+        if (cls.getTypeAlias() != null)
+            return cls.getTypeAlias();
+        else
+            return Strings.getClassName(
+                cls.getDescribedType()).replace('$', '_');
     }
 
     @Override

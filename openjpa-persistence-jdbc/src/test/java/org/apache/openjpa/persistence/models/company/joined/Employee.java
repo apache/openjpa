@@ -20,7 +20,6 @@ import javax.persistence.*;
 import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="JI_Employee")
-@Table(name="JI_Employee") // OPENJPA-121
 @Inheritance(strategy=InheritanceType.JOINED)
 public abstract class Employee extends Person implements IEmployee {
     @OneToOne

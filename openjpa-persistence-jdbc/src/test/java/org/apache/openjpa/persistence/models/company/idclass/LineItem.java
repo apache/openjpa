@@ -19,7 +19,6 @@ import javax.persistence.*;
 import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="IDC_LineItem")
-@Table(name="IDC_LineItem") // OPENJPA-121
 public class LineItem implements ILineItem {
     private static int ids = 1;
 
