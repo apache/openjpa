@@ -19,7 +19,6 @@ import javax.persistence.*;
 import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="JI_FullTimeEmployee")
-@Table(name="JI_FullTimeEmployee") // OPENJPA-121
 @Inheritance(strategy=InheritanceType.JOINED)
 public class FullTimeEmployee extends Employee
     implements IFullTimeEmployee {

@@ -24,6 +24,7 @@ import javax.persistence.Query;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.apache.openjpa.persistence.simple.NamedEntity;
 
 /**
  * Test that we can query by an entity's abstract schema name.

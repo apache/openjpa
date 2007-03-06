@@ -19,7 +19,6 @@ import javax.persistence.*;
 import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="IDC_Person")
-@Table(name="IDC_Person") // OPENJPA-121
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public abstract class Person implements IPerson {
     private static int ids = 1;

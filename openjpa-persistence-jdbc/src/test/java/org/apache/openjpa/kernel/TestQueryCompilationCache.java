@@ -26,7 +26,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
-import org.apache.openjpa.persistence.query.NamedEntity;
+import org.apache.openjpa.persistence.simple.NamedEntity;
 
 import junit.framework.TestCase;
 
@@ -53,7 +53,7 @@ public class TestQueryCompilationCache
         
         // dig into the entry and check its internal state
         Compilation comp = (Compilation) cache.values().iterator().next();
-        assertEquals(NamedEntity.class, 
+        assertEquals(NamedEntity.class,
             ((ParsedJPQL) comp.storeData).getCandidateType());
         
         emf.close();

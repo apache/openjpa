@@ -20,7 +20,6 @@ import javax.persistence.*;
 import org.apache.openjpa.persistence.models.company.*;
 
 @Entity(name="IDC_Product")
-@Table(name="IDC_Product") // OPENJPA-121
 public class Product implements IProduct {
     private static int ids = 1;
 

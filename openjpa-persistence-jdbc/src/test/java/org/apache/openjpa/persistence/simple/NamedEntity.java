@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.openjpa.persistence.query;
+package org.apache.openjpa.persistence.simple;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
