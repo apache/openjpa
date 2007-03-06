@@ -101,6 +101,9 @@ public class MySQLDictionary
             "LOAD", "MEDIUMINT", "OPTION", "OUTFILE", "REPLACE",
             "SET", "STARTING", "TEXT", "UNSIGNED", "ZEROFILL",
         }));
+
+        // MySQL requires double-escape for strings
+        searchStringEscape = "\\\\";
     }
 
     public String[] getCreateTableSQL(Table table) {
