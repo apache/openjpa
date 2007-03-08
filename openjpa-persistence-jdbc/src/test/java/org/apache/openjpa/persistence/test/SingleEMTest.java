@@ -65,6 +65,16 @@ public abstract class SingleEMTest extends TestCase {
 
             props.put("openjpa.MetaDataFactory", "jpa(Types=" + str + ")");
         }
+
+        if (clearDatabaseInSetUp()) {
+            props.put("openjpa.jdbc.SynchronizeMappings",
+                "buildSchema(ForeignKeys=true," +
+                    "SchemaAction='add,deleteTableContents')");
+        }
+    }
+
+    protected boolean clearDatabaseInSetUp() {
+        return false;
     }
 
     public void setUp() throws Exception {
