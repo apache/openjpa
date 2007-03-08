@@ -20,6 +20,8 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Entity;
 
+import org.apache.openjpa.persistence.PersistentCollection;
+
 @Entity
 public class AllFieldTypes {
 
@@ -35,6 +37,9 @@ public class AllFieldTypes {
     private Date dateField;
     private Set<String> setOfStrings = new HashSet<String>();
     private String[] arrayOfStrings;
+
+    @PersistentCollection
+    private int[] arrayOfInts;
 
     public void setShortField(short shortField) {
         this.shortField = shortField;
@@ -130,6 +135,14 @@ public class AllFieldTypes {
 
     public String[] getArrayOfStrings() {
         return this.arrayOfStrings;
+    }
+
+    public void setArrayOfInts(int[] arrayOfInts) {
+        this.arrayOfInts = arrayOfInts;
+    }
+
+    public int[] getArrayOfInts() {
+        return arrayOfInts;
     }
 }
 

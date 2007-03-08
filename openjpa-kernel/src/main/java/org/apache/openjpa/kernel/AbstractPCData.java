@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -45,6 +44,7 @@ public abstract class AbstractPCData
     implements PCData {
 
     public static final Object NULL = new Object();
+    private static final Object[] EMPTY_ARRAY = new Object[0];
 
     /**
      * Return the loaded field mask.
@@ -97,12 +97,16 @@ public abstract class AbstractPCData
                 }
                 return m2;
             case JavaTypes.ARRAY:
-                List l = (List) data;
+                int length = Array.getLength(data);
                 Object a = Array.newInstance(fmd.getElement().getDeclaredType(),
-                    l.size());
-                for (int i = 0; i < l.size(); i++) {
-                    Array.set(a, i, toNestedField(sm, fmd.getElement(),
-                        l.get(i), fetch, context));
+                    length);
+                if (isImmutableType(fmd.getElement())) {
+                    System.arraycopy(data, 0, a, 0, length);
+                } else {
+                    for (int i = 0; i < length; i++) {
+                        Array.set(a, i, toNestedField(sm, fmd.getElement(),
+                            Array.get(data, i), fetch, context));
+                    }
                 }
                 return a;
             default:
@@ -220,19 +224,50 @@ public abstract class AbstractPCData
                 Object a = val;
                 int length = Array.getLength(a);
                 if (length == 0)
-                    return Collections.EMPTY_LIST;
-                List l = null;
-                for (int i = 0; i < length; i++) {
-                    val = toNestedData(fmd.getElement(), Array.get(a, i), ctx);
-                    if (val == NULL)
-                        return NULL;
-                    if (l == null)
-                        l = new ArrayList(length);
-                    l.add(val);
+                    return EMPTY_ARRAY;
+
+                Object dataArray = Array.newInstance(
+                    fmd.getElement().getDeclaredType(), length);
+                if (isImmutableType(fmd.getElement())) {
+                    System.arraycopy(a, 0, dataArray, 0, length);
+                } else {
+                    for (int i = 0; i < length; i++) {
+                        val = toNestedData(fmd.getElement(), Array.get(a, i),
+                            ctx);
+                        Array.set(dataArray, i, val);
+                    }
                 }
-                return l;
+                return dataArray;
             default:
                 return toNestedData(fmd, val, ctx);
+        }
+    }
+
+    private boolean isImmutableType(ValueMetaData element) {
+        switch (element.getDeclaredTypeCode()) {
+            case JavaTypes.BOOLEAN:
+            case JavaTypes.BYTE:
+            case JavaTypes.CHAR:
+            case JavaTypes.DOUBLE:
+            case JavaTypes.FLOAT:
+            case JavaTypes.INT:
+            case JavaTypes.LONG:
+            case JavaTypes.SHORT:
+            case JavaTypes.STRING:
+            case JavaTypes.NUMBER:
+            case JavaTypes.BOOLEAN_OBJ:
+            case JavaTypes.BYTE_OBJ:
+            case JavaTypes.CHAR_OBJ:
+            case JavaTypes.DOUBLE_OBJ:
+            case JavaTypes.FLOAT_OBJ:
+            case JavaTypes.INT_OBJ:
+            case JavaTypes.LONG_OBJ:
+            case JavaTypes.SHORT_OBJ:
+            case JavaTypes.BIGDECIMAL:
+            case JavaTypes.BIGINTEGER:
+                return true;
+            default:
+                return false;
         }
     }
 

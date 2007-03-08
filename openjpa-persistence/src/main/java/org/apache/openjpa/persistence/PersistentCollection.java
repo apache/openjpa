@@ -24,7 +24,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 
 /**
- * Metadata annotation for a persistent collection field.
+ * Metadata annotation for a persistent collection field. This should be
+ * used to annotate array field types as well as fields of type
+ * {@link java.util.Collection}.
  *
  * @author Abe White
  * @since 0.4.0
