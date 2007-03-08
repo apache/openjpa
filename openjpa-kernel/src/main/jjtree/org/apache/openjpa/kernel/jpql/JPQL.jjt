@@ -248,7 +248,6 @@ TOKEN : /* literals */
 		| ((["0"-"9"])+ ".") (<EXPONENT>)? (["f","F","d","D"])?
 		| ((["0"-"9"])+) (<EXPONENT>) (["f","F","d","D"])?
 		| ((["0"-"9"])+) (<EXPONENT>)? (["f","F","d","D"])?) >
-	| < BOOLEAN_LITERAL: "TRUE" | "FALSE" | "true" | "false" >
 	| < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
 	| < STRING_LITERAL: "'"
 	  (("''" | ~["'"])
@@ -275,6 +274,11 @@ TOKEN : /* literals */
 	  )
 	  "'"
 	>
+}
+
+TOKEN [ IGNORE_CASE ]: /* boolean literals can be case-insensitive */
+{
+	< BOOLEAN_LITERAL: "TRUE" | "FALSE" >
 }
 
 /* From the Java 1.0.2 specification */
