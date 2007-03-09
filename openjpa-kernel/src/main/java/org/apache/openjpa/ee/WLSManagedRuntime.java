@@ -16,6 +16,7 @@
 package org.apache.openjpa.ee;
 
 import java.lang.reflect.Method;
+import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 /**
@@ -44,5 +45,35 @@ public class WLSManagedRuntime
         //	getTransactionManager ();
         Object o = _txHelperMeth.invoke(null, null);
         return (TransactionManager) _txManagerMeth.invoke(o, null);
+    }
+
+    public void setRollbackOnly(Throwable cause)
+        throws Exception {
+        Transaction transaction = getTransactionManager().getTransaction();
+        try {
+            // try to use reflection to call the setRollbackOnly(Throwable)
+            // method in weblogic.transaction.Transaction
+            transaction.getClass().
+                getMethod("setRollbackOnly", new Class[] { Throwable.class }).
+                    invoke(transaction, new Object[] { cause });
+        } catch (Throwable e) {
+            // some problem occurred: fall back to the traditional call
+            transaction.setRollbackOnly();
+        }
+    }
+
+    public Throwable getRollbackCause()
+        throws Exception {
+        Transaction transaction = getTransactionManager().getTransaction();
+        try {
+            // try to use reflection to call the getRollbackReason()
+            // method in weblogic.transaction.Transaction
+            return (Throwable) transaction.getClass().
+                getMethod("getRollbackReason", new Class[0]).
+                    invoke(transaction, new Object[0]);
+        } catch (Throwable e) {
+            // some problem occurred: just return null
+            return null;
+        }
     }
 }

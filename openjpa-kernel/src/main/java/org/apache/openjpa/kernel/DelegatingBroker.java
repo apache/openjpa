@@ -906,6 +906,22 @@ public class DelegatingBroker
         }
     }
 
+    public void setRollbackOnly(Throwable cause) {
+        try {
+            _broker.setRollbackOnly(cause);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public Throwable getRollbackCause() {
+        try {
+            return _broker.getRollbackCause();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
     public boolean getRollbackOnly() {
         try {
             return _broker.getRollbackOnly();

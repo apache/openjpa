@@ -682,7 +682,7 @@ public class BrokerImpl
                 setNestedThrowables(exceps);
         if ((mode & CALLBACK_ROLLBACK) != 0 && (_flags & FLAG_ACTIVE) != 0) {
             ce.setFatal(true);
-            setRollbackOnlyInternal();
+            setRollbackOnlyInternal(ce);
         }
         if ((mode & CALLBACK_LOG) != 0 && _log.isWarnEnabled())
             _log.warn(ce);
@@ -1205,12 +1205,12 @@ public class BrokerImpl
         } catch (OpenJPAException ke) {
             // if we already started the transaction, don't let it commit
             if ((_flags & FLAG_ACTIVE) != 0)
-                setRollbackOnlyInternal();
+                setRollbackOnlyInternal(ke);
             throw ke.setFatal(true);
         } catch (RuntimeException re) {
             // if we already started the transaction, don't let it commit
             if ((_flags & FLAG_ACTIVE) != 0)
-                setRollbackOnlyInternal();
+                setRollbackOnlyInternal(re);
             throw new StoreException(re).setFatal(true);
         }
 
@@ -1408,11 +1408,38 @@ public class BrokerImpl
         }
     }
 
+    public Throwable getRollbackCause() {
+        beginOperation(true);
+        try {
+            if ((_flags & FLAG_ACTIVE) == 0)
+                return null;
+
+            javax.transaction.Transaction trans =
+                _runtime.getTransactionManager().getTransaction();
+            if (trans == null)
+                return null;
+            if (trans.getStatus() == Status.STATUS_MARKED_ROLLBACK)
+                return _runtime.getRollbackCause();
+
+            return null;
+        } catch (OpenJPAException ke) {
+            throw ke;
+        } catch (Exception e) {
+            throw new GeneralException(e);
+        } finally {
+            endOperation();
+        }
+    }
+
     public void setRollbackOnly() {
+        setRollbackOnly(new UserException());
+    }
+
+    public void setRollbackOnly(Throwable cause) {
         beginOperation(true);
         try {
             assertTransactionOperation();
-            setRollbackOnlyInternal();
+            setRollbackOnlyInternal(cause);
         } finally {
             endOperation();
         }
@@ -1421,13 +1448,13 @@ public class BrokerImpl
     /**
      * Mark the current transaction as rollback-only.
      */
-    private void setRollbackOnlyInternal() {
+    private void setRollbackOnlyInternal(Throwable cause) {
         try {
             javax.transaction.Transaction trans =
                 _runtime.getTransactionManager().getTransaction();
             if (trans == null)
                 throw new InvalidStateException(_loc.get("null-trans"));
-            trans.setRollbackOnly();
+            _runtime.setRollbackOnly(cause);
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (Exception e) {
@@ -1613,11 +1640,11 @@ public class BrokerImpl
                 _flags |= FLAG_FLUSHED;
             } catch (OpenJPAException ke) {
                 // rollback on flush error; objects may be in inconsistent state
-                setRollbackOnly();
+                setRollbackOnly(ke);
                 throw ke.setFatal(true);
             } catch (RuntimeException re) {
                 // rollback on flush error; objects may be in inconsistent state
-                setRollbackOnly();
+                setRollbackOnly(re);
                 throw new StoreException(re).setFatal(true);
             }
         }
@@ -3145,7 +3172,7 @@ public class BrokerImpl
             try {
                 return new AttachManager(this, copyNew, call).attach(obj);
             } catch (OptimisticException oe) {
-                setRollbackOnly();
+                setRollbackOnly(oe);
                 throw oe.setFatal(true);
             } catch (OpenJPAException ke) {
                 throw ke;
@@ -3172,7 +3199,7 @@ public class BrokerImpl
             try {
                 return new AttachManager(this, copyNew, call).attachAll(objs);
             } catch (OptimisticException oe) {
-                setRollbackOnly();
+                setRollbackOnly(oe);
                 throw oe.setFatal(true);
             } catch (OpenJPAException ke) {
                 throw ke;
@@ -3609,7 +3636,7 @@ public class BrokerImpl
             // transaction to complete before we have a chance to set the
             // rollback only flag
             if ((_flags & FLAG_STORE_FLUSHING) != 0)
-                setRollbackOnlyInternal();
+                setRollbackOnlyInternal(new UserException());
             return _store.cancelAll();
         } catch (OpenJPAException ke) {
             throw ke;
