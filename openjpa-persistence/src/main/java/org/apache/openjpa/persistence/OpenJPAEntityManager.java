@@ -408,6 +408,24 @@ public interface OpenJPAEntityManager
     public void setRollbackOnly();
 
     /**
+     * Mark the current transaction for rollback with the specified cause
+     * of the rollback.
+     *
+     * @since 0.9.7
+     */
+    public void setRollbackOnly(Throwable cause);
+
+    /** 
+     * Returns the Throwable that caused the transaction to be
+     * marked for rollback. 
+     *  
+     * @return the Throwable, or null if none was given
+     *
+     * @since 0.9.7
+     */
+    public Throwable getRollbackCause();
+
+    /**
      * Return whether the current transaction has been marked for rollback.
      */
     public boolean getRollbackOnly();

@@ -430,6 +430,14 @@ public class EntityManagerImpl
         _broker.rollbackAndResume();
     }
 
+    public Throwable getRollbackCause() {
+        if (!isActive())
+            throw new IllegalStateException(_loc.get("no-transaction")
+                .getMessage());
+
+        return _broker.getRollbackCause();
+    }
+
     public boolean getRollbackOnly() {
         if (!isActive())
             throw new IllegalStateException(_loc.get("no-transaction")
@@ -440,6 +448,10 @@ public class EntityManagerImpl
 
     public void setRollbackOnly() {
         _broker.setRollbackOnly();
+    }
+
+    public void setRollbackOnly(Throwable cause) {
+        _broker.setRollbackOnly(cause);
     }
 
     public void setSavepoint(String name) {

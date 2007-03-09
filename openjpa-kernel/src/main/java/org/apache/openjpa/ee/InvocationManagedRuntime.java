@@ -76,4 +76,16 @@ public class InvocationManagedRuntime
 
     public void endConfiguration() {
 	}
+
+    public void setRollbackOnly(Throwable cause)
+        throws Exception {
+        // there is no generic support for setting the rollback cause
+        getTransactionManager().getTransaction().setRollbackOnly();
+    }
+
+    public Throwable getRollbackCause()
+        throws Exception {
+        // there is no generic support for setting the rollback cause
+        return null;
+    }
 }

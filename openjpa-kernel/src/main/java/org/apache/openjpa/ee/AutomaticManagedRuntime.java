@@ -190,4 +190,26 @@ public class AutomaticManagedRuntime
 
     public void endConfiguration() {
     }
+
+    public void setRollbackOnly(Throwable cause)
+        throws Exception {
+        // check to see if the runtime is cached
+        if (_runtime == null)
+            getTransactionManager();
+
+        if (_runtime != null)
+            _runtime.setRollbackOnly(cause);
+    }
+
+    public Throwable getRollbackCause()
+        throws Exception {
+        // check to see if the runtime is cached
+        if (_runtime == null)
+            getTransactionManager();
+
+        if (_runtime != null)
+            return _runtime.getRollbackCause();
+
+        return null;
+    }
 }

@@ -33,4 +33,24 @@ public interface ManagedRuntime {
      */
     public TransactionManager getTransactionManager()
         throws Exception;
+
+    /** 
+     * Sets the rollback only flag on the current transaction. If the
+     * TransactionManager is capable of tracking the cause of the
+     * rollback-only flag, it will also pass along cause information.
+     *  
+     * @param  cause  the Throwable that caused the transaction to be
+     *                marked for rollback, or null of none is known
+     */
+    public void setRollbackOnly(Throwable cause)
+        throws Exception;
+
+    /** 
+     * Returns the Throwable that caused the current transaction to be
+     * marked for rollback, provided that any exists.
+     *
+     * @return the Throwable cause, or null if none
+     */
+    public Throwable getRollbackCause()
+        throws Exception;
 }
