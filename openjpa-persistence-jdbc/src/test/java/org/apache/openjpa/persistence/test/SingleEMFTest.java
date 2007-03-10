@@ -8,7 +8,6 @@ import javax.persistence.Persistence;
 import javax.persistence.EntityManager;
 
 import junit.framework.TestCase;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
