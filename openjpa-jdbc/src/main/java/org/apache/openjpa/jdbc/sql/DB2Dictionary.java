@@ -60,6 +60,8 @@ public class DB2Dictionary
         supportsAlterTableWithDropColumn = false;
 
         supportsNullTableForGetColumns = false;
+        requiresCastForMathFunctions = true;
+        requiresCastForComparisons = true;
 
         reservedWordSet.addAll(Arrays.asList(new String[]{
             "AFTER", "ALIAS", "ALLOW", "APPLICATION", "ASSOCIATE", "ASUTIME",
