@@ -588,7 +588,8 @@ public class ClassMetaData
     /**
      * Sets the alias for the described type. The alias can be
      * any arbitrary string that the implementation can later use to
-     * refer to the class.
+     * refer to the class. Note that at runtime, only the alias
+     * computed when the persistent type was enhanced is used.
      *
      * @param alias the alias name to apply to the described type
      */
