@@ -61,6 +61,7 @@ import static org.apache.openjpa.persistence.MetaDataTag.*;
 import static org.apache.openjpa.persistence.PersistenceStrategy.*;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.UnsupportedException;
+import serp.util.Strings;
 
 /**
  * Custom SAX parser used by the system to quickly parse persistence i
@@ -721,7 +722,8 @@ public class XMLPersistenceMetaDataParser
         // query mode only?
         _cls = classForName(currentClassName());
         if (_mode == MODE_QUERY) {
-            if (_parser != null && !"true".equals(attrs.getValue("metadata-complete")))
+            if (_parser != null &&
+                !"true".equals(attrs.getValue("metadata-complete")))
                 _parser.parse(_cls);
             return true;
         }
@@ -759,7 +761,8 @@ public class XMLPersistenceMetaDataParser
             meta.setSourceMode(MODE_NONE);
 
             // parse annotations first so XML overrides them
-            if (_parser != null && !"true".equals(attrs.getValue("metadata-complete")))
+            if (_parser != null &&
+                !"true".equals(attrs.getValue("metadata-complete")))
                 _parser.parse(_cls);
         }
 
@@ -768,6 +771,9 @@ public class XMLPersistenceMetaDataParser
             meta.setSource(getSourceFile(), meta.SRC_XML);
             meta.setSourceMode(MODE_META, true);
             meta.setListingIndex(_clsPos);
+            String name = attrs.getValue("name");
+            if (!StringUtils.isEmpty(name))
+                meta.setTypeAlias(name);
             meta.setEmbeddedOnly(mappedSuper || "embeddable".equals(elem));
             if (mappedSuper)
                 meta.setIdentityType(meta.ID_UNKNOWN);

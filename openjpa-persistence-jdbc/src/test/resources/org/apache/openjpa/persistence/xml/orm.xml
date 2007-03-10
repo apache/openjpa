@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd"
+    version="1.0">
+    <package>
+        org.apache.openjpa.persistence.xml
+    </package>
+    <entity name="SimpleXml" class="SimpleXmlEntity">
+        <named-query name="SimpleXml.findAll">
+            <query>select o from SimpleXml o</query>
+        </named-query>
+        <named-query name="SimpleXmlEntity.findAll">
+            <query>select o from SimpleXmlEntity o</query>
+        </named-query>
+        <attributes>
+            <id name="id"/>
+            <basic name="stringField"/>
+            <version name="version"/>
+        </attributes>
+    </entity>
+</entity-mappings>
