@@ -19,84 +19,31 @@ import java.util.*;
 
 import javax.persistence.*;
 
-import junit.framework.TestCase;
-import junit.textui.TestRunner;
-import org.apache.openjpa.persistence.*;
-
 /**
  * A base test case that can be used to easily test scenarios where there
  * is only a single EntityManager at any given time.
  *
  * @author Marc Prud'hommeaux
  */
-public abstract class SingleEMTest extends TestCase {
+public abstract class SingleEMTest extends SingleEMFTest {
 
-    protected EntityManagerFactory emf;
     protected EntityManager em;
-    protected Class[] classes;
 
     public SingleEMTest(Class... classes) {
-        this.classes = classes;
+        super(classes);
     }
 
-    /** 
-     * Can be overridden to return a list of classes that will be used
-     * for this test.
-     */
-    protected Class[] getClasses() { 
-        return classes;
-    }
-
-    /** 
-     * Modify the properties that are used to create the EntityManagerFactory.
-     * By default, this will set up the MetaDataFactory with the
-     * persistent classes for this test case. This method can be overridden
-     * to add more properties to the map.
-     */
-    protected void setEMFProps(Map props) {
-        // if we have specified a list of persistent classes to examine,
-        // then set it in the MetaDataFactory so that our automatic
-        // schema generation will work.
-        Class[] pclasses = getClasses();
-        if (pclasses != null) {
-            StringBuilder str = new StringBuilder();
-            for (Class c : pclasses)
-                str.append(str.length() > 0 ? ";" : "").append(c.getName());
-
-            props.put("openjpa.MetaDataFactory", "jpa(Types=" + str + ")");
-        }
-
-        if (clearDatabaseInSetUp()) {
-            props.put("openjpa.jdbc.SynchronizeMappings",
-                "buildSchema(ForeignKeys=true," +
-                    "SchemaAction='add,deleteTableContents')");
-        }
-    }
-
-    protected boolean clearDatabaseInSetUp() {
-        return false;
-    }
-
-    public void setUp() throws Exception {
-        Map props = new HashMap(System.getProperties());
-        setEMFProps(props);
-        emf = Persistence.createEntityManagerFactory("test", props);
-    }
-
-    /** 
+    /**
      * Rolls back the current transaction and closes the EntityManager. 
      */
+    @Override
     public void tearDown() throws Exception {
         rollback();
         close();
-        closeEMF();
+        super.tearDown();
     }
 
-    public EntityManagerFactory emf() {
-        return emf;
-    }
-
-    /** 
+    /**
      * Returns the current EntityManager, creating one from the
      * EntityManagerFactory if it doesn't already exist. 
      */
@@ -164,17 +111,10 @@ public abstract class SingleEMTest extends TestCase {
         return !em.isOpen();
     }
 
+    @Override
     public boolean closeEMF() {
-        if (emf == null)
-            return false;
-
         close();
-
-        if (!emf.isOpen())
-            return false;
-
-        emf.close();
-        return !emf.isOpen();
+        return super.closeEMF();
     }
 
     /** 
@@ -284,4 +224,3 @@ public abstract class SingleEMTest extends TestCase {
         return total;
     }
 }
-

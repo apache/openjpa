@@ -646,6 +646,14 @@ public abstract class AbstractBrokerFactory
     }
 
     /**
+     * Returns a set of all the open brokers associated with this factory. The
+     * returned set is unmodifiable, and may contain null references.
+     */
+    public Collection getOpenBrokers() {
+        return Collections.unmodifiableCollection(_brokers);
+    }
+
+    /**
      * Simple synchronization listener to remove completed transactions
      * from our cache.
      */
