@@ -100,6 +100,9 @@ public abstract class AbstractPCData
                 int length = Array.getLength(data);
                 Object a = Array.newInstance(fmd.getElement().getDeclaredType(),
                     length);
+                if (length == 0)
+                    return a;
+
                 if (isImmutableType(fmd.getElement())) {
                     System.arraycopy(data, 0, a, 0, length);
                 } else {
@@ -221,28 +224,32 @@ public abstract class AbstractPCData
                 }
                 return m2;
             case JavaTypes.ARRAY:
-                Object a = val;
-                int length = Array.getLength(a);
+                int length = Array.getLength(val);
                 if (length == 0)
                     return EMPTY_ARRAY;
 
-                Object dataArray = Array.newInstance(
-                    fmd.getElement().getDeclaredType(), length);
+                Object a;
                 if (isImmutableType(fmd.getElement())) {
-                    System.arraycopy(a, 0, dataArray, 0, length);
+                    a = Array.newInstance(fmd.getElement().getDeclaredType(), 
+                        length);
+                    System.arraycopy(val, 0, a, 0, length);
                 } else {
+                    Object[] data = new Object[length];
                     for (int i = 0; i < length; i++) {
-                        val = toNestedData(fmd.getElement(), Array.get(a, i),
-                            ctx);
-                        Array.set(dataArray, i, val);
+                        data[i] = toNestedData(fmd.getElement(), 
+                            Array.get(val, i), ctx);
                     }
+                    a = data;
                 }
-                return dataArray;
+                return a;
             default:
                 return toNestedData(fmd, val, ctx);
         }
     }
 
+    /**
+     * Return whether the declared type of the given value is immutable.
+     */
     private boolean isImmutableType(ValueMetaData element) {
         switch (element.getDeclaredTypeCode()) {
             case JavaTypes.BOOLEAN:

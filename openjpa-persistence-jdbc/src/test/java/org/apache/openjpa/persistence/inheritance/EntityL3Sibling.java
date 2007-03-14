@@ -15,24 +15,20 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.Entity;
 
-@MappedSuperclass
-public class MappedSuperclassBase {
+@Entity 
+public class EntityL3Sibling 
+    extends MappedSuperclassL2 {
 
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private long id;
+    private int siblingl3data;
 
-    public long getId() {
-        return id;
+    public int getSiblingL3Data() {
+        return siblingl3data;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setSiblingL3Data(int data) {
+        siblingl3data = data;
     }
 }
 
