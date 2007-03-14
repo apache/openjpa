@@ -233,6 +233,7 @@
                     <configuration>
                         <useFile>false</useFile>
                         <trimStackTrace>false</trimStackTrace>
+                        <useSystemClassLoader>true</useSystemClassLoader>
                     </configuration>
                 </plugin>
             </plugins>
