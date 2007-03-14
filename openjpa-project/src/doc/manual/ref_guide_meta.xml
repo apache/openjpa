@@ -569,9 +569,11 @@ Magazine.coverArticle</literal> field is marked dependent, then setting
 <literal>Magazine.coverArticle</literal> to a new <classname>Article</classname>
 instance will automatically delete the old <classname>Article</classname> stored
 in the field. Similarly, deleting a <classname>Magazine</classname> object will
-automatically delete its current cover <classname>Article</classname>. You can
-prevent an orphaned dependent object from being deleted by assigning it to
-another relation in the same transaction.
+automatically delete its current cover <classname>Article</classname>. (This
+latter processing is analogous to using JPA's CascadeType.REMOVE functionality
+as described in <xref linkend="jpa_overview_meta_cascade"/>.) You can
+prevent an orphaned dependent object from being automatically deleted by 
+assigning it to another relation in the same transaction.
                 </para>
                 <para>
 OpenJPA offers a family of marker annotations to denote dependent relations in

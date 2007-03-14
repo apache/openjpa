@@ -1324,6 +1324,13 @@ entities held in this field.
                         </para>
                     </listitem>
                 </itemizedlist>
+                <note>
+                	<para>
+OpenJPA offers enhancements to JPA's CascadeType.REMOVE functionality,
+including additional annotations to control how and when dependent fields will
+be removed.  See <xref linkend="dependent"/> for more details.
+                	</para>
+                </note>
                 <para>
 <classname>CascadeType</classname> defines one additional value, <literal>
 CascadeType.ALL</literal>, that acts as a shortcut for all of the values above.
