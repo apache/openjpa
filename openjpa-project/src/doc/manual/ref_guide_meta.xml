@@ -258,7 +258,7 @@ OneToMany</literal> and <literal>ManyToMany</literal> persistence strategies.
 OpenJPA supports these strategies, and may be extended for other strategies as 
 well.  For extended strategies, use the 
 <ulink url="../javadoc/org/apache/openjpa/persistence/PersistentCollection.html">
-<classname>kodo.persistence.PersistentCollection</classname></ulink> metadata 
+<classname>org.apache.openjpa.persistence.PersistentCollection</classname></ulink> metadata 
 annotation to represents any persistent collection field.  It has the following
 properties:
 			</para>
@@ -314,7 +314,7 @@ ManyToMany</classname></link>. Defaults to empty array.
 JPA has limited support for maps.  If you extend JPA's standard map support to 
 encompass new mappings, use the 
 <ulink url="../javadoc/org/apache/openjpa/persistence/PersistentMap.html">
-<classname>kodo.persistence.PersistentMap</classname></ulink> metadata 
+<classname>org.apache.openjpa.persistence.PersistentMap</classname></ulink> metadata 
 annotation to represent your custom persistent map fields.  It has the 
 following properties:
 			</para>
