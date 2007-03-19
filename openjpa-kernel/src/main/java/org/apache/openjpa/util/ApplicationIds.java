@@ -27,6 +27,7 @@ import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.ObjectIdStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreManager;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -40,6 +41,9 @@ import serp.util.Numbers;
  * @nojavadoc
  */
 public class ApplicationIds {
+
+    private static final Localizer _loc = Localizer.forPackage
+        (ApplicationIds.class);
 
     /**
      * Return the primary key values for the given object id. The values
@@ -165,6 +169,8 @@ public class ApplicationIds {
 
         // default to reflection
         Class oidType = meta.getObjectIdType();
+        if (Modifier.isAbstract(oidType.getModifiers()))
+            throw new UserException(_loc.get("objectid-abstract", meta));
         Object copy = null;
         try {
             copy = oidType.newInstance();
