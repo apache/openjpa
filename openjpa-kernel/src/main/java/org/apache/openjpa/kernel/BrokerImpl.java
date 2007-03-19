@@ -1080,37 +1080,27 @@ public class BrokerImpl
         try {
             ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
                 getMetaData(cls, _loader, true);
-
-            // delegate to store manager for datastore ids
-            if (meta.getIdentityType() == ClassMetaData.ID_DATASTORE) {
+            switch (meta.getIdentityType()) {
+            case ClassMetaData.ID_DATASTORE:
+                // delegate to store manager for datastore ids
                 if (val instanceof String
                     && ((String) val).startsWith(StateManagerId.STRING_PREFIX))
                     return new StateManagerId((String) val);
                 return _store.newDataStoreId(val, meta);
-            } else if (meta.getIdentityType() == ClassMetaData.ID_UNKNOWN)
+            case ClassMetaData.ID_APPLICATION:
+                if (ImplHelper.isAssignable(meta.getObjectIdType(), 
+                    val.getClass())) {
+                    if (!meta.isOpenJPAIdentity() 
+                        && meta.isObjectIdTypeShared())
+                        return new ObjectId(cls, val);
+                    return val;
+                }
+                Object[] arr = (val instanceof Object[]) ? (Object[]) val
+                    : new Object[]{ val };
+                return ApplicationIds.fromPKValues(arr, meta);
+            default:
                 throw new UserException(_loc.get("meta-unknownid", cls));
-
-            if (val instanceof String
-                && !_conf.getCompatibilityInstance().getStrictIdentityValues())
-            {
-                // bug #958: section 9.6 of the JDO 1.0.1 specification states
-                // that a fatal internal exception should be thrown when
-                // invoking this method on an abstract class
-                if (Modifier.isAbstract(cls.getModifiers()))
-                    throw new InternalException(_loc.get("objectid-abstract",
-                        cls));
-                return PCRegistry.newObjectId(cls, (String) val);
             }
-            if (ImplHelper.isAssignable(meta.getObjectIdType(), val.getClass()))
-            {
-                if (!meta.isOpenJPAIdentity() && meta.isObjectIdTypeShared())
-                    return new ObjectId(cls, val);
-                return val;
-            }
-
-            Object[] arr = (val instanceof Object[]) ? (Object[]) val
-                : new Object[]{ val };
-            return ApplicationIds.fromPKValues(arr, meta);
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (ClassCastException cce) {
