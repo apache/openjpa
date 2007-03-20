@@ -1826,6 +1826,11 @@ public class PCEnhancer {
                             Object.class, null);
                         if (!fieldManager && type != Object.class)
                             code.checkcast().setType(fmds[i].getDeclaredType());
+                    } else if (oidType == DateId.class) {
+                        code.invokevirtual().setMethod(oidType, "getId",
+                            Date.class, null);
+                        if (!fieldManager && type != Date.class)
+                            code.checkcast().setType(fmds[i].getDeclaredType());
                     } else {
                         code.invokevirtual().setMethod(oidType, "getId", 
                             unwrapped, null);
@@ -2023,6 +2028,8 @@ public class PCEnhancer {
                 addExtractObjectIdFieldValueCode(code, pk);
             if (_meta.getObjectIdType() == ObjectId.class)
                 args = new Class[]{ Class.class, Object.class };
+            else if (_meta.getObjectIdType() == Date.class)
+                args = new Class[]{ Class.class, Date.class };
             else
                 args = new Class[]{ Class.class, pk.getObjectIdFieldType() };
         }
