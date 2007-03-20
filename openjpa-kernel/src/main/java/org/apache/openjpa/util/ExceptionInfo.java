@@ -75,6 +75,6 @@ public interface ExceptionInfo {
     /**
      * The failed object.
      */
-    public Object getFailedObject ();
+    public Object getFailedObject();
 }
 
