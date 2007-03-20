@@ -241,6 +241,9 @@ public class ApplicationIds {
                 case JavaTypes.OBJECT:
                     return new ObjectId(cls, koid.getIdObject(), 
                         koid.hasSubclasses());
+                case JavaTypes.DATE:
+                    return new DateId(cls, ((DateId) oid).getId(),
+                        koid.hasSubclasses());
                 default:
                     throw new InternalException();
             }
