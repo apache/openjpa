@@ -116,6 +116,7 @@ public class OracleDictionary
         maxConstraintNameLength = 30;
         maxEmbeddedBlobSize = 4000;
         maxEmbeddedClobSize = 4000;
+        inClauseLimit = 1000;
 
         supportsDeferredConstraints = true;
         supportsLockingWithDistinctClause = false;
