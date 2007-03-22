@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.schema.Column;
@@ -90,13 +91,13 @@ class InExpression
         _const.calculateValue(sel, ctx, istate.constantState, null, null);
         _val.calculateValue(sel, ctx, istate.valueState, null, null);
 
+        List list = null;
         Collection coll = getCollection(ctx, istate.constantState);
         if (coll != null) {
-            Collection ds = new ArrayList(coll.size());
+            list = new ArrayList(coll.size());
             for (Iterator itr = coll.iterator(); itr.hasNext();)
-                ds.add(_val.toDataStoreValue(sel, ctx, istate.valueState, 
+                list.add(_val.toDataStoreValue(sel, ctx, istate.valueState, 
                     itr.next()));
-            coll = ds;
         }
 
         Column[] cols = null;
@@ -105,13 +106,44 @@ class InExpression
         else if (_val instanceof GetObjectId)
             cols = ((GetObjectId) _val).getColumns(istate.valueState);
 
-        if (coll == null || coll.isEmpty())
+        if (list == null || list.isEmpty())
             buf.append("1 <> 1");
         else if (_val.length(sel, ctx, istate.valueState) == 1)
-            inContains(sel, ctx, istate.valueState, buf, coll, cols);
+            createInContains(sel, ctx, istate.valueState, buf, list, cols);
         else
-            orContains(sel, ctx, istate.valueState, buf, coll, cols);
+            orContains(sel, ctx, istate.valueState, buf, list, cols);
         sel.append(buf, state.joins);
+    }
+
+    /**
+     * Based on the inClauseLimit of the DBDictionary, create the needed IN 
+     * clauses
+     */
+    private void createInContains(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer buf, List list, Column[] cols) {
+
+        int inClauseLimit = ctx.store.getDBDictionary().inClauseLimit;
+        if ((inClauseLimit == -1) || (list.size() < inClauseLimit))
+            inContains(sel, ctx, state, buf, list, cols);
+        else {
+            buf.append("(");
+
+            int low = 0;
+            for (int i = 1, stop = list.size()/inClauseLimit; i <= stop; i++) {
+                List subList = list.subList(low, low + inClauseLimit);
+                inContains(sel, ctx, state, buf, subList, cols);
+                low += inClauseLimit;
+                if (low < list.size())
+                    buf.append(" OR ");
+            }
+            // Remaining
+            if (low < list.size()) {
+                List rem = list.subList(low, list.size());
+                inContains(sel, ctx, state, buf, rem, cols);
+            }
+
+            buf.append(")");
+        }
     }
 
     /**

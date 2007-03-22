@@ -22,6 +22,7 @@ import java.util.BitSet;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -149,28 +150,24 @@ public class PagingResultObjectProvider
         // try to find a good page size.  if the known size < batch size, use
         // it.  if the batch size is set, then use that; if it's sorta close
         // to the size, then use the size / 2 to get two full pages rather
-        // than a possible big one and small one.  cap everything at 50.
+        // than a possible big one and small one
         int batch = getFetchConfiguration().getFetchBatchSize();
         int pageSize;
-        if (size <= batch && size <= 50)
+        if (batch < 0)
             pageSize = (int) size;
-        else if (batch > 0 && batch <= 50) {
-            if (size <= batch * 2) {
+        else {
+            if (batch == 0)
+                batch = 50; // reasonable default
+            if (size <= batch)
+                pageSize = (int) size;
+            else if (size <= batch * 2) {
                 if (size % 2 == 0)
                     pageSize = (int) (size / 2);
                 else
                     pageSize = (int) (size / 2 + 1);
             } else
                 pageSize = batch;
-        } else if (size <= 50)
-            pageSize = (int) size;
-        else if (size <= 100) {
-            if (size % 2 == 0)
-                pageSize = (int) (size / 2);
-            else
-                pageSize = (int) (size / 2 + 1);
-        } else
-            pageSize = 50;
+        }
 
         _page = new Object[pageSize];
         if (_paged.length > 1)
@@ -341,10 +338,11 @@ public class PagingResultObjectProvider
         // create where condition limiting instances to this page
         JDBCStore store = getStore();
         Select sel = store.getSQLFactory().newSelect();
-        SQLBuffer buf = new SQLBuffer(store.getDBDictionary());
+        DBDictionary dict = store.getDBDictionary();
+        SQLBuffer buf = new SQLBuffer(dict);
         Column[] pks = mapping.getPrimaryKeyColumns();
         if (pks.length == 1)
-            inContains(sel, buf, mapping, pks, start, end);
+            createInContains(sel, dict, buf, mapping, pks, start, end);
         else
             orContains(sel, buf, mapping, pks, start, end);
         sel.where(buf);
@@ -388,6 +386,32 @@ public class PagingResultObjectProvider
         }
     }
 
+    /**
+     *  Based on the DBDictionary, create the needed IN clauses.
+     */
+    private void createInContains(Select sel, DBDictionary dict, SQLBuffer buf, 
+        ClassMapping mapping, Column[] pks, int start, int end) {
+        int inClauseLimit = dict.inClauseLimit;
+        if ((inClauseLimit == -1) || ((end - start) <= inClauseLimit))
+            inContains(sel, buf, mapping, pks, start, end);
+        else {
+            buf.append("(");
+
+            int low = start;
+            for (int i = 1, stop = (end - start)/inClauseLimit; i <= stop; i++) {
+                inContains(sel, buf, mapping, pks, low, low + inClauseLimit);
+                low += inClauseLimit;
+                if (low < end)
+                    buf.append(" OR ");
+            }
+            // Remaining
+            if (low < end)
+                inContains(sel, buf, mapping, pks, low, end);
+
+            buf.append(")");
+        }
+    }
+    
     /**
      * Create an IN clause limiting the results to the current page.
      */

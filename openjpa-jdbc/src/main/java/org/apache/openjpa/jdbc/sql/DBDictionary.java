@@ -237,6 +237,7 @@ public class DBDictionary
     public boolean useSetStringForClobs = false;
     public int maxEmbeddedBlobSize = -1;
     public int maxEmbeddedClobSize = -1;
+    public int inClauseLimit = -1;
     public int datePrecision = MILLI;
     public int characterColumnSize = 255;
     public String arrayTypeName = "ARRAY";
