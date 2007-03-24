@@ -132,10 +132,17 @@ public class Exceptions {
      * Stringify the given exception.
      */
     public static String toString(ExceptionInfo e) {
+        int type = e.getType();
         StringBuffer buf = new StringBuffer();
-        buf.append("<").append(e.getType()).
-            append('|').append(e.isFatal()).
-            append('|').append(OpenJPAVersion.VERSION_NUMBER).
+        buf.append("<").
+            append(OpenJPAVersion.VERSION_NUMBER).append(' ').
+            append(e.isFatal() ? "fatal " : "nonfatal ").
+            append (type == ExceptionInfo.GENERAL ? "general error" :
+                type == ExceptionInfo.INTERNAL ? "internal error" :
+                type == ExceptionInfo.STORE ? "store error" :
+                type == ExceptionInfo.UNSUPPORTED ? "unsupported error" :
+                type == ExceptionInfo.USER ? "user error" :
+                (type + " error")).
             append("> ");
         buf.append(e.getClass().getName()).append(": ").
             append(e.getMessage());
