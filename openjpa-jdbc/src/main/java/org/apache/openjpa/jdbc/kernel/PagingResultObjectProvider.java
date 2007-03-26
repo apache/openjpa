@@ -392,22 +392,16 @@ public class PagingResultObjectProvider
     private void createInContains(Select sel, DBDictionary dict, SQLBuffer buf, 
         ClassMapping mapping, Column[] pks, int start, int end) {
         int inClauseLimit = dict.inClauseLimit;
-        if ((inClauseLimit == -1) || ((end - start) <= inClauseLimit))
+        if (inClauseLimit <= 0 || end - start <= inClauseLimit)
             inContains(sel, buf, mapping, pks, start, end);
         else {
             buf.append("(");
-
-            int low = start;
-            for (int i = 1, stop = (end - start)/inClauseLimit; i <= stop; i++) {
-                inContains(sel, buf, mapping, pks, low, low + inClauseLimit);
-                low += inClauseLimit;
-                if (low < end)
+            for (int low = start, high; low < end; low = high) {
+                if (low > start)
                     buf.append(" OR ");
+                high = Math.min(low + inClauseLimit, end);
+                inContains(sel, buf, mapping, pks, low, high);
             }
-            // Remaining
-            if (low < end)
-                inContains(sel, buf, mapping, pks, low, end);
-
             buf.append(")");
         }
     }

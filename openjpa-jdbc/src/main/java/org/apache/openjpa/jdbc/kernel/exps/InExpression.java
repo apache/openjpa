@@ -123,25 +123,16 @@ class InExpression
         SQLBuffer buf, List list, Column[] cols) {
 
         int inClauseLimit = ctx.store.getDBDictionary().inClauseLimit;
-        if ((inClauseLimit == -1) || (list.size() < inClauseLimit))
+        if (inClauseLimit <= 0 || list.size() <= inClauseLimit)
             inContains(sel, ctx, state, buf, list, cols);
         else {
             buf.append("(");
-
-            int low = 0;
-            for (int i = 1, stop = list.size()/inClauseLimit; i <= stop; i++) {
-                List subList = list.subList(low, low + inClauseLimit);
-                inContains(sel, ctx, state, buf, subList, cols);
-                low += inClauseLimit;
-                if (low < list.size())
+            for (int low = 0, high; low < list.size(); low = high) {
+                if (low > 0)
                     buf.append(" OR ");
+                high = java.lang.Math.min(low + inClauseLimit, list.size());
+                inContains(sel, ctx, state, buf, list.subList(low, high), cols);
             }
-            // Remaining
-            if (low < list.size()) {
-                List rem = list.subList(low, list.size());
-                inContains(sel, ctx, state, buf, rem, cols);
-            }
-
             buf.append(")");
         }
     }
