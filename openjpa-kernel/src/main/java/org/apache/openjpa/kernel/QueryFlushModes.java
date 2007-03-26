@@ -29,7 +29,8 @@ public interface QueryFlushModes {
      * Constant denoting that queries should flush data to the
      * database automatically whenever OpenJPA determines that relevant
      * modifications have been made and IgnoreCache is
-     * <code>false</code>. See {@link OpenJPAConfiguration#getFlushBeforeQueries}
+     * <code>false</code>. See 
+     * {@link OpenJPAConfiguration#getFlushBeforeQueries}
      * for more info.
      */
     public static final int FLUSH_TRUE = 0;
