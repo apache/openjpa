@@ -34,20 +34,6 @@ public interface Union
     public String getOrdering();
 
     /**
-     * Whether this union will return at most a single result. Setting this
-     * flag makes it more efficient to execute logical unions that are actually
-     * made up from multiple selects executed in batch.
-     */
-    public boolean isSingleResult();
-
-    /**
-     * Whether this union will return at most a single result. Setting this
-     * flag makes it more efficient to execute logical unions that are actually
-     * made up from multiple selects executed in batch.
-     */
-    public void setSingleResult(boolean single);
-
-    /**
      * Whether this is a true UNION, rather than a logical combination of
      * independent selects.
      */

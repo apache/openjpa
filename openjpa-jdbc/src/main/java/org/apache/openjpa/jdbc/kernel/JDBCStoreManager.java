@@ -43,6 +43,7 @@ import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
+import org.apache.openjpa.jdbc.sql.SelectImpl;
 import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.LockManager;
@@ -368,9 +369,12 @@ public class JDBCStoreManager
         if (!select(sel, mapping, subs, sm, null, fetch,
             JDBCFetchConfiguration.EAGER_JOIN, true, false))
             return null;
-
         sel.wherePrimaryKey(sm.getObjectId(), mapping, this);
-        return sel.execute(this, fetch);
+        //Set the expectedResultCount for the select as 1 as a single
+        //object is being loaded. force = true is an indicator that it is 
+        //internally generated value
+          sel.setExpectedResultCount(1,true);
+       return sel.execute(this, fetch);
     }
 
     /**
@@ -385,7 +389,7 @@ public class JDBCStoreManager
             JDBCFetchConfiguration.EAGER_JOIN);
 
         Union union = _sql.newUnion(mappings.length);
-        union.setSingleResult(true);
+        union.setExpectedResultCount(1,true);
         if (fetch.getSubclassFetchMode(mapping) != fetch.EAGER_JOIN)
             union.abortUnion();
         union.select(new Union.Selector() {

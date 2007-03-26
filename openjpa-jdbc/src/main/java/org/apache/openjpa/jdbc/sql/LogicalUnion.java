@@ -47,13 +47,18 @@ public class LogicalUnion
 
     private static final Localizer _loc = Localizer.forPackage
         (LogicalUnion.class);
-
+     //expected number of results for this select to be used in 
+    // optimize for clause
+    protected int expectedResultCount = 0;
+    //indicate if this is internally generated result count 
+    //or not
+    protected boolean force = false;
     protected final UnionSelect[] sels;
     protected final DBDictionary dict;
     protected final ClassMapping[] mappings;
     protected final BitSet desc = new BitSet();
     private boolean _distinct = true;
-    private boolean _single = false;
+   
 
     /**
      * Constructor.
@@ -102,15 +107,7 @@ public class LogicalUnion
     public Select[] getSelects() {
         return sels;
     }
-
-    public boolean isSingleResult() {
-        return _single;
-    }
-
-    public void setSingleResult(boolean single) {
-        _single = single;
-    }
-
+   
     public boolean isUnion() {
         return false;
     }
@@ -215,9 +212,12 @@ public class LogicalUnion
             return res;
         }
 
-        if (_single) {
+        if (this.getExpectedResultCount()== 1) {
             AbstractResult res;
             for (int i = 0; i < sels.length; i++) {
+                //for each select set the expected result count to 1
+                //and force true indicating that this internally generated value
+                 sels[i].sel.setExpectedResultCount(1,true);
                 res = (AbstractResult) sels[i].execute(store, fetch,
                     lockLevel);
                 res.setBaseMapping(mappings[i]);
@@ -305,7 +305,12 @@ public class LogicalUnion
         protected final int pos;
         protected int orders = 0;
         protected List orderIdxs = null;
-
+        //  expected number of results for this select to be used in 
+        // optimize for clause
+        protected int expectedResultCount = 0;
+        //force indicates it is internally generated result count or not
+        protected boolean force = false;
+       
         public UnionSelect(SelectImpl sel, int pos) {
             this.sel = sel;
             this.pos = pos;
@@ -838,6 +843,18 @@ public class LogicalUnion
         public String toString() {
             return sel.toString();
         }
+
+		public int getExpectedResultCount() {
+			return expectedResultCount;
+		}
+
+		public void setExpectedResultCount(int expectedResultCount, boolean force) {
+			this.expectedResultCount = expectedResultCount;
+            this.force = force;
+		}
+         public boolean isExpRsltCntForced() {
+                return force;
+            }
     }
 
     /**
@@ -917,5 +934,17 @@ public class LogicalUnion
             }
             return a1.length - a2.length;
         }
+    }
+
+    public int getExpectedResultCount() {
+        return expectedResultCount;
+    }
+
+    public void setExpectedResultCount(int expectedResultCount,boolean force) {
+        this.expectedResultCount = expectedResultCount;
+        this.force = force;
+    }
+    public boolean isExpRsltCntForced() {
+        return force;
     }
 }
