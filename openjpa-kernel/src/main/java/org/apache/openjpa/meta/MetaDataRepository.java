@@ -304,7 +304,7 @@ public class MetaDataRepository
             return null;
 
         // check cache
-        processRegisteredClasses();
+        processRegisteredClasses(envLoader);
         List classList = (List) _aliases.get(alias);
 
         // multiple classes may have been defined with the same alias: we
@@ -322,8 +322,8 @@ public class MetaDataRepository
 
                 // if we have specified a list of persistent clases,
                 // also check to ensure that the class is in that list
-                if (pcNames == null || pcNames.size() == 0 ||
-                    pcNames.contains(nc.getName())) {
+                if (pcNames == null || pcNames.size() == 0 
+                    || pcNames.contains(nc.getName())) {
                     cls = nc;
                     if (!classList.contains(cls))
                         classList.add(cls);
@@ -375,7 +375,7 @@ public class MetaDataRepository
         // dev time so that user can manipulate persistent classes he's writing
         // before adding them to the list
         if ((_validate & VALIDATE_RUNTIME) != 0) {
-            Set pcNames = _factory.getPersistentTypeNames(false, envLoader);
+            Set pcNames = getPersistentTypeNames(false, envLoader);
             if (pcNames != null && !pcNames.contains(cls.getName()))
                 return meta;
         }
@@ -930,7 +930,7 @@ public class MetaDataRepository
         }
 
         // check cache
-        processRegisteredClasses();
+        processRegisteredClasses(envLoader);
         Class cls = (Class) _oids.get(oid.getClass());
         if (cls != null)
             return getMetaData(cls, envLoader, mustExist);
@@ -946,7 +946,7 @@ public class MetaDataRepository
         // if still not match, register any classes that look similar to the
         // oid class and check again
         resolveIdentityClass(oid);
-        if (processRegisteredClasses().length > 0) {
+        if (processRegisteredClasses(envLoader).length > 0) {
             cls = (Class) _oids.get(oid.getClass());
             if (cls != null)
                 return getMetaData(cls, envLoader, mustExist);
@@ -1201,7 +1201,7 @@ public class MetaDataRepository
      */
     public synchronized Collection loadPersistentTypes(boolean devpath,
         ClassLoader envLoader) {
-        Set names = _factory.getPersistentTypeNames(devpath, envLoader);
+        Set names = getPersistentTypeNames(devpath, envLoader);
         if (names == null || names.isEmpty())
             return Collections.EMPTY_LIST;
 
@@ -1264,7 +1264,7 @@ public class MetaDataRepository
      * Parses the metadata for all registered classes.
      */
     private void loadRegisteredClassMetaData(ClassLoader envLoader) {
-        Class[] reg = processRegisteredClasses();
+        Class[] reg = processRegisteredClasses(envLoader);
         for (int i = 0; i < reg.length; i++) {
             try {
                 getMetaData(reg[i], envLoader, false);
@@ -1278,7 +1278,7 @@ public class MetaDataRepository
     /**
      * Updates our datastructures with the latest registered classes.
      */
-    Class[] processRegisteredClasses() {
+    Class[] processRegisteredClasses(ClassLoader envLoader) {
         if (_registered.isEmpty())
             return EMPTY_CLASSES;
 
@@ -1290,8 +1290,15 @@ public class MetaDataRepository
             _registered.clear();
         }
 
+        Collection pcNames = getPersistentTypeNames(false, envLoader);
         Collection failed = null;
         for (int i = 0; i < reg.length; i++) {
+            // don't process types that aren't listed by the user; may belong
+            // to a different persistence unit
+            if (pcNames != null && !pcNames.isEmpty()
+                && !pcNames.contains(reg[i].getName()))
+                continue;
+
             try {
                 processRegisteredClass(reg[i]);
             } catch (Throwable t) {
@@ -1492,7 +1499,7 @@ public class MetaDataRepository
         if (meta == null && mustExist) {
             if (cls == null) {
                 throw new MetaDataException(_loc.get
-                    ("no-named-query-null-class",
+                    ("no-named-query-null-class", 
                         getPersistentTypeNames(false, envLoader), name));
             } else {
                 throw new MetaDataException(_loc.get("no-named-query",

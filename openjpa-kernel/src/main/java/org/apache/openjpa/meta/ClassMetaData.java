@@ -310,7 +310,7 @@ public class ClassMetaData
         if (_owner != null)
             return _repos.EMPTY_CLASSES;
 
-        _repos.processRegisteredClasses();
+        _repos.processRegisteredClasses(_loader);
         if (_subs == null) {
             Collection subs = _repos.getPCSubclasses(_type);
             _subs = (Class[]) subs.toArray(new Class[subs.size()]);
