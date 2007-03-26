@@ -1289,7 +1289,11 @@ public class QueryImpl
                 // Collections.singletonList is JDK 1.3, so...
                 return Arrays.asList(new Object[]{ single });
             }
-
+             
+            if(single == null)
+                throw new InvalidStateException(_loc.get("is-null",
+                        _class, _query));
+            
             // return single result
             return single;
         } finally {

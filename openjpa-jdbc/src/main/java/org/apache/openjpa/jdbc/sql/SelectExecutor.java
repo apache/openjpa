@@ -119,4 +119,23 @@ public interface SelectExecutor {
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
         int lockLevel)
         throws SQLException;
+    
+    /**
+     * Return the expected result count for the query
+     */
+    public int getExpectedResultCount() ;
+
+    /**
+     * Set the expected result count for the query
+     * force indicates whether the count is internally generated
+     * or given by the user as optimize hint
+     */
+    
+    public void setExpectedResultCount(int expectedResultCount,boolean force) ;
+    
+    /**
+     * Indicates whether the expectedResultCount is internally generated
+     */
+     
+     public boolean isExpRsltCntForced();
 }

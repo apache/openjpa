@@ -578,7 +578,7 @@ public class RelationFieldStrategy
         // back to our fk table if not an inverse mapping (in which case we
         // can just make sure the inverse cols == our pk values)
         Union union = store.getSQLFactory().newUnion(rels.length);
-        union.setSingleResult(true);
+        union.setExpectedResultCount(1,true);
         if (fetch.getSubclassFetchMode(field.getTypeMapping())
             != JDBCFetchConfiguration.EAGER_JOIN)
             union.abortUnion();

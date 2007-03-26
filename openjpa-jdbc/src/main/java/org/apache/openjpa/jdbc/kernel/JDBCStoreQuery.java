@@ -312,6 +312,7 @@ public class JDBCStoreQuery
         ClassMapping[] verts;
         boolean unionable = true;
         Select sel;
+        Object optHint = null;
         for (int i = 0; i < mappings.length; i++) {
             // determine vertical mappings to select separately
             verts = getVerticalMappings(mappings[i], subclasses, exps[i],
@@ -322,6 +323,19 @@ public class JDBCStoreQuery
             // create criteria select and clone for each vert mapping
             sel = ((JDBCExpressionFactory) facts[i]).getSelectConstructor().
                 evaluate(ctx, null, null, exps[i], states[i]);
+            //it means it is coming from getSingleResult so set the 
+            //expectedResultCount to 1.force = true indicates that this is 
+            //internally generated value
+            if(this.ctx.isUnique())
+                 sel.setExpectedResultCount(1,true);
+            //it means this is coming from getResultList so set the 
+            //expectedResultCount based on any optimize hint if provided
+            else{
+                   if((optHint = ctx.fetch.getHint
+                        (this.optimizeHint))!= null)
+                         sel.setExpectedResultCount
+                          (((Integer)optHint).intValue(),false);
+               }
             for (int j = 0; j < verts.length; j++) {
                 selMappings.add(verts[j]);
                 if (j == verts.length - 1) {
