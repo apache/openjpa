@@ -363,18 +363,18 @@ public class JDBCStoreManager
      * null if there is no data in the current fetch groups to select.
      */
     private Result getInitializeStateResult(OpenJPAStateManager sm,
-        ClassMapping mapping, JDBCFetchConfiguration fetch, int subs)
-        throws SQLException {
+            ClassMapping mapping, JDBCFetchConfiguration fetch, int subs)
+    throws SQLException {
         Select sel = _sql.newSelect();
         if (!select(sel, mapping, subs, sm, null, fetch,
-            JDBCFetchConfiguration.EAGER_JOIN, true, false))
+                JDBCFetchConfiguration.EAGER_JOIN, true, false))
             return null;
         sel.wherePrimaryKey(sm.getObjectId(), mapping, this);
-        //Set the expectedResultCount for the select as 1 as a single
-        //object is being loaded. force = true is an indicator that it is 
-        //internally generated value
-          sel.setExpectedResultCount(1,true);
-       return sel.execute(this, fetch);
+        // Set the expectedResultCount for the select as 1 as a single
+        // object is being loaded. force = true is an indicator that it is 
+        // internally generated value
+        sel.setExpectedResultCount(1,true);
+        return sel.execute(this, fetch);
     }
 
     /**

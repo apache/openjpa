@@ -24,6 +24,7 @@ import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
 import org.apache.openjpa.kernel.QueryFlushModes;
+import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
@@ -36,7 +37,7 @@ import org.apache.openjpa.kernel.exps.FilterListener;
  * @published
  */
 public interface OpenJPAQuery
-    extends Query, QueryOperations, QueryFlushModes {
+    extends Query, QueryOperations, QueryFlushModes, QueryHints {
 
     /**
      * The owning entity manage.

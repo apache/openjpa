@@ -47,11 +47,7 @@ public class LogicalUnion
 
     private static final Localizer _loc = Localizer.forPackage
         (LogicalUnion.class);
-     //expected number of results for this select to be used in 
-    // optimize for clause
     protected int expectedResultCount = 0;
-    //indicate if this is internally generated result count 
-    //or not
     protected boolean force = false;
     protected final UnionSelect[] sels;
     protected final DBDictionary dict;
@@ -215,9 +211,10 @@ public class LogicalUnion
         if (this.getExpectedResultCount()== 1) {
             AbstractResult res;
             for (int i = 0; i < sels.length; i++) {
-                //for each select set the expected result count to 1
-                //and force true indicating that this internally generated value
-                 sels[i].sel.setExpectedResultCount(1,true);
+                // For each select set the expected result count to 1
+                // and force true indicating that this internally generated 
+                // value
+                sels[i].sel.setExpectedResultCount(1,true);
                 res = (AbstractResult) sels[i].execute(store, fetch,
                     lockLevel);
                 res.setBaseMapping(mappings[i]);
@@ -305,10 +302,7 @@ public class LogicalUnion
         protected final int pos;
         protected int orders = 0;
         protected List orderIdxs = null;
-        //  expected number of results for this select to be used in 
-        // optimize for clause
         protected int expectedResultCount = 0;
-        //force indicates it is internally generated result count or not
         protected boolean force = false;
        
         public UnionSelect(SelectImpl sel, int pos) {
@@ -844,17 +838,19 @@ public class LogicalUnion
             return sel.toString();
         }
 
-		public int getExpectedResultCount() {
-			return expectedResultCount;
-		}
+        public int getExpectedResultCount() {
+            return expectedResultCount;
+        }
 
-		public void setExpectedResultCount(int expectedResultCount, boolean force) {
-			this.expectedResultCount = expectedResultCount;
+        public void setExpectedResultCount(int expectedResultCount,
+                boolean force) {
+            this.expectedResultCount = expectedResultCount;
             this.force = force;
-		}
-         public boolean isExpRsltCntForced() {
-                return force;
-            }
+        }
+        
+        public boolean isExpRsltCntForced() {
+            return force;
+        }
     }
 
     /**
@@ -939,11 +935,13 @@ public class LogicalUnion
     public int getExpectedResultCount() {
         return expectedResultCount;
     }
-
-    public void setExpectedResultCount(int expectedResultCount,boolean force) {
+    
+    public void setExpectedResultCount(int expectedResultCount,
+            boolean force) {
         this.expectedResultCount = expectedResultCount;
         this.force = force;
     }
+    
     public boolean isExpRsltCntForced() {
         return force;
     }

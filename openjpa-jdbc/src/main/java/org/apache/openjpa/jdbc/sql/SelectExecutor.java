@@ -130,12 +130,10 @@ public interface SelectExecutor {
      * force indicates whether the count is internally generated
      * or given by the user as optimize hint
      */
-    
     public void setExpectedResultCount(int expectedResultCount,boolean force) ;
-    
+
     /**
      * Indicates whether the expectedResultCount is internally generated
      */
-     
-     public boolean isExpRsltCntForced();
+    public boolean isExpRsltCntForced();
 }

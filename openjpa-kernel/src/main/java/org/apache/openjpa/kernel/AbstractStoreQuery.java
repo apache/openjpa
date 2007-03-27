@@ -33,8 +33,7 @@ public abstract class AbstractStoreQuery
     implements StoreQuery {
 
     protected QueryContext ctx = null;
-    public static final String optimizeHint ="openjpa.hint.OptimizeResultCount";
-
+   
     public QueryContext getContext() {
         return ctx;
     }

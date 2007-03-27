@@ -1290,7 +1290,7 @@ public class QueryImpl
                 return Arrays.asList(new Object[]{ single });
             }
              
-            if(single == null)
+            if (single == null)
                 throw new InvalidStateException(_loc.get("is-null",
                         _class, _query));
             
