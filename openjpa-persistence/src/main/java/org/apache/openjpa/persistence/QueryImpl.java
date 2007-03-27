@@ -279,13 +279,12 @@ public class QueryImpl
      */
     public Object getSingleResult() {
         _em.assertNotCloseInvoked();
-        //Indicate that this query returns single result.Later copied into
-        //select.expectedResultCount
+        // Indicate that this query returns single result.Later copied into
+        // select.expectedResultCount
         _query.setUnique(true);
-        try{
-        Object ob = execute();
-           return ob;
-
+        try {
+            Object ob = execute();
+            return ob;
         } finally {
             _query.setUnique(false);
         }
@@ -366,27 +365,29 @@ public class QueryImpl
             } else if (k.startsWith("FetchPlan.")) {
                 k = k.substring("FetchPlan.".length());
                 Filters.hintToSetter(getFetchPlan(), k, value);
-            } else if (k.startsWith("hint.")){
-            	if("hint.OptimizeResultCount".equals(k)){
-            		if((!(value instanceof String)&&!(value instanceof Integer))
-                       ||  (value instanceof String &&(Integer.parseInt
-                       ((String)value)< 0))||((value instanceof Integer)
-                        && (((Integer)value).intValue()<0)) )
-            			    throw new ArgumentException(_loc.get
-                                      ("bad-hint-value", key),
-                                      null, null, false);
-                    if(value instanceof String)
+            } else if (k.startsWith("hint.")) {
+                if ("hint.OptimizeResultCount".equals(k)) {
+                    if ((!(value instanceof String)&&! (value instanceof Integer))
+                            || (value instanceof String &&(Integer.parseInt
+                                    ((String)value)< 0))||
+                                    ((value instanceof Integer)
+                                            && (((Integer)value).intValue()<0)))
+                        throw new ArgumentException(_loc.get
+                                ("bad-hint-value", key),
+                                null, null, false);
+                    if (value instanceof String)
                         value = new Integer((String)value);
-         	}
+                }
                 _query.getFetchConfiguration().setHint(key, value);
             }
             else
                 throw new ArgumentException(_loc.get("bad-query-hint", key),
                     null, null, false);
             return this;
-        }catch(NumberFormatException e1){
-              throw new ArgumentException(_loc.get("bad-hint-value", key),
-                null, null, false); 
+        }
+         catch (NumberFormatException e1) {
+            throw new ArgumentException(_loc.get("bad-hint-value", key),
+                    null, null, false); 
         }
          catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);

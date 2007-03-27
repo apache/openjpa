@@ -48,6 +48,7 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.ExpressionStoreQuery;
 import org.apache.openjpa.kernel.OrderingMergedResultObjectProvider;
+import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.kernel.exps.FilterListener;
@@ -319,23 +320,22 @@ public class JDBCStoreQuery
                 subclassMode);
             if (verts.length == 1 && subclasses)
                 subclassBits.set(sels.size());
-
             // create criteria select and clone for each vert mapping
             sel = ((JDBCExpressionFactory) facts[i]).getSelectConstructor().
                 evaluate(ctx, null, null, exps[i], states[i]);
-            //it means it is coming from getSingleResult so set the 
-            //expectedResultCount to 1.force = true indicates that this is 
-            //internally generated value
-            if(this.ctx.isUnique())
-                 sel.setExpectedResultCount(1,true);
-            //it means this is coming from getResultList so set the 
-            //expectedResultCount based on any optimize hint if provided
-            else{
-                   if((optHint = ctx.fetch.getHint
-                        (this.optimizeHint))!= null)
-                         sel.setExpectedResultCount
-                          (((Integer)optHint).intValue(),false);
-               }
+            // It means it is coming from getSingleResult so set the 
+            // expectedResultCount to 1.force = true indicates that this is 
+            // internally generated value
+            if (this.ctx.isUnique())
+                sel.setExpectedResultCount(1,true);
+            // It means this is coming from getResultList so set the 
+            // expectedResultCount based on any optimize hint if provided
+            else {
+                if ((optHint = ctx.fetch.getHint
+                              (QueryHints.HINT_RESULT_COUNT))!= null)
+                   sel.setExpectedResultCount
+                   (((Integer)optHint).intValue(),false);
+            }
             for (int j = 0; j < verts.length; j++) {
                 selMappings.add(verts[j]);
                 if (j == verts.length - 1) {

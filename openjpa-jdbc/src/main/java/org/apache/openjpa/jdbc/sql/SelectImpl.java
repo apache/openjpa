@@ -154,11 +154,7 @@ public class SelectImpl
     private SelectImpl _from = null;
     private SelectImpl _outer = null;
     
-    //expected number of results for this select to be used in 
-    // optimize for clause
     private int expectedResultCount = 0;
-    //true if the expectedResultCount is internally set false if
-    //it is set by the user
     private boolean force = false;
      
     /**
@@ -312,19 +308,19 @@ public class SelectImpl
         throws SQLException {
         boolean forUpdate = false;
         
-        //expectedResultCount = 1 and force means that it is internally generated value 
-        //for getSingleResult,single valued relationship.We need to check if 
-        //there are any eager joins in the select if there are then the 
-        //optimize for 1 row clause is not generated else we do. if 
-        //!force then it is set by the user through hint and we 
-        //do not check the eager joins
-        if(this.expectedResultCount == 1 && force ){
-            if(this.hasEagerJoin(true))
+        // ExpectedResultCount = 1 and force means that it is internally  
+        // generated value for getSingleResult,single valued relationship. 
+        // We need to check if there are any eager joins in the select if  
+        // there are then the optimize for 1 row clause is not generated  
+        // else we do. if !force then it is set by the user through hint  
+        // and we do not check the eager joins
+        if (this.expectedResultCount == 1 && force ) {
+            if (this.hasEagerJoin(true))
                 this.setExpectedResultCount(0,false);
             else
-               this.setExpectedResultCount(1,false); 
-           }
-      
+                this.setExpectedResultCount(1,false); 
+        }
+
         if (!isAggregate() && _grouping == null) {
             JDBCLockManager lm = store.getLockManager();
             if (lm != null)
@@ -2821,14 +2817,15 @@ public class SelectImpl
         }
     }
 
-	public int getExpectedResultCount() {
-		return expectedResultCount;
-	}
+    public int getExpectedResultCount() {
+        return expectedResultCount;
+    }
 
-	public void setExpectedResultCount(int expectedResultCount, boolean force) {
-		this.expectedResultCount = expectedResultCount;
+    public void setExpectedResultCount(int expectedResultCount,
+            boolean force) {
+        this.expectedResultCount = expectedResultCount;
         this.force = force;
-	}
+    }
 
     public boolean isExpRsltCntForced() {
         return force;
