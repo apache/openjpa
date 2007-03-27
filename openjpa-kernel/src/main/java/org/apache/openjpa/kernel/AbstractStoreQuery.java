@@ -108,11 +108,11 @@ public abstract class AbstractStoreQuery
         implements Executor {
 
         public Number executeDelete(StoreQuery q, Object[] params) {
-            return q.getContext().deleteInMemory(this, params);
+            return q.getContext().deleteInMemory(q, this, params);
         }
 
         public Number executeUpdate(StoreQuery q, Object[] params) {
-            return q.getContext().updateInMemory(this, params);
+            return q.getContext().updateInMemory(q, this, params);
         }
 
         public String[] getDataStoreActions(StoreQuery q, Object[] params,

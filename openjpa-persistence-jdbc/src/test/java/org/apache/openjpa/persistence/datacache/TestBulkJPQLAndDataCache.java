@@ -2,6 +2,7 @@ package org.apache.openjpa.persistence.datacache;
 
 import java.util.List;
 import java.util.Map;
+import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
@@ -14,7 +15,7 @@ public class TestBulkJPQLAndDataCache
     private Object oid;
 
     public TestBulkJPQLAndDataCache() {
-        super(AllFieldTypes.class);
+        super(AllFieldTypes.class, CascadeParent.class, CascadeChild.class);
     }
 
     @Override
@@ -41,6 +42,24 @@ public class TestBulkJPQLAndDataCache
         oid = em.getObjectId(pc);
         em.getTransaction().commit();
         em.close();
+    }
+
+    public void tearDown() 
+        throws Exception {
+        if (emf == null)
+            return;
+        try {
+            EntityManager em = emf.createEntityManager();
+            em.getTransaction().begin();
+            em.createQuery("DELETE FROM AllFieldTypes").executeUpdate();
+            em.createQuery("DELETE FROM CascadeParent").executeUpdate();
+            em.createQuery("DELETE FROM CascadeChild").executeUpdate();
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+        }
+
+        super.tearDown();
     }
 
     public void testBulkDelete() {
@@ -86,6 +105,40 @@ public class TestBulkJPQLAndDataCache
         assertFalse(OpenJPAPersistence.cast(emf).getStoreCache()
             .contains(AllFieldTypes.class, oid));
 
+        em.close();
+    }
+
+    public void testBulkDeleteOfCascadingEntity() {
+        CascadeParent parent = new CascadeParent();
+        parent.setName("parent");
+        CascadeChild child = new CascadeChild();
+        child.setName("child");
+        parent.setChild(child);
+
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(parent);
+        em.getTransaction().commit();
+        em.close();
+
+        em = emf.createEntityManager();
+        assertEquals(1, em.createQuery("SELECT o FROM CascadeParent o").
+            getResultList().size());
+        assertEquals(1, em.createQuery("SELECT o FROM CascadeChild o").
+            getResultList().size());
+        em.close();
+
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.createQuery("DELETE FROM CascadeParent o").executeUpdate();
+        em.getTransaction().commit();
+        em.close();
+
+        em = emf.createEntityManager();
+        assertEquals(0, em.createQuery("SELECT o FROM CascadeParent o").
+            getResultList().size());
+        assertEquals(0, em.createQuery("SELECT o FROM CascadeChild o").
+            getResultList().size());
         em.close();
     }
 }

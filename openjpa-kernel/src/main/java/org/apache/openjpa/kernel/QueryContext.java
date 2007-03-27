@@ -252,13 +252,15 @@ public interface QueryContext {
      * Helper method to delete the objects found by executing a query on
      * the given executor.
      */
-    public Number deleteInMemory(StoreQuery.Executor ex, Object[] params);
+    public Number deleteInMemory(StoreQuery q, StoreQuery.Executor ex, 
+        Object[] params);
 
     /**
      * Helper method to update the objects found by executing a query on
      * the given executor.
      */
-    public Number updateInMemory(StoreQuery.Executor ex, Object[] params);
+    public Number updateInMemory(StoreQuery q, StoreQuery.Executor ex, 
+        Object[] params);
 
     /**
      * Helper method to instantiate the class with the given name, taking
