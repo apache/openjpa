@@ -679,7 +679,7 @@ public class ExpressionStoreQuery
             Number num = ((ExpressionStoreQuery) q).executeDelete(this, _meta,
                 _metas, _subs, _facts, _exps, params);
             if (num == null)
-                return q.getContext().deleteInMemory(this, params);
+                return q.getContext().deleteInMemory(q, this, params);
             return num;
         }
 
@@ -687,7 +687,7 @@ public class ExpressionStoreQuery
             Number num = ((ExpressionStoreQuery) q).executeUpdate(this, _meta,
                 _metas, _subs, _facts, _exps, params);
             if (num == null)
-                return q.getContext().updateInMemory(this, params);
+                return q.getContext().updateInMemory(q, this, params);
             return num;
         }
 

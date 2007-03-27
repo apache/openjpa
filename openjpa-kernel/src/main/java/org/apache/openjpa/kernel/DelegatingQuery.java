@@ -403,17 +403,19 @@ public class DelegatingQuery
         }
     }
 
-    public Number deleteInMemory(StoreQuery.Executor ex, Object[] params) {
+    public Number deleteInMemory(StoreQuery q, StoreQuery.Executor ex, 
+        Object[] params) {
         try {
-            return _query.deleteInMemory(ex, params);
+            return _query.deleteInMemory(q, ex, params);
         } catch (RuntimeException re) {
             throw translate(re);
         }
     }
 
-    public Number updateInMemory(StoreQuery.Executor ex, Object[] params) {
+    public Number updateInMemory(StoreQuery q, StoreQuery.Executor ex, 
+        Object[] params) {
         try {
-            return _query.updateInMemory(ex, params);
+            return _query.updateInMemory(q, ex, params);
         } catch (RuntimeException re) {
             throw translate(re);
         }
