@@ -82,6 +82,7 @@ public class SelectImpl
     private static final int EAGER_TO_MANY = 2 << 10;
     private static final int RECORD_ORDERED = 2 << 11;
     private static final int GROUPING = 2 << 12;
+    private static final int FORCE_COUNT = 2 << 13;
 
     private static final String[] TABLE_ALIASES = new String[16];
     private static final String[] ORDER_ALIASES = new String[16];
@@ -128,6 +129,7 @@ public class SelectImpl
     private int _nullIds = 0;
     private int _orders = 0;
     private int _placeholders = 0;
+    private int _expectedResultCount = 0;
 
     // query clauses
     private SQLBuffer _ordering = null;
@@ -153,9 +155,6 @@ public class SelectImpl
     // from select if this select selects from a tmp table created by another
     private SelectImpl _from = null;
     private SelectImpl _outer = null;
-    
-    private int expectedResultCount = 0;
-    private boolean force = false;
      
     /**
      * Helper method to return the proper table alias for the given alias index.
@@ -245,6 +244,22 @@ public class SelectImpl
             _flags &= ~LRS;
     }
 
+    public int getExpectedResultCount() {
+        // if the count isn't forced and we have to-many eager joins that could
+        // throw the count off, don't pay attention to it
+        if ((_flags & FORCE_COUNT) == 0 && hasEagerJoin(true))
+            return 0;
+        return _expectedResultCount;
+    }
+
+    public void setExpectedResultCount(int expectedResultCount, boolean force) {
+        _expectedResultCount = expectedResultCount;
+        if (force)
+            _flags |= FORCE_COUNT;
+        else 
+            _flags &= ~FORCE_COUNT;
+    }
+
     public int getJoinSyntax() {
         return _joinSyntax;
     }
@@ -307,20 +322,6 @@ public class SelectImpl
         JDBCFetchConfiguration fetch, int lockLevel)
         throws SQLException {
         boolean forUpdate = false;
-        
-        // ExpectedResultCount = 1 and force means that it is internally  
-        // generated value for getSingleResult,single valued relationship. 
-        // We need to check if there are any eager joins in the select if  
-        // there are then the optimize for 1 row clause is not generated  
-        // else we do. if !force then it is set by the user through hint  
-        // and we do not check the eager joins
-        if (this.expectedResultCount == 1 && force ) {
-            if (this.hasEagerJoin(true))
-                this.setExpectedResultCount(0,false);
-            else
-                this.setExpectedResultCount(1,false); 
-        }
-
         if (!isAggregate() && _grouping == null) {
             JDBCLockManager lm = store.getLockManager();
             if (lm != null)
@@ -1503,6 +1504,7 @@ public class SelectImpl
             sel._flags &= ~LRS;
             sel._flags &= ~EAGER_TO_ONE;
             sel._flags &= ~EAGER_TO_MANY;
+            sel._flags &= ~FORCE_COUNT;
             sel._joinSyntax = _joinSyntax;
             if (_aliases != null)
                 sel._aliases = new HashMap(_aliases);
@@ -1548,6 +1550,7 @@ public class SelectImpl
         for (int i = 0; i < sels; i++) {
             sel = (SelectImpl) whereClone(1);
             sel._flags = _flags;
+            sel._expectedResultCount = _expectedResultCount;
             sel._selects.addAll(_selects);
             if (_ordering != null)
                 sel._ordering = new SQLBuffer(_ordering);
@@ -2815,20 +2818,6 @@ public class SelectImpl
             _selectAs = null;
             _idents = null;
         }
-    }
-
-    public int getExpectedResultCount() {
-        return expectedResultCount;
-    }
-
-    public void setExpectedResultCount(int expectedResultCount,
-            boolean force) {
-        this.expectedResultCount = expectedResultCount;
-        this.force = force;
-    }
-
-    public boolean isExpRsltCntForced() {
-        return force;
     }
 }
 

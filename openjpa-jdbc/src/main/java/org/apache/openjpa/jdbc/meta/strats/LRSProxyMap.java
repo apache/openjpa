@@ -236,9 +236,8 @@ class LRSProxyMap
         final JDBCFetchConfiguration fetch = store.getFetchConfiguration();
         final ClassMapping[] clss = _strat.getIndependentValueMappings(true);
         final Joins[] resJoins = new Joins[Math.max(1, clss.length)];
-        Union union = store.getSQLFactory().newUnion
-            (Math.max(1, clss.length));
-        union.setExpectedResultCount(1,true);
+        Union union = store.getSQLFactory().newUnion(Math.max(1, clss.length));
+        union.setExpectedResultCount(1, false);
         if (fetch.getSubclassFetchMode(_strat.getFieldMapping().
             getElementMapping().getTypeMapping())
             != JDBCFetchConfiguration.EAGER_JOIN)

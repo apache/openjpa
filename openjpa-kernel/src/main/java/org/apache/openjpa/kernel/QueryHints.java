@@ -15,10 +15,13 @@
  */
 package org.apache.openjpa.kernel;
 
+/**
+ * Standard query hint keys.
+ */
 public interface QueryHints {
     
-    /** Hint to specify the number of rows for the optimize
-     * clause for DB2
+    /** 
+     * Hint to specify the number of rows to optimize for.
      */
     public static final String HINT_RESULT_COUNT =
         "openjpa.hint.OptimizeResultCount";

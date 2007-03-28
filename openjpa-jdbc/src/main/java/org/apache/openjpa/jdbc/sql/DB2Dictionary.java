@@ -28,9 +28,10 @@ import org.apache.openjpa.jdbc.schema.Sequence;
  */
 public class DB2Dictionary
     extends AbstractDB2Dictionary {
-    // variables to support optimize clause
+
     public String optimizeClause = "optimize for";
     public String rowClause = "row";
+
     public DB2Dictionary() {
         platform = "DB2";
         validationSQL = "SELECT DISTINCT(CURRENT TIMESTAMP) FROM "
@@ -197,60 +198,13 @@ public class DB2Dictionary
         }
     }
     
-    /** Based on the expectedResultCount of the select create the optimize
-     *  for clause
-     */ 
-    public String getOptimizeClause(JDBCFetchConfiguration fetch, 
-            int expectedResultCount) {
-        Integer rows = null;
-        StringBuffer optimizeString = new StringBuffer();
-        if (expectedResultCount != 0)
-            optimizeString.append(" ").append(optimizeClause).append(" ")
-            .append(expectedResultCount).append(" ")
-            .append(rowClause).append(" ");
-        return optimizeString.toString();    
-    }
-
-    /** Override the DBDictionary toSelect to call getOptimizeClause and append 
-    *   to the select string
-    */   
-    public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
-            SQLBuffer from, SQLBuffer where, SQLBuffer group,
-            SQLBuffer having, SQLBuffer order,
-            boolean distinct, boolean forUpdate, long start, long end,
-            int expectedResultCount) {
-        String optimizeString = null;
-        SQLBuffer selString = toOperation(getSelectOperation(fetch), 
-                selects, from, where,
-                group, having, order, distinct,
-                forUpdate, start, end);
-        if (fetch != null)
-            optimizeString = getOptimizeClause(fetch, expectedResultCount);
-        if (optimizeString != null && optimizeString.length() > 0)
-            selString.append(optimizeString);
-        return selString;
-    }
-    
-    /** Override the DBDictionary toSelect to pass expectedResultcount to the 
-     * other toSelect method
-     */
     public SQLBuffer toSelect(Select sel, boolean forUpdate,
-            JDBCFetchConfiguration fetch) {
-        sel.addJoinClassConditions();
-        boolean update = forUpdate && sel.getFromSelect() == null;
-        SQLBuffer select = getSelects(sel, false, update);
-        SQLBuffer ordering = null;
-        if (!sel.isAggregate() || sel.getGrouping() != null)
-            ordering = sel.getOrdering();
-        SQLBuffer from;
-        if (sel.getFromSelect() != null)
-            from = getFromSelect(sel, forUpdate);
-        else
-            from = getFrom(sel, update);
-        SQLBuffer where = getWhere(sel, update);
-        return toSelect(select, fetch, from, where, sel.getGrouping(),
-                sel.getHaving(), ordering, sel.isDistinct(), forUpdate,
-                sel.getStartIndex(), 
-                sel.getEndIndex(),sel.getExpectedResultCount());
+        JDBCFetchConfiguration fetch) {
+        SQLBuffer buf = super.toSelect(sel, forUpdate, fetch); 
+        if (sel.getExpectedResultCount() > 0)
+            buf.append(" ").append(optimizeClause).append(" ").
+                append(String.valueOf(sel.getExpectedResultCount())).
+                append(" ").append(rowClause);
+        return buf;
     }
 }
