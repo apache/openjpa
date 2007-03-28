@@ -310,32 +310,25 @@ public class JDBCStoreQuery
         List selMappings, boolean subclasses, BitSet subclassBits,
         BitSet nextBits, ExpressionFactory[] facts, QueryExpressions[] exps,
         QueryExpressionsState[] states, ExpContext ctx, int subclassMode) {
+        Number optHint = (Number) ctx.fetch.getHint
+            (QueryHints.HINT_RESULT_COUNT);
         ClassMapping[] verts;
         boolean unionable = true;
         Select sel;
-        Object optHint = null;
         for (int i = 0; i < mappings.length; i++) {
             // determine vertical mappings to select separately
             verts = getVerticalMappings(mappings[i], subclasses, exps[i],
                 subclassMode);
             if (verts.length == 1 && subclasses)
                 subclassBits.set(sels.size());
+
             // create criteria select and clone for each vert mapping
             sel = ((JDBCExpressionFactory) facts[i]).getSelectConstructor().
                 evaluate(ctx, null, null, exps[i], states[i]);
-            // It means it is coming from getSingleResult so set the 
-            // expectedResultCount to 1.force = true indicates that this is 
-            // internally generated value
-            if (this.ctx.isUnique())
-                sel.setExpectedResultCount(1,true);
-            // It means this is coming from getResultList so set the 
-            // expectedResultCount based on any optimize hint if provided
-            else {
-                if ((optHint = ctx.fetch.getHint
-                              (QueryHints.HINT_RESULT_COUNT))!= null)
-                   sel.setExpectedResultCount
-                   (((Integer)optHint).intValue(),false);
-            }
+            if (optHint != null)
+               sel.setExpectedResultCount(optHint.intValue(), true);
+            else if (this.ctx.isUnique())
+                sel.setExpectedResultCount(1, false);
             for (int j = 0; j < verts.length; j++) {
                 selMappings.add(verts[j]);
                 if (j == verts.length - 1) {

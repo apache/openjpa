@@ -78,6 +78,19 @@ public interface SelectExecutor {
      * result set.
      */
     public void setLRS(boolean lrs);
+    
+    /**
+     * The expected result count for the query.
+     */
+    public int getExpectedResultCount();
+
+    /**
+     * The expected result count for the query.
+     *
+     * @param force if false, the count will be discarded if this select has
+     * any to-many eager joins that would throw off the result count
+     */
+    public void setExpectedResultCount(int expectedResultCount, boolean force);
 
     /**
      * The join syntax for this select, as one of the syntax constants from
@@ -119,21 +132,4 @@ public interface SelectExecutor {
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
         int lockLevel)
         throws SQLException;
-    
-    /**
-     * Return the expected result count for the query
-     */
-    public int getExpectedResultCount() ;
-
-    /**
-     * Set the expected result count for the query
-     * force indicates whether the count is internally generated
-     * or given by the user as optimize hint
-     */
-    public void setExpectedResultCount(int expectedResultCount,boolean force) ;
-
-    /**
-     * Indicates whether the expectedResultCount is internally generated
-     */
-    public boolean isExpRsltCntForced();
 }

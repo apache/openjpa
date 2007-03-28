@@ -1273,14 +1273,17 @@ public class QueryImpl
             boolean next = rop.next();
 
             // extract single result; throw an exception if multiple results
-            // match and not constrainted by range, as per spec
+            // match and not constrainted by range, or if a unique query with
+            // no results
             Object single = null;
             if (next) {
                 single = rop.getResultObject();
                 if (range.end != range.start + 1 && rop.next())
                     throw new InvalidStateException(_loc.get("not-unique",
                         _class, _query));
-            }
+            } else if (_unique == Boolean.TRUE)
+                throw new InvalidStateException(_loc.get("no-result", 
+                    _class, _query));
 
             // if unique set to false, use collection
             if (_unique == Boolean.FALSE) {
@@ -1289,10 +1292,6 @@ public class QueryImpl
                 // Collections.singletonList is JDK 1.3, so...
                 return Arrays.asList(new Object[]{ single });
             }
-             
-            if (single == null)
-                throw new InvalidStateException(_loc.get("is-null",
-                        _class, _query));
             
             // return single result
             return single;

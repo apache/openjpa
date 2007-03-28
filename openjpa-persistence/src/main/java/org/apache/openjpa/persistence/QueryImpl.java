@@ -279,12 +279,12 @@ public class QueryImpl
      */
     public Object getSingleResult() {
         _em.assertNotCloseInvoked();
-        // Indicate that this query returns single result.Later copied into
-        // select.expectedResultCount
+        // temporarily set query to unique so that a single result is validated
+        // and returned; unset again in case the user executes query again
+        // via getResultList
         _query.setUnique(true);
         try {
-            Object ob = execute();
-            return ob;
+            return execute();
         } finally {
             _query.setUnique(false);
         }
@@ -367,16 +367,17 @@ public class QueryImpl
                 Filters.hintToSetter(getFetchPlan(), k, value);
             } else if (k.startsWith("hint.")) {
                 if ("hint.OptimizeResultCount".equals(k)) {
-                    if ((!(value instanceof String)&&! (value instanceof Integer))
-                            || (value instanceof String &&(Integer.parseInt
-                                    ((String)value)< 0))||
-                                    ((value instanceof Integer)
-                                            && (((Integer)value).intValue()<0)))
+                    if (value instanceof String) {
+                        try {
+                            value = new Integer((String) value);
+                        } catch (NumberFormatException nfe) {
+                        }
+                    }
+                    if (!(value instanceof Number) 
+                        || ((Number) value).intValue() < 0)
                         throw new ArgumentException(_loc.get
-                                ("bad-hint-value", key),
-                                null, null, false);
-                    if (value instanceof String)
-                        value = new Integer((String)value);
+                            ("bad-query-hint-value", key, value), null, null, 
+                            false);
                 }
                 _query.getFetchConfiguration().setHint(key, value);
             }
@@ -384,12 +385,7 @@ public class QueryImpl
                 throw new ArgumentException(_loc.get("bad-query-hint", key),
                     null, null, false);
             return this;
-        }
-         catch (NumberFormatException e1) {
-            throw new ArgumentException(_loc.get("bad-hint-value", key),
-                    null, null, false); 
-        }
-         catch (Exception e) {
+        } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
