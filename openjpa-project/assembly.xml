@@ -78,6 +78,7 @@
             <outputDirectory>/</outputDirectory>
             <unpack>false</unpack>
             <scope>runtime</scope>
+            <outputFileNameMapping>openjpa-${version}.${extension}</outputFileNameMapping>
             <includes>
                 <include>org.apache.openjpa:openjpa-all</include>
             </includes>
