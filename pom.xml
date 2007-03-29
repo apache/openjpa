@@ -103,7 +103,6 @@
         <module>openjpa-xmlstore</module>
         <module>openjpa-all</module>
         <module>openjpa-project</module>
-        <module>openjpa-integration</module>
     </modules>
     <profiles>
         <profile>
