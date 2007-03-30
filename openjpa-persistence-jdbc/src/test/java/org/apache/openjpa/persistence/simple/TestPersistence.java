@@ -15,16 +15,12 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Simple test case to get an EntityManager and perform some basic operations.
@@ -32,29 +28,10 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
  * @author Marc Prud'hommeaux
  */
 public class TestPersistence
-    extends TestCase {
-
-    private EntityManagerFactory emf;
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory",
-            "jpa(Types=" + AllFieldTypes.class.getName() + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from AllFieldTypes").executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-        }
+        setUp(AllFieldTypes.class);
     }
 
     public void testCreateEntityManager() {

@@ -7,47 +7,20 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.RollbackException;
 
+import junit.framework.TestCase;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.callbacks.ExceptionsFromCallbacksEntity.CallbackTestException;
-
-import junit.framework.TestCase;
-
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests against JPA section 3.5's description of callback exception handling.
  */
 public class TestExceptionsFromCallbacks
-    extends TestCase {
-
-    private OpenJPAEntityManagerFactory emf;
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        String types = ExceptionsFromCallbacksEntity.class.getName();
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" + types + ")");
-        emf = (OpenJPAEntityManagerFactory) Persistence.
-            createEntityManagerFactory("test", props);
-        deleteAll();
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            deleteAll();
-            emf.close();
-        } catch (Exception e) {
-        }
-    }
-    
-    private void deleteAll() {
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        em.createQuery("delete from ExceptionsFromCallbacksEntity").
-            executeUpdate();
-        em.getTransaction().commit();
-        em.close();
+        setUp(ExceptionsFromCallbacksEntity.class);
     }
 
     public void testPrePersistException() {

@@ -15,16 +15,12 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test that querying the id of a related many-one (or one-one) does not create
@@ -33,17 +29,12 @@ import junit.textui.TestRunner;
  * @author Abe White
  */
 public class TestQueryIdOfRelationDoesNotJoin
-    extends TestCase {
+    extends SingleEMFTestCase {
 
-    private EntityManagerFactory emf;
     private long e3Id;
 
     public void setUp() {
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types="
-                + ManyOneEntity.class.getName() + ";"
-                + ManyOneEntitySub.class.getName() + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
+        setUp(ManyOneEntity.class, ManyOneEntitySub.class);
 
         ManyOneEntity e1 = new ManyOneEntity();
         e1.setName("e1");
@@ -65,21 +56,6 @@ public class TestQueryIdOfRelationDoesNotJoin
         em.remove(e3);
         em.getTransaction().commit();
         em.close();
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from ManyOneEntity").executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void testQuery() {

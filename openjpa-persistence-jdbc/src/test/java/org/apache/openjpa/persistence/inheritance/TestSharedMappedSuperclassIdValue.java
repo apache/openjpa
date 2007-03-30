@@ -15,14 +15,10 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test that sibling classes with a shared id value declared in their 
@@ -31,18 +27,11 @@ import junit.textui.TestRunner;
  * @author Abe White
  */
 public class TestSharedMappedSuperclassIdValue
-    extends TestCase {
-
-    private EntityManagerFactory emf;
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        String types = MappedSuperclassBase.class.getName() + ";"
-            + MappedSuperclassL2.class.getName() + ";"
-            + EntityL3.class.getName() + ";"
-            + EntityL3Sibling.class.getName();
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" + types + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
+        setUp(MappedSuperclassBase.class, MappedSuperclassL2.class,
+            EntityL3.class, EntityL3Sibling.class);
 
         EntityL3 ent = new EntityL3();
         ent.setId(1);
@@ -59,22 +48,6 @@ public class TestSharedMappedSuperclassIdValue
         em.persist(sib);
         em.getTransaction().commit();
         em.close();
-
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from EntityL3").executeUpdate();
-            em.createQuery("delete from EntityL3Sibling").executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-        }
     }
 
     public void testFind() {
@@ -107,7 +80,6 @@ public class TestSharedMappedSuperclassIdValue
 
         em.close();
     }
-
 
     public static void main(String[] args) {
         TestRunner.run(TestSharedMappedSuperclassIdValue.class);

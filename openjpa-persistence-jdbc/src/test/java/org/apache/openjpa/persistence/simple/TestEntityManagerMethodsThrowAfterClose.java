@@ -15,16 +15,12 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
-import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 /**
  * Negative test case to verify that EntityManager throws required exceptions
@@ -33,34 +29,15 @@ import junit.textui.TestRunner;
  * @author Craig Russell
  */
 public class TestEntityManagerMethodsThrowAfterClose
-    extends TestCase {
+    extends SingleEMTestCase {
 
-    private EntityManagerFactory emf;
-    private EntityManager em;
     private AllFieldTypes aft = new AllFieldTypes();
 
     public void setUp() {
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory",
-            "jpa(Types=" + AllFieldTypes.class.getName() + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
-        em = emf.createEntityManager();
-        em.close();
+        setUp(AllFieldTypes.class);
+        close();
     }
 
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from AllFieldTypes").executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-        }
-    }
     public void testPersistAfterClose() {
         try {
             em.persist(aft);

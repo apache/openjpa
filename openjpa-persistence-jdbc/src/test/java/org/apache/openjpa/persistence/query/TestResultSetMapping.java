@@ -15,49 +15,25 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-public class TestResultSetMapping extends TestCase {
-
-    private EntityManagerFactory emf;
+public class TestResultSetMapping 
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        Map props = new HashMap();
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" + 
-            org.apache.openjpa.persistence.query.SimpleEntity.class.getName() + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
+        setUp(SimpleEntity.class);
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new SimpleEntity("tName", "tValue"));
         em.getTransaction().commit();
         em.close();
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from simple").executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void testSimpleQuery() {

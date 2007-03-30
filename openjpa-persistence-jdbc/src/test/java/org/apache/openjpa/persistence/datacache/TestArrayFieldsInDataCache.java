@@ -4,15 +4,15 @@ import java.util.Map;
 import java.util.Arrays;
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.test.SingleEMTest;
-import org.apache.openjpa.persistence.simple.AllFieldTypes;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.kernel.PCData;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.simple.AllFieldTypes;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestArrayFieldsInDataCache
-    extends SingleEMTest {
+    extends SingleEMFTestCase {
 
     private static final String[] STRINGS = new String[]{ "a", "b", "c" };
     private static final int[] INTS = new int[]{ 1, 2, 3 };
@@ -20,25 +20,10 @@ public class TestArrayFieldsInDataCache
     private Object jpaOid;
     private Object internalOid;
 
-    public TestArrayFieldsInDataCache() {
-        super(AllFieldTypes.class);
-    }
-
-    @Override
-    protected void setEMFProps(Map props) {
-        super.setEMFProps(props);
-        props.put("openjpa.DataCache", "true");
-        props.put("openjpa.RemoteCommitProvider", "sjvm");
-    }
-
-    @Override
-    protected boolean clearDatabaseInSetUp() {
-        return true;
-    }
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    public void setUp() {
+        setUp("openjpa.DataCache", "true", 
+            "openjpa.RemoteCommitProvider", "sjvm", 
+            AllFieldTypes.class);
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -70,7 +55,7 @@ public class TestArrayFieldsInDataCache
             cachedFieldData.getClass().getComponentType());
 
         // make sure that the returned results are correct
-        em = emf.createEntityManager();
+        EntityManager em = emf.createEntityManager();
         AllFieldTypes aft = em.find(AllFieldTypes.class, jpaOid);
         assertTrue(Arrays.equals(STRINGS, aft.getArrayOfStrings()));
         assertNotSame(STRINGS, aft.getArrayOfStrings());
@@ -90,7 +75,7 @@ public class TestArrayFieldsInDataCache
         assertEquals(int.class, cachedFieldData.getClass().getComponentType());
 
         // make sure that the returned results are correct
-        em = emf.createEntityManager();
+        EntityManager em = emf.createEntityManager();
         AllFieldTypes aft = em.find(AllFieldTypes.class, jpaOid);
         assertTrue(Arrays.equals(INTS, aft.getArrayOfInts()));
         assertNotSame(INTS, aft.getArrayOfInts());

@@ -15,16 +15,12 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.simple.NamedEntity;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test that we can query by an entity's abstract schema name.
@@ -32,15 +28,10 @@ import org.apache.openjpa.persistence.simple.NamedEntity;
  * @author Abe White
  */
 public class TestAbstractSchemaName
-    extends TestCase {
-
-    private EntityManagerFactory emf;
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" 
-            + NamedEntity.class.getName() + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
+        setUp(NamedEntity.class);
 
         NamedEntity e = new NamedEntity();
         e.setName("e"); 
@@ -50,21 +41,6 @@ public class TestAbstractSchemaName
         em.persist(e);
         em.getTransaction().commit();
         em.close();
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from named").executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void testQuery() {

@@ -15,14 +15,10 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 /**
  * Test case to ensure that the proper JPA clear semantics are processed.
@@ -30,71 +26,46 @@ import junit.textui.TestRunner;
  * @author Kevin Sutter
  */
 public class TestEntityManagerClear
-    extends TestCase {
-
-    private EntityManagerFactory emf;
-    private EntityManager em;
+    extends SingleEMTestCase {
 
     public void setUp() {
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory",
-            "jpa(Types=" + AllFieldTypes.class.getName() + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
+        setUp(AllFieldTypes.class);
     }
 
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from AllFieldTypes").executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-        }
-    }
     public void testClear() {
-        try {
-            // Create EntityManager and Start a transaction (1)
-            em = emf.createEntityManager();
-            em.getTransaction().begin();
+        // Create EntityManager and Start a transaction (1)
+        begin();
 
-            // Insert a new object and flush
-            AllFieldTypes testObject1 = new AllFieldTypes();
-            testObject1.setStringField("my test object1");
-            em.persist(testObject1);
-            em.flush();
+        // Insert a new object and flush
+        AllFieldTypes testObject1 = new AllFieldTypes();
+        testObject1.setStringField("my test object1");
+        persist(testObject1);
+        em.flush();
 
-            // Clear the PC for new object 2
-            AllFieldTypes testObject2 = new AllFieldTypes();
-            testObject1.setStringField("my test object2");
-            em.persist(testObject2);
-            em.clear();
+        // Clear the PC for new object 2
+        AllFieldTypes testObject2 = new AllFieldTypes();
+        testObject1.setStringField("my test object2");
+        persist(testObject2);
+        em.clear();
 
-            // Commit the transaction (only object 1 should be in database)
-            em.getTransaction().commit();
+        // Commit the transaction (only object 1 should be in database)
+        commit();
 
-            // Start a new transaction
-            em.getTransaction().begin();
+        // Start a new transaction
+        begin();
 
-            // Attempt retrieve of Object1 from previous PC (should exist)
-            assertEquals(1, em.createQuery
-                    ("select x from AllFieldTypes x where x.stringField = 'my test object1'").
-                    getResultList().size());
+        // Attempt retrieve of Object1 from previous PC (should exist)
+        assertEquals(1, query("select x from AllFieldTypes x "
+            + "where x.stringField = 'my test object1'").
+                getResultList().size());
 
-            // Attempt retrieve of Object2 from previous PC (should not exist)
-            assertEquals(0, em.createQuery
-                    ("select x from AllFieldTypes x where x.stringField = 'my test object2'").
-                    getResultList().size());
+        // Attempt retrieve of Object2 from previous PC (should not exist)
+        assertEquals(0, query("select x from AllFieldTypes x "
+            + "where x.stringField = 'my test object2'").
+                getResultList().size());
 
-            // Rollback the transaction and close everything
-            em.getTransaction().rollback();
-            em.close();
-        } catch (Exception ex) {
-            fail("Unexpected Exception ex = " + ex);
-        }
+        // Rollback the transaction and close everything
+        rollback();
     }
 
     public static void main(String[] args) {

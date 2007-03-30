@@ -7,34 +7,19 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
-import org.apache.openjpa.persistence.test.SingleEMFTest;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestBulkJPQLAndDataCache
-    extends SingleEMFTest {
+    extends SingleEMFTestCase {
 
     private Object oid;
 
-    public TestBulkJPQLAndDataCache() {
-        super(AllFieldTypes.class, CascadeParent.class, CascadeChild.class);
-    }
-
-    @Override
-    protected boolean clearDatabaseInSetUp() {
-        return true;
-    }
-
-    protected void setEMFProps(Map props) {
-        super.setEMFProps(props);
-        props.put("openjpa.DataCache", "true");
-        props.put("openjpa.RemoteCommitProvider", "sjvm");
-    }
-
-    @Override
     public void setUp() throws Exception {
-        super.setUp();
+        setUp("openjpa.DataCache", "true",
+            "openjpa.RemoteCommitProvider", "sjvm",
+            AllFieldTypes.class, CascadeParent.class, CascadeChild.class);
 
-        OpenJPAEntityManager em =
-            OpenJPAPersistence.cast(emf.createEntityManager());
+        OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AllFieldTypes pc = new AllFieldTypes();
         pc.setStringField("DeleteMe");
@@ -44,28 +29,8 @@ public class TestBulkJPQLAndDataCache
         em.close();
     }
 
-    public void tearDown() 
-        throws Exception {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("DELETE FROM AllFieldTypes").executeUpdate();
-            em.createQuery("DELETE FROM CascadeParent").executeUpdate();
-            em.createQuery("DELETE FROM CascadeChild").executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-        } catch (Exception e) {
-        }
-
-        super.tearDown();
-    }
-
     public void testBulkDelete() {
-        OpenJPAEntityManager em =
-            OpenJPAPersistence.cast(emf.createEntityManager());
-
+        OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         List result = em.createQuery("SELECT o FROM AllFieldTypes o")
             .getResultList();
@@ -74,7 +39,7 @@ public class TestBulkJPQLAndDataCache
         em.getTransaction().commit();
         em.close();
 
-        em = OpenJPAPersistence.cast(emf.createEntityManager());
+        em = emf.createEntityManager();
 
         // this assumes that we invalidate the cache, rather than update it
         // according to the bulk rule.
@@ -86,8 +51,7 @@ public class TestBulkJPQLAndDataCache
     }
 
     public void testBulkUpdate() {
-        OpenJPAEntityManager em =
-            OpenJPAPersistence.cast(emf.createEntityManager());
+        OpenJPAEntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();
         List result = em.createQuery("SELECT o FROM AllFieldTypes o "
@@ -98,7 +62,7 @@ public class TestBulkJPQLAndDataCache
         em.getTransaction().commit();
         em.close();
 
-        em = OpenJPAPersistence.cast(emf.createEntityManager());
+        em = emf.createEntityManager();
 
         // this assumes that we invalidate the cache, rather than update it
         // according to the bulk rule.

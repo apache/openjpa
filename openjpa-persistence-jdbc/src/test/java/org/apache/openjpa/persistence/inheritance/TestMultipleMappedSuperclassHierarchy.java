@@ -15,14 +15,10 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Perform basic operations on an inheritance hierarchy involving multiple
@@ -31,31 +27,11 @@ import junit.textui.TestRunner;
  * @author Abe White
  */
 public class TestMultipleMappedSuperclassHierarchy
-    extends TestCase {
-
-    private EntityManagerFactory emf;
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        String types = MappedSuperclassBase.class.getName() + ";"
-            + MappedSuperclassL2.class.getName() + ";"
-            + EntityL3.class.getName();
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" + types + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from EntityL3").executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-        }
+        setUp(MappedSuperclassBase.class, MappedSuperclassL2.class,
+            EntityL3.class);
     }
 
     public void testPersist() {

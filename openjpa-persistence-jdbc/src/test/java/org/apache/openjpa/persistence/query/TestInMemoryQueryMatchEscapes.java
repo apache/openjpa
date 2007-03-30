@@ -15,33 +15,18 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.persistence.FlushModeType;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
-
-import junit.framework.TestCase;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestInMemoryQueryMatchEscapes
-    extends TestCase {
-
-    private EntityManagerFactory emf;
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        Map options = new HashMap(System.getProperties());
-
-        // ensure that OpenJPA knows about our type, so that 
-        // auto-schema-creation works
-        options.put("openjpa.MetaDataFactory",
-            "jpa(Types=" + AllFieldTypes.class.getName() + ")");
-
-        emf = Persistence.createEntityManagerFactory("test", options);
+        setUp(AllFieldTypes.class);
     }
     
     public void testDatabaseEscape() {

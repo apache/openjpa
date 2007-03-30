@@ -15,14 +15,10 @@
  */
 package org.apache.openjpa.persistence.relations;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Perform basic operations on an entity with interface relations that use
@@ -31,30 +27,10 @@ import junit.textui.TestRunner;
  * @author Abe White
  */
 public class TestTargetedIFaceRelations
-    extends TestCase {
-
-    private EntityManagerFactory emf;
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" 
-            + TargetedIFaceRelationParent.class.getName() + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from TargetedIFaceRelationParent").
-                executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-        }
+        setUp(TargetedIFaceRelationParent.class);
     }
 
     public void testPersist() {

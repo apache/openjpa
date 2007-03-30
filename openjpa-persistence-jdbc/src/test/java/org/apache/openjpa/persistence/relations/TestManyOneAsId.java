@@ -15,16 +15,12 @@
  */
 package org.apache.openjpa.persistence.relations;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Perform basic operations on an entity with a many-one relation as its id
@@ -33,22 +29,16 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
  * @author Abe White
  */
 public class TestManyOneAsId
-    extends TestCase {
+    extends SingleEMFTestCase {
 
-    private EntityManagerFactory emf;
     private long id;
     private long dsid;
     private long cid;
 
     public void setUp() {
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" 
-            + BasicEntity.class.getName() + ";"
-            + DataStoreBasicEntity.class.getName() + ";"
-            + ManyOneIdOwner.class.getName() + ";"
-            + DataStoreManyOneIdOwner.class.getName() + ";"
-            + ManyOneCompoundIdOwner.class.getName() + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
+        setUp(BasicEntity.class, DataStoreBasicEntity.class,
+            ManyOneIdOwner.class, DataStoreManyOneIdOwner.class,
+            ManyOneCompoundIdOwner.class);
 
         BasicEntity id1 = new BasicEntity();
         id1.setName("id1");
@@ -106,26 +96,6 @@ public class TestManyOneAsId
         cid = cparent.getLongId();
         assertCompoundRelations(oem, cparent);
         em.close();
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from ManyOneIdOwner").executeUpdate();
-            em.createQuery("delete from DataStoreManyOneIdOwner").
-                executeUpdate();
-            em.createQuery("delete from ManyOneCompoundIdOwner").
-                executeUpdate();
-            em.createQuery("delete from BasicEntity").executeUpdate();
-            em.createQuery("delete from DataStoreBasicEntity").executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-        }
     }
 
     private void assertRelations(EntityManager em, ManyOneIdOwner parent) {

@@ -15,16 +15,12 @@
  */
 package org.apache.openjpa.persistence.relations;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test that querying and retrieving entities with multiple same-typed embedded
@@ -33,16 +29,10 @@ import junit.textui.TestRunner;
  * @author Abe White
  */
 public class TestMultipleSameTypedEmbeddedWithEagerRelations
-    extends TestCase {
-
-    private EntityManagerFactory emf;
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" 
-            + EmbeddableWithRelation.class.getName() + ";"
-            + MultipleSameTypedEmbedded.class.getName() + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
+        setUp(EmbeddableWithRelation.class, MultipleSameTypedEmbedded.class);
 
         EmbeddableWithRelation embed1 = new EmbeddableWithRelation();
         embed1.setName("embed1");
@@ -67,22 +57,6 @@ public class TestMultipleSameTypedEmbeddedWithEagerRelations
         em.persist(m2);
         em.getTransaction().commit();
         em.close();
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from MultipleSameTypedEmbedded").
-                executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void testQuery() {

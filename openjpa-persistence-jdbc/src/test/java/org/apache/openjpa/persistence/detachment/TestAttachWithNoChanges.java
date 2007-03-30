@@ -15,15 +15,11 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.OptimisticLockException;
-import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test that attaching an instance without having changed it still overwrites
@@ -32,37 +28,13 @@ import junit.textui.TestRunner;
  * @author Abe White
  */
 public class TestAttachWithNoChanges
-    extends TestCase {
-
-    private EntityManagerFactory emf;
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        String types = DetachmentOneManyParent.class.getName() + ";"
-            + DetachmentOneManyChild.class.getName(); 
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" + types + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
+        setUp(DetachmentOneManyParent.class, DetachmentOneManyChild.class);
     }
 
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from DetachmentOneManyChild").
-                executeUpdate();
-            em.createQuery("delete from DetachmentOneManyParent").
-                executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-        }
-    }
-    
     public void testAttachWithNoChangesChecksVersion() {
-try {
         DetachmentOneManyChild e = new DetachmentOneManyChild();
         DetachmentOneManyParent p = new DetachmentOneManyParent();
         e.setName("orig");
@@ -91,10 +63,6 @@ try {
                 em.getTransaction().rollback();
             em.close();
         }
-} catch (RuntimeException re) {
-re.printStackTrace();
-throw re;
-}
     }
 
     public static void main(String[] args) {
