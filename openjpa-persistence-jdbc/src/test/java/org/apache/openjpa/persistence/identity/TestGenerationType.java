@@ -15,20 +15,16 @@
  */
 package org.apache.openjpa.persistence.identity;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
-
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Simple test case to test the GenerationType for @Id...
@@ -36,16 +32,11 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
  * @author Kevin Sutter
  */
 public class TestGenerationType
-    extends TestCase {
-
-    private OpenJPAEntityManagerFactory emf;
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory",
-            "jpa(Types=" + IdentityGenerationType.class.getName() + ")");
-        emf = (OpenJPAEntityManagerFactory) Persistence.
-            createEntityManagerFactory("test", props);
+        setUp(IdentityGenerationType.class);
+
         /*
          * If the DBDictionary doesn't support AutoAssign(ment) of column
          * values, then null out the emf instance to prevent the rest of
@@ -56,20 +47,6 @@ public class TestGenerationType
             emf = null;
         }
 
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from IdentityGenerationType").executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-        }
     }
 
     public void testCreateEntityManager() {

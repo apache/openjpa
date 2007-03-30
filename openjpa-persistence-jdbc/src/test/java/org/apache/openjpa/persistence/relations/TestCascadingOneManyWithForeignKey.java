@@ -15,17 +15,13 @@
  */
 package org.apache.openjpa.persistence.relations;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests a cascading one-many backed by a foreign key.
@@ -33,33 +29,10 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
  * @author Abe White
  */
 public class TestCascadingOneManyWithForeignKey
-    extends TestCase {
-
-    private OpenJPAEntityManagerFactory emf;
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        String types = CascadingOneManyParent.class.getName() + ";"
-            + CascadingOneManyChild.class.getName(); 
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" + types + ")");
-        emf = (OpenJPAEntityManagerFactory) Persistence.
-            createEntityManagerFactory("test", props);
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from CascadingOneManyChild").executeUpdate();
-            em.createQuery("delete from CascadingOneManyParent").
-                executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-        }
+        setUp(CascadingOneManyParent.class, CascadingOneManyChild.class);
     }
 
     public void testPersist() {

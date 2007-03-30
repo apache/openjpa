@@ -1,54 +1,19 @@
 package org.apache.openjpa.persistence.detachment;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 import javax.persistence.RollbackException;
 
-import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-
 import junit.framework.TestCase;
-
+import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestGetReferenceAndImplicitDetachment
-    extends TestCase {
-
-    private OpenJPAEntityManagerFactory emf;
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        String types = DetachmentOneManyParent.class.getName() + ";"
-            + DetachmentOneManyChild.class.getName(); 
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" + types + ")");
-        props.put("openjpa.DetachState", "fgs");
-        emf = (OpenJPAEntityManagerFactory) Persistence.
-            createEntityManagerFactory("test", props);
-        deleteAll();
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            deleteAll();
-            emf.close();
-        } catch (Exception e) {
-        }
-    }
-    
-    private void deleteAll() {
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        em.createQuery("delete from DetachmentOneManyChild").
-            executeUpdate();
-        em.createQuery("delete from DetachmentOneManyParent").
-            executeUpdate();
-        em.getTransaction().commit();
-        em.close();
+        setUp("openjpa.DetachState", "fgs",
+            DetachmentOneManyParent.class, DetachmentOneManyChild.class);
     }
 
     public void testNonexistentGetReferenceDetachmentInTxWithCommit() {

@@ -15,15 +15,10 @@
  */
 package org.apache.openjpa.persistence.relations;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test ordering a one-many field on the primary key of the related entity.
@@ -31,17 +26,12 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
  * @author Abe White
  */
 public class TestIdOrderedOneMany
-    extends TestCase {
+    extends SingleEMFTestCase {
 
-    private EntityManagerFactory emf;
     private long id;
 
     public void setUp() {
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" 
-            + IdOrderedOneManyParent.class.getName() + ";"
-            + IdOrderedOneManyChild.class.getName() + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
+        setUp(IdOrderedOneManyParent.class, IdOrderedOneManyChild.class);
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -69,22 +59,6 @@ public class TestIdOrderedOneMany
         em.getTransaction().commit();
         id = parent.getId();
         em.close();
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from IdOrderedOneManyChild").executeUpdate();
-            em.createQuery("delete from IdOrderedOneManyParent").
-                executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-        }
     }
 
     public void testExplicitOrdering() {

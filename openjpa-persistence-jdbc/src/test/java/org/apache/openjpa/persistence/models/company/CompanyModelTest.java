@@ -28,12 +28,13 @@ import org.apache.openjpa.persistence.test.*;
  *  
  * @author  Marc Prud'hommeaux
  */
-public abstract class CompanyModelTest extends SingleEMTest {
+public abstract class CompanyModelTest 
+    extends SingleEMTestCase {
+
     private static Map<Class,Class> factoryClasses;
+    private Map<Class,Class> impls;
 
-    private final Map<Class,Class> impls;
-
-    public CompanyModelTest() {
+    public void setUp() {
         // make a map of the implementations based on the class names in
         // the current package of the test subclass
         impls = new HashMap<Class,Class>();
@@ -48,7 +49,8 @@ public abstract class CompanyModelTest extends SingleEMTest {
         impls.put(IPartTimeEmployee.class, localClass("PartTimeEmployee"));
         impls.put(IProduct.class, localClass("Product"));
 
-        classes = (Class[]) impls.values().toArray(new Class[impls.size()]);
+        setUp(impls.values().toArray(new Class[impls.size()]));
+        checkModel();
     }
 
     private Class localClass(String name) {
@@ -57,16 +59,6 @@ public abstract class CompanyModelTest extends SingleEMTest {
             return Class.forName(pkg + "." + name);
         } catch (Exception e) {
             throw new IllegalStateException(e);
-        }
-    }
-
-    public void setUp() throws Exception {
-        super.setUp();
-        try {
-            checkModel();
-        } catch (Exception e) {
-            closeEMF();
-            throw e;
         }
     }
 
@@ -174,7 +166,7 @@ public abstract class CompanyModelTest extends SingleEMTest {
             verifyModel();
         } catch (AssertionFailedError e) {
             // clear all existing instances
-            delete(impls.values().toArray(new Class[0]));
+            clear(emf, impls.values().toArray(new Class[impls.size()]));
 
             // since the factory method needs to be static, we need to store
             // the classes statically

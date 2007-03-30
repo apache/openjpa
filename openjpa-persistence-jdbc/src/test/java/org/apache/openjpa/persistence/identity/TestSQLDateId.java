@@ -16,14 +16,10 @@
 package org.apache.openjpa.persistence.identity;
 
 import java.sql.Date;
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test that entities can use SQL dates as identity values.
@@ -31,29 +27,10 @@ import junit.textui.TestRunner;
  * @author Abe White
  */
 public class TestSQLDateId
-    extends TestCase {
-
-    private EntityManagerFactory emf;
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        String types = SQLDateIdEntity.class.getName();
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" + types + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from SQLDateIdEntity").executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-        }
+        setUp(SQLDateIdEntity.class);
     }
 
     public void testPersist() {

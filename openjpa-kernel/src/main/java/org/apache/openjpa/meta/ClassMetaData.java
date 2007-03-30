@@ -577,7 +577,8 @@ public class ClassMetaData
     /**
      * Returns the alias for the described type, or <code>null</code> if none
      * has been set.
-     *  #see	setTypeAlias
+     * 
+     * @see #setTypeAlias
      */
     public String getTypeAlias() {
         if (_alias == null)

@@ -15,16 +15,12 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.kernel.AutoDetach;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests detachment for bidirectional one-many relationship
@@ -32,37 +28,12 @@ import org.apache.openjpa.kernel.AutoDetach;
  * @author David Ezzio
  */
 public class TestDetachmentOneMany
-    extends TestCase {
+    extends SingleEMFTestCase {
 
-    private OpenJPAEntityManagerFactory emf;
-
-    @SuppressWarnings("unchecked")
     public void setUp() {
-        String types = DetachmentOneManyParent.class.getName() + ";"
-            + DetachmentOneManyChild.class.getName(); 
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" + types + ")");
-        emf = (OpenJPAEntityManagerFactory) Persistence.
-            createEntityManagerFactory("test", props);
+        setUp(DetachmentOneManyParent.class, DetachmentOneManyChild.class);
     }
 
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from DetachmentOneManyChild").
-                executeUpdate();
-            em.createQuery("delete from DetachmentOneManyParent").
-                executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-        }
-    }
-    
     public void testDetachment() {
         long id = createParentAndChildren();
     
@@ -72,6 +43,7 @@ public class TestDetachmentOneMany
             id);
         assertNotNull(parent);
         assertFalse("The parent was not detached", em.contains(parent));
+        em.close();
     }
 
     public void testFetchWithDetach() {

@@ -15,14 +15,10 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test that you can find a concrete subclass record when passing in its
@@ -31,16 +27,10 @@ import junit.textui.TestRunner;
  * @author Abe White
  */
 public class TestFindAbstractClass
-    extends TestCase {
-
-    private EntityManagerFactory emf;
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        String types = AbstractBase.class.getName() + ";"
-            + ConcreteSubclass.class.getName();
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" + types + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
+        setUp(AbstractBase.class, ConcreteSubclass.class);
 
         ConcreteSubclass e = new ConcreteSubclass();
         e.setId("id");
@@ -51,20 +41,6 @@ public class TestFindAbstractClass
         em.persist(e);
         em.getTransaction().commit();
         em.close();
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from ConcreteSubclass").executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-        }
     }
 
     public void testFind() {

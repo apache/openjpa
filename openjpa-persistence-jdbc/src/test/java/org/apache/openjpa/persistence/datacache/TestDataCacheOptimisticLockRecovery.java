@@ -15,60 +15,34 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.RollbackException;
-import javax.persistence.LockModeType;
-
-import junit.framework.TestCase;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import javax.persistence.EntityManager;
+import javax.persistence.RollbackException;
+import javax.persistence.LockModeType;
 import javax.sql.DataSource;
 
-public class TestDataCacheOptimisticLockRecovery
-    extends TestCase {
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-    private EntityManagerFactory emf;
+public class TestDataCacheOptimisticLockRecovery
+    extends SingleEMFTestCase {
+
     private int pk;
 
     public void setUp() {
-        Map options = new HashMap(System.getProperties());
-
-        // turn on caching
-        options.put("openjpa.DataCache", "true");
-        options.put("openjpa.RemoteCommitProvider", "sjvm");
-
-        // ensure that OpenJPA knows about our type, so that 
-        // auto-schema-creation works
-        options.put("openjpa.MetaDataFactory",
-            "jpa(Types=" + OptimisticLockInstance.class.getName() + ")");
-
-        emf = Persistence.createEntityManagerFactory("test", options);
+        setUp("openjpa.DataCache", "true",
+            "openjpa.RemoteCommitProvider", "sjvm",
+            OptimisticLockInstance.class);
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        em.createQuery("delete from OptimisticLockInstance").executeUpdate();
-
         OptimisticLockInstance oli = new OptimisticLockInstance("foo");
-        try {
-            em.persist(oli);
-            em.getTransaction().commit();
-        } finally {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-        }
+        em.persist(oli);
+        em.getTransaction().commit();
         pk = oli.getPK();
         em.close();
-    }
-
-    public void tearDown() {
-        emf.close();
     }
 
     public void testOptimisticLockRecovery() 

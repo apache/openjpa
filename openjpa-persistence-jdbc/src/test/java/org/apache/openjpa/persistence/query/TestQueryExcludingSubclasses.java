@@ -15,17 +15,13 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test that we can exclude subclass instances from query results.
@@ -33,16 +29,10 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
  * @author Abe White
  */
 public class TestQueryExcludingSubclasses
-    extends TestCase {
-
-    private EntityManagerFactory emf;
+    extends SingleEMFTestCase {
 
     public void setUp() {
-        Map props = new HashMap(System.getProperties());
-        props.put("openjpa.MetaDataFactory", "jpa(Types=" 
-            + ManyOneEntity.class.getName() + ";"
-            + ManyOneEntitySub.class.getName() + ")");
-        emf = Persistence.createEntityManagerFactory("test", props);
+        setUp(ManyOneEntity.class, ManyOneEntitySub.class);
 
         ManyOneEntity e1 = new ManyOneEntity();
         e1.setName("e1"); 
@@ -67,21 +57,6 @@ public class TestQueryExcludingSubclasses
         em.persist(invalidsub);
         em.getTransaction().commit();
         em.close();
-    }
-
-    public void tearDown() {
-        if (emf == null)
-            return;
-        try {
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.createQuery("delete from ManyOneEntity").executeUpdate();
-            em.getTransaction().commit();
-            em.close();
-            emf.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void testQuery() {
@@ -114,7 +89,6 @@ public class TestQueryExcludingSubclasses
         }
         em.close();
     }
-
 
     public static void main(String[] args) {
         TestRunner.run(TestQueryExcludingSubclasses.class);

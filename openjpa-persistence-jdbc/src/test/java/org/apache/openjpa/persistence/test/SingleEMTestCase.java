@@ -15,9 +15,12 @@
  */
 package org.apache.openjpa.persistence.test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import javax.persistence.EntityTransaction;
 
-import javax.persistence.*;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAQuery;
 
 /**
  * A base test case that can be used to easily test scenarios where there
@@ -25,42 +28,30 @@ import javax.persistence.*;
  *
  * @author Marc Prud'hommeaux
  */
-public abstract class SingleEMTest extends SingleEMFTest {
+public abstract class SingleEMTestCase 
+    extends SingleEMFTestCase {
 
-    protected EntityManager em;
+    protected OpenJPAEntityManager em;
 
-    public SingleEMTest(Class... classes) {
-        super(classes);
+    @Override
+    public void setUp(Object... props) {
+        super.setUp(props);
+        em = emf.createEntityManager(); 
     }
 
-    /**
-     * Rolls back the current transaction and closes the EntityManager. 
-     */
     @Override
-    public void tearDown() throws Exception {
+    public void tearDown() {
         rollback();
         close();
         super.tearDown();
-    }
-
-    /**
-     * Returns the current EntityManager, creating one from the
-     * EntityManagerFactory if it doesn't already exist. 
-     */
-    public EntityManager em() {
-        if (em == null) {
-            em = emf().createEntityManager();
-        }
-
-        return em;
     }
 
     /** 
      * Start a new transaction if there isn't currently one active. 
      * @return  true if a transaction was started, false if one already existed
      */
-    public boolean begin() {
-        EntityTransaction tx = em().getTransaction();
+    protected boolean begin() {
+        EntityTransaction tx = em.getTransaction();
         if (tx.isActive())
             return false;
 
@@ -72,8 +63,8 @@ public abstract class SingleEMTest extends SingleEMFTest {
      * Commit the current transaction, if it is active. 
      * @return true if the transaction was committed
      */
-    public boolean commit() {
-        EntityTransaction tx = em().getTransaction();
+    protected boolean commit() {
+        EntityTransaction tx = em.getTransaction();
         if (!tx.isActive())
             return false;
 
@@ -85,8 +76,8 @@ public abstract class SingleEMTest extends SingleEMFTest {
      * Rollback the current transaction, if it is active. 
      * @return true if the transaction was rolled back
      */
-    public boolean rollback() {
-        EntityTransaction tx = em().getTransaction();
+    protected boolean rollback() {
+        EntityTransaction tx = em.getTransaction();
         if (!tx.isActive())
             return false;
 
@@ -98,7 +89,7 @@ public abstract class SingleEMTest extends SingleEMFTest {
      * Closes the current EntityManager if it is open. 
      * @return false if the EntityManager was already closed.
      */
-    public boolean close() {
+    protected boolean close() {
         if (em == null)
             return false;
 
@@ -111,41 +102,18 @@ public abstract class SingleEMTest extends SingleEMFTest {
         return !em.isOpen();
     }
 
-    @Override
-    public boolean closeEMF() {
-        close();
-        return super.closeEMF();
-    }
-
-    /** 
-     * Returns the entity name of the specified class. If the class
-     * declares an @Entity, then it will be used, otherwise the base
-     * name of the class will be returned.
-     *
-     * Note that this will not correctly return the entity name of
-     * a class declared in an orm.xml file.
-     */
-    public String entityName(Class c) {
-        Entity e = (Entity) c.getAnnotation(Entity.class);
-        if (e != null && e.name() != null && e.name().length() > 0)
-            return e.name();
-
-        String name = c.getSimpleName();
-        name = name.substring(name.lastIndexOf(".") + 1);
-        return name;
-    }
-
     /** 
      * Delete all of the instances.
      *
      * If no transaction is running, then one will be started and committed.
      * Otherwise, the operation will take place in the current transaction.
      */
-    public void remove(Object... obs) {
+    protected void remove(Object... obs) {
         boolean tx = begin();
         for (Object ob : obs)
-            em().remove(ob);
-        if (tx) commit();
+            em.remove(ob);
+        if (tx) 
+            commit();
     }
 
     /** 
@@ -154,18 +122,19 @@ public abstract class SingleEMTest extends SingleEMFTest {
      * If no transaction is running, then one will be started and committed.
      * Otherwise, the operation will take place in the current transaction.
      */
-    public void persist(Object... obs) {
+    protected void persist(Object... obs) {
         boolean tx = begin();
         for (Object ob : obs)
-            em().persist(ob);
-        if (tx) commit();
+            em.persist(ob);
+        if (tx) 
+            commit();
     }
 
     /** 
      * Creates a query in the current EntityManager with the specified string. 
      */
-    public Query query(String str) {
-        return em().createQuery(str);
+    protected OpenJPAQuery query(String str) {
+        return em.createQuery(str);
     }
 
     /** 
@@ -178,10 +147,10 @@ public abstract class SingleEMTest extends SingleEMFTest {
      * @param  params  the parameters, if any
      * @return the Query object
      */
-    public Query query(Class c, String str, Object... params) {
-        String query = "select x from " + entityName(c) + " x "
+    protected OpenJPAQuery query(Class c, String str, Object... params) {
+        String query = "select x from " + entityName(emf, c) + " x "
             + (str == null ? "" : str);
-        Query q = em().createQuery(query);
+        OpenJPAQuery q = em.createQuery(query);
         for (int i = 0; params != null && i < params.length; i++)
             q.setParameter(i + 1, params[i]);
         return q;
@@ -196,31 +165,14 @@ public abstract class SingleEMTest extends SingleEMFTest {
      *
      * @see #query(java.lang.Class,java.lang.String)
      */
-    public <E> List<E> find(Class<E> c, String q, Object... params) {
+    protected <E> List<E> find(Class<E> c, String q, Object... params) {
         return Collections.checkedList(query(c, q, params).getResultList(), c);
     }
 
-    public <E> List<E> find(Class<E> c) {
-        return find(c, null);
-    }
-
     /** 
-     * Deletes all instances of the specific class from the database. 
-     *
-     * If no transaction is running, then one will be started and committed.
-     * Otherwise, the operation will take place in the current transaction.
-     *
-     * @return the total number of instanes deleted
+     * Returns a list of all instances of the specific class in the database. 
      */
-    public int delete(Class... classes) {
-        boolean tx = begin();
-        int total = 0;
-        for (Class c : classes) {
-            total += query("delete from " + entityName(c) + " x").
-                executeUpdate();
-        }
-        if (tx) commit();
-
-        return total;
+    protected <E> List<E> find(Class<E> c) {
+        return find(c, null);
     }
 }
