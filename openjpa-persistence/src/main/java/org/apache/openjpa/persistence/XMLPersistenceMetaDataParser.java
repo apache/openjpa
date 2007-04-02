@@ -1196,6 +1196,12 @@ public class XMLPersistenceMetaDataParser
         val = attrs.getValue("optional");
         if ("false".equals(val))
             fmd.setNullValue(FieldMetaData.NULL_EXCEPTION);
+        else if ("true".equals(val)
+                && fmd.getNullValue() == FieldMetaData.NULL_EXCEPTION) {
+            // Reset value if the field was annotated with optional=false. 
+            // Otherwise leave it alone.
+            fmd.setNullValue(FieldMetaData.NULL_UNSET);
+        }
         if (isMappingOverrideMode()) {
             val = attrs.getValue("mapped-by");
             if (val != null)

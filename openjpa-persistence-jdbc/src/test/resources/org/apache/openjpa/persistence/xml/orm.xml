@@ -20,4 +20,11 @@
             <version name="version"/>
         </attributes>
     </entity>
+    <entity name="XmlOverride" class="XmlOverrideEntity">
+    	<attributes>
+	    <basic name="name" optional="true"></basic>
+	    <basic name="description" optional="false"></basic>
+    	</attributes>
+    </entity>
 </entity-mappings>
+
