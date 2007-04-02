@@ -1661,9 +1661,6 @@ public class QueryImpl
         if (typeCount > params.length)
             throw new UserException(_loc.get("unbound-params",
                 paramTypes.keySet()));
-        if (typeCount < params.length)
-            throw new UserException(_loc.get("extra-params", new Object[]
-                { String.valueOf(typeCount), String.valueOf(params.length) }));
 
         Iterator itr = paramTypes.entrySet().iterator();
         Map.Entry entry;
