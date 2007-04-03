@@ -441,7 +441,7 @@ public abstract class MappingInfo
             if (schema == null) {
                 schemaName = Schemas.getNewTableSchema((JDBCConfiguration)
                     repos.getConfiguration());
-                if(StringUtils.isEmpty(schemaName)) { 
+                if (StringUtils.isEmpty(schemaName)) { 
                    schemaName = _defaultSchemaName;
                 }
                 schema = group.getSchema(schemaName);
