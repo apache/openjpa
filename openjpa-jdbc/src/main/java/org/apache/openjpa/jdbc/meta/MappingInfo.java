@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
@@ -69,6 +70,7 @@ public abstract class MappingInfo
     private boolean _canFK = true;
     private int _join = JOIN_NONE;
     private ColumnIO _io = null;
+    private String _defaultSchemaName = null;
 
     /**
      * Mapping strategy name.
@@ -439,6 +441,9 @@ public abstract class MappingInfo
             if (schema == null) {
                 schemaName = Schemas.getNewTableSchema((JDBCConfiguration)
                     repos.getConfiguration());
+                if(StringUtils.isEmpty(schemaName)) { 
+                   schemaName = _defaultSchemaName;
+                }
                 schema = group.getSchema(schemaName);
                 if (schema == null)
                     schema = group.addSchema(schemaName);
@@ -1764,4 +1769,12 @@ public abstract class MappingInfo
         public void populate(Table local, Table foreign, Column col,
             Object target, boolean inverse, int pos, int cols);
 	}
+    
+    public String getDefaultSchemaName() {
+        return _defaultSchemaName;
+    }
+
+    public void setDefaultSchemaName(String schemaName) {
+        _defaultSchemaName = schemaName;
+    }
 }

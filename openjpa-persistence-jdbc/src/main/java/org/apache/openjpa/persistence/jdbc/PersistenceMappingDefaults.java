@@ -15,6 +15,7 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -114,17 +115,31 @@ public class PersistenceMappingDefaults
 
     @Override
     public String getTableName(ClassMapping cls, Schema schema) {
+        String name = "";
+
+        if(StringUtils.isNotEmpty(schema.getName())) { 
+            name +=schema.getName() + '.'; 
+        }
+
         if (cls.getTypeAlias() != null)
-            return cls.getTypeAlias();
+            name += cls.getTypeAlias();
+        
         else
-            return Strings.getClassName(
-                cls.getDescribedType()).replace('$', '_');
+            name += Strings.getClassName(cls.getDescribedType()).replace('$',
+                    '_');
+        
+        return name;
     }
 
     @Override
     public String getTableName(FieldMapping fm, Schema schema) {
+        String name = ""; 
+        if(StringUtils.isNotEmpty(schema.getName())) { 
+            name +=schema.getName() + '.'; 
+        }
+        
         // base name is table of defining type + '_'
-        String name = fm.getDefiningMapping().getTable().getName() + "_";
+        name += fm.getDefiningMapping().getTable().getName() + "_";
 
         // if this is an assocation table, spec says to suffix with table of
         // the related type. spec doesn't cover other cases; we're going to

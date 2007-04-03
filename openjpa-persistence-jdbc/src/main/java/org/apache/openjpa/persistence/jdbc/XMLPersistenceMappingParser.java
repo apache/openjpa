@@ -50,6 +50,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.XMLPersistenceMetaDataParser;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.*;
 
@@ -910,4 +911,18 @@ public class XMLPersistenceMappingParser
 		TRUE,
 		FALSE
 	}
+    
+    @Override
+    protected void endClass(String elem)
+        throws SAXException {
+        if (StringUtils.isNotEmpty(_schema)) {
+            Class cls = classForName(currentClassName());
+
+            MetaDataRepository repos = getRepository();
+            ClassMapping meta = (ClassMapping) repos.getCachedMetaData(cls);
+
+            meta.getMappingInfo().setDefaultSchemaName(_schema);
+        }
+        super.endClass(elem);
+    }
 }
