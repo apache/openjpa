@@ -116,9 +116,8 @@ public class PersistenceMappingDefaults
     @Override
     public String getTableName(ClassMapping cls, Schema schema) {
         String name = "";
-
-        if(StringUtils.isNotEmpty(schema.getName())) { 
-            name +=schema.getName() + '.'; 
+        if (StringUtils.isNotEmpty(schema.getName())) {
+            name += schema.getName() + '.';
         }
 
         if (cls.getTypeAlias() != null)
@@ -126,7 +125,7 @@ public class PersistenceMappingDefaults
         
         else
             name += Strings.getClassName(cls.getDescribedType()).replace('$',
-                    '_');
+                '_');
         
         return name;
     }
@@ -134,8 +133,8 @@ public class PersistenceMappingDefaults
     @Override
     public String getTableName(FieldMapping fm, Schema schema) {
         String name = ""; 
-        if(StringUtils.isNotEmpty(schema.getName())) { 
-            name +=schema.getName() + '.'; 
+        if (StringUtils.isNotEmpty(schema.getName())) {
+            name += schema.getName() + '.';
         }
         
         // base name is table of defining type + '_'
