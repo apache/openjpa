@@ -45,6 +45,8 @@ public class DB2Dictionary
     private static final String  useKeepUpdateLockClause= "USE AND KEEP UPDATE LOCKS";
     private static final String  useKeepExclusiveLockClause="USE AND KEEP EXCLUSIVE LOCKS";
     private static final String  forReadOnlyClause = "FOR READ ONLY";
+    public static final String UPDATE_HINT = "openjpa.hint.updateClause";
+    public static final String ISOLATION_HINT = "openjpa.hint.isolationLevel";
     public DB2Dictionary() {
         platform = "DB2";
         validationSQL = "SELECT DISTINCT(CURRENT TIMESTAMP) FROM "
@@ -234,20 +236,20 @@ public class DB2Dictionary
         try {
             // Determine the update clause/isolationLevel the hint 
             // overrides the persistence.xml value
-            if (fetch != null && fetch.getHint("openjpa.hint.updateClause")
+            if (fetch != null && fetch.getHint(UPDATE_HINT)
                 !=null )
                 updateClause = ((Boolean)fetch.
-                    getHint("openjpa.hint.updateClause")).booleanValue();
+                getHint(UPDATE_HINT)).booleanValue();
             else 
                 updateClause = forUpdate;
-            if (fetch != null &&fetch.getHint("openjpa.hint.isolationLevel")
+            if (fetch != null &&fetch.getHint(ISOLATION_HINT)
                 !=null )
                 isolationLevel = (String)fetch.
-                    getHint("openjpa.hint.isolationLevel");
+                getHint(ISOLATION_HINT);
             else 
                 isolationLevel = conf.getTransactionIsolation();
             if (updateClause == false)
-                //This sql is not for update so add FOR Read Only clause
+                // This sql is not for update so add FOR Read Only clause
                 forUpdateString.append(" ").append(forReadOnlyClause)
                     .append(" ");
             else if (updateClause == true){
