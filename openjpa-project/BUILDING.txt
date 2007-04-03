@@ -1,0 +1,163 @@
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+ 
+                     Building OpenJPA
+===============================================================================
+
+These instructions describe how to build OpenJPA from source code using the
+Apache Maven 2 build too. They are written for use from the console, and are 
+known to work on Linux and Mac OSX. They are also reported to work from Windows.
+
+The most up to date version of these instructions may be found on the OpenJPA 
+website at http://incubator.apache.org/openjpa/building-openjpa.html
+
+   1. Ensure that you have Java 1.5 installed and in your path by running:
+      java -version
+   2. Install the build tool Apache Maven 2.0.4, from http://maven.apache.org/.
+      If it is installed correctly, typing mvn -v from the console will result
+      in the text "Maven version: 2.0.4"
+   3. Extract the source archive if you have not already done so. 
+      The source will create a new directory named:
+      openjpa-project-${version}-source. Where ${version} is the openjpa 
+      version, for example openjpa-project-0.9.7-incubating-source.
+   4. Change to the openjpa source directory, which has already been created in
+      the previous step.
+   5. Build OpenJPA by running: mvn package or better mvn install. 
+      The first time you run the build, many dependencies are automatically 
+      resolved and downloaded. It is common for dependency downloading to fail
+      the first time, which will fail the build. If any of these dependency 
+      downloads fail, just re-run the command. You may also add the following 
+      to your ~/.m2/setting.xml file
+      (see http://maven.apache.org/guides/mini/guide-mirror-settings.html)
+
+       <settings>
+           <mirrors>
+               <mirror>
+                   <id>repo.mergere.com</id>
+                   <url>http://repo.mergere.com/maven2</url>
+                   <mirrorOf>central</mirrorOf>
+                   </mirror>
+           </mirrors>
+        </settings>
+
+        If any tests fail, and you want to ignore the failures, instead run:
+        mvn package -Dtest=false
+
+An example session as as follows:
+
+$ cd /tmp/
+
+$ java -version
+
+java version "1.5.0_06"
+Java(TM) 2 Runtime Environment, Standard Edition (build 1.5.0_06-112)
+Java HotSpot(TM) Client VM (build 1.5.0_06-64, mixed mode, sharing)
+
+$ mvn -v
+
+Maven version: 2.0.4
+
+$ svn --version
+
+svn, version 1.1.4 (r13838)
+   compiled Jul 10 2006, 22:17:43
+
+$ svn co https://svn.apache.org/repos/asf/incubator/openjpa/trunk/
+
+A  trunk/openjpa-lib
+A  trunk/openjpa-lib/src
+A  trunk/openjpa-lib/src/test
+A  trunk/openjpa-lib/src/test/java
+A  trunk/openjpa-lib/src/test/java/org
+A  trunk/openjpa-lib/src/test/java/org/apache
+A  trunk/openjpa-lib/src/test/java/org/apache/openjpa
+A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib
+A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib/test
+A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib/test/AbstractTestCase.
+java
+
+ ...
+
+A  trunk/openjpa-persistence/pom.xml
+Checked out revision 421381.
+
+$ cd trunk/
+
+$ mvn compile
+
+[INFO] Scanning for projects...
+[INFO] Reactor build order: 
+[INFO]   OpenJPA
+[INFO]   Utilities
+[INFO]   Kernel
+[INFO]   JDBC
+[INFO]   XML Store
+[INFO]   JDBC 1.5
+[INFO]   Kernel 1.5
+[INFO]   JPA
+[INFO]   JPA JDBC
+[INFO]   OpenJPA Project
+[INFO] -------------------------------------------------------------------------
+[INFO] Building OpenJPA
+[INFO]    task-segment: [compile]
+[INFO] -------------------------------------------------------------------------
+
+ ...
+
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] ------------------------------------------------------------------------
+[INFO] OpenJPA ............................................... SUCCESS [0.789s]
+[INFO] Utilities ............................................. SUCCESS [3.489s]
+[INFO] Kernel ................................................ SUCCESS [9.347s]
+[INFO] JDBC .................................................. SUCCESS [12.208s]
+[INFO] XML Store ............................................. SUCCESS [1.166s]
+[INFO] JDBC 1.5 .............................................. SUCCESS [1.519s]
+[INFO] Kernel 1.5 ............................................ SUCCESS [0.538s]
+[INFO] JPA ................................................... SUCCESS [2.777s]
+[INFO] JPA JDBC .............................................. SUCCESS [2.151s]
+[INFO] OpenJPA Project ....................................... SUCCESS [1.495s]
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 37 seconds
+[INFO] Finished at: Wed Jul 26 11:44:33 PDT 2006
+[INFO] Final Memory: 10M/41M
+[INFO] ------------------------------------------------------------------------
+
+
+$ mvn package -Dtest=false
+
+[INFO] Scanning for projects...
+
+...
+
+[INFO] [assembly:assembly {execution: bin}]
+[INFO] Building zip: /tmp/openjpatestbuild/trunk/openjpa-project/target/filtered
+-site/resources/downloads/openjpa-0.9.0.zip
+
+... 
+
+
+$ ls -lh openjpa-project/target/filtered-site/resources/downloads/
+
+total 9.2M
+-rw-r--r--    1 mprudhom wheel       4.0M Jul 26 11:46 openjpa-0.9.0-sources.zip
+-rw-r--r--    1 mprudhom wheel       5.2M Jul 26 11:46 openjpa-0.9.0.zip
+
+ 
