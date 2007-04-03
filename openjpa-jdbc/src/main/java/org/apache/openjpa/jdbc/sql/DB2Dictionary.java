@@ -228,7 +228,7 @@ public class DB2Dictionary
      */
     public String getForUpdateClause(JDBCFetchConfiguration fetch, boolean forUpdate) {
         String isolationLevel = null;
-        Boolean updateClause = null;
+        boolean updateClause;
         DatabaseMetaData metaData = null;
         StringBuffer forUpdateString = new StringBuffer();
         try {
@@ -236,20 +236,20 @@ public class DB2Dictionary
             // overrides the persistence.xml value
             if (fetch != null && fetch.getHint("openjpa.hint.updateClause")
                 !=null )
-                updateClause = (Boolean)fetch.
-                getHint("openjpa.hint.updateClause");
+                updateClause = ((Boolean)fetch.
+                    getHint("openjpa.hint.updateClause")).booleanValue();
             else 
                 updateClause = forUpdate;
             if (fetch != null &&fetch.getHint("openjpa.hint.isolationLevel")
                 !=null )
                 isolationLevel = (String)fetch.
-                getHint("openjpa.hint.isolationLevel");
+                    getHint("openjpa.hint.isolationLevel");
             else 
                 isolationLevel = conf.getTransactionIsolation();
             if (updateClause == false)
                 //This sql is not for update so add FOR Read Only clause
                 forUpdateString.append(" ").append(forReadOnlyClause)
-                .append(" ");
+                    .append(" ");
             else if (updateClause == true){
 
                 switch(db2ServerType){
