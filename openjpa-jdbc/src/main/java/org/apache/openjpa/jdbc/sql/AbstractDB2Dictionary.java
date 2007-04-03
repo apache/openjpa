@@ -52,7 +52,7 @@ public abstract class AbstractDB2Dictionary
         supportsLockingWithOrderClause = false;
         supportsLockingWithOuterJoin = false;
         supportsLockingWithInnerJoin = false;
-        supportsLockingWithSelectRange = false;
+        supportsLockingWithSelectRange = true;
 
         requiresAutoCommitForMetaData = true;
         requiresAliasForSubselect = true;
