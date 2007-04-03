@@ -1,0 +1,83 @@
+Changes in OpenJPA 0.9.7
+
+Additional information on a specific change can be found in the OpenJPA 
+project's issue tracker at http://issues.apache.org/jira/browse/OPENJPA
+
+** Bugs
+    * [OPENJPA-16] - NPE in createQuery for EJB QL with nested correlated subqueries
+    * [OPENJPA-21] - Time is missing from list of mutable classes.
+    * [OPENJPA-22] - locate & substring queries fail both db2 & derby, cannot use parameter markers in expression ?-?
+    * [OPENJPA-23] - -418 sqlexception using DB2 and EJB QL with SQRT or MOD
+    * [OPENJPA-24] - Allow OpenJPA to be extensible
+    * [OPENJPA-25] - Incorrect SQL generated for queries involving more than one AbstractSchemaNames, generated SQL FROM clause is missing 'Table alias'
+    * [OPENJPA-35] - In-memory Delete operation fails with active DataCache
+    * [OPENJPA-41] - transforming classes doesn't work
+    * [OPENJPA-48] -  parsing error - cast of subselect does not work
+    * [OPENJPA-50] - bad sql pushdown, cast changes datatype
+    * [OPENJPA-53] -  bad sql pushdown for nested subselects, missing nested subselect
+    * [OPENJPA-54] - bad sql pushdown, should use all syntax
+    * [OPENJPA-56] - in derby concat with input parameter needs a cast, otherwise becomes long varchar and some operations do not work
+    * [OPENJPA-60] - Specifying the wrong persistence implementation in persistence.xml leads to misleading error message
+    * [OPENJPA-62] - Ejbql join queries show invalid null Entities when run in a new persistence context where no entity instances exist.
+    * [OPENJPA-71] - Caching primitive array types consumes excessive memory
+    * [OPENJPA-77] - Problems in default setting in DB2Dictionary , also missing support for DB2 z/OS platforms
+    * [OPENJPA-80] - Bad Escaping for LIKE in MySQL
+    * [OPENJPA-98] - Java deadlock when insert in t1 and find in t2 when using IBM JVM 1.5.0
+    * [OPENJPA-100] - <jar-file> entries failing to be processed for persistence unit rooted in an EAR
+    * [OPENJPA-102] - JTA transaction rollback, nonexistant instances, transactional persistence context => failures during afterCompletion() and close()
+    * [OPENJPA-103] - Default Listeners not being processed correctly
+    * [OPENJPA-104] - OpenJPA does not detach instances on rollback()
+    * [OPENJPA-107] - @SqlResultSetMappings fails in mapping tool with java.lang.ArrayStoreException
+    * [OPENJPA-108] - @AttributeOverrides fails in mapping tool with java.lang.ArrayStoreException
+    * [OPENJPA-109] - every NativeQuery using SqlResultSetMapping fails at runtime with There is no query result mapping for "null" with name "xxx" when the entity is persisted in a different method than the method doing the query.  
+    * [OPENJPA-110] - Every NamedNativeQuery using ResultSetMapping fails at runtime with class cast exception when try to iterate over list<Some Entity>
+    * [OPENJPA-111] - native queries fail when use named parameters
+    * [OPENJPA-115] - Bottleneck(s) with using OpenJPA in a Container-managed environment
+    * [OPENJPA-116] - EntityManager.getDelegate should throw an IllegalStateException 
+    * [OPENJPA-118] - AutoDetach property has no effect
+    * [OPENJPA-119] - EntityManager.clear() should not implicitly invoke the flush operation
+    * [OPENJPA-121] - Table name defaults to the class name instead of the entity name
+    * [OPENJPA-122] - EntityManager does not throw exceptions after close() in required cases
+    * [OPENJPA-132] - java.lang.NoSuchMethodError for entity with ID of type java.sql.Date
+    * [OPENJPA-133] - Can't find non-public callback methods with superclass or interface parameters
+    * [OPENJPA-139] - PersistenceException merging an entity with a Calendar field. 
+    * [OPENJPA-140] - Wrong package name in test classes
+    * [OPENJPA-142] - Entity name is ignored when specified in the orm.xml file
+    * [OPENJPA-144] - JDBCConfigurationImpl does not support JNDI lookup for non-jta-data-source.  
+    * [OPENJPA-146] - Entity enhancement fails while using EmbeddedId on a MappedSuperclass
+    * [OPENJPA-150] - @Column in @AttributeOverride not honoring table attribute that maps to a secondary table in mappedsuperclass entity
+    * [OPENJPA-154] - OptimisticLockException working with  Savepoints
+    * [OPENJPA-155] -  java.lang.ArrayIndexOutOfBoundsException during commit
+    * [OPENJPA-157] - NullPointerException when running query with null parameter
+    * [OPENJPA-162] - @OrderBy on @OneToMany does not allow ordering by @Id value
+    * [OPENJPA-174] - error when find()'ing an abstract class
+    * [OPENJPA-175] - Eager selects by PagingResultObjectProvider may not use the FetchBatchSize
+    * [OPENJPA-179] - Schemas defined in orm.xml are only applied when a name is also specified. 
+    * [OPENJPA-181] - ClassCastException when executing bulk delete on an entity that owns a OneToOne with a Cascade.DELETE when DataCache is on
+    * [OPENJPA-185] - optional attribute is not overriden by xml descriptor
+    * [OPENJPA-186] - Build failure of OpenJPA sources from trunk
+
+** Improvements
+    * [OPENJPA-10] - persistence unit name should be default diagnostic context for standard OpenJPA log impl
+    * [OPENJPA-37] - Support ant typedefs for OpenJPA tasks
+    * [OPENJPA-55] - Allow executeUpdate() invocations on native queries
+    * [OPENJPA-57] - persistence_1_0.xsd is missing
+    * [OPENJPA-63] - Better pessimistic lock support for DB2 v8.2+
+    * [OPENJPA-151] - Added field in enhanced vesrion of a class is not serialized. Hence the change in detached+serialized instances is not registered under certain conditions.  
+    * [OPENJPA-153] - WebSphere and non-jta-data-source and default ManagedRuntime
+    * [OPENJPA-158] - OpenJPA logs overly-verbose at INFO level
+    * [OPENJPA-161] - Overuse of synchronization in AbstractBrokerFactory
+    * [OPENJPA-166] - Track the reason why a setRollbackOnly invocation was made
+    * [OPENJPA-176] - Exception prefixes should be human-readable
+    * [OPENJPA-196] - Ease the restrictions on forcing a matche between the number of declared and assigned positional parameters
+
+** New Features
+    * [OPENJPA-92] - Support for H2 Database Engine
+    * [OPENJPA-93] - Sequence generation in a JTA environment should not require non-JTA datasource
+    * [OPENJPA-94] - Allow MappingTool and persistence.xml to support drop-create for database schema
+
+** Tasks
+    * [OPENJPA-36] - Add cwiki url to incubator status page
+
+** Tests
+    * [OPENJPA-40] - Testing OpenJPA and Spring integration fails
