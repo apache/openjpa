@@ -24,6 +24,7 @@ import java.util.StringTokenizer;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.util.OpenJPAException;
 
 /**
  * Dictionary for IBM DB2 database.
@@ -443,10 +444,18 @@ public class DB2Dictionary
         return buf;
     }
 
-    /** Append exception information from SQLCA to the exsisting 
+    public OpenJPAException newStoreException(String msg, SQLException[] causes,
+        Object failed) {
+        if (causes != null && causes.length > 0)
+            msg = appendExtendedExceptionMsg(msg, causes[0]);
+        return super.newStoreException(msg, causes, failed);
+    }
+
+    /**
+     *  Append exception information from SQLCA to the exsisting
      *  exception meassage
      */
-    public String appendExtendedExceptionMsg(String msg, SQLException sqle){
+    private String appendExtendedExceptionMsg(String msg, SQLException sqle){
        final String GETSQLCA ="getSqlca";
        String exceptionMsg = new String();
        try {

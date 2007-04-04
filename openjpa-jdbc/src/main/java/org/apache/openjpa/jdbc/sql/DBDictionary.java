@@ -2471,13 +2471,6 @@ public class DBDictionary
         buf.append(post);
     }
     
-    /** Append any database specific exception message to 
-     *  the exsisting exception message
-     */
-     public String appendExtendedExceptionMsg(String msg, SQLException sqle) {
-         return msg; 
-     }
-    
     ///////////
     // DDL SQL
     ///////////
