@@ -70,7 +70,6 @@ public abstract class MappingInfo
     private boolean _canFK = true;
     private int _join = JOIN_NONE;
     private ColumnIO _io = null;
-    private String _defaultSchemaName = null;
 
     /**
      * Mapping strategy name.
@@ -423,58 +422,56 @@ public abstract class MappingInfo
      *
      * @param context the mapping that uses the table
      * @param def default table name provider
-     * @param schema default schema if known, or null
+     * @param schemaName default schema if known, or null
      * @param given given table name
      * @param adapt whether we can alter the schema or mappings
      */
     public Table createTable(MetaDataContext context, TableDefaults def,
-        Schema schema, String given, boolean adapt) {
+        String schemaName, String given, boolean adapt) {
         MappingRepository repos = (MappingRepository) context.getRepository();
         if (given == null && (def == null || (!adapt
             && !repos.getMappingDefaults().defaultMissingInfo())))
             throw new MetaDataException(_loc.get("no-table", context));
 
+        if (schemaName == null)
+            schemaName = Schemas.getNewTableSchema((JDBCConfiguration)
+                repos.getConfiguration());
+
         // if no given and adapting or defaulting missing info, use template
         SchemaGroup group = repos.getSchemaGroup();
-        String schemaName = null;
+        Schema schema = null;
         if (given == null) {
-            if (schema == null) {
-                schemaName = Schemas.getNewTableSchema((JDBCConfiguration)
-                    repos.getConfiguration());
-                if (StringUtils.isEmpty(schemaName)) { 
-                   schemaName = _defaultSchemaName;
-                }
-                schema = group.getSchema(schemaName);
-                if (schema == null)
-                    schema = group.addSchema(schemaName);
-            }
+            schema = group.getSchema(schemaName);
+            if (schema == null)
+                schema = group.addSchema(schemaName);
             given = def.get(schema);
         }
 
-        // look for named table
-        Table table = group.findTable(given);
+        String fullName;
+        int dotIdx = given.lastIndexOf('.');
+        if (dotIdx == -1)
+            fullName = (schemaName == null) ? given : schemaName + "." + given;
+        else {
+            fullName = given;
+            schema = null;
+            schemaName = given.substring(0, dotIdx);
+            given = given.substring(dotIdx + 1);
+        }
+
+        // look for named table using full name and findTable, which allows
+        // the dynamic schema factory to create the table if needed
+        Table table = group.findTable(fullName);
         if (table != null)
             return table;
         if (!adapt)
             throw new MetaDataException(_loc.get("bad-table", given, context));
 
-        // named table doesn't exist; figure out what schema to create new
-        // table in
-        int dotIdx = given.lastIndexOf('.');
-        if (dotIdx != -1) {
-            schema = null;
-            schemaName = given.substring(0, dotIdx);
-            given = given.substring(dotIdx + 1);
-        } else if (schema == null)
-            schemaName = Schemas.getNewTableSchema((JDBCConfiguration)
-                repos.getConfiguration());
-
+        // named table doesn't exist; create it
         if (schema == null) {
             schema = group.getSchema(schemaName);
             if (schema == null)
                 schema = group.addSchema(schemaName);
         }
-
         table = schema.getTable(given);
         if (table == null)
             table = schema.addTable(given);
@@ -1769,12 +1766,4 @@ public abstract class MappingInfo
         public void populate(Table local, Table foreign, Column col,
             Object target, boolean inverse, int pos, int cols);
 	}
-    
-    public String getDefaultSchemaName() {
-        return _defaultSchemaName;
-    }
-
-    public void setDefaultSchemaName(String schemaName) {
-        _defaultSchemaName = schemaName;
-    }
 }

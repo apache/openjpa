@@ -47,7 +47,7 @@ public class FlatClassStrategy
         info.assertNoSchemaComponents(cls, true);
 
         if (info.getTableName() != null) {
-            Table table = info.createTable(cls, null, null,
+            Table table = info.createTable(cls, null, info.getSchemaName(),
                 info.getTableName(), false);
             if (table != sup.getTable())
                 throw new MetaDataException(_loc.get("flat-table", cls,
