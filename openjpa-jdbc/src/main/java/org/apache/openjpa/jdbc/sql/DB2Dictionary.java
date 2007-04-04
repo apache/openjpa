@@ -476,5 +476,4 @@ public class DB2Dictionary
             return sqle.getMessage();
         }
     }
-
    }
