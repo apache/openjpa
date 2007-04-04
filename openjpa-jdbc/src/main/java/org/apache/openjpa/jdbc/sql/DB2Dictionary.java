@@ -294,24 +294,7 @@ public class DB2Dictionary
         }
         return forUpdateString.toString();
     }  
-
    
-    /** Override the DBDictionary toSelect to call getOptimizeClause and append 
-     *   to the select string
-     */   
-    public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
-       SQLBuffer from, SQLBuffer where, SQLBuffer group,
-       SQLBuffer having, SQLBuffer order,
-       boolean distinct, boolean forUpdate, long start, long end,
-       int expectedResultCount) {
-       String forUpdateString = getForUpdateClause(fetch,forUpdate);
-       SQLBuffer selString = toOperation(getSelectOperation(fetch), 
-            selects, from, where,
-            group, having, order, distinct,
-            forUpdate, start, end,forUpdateString);
-        return selString;
-    }
-
     public boolean isDB2UDBV82AndLater(DatabaseMetaData metadata, int maj,
         int min) throws SQLException {
         boolean match = false;
