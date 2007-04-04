@@ -442,4 +442,39 @@ public class DB2Dictionary
             append(" ").append(rowClause);
         return buf;
     }
-}
+
+    /** Append exception information from SQLCA to the exsisting 
+     *  exception meassage
+     */
+    public String appendExtendedExceptionMsg(String msg, SQLException sqle){
+       final String GETSQLCA ="getSqlca";
+       String exceptionMsg = new String();
+       try {
+            Method sqlcaM2 = sqle.getNextException().getClass()
+                             .getMethod(GETSQLCA,null);
+            Object sqlca = sqlcaM2.invoke(sqle.getNextException(),
+                                          new Object[] {});
+            Method  getSqlErrpMethd = sqlca.getClass().
+            getMethod("getSqlErrp", null);
+            Method  getSqlWarnMethd = sqlca.getClass().
+            getMethod("getSqlWarn", null);
+            Method  getSqlErrdMethd = sqlca.getClass().
+            getMethod("getSqlErrd", null);
+            exceptionMsg = exceptionMsg.concat( "SQLCA OUTPUT" + 
+                    "[Errp=" +getSqlErrpMethd.invoke(sqlca,new Object[]{})
+                    + ", Errd=" + Arrays.toString((int[])
+                            (getSqlErrdMethd.invoke(sqlca, new Object[]{}))));
+            String Warn = new String((char[])getSqlWarnMethd.
+                    invoke(sqlca, new Object[]{}));
+            if(Warn.trim().length() != 0)
+                exceptionMsg = exceptionMsg.concat(", Warn=" +Warn + "]" ); 
+            else
+                exceptionMsg = exceptionMsg.concat( "]" ); 
+            msg = msg.concat(exceptionMsg);
+            return msg;
+        } catch (Throwable t) {
+            return sqle.getMessage();
+        }
+    }
+
+   }
