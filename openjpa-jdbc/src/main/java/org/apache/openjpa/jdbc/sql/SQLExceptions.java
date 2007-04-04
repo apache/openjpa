@@ -87,6 +87,7 @@ public class SQLExceptions {
         Object failed, DBDictionary dict) {
         if (msg == null)
             msg = se.getClass().getName();
+        msg = dict.appendExtendedExceptionMsg(msg,se);
         SQLException[] ses = getSQLExceptions(se);
         if (dict == null)
             return new StoreException(msg).setFailedObject(failed).
