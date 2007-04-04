@@ -115,30 +115,15 @@ public class PersistenceMappingDefaults
 
     @Override
     public String getTableName(ClassMapping cls, Schema schema) {
-        String name = "";
-        if (StringUtils.isNotEmpty(schema.getName())) {
-            name += schema.getName() + '.';
-        }
-
         if (cls.getTypeAlias() != null)
-            name += cls.getTypeAlias();
-        
-        else
-            name += Strings.getClassName(cls.getDescribedType()).replace('$',
-                '_');
-        
-        return name;
+            return cls.getTypeAlias();
+        return Strings.getClassName(cls.getDescribedType()).replace('$', '_');
     }
 
     @Override
     public String getTableName(FieldMapping fm, Schema schema) {
-        String name = ""; 
-        if (StringUtils.isNotEmpty(schema.getName())) {
-            name += schema.getName() + '.';
-        }
-        
         // base name is table of defining type + '_'
-        name += fm.getDefiningMapping().getTable().getName() + "_";
+        String name = fm.getDefiningMapping().getTable().getName() + "_";
 
         // if this is an assocation table, spec says to suffix with table of
         // the related type. spec doesn't cover other cases; we're going to

@@ -118,7 +118,8 @@ public class FieldMappingInfo
             return null;
 
         Table table = field.getDefiningMapping().getTable();
-        Schema schema = (table == null) ? null : table.getSchema();
+        String schemaName = (table == null) ? null 
+            : table.getSchema().getName();
 
         // if we have no join columns defined, there may be class-level join
         // information with a more fully-qualified name for our table
@@ -134,7 +135,7 @@ public class FieldMappingInfo
                 return field.getMappingRepository().getMappingDefaults().
                     getTableName(field, schema);
             }
-        }, schema, tableName, adapt);
+        }, schemaName, tableName, adapt);
     }
 
     /**

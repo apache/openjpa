@@ -54,6 +54,7 @@ public class ClassMappingInfo
 
     private String _className = Object.class.getName();
     private String _tableName = null;
+    private String _schemaName = null;
     private boolean _joined = false;
     private Map _seconds = null;
     private String _subStrat = null;
@@ -102,6 +103,20 @@ public class ClassMappingInfo
      */
     public void setTableName(String table) {
         _tableName = table;
+    }
+
+    /**
+     * The default schema name for unqualified tables.
+     */
+    public String getSchemaName() {
+        return _schemaName;
+    }
+
+    /**
+     * The default schema name for unqualified tables.
+     */
+    public void setSchemaName(String schema) {
+        _schemaName = schema;
     }
 
     /**
@@ -215,7 +230,7 @@ public class ClassMappingInfo
                 return cls.getMappingRepository().getMappingDefaults().
                     getTableName(cls, schema);
             }
-        }, null, _tableName, adapt);
+        }, _schemaName, _tableName, adapt);
     }
 
     /**

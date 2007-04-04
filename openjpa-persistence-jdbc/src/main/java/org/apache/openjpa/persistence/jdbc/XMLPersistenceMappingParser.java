@@ -304,6 +304,9 @@ public class XMLPersistenceMappingParser
     protected void endClassMapping(ClassMetaData meta)
         throws SAXException {
         ClassMapping cm = (ClassMapping) meta;
+        if (_schema != null)
+            cm.getMappingInfo().setSchemaName(_schema);
+
         if (_supJoinCols != null)
             cm.getMappingInfo().setColumns(_supJoinCols);
 
@@ -769,10 +772,9 @@ public class XMLPersistenceMappingParser
     private String toTableName(String schema, String table) {
         if (StringUtils.isEmpty(table))
             return null;
-        schema = StringUtils.isEmpty(schema) ? _schema : schema;
         if (StringUtils.isEmpty(schema))
-            return table;
-        return schema + "." + table;
+            schema = _schema;
+        return (StringUtils.isEmpty(schema)) ? table : schema + "." + table;
     }
 
     /**
@@ -911,18 +913,4 @@ public class XMLPersistenceMappingParser
 		TRUE,
 		FALSE
 	}
-    
-    @Override
-    protected void endClass(String elem)
-        throws SAXException {
-        if (StringUtils.isNotEmpty(_schema)) {
-            Class cls = classForName(currentClassName());
-
-            MetaDataRepository repos = getRepository();
-            ClassMapping meta = (ClassMapping) repos.getCachedMetaData(cls);
-
-            meta.getMappingInfo().setDefaultSchemaName(_schema);
-        }
-        super.endClass(elem);
-    }
 }
