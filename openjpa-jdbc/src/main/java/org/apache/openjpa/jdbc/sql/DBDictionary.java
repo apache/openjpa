@@ -2155,7 +2155,7 @@ public class DBDictionary
      */
     protected String getForUpdateClause(JDBCFetchConfiguration fetch,
         boolean forUpdate) {
-        if (fetch.getIsolationLevel() != -1)
+        if (fetch != null && fetch.getIsolationLevel() != -1)
             throw new IllegalStateException(_loc.get(
                 "isolation-level-config-not-supported", getClass().getName())
                 .getMessage());
