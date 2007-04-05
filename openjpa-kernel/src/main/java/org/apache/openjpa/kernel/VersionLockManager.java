@@ -69,17 +69,15 @@ public class VersionLockManager
             return;
         while (sm.getOwner() != null)
             sm = sm.getOwner();
-        int oldlevel = getLockLevel(sm);
-        if (!sm.isPersistent() || sm.isNew() || level <= oldlevel)
+        int oldLevel = getLockLevel(sm);
+        if (!sm.isPersistent() || sm.isNew() || level <= oldLevel)
             return;
 
-        // set the lock level first to avoid infinite recursion
-        setLockLevel(sm, level);
         try {
             lockInternal(sm, level, timeout, sdata);
         } catch (RuntimeException re) {
             // revert lock
-            setLockLevel(sm, oldlevel);
+            setLockLevel(sm, oldLevel);
             throw re;
         }
     }
@@ -94,6 +92,9 @@ public class VersionLockManager
      */
     protected void lockInternal(OpenJPAStateManager sm, int level, long timeout,
         Object sdata) {
+        // Set lock level first to prevent infinite recursion with
+        // transactional(..) call
+        setLockLevel(sm, level);
         if (level >= LockLevels.LOCK_WRITE && _versionUpdateOnWriteLock)
             getContext().transactional(sm.getManagedInstance(), true, null);
         else if (level >= LockLevels.LOCK_READ && _versionCheckOnReadLock)
@@ -132,6 +133,5 @@ public class VersionLockManager
      */
     public boolean getVersionUpdateOnWriteLock() {
         return _versionUpdateOnWriteLock;
-	}
+    }
 }
-
