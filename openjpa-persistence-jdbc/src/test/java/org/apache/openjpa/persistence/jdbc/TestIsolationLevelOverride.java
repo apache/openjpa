@@ -27,6 +27,7 @@ import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.jdbc.sql.HSQLDictionary;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 
 public class TestIsolationLevelOverride
@@ -43,6 +44,11 @@ public class TestIsolationLevelOverride
             OpenJPAPersistence.cast(emf.createEntityManager());
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
             .getDBDictionaryInstance();
+
+        // hsql doesn't support locking; circumvent the test
+        if (dict instanceof HSQLDictionary)
+            return;
+
         sql.clear();
         try {
             em.getTransaction().begin();
