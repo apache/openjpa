@@ -159,32 +159,12 @@ public class H2Dictionary extends DBDictionary {
         return buf.toString();
     }
 
-    protected SQLBuffer toOperation(String op, SQLBuffer selects,
-        SQLBuffer from, SQLBuffer where, SQLBuffer group, SQLBuffer having,
-        SQLBuffer order, boolean distinct, boolean forUpdate, long start,
-        long end) {
-        return super.toOperation(op, selects, from, where, group, having,
-            order, distinct, forUpdate, start, end);
-    }
-
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String columnName, Connection conn)
         throws SQLException {
         Column[] cols = super.getColumns(meta, catalog, schemaName, tableName, 
             columnName, conn);
         return cols;
-    }
-
-    public void setDouble(PreparedStatement stmnt, int idx, double val,
-        Column col)
-        throws SQLException {
-        super.setDouble(stmnt, idx, val, col);
-    }
-
-    public void setBigDecimal(PreparedStatement stmnt, int idx, BigDecimal val,
-        Column col)
-        throws SQLException {
-        super.setBigDecimal(stmnt, idx, val, col);
     }
 
     protected void appendSelectRange(SQLBuffer buf, long start, long end) {

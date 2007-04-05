@@ -2145,7 +2145,22 @@ public class DBDictionary
         SQLBuffer having, SQLBuffer order,
         boolean distinct, boolean forUpdate, long start, long end) {
         return toOperation(getSelectOperation(fetch), selects, from, where,
-            group, having, order, distinct, forUpdate, start, end);
+            group, having, order, distinct, forUpdate, start, end,
+            getForUpdateClause(fetch, forUpdate));
+    }
+
+    /**
+     * Get the update clause for the query based on the
+     * updateClause and isolationLevel hints
+     */
+    protected String getForUpdateClause(JDBCFetchConfiguration fetch,
+        boolean forUpdate) {
+        if (fetch.getIsolationLevel() != -1)
+            throw new IllegalStateException(_loc.get(
+                "isolation-level-config-not-supported", getClass().getName())
+                .getMessage());
+        else
+            return forUpdateClause;
     }
 
     /**
@@ -2158,10 +2173,10 @@ public class DBDictionary
     /**
      * Return the SQL for the given selecting operation.
      */
-    protected SQLBuffer toOperation(String op, SQLBuffer selects, 
-        SQLBuffer from, SQLBuffer where, SQLBuffer group, SQLBuffer having, 
-        SQLBuffer order, boolean distinct, boolean forUpdate, long start, 
-        long end) {
+    protected SQLBuffer toOperation(String op, SQLBuffer selects,
+        SQLBuffer from, SQLBuffer where, SQLBuffer group, SQLBuffer having,
+        SQLBuffer order, boolean distinct, boolean forUpdate, long start,
+        long end, String forUpdateClause) {
         SQLBuffer buf = new SQLBuffer(this);
         buf.append(op);
 
@@ -2190,8 +2205,8 @@ public class DBDictionary
 
         if (forUpdate && !simulateLocking) {
             assertSupport(supportsSelectForUpdate, "SupportsSelectForUpdate");
-            if (forUpdateClause != null)
-                buf.append(" ").append(forUpdateClause);
+            if (this.forUpdateClause != null)
+                buf.append(" ").append(this.forUpdateClause);
         }
         if (range && rangePosition == RANGE_POST_LOCK)
             appendSelectRange(buf, start, end);

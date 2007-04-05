@@ -15,6 +15,8 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import java.sql.Connection;
+
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.LRSSizes;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
@@ -114,4 +116,38 @@ public interface JDBCFetchPlan
      * @see JoinSyntaxes
      */
     public JDBCFetchPlan setJoinSyntax(int syntax);
+
+    /**
+     * <p>The isolation level for queries issued to the database. This overrides
+     * the persistence-unit-wide <code>openjpa.jdbc.TransactionIsolation</code>
+     * value.</p>
+     *
+     * <p>Must be one of {@link Connection#TRANSACTION_NONE},
+     * {@link Connection#TRANSACTION_READ_UNCOMMITTED},
+     * {@link Connection#TRANSACTION_READ_COMMITTED},
+     * {@link Connection#TRANSACTION_REPEATABLE_READ}, 
+     * {@link Connection#TRANSACTION_SERIALIZABLE},
+     * or -1 for the default connection level specified by the context in
+     * which this fetch plan is being used.</p>
+     *
+     * @since 0.9.7
+     */
+    public int getIsolationLevel();
+
+    /**
+     * <p>The isolation level for queries issued to the database. This overrides
+     * the persistence-unit-wide <code>openjpa.jdbc.TransactionIsolation</code>
+     * value.</p>
+     *
+     * <p>Must be one of {@link Connection#TRANSACTION_NONE},
+     * {@link Connection#TRANSACTION_READ_UNCOMMITTED},
+     * {@link Connection#TRANSACTION_READ_COMMITTED},
+     * {@link Connection#TRANSACTION_REPEATABLE_READ},
+     * {@link Connection#TRANSACTION_SERIALIZABLE},
+     * or -1 for the default connection level specified by the context in
+     * which this fetch plan is being used.</p>
+     *
+     * @since 0.9.7
+     */
+    public JDBCFetchPlan setIsolationLevel(int level);
 }

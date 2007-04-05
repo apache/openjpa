@@ -102,4 +102,13 @@ public class JDBCFetchPlanImpl
         _fetch.setJoinSyntax(syntax);
         return this;
     }
+
+    public int getIsolationLevel() {
+        return _fetch.getIsolationLevel();
+    }
+
+    public JDBCFetchPlan setIsolationLevel(int level) {
+        _fetch.setIsolationLevel(level);
+        return this;
+    }
 }
