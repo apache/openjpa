@@ -240,4 +240,21 @@ public class DelegatingJDBCFetchConfiguration
             throw translate(re);
         }
     }
+
+    public int getIsolationLevel() {
+        try {
+            return getJDBCDelegate().getIsolationLevel();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public JDBCFetchConfiguration setIsolationLevel(int level) {
+        try {
+            getJDBCDelegate().setIsolationLevel(level);
+            return this;
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 }

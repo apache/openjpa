@@ -17,6 +17,7 @@ package org.apache.openjpa.jdbc.kernel;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
+import java.sql.Connection;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -65,6 +66,7 @@ public class JDBCFetchConfigurationImpl
         public int size = 0;
         public int syntax = 0;
         public Set joins = null;
+        public int isolationLevel = -1;
     }
 
     private final JDBCConfigurationState _state;
@@ -318,5 +320,23 @@ public class JDBCFetchConfigurationImpl
         if (!(conf instanceof JDBCConfiguration))
             return null;
         return (JDBCConfiguration) conf;
+    }
+
+    public int getIsolationLevel() {
+        return _state.isolationLevel;
+    }
+
+    public JDBCFetchConfiguration setIsolationLevel(int level) {
+        if (level != -1
+            && level != Connection.TRANSACTION_NONE
+            && level != Connection.TRANSACTION_READ_UNCOMMITTED
+            && level != Connection.TRANSACTION_READ_COMMITTED
+            && level != Connection.TRANSACTION_REPEATABLE_READ
+            && level != Connection.TRANSACTION_SERIALIZABLE)
+            throw new IllegalArgumentException(
+                _loc.get("bad-level", Integer.valueOf(level)).getMessage());
+        
+        _state.isolationLevel = level;
+        return this;
     }
 }

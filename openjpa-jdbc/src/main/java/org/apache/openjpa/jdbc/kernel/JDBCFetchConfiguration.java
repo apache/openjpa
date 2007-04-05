@@ -16,6 +16,7 @@
 package org.apache.openjpa.jdbc.kernel;
 
 import java.sql.ResultSet;
+import java.sql.Connection;
 import java.util.Collection;
 import java.util.Set;
 
@@ -169,4 +170,38 @@ public interface JDBCFetchConfiguration
      * Convenience method to cast traversal to store-specific type.
      */
     public JDBCFetchConfiguration traverseJDBC(FieldMetaData fm);
+
+    /**
+     * <p>The isolation level for queries issued to the database. This overrides
+     * the persistence-unit-wide <code>openjpa.jdbc.TransactionIsolation</code>
+     * value.</p>
+     *
+     * <p>Must be one of {@link Connection#TRANSACTION_NONE},
+     * {@link Connection#TRANSACTION_READ_UNCOMMITTED},
+     * {@link Connection#TRANSACTION_READ_COMMITTED},
+     * {@link Connection#TRANSACTION_REPEATABLE_READ},
+     * {@link Connection#TRANSACTION_SERIALIZABLE},
+     * or -1 for the default connection level specified by the context in
+     * which this fetch configuration is being used.</p>
+     *
+     * @since 0.9.7
+     */
+    public int getIsolationLevel();
+
+    /**
+     * <p>The isolation level for queries issued to the database. This overrides
+     * the persistence-unit-wide <code>openjpa.jdbc.TransactionIsolation</code>
+     * value.</p>
+     *
+     * <p>Must be one of {@link Connection#TRANSACTION_NONE},
+     * {@link Connection#TRANSACTION_READ_UNCOMMITTED},
+     * {@link Connection#TRANSACTION_READ_COMMITTED},
+     * {@link Connection#TRANSACTION_REPEATABLE_READ},
+     * {@link Connection#TRANSACTION_SERIALIZABLE},
+     * or -1 for the default connection level specified by the context in
+     * which this fetch configuration is being used.</p>
+     *
+     * @since 0.9.7
+     */
+    public JDBCFetchConfiguration setIsolationLevel(int level);
 }
