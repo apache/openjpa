@@ -2205,8 +2205,8 @@ public class DBDictionary
 
         if (forUpdate && !simulateLocking) {
             assertSupport(supportsSelectForUpdate, "SupportsSelectForUpdate");
-            if (this.forUpdateClause != null)
-                buf.append(" ").append(this.forUpdateClause);
+            if (forUpdateClause != null)
+                buf.append(" ").append(forUpdateClause);
         }
         if (range && rangePosition == RANGE_POST_LOCK)
             appendSelectRange(buf, start, end);
