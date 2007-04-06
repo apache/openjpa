@@ -96,6 +96,7 @@ import org.apache.openjpa.util.Serialization;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.util.InvalidStateException;
 import serp.util.Numbers;
 import serp.util.Strings;
 
@@ -2156,9 +2157,8 @@ public class DBDictionary
     protected String getForUpdateClause(JDBCFetchConfiguration fetch,
         boolean forUpdate) {
         if (fetch != null && fetch.getIsolation() != -1) {
-            throw new IllegalStateException(_loc.get(
-                "isolation-level-config-not-supported", getClass().getName())
-                .getMessage());
+            throw new InvalidStateException(_loc.get(
+                "isolation-level-config-not-supported", getClass().getName()));
         } else if (forUpdate && !simulateLocking) {
             assertSupport(supportsSelectForUpdate, "SupportsSelectForUpdate");
             return forUpdateClause;

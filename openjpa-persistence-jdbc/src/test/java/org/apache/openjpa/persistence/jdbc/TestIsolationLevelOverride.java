@@ -15,13 +15,14 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
-import java.sql.Connection;
-import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.HSQLDictionary;
@@ -36,7 +37,20 @@ public class TestIsolationLevelOverride
             "openjpa.LockManager", "pessimistic");
     }
 
-    public void testIsolationLevelOverride() {
+    public void testIsolationOverrideViaFetchPlan() {
+        testIsolationLevelOverride(false, false);
+    }
+
+    public void testIsolationOverrideViaHint() {
+        testIsolationLevelOverride(true, false);
+    }
+
+    public void testIsolationOverrideViaStringHint() {
+        testIsolationLevelOverride(true, true);
+    }
+
+    public void testIsolationLevelOverride(boolean useHintsAndQueries,
+        boolean useStringHints) {
         OpenJPAEntityManager em =
             OpenJPAPersistence.cast(emf.createEntityManager());
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
@@ -49,9 +63,27 @@ public class TestIsolationLevelOverride
         sql.clear();
         try {
             em.getTransaction().begin();
-            ((JDBCFetchPlan) em.getFetchPlan())
-                .setIsolation(Connection.TRANSACTION_SERIALIZABLE);
-            em.find(AllFieldTypes.class, 0);
+            if (useHintsAndQueries) {
+                Query q = em.createQuery(
+                    "select o from AllFieldTypes o where o.intField = :p");
+                q.setParameter("p", 0);
+                if (useStringHints) {
+                    q.setHint("openjpa.FetchPlan.Isolation", "SERIALIZABLE");
+                } else {
+                    q.setHint("openjpa.FetchPlan.Isolation",
+                        IsolationLevel.SERIALIZABLE);
+                }
+
+                assertEquals(IsolationLevel.SERIALIZABLE,
+                    ((JDBCFetchPlan) ((OpenJPAQuery) q).getFetchPlan())
+                        .getIsolation());
+
+                q.getResultList();
+            } else {
+                ((JDBCFetchPlan) em.getFetchPlan())
+                    .setIsolation(IsolationLevel.SERIALIZABLE);
+                em.find(AllFieldTypes.class, 0);
+            }
 
             if (dict instanceof DB2Dictionary) {
                 assertEquals(1, sql.size());
@@ -60,10 +92,9 @@ public class TestIsolationLevelOverride
                 fail("OpenJPA currently only supports per-query isolation " +
                     "level configuration on the following databases: DB2");
             }
-        } catch (PersistenceException pe) {
-            // if we're not using DB2, we expect an IllegalStateException.
-            if (dict instanceof DB2Dictionary
-                || !(pe.getCause() instanceof IllegalStateException))
+        } catch (InvalidStateException pe) {
+            // if we're not using DB2, we expect an InvalidStateException.
+            if (dict instanceof DB2Dictionary)
                 throw pe;
         } finally {
             em.getTransaction().rollback();

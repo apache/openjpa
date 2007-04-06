@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.lang.reflect.Method;
 import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
@@ -38,6 +39,7 @@ import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.enhance.Reflection;
 
 /**
  * Implementation of {@link Query} interface.
@@ -364,7 +366,7 @@ public class QueryImpl
                     addAggregateListener(arr[i]);
             } else if (k.startsWith("FetchPlan.")) {
                 k = k.substring("FetchPlan.".length());
-                Filters.hintToSetter(getFetchPlan(), k, value);
+                hintToSetter(getFetchPlan(), k, value);
             } else if (k.startsWith("hint.")) {
                 if ("hint.OptimizeResultCount".equals(k)) {
                     if (value instanceof String) {
@@ -388,6 +390,18 @@ public class QueryImpl
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
+    }
+
+    private void hintToSetter(FetchPlan fetchPlan, String k, Object value) {
+        if (fetchPlan == null || k == null)
+            return;
+
+        Method setter = Reflection.findSetter(fetchPlan.getClass(), k, true);
+        Class paramType = setter.getParameterTypes()[0];
+        if (Enum.class.isAssignableFrom(paramType) && value instanceof String)
+            value = Enum.valueOf(paramType, (String) value);
+        
+        Filters.hintToSetter(fetchPlan, k, value);
     }
 
     public OpenJPAQuery setParameter(int position, Calendar value,
