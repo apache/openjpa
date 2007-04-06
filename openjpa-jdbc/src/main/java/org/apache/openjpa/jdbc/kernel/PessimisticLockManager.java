@@ -86,7 +86,7 @@ public class PessimisticLockManager
             setLockLevel(sm, LOCK_DATASTORE_ONLY);
     }
 
-    protected void lockInternal(OpenJPAStateManager sm, int level, long timeout,
+    protected void lockInternal(OpenJPAStateManager sm, int level, int timeout,
         Object sdata) {
         // we can skip any already-locked instance regardless of level because
         // we treat all locks the same (though super doesn't)
@@ -103,7 +103,7 @@ public class PessimisticLockManager
      * Lock the specified instance row by issuing a "SELECT ... FOR UPDATE"
      * statement.
      */
-    private void lockRow(OpenJPAStateManager sm, long timeout) {
+    private void lockRow(OpenJPAStateManager sm, int timeout) {
         // assert that the dictionary supports the "SELECT ... FOR UPDATE"
         // construct; if not, and we the assertion does not throw an
         // exception, then just return without locking
@@ -136,7 +136,7 @@ public class PessimisticLockManager
                     if (log.isWarnEnabled())
                         log.warn(_loc.get("millis-query-timeout"));
                 }
-                stmnt.setQueryTimeout((int) (timeout / 1000));
+                stmnt.setQueryTimeout(timeout / 1000);
             }
             rs = stmnt.executeQuery();
             if (!rs.next())
@@ -145,19 +145,10 @@ public class PessimisticLockManager
             throw SQLExceptions.getStore(se, dict);
         } finally {
             if (stmnt != null)
-                try {
-                    stmnt.close();
-                } catch (SQLException se) {
-                }
+                try { stmnt.close(); } catch (SQLException se) {}
             if (rs != null)
-                try {
-                    rs.close();
-                } catch (SQLException se) {
-                }
-            try {
-                conn.close();
-            } catch (SQLException se) {
-            }
+                try { rs.close(); } catch (SQLException se) {}
+            try { conn.close(); } catch (SQLException se) {}
         }
     }
 
