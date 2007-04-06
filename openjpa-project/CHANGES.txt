@@ -57,6 +57,7 @@ project's issue tracker at http://issues.apache.org/jira/browse/OPENJPA
     * [OPENJPA-182] - db2 update lock syntax WITH <isolation> USE AND KEEP UPDATE LOCKS
     * [OPENJPA-185] - optional attribute is not overriden by xml descriptor
     * [OPENJPA-186] - Build failure of OpenJPA sources from trunk
+    * [OPENJPA-202] - after invoking LRS processing in a client by calling an @LRS annotated relationship, the next em.clear()/em.close() gets org.apache.openjpa.persistence.InvalidStateException: You cannot transfer large result set fields from one object or field to another
 
 ** Improvements
     * [OPENJPA-10] - persistence unit name should be default diagnostic context for standard OpenJPA log impl
