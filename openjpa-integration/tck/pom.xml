@@ -19,16 +19,18 @@
     This build file is used to run the JPA TCK. It assumes that you have
     the TCK zip file located at:
 
-        ${user.home}/.m2/privaterepos/jpa-1_0a-tck.zip
+        ${user.home}/.m2/privaterepos/jpa-1_0b-tck.zip
 
     If you have that file in a different location, it can be specified with
     the "tck.zip" system property.
+
+    The TCK will only be run if you have the "tck-profile" enabled.
 
     To run a specific package of tests, use the "jpatck.pkg.dir" system
     property to specify the parent directory of the tests you want to run.
     E.g.:
 
-        mvn integration-test -Djpatck.pkg.dir=com/sun/ts/tests/ejb30/persistence/inheritance/mappedsc/descriptors
+        mvn integration-test -Ptck-profile -Djpatck.pkg.dir=com/sun/ts/tests/ejb30/persistence/inheritance/mappedsc/descriptors
 
     The TCK running process will do the following:
 
@@ -53,6 +55,9 @@
         <version>0.9.7-incubating-SNAPSHOT</version>
     </parent>
 
+    <profiles>
+    <profile>
+    <id>tck-profile</id>
     <build>
         <plugins>
             <plugin>
@@ -66,16 +71,9 @@
                         <echo>Running Sun JPA TCK</echo>
 
                         <property name="tck.zip" value=
-                            "${settings.localRepository}/../privaterepos/jpa-1_0a-tck.zip"/>
-                        <!-- patch from Anderson for mappedBy bug -->
-                        <property name="tck.patch" value=
-                            "${settings.localRepository}/../privaterepos/jpa-tck-inheritance-mappedBy.jar"/>
-
+                            "${settings.localRepository}/../privaterepos/jpa-1_0b-tck.zip"/>
                          <available property="tck.available" file="${tck.zip}"/>
                         <fail unless="tck.available">The TCK file ${tck.zip} does not exist. This file must be downloaded separately in order to be able to run the JPA TCK</fail>
-
-                        <available property="tck.patch.available" file="${tck.patch}"/>
-                        <fail unless="tck.patch.available">The TCK patch ${tck.patch} does not exist. This file must be downloaded separately in order to be able to run the JPA TCK</fail>
 
 
                         <available property="tck.available" file="${tck.zip}"/>
@@ -93,10 +91,6 @@
 
                         <unzip overwrite="false"
                             src="${tck.zip}" dest="${tck.base}"/>
-
-                        <!-- unpack the patch over the TCK -->
-                        <unzip overwrite="true"
-                            src="${tck.patch}" dest="${tck.dir}"/>
 
                         <property name="db.driver"
                             value="org.apache.derby.jdbc.EmbeddedDriver"/>
@@ -247,6 +241,9 @@ database.driver=${db.driver}
             </plugin>
         </plugins>
     </build>
+    </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
