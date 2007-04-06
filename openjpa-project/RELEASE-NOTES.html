@@ -1,19 +1,22 @@
 <html>
-<title>Release Notes for OpenJPA - Version 0.9.7</title>
+<title>Release Notes for OpenJPA - 0.9.7</title>
 <body>
-<h1>Release Notes for OpenJPA - Version 0.9.7</h1>
+<h1>Release Notes for OpenJPA - 0.9.7</h1>
 
 <ul>
 <li><a href="#Overview">Overview</a></li>
+<li><a href="#Documentation">Documentation</a></li>
 <li><a href="#GetInvolved">Getting Involved</a></li>
 <li><a href="#Bugs">Bugs</a></li>
 <li><a href="#Improvements">Improvements</a></li>
 <li><a href="#New Features">New Features</a></li>
+<li><a href="#Task">Task</a></li>
+<li><a href="#Test">Test</a></li>
 </ul>
 
 <h2><a name="Overview"></a>Overview</h2>
 
-<p> These notes describe the difference between OpenJPA release 0.9.7and the 
+<p> These notes describe the difference between OpenJPA release 0.9.7 and the 
 preceding release, 0.9.6. 0.9.7 is a feature release and is backwards compatible
 with release 0.9.6. 
 <P>
@@ -28,6 +31,18 @@ Java Community Process
 Additional information on the OpenJPA project may be found at the project web 
 site: <a href="http://incubator.apache.org/openjpa/">
 http://incubator.apache.org/openjpa/</a>
+
+<h2><a name="Documentation"></a>Documentation</h2>
+<p>If you have questions about OpenJPA, a good source of information is the 
+online product manual. You can find the manual for the current release as well
+as older releases of OpenJPA at 
+<a href="http://incubator.apache.org/openjpa/documentation.html">
+http://incubator.apache.org/openjpa/documentation.html</a>
+<p>If you can't find what you're looking for in the manual or would like more
+clarification you please post to the OpenJPA development mailing list.
+Information on all of the OpenJPA mailing lists may be found here:
+<a href="http://incubator.apache.org/openjpa/mailing-lists.html">
+http://incubator.apache.org/openjpa/mailing-lists.html</a>
 
 <p>
 <h2><a name="GetInvolved"></a>Getting Involved</h2>
@@ -54,7 +69,7 @@ How do I Contribute?
 
     
 <h2><a name="Bugs"</a>Bugs</h2>
-The following bugs have been fixed since version 0.9.6
+The following bugs have been fixed since release 0.9.6
 <ul>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-16'>OPENJPA-16</a>] - NPE in createQuery for EJB QL with nested correlated subqueries</li>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-21'>OPENJPA-21</a>] - Time is missing from list of mutable classes.</li>
@@ -106,12 +121,13 @@ The following bugs have been fixed since version 0.9.6
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-175'>OPENJPA-175</a>] - Eager selects by PagingResultObjectProvider may not use the FetchBatchSize</li>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-179'>OPENJPA-179</a>] - Schemas defined in orm.xml are only applied when a name is also specified. </li>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-181'>OPENJPA-181</a>] - ClassCastException when executing bulk delete on an entity that owns a OneToOne with a Cascade.DELETE when DataCache is on</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-182'>OPENJPA-182</a>] - db2 update lock syntax WITH <isolation> USE AND KEEP UPDATE LOCKS</li>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-185'>OPENJPA-185</a>] - optional attribute is not overriden by xml descriptor</li>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-186'>OPENJPA-186</a>] - Build failure of OpenJPA sources from trunk</li>
 </ul>
     
 <h2><a name="Improvements"</a>Improvements</h2>
-Improvements made since version 0.9.6
+Improvements made since release 0.9.6
 <ul>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-10'>OPENJPA-10</a>] - persistence unit name should be default diagnostic context for standard OpenJPA log impl</li>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-37'>OPENJPA-37</a>] - Support ant typedefs for OpenJPA tasks</li>
@@ -128,10 +144,21 @@ Improvements made since version 0.9.6
 </ul>
     
 <h2><a name="New Features"</a>New Features</h2>
-Features added since version 0.9.6
+Features added since release 0.9.6
 <ul>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-92'>OPENJPA-92</a>] - Support for H2 Database Engine</li>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-93'>OPENJPA-93</a>] - Sequence generation in a JTA environment should not require non-JTA datasource</li>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-94'>OPENJPA-94</a>] - Allow MappingTool and persistence.xml to support drop-create for database schema</li>
 </ul>
 
+<h2><a name="Task"</a>Task</h2>
+Tasks done since release 0.9.6
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-36'>OPENJPA-36</a>] - Add cwiki url to incubator status page</li>
+</ul>
+    
+<h2><a name="Test"</a>Test</h2>
+Additional testing done since release 0.9.6
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-40'>OPENJPA-40</a>] - Testing OpenJPA and Spring integration fails</li>
+</ul>

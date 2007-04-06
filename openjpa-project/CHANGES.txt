@@ -54,6 +54,7 @@ project's issue tracker at http://issues.apache.org/jira/browse/OPENJPA
     * [OPENJPA-175] - Eager selects by PagingResultObjectProvider may not use the FetchBatchSize
     * [OPENJPA-179] - Schemas defined in orm.xml are only applied when a name is also specified. 
     * [OPENJPA-181] - ClassCastException when executing bulk delete on an entity that owns a OneToOne with a Cascade.DELETE when DataCache is on
+    * [OPENJPA-182] - db2 update lock syntax WITH <isolation> USE AND KEEP UPDATE LOCKS
     * [OPENJPA-185] - optional attribute is not overriden by xml descriptor
     * [OPENJPA-186] - Build failure of OpenJPA sources from trunk
 
