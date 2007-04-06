@@ -40,6 +40,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.CallbackException;
+import org.apache.openjpa.util.LRSProxy;
 import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.Proxy;
 import org.apache.openjpa.util.ProxyManager;
@@ -163,6 +164,12 @@ public class DetachManager
                 setFetchGroupFields(broker, sm, idxs);
             else
                 idxs.or(sm.getLoaded());
+
+            // clear lrs fields
+            FieldMetaData[] fmds = sm.getMetaData().getFields();
+            for (int i = 0; i < fmds.length; i++)
+                if (fmds[i].isLRS())
+                    idxs.clear(i);
         }
     }
 
@@ -482,46 +489,49 @@ public class DetachManager
                 fmd.getTypeCode());
             val = fmd.getFieldValue(val, sm.getBroker());
             switch (fmd.getDeclaredTypeCode()) {
-                case JavaTypes.LONG:
-                case JavaTypes.SHORT:
-                case JavaTypes.INT:
-                case JavaTypes.BYTE:
-                    longval = (val == null) ? 0L : ((Number) val).longValue();
-                    break;
-                case JavaTypes.DOUBLE:
-                case JavaTypes.FLOAT:
-                    dblval = (val == null) ? 0D : ((Number) val).doubleValue();
-                    break;
-                default:
-                    objval = val;
+            case JavaTypes.LONG:
+            case JavaTypes.SHORT:
+            case JavaTypes.INT:
+            case JavaTypes.BYTE:
+                longval = (val == null) ? 0L : ((Number) val).longValue();
+                break;
+            case JavaTypes.DOUBLE:
+            case JavaTypes.FLOAT:
+                dblval = (val == null) ? 0D : ((Number) val).doubleValue();
+                break;
+            default:
+                objval = val;
             }
             sm.replaceField(getDetachedPersistenceCapable(), this,
                 fmd.getIndex());
         }
 
         /**
-         * Unproxies second class object fields; in the future we should
-         * instead set these fields up for change tracking.
+         * Unproxies second class object fields.
          */
         public void reproxy(DetachedStateManager dsm) {
             FieldMetaData[] fmds = sm.getMetaData().getFields();
             for (int i = 0; i < fmds.length; i++) {
                 switch (fmds[i].getDeclaredTypeCode()) {
-                    case JavaTypes.COLLECTION:
-                    case JavaTypes.MAP:
-                    case JavaTypes.DATE:
-                    case JavaTypes.OBJECT:
-                        sm.provideField(getDetachedPersistenceCapable(), this,
-                            i);
-                        if (objval instanceof Proxy) {
-                            Proxy proxy = (Proxy) objval;
-                            if (proxy.getChangeTracker() != null)
-                                proxy.getChangeTracker().stopTracking();
-                            if (dsm == null)
-                                proxy.setOwner(null, -1);
-                            else
-                                proxy.setOwner(dsm, i);
-                        }
+                case JavaTypes.COLLECTION:
+                case JavaTypes.MAP:
+                    // lrs proxies not detached
+                    if (fmds[i].isLRS()) {
+                        objval = null;
+                        sm.replaceField(getDetachedPersistenceCapable(), 
+                            this, i);
+                        break;
+                    }
+                    // no break
+                case JavaTypes.DATE:
+                case JavaTypes.OBJECT:
+                    sm.provideField(getDetachedPersistenceCapable(), this, i);
+                    if (objval instanceof Proxy) {
+                        Proxy proxy = (Proxy) objval;
+                        if (proxy.getChangeTracker() != null)
+                            proxy.getChangeTracker().stopTracking();
+                        proxy.setOwner(dsm, (dsm == null) ? -1 : i);
+                    }
                 }
             }
             clear();
@@ -583,7 +593,7 @@ public class DetachManager
                     detachField(from, pks[i].getIndex(), true);
                 detachVersion();
                 for (int i = 0; i < fmds.length; i++)
-                    if (!fmds[i].isPrimaryKey() && !fmds[i].isVersion())
+                    if (!fmds[i].isPrimaryKey() && !fmds[i].isVersion()) 
                         detachField(from, i, fgfields.get(i));
             } finally {
                 // clear the StateManager from the target object
@@ -677,61 +687,58 @@ public class DetachManager
             FieldMetaData fmd = sm.getMetaData().getField(field);
             Object newVal = null;
             switch (fmd.getDeclaredTypeCode()) {
-                case JavaTypes.ARRAY:
-                    if (_copy)
-                        newVal = _proxy.copyArray(curVal);
-                    else
-                        newVal = curVal;
-                    detachArray(newVal, fmd);
-                    return newVal;
-                case JavaTypes.COLLECTION:
-                    if (_copy) {
-                        if (_detSM != null) {
-                            newVal =
-                                _proxy.newCollectionProxy(fmd.getProxyType(),
-                                    fmd.getElement().getDeclaredType(),
-                                    fmd.getInitializer() instanceof Comparator ?
-                                        (Comparator) fmd.getInitializer() :
-                                        null);
-                            ((Collection) newVal).addAll((Collection) curVal);
-                        } else
-                            newVal = _proxy.copyCollection((Collection) curVal);
+            case JavaTypes.ARRAY:
+                if (_copy)
+                    newVal = _proxy.copyArray(curVal);
+                else
+                    newVal = curVal;
+                detachArray(newVal, fmd);
+                return newVal;
+            case JavaTypes.COLLECTION:
+                if (_copy) {
+                    if (_detSM != null) {
+                        newVal = _proxy.newCollectionProxy(fmd.getProxyType(),
+                            fmd.getElement().getDeclaredType(),
+                            fmd.getInitializer() instanceof Comparator ?
+                            (Comparator) fmd.getInitializer() : null);
+                        ((Collection) newVal).addAll((Collection) curVal);
                     } else
-                        newVal = curVal;
-                    detachCollection((Collection) newVal, (Collection) curVal,
-                        fmd);
-                    return reproxy(newVal, field);
-                case JavaTypes.MAP:
-                    if (_copy) {
-                        if (_detSM != null) {
-                            newVal = _proxy.newMapProxy(fmd.getProxyType(),
-                                fmd.getKey().getDeclaredType(),
-                                fmd.getElement().getDeclaredType(),
-                                fmd.getInitializer() instanceof Comparator ?
-                                    (Comparator) fmd.getInitializer() : null);
-                            ((Map) newVal).putAll((Map) curVal);
-                        } else
-                            newVal = _proxy.copyMap((Map) curVal);
+                        newVal = _proxy.copyCollection((Collection) curVal);
+                } else
+                    newVal = curVal;
+                detachCollection((Collection) newVal, (Collection) curVal, fmd);
+                return reproxy(newVal, field);
+            case JavaTypes.MAP:
+                if (_copy) {
+                    if (_detSM != null) {
+                        newVal = _proxy.newMapProxy(fmd.getProxyType(),
+                            fmd.getKey().getDeclaredType(),
+                            fmd.getElement().getDeclaredType(),
+                            fmd.getInitializer() instanceof Comparator ?
+                                (Comparator) fmd.getInitializer() : null);
+                        ((Map) newVal).putAll((Map) curVal);
                     } else
-                        newVal = curVal;
-                    detachMap((Map) newVal, (Map) curVal, fmd);
-                    return reproxy(newVal, field);
-                case JavaTypes.CALENDAR:
-                    newVal = (_copy) ? _proxy.copyCalendar((Calendar) curVal) :
-                        curVal;
-                    return reproxy(newVal, field);
-                case JavaTypes.DATE:
-                    newVal = (_copy) ? _proxy.copyDate((Date) curVal) : curVal;
-                    return reproxy(newVal, field);
-                case JavaTypes.OBJECT:
-                    if (_copy)
-                        newVal = _proxy.copyCustom(curVal);
-                    return reproxy((newVal == null) ? curVal : newVal, field);
-                case JavaTypes.PC:
-                case JavaTypes.PC_UNTYPED:
-                    return detachInternal(curVal);
-                default:
-                    return curVal;
+                        newVal = _proxy.copyMap((Map) curVal);
+                } else
+                    newVal = curVal;
+                detachMap((Map) newVal, (Map) curVal, fmd);
+                return reproxy(newVal, field);
+            case JavaTypes.CALENDAR:
+                newVal = (_copy) ? _proxy.copyCalendar((Calendar) curVal) :
+                    curVal;
+                return reproxy(newVal, field);
+            case JavaTypes.DATE:
+                newVal = (_copy) ? _proxy.copyDate((Date) curVal) : curVal;
+                return reproxy(newVal, field);
+            case JavaTypes.OBJECT:
+                if (_copy)
+                    newVal = _proxy.copyCustom(curVal);
+                return reproxy((newVal == null) ? curVal : newVal, field);
+            case JavaTypes.PC:
+            case JavaTypes.PC_UNTYPED:
+                return detachInternal(curVal);
+            default:
+                return curVal;
             }
         }
 
@@ -752,7 +759,7 @@ public class DetachManager
          */
         private void detachCollection(Collection coll, Collection orig,
             FieldMetaData fmd) {
-            // coll can be null if not copyable (lrs, for instance)
+            // coll can be null if not copyable
             if (_copy && coll == null)
                 throw new UserException(_loc.get("not-copyable", fmd));
             if (!fmd.getElement().isDeclaredTypePC())
@@ -773,7 +780,7 @@ public class DetachManager
          * Make sure all the values in the given map are detached.
          */
         private void detachMap(Map map, Map orig, FieldMetaData fmd) {
-            // map can be null if not copyable (lrs, for instance)
+            // map can be null if not copyable
             if (_copy && map == null)
                 throw new UserException(_loc.get("not-copyable", fmd));
             boolean keyPC = fmd.getKey().isDeclaredTypePC();
@@ -788,8 +795,7 @@ public class DetachManager
                 if (_copy)
                     map.clear();
                 Object key, val;
-                for (Iterator itr = orig.entrySet().iterator(); itr.hasNext();)
-                {
+                for (Iterator itr = orig.entrySet().iterator(); itr.hasNext();){
                     entry = (Map.Entry) itr.next();
                     key = entry.getKey();
                     if (keyPC)
