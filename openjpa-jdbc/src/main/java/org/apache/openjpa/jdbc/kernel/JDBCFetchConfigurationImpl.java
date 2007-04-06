@@ -327,7 +327,7 @@ public class JDBCFetchConfigurationImpl
     }
 
     public JDBCFetchConfiguration setIsolationLevel(int level) {
-        if (level != -1
+        if (level != -1 && level != DEFAULT
             && level != Connection.TRANSACTION_NONE
             && level != Connection.TRANSACTION_READ_UNCOMMITTED
             && level != Connection.TRANSACTION_READ_COMMITTED
@@ -335,8 +335,11 @@ public class JDBCFetchConfigurationImpl
             && level != Connection.TRANSACTION_SERIALIZABLE)
             throw new IllegalArgumentException(
                 _loc.get("bad-level", Integer.valueOf(level)).getMessage());
-        
-        _state.isolationLevel = level;
+
+        if (level == DEFAULT)
+            _state.isolationLevel = -1;
+        else
+            _state.isolationLevel = level;
         return this;
     }
 }
