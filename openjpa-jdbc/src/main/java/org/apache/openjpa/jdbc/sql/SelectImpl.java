@@ -340,8 +340,19 @@ public class SelectImpl
             else
                 stmnt = sql.prepareStatement(conn, rsType, -1);
 
-            if (forUpdate)
+            // if this is a locking select and the lock timeout is greater than
+            // the configured query timeout, use the lock timeout
+            if (forUpdate && _dict.supportsQueryTimeout && fetch != null 
+                && fetch.getLockTimeout() > stmnt.getQueryTimeout() * 1000) {
+                int timeout = fetch.getLockTimeout();
+                if (timeout < 1000) {
+                    timeout = 1000; 
+                    Log log = _conf.getLog(JDBCConfiguration.LOG_JDBC);
+                    if (log.isWarnEnabled())
+                        log.warn(_loc.get("millis-query-timeout"));
+                }
                 stmnt.setQueryTimeout(fetch.getLockTimeout() / 1000);
+            }
             rs = stmnt.executeQuery();
         } catch (SQLException se) {
             // clean up statement

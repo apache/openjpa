@@ -90,7 +90,7 @@ public class VersionLockManager
      *
      * @see StoreContext#transactional
      */
-    protected void lockInternal(OpenJPAStateManager sm, int level, long timeout,
+    protected void lockInternal(OpenJPAStateManager sm, int level, int timeout,
         Object sdata) {
         // Set lock level first to prevent infinite recursion with
         // transactional(..) call
