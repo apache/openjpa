@@ -339,6 +339,9 @@ public class SelectImpl
                 stmnt = sql.prepareStatement(conn, fetch, rsType, -1);
             else
                 stmnt = sql.prepareStatement(conn, rsType, -1);
+
+            if (forUpdate)
+                stmnt.setQueryTimeout(fetch.getLockTimeout() / 1000);
             rs = stmnt.executeQuery();
         } catch (SQLException se) {
             // clean up statement
