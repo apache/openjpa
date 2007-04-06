@@ -322,11 +322,11 @@ public class JDBCFetchConfigurationImpl
         return (JDBCConfiguration) conf;
     }
 
-    public int getIsolationLevel() {
+    public int getIsolation() {
         return _state.isolationLevel;
     }
 
-    public JDBCFetchConfiguration setIsolationLevel(int level) {
+    public JDBCFetchConfiguration setIsolation(int level) {
         if (level != -1 && level != DEFAULT
             && level != Connection.TRANSACTION_NONE
             && level != Connection.TRANSACTION_READ_UNCOMMITTED

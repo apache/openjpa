@@ -132,7 +132,7 @@ public interface JDBCFetchPlan
      *
      * @since 0.9.7
      */
-    public int getIsolationLevel();
+    public int getIsolation();
 
     /**
      * <p>The isolation level for queries issued to the database. This overrides
@@ -149,5 +149,5 @@ public interface JDBCFetchPlan
      *
      * @since 0.9.7
      */
-    public JDBCFetchPlan setIsolationLevel(int level);
+    public JDBCFetchPlan setIsolation(int level);
 }

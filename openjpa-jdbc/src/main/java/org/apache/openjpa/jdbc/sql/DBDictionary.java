@@ -2145,7 +2145,7 @@ public class DBDictionary
         SQLBuffer having, SQLBuffer order,
         boolean distinct, boolean forUpdate, long start, long end) {
         return toOperation(getSelectOperation(fetch), selects, from, where,
-            group, having, order, distinct, forUpdate, start, end,
+            group, having, order, distinct, start, end,
             getForUpdateClause(fetch, forUpdate));
     }
 
@@ -2155,12 +2155,16 @@ public class DBDictionary
      */
     protected String getForUpdateClause(JDBCFetchConfiguration fetch,
         boolean forUpdate) {
-        if (fetch != null && fetch.getIsolationLevel() != -1)
+        if (fetch != null && fetch.getIsolation() != -1) {
             throw new IllegalStateException(_loc.get(
                 "isolation-level-config-not-supported", getClass().getName())
                 .getMessage());
-        else
+        } else if (forUpdate && !simulateLocking) {
+            assertSupport(supportsSelectForUpdate, "SupportsSelectForUpdate");
             return forUpdateClause;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -2175,8 +2179,8 @@ public class DBDictionary
      */
     protected SQLBuffer toOperation(String op, SQLBuffer selects,
         SQLBuffer from, SQLBuffer where, SQLBuffer group, SQLBuffer having,
-        SQLBuffer order, boolean distinct, boolean forUpdate, long start,
-        long end, String forUpdateClause) {
+        SQLBuffer order, boolean distinct, long start, long end,
+        String forUpdateClause) {
         SQLBuffer buf = new SQLBuffer(this);
         buf.append(op);
 
@@ -2202,12 +2206,8 @@ public class DBDictionary
             buf.append(" ORDER BY ").append(order);
         if (range && rangePosition == RANGE_POST_SELECT)
             appendSelectRange(buf, start, end);
-
-        if (forUpdate && !simulateLocking) {
-            assertSupport(supportsSelectForUpdate, "SupportsSelectForUpdate");
-            if (forUpdateClause != null)
-                buf.append(" ").append(forUpdateClause);
-        }
+        if (forUpdateClause != null)
+            buf.append(" ").append(forUpdateClause);
         if (range && rangePosition == RANGE_POST_LOCK)
             appendSelectRange(buf, start, end);
         return buf;
