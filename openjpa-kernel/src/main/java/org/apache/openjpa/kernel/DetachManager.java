@@ -40,7 +40,6 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.CallbackException;
-import org.apache.openjpa.util.LRSProxy;
 import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.Proxy;
 import org.apache.openjpa.util.ProxyManager;
