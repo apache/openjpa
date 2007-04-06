@@ -103,12 +103,12 @@ public class JDBCFetchPlanImpl
         return this;
     }
 
-    public int getIsolationLevel() {
-        return _fetch.getIsolationLevel();
+    public int getIsolation() {
+        return _fetch.getIsolation();
     }
 
-    public JDBCFetchPlan setIsolationLevel(int level) {
-        _fetch.setIsolationLevel(level);
+    public JDBCFetchPlan setIsolation(int level) {
+        _fetch.setIsolation(level);
         return this;
     }
 }

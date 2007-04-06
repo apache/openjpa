@@ -24,7 +24,6 @@ import java.util.StringTokenizer;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.util.OpenJPAException;
-import org.apache.openjpa.kernel.LockLevels;
 
 /**
  * Dictionary for IBM DB2 database.
@@ -238,8 +237,8 @@ public class DB2Dictionary
         try {
             // Determine the isolationLevel; the fetch
             // configuration data overrides the persistence.xml value
-            if (fetch != null && fetch.getIsolationLevel() != -1)
-                isolationLevel = fetch.getIsolationLevel();
+            if (fetch != null && fetch.getIsolation() != -1)
+                isolationLevel = fetch.getIsolation();
             else
                 isolationLevel = conf.getTransactionIsolationConstant();
 

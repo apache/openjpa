@@ -186,7 +186,7 @@ public interface JDBCFetchConfiguration
      *
      * @since 0.9.7
      */
-    public int getIsolationLevel();
+    public int getIsolation();
 
     /**
      * <p>The isolation level for queries issued to the database. This overrides
@@ -203,5 +203,5 @@ public interface JDBCFetchConfiguration
      *
      * @since 0.9.7
      */
-    public JDBCFetchConfiguration setIsolationLevel(int level);
+    public JDBCFetchConfiguration setIsolation(int level);
 }

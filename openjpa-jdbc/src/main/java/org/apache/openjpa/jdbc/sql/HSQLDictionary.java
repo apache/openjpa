@@ -192,14 +192,14 @@ public class HSQLDictionary
 
     protected SQLBuffer toOperation(String op, SQLBuffer selects,
         SQLBuffer from, SQLBuffer where, SQLBuffer group, SQLBuffer having,
-        SQLBuffer order, boolean distinct, boolean forUpdate, long start,
-        long end, String forUpdateClause) {
+        SQLBuffer order, boolean distinct, long start, long end,
+        String forUpdateClause) {
         // hsql requires ordering when limit is used
         if ((start != 0 || end != Long.MAX_VALUE)
             && (order == null || order.isEmpty()))
             order = _oneBuffer;
         return super.toOperation(op, selects, from, where, group, having,
-            order, distinct, forUpdate, start, end, forUpdateClause);
+            order, distinct, start, end, forUpdateClause);
     }
 
     public Column[] getColumns(DatabaseMetaData meta, String catalog,

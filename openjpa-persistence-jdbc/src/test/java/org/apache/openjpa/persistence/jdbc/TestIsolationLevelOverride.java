@@ -16,14 +16,11 @@
 package org.apache.openjpa.persistence.jdbc;
 
 import java.sql.Connection;
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
 import javax.persistence.PersistenceException;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
@@ -53,7 +50,7 @@ public class TestIsolationLevelOverride
         try {
             em.getTransaction().begin();
             ((JDBCFetchPlan) em.getFetchPlan())
-                .setIsolationLevel(Connection.TRANSACTION_SERIALIZABLE);
+                .setIsolation(Connection.TRANSACTION_SERIALIZABLE);
             em.find(AllFieldTypes.class, 0);
 
             if (dict instanceof DB2Dictionary) {
