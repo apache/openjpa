@@ -176,7 +176,9 @@ database.driver=${db.driver}
                                 <java classname=
                                     "org.apache.tools.ant.launch.Launcher"
                                     fork="true" failonerror="true"
-                                    dir="${tck.dir}/src" timeout="7200000">
+                                    dir="${tck.dir}/src"
+                                    output="${tck.dir}/openjpa-tck.log"
+                                    timeout="7200000">
                                     <arg value="-emacs"/>
                                     <arg value="-buildfile"/>
                                     <arg value="@{buildfile}"/>
