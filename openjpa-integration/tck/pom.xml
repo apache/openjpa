@@ -83,14 +83,20 @@
                             value="${basedir}/target/tck"/>
                         <property name="tck.dir" value="${tck.base}/jpatck"/>
 
+                        <unzip overwrite="false"
+                            src="${tck.zip}" dest="${tck.base}"/>
+
                         <path id="cp">
                             <path refid="maven.compile.classpath"/>
+
+                            <!-- use official JPA API instead of GM's -->
+                            <fileset dir="${tck.dir}/lib">
+                                <include name="**/*.jar"/>
+                                <exclude name="**/geronimo-jpa*"/>
+                            </fileset>
                             <pathelement path="${java.class.path}"/>
                         </path>
                         <pathconvert property="cp.property" refid="cp"/>
-
-                        <unzip overwrite="false"
-                            src="${tck.zip}" dest="${tck.base}"/>
 
                         <property name="db.driver"
                             value="org.apache.derby.jdbc.EmbeddedDriver"/>
@@ -103,6 +109,8 @@
 
                         <property name="jpatck.work.dir"
                             value="${tck.dir}/../work"/>
+                        <property name="tck.log"
+                            value="${tck.base}/openjpa-tck.log"/>
 
                         <property name="openjpa.properties"
                             value="${tck.dir}/openjpa-provier.properties"/>
@@ -167,7 +175,6 @@ database.driver=${db.driver}
                             <replacefilter token="-javaagent:${jpa.home}/lib/toplink-essentials-agent.jar" value="-javaagent:${agent} -Dopenjpa.MetaDataFactory=jpa(DefaultAccessType=PROPERTY)"/>
                         </replace>
 
-
                         <!-- make a macro for the TCK harness launcher -->
                         <macrodef name="tsant">
                             <attribute name="buildfile"/>
@@ -177,7 +184,8 @@ database.driver=${db.driver}
                                     "org.apache.tools.ant.launch.Launcher"
                                     fork="true" failonerror="true"
                                     dir="${tck.dir}/src"
-                                    output="${tck.dir}/openjpa-tck.log"
+                                    append="true"
+                                    output="${tck.log}"
                                     timeout="7200000">
                                     <arg value="-emacs"/>
                                     <arg value="-buildfile"/>
@@ -200,18 +208,16 @@ database.driver=${db.driver}
                                         value="${jpatck.pkg.dir}"/>
 
                                     <classpath>
+                                        <path refid="cp"/>
                                         <fileset dir="${tck.dir}/tools/ant/lib">
                                             <include name="**/*.jar"/>
                                         </fileset>
-                                        <fileset dir="${tck.dir}/lib">
-                                            <include name="**/*.jar"/>
-                                        </fileset>
-                                        <path refid="cp"/>
                                     </classpath>
                                 </java>
                             </sequential>
                         </macrodef>
 
+                        <echo>Logging JPA TCK output to ${tck.log}</echo>
 
                         <!-- first initialize the database -->
                         <tsant buildfile="${tck.dir}/bin/initdb.xml"
@@ -233,6 +239,15 @@ database.driver=${db.driver}
                                 substring="Completed test run: not ok"/>
                         </condition>
                         <fail if="jpatck.failed">Some tests failed</fail>
+
+                        <echo>JPA TCK Passed 100%!</echo>
+
+                        <property name="tck.results.archive"
+                            value="${tck.base}/openjpa-tck-results.zip"/>
+                        <zip destfile="${tck.results.archive}"
+                            basedir="${jpatck.work.dir}"/>
+                        <echo>Results archive at: ${tck.results.archive}</echo>
+
                         </tasks>
                         </configuration>
                         <goals>
@@ -246,10 +261,25 @@ database.driver=${db.driver}
     </profile>
     </profiles>
 
+    <repositories>
+        <repository>
+            <id>java.net</id>
+            <name>Java.net Maven Repository</name>
+            <url>https://maven-repository.dev.java.net/nonav/repository</url>
+            <layout>legacy</layout>
+        </repository>
+    </repositories>
+
     <dependencies>
+        <!-- use the authoritative javax.persistence API for testing -->
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>1.0b</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-all</artifactId>
+            <artifactId>openjpa-kernel</artifactId>
             <version>${pom.version}</version>
         </dependency>
         <dependency>
