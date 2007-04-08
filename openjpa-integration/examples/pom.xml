@@ -18,6 +18,10 @@
 <!--
     This integration build tests the examples that are bundled with
     the OpenJPA distribution.
+
+    The examples will only be run if you have the 'examples-profile' enabled:
+
+        mvn integration-test -Pexamples-profile
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -33,6 +37,9 @@
         <version>0.9.8-incubating-SNAPSHOT</version>
     </parent>
 
+    <profiles>
+    <profile>
+    <id>examples-profile</id>
     <build>
         <plugins>
             <plugin>
@@ -67,6 +74,9 @@
             </plugin>
         </plugins>
     </build>
+    </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
