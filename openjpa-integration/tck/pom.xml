@@ -83,6 +83,8 @@
                             value="${basedir}/target/tck"/>
                         <property name="tck.dir" value="${tck.base}/jpatck"/>
 
+                        <delete dir="${tck.dir}"/>
+
                         <unzip overwrite="false"
                             src="${tck.zip}" dest="${tck.base}"/>
 
@@ -134,7 +136,7 @@ openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
                         <property name="jpatck.config"
                             value="${tck.dir}/bin/ts.jte"/>
 
-                        <echo append="true" file="${jpatck.config}">
+                        <echo append="false" file="${jpatck.config}.tmp">
 
 
 #########################################################################
@@ -145,7 +147,7 @@ jpa.home=${tck.dir}
 work.dir=${jpatck.work.dir}
 report.dir=${tck.dir}/../reports
 jpa.classes=${cp.property}
-database.classes=$${jpa.classes}
+database.classes=${jpa.classes}
 # Need to specify java.* classes, both in Windows/UNIX locations as well as Mac
 sigTestClasspath=$${JAVA_HOME}/lib/rt.jar:$${JAVA_HOME}/../Classes/classes.jar:$${jpa.classes}
 persistence.unit.properties.file.full.path=${openjpa.properties}
@@ -156,12 +158,22 @@ database.driver=${db.driver}
 
                         </echo>
 
+                        <!-- convert backslashes and known paths with spaces
+                            to get around a problem with the TCK testrunner 
+                            on windows -->
+                        <replace summary="yes" file="${jpatck.config}.tmp" 
+                            replacefilterfile="windows-replacefilter.properties"/>
+                        <concat append="true" destfile="${jpatck.config}">
+                            <fileset file="${jpatck.config}.tmp"/>
+                        </concat>
+
                         <path id="agent.path">
                             <fileset dir="../../openjpa-all/target">
                                 <include name="**/*.jar"/>
                             </fileset>
                         </path>
-                        <pathconvert property="agent" refid="agent.path"/>
+                        <pathconvert dirsep="/" property="agent" 
+                            refid="agent.path"/>
                         <echo>AGENT: ${agent}</echo>
 
                         <!--
