@@ -151,7 +151,7 @@ database.classes=${jpa.classes}
 # Need to specify java.* classes, both in Windows/UNIX locations as well as Mac.
 # This includes a few different possible locations; only one of them needs to 
 # actually work for a given environment.
-sigTestClasspath=${JAVA_HOME}/lib/rt.jar:${JAVA_HOME}/jre/lib/rt.jar:${JAVA_HOME}/../Classes/classes.jar:$${jpa.classes}
+sigTestClasspath=${JAVA_HOME}/lib/rt.jar${path.separator}${JAVA_HOME}/jre/lib/rt.jar${path.separator}${JAVA_HOME}/../Classes/classes.jar${path.separator}$${jpa.classes}
 persistence.unit.properties.file.full.path=${openjpa.properties}
 database.user=${db.username}
 database.passwd=${db.password}
