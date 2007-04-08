@@ -177,7 +177,7 @@ public class PCClassFileTransformer
             // cannot load the class: this might mean that it is a proxy
             // or otherwise inaccessible class which can't be an entity
             return Boolean.FALSE;
-        } catch (ClassCircularityError cce) {
+        } catch (LinkageError cce) {
             // this can happen if we are loading classes that this
             // class depends on; these will never be enhanced anyway
             return Boolean.FALSE;
