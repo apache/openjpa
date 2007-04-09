@@ -30,6 +30,8 @@ public class UserException
     public static final int INVALID_STATE = 2;
     public static final int NO_TRANSACTION = 3;
     public static final int CALLBACK = 4;
+    public static final int NO_RESULT = 5;
+    public static final int NON_UNIQUE_RESULT = 6;
 
     public UserException() {
     }

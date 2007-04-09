@@ -173,6 +173,16 @@ public class PersistenceExceptions
                         (ke.getMessage(), getNestedThrowables(ke),
                             getFailedObject(ke), ke.isFatal());
                 break;
+            case UserException.NO_RESULT:
+                e = new org.apache.openjpa.persistence.NoResultException
+                    (ke.getMessage(), getNestedThrowables(ke),
+                        getFailedObject(ke), ke.isFatal());
+                break;
+            case UserException.NON_UNIQUE_RESULT:
+                e = new org.apache.openjpa.persistence.NonUniqueResultException
+                    (ke.getMessage(), getNestedThrowables(ke),
+                        getFailedObject(ke), ke.isFatal());
+                break;
             case UserException.INVALID_STATE:
                 e = new org.apache.openjpa.persistence.InvalidStateException
                     (ke.getMessage(), getNestedThrowables(ke),

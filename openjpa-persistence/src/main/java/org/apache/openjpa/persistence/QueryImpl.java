@@ -281,26 +281,14 @@ public class QueryImpl
      */
     public Object getSingleResult() {
         _em.assertNotCloseInvoked();
-        Object ob = execute();
-        if (!(ob instanceof List))
-            return ob;
-
-        List res = (List) ob;
+        // temporarily set query to unique so that a single result is validated
+        // and returned; unset again in case the user executes query again
+        // via getResultList
+        _query.setUnique(true);
         try {
-            // don't use size() b/c can be inefficient under some LRS settings
-            Iterator itr = res.iterator();
-            if (!itr.hasNext())
-                throw new NoResultException(_loc.get("no-results",
-                    _query.getQueryString()).getMessage(), null, null, false);
-
-            Object ret = itr.next();
-            if (itr.hasNext())
-                throw new NonUniqueResultException(_loc.get("mult-results",
-                    _query.getQueryString()).getMessage(), null, null, false);
-
-            return ret;
+            return execute();
         } finally {
-            OpenJPAPersistence.close(res);
+            _query.setUnique(false);
         }
     }
 
