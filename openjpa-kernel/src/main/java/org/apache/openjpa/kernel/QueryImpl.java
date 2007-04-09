@@ -51,6 +51,8 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InvalidStateException;
+import org.apache.openjpa.util.NonUniqueResultException;
+import org.apache.openjpa.util.NoResultException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
@@ -1279,10 +1281,10 @@ public class QueryImpl
             if (next) {
                 single = rop.getResultObject();
                 if (range.end != range.start + 1 && rop.next())
-                    throw new InvalidStateException(_loc.get("not-unique",
+                    throw new NonUniqueResultException(_loc.get("not-unique",
                         _class, _query));
             } else if (_unique == Boolean.TRUE)
-                throw new InvalidStateException(_loc.get("no-result", 
+                throw new NoResultException(_loc.get("no-result", 
                     _class, _query));
 
             // if unique set to false, use collection
