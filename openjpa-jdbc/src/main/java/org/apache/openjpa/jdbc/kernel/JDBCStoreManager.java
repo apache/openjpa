@@ -756,8 +756,8 @@ public class JDBCStoreManager
     public Object load(ClassMapping mapping, JDBCFetchConfiguration fetch,
         BitSet exclude, Result result) throws SQLException {
         if (!mapping.isMapped())
-            throw new InvalidStateException(_loc
-                .get("virtual-mapping", mapping));
+            throw new InvalidStateException(_loc.get("virtual-mapping", 
+                mapping));
 
         // get the object id for the row; base class selects pk columns
         ClassMapping base = mapping;
@@ -972,7 +972,7 @@ public class JDBCStoreManager
         if (sm != null && sm.getPCState() != PCState.TRANSIENT
             && sm.getLoaded().get(fm.getIndex()))
             return false;
-        return fetch.requiresFetch(fm);
+        return fetch.requiresFetch(fm) == FetchConfiguration.FETCH_LOAD;
     }
 
     /**
@@ -1127,7 +1127,7 @@ public class JDBCStoreManager
             fms = subMappings[i].getDefinedFieldMappings();
             for (int j = 0; j < fms.length; j++) {
                 // make sure in one of configured fetch groups
-            	if (!fetch.requiresFetch(fms[j]) 
+            	if (fetch.requiresFetch(fms[j]) != FetchConfiguration.FETCH_LOAD
                     && ((!fms[j].isInDefaultFetchGroup() 
                     && fms[j].isDefaultFetchGroupExplicit())
                     || fms[j].supportsSelect(sel, sel.TYPE_TWO_PART, sm, this, 

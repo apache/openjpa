@@ -436,9 +436,17 @@ public class DelegatingFetchConfiguration
 		}
 	}
 
-    public boolean requiresFetch(FieldMetaData fmd) {
+    public int requiresFetch(FieldMetaData fmd) {
         try {
             return _fetch.requiresFetch(fmd);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public boolean requiresLoad() {
+        try {
+            return _fetch.requiresLoad();
         } catch (RuntimeException re) {
             throw translate(re);
         }

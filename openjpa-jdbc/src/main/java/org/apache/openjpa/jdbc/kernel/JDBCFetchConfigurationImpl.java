@@ -303,25 +303,6 @@ public class JDBCFetchConfigurationImpl
         return this;
     }
 
-    public JDBCFetchConfiguration traverseJDBC(FieldMetaData fm) {
-        return (JDBCFetchConfiguration) traverse(fm);
-    }
-
-    /**
-     * Access JDBC configuration information. May return null if not a
-     * JDBC back-end (possible to get a JDBCFetchConfiguration on non-JDBC
-     * back end in remote client).
-     */
-    private JDBCConfiguration getJDBCConfiguration() {
-        StoreContext ctx = getContext();
-        if (ctx == null)
-            return null;
-        OpenJPAConfiguration conf = ctx.getConfiguration();
-        if (!(conf instanceof JDBCConfiguration))
-            return null;
-        return (JDBCConfiguration) conf;
-    }
-
     public int getIsolation() {
         return _state.isolationLevel;
     }
@@ -341,5 +322,24 @@ public class JDBCFetchConfigurationImpl
         else
             _state.isolationLevel = level;
         return this;
+    }
+
+    public JDBCFetchConfiguration traverseJDBC(FieldMetaData fm) {
+        return (JDBCFetchConfiguration) traverse(fm);
+    }
+
+    /**
+     * Access JDBC configuration information. May return null if not a
+     * JDBC back-end (possible to get a JDBCFetchConfiguration on non-JDBC
+     * back end in remote client).
+     */
+    private JDBCConfiguration getJDBCConfiguration() {
+        StoreContext ctx = getContext();
+        if (ctx == null)
+            return null;
+        OpenJPAConfiguration conf = ctx.getConfiguration();
+        if (!(conf instanceof JDBCConfiguration))
+            return null;
+        return (JDBCConfiguration) conf;
     }
 }

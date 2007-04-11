@@ -138,7 +138,8 @@ public class PCDataImpl
             // fields in configured fetch groups
             if (!isLoaded(i))
                 loadIntermediate(sm, fmds[i]);
-            else if (!sm.getLoaded().get(i) && fetch.requiresFetch(fmds[i]))
+            else if (!sm.getLoaded().get(i) && fetch.requiresFetch(fmds[i]) 
+                != FetchConfiguration.FETCH_NONE)
                 loadField(sm, fmds[i], fetch, context);
         }
     }

@@ -167,11 +167,6 @@ public interface JDBCFetchConfiguration
     public JDBCFetchConfiguration clearJoins();
 
     /**
-     * Convenience method to cast traversal to store-specific type.
-     */
-    public JDBCFetchConfiguration traverseJDBC(FieldMetaData fm);
-
-    /**
      * <p>The isolation level for queries issued to the database. This overrides
      * the persistence-unit-wide <code>openjpa.jdbc.TransactionIsolation</code>
      * value.</p>
@@ -204,4 +199,9 @@ public interface JDBCFetchConfiguration
      * @since 0.9.7
      */
     public JDBCFetchConfiguration setIsolation(int level);
+
+    /**
+     * Convenience method to cast traversal to store-specific type.
+     */
+    public JDBCFetchConfiguration traverseJDBC(FieldMetaData fm);
 }
