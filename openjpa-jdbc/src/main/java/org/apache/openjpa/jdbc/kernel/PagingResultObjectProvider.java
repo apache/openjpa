@@ -27,6 +27,7 @@ import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
+import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Closeable;
@@ -90,7 +91,7 @@ public class PagingResultObjectProvider
         FieldMapping[] fms = mapping.getDefinedFieldMappings();
         BitSet paged = null;
         for (int i = 0; i < fms.length; i++) {
-            if (!fetch.requiresFetch(fms[i]))
+            if (fetch.requiresFetch(fms[i]) != FetchConfiguration.FETCH_LOAD)
                 continue;
 
             if (fms[i].supportsSelect(sel, sel.EAGER_PARALLEL, null, store,

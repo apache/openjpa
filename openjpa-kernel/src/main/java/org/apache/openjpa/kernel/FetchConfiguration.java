@@ -40,6 +40,32 @@ public interface FetchConfiguration
     public static final int DEFAULT = -99;
 
     /**
+     * Constant indicating that a field does not require fetching.
+     *
+     * @see #requiresFetch
+     */
+    public static final int FETCH_NONE = 0;
+
+    /**
+     * Constant indicating that a field requires a fetch and load of fetched
+     * data.
+     *
+     * @see #requiresFetch
+     */
+    public static final int FETCH_LOAD = 1;
+
+    /**
+     * Constant indicating that a reference to the field's value must be
+     * fetched, but loading data is not necessary.  Used when we know the
+     * data will be loaded anyway, such as when traversing the back-ptr of
+     * a bidirectional relation where the other side is also being fetched.
+     *
+     * @see #requiresFetch
+     */
+    public static final int FETCH_REF = 2;
+
+
+    /**
      * Return the context assiciated with this configuration;
      * may be null if it has not been set or this object has been serialized.
      */
@@ -309,11 +335,19 @@ public interface FetchConfiguration
 
     /**
      * Affirms if the given field requires to be fetched in the context
-     * of current fetch operation.
+     * of current fetch operation.  Returns one of {@link #FETCH_NONE},
+     * {@link #FETCH_LOAD}, {@link FETCH_REF}.
      *
      * @since 0.4.1
      */
-    public boolean requiresFetch(FieldMetaData fm);
+    public int requiresFetch(FieldMetaData fm);
+
+    /**
+     * Return false if we know that the object being fetched with this
+     * configuration does not require a load, because this configuration came
+     * from a traversal of a {@link #FETCH_REF} field.
+     */
+    public boolean requiresLoad();
     
     /**
      * Traverse the given field to generate (possibly) a new configuration 

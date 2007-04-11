@@ -233,14 +233,6 @@ public class DelegatingJDBCFetchConfiguration
         }
     }
 
-    public JDBCFetchConfiguration traverseJDBC(FieldMetaData fm) {
-        try {
-            return getJDBCDelegate().traverseJDBC(fm);
-        } catch (RuntimeException re) {
-            throw translate(re);
-        }
-    }
-
     public int getIsolation() {
         try {
             return getJDBCDelegate().getIsolation();
@@ -253,6 +245,14 @@ public class DelegatingJDBCFetchConfiguration
         try {
             getJDBCDelegate().setIsolation(level);
             return this;
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public JDBCFetchConfiguration traverseJDBC(FieldMetaData fm) {
+        try {
+            return getJDBCDelegate().traverseJDBC(fm);
         } catch (RuntimeException re) {
             throw translate(re);
         }

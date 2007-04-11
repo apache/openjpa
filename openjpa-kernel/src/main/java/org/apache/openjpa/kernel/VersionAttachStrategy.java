@@ -131,7 +131,8 @@ class VersionAttachStrategy
                         attachField(manager, toAttach, sm, fmds[i], true);
                         break;
                     case DETACH_FGS:
-                        if (fetch.requiresFetch(fmds[i]))
+                        if (fetch.requiresFetch(fmds[i]) 
+                            != FetchConfiguration.FETCH_NONE)
                             attachField(manager, toAttach, sm, fmds[i], true);
                         break;
                     case DETACH_LOADED:

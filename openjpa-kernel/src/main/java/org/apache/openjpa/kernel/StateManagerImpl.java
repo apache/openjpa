@@ -407,7 +407,8 @@ public class StateManagerImpl
                     load = !fmds[i].isTransient();
                     break;
                 case LOAD_FGS:
-                    load = fetch == null || fetch.requiresFetch(fmds[i]);
+                    load = fetch == null || fetch.requiresFetch(fmds[i]) 
+                        != FetchConfiguration.FETCH_NONE;
                     break;
                 default: // LOAD_ALL
                     load = true;

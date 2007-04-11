@@ -39,6 +39,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FetchGroup;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.NoTransactionException;
@@ -84,6 +85,8 @@ public class FetchConfigurationImpl
     private FetchConfigurationImpl _parent;
     private String _fromField;
     private Class _fromType;
+    private String _directRelationOwner;
+    private boolean _load = true;
     private int _availableRecursion;
     private int _availableDepth;
 
@@ -126,6 +129,8 @@ public class FetchConfigurationImpl
         clone._parent = _parent;
         clone._fromField = _fromField;
         clone._fromType = _fromType;
+        clone._directRelationOwner = _directRelationOwner;
+        clone._load = _load;
         clone._availableRecursion = _availableRecursion;
         clone._availableDepth = _availableDepth;
         clone.copy(this);
@@ -498,23 +503,32 @@ public class FetchConfigurationImpl
     // Traversal
     /////////////
     
-    public boolean requiresFetch(FieldMetaData fm) {
+    public int requiresFetch(FieldMetaData fm) {
         if (!includes(fm))
-            return false;
+            return FETCH_NONE;
         
         Class type = getRelationType(fm);
         if (type == null)
-            return true;
+            return FETCH_LOAD;
         if (_availableDepth == 0)
-            return false;
+            return FETCH_NONE;
 
         // we can skip calculating recursion depth if this is a top-level conf:
         // the field is in our fetch groups, so can't possibly not select
         if (_parent == null) 
-            return true;
+            return FETCH_LOAD;
 
         int rdepth = getAvailableRecursionDepth(fm, type, false);
-        return rdepth == FetchGroup.DEPTH_INFINITE || rdepth > 0;
+        if (rdepth != FetchGroup.DEPTH_INFINITE && rdepth <= 0)
+            return FETCH_NONE;
+
+        if (StringUtils.equals(_directRelationOwner, fm.getFullName()))
+            return FETCH_REF;
+        return FETCH_LOAD;
+    }
+
+    public boolean requiresLoad() {
+        return _load;
     }
 
     public FetchConfiguration traverse(FieldMetaData fm) {
@@ -528,6 +542,15 @@ public class FetchConfigurationImpl
         clone._fromField = fm.getFullName(false);
         clone._fromType = type;
         clone._availableRecursion = getAvailableRecursionDepth(fm, type, true);
+        if (StringUtils.equals(_directRelationOwner, fm.getFullName()))
+            clone._load = false;
+        else
+            clone._load = _load;
+
+        FieldMetaData owner = fm.getMappedByMetaData();
+        if (owner != null && owner.getTypeCode() == JavaTypes.PC)
+            clone._directRelationOwner = owner.getFullName();
+        
         return clone;
     }
 

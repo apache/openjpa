@@ -231,9 +231,11 @@ public class DetachManager
         StateManagerImpl sm, BitSet idxs) {
         FetchConfiguration fetch = broker.getFetchConfiguration();
         FieldMetaData[] fmds = sm.getMetaData().getFields();
-        for (int i = 0; i < fmds.length; i++)
-            if (fmds[i].isPrimaryKey() || fetch.requiresFetch(fmds[i]))
+        for (int i = 0; i < fmds.length; i++) {
+            if (fmds[i].isPrimaryKey() || fetch.requiresFetch(fmds[i])
+                != FetchConfiguration.FETCH_NONE)
                 idxs.set(i);
+        }
     }
 
     /**

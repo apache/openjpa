@@ -777,7 +777,7 @@ public class BrokerImpl
             StateManagerImpl sm = getStateManagerImplById(oid,
                 (flags & OID_ALLOW_NEW) != 0 || (_flags & FLAG_FLUSHED) != 0);
             if (sm != null) {
-                if (!requiresLoad(sm, true, edata, flags))
+                if (!requiresLoad(sm, true, fetch, edata, flags))
                     return call.processReturn(oid, sm);
 
                 if (!sm.isLoading()) {
@@ -827,7 +827,7 @@ public class BrokerImpl
 
             // initialize a new state manager for the datastore instance
             sm = newStateManagerImpl(oid, (flags & OID_COPY) != 0);
-            boolean load = requiresLoad(sm, false, edata, flags);
+            boolean load = requiresLoad(sm, false, fetch, edata, flags);
             sm = initialize(sm, load, fetch, edata);
             if (sm == null) {
                 if ((flags & OID_NOVALIDATE) != 0)
@@ -939,7 +939,7 @@ public class BrokerImpl
                     sm = newStateManagerImpl(oid, (flags & OID_COPY) != 0);
 
                 _loading.put(obj, sm);
-                if (requiresLoad(sm, initialized, edata, flags)) {
+                if (requiresLoad(sm, initialized, fetch, edata, flags)) {
                     transState = transState || useTransactionalState(fetch);
                     if (initialized && !sm.isTransactional() && transState)
                         sm.transactional();
@@ -977,7 +977,7 @@ public class BrokerImpl
             for (Iterator itr = oids.iterator(); itr.hasNext(); idx++) {
                 oid = itr.next();
                 sm = (StateManagerImpl) _loading.get(oid);
-                if (sm != null && requiresLoad(sm, true, edata, flags)) {
+                if (sm != null && requiresLoad(sm, true, fetch, edata, flags)) {
                     try {
                         sm.load(fetch, StateManagerImpl.LOAD_FGS,
                         	exclude, edata, false);
@@ -1011,7 +1011,9 @@ public class BrokerImpl
      * to the user.
      */
     private boolean requiresLoad(OpenJPAStateManager sm, boolean initialized,
-        Object edata, int flags) {
+        FetchConfiguration fetch, Object edata, int flags) {
+        if (!fetch.requiresLoad())
+            return false;
         if ((flags & OID_NOVALIDATE) == 0)
             return true;
         if (edata != null) // take advantage of existing result
