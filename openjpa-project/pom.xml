@@ -42,7 +42,7 @@
 
     <properties>
         <openjpa.release.keyAlias>${user.name}@apache.org</openjpa.release.keyAlias>
-        <openjpa.assembly.finalName>openjpa-${version}</openjpa.assembly.finalName>
+        <openjpa.assembly.finalName>${artifactId}-${version}</openjpa.assembly.finalName>
         <openjpa.assembly.outputDirectory>${project.basedir}/target/assembly</openjpa.assembly.outputDirectory>
 
         <openjpa.assembly.binarySuffix>binary</openjpa.assembly.binarySuffix>
@@ -83,7 +83,6 @@
                         </goals>
                         <configuration>
                             <descriptor>assembly.xml</descriptor>
-                            <finalName>${openjpa.assembly.finalName}</finalName>
                             <outputDirectory>${openjpa.assembly.outputDirectory}</outputDirectory>
                             <workDirectory>target/work</workDirectory>
                         </configuration>
@@ -96,7 +95,6 @@
                         </goals>
                         <configuration>
                             <descriptor>source-assembly.xml</descriptor>
-                            <finalName>openjpa-${version}</finalName>
                             <outputDirectory>${project.basedir}/target/assembly</outputDirectory>
                             <workDirectory>target/work</workDirectory>
                         </configuration>
