@@ -62,8 +62,10 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.ByteId;
 import org.apache.openjpa.util.CharId;
 import org.apache.openjpa.util.DateId;
+import org.apache.openjpa.util.DoubleId;
 import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.IntId;
+import org.apache.openjpa.util.FloatId;
 import org.apache.openjpa.util.LongId;
 import org.apache.openjpa.util.ObjectId;
 import org.apache.openjpa.util.ShortId;
@@ -1632,6 +1634,32 @@ public class PCEnhancer {
                         code.invokespecial().setMethod(Character.class, 
                             "<init>", void.class, new Class[] {char.class});
                     break;
+                case JavaTypes.DOUBLE_OBJ:
+                    code.anew().setType(Double.class);
+                    code.dup();
+                    // no break
+                case JavaTypes.DOUBLE:
+                    code.aload().setLocal(oid);
+                    code.checkcast().setType(DoubleId.class);
+                    code.invokevirtual().setMethod(DoubleId.class, "getId",
+                        double.class, null);
+                    if (pkcode == JavaTypes.DOUBLE_OBJ)
+                        code.invokespecial().setMethod(Double.class, "<init>", 
+                            void.class, new Class[]{double.class});
+                    break;
+                case JavaTypes.FLOAT_OBJ:
+                    code.anew().setType(Float.class);
+                    code.dup();
+                    // no break
+                case JavaTypes.FLOAT:
+                    code.aload().setLocal(oid);
+                    code.checkcast().setType(FloatId.class);
+                    code.invokevirtual().setMethod(FloatId.class, "getId",
+                        float.class, null);
+                    if (pkcode == JavaTypes.FLOAT_OBJ)
+                        code.invokespecial().setMethod(Float.class, "<init>", 
+                            void.class, new Class[]{float.class});
+                    break;
                 case JavaTypes.INT_OBJ:
                     code.anew().setType(Integer.class);
                     code.dup();
@@ -1927,6 +1955,10 @@ public class PCEnhancer {
                 return byte.class;
             case JavaTypes.CHAR_OBJ:
                 return char.class;
+            case JavaTypes.DOUBLE_OBJ:
+                return double.class;
+            case JavaTypes.FLOAT_OBJ:
+                return float.class;
             case JavaTypes.INT_OBJ:
                 return int.class;
             case JavaTypes.SHORT_OBJ:

@@ -44,6 +44,8 @@ import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.util.ByteId;
 import org.apache.openjpa.util.CharId;
 import org.apache.openjpa.util.DateId;
+import org.apache.openjpa.util.DoubleId;
+import org.apache.openjpa.util.FloatId;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.IntId;
 import org.apache.openjpa.util.InternalException;
@@ -437,6 +439,14 @@ public class ClassMetaData
             case JavaTypes.CHAR:
             case JavaTypes.CHAR_OBJ:
                 _objectId = CharId.class;
+                break;
+            case JavaTypes.DOUBLE:
+            case JavaTypes.DOUBLE_OBJ:
+                _objectId = DoubleId.class;
+                break;
+            case JavaTypes.FLOAT:
+            case JavaTypes.FLOAT_OBJ:
+                _objectId = FloatId.class;
                 break;
             case JavaTypes.INT:
             case JavaTypes.INT_OBJ:
