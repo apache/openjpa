@@ -35,7 +35,18 @@ import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.util.*;
+import org.apache.openjpa.util.ByteId;
+import org.apache.openjpa.util.CharId;
+import org.apache.openjpa.util.DoubleId;
+import org.apache.openjpa.util.FloatId;
+import org.apache.openjpa.util.Id;
+import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.IntId;
+import org.apache.openjpa.util.LongId;
+import org.apache.openjpa.util.ObjectId;
+import org.apache.openjpa.util.OpenJPAId;
+import org.apache.openjpa.util.ShortId;
+import org.apache.openjpa.util.StringId;
 
 /**
  * Static helper method for JPA users, including switching
@@ -373,6 +384,10 @@ public class OpenJPAPersistence
             return new ByteId(cls, (Byte) oid);
         if (oid instanceof Character)
             return new CharId(cls, (Character) oid);
+        if (oid instanceof Double)
+            return new DoubleId(cls, (Double) oid);
+        if (oid instanceof Float)
+            return new FloatId(cls, (Float) oid);
         if (oid instanceof Integer)
             return new IntId(cls, (Integer) oid);
         if (oid instanceof Long)
@@ -440,6 +455,10 @@ public class OpenJPAPersistence
             return Byte.class;
         if (oidClass == CharId.class)
             return Character.class;
+        if (oidClass == DoubleId.class)
+            return Double.class;
+        if (oidClass == FloatId.class)
+            return Float.class;
         if (oidClass == IntId.class)
             return Integer.class;
         if (oidClass == LongId.class)

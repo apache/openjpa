@@ -125,6 +125,18 @@ public class ApplicationIds {
                 case JavaTypes.CHAR_OBJ:
                     return new CharId(meta.getDescribedType(),
                         ((Character) val).charValue());
+                case JavaTypes.DOUBLE:
+                case JavaTypes.DOUBLE_OBJ:
+                    if (!convert && !(val instanceof Double))
+                        throw new ClassCastException("!(x instanceof Double)");
+                    return new DoubleId(meta.getDescribedType(),
+                        ((Number) val).doubleValue());
+                case JavaTypes.FLOAT:
+                case JavaTypes.FLOAT_OBJ:
+                    if (!convert && !(val instanceof Float))
+                        throw new ClassCastException("!(x instanceof Float)");
+                    return new FloatId(meta.getDescribedType(),
+                        ((Number) val).floatValue());
                 case JavaTypes.INT:
                 case JavaTypes.INT_OBJ:
                     if (!convert && !(val instanceof Integer))
@@ -216,6 +228,14 @@ public class ApplicationIds {
                 case JavaTypes.CHAR:
                 case JavaTypes.CHAR_OBJ:
                     return new CharId(cls, ((CharId) oid).getId(),
+                        koid.hasSubclasses());
+                case JavaTypes.DOUBLE:
+                case JavaTypes.DOUBLE_OBJ:
+                    return new DoubleId(cls, ((DoubleId) oid).getId(),
+                        koid.hasSubclasses());
+                case JavaTypes.FLOAT:
+                case JavaTypes.FLOAT_OBJ:
+                    return new FloatId(cls, ((FloatId) oid).getId(),
                         koid.hasSubclasses());
                 case JavaTypes.INT:
                 case JavaTypes.INT_OBJ:
