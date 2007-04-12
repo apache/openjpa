@@ -5,6 +5,7 @@
 
 <ul>
 <li><a href="#Overview">Overview</a></li>
+<li><a href="#Prerequisites">Prerequisites</a></li>
 <li><a href="#Documentation">Documentation</a></li>
 <li><a href="#GetInvolved">Getting Involved</a></li>
 <li><a href="#Bugs">Bugs</a></li>
@@ -31,6 +32,13 @@ Java Community Process
 Additional information on the OpenJPA project may be found at the project web 
 site: <a href="http://incubator.apache.org/openjpa/">
 http://incubator.apache.org/openjpa/</a>
+
+<h2><a name="Prerequisites"></a>Prerequisites</h2>
+<P>
+OpenJPA requires Java 1.5 but will not compile with Java 6. More accurately
+OpenJPA is not compatible with JDBC 4 which is included in Java 6. For more
+detail please see <a href="http://issues.apache.org/jira/browse/OPENJPA-5">
+http://issues.apache.org/jira/browse/OPENJPA-5</a>
 
 <h2><a name="Documentation"></a>Documentation</h2>
 <p>If you have questions about OpenJPA, a good source of information is the 
@@ -107,6 +115,7 @@ The following bugs have been fixed since release 0.9.6
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-122'>OPENJPA-122</a>] - EntityManager does not throw exceptions after close() in required cases</li>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-132'>OPENJPA-132</a>] - java.lang.NoSuchMethodError for entity with ID of type java.sql.Date</li>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-133'>OPENJPA-133</a>] - Can't find non-public callback methods with superclass or interface parameters</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-134'>OPENJPA-134</a>] - Extra unneeded SQL joins for OneToMany relationship with fetch type EAGER</li>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-139'>OPENJPA-139</a>] - PersistenceException merging an entity with a Calendar field. </li>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-140'>OPENJPA-140</a>] - Wrong package name in test classes</li>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-142'>OPENJPA-142</a>] - Entity name is ignored when specified in the orm.xml file</li>
@@ -126,6 +135,7 @@ The following bugs have been fixed since release 0.9.6
 </ul>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-202'>OPENJPA-202</a>] - after invoking LRS processing in a client by calling an @LRS annotated relationship, the next em.clear()/em.close() gets org.apache.openjpa.persistence.InvalidStateException: You cannot transfer large result set fields from one object or field to another</li>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-208'>OPENJPA-208</a>] - NoResultException and NonUniqueResultException are not thrown when expected</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-214'>OPENJPA-214</a>] - Need to support floating point primary keys</li>
 </ul>
     
 <h2><a name="Improvements"</a>Improvements</h2>
