@@ -26,6 +26,9 @@ website at http://incubator.apache.org/openjpa/building-openjpa.html
 
    1. Ensure that you have Java 1.5 installed and in your path by running:
       java -version
+      OpenJPA requires Java 1.5 but will not compile with Java 6. More accurately
+      OpenJPA is not compatible with JDBC 4 which is included in Java 6. For more
+      detail please see http://issues.apache.org/jira/browse/OPENJPA-5.
    2. Install the build tool Apache Maven 2.0.4, from http://maven.apache.org/.
       If it is installed correctly, typing mvn -v from the console will result
       in the text "Maven version: 2.0.4"

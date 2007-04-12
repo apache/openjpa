@@ -40,6 +40,7 @@ project's issue tracker at http://issues.apache.org/jira/browse/OPENJPA
     * [OPENJPA-122] - EntityManager does not throw exceptions after close() in required cases
     * [OPENJPA-132] - java.lang.NoSuchMethodError for entity with ID of type java.sql.Date
     * [OPENJPA-133] - Can't find non-public callback methods with superclass or interface parameters
+    * [OPENJPA-134] - Extra unneeded SQL joins for OneToMany relationship with fetch type EAGER
     * [OPENJPA-139] - PersistenceException merging an entity with a Calendar field. 
     * [OPENJPA-140] - Wrong package name in test classes
     * [OPENJPA-142] - Entity name is ignored when specified in the orm.xml file
@@ -58,6 +59,7 @@ project's issue tracker at http://issues.apache.org/jira/browse/OPENJPA
     * [OPENJPA-186] - Build failure of OpenJPA sources from trunk
     * [OPENJPA-202] - after invoking LRS processing in a client by calling an @LRS annotated relationship, the next em.clear()/em.close() gets org.apache.openjpa.persistence.InvalidStateException: You cannot transfer large result set fields from one object or field to another
     * [OPENJPA-208] - NoResultException and NonUniqueResultException are not thrown when expected
+    * [OPENJPA-214] - Need to support floating point primary keys
 
 ** Improvements
     * [OPENJPA-10] - persistence unit name should be default diagnostic context for standard OpenJPA log impl
