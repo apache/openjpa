@@ -71,6 +71,10 @@
                                         <value>org.apache.commons.dbcp.BasicDataSource</value>
                                     </property>
                                     <property>
+                                        <name>derby.stream.error.file</name>
+                                        <value>target/derby.log</value>
+                                    </property>
+                                    <property>
                                         <name>openjpa.ConnectionProperties</name>
                                         <value>DriverClassName=org.apache.derby.jdbc.EmbeddedDriver,Url=jdbc:derby:target/database/openjpa-derby-database;create=true,MaxActive=100,MaxIdle=0,MaxWait=10000,TestOnBorrow=true</value>
                                     </property>
