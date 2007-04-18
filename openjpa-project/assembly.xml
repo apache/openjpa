@@ -114,6 +114,7 @@
 
                 <!-- not required for release -->
                 <exclude>hsqldb:hsqldb</exclude>
+                <exclude>docbook:docbook-xsl</exclude>
 
                 <!-- only required for persistence server -->
                 <exclude>javax.servlet:servlet-api</exclude>
