@@ -245,11 +245,7 @@ public class DB2Dictionary
             else
                 isolationLevel = conf.getTransactionIsolationConstant();
 
-            if (!forUpdate) {
-                // This sql is not for update so add FOR Read Only clause
-                forUpdateString.append(" ").append(forReadOnlyClause)
-                    .append(" ");
-            } else {
+            if (forUpdate) {
 
                 switch(db2ServerType) {
                 case db2ISeriesV5R3AndEarlier:
@@ -266,22 +262,26 @@ public class DB2Dictionary
                 case db2ZOSV8x:
                 case db2UDBV82AndLater:
                     if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE) {
-                        forUpdateString.append(" ").append(withRRClause)
+                        forUpdateString.append(" ").append(forReadOnlyClause)
+                            .append(" ").append(withRRClause)
                             .append(" ").append(useKeepUpdateLockClause)
                             .append(" ");
                     } else {
-                        forUpdateString.append(" ").append(withRSClause)
+                        forUpdateString.append(" ").append(forReadOnlyClause)
+                            .append(" ").append(withRSClause)
                             .append(" ").append(useKeepUpdateLockClause)
                             .append(" ");
                     }
                     break;
                 case db2ISeriesV5R4AndLater:
                     if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE) {
-                        forUpdateString.append(" ").append(withRRClause)
+                        forUpdateString.append(" ").append(forReadOnlyClause)
+                            .append(" ").append(withRRClause)
                             .append(" ").append(useKeepExclusiveLockClause)
                             .append(" ");
                     } else {
-                        forUpdateString.append(" ").append(withRSClause)
+                        forUpdateString.append(" ").append(forReadOnlyClause)
+                            .append(" ").append(withRSClause)
                             .append(" ").append(useKeepExclusiveLockClause)
                             .append(" ");
                     }
