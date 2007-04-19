@@ -252,37 +252,31 @@ public class DB2Dictionary
                     if (isolationLevel ==
                         Connection.TRANSACTION_READ_UNCOMMITTED) {
                         forUpdateString.append(" ").append(withRSClause)
-                            .append(" ").append(forUpdateOfClause).append(" ");
-                    } else {
-                        forUpdateString.append(" ").append(forUpdateOfClause)
-                           .append(" ");
-                    }
+                            .append(" ").append(forUpdateOfClause);
+                    } else
+                        forUpdateString.append(" ").append(forUpdateOfClause);
                     break;
                 case db2ZOSV8xOrLater:
                 case db2UDBV82AndLater:
                     if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE) {
                         forUpdateString.append(" ").append(forReadOnlyClause)
                             .append(" ").append(withRRClause)
-                            .append(" ").append(useKeepUpdateLockClause)
-                            .append(" ");
+                            .append(" ").append(useKeepUpdateLockClause);   
                     } else {
                         forUpdateString.append(" ").append(forReadOnlyClause)
                             .append(" ").append(withRSClause)
-                            .append(" ").append(useKeepUpdateLockClause)
-                            .append(" ");
+                            .append(" ").append(useKeepUpdateLockClause);                            
                     }
                     break;
                 case db2ISeriesV5R4AndLater:
                     if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE) {
                         forUpdateString.append(" ").append(forReadOnlyClause)
                             .append(" ").append(withRRClause)
-                            .append(" ").append(useKeepExclusiveLockClause)
-                            .append(" ");
+                            .append(" ").append(useKeepExclusiveLockClause);       
                     } else {
                         forUpdateString.append(" ").append(forReadOnlyClause)
                             .append(" ").append(withRSClause)
-                            .append(" ").append(useKeepExclusiveLockClause)
-                            .append(" ");
+                            .append(" ").append(useKeepExclusiveLockClause);
                     }
                     break;
                 }
@@ -413,4 +407,8 @@ public class DB2Dictionary
             return sqle.getMessage();
         }
     }
-   }
+
+    public int getDb2ServerType() {
+        return db2ServerType;
+    }
+}
