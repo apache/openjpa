@@ -82,9 +82,9 @@ public class TestIsolationLevelOverride
                         .getIsolation());
 
                 q.getResultList();
-                if (dict instanceof DB2Dictionary &&(((DB2Dictionary)dict).
+                if (dict instanceof DB2Dictionary &&((((DB2Dictionary)dict).
                     getDb2ServerType() == 1) || ((DB2Dictionary)dict)
-                        .getDb2ServerType()== 2) {
+                        .getDb2ServerType()== 2)) {
                     assertEquals(1, sql.size());
                     assertSQL("SELECT t0.id, t0.booleanField, t0.byteField,"
                         + " t0.charField, t0.dateField, t0.doubleField,"
@@ -95,9 +95,9 @@ public class TestIsolationLevelOverride
                 }
 
                 // it is DB2 v82 or later
-                else if (dict instanceof DB2Dictionary &&(((DB2Dictionary)dict).
+                else if (dict instanceof DB2Dictionary &&((((DB2Dictionary)dict).
                     getDb2ServerType() == 3) || ((DB2Dictionary)dict)
-                        .getDb2ServerType() == 4) {
+                        .getDb2ServerType() == 4)) {
                     assertEquals(1, sql.size());
                     assertSQL("SELECT t0.id, t0.booleanField, t0.byteField,"
                         + " t0.charField, t0.dateField, t0.doubleField,"
@@ -126,9 +126,9 @@ public class TestIsolationLevelOverride
                 ((JDBCFetchPlan) em.getFetchPlan())
                     .setIsolation(IsolationLevel.SERIALIZABLE);
                 em.find(AllFieldTypes.class, 0);
-                if (dict instanceof DB2Dictionary &&(((DB2Dictionary)dict).
+                if (dict instanceof DB2Dictionary &&((((DB2Dictionary)dict).
                     getDb2ServerType() == 1) || ((DB2Dictionary)dict)
-                        .getDb2ServerType()== 2) {
+                        .getDb2ServerType()== 2)) {
                     assertEquals(1, sql.size());
                     assertSQL("SELECT t0.booleanField, t0.byteField, "
                         + "t0.charField, t0.dateField, t0.doubleField,"
@@ -138,9 +138,9 @@ public class TestIsolationLevelOverride
                         + " FOR UPDATE OF optimize for 1 row");
                 }
                 // it is DB2 v82 or later
-                else if (dict instanceof DB2Dictionary &&(((DB2Dictionary)dict).
+                else if (dict instanceof DB2Dictionary &&((((DB2Dictionary)dict).
                     getDb2ServerType() == 3) || ((DB2Dictionary)dict)
-                        .getDb2ServerType() == 4) {
+                        .getDb2ServerType() == 4)) {
                     assertEquals(1, sql.size());
                     assertSQL("SELECT t0.booleanField, t0.byteField, "
                         + "t0.charField, t0.dateField, t0.doubleField,"
