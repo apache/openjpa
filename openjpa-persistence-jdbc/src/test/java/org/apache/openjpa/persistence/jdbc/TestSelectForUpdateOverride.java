@@ -94,7 +94,7 @@ public class TestSelectForUpdateOverride
                     + " FOR READ ONLY WITH RS USE AND KEEP EXCLUSIVE LOCKS"
                     + " optimize for 1 row");
             }    
-            else {
+            else if (dict instanceof DB2Dictionary) {
                 fail("OpenJPA currently only supports per-query isolation " +
                 "level configuration on the following databases: DB2");
             }
