@@ -37,11 +37,11 @@ public class DB2Dictionary
     public String optimizeClause = "optimize for";
     public String rowClause = "row";
     private int db2ServerType = 0;
-    private static final int db2ISeriesV5R3AndEarlier = 1;
+    private static final int db2ISeriesV5R3OrEarlier = 1;
     private static final int db2UDBV81OrEarlier = 2;
     private static final int db2ZOSV8xOrLater = 3;
-    private static final int db2UDBV82AndLater = 4;
-    private static final int db2ISeriesV5R4AndLater = 5;
+    private static final int db2UDBV82OrLater = 4;
+    private static final int db2ISeriesV5R4OrLater = 5;
 	private static final String forUpdateOfClause = "FOR UPDATE OF";
     private static final String withRSClause = "WITH RS";
     private static final String withRRClause = "WITH RR";
@@ -191,16 +191,16 @@ public class DB2Dictionary
 	    	int min = metaData.getDatabaseMinorVersion();
 
 	    	// Determine the type of DB2 database
-	    	if (isDB2ISeriesV5R3AndEarlier(metaData))
-	    	    db2ServerType = db2ISeriesV5R3AndEarlier;
+	    	if (isDB2ISeriesV5R3OrEarlier(metaData))
+	    	    db2ServerType = db2ISeriesV5R3OrEarlier;
 	    	else if (isDB2UDBV81OrEarlier(metaData,maj,min))
 	    	    db2ServerType = db2UDBV81OrEarlier;
 	    	else if (isDB2ZOSV8xOrLater(metaData,maj))
 	    	    db2ServerType = db2ZOSV8xOrLater;
-	    	else if (isDB2UDBV82AndLater(metaData,maj,min))
-	    	    db2ServerType = db2UDBV82AndLater;
-	    	else if (isDB2ISeriesV5R4AndLater(metaData))
-	    	    db2ServerType = db2ISeriesV5R4AndLater;
+	    	else if (isDB2UDBV82OrLater(metaData,maj,min))
+	    	    db2ServerType = db2UDBV82OrLater;
+	    	else if (isDB2ISeriesV5R4OrLater(metaData))
+	    	    db2ServerType = db2ISeriesV5R4OrLater;
 
 	    	if (maj >= 9 || (maj == 8 && min >= 2)) {
 	    		supportsLockingWithMultipleTables = true;
@@ -247,7 +247,7 @@ public class DB2Dictionary
 
             if (forUpdate) {
                 switch(db2ServerType) {
-                case db2ISeriesV5R3AndEarlier:
+                case db2ISeriesV5R3OrEarlier:
                 case db2UDBV81OrEarlier:
                     if (isolationLevel ==
                         Connection.TRANSACTION_READ_UNCOMMITTED) {
@@ -257,7 +257,7 @@ public class DB2Dictionary
                         forUpdateString.append(" ").append(forUpdateOfClause);
                     break;
                 case db2ZOSV8xOrLater:
-                case db2UDBV82AndLater:
+                case db2UDBV82OrLater:
                     if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE) {
                         forUpdateString.append(" ").append(forReadOnlyClause)
                             .append(" ").append(withRRClause)
@@ -268,7 +268,7 @@ public class DB2Dictionary
                             .append(" ").append(useKeepUpdateLockClause);                            
                     }
                     break;
-                case db2ISeriesV5R4AndLater:
+                case db2ISeriesV5R4OrLater:
                     if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE) {
                         forUpdateString.append(" ").append(forReadOnlyClause)
                             .append(" ").append(withRRClause)
@@ -289,7 +289,7 @@ public class DB2Dictionary
         return forUpdateString.toString();
     }
 
-    public boolean isDB2UDBV82AndLater(DatabaseMetaData metadata, int maj,
+    public boolean isDB2UDBV82OrLater(DatabaseMetaData metadata, int maj,
         int min) throws SQLException {
         boolean match = false;
         if (metadata.getDatabaseProductVersion().indexOf("SQL") != -1
@@ -307,7 +307,7 @@ public class DB2Dictionary
         return match;
     }
 
-    public boolean isDB2ISeriesV5R3AndEarlier(DatabaseMetaData metadata)
+    public boolean isDB2ISeriesV5R3OrEarlier(DatabaseMetaData metadata)
        throws SQLException {
        boolean match = false;
        if (metadata.getDatabaseProductVersion().indexOf("AS") != -1
@@ -317,7 +317,7 @@ public class DB2Dictionary
        return match;
     }
 
-    public boolean isDB2ISeriesV5R4AndLater(DatabaseMetaData metadata)
+    public boolean isDB2ISeriesV5R4OrLater(DatabaseMetaData metadata)
        throws SQLException {
        boolean match = false;
        if (metadata.getDatabaseProductVersion().indexOf("AS") != -1

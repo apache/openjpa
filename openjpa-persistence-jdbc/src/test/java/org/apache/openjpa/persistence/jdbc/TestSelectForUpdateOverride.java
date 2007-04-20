@@ -57,47 +57,46 @@ public class TestSelectForUpdateOverride
             OpenJPAPersistence.cast(em).getFetchPlan()
                 .setReadLockMode(LockModeType.WRITE);
             em.find(AllFieldTypes.class, 0);
-
             assertEquals(1, sql.size());
-            if (dict instanceof DB2Dictionary &&((((DB2Dictionary)dict).
-                getDb2ServerType() == 1) || ((DB2Dictionary)dict)
-                    .getDb2ServerType()== 2)) {
-                assertEquals(1, sql.size());
-                assertSQL("SELECT t0.booleanField, t0.byteField, "
-                    + "t0.charField, t0.dateField, t0.doubleField,"
-                    + " t0.floatField, t0.intField, t0.longField,"
-                    + " t0.shortField, t0.stringField FROM "
-                    + "AllFieldTypes t0 WHERE t0.id = \\? "
-                    + " FOR UPDATE OF optimize for 1 row");
-            }
-            // it is DB2 v82 or later
-            else if (dict instanceof DB2Dictionary &&((((DB2Dictionary)dict).
-                getDb2ServerType() == 3) || ((DB2Dictionary)dict)
-                    .getDb2ServerType() == 4)) {
-                assertEquals(1, sql.size());
-                assertSQL("SELECT t0.booleanField, t0.byteField, "
-                    + "t0.charField, t0.dateField, t0.doubleField,"
-                    + " t0.floatField, t0.intField, t0.longField,"
-                    + " t0.shortField, t0.stringField FROM "
-                    + "AllFieldTypes t0 WHERE t0.id = \\? "
-                    + " FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS" 
-                    + " optimize for 1 row");
-            }
-            else if (dict instanceof DB2Dictionary && ((DB2Dictionary)dict).
-                getDb2ServerType() == 5) {
-                assertEquals(1, sql.size());
-                assertSQL("SELECT t0.booleanField, t0.byteField, "
-                    + "t0.charField, t0.dateField, t0.doubleField,"
-                    + " t0.floatField, t0.intField, t0.longField,"
-                    + " t0.shortField, t0.stringField FROM "
-                    + "AllFieldTypes t0 WHERE t0.id = \\? "
-                    + " FOR READ ONLY WITH RS USE AND KEEP EXCLUSIVE LOCKS"
-                    + " optimize for 1 row");
+            if (dict instanceof DB2Dictionary) {
+                if ((((DB2Dictionary)dict).getDb2ServerType() == 1)
+                    || (((DB2Dictionary)dict).getDb2ServerType()== 2)) {
+                    assertEquals(1, sql.size());
+                    assertSQL("SELECT t0.booleanField, t0.byteField, "
+                        + "t0.charField, t0.dateField, t0.doubleField,"
+                        + " t0.floatField, t0.intField, t0.longField,"
+                        + " t0.shortField, t0.stringField FROM "
+                        + "AllFieldTypes t0 WHERE t0.id = \\? "
+                        + " FOR UPDATE OF optimize for 1 row");
+                }
+                // it is DB2 v82 or later
+                else if ((((DB2Dictionary)dict).getDb2ServerType() == 3)
+                    || (((DB2Dictionary)dict).getDb2ServerType() == 4)) {
+                    assertEquals(1, sql.size());
+                    assertSQL("SELECT t0.booleanField, t0.byteField, "
+                        + "t0.charField, t0.dateField, t0.doubleField,"
+                        + " t0.floatField, t0.intField, t0.longField,"
+                        + " t0.shortField, t0.stringField FROM "
+                        + "AllFieldTypes t0 WHERE t0.id = \\? "
+                        + " FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS" 
+                        + " optimize for 1 row");
+                }
+                else if (((DB2Dictionary)dict).getDb2ServerType() == 5) {
+                    assertEquals(1, sql.size());
+                    assertSQL("SELECT t0.booleanField, t0.byteField, "
+                        + "t0.charField, t0.dateField, t0.doubleField,"
+                        + " t0.floatField, t0.intField, t0.longField,"
+                        + " t0.shortField, t0.stringField FROM "
+                        + "AllFieldTypes t0 WHERE t0.id = \\? "
+                        + " FOR READ ONLY WITH RS USE AND KEEP EXCLUSIVE LOCKS"
+                        + " optimize for 1 row");
+                }    
+                else {
+                    fail("OpenJPA currently only supports per-query isolation " 
+                        + "level configuration on the following databases: "
+                        + "DB2");
+                }
             }    
-            else if (dict instanceof DB2Dictionary) {
-                fail("OpenJPA currently only supports per-query isolation " +
-                "level configuration on the following databases: DB2");
-            }
         } finally {
             em.getTransaction().rollback();
             em.close();
