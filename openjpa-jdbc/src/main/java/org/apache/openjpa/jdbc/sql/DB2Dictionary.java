@@ -39,7 +39,7 @@ public class DB2Dictionary
     private int db2ServerType = 0;
     private static final int db2ISeriesV5R3AndEarlier = 1;
     private static final int db2UDBV81OrEarlier = 2;
-    private static final int db2ZOSV8x = 3;
+    private static final int db2ZOSV8xOrLater = 3;
     private static final int db2UDBV82AndLater = 4;
     private static final int db2ISeriesV5R4AndLater = 5;
 	private static final String forUpdateOfClause = "FOR UPDATE OF";
@@ -195,8 +195,8 @@ public class DB2Dictionary
 	    	    db2ServerType = db2ISeriesV5R3AndEarlier;
 	    	else if (isDB2UDBV81OrEarlier(metaData,maj,min))
 	    	    db2ServerType = db2UDBV81OrEarlier;
-	    	else if (isDB2ZOSV8x(metaData,maj))
-	    	    db2ServerType = db2ZOSV8x;
+	    	else if (isDB2ZOSV8xOrLater(metaData,maj))
+	    	    db2ServerType = db2ZOSV8xOrLater;
 	    	else if (isDB2UDBV82AndLater(metaData,maj,min))
 	    	    db2ServerType = db2UDBV82AndLater;
 	    	else if (isDB2ISeriesV5R4AndLater(metaData))
@@ -245,45 +245,38 @@ public class DB2Dictionary
             else
                 isolationLevel = conf.getTransactionIsolationConstant();
 
-            if (!forUpdate) {
-                // This sql is not for update so add FOR Read Only clause
-                forUpdateString.append(" ").append(forReadOnlyClause)
-                    .append(" ");
-            } else {
-
+            if (forUpdate) {
                 switch(db2ServerType) {
                 case db2ISeriesV5R3AndEarlier:
                 case db2UDBV81OrEarlier:
                     if (isolationLevel ==
                         Connection.TRANSACTION_READ_UNCOMMITTED) {
                         forUpdateString.append(" ").append(withRSClause)
-                            .append(" ").append(forUpdateOfClause).append(" ");
-                    } else {
-                        forUpdateString.append(" ").append(forUpdateOfClause)
-                           .append(" ");
-                    }
+                            .append(" ").append(forUpdateOfClause);
+                    } else
+                        forUpdateString.append(" ").append(forUpdateOfClause);
                     break;
-                case db2ZOSV8x:
+                case db2ZOSV8xOrLater:
                 case db2UDBV82AndLater:
                     if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE) {
-                        forUpdateString.append(" ").append(withRRClause)
-                            .append(" ").append(useKeepUpdateLockClause)
-                            .append(" ");
+                        forUpdateString.append(" ").append(forReadOnlyClause)
+                            .append(" ").append(withRRClause)
+                            .append(" ").append(useKeepUpdateLockClause);   
                     } else {
-                        forUpdateString.append(" ").append(withRSClause)
-                            .append(" ").append(useKeepUpdateLockClause)
-                            .append(" ");
+                        forUpdateString.append(" ").append(forReadOnlyClause)
+                            .append(" ").append(withRSClause)
+                            .append(" ").append(useKeepUpdateLockClause);                            
                     }
                     break;
                 case db2ISeriesV5R4AndLater:
                     if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE) {
-                        forUpdateString.append(" ").append(withRRClause)
-                            .append(" ").append(useKeepExclusiveLockClause)
-                            .append(" ");
+                        forUpdateString.append(" ").append(forReadOnlyClause)
+                            .append(" ").append(withRRClause)
+                            .append(" ").append(useKeepExclusiveLockClause);       
                     } else {
-                        forUpdateString.append(" ").append(withRSClause)
-                            .append(" ").append(useKeepExclusiveLockClause)
-                            .append(" ");
+                        forUpdateString.append(" ").append(forReadOnlyClause)
+                            .append(" ").append(withRSClause)
+                            .append(" ").append(useKeepExclusiveLockClause);
                     }
                     break;
                 }
@@ -305,11 +298,11 @@ public class DB2Dictionary
         return match;
     }
 
-    public boolean isDB2ZOSV8x(DatabaseMetaData metadata, int maj)
+    public boolean isDB2ZOSV8xOrLater(DatabaseMetaData metadata, int maj)
        throws SQLException {
        boolean match = false;
        if (metadata.getDatabaseProductVersion().indexOf("DSN") != -1
-           && maj == 8)
+           && maj >= 8)
            match = true;
         return match;
     }
@@ -414,4 +407,8 @@ public class DB2Dictionary
             return sqle.getMessage();
         }
     }
-   }
+
+    public int getDb2ServerType() {
+        return db2ServerType;
+    }
+}
