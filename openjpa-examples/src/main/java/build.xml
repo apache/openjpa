@@ -22,6 +22,13 @@
     <property name="parent" value="${basedir}/.."/>
     <property name="root" value="${parent}/.."/>
 
+    <!-- database connection properties -->
+    <property name="dbdriver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+    <property name="dburl" value="jdbc:derby:${example}-database;create=true"/>
+    <property name="dbuser" value=""/>
+    <property name="dbpass" value=""/>
+
+
     <target name="usagewarning">
         <fail>
 Please traverse to a sub-directory and run "ant" from there.
@@ -43,9 +50,9 @@ Please traverse to a sub-directory and run "ant" from there.
     </path>
     <pathconvert property="javaagent" refid="javaagent"/>
 
-    <target name="clean"
+    <target name="clean" depends="pre-clean"
         description="Clean up compiled files and generated database files">
-        <delete includeemptydirs="true">
+        <delete includeemptydirs="yes">
             <fileset dir="${basedir}">
                 <include name="*.class"/>
                 <include name="*.log"/>
@@ -55,9 +62,18 @@ Please traverse to a sub-directory and run "ant" from there.
         </delete>
     </target>
 
-    <target name="compile" description="Compile the example java files">
+    <!-- this target can be overridden by the sub-build -->
+    <target name="pre-clean" description="Pre-clean phase">
+    </target>
+
+    <target name="compile" depends="pre-compile"
+        description="Compile the example java files">
         <javac srcdir="${parent}" classpathref="classpath"
-            includes="${example}/**.java"/>
+            debug="yes" includes="${example}/**.java"/>
+    </target>
+
+    <!-- this target can be overridden by the sub-build -->
+    <target name="pre-compile" description="Pre-compilation phase">
     </target>
 
     <target name="run" depends="compile"
@@ -84,9 +100,10 @@ Please traverse to a sub-directory and run "ant" from there.
                 provided you ensure it is accessible in the classpath.
             -->
             <sysproperty key="openjpa.ConnectionDriverName"
-                value="org.apache.derby.jdbc.EmbeddedDriver"/>
-            <sysproperty key="openjpa.ConnectionURL"
-                value="jdbc:derby:${example}-database;create=true"/>
+                value="${dbdriver}"/>
+            <sysproperty key="openjpa.ConnectionURL" value="${dburl}"/>
+            <sysproperty key="openjpa.ConnectionUserName" value="${dbuser}"/>
+            <sysproperty key="openjpa.ConnectionPassword" value="${dbpass}"/>
 
             <!--
                 Tell OpenJPA to automatically create tables in the database
