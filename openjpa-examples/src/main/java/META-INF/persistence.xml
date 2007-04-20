@@ -26,6 +26,7 @@
         See: http://issues.apache.org/jira/browse/OPENJPA-78
     -->
     <persistence-unit name="none" transaction-type="RESOURCE_LOCAL">
+        <mapping-file>reversemapping/orm.xml</mapping-file>
         <class>hellojpa.Message</class>
         <class>relations.Deity</class>
     </persistence-unit>
@@ -74,5 +75,10 @@
     <!-- persistence unit for the "relations" example -->
     <persistence-unit name="relations" transaction-type="RESOURCE_LOCAL">
         <class>relations.Deity</class>
+    </persistence-unit>
+
+    <!-- persistence unit for the "reversemapping" example -->
+    <persistence-unit name="reversemapping" transaction-type="RESOURCE_LOCAL">
+        <mapping-file>reversemapping/orm.xml</mapping-file>
     </persistence-unit>
 </persistence>
