@@ -151,7 +151,7 @@
                                 <goals><goal>javadoc</goal></goals>
                                 <configuration>
                                     <aggregate>true</aggregate>
-                                    <excludePackageNames>hellojpa</excludePackageNames>
+                                    <subpackages>org.apache.openjpa</subpackages>
                                     <verbose>false</verbose>
                                     <!-- <linksource>true</linksource> -->
                                     <maxmemory>512m</maxmemory>
