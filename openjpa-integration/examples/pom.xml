@@ -55,12 +55,14 @@
                         <tasks>
                         <echo>Running OpenJPA Examples</echo>
 
-                        <property name="binary.zip" value="../../openjpa-project/target/assembly/openjpa-${version}-binary.zip"/>
 
                         <property name="examples.base"
                             value="${basedir}/target/examples"/>
-                        <unzip overwrite="false"
-                            src="${binary.zip}" dest="${examples.base}"/>
+                        <unzip overwrite="false" dest="${examples.base}">
+                        <fileset dir="../../openjpa-project/target/assembly">
+                            <include name="openjpa-*${version}-binary.zip"/>
+                        </fileset>
+                        </unzip>
 
                         <subant inheritAll="false">
                             <fileset dir="${examples.base}"
