@@ -583,7 +583,7 @@ get cleaned up. If you are properly managing your resources, this finalization
 is not necessary, and will introduce unneeded synchronization, leading to
 scalability problems. You can disable this protective behavior by setting the
 <literal>openjpa.BrokerImpl</literal> property to
-<literal>non-finalizing</literal>. See <link
+<literal>non-finalizing</literal>. See <xref
 linkend="ref_guide_runtime_broker_finalization"/> for details.
                     </entry>
                 </row>
