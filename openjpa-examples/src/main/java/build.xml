@@ -24,7 +24,8 @@
 
     <!-- database connection properties -->
     <property name="dbdriver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-    <property name="dburl" value="jdbc:derby:${example}-database;create=true"/>
+    <property name="dburl"
+        value="jdbc:derby:${basedir}/${example}-database;create=true"/>
     <property name="dbuser" value=""/>
     <property name="dbpass" value=""/>
 
