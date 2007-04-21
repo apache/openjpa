@@ -161,10 +161,30 @@
                                     <unzip src="${local.repository}/docbook/docbook-xsl/${docbook.version}/docbook-xsl-${docbook.version}.zip" dest="${project.basedir}/target/stylesheets/" overwrite="false"/>
 
 
+                                    <property name="docsrcdir"
+                                    value="${project.basedir}/src/doc/manual"/>
+
+                                    <property name="docdir"
+                                    value="${project.basedir}/target/manual"/>
+
+                                    <mkdir dir="${docdir}/img"/>
+                                    <copy todir="${docdir}/img">
+                                        <fileset dir="${docsrcdir}/img">
+                                            <include name="*.*"/>
+                                        </fileset>
+                                    </copy>
+
+                                    <mkdir dir="${docdir}/css"/>
+                                    <copy todir="${docdir}/css">
+                                        <fileset dir="${docsrcdir}/css">
+                                            <include name="*.*"/>
+                                        </fileset>
+                                    </copy>
+
                                     <style includes="**/manual.xml"
                                         force="true"
-                                        basedir="${project.basedir}/src/doc/manual"
-                                        destdir="${project.basedir}/target/manual"
+                                        basedir="${docsrcdir}"
+                                        destdir="${docdir}"
                                         style="manual-xhtml.xsl"
                                         classpathref="maven.runtime.classpath">
                                         <factory name="org.apache.xalan.processor.TransformerFactoryImpl">
@@ -175,8 +195,8 @@
                                     <!--
                                     <style includes="**/manual.xml"
                                         force="true"
-                                        basedir="${project.basedir}/src/doc/manual"
-                                        destdir="${project.basedir}/target/manual"
+                                        basedir="${docsrcdir}"
+                                        destdir="${docdir}"
                                         style="manual-xhtml-chunk.xsl"
                                         classpathref="maven.runtime.classpath">
                                         <factory name="org.apache.xalan.processor.TransformerFactoryImpl">
