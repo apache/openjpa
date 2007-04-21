@@ -72,13 +72,21 @@
         <!-- now run the tool to generate java files from the db schema -->
         <taskdef name="reversemappingtool" classpathref="classpath"
             classname="org.apache.openjpa.jdbc.ant.ReverseMappingToolTask"/>
-        <reversemappingtool package="reversemapping" directory="."
+        <reversemappingtool package="reversemapping" directory="${basedir}"
             innerIdentityClasses="true"
-            customizerProperties="reverse-customizer.properties">
+            customizerProperties="${basedir}/reverse-customizer.properties">
             <config connectiondrivername="${dbdriver}" connectionurl="${dburl}"
                 connectionusername="${dbuser}" connectionpassword="${dbpass}"/>
             <codeformat tabSpaces="4" spaceBeforeParen="false"
                 braceOnSameLine="true"/>
         </reversemappingtool>
+
+        <!--
+            the reverse mapping tool always outputs the orm.xml file to
+            the current directory; move it to the base directory in case
+            we are executing this build file from a different directory.
+        -->
+        <move file="${user.dir}/orm.xml"
+            tofile="${basedir}/orm.xml" failonerror="false"/>
     </target>
 </project>
