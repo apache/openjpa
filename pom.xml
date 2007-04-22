@@ -156,6 +156,7 @@
                     -filterpath ${ydoc.home}/lib/ydoc.jar
                     -doclet ydoc.doclets.YStandard
                     -docletpath ${ydoc.home}/lib/ydoc.jar${path.separator}${ydoc.home}/lib/class2svg.jar${path.separator}${ydoc.home}/resources
+                    ${ydoc.params}
                 </javadoc.additionalparam>
             </properties>
         </profile>
