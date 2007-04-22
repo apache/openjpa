@@ -55,7 +55,7 @@
 ]>
 <book id="manual">
     <bookinfo>
-        <title>OpenJPA User's Guide</title>
+        <title>Apache OpenJPA User's Guide</title>
     </bookinfo>
 
     <part id="introduction">
