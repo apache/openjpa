@@ -133,10 +133,37 @@
                 <module>openjpa-project</module>
             </modules>
         </profile>
+
+        <!--
+            Generate the documentation using the YDoc UML generation plugin.
+            Assumes you have the YDoc libraries locally, as well as a valid
+            YDoc license file. Example usage for building the docs:
+
+            mvn process-classes -Pydoc-profile,javadoc-profile -Dydoc.home=${HOME}/.m2/privaterepos/ydoc/ydoc-2.2_04-jdk1.5 -Dydoc.license=${HOME}/.m2/privaterepos/ydoc/ydoc.license
+        -->
+        <profile>
+            <id>ydoc-profile</id>
+            <properties>
+                <javadoc.additionalparam>
+                    -generic
+                    -umlautogen
+                    -tag param
+                    -tag return
+                    -tag see
+                    -ytag y.uml
+                    -license ${ydoc.license}
+                    -filter ydoc.filters.ExcludeFilter
+                    -filterpath ${ydoc.home}/lib/ydoc.jar
+                    -doclet ydoc.doclets.YStandard
+                    -docletpath ${ydoc.home}/lib/ydoc.jar${path.separator}${ydoc.home}/lib/class2svg.jar${path.separator}${ydoc.home}/resources
+                </javadoc.additionalparam>
+            </properties>
+        </profile>
+
         <profile>
             <!--                        
                 Javadoc profile. Docs can be built by running:
-                    mvn package -Dtest=false -Pjavadoc-profile,docbook-profile
+                    mvn process-resources -Dtest=false -Pjavadoc-profile
             -->  
             <id>javadoc-profile</id>
             <build>
@@ -144,14 +171,18 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.1</version>
+                        <version>2.2</version>
                         <executions>
                             <execution>
-                                <phase>package</phase>
+                                <phase>process-classes</phase>
                                 <goals><goal>javadoc</goal></goals>
                                 <configuration>
+                                    <additionalparam>
+                                        ${javadoc.additionalparam}
+                                    </additionalparam>
                                     <aggregate>true</aggregate>
                                     <subpackages>org.apache.openjpa</subpackages>
+
                                     <verbose>false</verbose>
                                     <!-- <linksource>true</linksource> -->
                                     <maxmemory>512m</maxmemory>
