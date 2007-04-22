@@ -44,18 +44,33 @@
     </parent>
 
     <properties>
-        <openjpa.release.keyAlias>${user.name}@apache.org</openjpa.release.keyAlias>
-        <openjpa.assembly.finalName>${artifactId}-${version}</openjpa.assembly.finalName>
-        <openjpa.assembly.outputDirectory>${project.basedir}/target/assembly</openjpa.assembly.outputDirectory>
+        <openjpa.release.keyAlias>
+            ${user.name}@apache.org
+        </openjpa.release.keyAlias>
+        <openjpa.assembly.finalName>
+            ${artifactId}-${version}</openjpa.assembly.finalName>
+        <openjpa.assembly.outputDirectory>
+            ${project.basedir}/target/assembly
+        </openjpa.assembly.outputDirectory>
 
         <openjpa.assembly.binarySuffix>binary</openjpa.assembly.binarySuffix>
-        <openjpa.assembly.binaryBase>${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.binarySuffix}</openjpa.assembly.binaryBase>
-        <openjpa.assembly.binaryFile>${openjpa.assembly.binaryBase}.zip</openjpa.assembly.binaryFile>
+        <openjpa.assembly.binaryBase>
+            ${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.binarySuffix}
+        </openjpa.assembly.binaryBase>
+        <openjpa.assembly.binaryFile>
+            ${openjpa.assembly.binaryBase}.zip
+        </openjpa.assembly.binaryFile>
 
         <openjpa.assembly.sourceSuffix>source</openjpa.assembly.sourceSuffix>
-        <openjpa.assembly.sourceBase>${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.sourceSuffix}</openjpa.assembly.sourceBase>
-        <openjpa.assembly.sourceFile>${openjpa.assembly.sourceBase}.zip</openjpa.assembly.sourceFile>
+        <openjpa.assembly.sourceBase>
+            ${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.sourceSuffix}
+        </openjpa.assembly.sourceBase>
+        <openjpa.assembly.sourceFile>
+            ${openjpa.assembly.sourceBase}.zip
+        </openjpa.assembly.sourceFile>
 
+        <docbook.source>${project.basedir}/src/doc/manual</docbook.source>
+        <docbook.target>${project.basedir}/target/manual</docbook.target>
         <docbook.version>1.67.2</docbook.version>
         <local.repository>${settings.localRepository}</local.repository>
     </properties>
@@ -137,79 +152,107 @@
     <profiles>
         <!--
             Docbook profile. Docs can be built by running:
-                mvn package -Dtest=false -Pjavadoc-profile,docbook-profile
+            MAVEN_OPTS=-Xmx512m
+            mvn -f openjpa-project/pom.xml process-resources -Pdocbook-profile
         -->
         <profile>
             <id>docbook-profile</id>
             <build>
                 <plugins>
-                    <!-- build the docs when creating the site from docbook source -->
+                    <!-- build the docs when processing resources -->
                     <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
+                        <groupId>com.agilejava.docbkx</groupId>
+                        <artifactId>docbkx-maven-plugin</artifactId>
                         <executions>
                             <execution>
+                                <id>build-pdf-doc</id>
                                 <phase>process-resources</phase>
+                                <goals><goal>generate-pdf</goal></goals>
                                 <configuration>
-                                 <!-- destdir="${project.build.directory}/site/manual" -->
-                                    <tasks>
-                                    <echo>Building docbook manual</echo>
-
-                                    <mkdir dir="${project.basedir}/target/stylesheets"/>
-                                    <available file="${local.repository}/docbook/docbook-xsl/${docbook.version}/docbook-xsl-${docbook.version}.zip" property="docbook.available"/>
-                                    <fail unless="docbook.available">Could not find docbook file: ${local.repository}/docbook/docbook-xsl/${docbook.version}/docbook-xsl-${docbook.version}.zip</fail>
-
-                                    <unzip src="${local.repository}/docbook/docbook-xsl/${docbook.version}/docbook-xsl-${docbook.version}.zip" dest="${project.basedir}/target/stylesheets/" overwrite="false"/>
-
-
-                                    <property name="docsrcdir"
-                                    value="${project.basedir}/src/doc/manual"/>
-
-                                    <property name="docdir"
-                                    value="${project.basedir}/target/manual"/>
-
-                                    <mkdir dir="${docdir}/img"/>
-                                    <copy todir="${docdir}/img">
-                                        <fileset dir="${docsrcdir}/img">
-                                            <include name="*.*"/>
-                                        </fileset>
-                                    </copy>
-
-                                    <mkdir dir="${docdir}/css"/>
-                                    <copy todir="${docdir}/css">
-                                        <fileset dir="${docsrcdir}/css">
-                                            <include name="*.*"/>
-                                        </fileset>
-                                    </copy>
-
-                                    <style includes="**/manual.xml"
-                                        force="true"
-                                        basedir="${docsrcdir}"
-                                        destdir="${docdir}"
-                                        style="manual-xhtml-chunk.xsl"
-                                        classpathref="maven.runtime.classpath">
-                                        <factory name="org.apache.xalan.processor.TransformerFactoryImpl">
-                                            <attribute name="http://xml.apache.org/xalan/features/optimize" value="true"/>
-                                        </factory>
-                                    </style>
-
-                                    <style includes="**/manual.xml"
-                                        force="true"
-                                        basedir="${docsrcdir}"
-                                        destdir="${docdir}"
-                                        style="manual-xhtml.xsl"
-                                        classpathref="maven.runtime.classpath">
-                                        <factory name="org.apache.xalan.processor.TransformerFactoryImpl">
-                                            <attribute name="http://xml.apache.org/xalan/features/optimize" value="true"/>
-                                        </factory>
-                                    </style>
-
-                                    </tasks>
+                                    <sourceDirectory>
+                                        ${docbook.source}
+                                    </sourceDirectory>
+                                    <targetDirectory>
+                                        ${docbook.target}
+                                    </targetDirectory>
+                                    <includes>manual.xml</includes>
+                                    <foCustomization>
+                                        ${docbook.source}/manual-pdf.xsl
+                                    </foCustomization>
+                                    <imgSrcPath>
+                                        ${docbook.source}/
+                                    </imgSrcPath>
                                 </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
+                            </execution>
+                            <execution>
+                                <id>build-chunked-doc</id>
+                                <phase>process-resources</phase>
+                                <goals><goal>generate-html</goal></goals>
+                                <configuration>
+                                    <sourceDirectory>
+                                        ${docbook.source}
+                                    </sourceDirectory>
+                                    <targetDirectory>
+                                        ${docbook.target}
+                                    </targetDirectory>
+                                    <includes>manual.xml</includes>
+                                    <chunkedOutput>true</chunkedOutput>
+                                    <chunkQuietly>false</chunkQuietly>
+                                    <htmlCustomization>
+                                        ${docbook.source}/manual-xhtml-chunk.xsl
+                                    </htmlCustomization>
+                                    <postProcess>
+                                        <!-- rename manual to index -->
+                                        <move
+                                        file="${docbook.target}/manual.html"
+                                        tofile="${docbook.target}/index.html"/>
+
+                                        <!-- copy over images and styles -->
+                                        <mkdir dir="${docbook.target}/img"/>
+                                        <copy todir="${docbook.target}/img">
+                                            <fileset
+                                                dir="${docbook.source}/img">
+                                                <include name="*.*"/>
+                                            </fileset>
+                                        </copy>
+
+                                        <mkdir dir="${docbook.target}/css"/>
+                                        <copy todir="${docbook.target}/css">
+                                            <fileset
+                                                dir="${docbook.source}/css">
+                                                <include name="*.*"/>
+                                            </fileset>
+                                        </copy>
+                                    </postProcess>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>build-single-doc</id>
+                                <phase>process-resources</phase>
+                                <goals><goal>generate-html</goal></goals>
+                                <configuration>
+                                    <sourceDirectory>
+                                        ${docbook.source}
+                                    </sourceDirectory>
+                                    <targetDirectory>
+                                        ${docbook.target}
+                                    </targetDirectory>
+                                    <includes>manual.xml</includes>
+                                    <chunkedOutput>false</chunkedOutput>
+                                    <htmlCustomization>
+                                        ${docbook.source}/manual-xhtml.xsl
+                                    </htmlCustomization>
+                                </configuration>
                             </execution>
                         </executions>
+                        <dependencies>
+                        <dependency>
+                            <groupId>org.docbook</groupId>
+                            <artifactId>docbook-xml</artifactId>
+                            <version>4.4</version>
+                            <scope>runtime</scope>
+                        </dependency>
+                        </dependencies>
                     </plugin>
                 </plugins>
             </build>
@@ -219,6 +262,13 @@
                     <value>true</value>
                 </property>
             </activation>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>agilejava</id>
+                    <name>Agilejava repository (Docbook plugin)</name>
+                    <url>http://agilejava.com/maven</url>
+                </pluginRepository>
+            </pluginRepositories>
         </profile>
 
         <!-- sign the release files -->
@@ -307,90 +357,12 @@
             <artifactId>openjpa-all</artifactId>
             <version>${pom.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-lib</artifactId>
-            <version>${pom.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-kernel</artifactId>
-            <version>${pom.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-kernel-5</artifactId>
-            <version>${pom.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-jdbc</artifactId>
-            <version>${pom.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-jdbc-5</artifactId>
-            <version>${pom.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-persistence</artifactId>
-            <version>${pom.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-persistence-jdbc</artifactId>
-            <version>${pom.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-xmlstore</artifactId>
-            <version>${pom.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-examples</artifactId>
-            <version>${pom.version}</version>
-        </dependency>
 
         <!-- included so we can include it in the distribution -->
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
             <version>10.2.2.0</version>
-        </dependency>
-
-        <!-- jars needed for for docbook -->
-        <dependency>
-            <groupId>ant</groupId>
-            <artifactId>ant</artifactId>
-            <version>1.6.5</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>ant</groupId>
-            <artifactId>ant-trax</artifactId>
-            <version>1.6.5</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>xalan</groupId>
-            <artifactId>xalan</artifactId>
-            <version>2.7.0</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>bcel</groupId>
-            <artifactId>bcel</artifactId>
-            <version>5.1</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>docbook</groupId>
-            <artifactId>docbook-xsl</artifactId>
-            <version>${docbook.version}</version>
-            <scope>runtime</scope>
-            <type>zip</type>
         </dependency>
     </dependencies>
 </project>

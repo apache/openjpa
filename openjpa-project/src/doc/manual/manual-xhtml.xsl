@@ -22,7 +22,10 @@
     <!-- docbook stylesheet customizations for openjpa manual -->
 	<!-- <xsl:import href="http://docbook.sourceforge.net/release/xsl/docbook-xsl-1.67.2/html/docbook.xsl"/> -->
     <!-- locally downloaded cache of stylesheets -->
-	<xsl:import href="../../../target/stylesheets/docbook-xsl-1.67.2/html/docbook.xsl"/>
+	<!-- <xsl:import href="../../../target/stylesheets/docbook-xsl-1.67.2/html/docbook.xsl"/> -->
+
+    <!-- used by docbkx-maven-plugin to reference the core styles -->
+    <xsl:import href="urn:docbkx:stylesheet"/>
 
 	<xsl:param name="html.stylesheet">css/docbook.css</xsl:param>
 
