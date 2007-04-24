@@ -687,15 +687,8 @@ public class PCEnhancer {
         Class owner) {
         // find the actual ancestor class that declares the field, then
         // check if the class is persistent, and if the field is managed
-        for (; !owner.getName().equals(Object.class.getName());
-            owner = owner.getSuperclass()) {
-            try {
-                owner.getDeclaredField(fieldName);
-                break;
-            } catch (Exception e) {
-            }
-        }
-        if (owner.getName().equals(Object.class.getName()))
+        Field f = Reflection.findField(owner, fieldName, false);
+        if (f == null)
             return null;
 
         // managed interface

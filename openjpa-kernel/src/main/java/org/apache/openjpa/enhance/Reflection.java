@@ -47,20 +47,20 @@ public class Reflection {
     public static Method findGetter(Class cls, String prop, boolean mustExist) {
         prop = StringUtils.capitalize(prop);
         String name = "get" + prop;
+        Method m;
         try {
-            for (Class c = cls; c != null && c != Object.class; 
+            // this algorithm searches for a get<prop> or is<prop> method in
+            // a breadth-first manner.
+            for (Class c = cls; c != null && c != Object.class;
                 c = c.getSuperclass()) {
-                try {
-                    return c.getDeclaredMethod(name, (Class[]) null);
-                } catch (NoSuchMethodException nsme) {
-                    try {
-                        Method m = c.getDeclaredMethod("is" + prop, 
-                            (Class[]) null);
-                        if (m != null && (m.getReturnType() == boolean.class
-                            || m.getReturnType() == Boolean.class))
-                            return m;
-                    } catch (NoSuchMethodException nsme2) {
-                    }
+                m = getDeclaredMethod(c, name, null);
+                if (m != null) {
+                    return m;
+                } else {
+                    m = getDeclaredMethod(c, "is" + prop, null);
+                    if (m != null && (m.getReturnType() == boolean.class
+                        || m.getReturnType() == Boolean.class))
+                        return m;
                 }
             }
         } catch (Exception e) {
@@ -89,14 +89,13 @@ public class Reflection {
     public static Method findSetter(Class cls, String prop, Class param,
         boolean mustExist) {
         String name = "set" + StringUtils.capitalize(prop);
-        Class[] params = new Class[] { param };
+        Method m;
         try {
-            for (Class c = cls; c != null && c != Object.class; 
+            for (Class c = cls; c != null && c != Object.class;
                 c = c.getSuperclass()) {
-                try {
-                    return c.getDeclaredMethod(name, params);
-                } catch (NoSuchMethodException nsme) {
-                }
+                m = getDeclaredMethod(c, name, param);
+                if (m != null)
+                    return m;
             }
         } catch (Exception e) {
             throw new GeneralException(e);
@@ -108,17 +107,41 @@ public class Reflection {
     }
 
     /**
-     * Return the field with the given name, optionally throwing an exception 
+     * Invokes <code>cls.getDeclaredMethods()</code>, and returns the method
+     * that matches the <code>name</code> and <code>param</code> arguments.
+     * Avoids the exception thrown by <code>Class.getDeclaredMethod()</code>
+     * for performance reasons. <code>param</code> may be null.
+     *
+     * @since 0.9.8
+     */
+    private static Method getDeclaredMethod(Class cls, String name,
+        Class param) {
+        Method[] methods = cls.getDeclaredMethods();
+        for (int i = 0 ; i < methods.length; i++) {
+    	    if (name.equals(methods[i].getName())) {
+                Class[] methodParams = methods[i].getParameterTypes();
+                if (param == null && methodParams.length == 0)
+                    return methods[i];
+                if (param != null && methodParams.length == 1
+                    && param.equals(methodParams[0]))
+                    return methods[i];
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Return the field with the given name, optionally throwing an exception
      * if none.
      */
     public static Field findField(Class cls, String name, boolean mustExist) {
         try {
-            for (Class c = cls; c != null && c != Object.class; 
+            Field f;
+            for (Class c = cls; c != null && c != Object.class;
                 c = c.getSuperclass()) {
-                try {
-                    return c.getDeclaredField(name);
-                } catch (NoSuchFieldException nsfe) {
-                }
+                f = getDeclaredField(c, name);
+                if (f != null)
+                    return f;
             }
         } catch (Exception e) {
             throw new GeneralException(e);
@@ -126,6 +149,22 @@ public class Reflection {
 
         if (mustExist)
             throw new UserException(_loc.get("bad-field", cls, name));
+        return null;
+    }
+
+    /**
+     * Invokes <code>cls.getDeclaredFields()</code>, and returns the field
+     * that matches the <code>name</code> argument.  Avoids the exception
+     * thrown by <code>Class.getDeclaredField()</code> for performance reasons.
+     *
+     * @since 0.9.8
+     */
+    private static Field getDeclaredField(Class cls, String name) {
+        Field[] fields = cls.getDeclaredFields();
+        for (int i = 0 ; i < fields.length; i++) {
+    	    if (name.equals(fields[i].getName()))
+		        return fields[i];
+        }
         return null;
     }
 

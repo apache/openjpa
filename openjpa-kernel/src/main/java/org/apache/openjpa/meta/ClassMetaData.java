@@ -55,7 +55,6 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.LongId;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.ObjectId;
-import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.ShortId;
 import org.apache.openjpa.util.StringId;
@@ -116,6 +115,10 @@ public class ClassMetaData
 
     private static final Localizer _loc = Localizer.forPackage
         (ClassMetaData.class);
+
+    private static final FetchGroup[] EMPTY_FETCH_GROUP_ARRAY
+        = new FetchGroup[0];
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     private MetaDataRepository _repos;
     private transient ClassLoader _loader = null;
@@ -784,8 +787,9 @@ public class ClassMetaData
         synchronized (_ifaceMap) {
             Map fields = (Map) _ifaceMap.get(iface);
             if (fields == null)
-                return new String[0];
-            return (String[]) fields.keySet().toArray(new String[0]);
+                return EMPTY_STRING_ARRAY;
+            return (String[]) fields.keySet().toArray(
+                new String[fields.size()]);
         }
     }
     
@@ -1397,15 +1401,12 @@ public class ClassMetaData
         if (fieldName == null || SYNTHETIC.equals(fieldName))
             return null;
 
-        for (Class type = _type; type != null && type != Object.class;
-            type = type.getSuperclass()) {
-            try {
-                return type.getDeclaredField(fieldName);
-            } catch (Exception e) {
-            }
-        }
-        throw new MetaDataException(_loc.get("no-detach-state", fieldName,
-            _type));
+        Field f = Reflection.findField(_type, fieldName, false);
+        if (f != null)
+            return f;
+        else
+            throw new MetaDataException(
+                _loc.get("no-detach-state", fieldName, _type));
     }
 
     /**
@@ -1823,7 +1824,7 @@ public class ClassMetaData
                 ClassMetaData embed = pks[0].getEmbeddedMetaData();
                 validateAppIdClassMethods(embed.getDescribedType());
                 validateAppIdClassPKs(embed, embed.getFields(),
-                    embed.getDescribedType(), runtime);
+                    embed.getDescribedType());
             }
             return;
         }
@@ -1850,7 +1851,7 @@ public class ClassMetaData
                 validateAppIdClassMethods(_objectId);
 
             // make sure the app id class has all pk fields
-            validateAppIdClassPKs(this, pks, _objectId, runtime);
+            validateAppIdClassPKs(this, pks, _objectId);
         }
     }
 
@@ -1904,7 +1905,7 @@ public class ClassMetaData
      * Validate that the primary key class has all pk fields.
      */
     private void validateAppIdClassPKs(ClassMetaData meta,
-        FieldMetaData[] fmds, Class oid, boolean runtime) {
+        FieldMetaData[] fmds, Class oid) {
         if (fmds.length == 0 && !Modifier.isAbstract(meta.getDescribedType().
             getModifiers()))
             throw new MetaDataException(_loc.get("no-pk", _type));
@@ -2012,7 +2013,7 @@ public class ClassMetaData
      */
     public FetchGroup[] getDeclaredFetchGroups() {
         if (_fgs == null)
-            _fgs = (_fgMap == null) ? new FetchGroup[0] : (FetchGroup[])
+            _fgs = (_fgMap == null) ? EMPTY_FETCH_GROUP_ARRAY : (FetchGroup[])
                 _fgMap.values().toArray(new FetchGroup[_fgMap.size()]); 
         return _fgs;
     }
