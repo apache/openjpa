@@ -555,7 +555,7 @@ public class PCDataGenerator
                 addLoadIntermediate(code, i, objectCount, jumps2, inter);
             jumps2.add(code.go2());
 
-            // if (fetch.requiresFetch(fmds[i]))
+            // if (fetch.requiresFetch(fmds[i])!=FetchConfiguration.FETCH_NONE)
             setTarget(code.aload().setParam(1), jumps);
             code.aload().setParam(0);
             code.invokeinterface().setMethod(OpenJPAStateManager.class,
@@ -564,9 +564,9 @@ public class PCDataGenerator
             code.invokevirtual().setMethod(ClassMetaData.class,
                 "getField", FieldMetaData.class, new Class[]{int.class});
             code.invokeinterface().setMethod (FetchConfiguration.class, 
-                "requiresFetch", boolean.class, 
-                new Class[]{FieldMetaData.class});
-            jumps2.add(code.ifeq());
+                "requiresFetch", int.class, new Class[]{FieldMetaData.class});
+            code.constant().setValue(FetchConfiguration.FETCH_NONE);
+            jumps2.add(code.ificmpeq());
             addLoad(bc, code, fmds[i], objectCount, local, false);
 
             jumps = jumps2;
