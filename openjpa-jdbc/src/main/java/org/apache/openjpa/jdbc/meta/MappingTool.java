@@ -388,7 +388,7 @@ public class MappingTool
      */
     public SchemaGroup getSchemaGroup() {
         if (_schema == null) {
-            if (_action.contains(ACTION_BUILD_SCHEMA)) {
+            if (_action.indexOf(ACTION_BUILD_SCHEMA) != -1) {
                 DynamicSchemaFactory factory = new DynamicSchemaFactory();
                 factory.setConfiguration(_conf);
                 _schema = factory;
