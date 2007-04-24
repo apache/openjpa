@@ -1100,6 +1100,14 @@ public class BrokerImpl
                         return new ObjectId(cls, val);
                     return val;
                 }
+
+                // stringified app id?
+                if (val instanceof String 
+                    && !_conf.getCompatibilityInstance().
+                        getStrictIdentityValues()
+                    && !Modifier.isAbstract(cls.getModifiers()))
+                    return PCRegistry.newObjectId(cls, (String) val);
+
                 Object[] arr = (val instanceof Object[]) ? (Object[]) val
                     : new Object[]{ val };
                 return ApplicationIds.fromPKValues(arr, meta);
