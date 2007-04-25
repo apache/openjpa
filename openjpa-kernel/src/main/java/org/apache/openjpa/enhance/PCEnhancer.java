@@ -3612,7 +3612,7 @@ public class PCEnhancer {
         Collection classes;
         if (args.length == 0) {
             log.info(_loc.get("running-all-classes"));
-            classes = repos.loadPersistentTypes(true, loader);
+            classes = repos.getPersistentTypeNames(true, loader);
         } else {
             ClassArgParser cap = conf.getMetaDataRepositoryInstance().
                 getMetaDataFactory().newClassArgParser();
@@ -3628,11 +3628,14 @@ public class PCEnhancer {
         int status;
         Class cls;
         for (Iterator itr = classes.iterator(); itr.hasNext();) {
-            cls = (Class) itr.next();
+            Object o = itr.next();
             if (log.isTraceEnabled())
-                log.trace(_loc.get("enhance-running", cls));
+                log.trace(_loc.get("enhance-running", o));
 
-            bc = project.loadClass(cls);
+            if (o instanceof String)
+                bc = project.loadClass((String) o);
+            else
+                bc = project.loadClass((Class) o);
             enhancer = new PCEnhancer(conf, bc, repos);
             if (writer != null)
                 enhancer.setBytecodeWriter(writer);
