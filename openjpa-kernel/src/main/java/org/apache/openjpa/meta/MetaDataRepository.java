@@ -961,7 +961,7 @@ public class MetaDataRepository
         if (!mustExist)
             return null;
         throw new MetaDataException(_loc.get("no-oid-meta", oid,
-            oid.getClass(), _oids), oid);
+            oid.getClass(), _oids)).setFailedObject(oid);
     }
 
     /**
