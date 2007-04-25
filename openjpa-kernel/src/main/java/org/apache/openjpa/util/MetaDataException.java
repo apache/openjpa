@@ -43,10 +43,9 @@ public class MetaDataException
         setFatal(true);
     }
 
-    public MetaDataException(Message msg, Object failed) {
-        super(msg);
+    public MetaDataException(Message msg, Throwable nested) {
+        super(msg, nested);
         setFatal(true);
-        setFailedObject(failed);
     }
 
     public int getSubtype() {
