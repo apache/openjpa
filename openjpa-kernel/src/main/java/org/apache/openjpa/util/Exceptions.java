@@ -138,7 +138,8 @@ public class Exceptions {
         int type = e.getType();
         StringBuffer buf = new StringBuffer();
         buf.append("<").
-            append(OpenJPAVersion.VERSION_NUMBER).append(' ').
+            append(OpenJPAVersion.VERSION_NUMBER).
+            append(OpenJPAVersion.RELEASE_STATUS).append(' ').
             append(e.isFatal() ? "fatal " : "nonfatal ").
             append (type == ExceptionInfo.GENERAL ? "general error" :
                 type == ExceptionInfo.INTERNAL ? "internal error" :
