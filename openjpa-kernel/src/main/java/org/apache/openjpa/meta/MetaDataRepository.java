@@ -312,7 +312,7 @@ public class MetaDataRepository
 
         // multiple classes may have been defined with the same alias: we
         // will filter by checking against the current list of the
-        // persistent types and filted based on which classes are loadable
+        // persistent types and filter based on which classes are loadable
         // via the current environment's ClassLoader
         Set pcNames = getPersistentTypeNames(false, envLoader);
         Class cls = null;
@@ -346,7 +346,7 @@ public class MetaDataRepository
         if (_aliases.containsKey(alias)) {
             if (mustExist)
                 throw new MetaDataException(_loc.get("no-alias-meta", alias,
-                    _aliases));
+                    _aliases.toString()));
             return null;
         }
 
@@ -923,7 +923,7 @@ public class MetaDataRepository
         boolean mustExist) {
         if (oid == null && mustExist)
             throw new MetaDataException(_loc.get("no-oid-meta", oid, "?",
-                _oids));
+                _oids.toString()));
         if (oid == null)
             return null;
 
@@ -1235,6 +1235,20 @@ public class MetaDataRepository
                 _log.info(_loc.get("bad-discover-class", name));
             if (_log.isTraceEnabled())
                 _log.trace(e);
+        } catch (NoSuchMethodError nsme) {
+            if (nsme.getMessage().indexOf(".pc") == -1)
+                throw nsme;
+
+            // if the error is about a method that uses the PersistenceCapable
+            // 'pc' method prefix, perform some logging and continue. This
+            // probably just means that the class is not yet enhanced.
+            if ((_validate & VALIDATE_RUNTIME) != 0) {
+                if (_log.isWarnEnabled())
+                    _log.warn(_loc.get("bad-discover-class", name));
+            } else if (_log.isInfoEnabled())
+                _log.info(_loc.get("bad-discover-class", name));
+            if (_log.isTraceEnabled())
+                _log.trace(nsme);
         }
         return null;
     }
