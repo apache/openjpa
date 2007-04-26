@@ -2283,7 +2283,12 @@ public class PCEnhancer {
         code.getstatic().setField(PRE + "FieldTypes", Class[].class);
         code.getstatic().setField(PRE + "FieldFlags", byte[].class);
         code.getstatic().setField(SUPER, Class.class);
-        code.constant().setValue(_meta.getTypeAlias());
+        
+        if (_meta.isMapped())
+            code.constant().setValue(_meta.getTypeAlias());
+        else
+            code.constant().setNull();
+
         if (_pc.isAbstract())
             code.constant().setNull();
         else {
