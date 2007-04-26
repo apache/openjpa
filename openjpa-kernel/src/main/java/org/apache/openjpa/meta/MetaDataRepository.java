@@ -1396,14 +1396,16 @@ public class MetaDataRepository
 
         // set alias for class
         String alias = PCRegistry.getTypeAlias(cls);
-        synchronized (_aliases) {
-            List classList = (List) _aliases.get(alias);
-            if (classList == null) {
-                classList = new ArrayList(3);
-                _aliases.put(alias, classList);
+        if (alias != null) {
+            synchronized (_aliases) {
+                List classList = (List) _aliases.get(alias);
+                if (classList == null) {
+                    classList = new ArrayList(3);
+                    _aliases.put(alias, classList);
+                }
+                if (!classList.contains(cls))
+                    classList.add(cls);
             }
-            if (!classList.contains(cls))
-                classList.add(cls);
         }
     }
 
