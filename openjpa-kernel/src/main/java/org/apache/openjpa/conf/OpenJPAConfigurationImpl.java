@@ -360,10 +360,12 @@ public class OpenJPAConfigurationImpl
         addValue(autoDetach);
 
         detachStatePlugin = addPlugin("DetachState", true);
-        aliases =
-            new String[] { "loaded", DetachOptions.Loaded.class.getName(),
-                "fgs", DetachOptions.FetchGroups.class.getName(), "all",
-                DetachOptions.All.class.getName(), };
+        aliases = new String[] {
+            "loaded", DetachOptions.Loaded.class.getName(),
+            "fgs", DetachOptions.FetchGroups.class.getName(),
+            "fetch-groups", DetachOptions.FetchGroups.class.getName(), 
+            "all", DetachOptions.All.class.getName(),
+        };
         detachStatePlugin.setAliases(aliases);
         detachStatePlugin.setDefault(aliases[0]);
         detachStatePlugin.setString(aliases[0]);

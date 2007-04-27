@@ -28,6 +28,13 @@ public interface DetachState {
 
     /**
      * Mode to detach all fields in the current fetch groups.
+     * 
+     * @since 0.9.8
+     */
+    public static final int DETACH_FETCH_GROUPS = 0;
+
+    /**
+     * @deprecated
      */
     public static final int DETACH_FGS = 0;
 

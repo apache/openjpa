@@ -162,7 +162,7 @@ public class DetachManager
         // create bitset of fields to detach; if mode is all we can use
         // currently loaded bitset clone, since we know all fields are loaded
         if (idxs != null) {
-            if (detachMode == DETACH_FGS)
+            if (detachMode == DETACH_FETCH_GROUPS)
                 setFetchGroupFields(broker, sm, idxs);
             else
                 idxs.or(sm.getLoaded());

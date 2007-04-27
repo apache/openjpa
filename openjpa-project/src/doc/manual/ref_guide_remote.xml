@@ -239,7 +239,7 @@ default.
                 </listitem>
                 <listitem>
                     <para>
-<literal>fgs</literal>: Detach all fields and relations in the current 
+<literal>fetch-groups</literal>: Detach all fields and relations in the current
 <link linkend="ref_guide_runtime">fetch configuration</link>. For more
 information on custom fetch groups, see <xref linkend="ref_guide_fetch"/>.
                     </para>
@@ -333,7 +333,7 @@ use detached state managers, as determined by the settings above.
                     Configuring Detached State
                 </title>
 <programlisting>
-&lt;property name="openjpa.DetachState" value="fgs(DetachedStateField=true)"/&gt;
+&lt;property name="openjpa.DetachState" value="fetch-groups(DetachedStateField=true)"/&gt;
 </programlisting>
             </example>
             <para>
@@ -345,7 +345,7 @@ for controlling detached state:
             </para>
 <programlisting>
 public static final int DETACH_LOADED;
-public static final int DETACH_FGS;
+public static final int DETACH_FETCH_GROUPS;
 public static final int DETACH_ALL;
 public int getDetachState();
 public void setDetachState(int mode);

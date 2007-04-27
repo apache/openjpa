@@ -30,7 +30,7 @@ public class TestGetReferenceAndImplicitDetachment
     extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp("openjpa.DetachState", "fgs",
+        setUp("openjpa.DetachState", "fetch-groups",
             DetachmentOneManyParent.class, DetachmentOneManyChild.class);
     }
 
