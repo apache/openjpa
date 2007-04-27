@@ -1,17 +1,20 @@
 /*
- * Copyright 2006 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.    
  */
 package org.apache.openjpa.persistence.jdbc;
 
@@ -79,18 +82,89 @@ public class TestIsolationLevelOverride
                         .getIsolation());
 
                 q.getResultList();
+                if (dict instanceof DB2Dictionary &&((((DB2Dictionary)dict).
+                    getDb2ServerType() == 1) || ((DB2Dictionary)dict)
+                        .getDb2ServerType()== 2)) {
+                    assertEquals(1, sql.size());
+                    assertSQL("SELECT t0.id, t0.booleanField, t0.byteField,"
+                        + " t0.charField, t0.dateField, t0.doubleField,"
+                        + " t0.floatField, t0.intField, t0.longField, "
+                        + "t0.shortField, t0.stringField FROM "
+                        + "AllFieldTypes t0 WHERE \\(t0.intField = \\?\\) "
+                        + " FOR UPDATE OF");
+                }
+
+                // it is DB2 v82 or later
+                else if (dict instanceof DB2Dictionary &&((((DB2Dictionary)dict).
+                    getDb2ServerType() == 3) || ((DB2Dictionary)dict)
+                        .getDb2ServerType() == 4)) {
+                    assertEquals(1, sql.size());
+                    assertSQL("SELECT t0.id, t0.booleanField, t0.byteField,"
+                        + " t0.charField, t0.dateField, t0.doubleField,"
+                        + " t0.floatField, t0.intField, t0.longField, "
+                        + "t0.shortField, t0.stringField FROM "
+                        + "AllFieldTypes t0 WHERE \\(t0.intField = \\?\\) "
+                        + " FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS");
+                }
+
+                else if (dict instanceof DB2Dictionary && ((DB2Dictionary)dict).
+                    getDb2ServerType() == 5){
+                    assertEquals(1, sql.size());
+                    assertSQL("SELECT t0.id, t0.booleanField, t0.byteField,"
+                        + " t0.charField, t0.dateField, t0.doubleField,"
+                        + " t0.floatField, t0.intField, t0.longField, "
+                        + "t0.shortField, t0.stringField FROM "
+                        + "AllFieldTypes t0 WHERE \\(t0.intField = \\?\\) "
+                        + " FOR READ ONLY WITH RR USE AND KEEP EXCLUSIVE " 
+                        + "LOCKS");
+                }    
+                else if (dict instanceof DB2Dictionary) {
+                    fail("OpenJPA currently only supports per-query isolation " 
+                    + "level configuration on the following databases: DB2");
+                }
             } else {
                 ((JDBCFetchPlan) em.getFetchPlan())
                     .setIsolation(IsolationLevel.SERIALIZABLE);
                 em.find(AllFieldTypes.class, 0);
-            }
-
-            if (dict instanceof DB2Dictionary) {
-                assertEquals(1, sql.size());
-                assertSQL(".*DB2-specific SQL to test for goes here.*");
-            } else {
-                fail("OpenJPA currently only supports per-query isolation " +
-                    "level configuration on the following databases: DB2");
+                if (dict instanceof DB2Dictionary &&((((DB2Dictionary)dict).
+                    getDb2ServerType() == 1) || ((DB2Dictionary)dict)
+                        .getDb2ServerType()== 2)) {
+                    assertEquals(1, sql.size());
+                    assertSQL("SELECT t0.booleanField, t0.byteField, "
+                        + "t0.charField, t0.dateField, t0.doubleField,"
+                        + " t0.floatField, t0.intField, t0.longField,"
+                        + " t0.shortField, t0.stringField FROM "
+                        + "AllFieldTypes t0 WHERE t0.id = \\? "
+                        + " FOR UPDATE OF optimize for 1 row");
+                }
+                // it is DB2 v82 or later
+                else if (dict instanceof DB2Dictionary &&((((DB2Dictionary)dict).
+                    getDb2ServerType() == 3) || ((DB2Dictionary)dict)
+                        .getDb2ServerType() == 4)) {
+                    assertEquals(1, sql.size());
+                    assertSQL("SELECT t0.booleanField, t0.byteField, "
+                        + "t0.charField, t0.dateField, t0.doubleField,"
+                        + " t0.floatField, t0.intField, t0.longField,"
+                        + " t0.shortField, t0.stringField FROM "
+                        + "AllFieldTypes t0 WHERE t0.id = \\? "
+                        + " FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS" 
+                        + " optimize for 1 row");
+                }
+                else if (dict instanceof DB2Dictionary && ((DB2Dictionary)dict).
+                    getDb2ServerType() == 5) {
+                    assertEquals(1, sql.size());
+                    assertSQL("SELECT t0.booleanField, t0.byteField, "
+                        + "t0.charField, t0.dateField, t0.doubleField,"
+                        + " t0.floatField, t0.intField, t0.longField,"
+                        + " t0.shortField, t0.stringField FROM "
+                        + "AllFieldTypes t0 WHERE t0.id = \\? "
+                        + " FOR READ ONLY WITH RR USE AND KEEP EXCLUSIVE LOCKS"
+                        + " optimize for 1 row");
+                }    
+                else if (dict instanceof DB2Dictionary) {
+                    fail("OpenJPA currently only supports per-query isolation " 
+                    + "level configuration on the following databases: DB2");
+                }
             }
         } catch (InvalidStateException pe) {
             // if we're not using DB2, we expect an InvalidStateException.

@@ -60,6 +60,7 @@ project's issue tracker at http://issues.apache.org/jira/browse/OPENJPA
     * [OPENJPA-202] - after invoking LRS processing in a client by calling an @LRS annotated relationship, the next em.clear()/em.close() gets org.apache.openjpa.persistence.InvalidStateException: You cannot transfer large result set fields from one object or field to another
     * [OPENJPA-208] - NoResultException and NonUniqueResultException are not thrown when expected
     * [OPENJPA-214] - Need to support floating point primary keys
+    * [OPENJPA-222] - FOR READ ONLY clause getting generated for subselects
 
 ** Improvements
     * [OPENJPA-10] - persistence unit name should be default diagnostic context for standard OpenJPA log impl
