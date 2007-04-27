@@ -1583,7 +1583,7 @@ DetachState</literal>
             </para>
             <para>
 <emphasis role="bold">Possible values: </emphasis><literal>loaded</literal>,
-<literal>fgs</literal>, <literal>all</literal>
+<literal>fetch-groups</literal>, <literal>all</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> Determines which fields are part
