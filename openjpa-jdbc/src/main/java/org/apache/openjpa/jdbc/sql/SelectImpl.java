@@ -26,6 +26,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -164,7 +165,7 @@ public class SelectImpl
     // bit 1 : correspond to alias 1, etc.
     // if the bit is set, the corresponding alias has been removed from parent
     // and recorded under subselect.
-    private int _removedAliasFromParent = 0;
+    private BitSet _removedAliasFromParent = new BitSet(16);
      
     /**
      * Helper method to return the proper table alias for the given alias index.
@@ -1496,7 +1497,7 @@ public class SelectImpl
             return;
         if (_parent._joins != null && !_parent._joins.isEmpty()) {
             boolean removed = false;
-            if (_removedAliasFromParent > 0)
+            if (!_removedAliasFromParent.isEmpty())
                 removed = _parent._joins.joins().removeAll(pj.joins());
             if (!removed)
                 pj.joins().removeAll(_parent._joins.joins());
@@ -1914,7 +1915,7 @@ public class SelectImpl
             if (alias != null) {
                 if (removeAliasFromParent) {
                     recordTableAlias(table, key, alias);
-                    _removedAliasFromParent |= (1 << alias.intValue());
+                    _removedAliasFromParent.set(alias.intValue());
                 }
                 return alias;
             }
