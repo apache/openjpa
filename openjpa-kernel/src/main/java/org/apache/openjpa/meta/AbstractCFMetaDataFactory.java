@@ -633,6 +633,13 @@ public abstract class AbstractCFMetaDataFactory
         if (urls != null) {
             for (Iterator itr = urls.iterator(); itr.hasNext();) {
                 url = (URL) itr.next();
+
+                if ("file".equals(url.getProtocol())) {
+                    File file = new File(url.getFile()).getAbsoluteFile();
+                    if (files.contains(file)) {
+                        continue;
+                    }
+                } 
                 if ("jar".equals(url.getProtocol())
                     && url.getPath().endsWith("!/")) {
                     if (log.isTraceEnabled())
