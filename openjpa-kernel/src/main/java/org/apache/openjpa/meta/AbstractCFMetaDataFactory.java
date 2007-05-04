@@ -609,7 +609,7 @@ public abstract class AbstractCFMetaDataFactory
                 if (file.isDirectory()) {
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scanning-directory", file));
-                    scan(new FileMetaDataIterator(dir, newMetaDataFilter()),
+                    scan(new FileMetaDataIterator(file, newMetaDataFilter()),
                         cparser, names, true, file);
                 } else if (file.getName().endsWith(".jar")) {
                     if (log.isTraceEnabled())
@@ -668,7 +668,7 @@ public abstract class AbstractCFMetaDataFactory
                             log.trace(_loc.get("scanning-jar-stream-url", url));
                         scan(new ZipStreamMetaDataIterator
                             (new ZipInputStream(url.openStream()),
-                                newMetaDataFilter()), cparser, names, true, 
+                                newMetaDataFilter()), cparser, names, true,
                                 url);
                     }
                 } else {
@@ -695,7 +695,7 @@ public abstract class AbstractCFMetaDataFactory
         }
         if (types != null)
             names.addAll(types);
-        
+
         if (log.isTraceEnabled())
             log.trace(_loc.get("parse-found-names", names));
         
@@ -799,8 +799,8 @@ public abstract class AbstractCFMetaDataFactory
 
         /**
          * Add all components in the given repository to the set to be
-		 * serialized.
-		 */
-		public void addAll (MetaDataRepository repos);
-	}
+         * serialized.
+         */
+        public void addAll (MetaDataRepository repos);
+    }
 }
