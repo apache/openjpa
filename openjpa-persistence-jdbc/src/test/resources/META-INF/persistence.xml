@@ -31,9 +31,16 @@
             This needs to be listed because the OpenJPA test framework
             does not provide any other means to incrementally enhance classes
             for particular test cases, and the XML data must be available at
-            enhance time for XML data to get incorporated into PCRegistry
+            enhance time for XML data to get incorporated into PCRegistry.
         -->
         <mapping-file>org/apache/openjpa/persistence/xml/orm.xml</mapping-file>
+        <!--
+            In general, for persistent types that use annotations, you should
+            not list the persistent types here, but rather use the
+            PersistenceTestCase.setUp(Object...) method in your test case's
+            setUp() method, passing the Class objects for your persistent types
+            to that method.
+        -->
         <properties>
             <!--
             These properties are instead passed via System properties
