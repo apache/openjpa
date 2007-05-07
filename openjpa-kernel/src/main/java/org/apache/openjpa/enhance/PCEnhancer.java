@@ -181,9 +181,30 @@ public class PCEnhancer {
      * because the configuration might be an
      * implementation-specific subclass whose metadata
      * required more than just base metadata files
+     * @deprecated use {@link #PCEnhancer(OpenJPAConfiguration, BCClass,
+        MetaDataRepository, ClassLoader)} instead. 
      */
     public PCEnhancer(OpenJPAConfiguration conf, BCClass type,
         MetaDataRepository repos) {
+        this(conf, type, repos, (ClassLoader) null);
+    }
+
+    /**
+     * Constructor. Supply configuration.
+     *
+     * @param type the bytecode representation fo the type to
+     * enhance; this can be created from any stream or file
+     * @param repos a metadata repository to use for metadata access,
+     * or null to create a new reporitory; the repository
+     * from the given configuration isn't used by default
+     * because the configuration might be an
+     * implementation-specific subclass whose metadata
+     * required more than just base metadata files
+     * @param loader the environment classloader to use for loading
+     * classes and resources.
+     */
+    public PCEnhancer(OpenJPAConfiguration conf, BCClass type,
+        MetaDataRepository repos, ClassLoader loader) {
         _pc = type;
         _log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
 
@@ -192,7 +213,7 @@ public class PCEnhancer {
             _repos.setSourceMode(MetaDataRepository.MODE_META);
         } else
             _repos = repos;
-        _meta = _repos.getMetaData(type.getType(), null, false);
+        _meta = _repos.getMetaData(type.getType(), loader, false);
     }
 
     /**
@@ -3641,7 +3662,7 @@ public class PCEnhancer {
                 bc = project.loadClass((String) o);
             else
                 bc = project.loadClass((Class) o);
-            enhancer = new PCEnhancer(conf, bc, repos);
+            enhancer = new PCEnhancer(conf, bc, repos, loader);
             if (writer != null)
                 enhancer.setBytecodeWriter(writer);
             enhancer.setDirectory(flags.directory);
