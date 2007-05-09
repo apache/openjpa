@@ -26,10 +26,15 @@
         <maven>2.0.4</maven>
     </prerequisites>
     <groupId>org.apache.openjpa</groupId>
-    <artifactId>openjpa</artifactId>
+    <artifactId>openjpa-parent</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA</name>
     <description>OpenJPA</description>
+
+    <properties>
+        <scm.dir>svn.apache.org/repos/asf/incubator/openjpa/trunk</scm.dir>
+    </properties>
+
     <!--
         Changing this version needs to also be done in all children poms
         See: http://jira.codehaus.org/browse/MNG-624
@@ -95,9 +100,9 @@
         <url>http://www.apache.org</url>
     </organization>
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/openjpa/trunk</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/openjpa/trunk</developerConnection>
-        <url>https://svn.apache.org/repos/asf/incubator/openjpa/trunk</url>
+        <connection>scm:svn:http://${scm.dir}</connection>
+        <developerConnection>scm:svn:https://${scm.dir}</developerConnection>
+        <url>https://${scm.dir}</url>
     </scm>
     <modules>
         <module>openjpa-lib</module>

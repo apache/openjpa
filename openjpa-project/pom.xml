@@ -34,12 +34,12 @@
         create a key. See http://apache.org/dev/release-signing.html
     -->
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>openjpa-project</artifactId>
+    <artifactId>apache-openjpa</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Distribution</name>
     <parent>
         <groupId>org.apache.openjpa</groupId>
-        <artifactId>openjpa</artifactId>
+        <artifactId>openjpa-parent</artifactId>
         <version>0.9.8-incubating-SNAPSHOT</version>
     </parent>
 
@@ -354,7 +354,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-all</artifactId>
+            <artifactId>openjpa</artifactId>
             <version>${pom.version}</version>
         </dependency>
 

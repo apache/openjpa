@@ -85,7 +85,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-all</artifactId>
+            <artifactId>openjpa</artifactId>
             <version>${pom.version}</version>
         </dependency>
     </dependencies>

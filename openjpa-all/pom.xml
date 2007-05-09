@@ -22,12 +22,12 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
         http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>openjpa-all</artifactId>
+    <artifactId>openjpa</artifactId>
     <packaging>jar</packaging>
     <name>OpenJPA Aggregate Jar</name>
     <parent>
         <groupId>org.apache.openjpa</groupId>
-        <artifactId>openjpa</artifactId>
+        <artifactId>openjpa-parent</artifactId>
         <version>0.9.8-incubating-SNAPSHOT</version>
     </parent>
     <build>

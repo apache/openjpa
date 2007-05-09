@@ -27,7 +27,7 @@
     <name>OpenJPA Integration Tests</name>
     <parent>
         <groupId>org.apache.openjpa</groupId>
-        <artifactId>openjpa</artifactId>
+        <artifactId>openjpa-parent</artifactId>
         <version>0.9.8-incubating-SNAPSHOT</version>
     </parent>
     <modules>
