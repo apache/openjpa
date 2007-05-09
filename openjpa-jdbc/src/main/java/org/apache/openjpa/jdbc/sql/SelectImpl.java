@@ -26,7 +26,6 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -159,13 +158,6 @@ public class SelectImpl
     // from select if this select selects from a tmp table created by another
     private SelectImpl _from = null;
     private SelectImpl _outer = null;
-    
-    // bitSet indicating if an alias is removed from parent select
-    // bit 0 : correspond to alias 0
-    // bit 1 : correspond to alias 1, etc.
-    // if the bit is set, the corresponding alias has been removed from parent
-    // and recorded under subselect.
-    private BitSet _removedAliasFromParent = new BitSet(16);
      
     /**
      * Helper method to return the proper table alias for the given alias index.
@@ -1495,13 +1487,8 @@ public class SelectImpl
     private void removeParentJoins(PathJoins pj) {
         if (_parent == null)
             return;
-        if (_parent._joins != null && !_parent._joins.isEmpty()) {
-            boolean removed = false;
-            if (!_removedAliasFromParent.isEmpty())
-                removed = _parent._joins.joins().removeAll(pj.joins());
-            if (!removed)
-                pj.joins().removeAll(_parent._joins.joins());
-        }
+        if (_parent._joins != null && !_parent._joins.isEmpty())
+            pj.joins().removeAll(_parent._joins.joins());
         if (!pj.isEmpty())
             _parent.removeParentJoins(pj);
     }
@@ -1910,15 +1897,9 @@ public class SelectImpl
             }
         }
         if (!fromParent && _parent != null) {
-            boolean removeAliasFromParent = key.toString().contains(":");
-            alias = _parent.findAlias(table, key, removeAliasFromParent, this);
-            if (alias != null) {
-                if (removeAliasFromParent) {
-                    recordTableAlias(table, key, alias);
-                    _removedAliasFromParent.set(alias.intValue());
-                }
+            alias = _parent.findAlias(table, key, false, this);
+            if (alias != null)
                 return alias;
-            }
         }
         if (_subsels != null) {
             SelectImpl sub;
@@ -1932,11 +1913,9 @@ public class SelectImpl
                     if (sub._tables != null)
                         sub._tables.remove(alias);
                 } else {
-                    if (fromSub == null) {
-                        alias = sub.findAlias(table, key, true, null);
-                        if (!fromParent && alias != null)
-                            recordTableAlias(table, key, alias);
-                    }
+                    alias = sub.findAlias(table, key, true, null);
+                    if (!fromParent && alias != null)
+                        recordTableAlias(table, key, alias);
                 }
             }
         }
