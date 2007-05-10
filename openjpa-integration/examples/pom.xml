@@ -58,6 +58,7 @@
 
                         <property name="examples.base"
                             value="${basedir}/target/examples"/>
+                        <mkdir dir="${examples.base}"/>
                         <unzip overwrite="false" dest="${examples.base}">
                         <fileset dir="../../openjpa-project/target/assembly">
                             <include name="openjpa-*${version}-binary.zip"/>
