@@ -51,7 +51,6 @@ import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.Serialization;
 import org.apache.openjpa.lib.util.concurrent.ReentrantLock;
-import org.apache.openjpa.lib.util.concurrent.Concurrent;
 
 import serp.util.Strings;
 
