@@ -73,5 +73,5 @@ public interface DataCacheManager {
     /**
      * Close all caches.
      */
-    public void close ();
+    public void close();
 }
