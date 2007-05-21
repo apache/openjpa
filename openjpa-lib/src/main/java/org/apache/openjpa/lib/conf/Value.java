@@ -100,9 +100,13 @@ public abstract class Value implements Cloneable {
     /**
      * Aliases for the value in the form key1, value1, key2, value2, ...
      * All alias values must be in string form.
+     * <p>
+     * To avoid potential side-effects, this method copies the array passed in.
      */
     public void setAliases(String[] aliases) {
-        this.aliases = aliases;
+        String [] aStrings = new String[aliases.length];
+        System.arraycopy(aliases, 0, aStrings, 0, aStrings.length);
+        this.aliases = aStrings;
     }
 
     /**
