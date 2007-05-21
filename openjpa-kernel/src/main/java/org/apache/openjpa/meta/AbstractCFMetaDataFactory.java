@@ -46,7 +46,6 @@ import org.apache.openjpa.lib.meta.ResourceMetaDataIterator;
 import org.apache.openjpa.lib.meta.URLMetaDataIterator;
 import org.apache.openjpa.lib.meta.ZipFileMetaDataIterator;
 import org.apache.openjpa.lib.meta.ZipStreamMetaDataIterator;
-import org.apache.openjpa.lib.meta.ClassLoaderMetaDataIterator;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.GeneralException;
