@@ -46,6 +46,7 @@ import org.apache.openjpa.lib.meta.ResourceMetaDataIterator;
 import org.apache.openjpa.lib.meta.URLMetaDataIterator;
 import org.apache.openjpa.lib.meta.ZipFileMetaDataIterator;
 import org.apache.openjpa.lib.meta.ZipStreamMetaDataIterator;
+import org.apache.openjpa.lib.meta.ClassLoaderMetaDataIterator;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.GeneralException;
@@ -633,13 +634,18 @@ public abstract class AbstractCFMetaDataFactory
         if (urls != null) {
             for (Iterator itr = urls.iterator(); itr.hasNext();) {
                 url = (URL) itr.next();
-
                 if ("file".equals(url.getProtocol())) {
                     File file = new File(url.getFile()).getAbsoluteFile();
-                    if (files.contains(file)) {
+                    if (files != null && files.contains(file)) {
+                        continue;
+                    } else if (file.isDirectory()) {
+                        if (log.isTraceEnabled())
+                            log.trace(_loc.get("scanning-directory", file));
+                        scan(new FileMetaDataIterator(file, newMetaDataFilter()),
+                                cparser, names, true, file);
                         continue;
                     }
-                } 
+                }
                 if ("jar".equals(url.getProtocol())
                     && url.getPath().endsWith("!/")) {
                     if (log.isTraceEnabled())
