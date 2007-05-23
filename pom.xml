@@ -32,7 +32,7 @@
     <description>OpenJPA</description>
 
     <properties>
-        <scm.dir>svn.apache.org/repos/asf/incubator/openjpa/trunk</scm.dir>
+        <scm.dir>svn.apache.org/repos/asf/openjpa/trunk</scm.dir>
     </properties>
 
     <!--
