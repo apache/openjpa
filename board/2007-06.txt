@@ -1,0 +1,25 @@
+2007-06 Status Report for the Apache OpenJPA Project
+
+Highlights
+
+In its first month following graduation from the incubator,
+OpenJPA has begun work on its first official release, 1.0.
+
+Community
+
+Email traffic on the lists continues to grow as more people
+discover that the Java EE 5 specification really does allow
+pluggable persistence implementations.
+
+Governance
+
+Michael Dick was added to the OpenJPA PMC.
+
+Releases
+
+Legal
+
+Projects
+
+Conferences
+
