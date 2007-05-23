@@ -971,4 +971,3 @@ public class TestProxyManager
         extends GregorianCalendar {
     }
 }
-
