@@ -44,6 +44,7 @@
     </parent>
 
     <properties>
+        <scm.dir>svn.apache.org/repos/asf/openjpa/trunk/openjpa-project</scm.dir>
         <openjpa.release.keyAlias>
             ${user.name}@apache.org
         </openjpa.release.keyAlias>
@@ -74,6 +75,12 @@
         <docbook.version>1.67.2</docbook.version>
         <local.repository>${settings.localRepository}</local.repository>
     </properties>
+
+    <scm>
+        <connection>scm:svn:http://${scm.dir}</connection>
+        <developerConnection>scm:svn:https://${scm.dir}</developerConnection>
+        <url>https://${scm.dir}</url>
+    </scm>
 
     <build>
         <!-- needed to let maven pass the "compile" phase -->
