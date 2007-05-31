@@ -630,7 +630,7 @@ public class AnnotationPersistenceMappingParser
             fk.setName(name);
         fk.setDeferred(deferred);
         fk.setDeleteAction(toForeignKeyAction(deleteAction));
-        fk.setUpdateAction(toForeignKeyAction(deleteAction));
+        fk.setUpdateAction(toForeignKeyAction(updateAction));
         info.setForeignKey(fk);
     }
 
