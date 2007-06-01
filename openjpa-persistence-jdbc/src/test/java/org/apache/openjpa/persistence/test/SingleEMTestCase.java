@@ -84,7 +84,7 @@ public abstract class SingleEMTestCase
         if (!tx.isActive())
             return false;
 
-        tx.commit();
+        tx.rollback();
         return true;
     }
 
