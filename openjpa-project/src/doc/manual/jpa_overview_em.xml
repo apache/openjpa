@@ -335,7 +335,7 @@ method behaves as follows:
         <itemizedlist>
             <listitem>
                 <para>
-If <literal>A</literal> is a new entity, it is ignored. However, the remove
+If <literal>A</literal> is a new entity, it is ignored. However, the refresh
 operation cascades as defined below.
                 </para>
             </listitem>

@@ -1836,12 +1836,6 @@ a sub-element of the <literal>one-to-many</literal> or <literal>many-to-many
 </literal> elements. The text within this element is parsed as the order by
 string.
             </para>
-            <note>
-                <para>
-OpenJPA expands the available ordering syntax. See <xref linkend="order-by"/>
- in the Reference Guide for details.
-                </para>
-            </note>
         </section>
         <section id="jpa_overview_meta_mapkey">
             <title>
