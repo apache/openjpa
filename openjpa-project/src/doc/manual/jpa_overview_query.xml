@@ -763,7 +763,7 @@ all subscriptions whose expiration date has passed.
                     Delete by Query
                 </title>
 <programlisting>
-Query q = em.createQuery("DELETE s FROM Subscription s WHERE s.subscriptionDate &lt; :today");
+Query q = em.createQuery("DELETE FROM Subscription s WHERE s.subscriptionDate &lt; :today");
 q.setParameter("today", new Date());
 int deleted = q.executeUpdate();
 </programlisting>
