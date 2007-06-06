@@ -214,9 +214,11 @@ public class JDBCConfigurationImpl
         updateManagerPlugin = addPlugin("jdbc.UpdateManager", true);
         aliases = new String[]{
             "default",
-            "org.apache.openjpa.jdbc.kernel.OperationOrderUpdateManager",
+            "org.apache.openjpa.jdbc.kernel.ConstraintUpdateManager",
             "operation-order",
             "org.apache.openjpa.jdbc.kernel.OperationOrderUpdateManager",
+            "constraint",
+            "org.apache.openjpa.jdbc.kernel.ConstraintUpdateManager",
         };
         updateManagerPlugin.setAliases(aliases);
         updateManagerPlugin.setDefault(aliases[0]);
