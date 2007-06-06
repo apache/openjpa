@@ -3,7 +3,7 @@
 Highlights
 
 In its first month following graduation from the incubator,
-OpenJPA has begun work on its first official release, 1.0.
+OpenJPA has begun work on its first official release, 1.0.0.
 
 Community
 
@@ -12,6 +12,10 @@ discover that the Java EE 5 specification really does allow
 pluggable persistence implementations.
 
 Governance
+
+The TLP migration of the svn repository, mail lists, unix aliases, and web site have been completed. Final cleanup of the incubator site to change the status of the project is pending.
+
+Release naming policy is being discussed and resolution is expected prior to the first release as a TLP.
 
 Michael Dick was added to the OpenJPA PMC.
 
