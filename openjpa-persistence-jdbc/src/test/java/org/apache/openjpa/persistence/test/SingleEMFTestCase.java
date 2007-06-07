@@ -31,7 +31,9 @@ public abstract class SingleEMFTestCase
     protected OpenJPAEntityManagerFactory emf;
 
     /**
-     * Initialize entity manager factory.
+     * Initialize entity manager factory. Put {@link #CLEAR_TABLES} in
+     * this list to tell the test framework to delete all table contents
+     * before running the tests.
      *
      * @param props list of persistent types used in testing and/or 
      * configuration values in the form key,value,key,value...

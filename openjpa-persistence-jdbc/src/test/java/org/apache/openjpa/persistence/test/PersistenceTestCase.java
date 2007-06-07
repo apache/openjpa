@@ -48,7 +48,9 @@ public abstract class PersistenceTestCase
     protected static final Object CLEAR_TABLES = new Object();
 
     /**
-     * Create an entity manager factory.
+     * Create an entity manager factory. Put {@link #CLEAR_TABLES} in
+     * this list to tell the test framework to delete all table contents
+     * before running the tests.
      *
      * @param props list of persistent types used in testing and/or 
      * configuration values in the form key,value,key,value...
