@@ -41,7 +41,7 @@ public class EntityC {
 
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "entityd_id", referencedColumnName = "entityd_id",
         nullable = false)
     @ForeignKey
