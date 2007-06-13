@@ -318,7 +318,7 @@ public class JDBCFetchConfigurationImpl
             && level != Connection.TRANSACTION_REPEATABLE_READ
             && level != Connection.TRANSACTION_SERIALIZABLE)
             throw new IllegalArgumentException(
-                _loc.get("bad-level", Integer.valueOf(level)).getMessage());
+                _loc.get("bad-level", new Integer(level)).getMessage());
 
         if (level == DEFAULT)
             _state.isolationLevel = -1;
