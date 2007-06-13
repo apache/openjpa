@@ -391,10 +391,16 @@ public class DB2Dictionary
             getMethod("getSqlWarn", null);
             Method  getSqlErrdMethd = sqlca.getClass().
             getMethod("getSqlErrd", null);
+            StringBuffer errdStr = new StringBuffer();
+
+            int[] errds = (int[]) getSqlErrdMethd.invoke(sqlca, new Object[]{});
+            for (int i = 0; i < errds.length; i++)
+                errdStr.append(errdStr.length() > 0 ? ", " : "").
+                    append(errds[i]);
             exceptionMsg = exceptionMsg.concat( "SQLCA OUTPUT" +
-                    "[Errp=" +getSqlErrpMethd.invoke(sqlca,new Object[]{})
-                    + ", Errd=" + Arrays.toString((int[])
-                            (getSqlErrdMethd.invoke(sqlca, new Object[]{}))));
+                    "[Errp=" + getSqlErrpMethd.invoke(sqlca, new Object[]{})
+                    + ", Errd=" + errdStr);
+
             String Warn = new String((char[])getSqlWarnMethd.
                     invoke(sqlca, new Object[]{}));
             if(Warn.trim().length() != 0)
