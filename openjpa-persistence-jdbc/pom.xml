@@ -32,12 +32,11 @@
         <artifactId>openjpa-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-
     <properties>
         <openjpa.loglevel>INFO</openjpa.loglevel>
     </properties>
-
     <profiles>
+
         <!-- Profile for testing with Apache Derby -->
         <profile>
             <id>test-derby</id>
@@ -374,7 +373,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>1.5</source>

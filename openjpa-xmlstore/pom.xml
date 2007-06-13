@@ -32,6 +32,26 @@
         <artifactId>openjpa-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
+    <profiles>
+        <profile>
+            <id>java14-validate</id>
+            <activation><property><name>java14.jar</name></property></activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <configuration>
+                                <compilerArguments>
+                                    <bootclasspath>${java14.jar}</bootclasspath>
+                                </compilerArguments>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
@@ -43,7 +63,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>1.4</source>
