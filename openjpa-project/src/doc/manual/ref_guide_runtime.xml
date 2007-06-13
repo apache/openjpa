@@ -117,9 +117,9 @@ and <classname>Broker</classname>s.
                 <secondary>
                     finalizing
                 </secondary>
-                <secondary>
+                <tertiary>
                     clean-up
-                </secondary>
+                </tertiary>
             </indexterm>
             <para>
 Outside of a Java EE 5 application server or other JPA persistence container
