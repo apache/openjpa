@@ -278,7 +278,7 @@ parameterized type.
 					<para>
 <literal>FetchType fetch</literal>: Whether to load the collection eagerly or 
 lazily.  Corresponds exactly to the same-named property of standard JPA 
-annotations such as <link linkend="ejb3_overview_meta_basic"><classname>
+annotations such as <link linkend="jpa_overview_meta_basic"><classname>
 Basic</classname></link>. Defaults to <literal>FetchType.LAZY</literal>.
 					</para>
 				</listitem>
@@ -286,7 +286,7 @@ Basic</classname></link>. Defaults to <literal>FetchType.LAZY</literal>.
 					<para>
 <literal>String mappedBy</literal>: Names the field in the related entity that 
 maps this bidirectional relation.  Corresponds to the same-named property of 
-standard JPA annotations such as <link linkend="ejb3_overview_meta_manytomany">
+standard JPA annotations such as <link linkend="jpa_overview_meta_manytomany">
 <classname>ManyToMany</classname></link>.
 					</para>
 				</listitem>
@@ -295,7 +295,7 @@ standard JPA annotations such as <link linkend="ejb3_overview_meta_manytomany">
 <literal>CascadeType[] elementCascade</literal>: Array of enum values defining 
 cascade behavior for the collection elements.  Corresponds exactly to the 
 <literal>cascade</literal> property of standard JPA annotations such as 
-<link linkend="ejb3_overview_meta_manytomany"><classname>
+<link linkend="jpa_overview_meta_manytomany"><classname>
 ManyToMany</classname></link>. Defaults to empty array.
 					</para>
 				</listitem>
@@ -340,7 +340,7 @@ supply it explicitly, however, if your field isn't a parameterized type.
 					<para>
 <literal>FetchType fetch</literal>: Whether to load the collection eagerly or 
 lazily.  Corresponds exactly to the same-named property of standard JPA 
-annotations such as <link linkend="ejb3_overview_meta_basic"><classname>
+annotations such as <link linkend="jpa_overview_meta_basic"><classname>
 Basic</classname></link>. Defaults to <literal>FetchType.LAZY</literal>.
 					</para>
 				</listitem>
@@ -349,7 +349,7 @@ Basic</classname></link>. Defaults to <literal>FetchType.LAZY</literal>.
 <literal>CascadeType[] keyCascade</literal>: Array of enum values defining 
 cascade behavior for the map keys.  Corresponds exactly to the <literal>cascade
 </literal> property of standard JPA annotations such as 
-<link linkend="ejb3_overview_meta_manytoone"><classname>
+<link linkend="jpa_overview_meta_manytoone"><classname>
 ManyToOne</classname></link>. Defaults to empty array.
 					</para>
 				</listitem>
@@ -358,7 +358,7 @@ ManyToOne</classname></link>. Defaults to empty array.
 <literal>CascadeType[] elementCascade</literal>: Array of enum values defining 
 cascade behavior for the map values.  Corresponds exactly to the 
 <literal>cascade</literal> property of standard JPA annotations such as 
-<link linkend="ejb3_overview_meta_manytoone"><classname>
+<link linkend="jpa_overview_meta_manytoone"><classname>
 ManyToOne</classname></link>. Defaults to empty array.
 					</para>
 				</listitem>
