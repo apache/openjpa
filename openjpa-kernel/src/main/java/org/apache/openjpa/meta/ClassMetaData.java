@@ -1945,7 +1945,7 @@ public class ClassMetaData
                     throw new MetaDataException(_loc.get("invalid-id",
                         _type, fmds[i].getName()));
                 m = Reflection.findSetter(oid, fmds[i].getName(),
-                    fmds[i].getDeclaredType(), false);
+                    fmds[i].getObjectIdFieldType(), false);
                 if (m == null || m.getReturnType() != void.class)
                     throw new MetaDataException(_loc.get("invalid-id",
                         _type, fmds[i].getName()));
