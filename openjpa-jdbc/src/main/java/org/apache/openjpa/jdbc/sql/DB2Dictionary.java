@@ -207,6 +207,8 @@ public class DB2Dictionary
 	    		supportsLockingWithInnerJoin = true;
 	    		supportsLockingWithOuterJoin = true;
 	    		forUpdateClause = "WITH RR USE AND KEEP UPDATE LOCKS";
+	    		if (maj >=9)
+	    		    supportsXMLColumn = true;
 	    	}
 
             if (metaData.getDatabaseProductVersion().indexOf("DSN") != -1) {

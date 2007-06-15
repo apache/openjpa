@@ -130,6 +130,8 @@ public class OracleDictionary
             "CTXSYS", "MDSYS", "SYS", "SYSTEM", "WKSYS", "WMSYS", "XDB",
         }));
 
+        supportsXMLColumn = true;
+        xmlTypeName = "XMLType";
         bigintTypeName = "NUMBER{0}";
         bitTypeName = "NUMBER{0}";
         decimalTypeName = "NUMBER{0}";
@@ -182,15 +184,23 @@ public class OracleDictionary
                 driverVendor = VENDOR_ORACLE + meta.getDriverMajorVersion()
                     + meta.getDriverMinorVersion();
 
+                String productVersion = meta.getDatabaseProductVersion()
+                    .split("Release ",0)[1].split("\\.",0)[0];
+                int release = Integer.parseInt(productVersion);
+                
                 // warn sql92
-                if (meta.getDatabaseProductVersion().indexOf("Release 8.") > 0)
-                {
+                if (release == 8) {
                     if (joinSyntax == SYNTAX_SQL92 && log.isWarnEnabled())
                         log.warn(_loc.get("oracle-syntax"));
                     joinSyntax = SYNTAX_DATABASE;
                     dateTypeName = "DATE"; // added oracle 9
                     timestampTypeName = "DATE"; // added oracle 9
+                    supportsXMLColumn = false;
                 }
+                else 
+                    // select of an xml column requires ".getStringVal()"
+                    // suffix. eg. t0.xmlcol.getStringVal()
+                    getStringVal = ".getStringVal()";
             } else if (metadataClassName.startsWith("com.ddtek.")
                 || url.indexOf("jdbc:datadirect:oracle:") != -1
                 || "Oracle".equals(driverName)) {
@@ -499,7 +509,8 @@ public class OracleDictionary
         throws SQLException {
         if (colType == Types.BLOB && _driverBehavior == BEHAVE_ORACLE)
             stmnt.setBlob(idx, getEmptyBlob());
-        else if (colType == Types.CLOB && _driverBehavior == BEHAVE_ORACLE)
+        else if (colType == Types.CLOB && _driverBehavior == BEHAVE_ORACLE
+            && !col.isXML())
             stmnt.setClob(idx, getEmptyClob());
         else if ((colType == Types.STRUCT || colType == Types.OTHER)
             && col != null && col.getTypeName() != null)
@@ -509,7 +520,7 @@ public class OracleDictionary
         else if (colType == Types.DATE)
             super.setNull(stmnt, idx, Types.TIMESTAMP, col);
         // the Oracle driver does not support Types.OTHER with setNull
-        else if (colType == Types.OTHER)
+        else if (colType == Types.OTHER || col.isXML())
             super.setNull(stmnt, idx, Types.NULL, col);
         else
             super.setNull(stmnt, idx, colType, col);

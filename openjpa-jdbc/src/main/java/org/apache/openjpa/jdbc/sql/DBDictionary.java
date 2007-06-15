@@ -212,6 +212,7 @@ public class DBDictionary
     public boolean requiresCastForMathFunctions = false;
     public boolean requiresCastForComparisons = false;
     public boolean supportsModOperator = false;
+    public boolean supportsXMLColumn = false;
 
     // functions
     public String castFunction = "CAST({0} AS {1})";
@@ -273,6 +274,8 @@ public class DBDictionary
     public String tinyintTypeName = "TINYINT";
     public String varbinaryTypeName = "VARBINARY";
     public String varcharTypeName = "VARCHAR";
+    public String xmlTypeName = "XML";
+    public String getStringVal = "";
 
     // schema metadata
     public boolean useSchemaName = true;

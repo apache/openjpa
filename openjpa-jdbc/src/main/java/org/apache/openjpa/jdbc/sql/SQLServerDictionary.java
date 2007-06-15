@@ -79,6 +79,9 @@ public class SQLServerDictionary
                     driverVendor = VENDOR_OTHER;
             } else
                 driverVendor = VENDOR_OTHER;
+            if (driverName.contains(platform) && Integer.parseInt(driverName
+                .split("Server ",0)[1].split(" ")[0]) >= 2005)
+                supportsXMLColumn = true;
         }
 
         // warn about using cursors

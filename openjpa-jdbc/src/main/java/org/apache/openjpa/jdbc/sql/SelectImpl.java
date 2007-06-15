@@ -189,6 +189,7 @@ public class SelectImpl
         _conf = conf;
         _dict = _conf.getDBDictionaryInstance();
         _joinSyntax = _dict.joinSyntax;
+        _selects._dict = _dict;
     }
 
     /////////////////////////////////
@@ -2661,6 +2662,7 @@ public class SelectImpl
         private List _idents = null;
         private Map _aliases = null;
         private Map _selectAs = null;
+        private DBDictionary _dict = null;
 
         /**
          * Add all aliases from another instance.
@@ -2769,6 +2771,9 @@ public class SelectImpl
                     Object id = (ident && _idents != null) ? _idents.get(i)
                         : _ids.get(i);
                     Object alias = _aliases.get(id);
+                    if (id instanceof Column && ((Column)id).isXML())
+                        alias = alias + _dict.getStringVal;
+                        
                     String as = null;
                     if (inner)
                         as = ((String) alias).replace('.', '_');
