@@ -51,6 +51,7 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -70,6 +71,7 @@ import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Unique;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -1030,6 +1032,15 @@ public class AnnotationPersistenceMappingParser
                 if (cols.isEmpty())
                     cols = new ArrayList<Column>(pcols.length);
                 cols.add(newColumn(pcols[i]));
+            }
+            
+            if (StringUtils.isEmpty(pcols[i].columnDefinition())
+                && fm.getDeclaredType().isAnnotationPresent(XmlType.class)) {
+                DBDictionary dict = ((MappingRepository) getRepository())
+                    .getDBDictionary();
+                if (dict.supportsXMLColumn)
+                  // column maps to xml type
+                  ((Column) cols.get(i)).setTypeName(dict.xmlTypeName);
             }
 
             unique |= (pcols[i].unique()) ? TRUE : FALSE;
