@@ -124,6 +124,7 @@
                 <module>openjpa-persistence-jdbc</module>
                 <module>openjpa-kernel-5</module>
                 <module>openjpa-jdbc-5</module>
+        		<module>openjpa-xmlmapping-5</module>
                 <module>openjpa-examples</module>
             </modules>
         </profile>
