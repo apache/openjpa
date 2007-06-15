@@ -708,4 +708,11 @@ public class Column
         if (_flags == 0)
             _flags = from._flags;
     }
+    
+    /**
+     * Whether this column is an XML type.
+     */
+    public boolean isXML() {
+        return _typeName != null && _typeName.startsWith("XML");
+    }
 }
