@@ -1039,8 +1039,8 @@ public class AnnotationPersistenceMappingParser
                 DBDictionary dict = ((MappingRepository) getRepository())
                     .getDBDictionary();
                 if (dict.supportsXMLColumn)
-                  // column maps to xml type
-                  ((Column) cols.get(i)).setTypeName(dict.xmlTypeName);
+                    // column maps to xml type
+                    ((Column) cols.get(i)).setTypeName(dict.xmlTypeName);
             }
 
             unique |= (pcols[i].unique()) ? TRUE : FALSE;
