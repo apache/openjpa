@@ -117,6 +117,7 @@ PARSER_END(JPQL)
 SKIP :
 {
  	" "
+    | "\n"
 	| "\r"
 	| "\t"
 }
