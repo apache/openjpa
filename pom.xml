@@ -220,6 +220,11 @@
             <name>Maven Repository Switchboard</name>
             <url>http://www.ibiblio.org/maven2</url>
         </repository>
+        <repository>
+    	    <id>java.net</id>
+	        <url>https://maven-repository.dev.java.net/nonav/repository</url>
+	        <layout>legacy</layout>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
