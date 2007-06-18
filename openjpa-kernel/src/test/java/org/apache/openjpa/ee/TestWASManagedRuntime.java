@@ -52,6 +52,6 @@ public class TestWASManagedRuntime extends TestCase {
             getClassName(WASManagedRuntime.INTERFACE);
         assertTrue("message should have contained "
             + interfaceName + ", but was '" + msg + "'",
-            msg.contains(interfaceName));
+            msg.indexOf(interfaceName) != -1);
     }
 }
