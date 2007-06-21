@@ -3639,6 +3639,10 @@ public class PCEnhancer {
         if (args.length == 0) {
             log.info(_loc.get("running-all-classes"));
             classes = repos.getPersistentTypeNames(true, loader);
+            if (classes == null) {
+            	log.warn(_loc.get("no-class-to-enhance"));
+            	return false;
+            }
         } else {
             ClassArgParser cap = conf.getMetaDataRepositoryInstance().
                 getMetaDataFactory().newClassArgParser();
@@ -3647,7 +3651,7 @@ public class PCEnhancer {
             for (int i = 0; i < args.length; i++)
                 classes.addAll(Arrays.asList(cap.parseTypes(args[i])));
         }
-
+        
         Project project = new Project();
         BCClass bc;
         PCEnhancer enhancer;
