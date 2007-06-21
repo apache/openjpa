@@ -79,9 +79,16 @@ public class SQLServerDictionary
                     driverVendor = VENDOR_OTHER;
             } else
                 driverVendor = VENDOR_OTHER;
-            if (driverName.contains(platform) && Integer.parseInt(driverName
-                .split("Server ",0)[1].split(" ")[0]) >= 2005)
-                supportsXMLColumn = true;
+            if (driverName.indexOf(platform) != -1) {
+                String versionString = driverName.
+                    substring(platform.length() + 1);
+                if (versionString.indexOf(" ") != -1)
+                    versionString = versionString.substring(0,
+                        versionString.indexOf(" "));
+                int version = Integer.parseInt(versionString);
+                if (version >= 2005)
+                    supportsXMLColumn = true;
+            }
         }
 
         // warn about using cursors
