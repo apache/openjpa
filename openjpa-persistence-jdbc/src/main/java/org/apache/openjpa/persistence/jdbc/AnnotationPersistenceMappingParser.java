@@ -51,7 +51,6 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.UniqueConstraint;
-import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -1023,6 +1022,14 @@ public class AnnotationPersistenceMappingParser
             throw new MetaDataException(_loc.get("num-cols-mismatch", fm,
                 String.valueOf(cols.size()), String.valueOf(pcols.length)));
 
+        // cache the JAXB XmlType class if it is present so we do not
+        // have a hard-wired dependency on JAXB here
+        Class xmlTypeClass = null;
+        try {
+            xmlTypeClass = Class.forName("javax.xml.bind.annotation.XmlType");
+        } catch (Exception e) {
+        }
+
         int unique = 0;
         String secondary = null;
         for (int i = 0; i < pcols.length; i++) {
@@ -1034,8 +1041,9 @@ public class AnnotationPersistenceMappingParser
                 cols.add(newColumn(pcols[i]));
             }
             
-            if (StringUtils.isEmpty(pcols[i].columnDefinition())
-                && fm.getDeclaredType().isAnnotationPresent(XmlType.class)) {
+            if (xmlTypeClass != null
+                && StringUtils.isEmpty(pcols[i].columnDefinition())
+                && fm.getDeclaredType().isAnnotationPresent(xmlTypeClass)) {
                 DBDictionary dict = ((MappingRepository) getRepository())
                     .getDBDictionary();
                 if (dict.supportsXMLColumn)
