@@ -30,7 +30,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
-import org.apache.openjpa.jdbc.meta.strats.AbstractValueHandler;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.meta.JavaTypes;
