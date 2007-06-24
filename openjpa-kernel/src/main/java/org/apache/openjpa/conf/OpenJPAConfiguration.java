@@ -1391,6 +1391,8 @@ public interface OpenJPAConfiguration
     /**
      * Return the {@link org.apache.openjpa.event.BrokerFactoryEventManager} associated with this
      * configuration.
+     *
+     * @since 1.0.0
      */
     public BrokerFactoryEventManager getBrokerFactoryEventManager();
 }
