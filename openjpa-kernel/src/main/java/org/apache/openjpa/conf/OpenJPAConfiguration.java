@@ -39,6 +39,7 @@ import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.RestoreState;
 import org.apache.openjpa.kernel.SavepointManager;
 import org.apache.openjpa.kernel.Seq;
+import org.apache.openjpa.event.BrokerFactoryEventManager;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -1386,4 +1387,10 @@ public interface OpenJPAConfiguration
      * configuration.
      */
     public StoreFacadeTypeRegistry getStoreFacadeTypeRegistry();
+
+    /**
+     * Return the {@link org.apache.openjpa.event.BrokerFactoryEventManager} associated with this
+     * configuration.
+     */
+    public BrokerFactoryEventManager getBrokerFactoryEventManager();
 }

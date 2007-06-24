@@ -37,6 +37,7 @@ import org.apache.openjpa.conf.OpenJPAVersion;
 import org.apache.openjpa.datacache.DataCacheStoreManager;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.event.RemoteCommitEventManager;
+import org.apache.openjpa.event.BrokerFactoryEvent;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
@@ -545,6 +546,12 @@ public abstract class AbstractBrokerFactory
             // avoid synchronization
             _conf.setReadOnly(true);
             _conf.instantiateAll();
+
+            // fire an event for all the broker factory listeners
+            // registered on the configuration.
+            _conf.getBrokerFactoryEventManager().fireEvent(
+                new BrokerFactoryEvent(this,
+                    BrokerFactoryEvent.BROKER_FACTORY_CREATED));
         } finally {
             unlock();
         }

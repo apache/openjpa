@@ -22,9 +22,10 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 
 /**
- * Tests the {@link AbstractEventManager}.
+ * Tests the {@link AbstractConcurrentEventManager}.
  *
  * @author Abe White
  */
@@ -67,7 +68,7 @@ public class TestAbstractEventManager extends TestCase {
         TestRunner.run(suite());
     }
 
-    private static class EventManager extends AbstractEventManager {
+    private static class EventManager extends AbstractConcurrentEventManager {
 
         protected void fireEvent(Object event, Object listener) {
             ((Listener) listener).fire();

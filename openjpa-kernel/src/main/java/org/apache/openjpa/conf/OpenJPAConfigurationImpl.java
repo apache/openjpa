@@ -31,6 +31,7 @@ import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.event.OrphanedKeyAction;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.RemoteCommitProvider;
+import org.apache.openjpa.event.BrokerFactoryEventManager;
 import org.apache.openjpa.kernel.AutoClear;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.ConnectionRetainModes;
@@ -140,6 +141,8 @@ public class OpenJPAConfigurationImpl
     private String spec = null;
     private final StoreFacadeTypeRegistry _storeFacadeRegistry =
         new StoreFacadeTypeRegistry();
+    private BrokerFactoryEventManager _brokerFactoryEventManager =
+        new BrokerFactoryEventManager(this);
 
     /**
      * Default constructor. Attempts to load global properties.
@@ -1408,7 +1411,11 @@ public class OpenJPAConfigurationImpl
     public StoreFacadeTypeRegistry getStoreFacadeTypeRegistry() {
         return _storeFacadeRegistry;
     }
-    
+
+    public BrokerFactoryEventManager getBrokerFactoryEventManager() {
+        return _brokerFactoryEventManager;
+    }
+
     public void instantiateAll() {
         super.instantiateAll();
         getMetaDataRepositoryInstance();
