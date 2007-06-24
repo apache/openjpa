@@ -1911,7 +1911,7 @@ public class SelectImpl
             }
         }
         if (!fromParent && _parent != null) {
-            boolean removeAliasFromParent = key.toString().contains(":");
+            boolean removeAliasFromParent = key.toString().indexOf(":") != -1;
             alias = _parent.findAlias(table, key, removeAliasFromParent, this);
             if (alias != null) {
                 if (removeAliasFromParent) {
