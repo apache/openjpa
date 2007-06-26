@@ -66,6 +66,8 @@ public class AutomaticManagedRuntime
         "com.inprise.visitransact.jta.TransactionManagerImpl."
             + "getTransactionManagerImpl", // borland
     };
+
+    private static final ManagedRuntime REGISTRY;
     private static final WLSManagedRuntime WLS;
     private static final SunOneManagedRuntime SUNONE;
     private static final WASManagedRuntime WAS;
@@ -75,6 +77,19 @@ public class AutomaticManagedRuntime
 
     static {
         ManagedRuntime mr = null;
+
+        mr = null;
+        try {
+            mr = (ManagedRuntime) Class.
+                forName("org.apache.openjpa.ee.RegistryManagedRuntime").
+                    newInstance();
+        } catch (Throwable t) {
+            // might be JTA version lower than 1.1, which doesn't have 
+            // TransactionSynchronizationRegistry
+        }
+        REGISTRY = mr;
+
+        mr = null;
         try {
             mr = new WLSManagedRuntime();
         } catch (Throwable t) {
@@ -107,6 +122,20 @@ public class AutomaticManagedRuntime
 
         List errors = new LinkedList();
         TransactionManager tm = null;
+
+        // first try the registry, which is the official way to obtain
+        // transaction synchronication in JTA 1.1
+        if (REGISTRY != null) {
+            try {
+                tm = REGISTRY.getTransactionManager();
+            } catch (Throwable t) {
+                errors.add(t);
+            }
+            if (tm != null) {
+                _runtime = REGISTRY;
+                return tm;
+            }
+        }
 
         if (WLS != null) {
             try {
