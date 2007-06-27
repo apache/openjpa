@@ -131,6 +131,11 @@ public class InformixDictionary
         // schema name in reflection on columns and tables
         supportsSchemaForGetColumns = false;
         supportsSchemaForGetTables = false;
+
+        // Informix doesn't support aliases in deletes if the table has an index
+        allowsAliasInBulkClause = false;
+        
+        supportsSubselect = false;
     }
 
     public void connectedConfiguration(Connection conn)
