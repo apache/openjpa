@@ -248,6 +248,10 @@ public class MethodStoreQuery
             }
             if (!Modifier.isStatic(meth.getModifiers()))
                 throw new UserException(_loc.get("method-not-static", meth));
+            if (!ResultObjectProvider.class.isAssignableFrom(
+                meth.getReturnType()))
+                throw new UserException(_loc.get("method-return-type-invalid",
+                    meth, meth.getReturnType()));
             _meth = meth;
         }
 
