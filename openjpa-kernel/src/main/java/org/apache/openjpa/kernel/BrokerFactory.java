@@ -83,6 +83,23 @@ public interface BrokerFactory
     public void removeLifecycleListener(Object listener);
 
     /**
+     * Register a listener for transaction-related events on the specified
+     * classes. It will be registered with all {@link Broker}s created
+     * from this instance moving forward.
+     *
+     * @since 1.0.0
+     */
+    public void addTransactionListener(Object listener);
+
+    /**
+     * Remove a listener for transaction-related events. It will no longer
+     * be registered with new {@link Broker}s created from this instance.
+     *
+     * @since 1.0.0
+     */
+    public void removeTransactionListener(Object listener);
+
+    /**
      * Close the factory.
      */
     public void close();

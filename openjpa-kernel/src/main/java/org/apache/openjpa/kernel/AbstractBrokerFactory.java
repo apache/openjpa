@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.LinkedList;
+import java.util.List;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
@@ -90,6 +92,9 @@ public abstract class AbstractBrokerFactory
 
     // lifecycle listeners to pass to each broker
     private transient Map _lifecycleListeners = null;
+
+    // transaction listeners to pass to each broker
+    private transient List _transactionListeners = null;
 
     /**
      * Return the pooled factory matching the given configuration, or null
@@ -174,7 +179,7 @@ public abstract class AbstractBrokerFactory
 
                 broker = newBrokerImpl(user, pass);
                 broker.initialize(this, dsm, managed, connRetainMode);
-                addLifecycleListeners(broker);
+                addListeners(broker);
 
                 // if we're using remote events, register the event manager so
                 // that it can broadcast commit notifications from the broker
@@ -198,16 +203,24 @@ public abstract class AbstractBrokerFactory
     /**
      * Add factory-registered lifecycle listeners to the broker.
      */
-    protected void addLifecycleListeners(BrokerImpl broker) {
-        if (_lifecycleListeners == null || _lifecycleListeners.isEmpty())
-            return;
+    protected void addListeners(BrokerImpl broker) {
+        if (_lifecycleListeners != null && !_lifecycleListeners.isEmpty()) {
+            Map.Entry entry;
+            for (Iterator itr = _lifecycleListeners.entrySet().iterator();
+                itr.hasNext();) {
+                entry = (Map.Entry) itr.next();
+                broker.addLifecycleListener(entry.getKey(), (Class[])
+                    entry.getValue());
+            }
+        }
 
-        Map.Entry entry;
-        for (Iterator itr = _lifecycleListeners.entrySet().iterator();
-            itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
-            broker.addLifecycleListener(entry.getKey(), (Class[])
-                entry.getValue());
+        if (_transactionListeners != null && !_transactionListeners.isEmpty()) {
+            Map.Entry entry;
+            for (Iterator itr = _transactionListeners.iterator();
+                itr.hasNext(); ) {
+                entry = (Map.Entry) itr.next();
+                broker.addTransactionListener(entry.getKey());
+            }
         }
     }
 
@@ -269,6 +282,29 @@ public abstract class AbstractBrokerFactory
             assertOpen();
             if (_lifecycleListeners != null)
                 _lifecycleListeners.remove(listener);
+        } finally {
+            unlock();
+        }
+    }
+
+    public void addTransactionListener(Object listener) {
+        lock();
+        try {
+            assertOpen();
+            if (_transactionListeners == null)
+                _transactionListeners = new LinkedList();
+            _transactionListeners.add(listener);
+        } finally {
+            unlock();
+        }
+    }
+
+    public void removeTransactionListener(Object listener) {
+        lock();
+        try {
+            assertOpen();
+            if (_transactionListeners != null)
+                _transactionListeners.remove(listener);
         } finally {
             unlock();
         }

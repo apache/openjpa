@@ -28,7 +28,7 @@ package org.apache.openjpa.event;
 public interface BrokerFactoryListener {
 
     /**
-     * Invoked after a {@link AbstractBrokerFactory} has been fully created.
+     * Invoked after a {@link BrokerFactory} has been fully created.
      * This happens after the factory has been made read-only.
      */
     public void afterBrokerFactoryCreate(BrokerFactoryEvent event);

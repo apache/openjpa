@@ -162,6 +162,22 @@ public class DelegatingBrokerFactory
         }
     }
 
+    public void addTransactionListener(Object listener) {
+        try {
+            _factory.addTransactionListener(listener);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public void removeTransactionListener(Object listener) {
+        try {
+            _factory.removeTransactionListener(listener);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
     public void close() {
         try {
             _factory.close();
