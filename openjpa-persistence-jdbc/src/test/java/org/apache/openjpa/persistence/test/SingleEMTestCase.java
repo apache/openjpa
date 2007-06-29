@@ -37,6 +37,11 @@ public abstract class SingleEMTestCase
     protected OpenJPAEntityManager em;
 
     @Override
+    public void setUp() {
+        setUp(new Object[0]);
+    }
+
+    @Override
     public void setUp(Object... props) {
         super.setUp(props);
         em = emf.createEntityManager(); 
