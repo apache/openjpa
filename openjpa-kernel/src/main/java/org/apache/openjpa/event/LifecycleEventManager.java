@@ -131,75 +131,68 @@ public class LifecycleEventManager
      * Return whether there are listeners or callbacks for the given source.
      */
     public boolean hasPersistListeners(Object source, ClassMetaData meta) {
-        return hasCallbacks(source, meta, LifecycleEvent.BEFORE_PERSIST)
-            || hasCallbacks(source, meta, LifecycleEvent.AFTER_PERSIST)
-            || hasListeners(source, meta, LifecycleEvent.AFTER_PERSIST);
+        return hasHandlers(source, meta, LifecycleEvent.BEFORE_PERSIST)
+            || hasHandlers(source, meta, LifecycleEvent.AFTER_PERSIST);
     }
 
     /**
      * Return whether there are listeners or callbacks for the given source.
      */
     public boolean hasDeleteListeners(Object source, ClassMetaData meta) {
-        return hasCallbacks(source, meta, LifecycleEvent.BEFORE_DELETE)
-            || hasCallbacks(source, meta, LifecycleEvent.AFTER_DELETE)
-            || hasListeners(source, meta, LifecycleEvent.AFTER_DELETE);
+        return hasHandlers(source, meta, LifecycleEvent.BEFORE_DELETE)
+            || hasHandlers(source, meta, LifecycleEvent.AFTER_DELETE);
     }
 
     /**
      * Return whether there are listeners or callbacks for the given source.
      */
     public boolean hasClearListeners(Object source, ClassMetaData meta) {
-        return hasCallbacks(source, meta, LifecycleEvent.BEFORE_CLEAR)
-            || hasCallbacks(source, meta, LifecycleEvent.AFTER_CLEAR)
-            || hasListeners(source, meta, LifecycleEvent.AFTER_CLEAR);
+        return hasHandlers(source, meta, LifecycleEvent.BEFORE_CLEAR)
+            || hasHandlers(source, meta, LifecycleEvent.AFTER_CLEAR);
     }
 
     /**
      * Return whether there are listeners or callbacks for the given source.
      */
     public boolean hasLoadListeners(Object source, ClassMetaData meta) {
-        return hasCallbacks(source, meta, LifecycleEvent.AFTER_LOAD)
-            || hasListeners(source, meta, LifecycleEvent.AFTER_LOAD);
+        return hasHandlers(source, meta, LifecycleEvent.AFTER_LOAD);
     }
 
     /**
      * Return whether there are listeners or callbacks for the given source.
      */
     public boolean hasStoreListeners(Object source, ClassMetaData meta) {
-        return hasCallbacks(source, meta, LifecycleEvent.BEFORE_STORE)
-            || hasCallbacks(source, meta, LifecycleEvent.AFTER_STORE)
-            || hasListeners(source, meta, LifecycleEvent.AFTER_STORE);
+        return hasHandlers(source, meta, LifecycleEvent.BEFORE_STORE)
+            || hasHandlers(source, meta, LifecycleEvent.AFTER_STORE);
     }
 
     /**
      * Return whether there are listeners or callbacks for the given source.
      */
     public boolean hasDirtyListeners(Object source, ClassMetaData meta) {
-        return hasCallbacks(source, meta, LifecycleEvent.BEFORE_DIRTY)
-            || hasCallbacks(source, meta, LifecycleEvent.AFTER_DIRTY)
-            || hasCallbacks(source, meta, LifecycleEvent.BEFORE_DIRTY_FLUSHED)
-            || hasCallbacks(source, meta, LifecycleEvent.AFTER_DIRTY_FLUSHED)
-            || hasListeners(source, meta, LifecycleEvent.AFTER_DIRTY);
+        return hasHandlers(source, meta, LifecycleEvent.BEFORE_DIRTY)
+            || hasHandlers(source, meta, LifecycleEvent.AFTER_DIRTY);
     }
 
     /**
      * Return whether there are listeners or callbacks for the given source.
      */
     public boolean hasDetachListeners(Object source, ClassMetaData meta) {
-        return hasCallbacks(source, meta, LifecycleEvent.BEFORE_DETACH)
-            || hasCallbacks(source, meta, LifecycleEvent.AFTER_DETACH)
-            || hasListeners(source, meta, LifecycleEvent.BEFORE_DETACH)
-            || hasListeners(source, meta, LifecycleEvent.AFTER_DETACH);
+        return hasHandlers(source, meta, LifecycleEvent.BEFORE_DETACH)
+            || hasHandlers(source, meta, LifecycleEvent.AFTER_DETACH);
     }
 
     /**
      * Return whether there are listeners or callbacks for the given source.
      */
     public boolean hasAttachListeners(Object source, ClassMetaData meta) {
-        return hasCallbacks(source, meta, LifecycleEvent.BEFORE_ATTACH)
-            || hasCallbacks(source, meta, LifecycleEvent.AFTER_ATTACH)
-            || hasListeners(source, meta, LifecycleEvent.BEFORE_ATTACH)
-            || hasListeners(source, meta, LifecycleEvent.AFTER_ATTACH);
+        return hasHandlers(source, meta, LifecycleEvent.BEFORE_ATTACH)
+            || hasHandlers(source, meta, LifecycleEvent.AFTER_ATTACH);
+    }
+
+    private boolean hasHandlers(Object source, ClassMetaData meta, int type) {
+        return hasCallbacks(source, meta, type)
+            || hasListeners(source, meta, type);
     }
 
     /**
@@ -557,8 +550,10 @@ public class LifecycleEventManager
                 return types;
             }
 
-            if (listener instanceof PersistListener)
+            if (listener instanceof PersistListener) {
+                types |= 2 << LifecycleEvent.BEFORE_PERSIST;
                 types |= 2 << LifecycleEvent.AFTER_PERSIST;
+            }
             if (listener instanceof ClearListener) {
                 types |= 2 << LifecycleEvent.BEFORE_CLEAR;
                 types |= 2 << LifecycleEvent.AFTER_CLEAR;

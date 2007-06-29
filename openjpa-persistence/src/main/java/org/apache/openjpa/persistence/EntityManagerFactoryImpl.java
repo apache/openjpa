@@ -272,6 +272,14 @@ public class EntityManagerFactoryImpl
         _factory.removeLifecycleListener(listener);
     }
 
+    public void addTransactionListener(Object listener) {
+        _factory.addTransactionListener(listener);
+    }
+
+    public void removeTransactionListener(Object listener) {
+        _factory.removeTransactionListener(listener);
+    }
+
     public void close() {
         _factory.close();
     }

@@ -34,6 +34,10 @@ public abstract class AbstractLifecycleListener
     protected void eventOccurred(LifecycleEvent event) {
     }
 
+    public void beforePersist(LifecycleEvent event) {
+        eventOccurred(event);
+    }
+
     public void afterPersist(LifecycleEvent event) {
         eventOccurred(event);
     }
@@ -79,6 +83,26 @@ public abstract class AbstractLifecycleListener
     }
 
     public void afterDirtyFlushed(LifecycleEvent event) {
+        eventOccurred(event);
+    }
+
+    public void afterRefresh(LifecycleEvent event) {
+        eventOccurred(event);
+    }
+
+    public void beforeDetach(LifecycleEvent event) {
+        eventOccurred(event);
+    }
+
+    public void afterDetach(LifecycleEvent event) {
+        eventOccurred(event);
+    }
+
+    public void beforeAttach(LifecycleEvent event) {
+        eventOccurred(event);
+    }
+
+    public void afterAttach(LifecycleEvent event) {
         eventOccurred(event);
     }
 }

@@ -93,7 +93,7 @@ public interface OpenJPAEntityManagerFactory
      * Register a listener for lifecycle-related events on the specified
      * classes. If the classes are null, all events will be propagated to
      * the listener. The listener will be passed on to all new entity
-     * managers. See the <code>org.apache.openjpa.event</code> package for 
+     * managers. See the <code>org.apache.openjpa.event</code> package for
      * listener types.
      *
      * @since 0.3.3
@@ -106,4 +106,21 @@ public interface OpenJPAEntityManagerFactory
      * @since 0.3.3
      */
     public void removeLifecycleListener (Object listener);
+
+    /**
+     * Register a listener for transaction-related events on the specified
+     * classes. The listener will be passed on to all new entity
+     * managers. See the <code>org.apache.openjpa.event</code> package for
+     * listener types.
+     *
+     * @since 1.0.0
+     */
+    public void addTransactionListener(Object listener);
+
+    /**
+     * Remove a listener for transaction-related events.
+     *
+     * @since 1.0.0
+     */
+    public void removeTransactionListener (Object listener);
 }

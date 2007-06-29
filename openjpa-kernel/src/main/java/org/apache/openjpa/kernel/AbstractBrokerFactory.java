@@ -218,8 +218,7 @@ public abstract class AbstractBrokerFactory
             Map.Entry entry;
             for (Iterator itr = _transactionListeners.iterator();
                 itr.hasNext(); ) {
-                entry = (Map.Entry) itr.next();
-                broker.addTransactionListener(entry.getKey());
+                broker.addTransactionListener(itr.next());
             }
         }
     }
