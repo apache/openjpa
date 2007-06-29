@@ -122,7 +122,7 @@ public class SelectImpl
     private SortedMap _tables = null;
 
     // combined list of selected ids and map of each id to its alias
-    private final Selects _selects = new Selects();
+    protected final Selects _selects = newSelects();
     private List _ordered = null;
 
     // flags
@@ -158,7 +158,7 @@ public class SelectImpl
 
     // from select if this select selects from a tmp table created by another
     private SelectImpl _from = null;
-    private SelectImpl _outer = null;
+    protected SelectImpl _outer = null;
     
     // bitSet indicating if an alias is removed from parent select
     // bit 0 : correspond to alias 0
@@ -2670,20 +2670,24 @@ public class SelectImpl
             return super.toString() + " (" + _outer + "): " + _joins;
         }
     }
+    
+    protected Selects newSelects() {
+        return new Selects();
+    }
 
     /**
      * Helper class to track selected columns, with fast contains method.
      * Acts as a list of select ids, with additional methods to manipulate
      * the alias of each selected id.
      */
-    private static class Selects
+    protected static class Selects
         extends AbstractList {
 
-        private List _ids = null;
-        private List _idents = null;
-        private Map _aliases = null;
-        private Map _selectAs = null;
-        private DBDictionary _dict = null;
+        protected List _ids = null;
+        protected List _idents = null;
+        protected Map _aliases = null;
+        protected Map _selectAs = null;
+        protected DBDictionary _dict = null;
 
         /**
          * Add all aliases from another instance.

@@ -136,7 +136,7 @@ public abstract class AbstractUpdateManager
      * @param customs buffer custom mappings
      * @return the exceptions list
      */
-    private Collection populateRowManager(OpenJPAStateManager sm,
+    protected Collection populateRowManager(OpenJPAStateManager sm,
         RowManager rowMgr, JDBCStore store, Collection exceps,
         Collection customs) {
         try {
@@ -336,7 +336,7 @@ public abstract class AbstractUpdateManager
     /**
      * Executes customized mapping updates.
      */
-    private static class CustomMapping {
+    protected static class CustomMapping {
 
         public static final int INSERT = 0;
         public static final int UPDATE = 1;

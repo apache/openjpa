@@ -79,7 +79,7 @@ public class PreparedStatementManagerImpl
     /**
      * Flush the given row.
      */
-    private void flushInternal(RowImpl row) throws SQLException {
+    protected void flushInternal(RowImpl row) throws SQLException {
         // can't batch rows with auto-inc columns
         Column[] autoAssign = null;
         if (row.getAction() == Row.ACTION_INSERT)

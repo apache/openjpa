@@ -912,7 +912,7 @@ public class OracleDictionary
     /**
      * Returns a OpenJPA 3-compatible name for an auto-assign sequence.
      */
-    private String getOpenJPA3GeneratedKeySequenceName(Column col) {
+    protected String getOpenJPA3GeneratedKeySequenceName(Column col) {
         Table table = col.getTable();
         return makeNameValid("SEQ_" + table.getName(), table.getSchema().
             getSchemaGroup(), maxTableNameLength, NAME_ANY);
@@ -921,7 +921,7 @@ public class OracleDictionary
     /**
      * Returns a OpenJPA 3-compatible name for an auto-assign trigger.
      */
-    private String getOpenJPA3GeneratedKeyTriggerName(Column col) {
+    protected String getOpenJPA3GeneratedKeyTriggerName(Column col) {
         Table table = col.getTable();
         return makeNameValid("TRIG_" + table.getName(), table.getSchema().
             getSchemaGroup(), maxTableNameLength, NAME_ANY);
