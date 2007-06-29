@@ -28,16 +28,35 @@ import javax.sql.DataSource;
 
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.event.RemoteCommitListener;
+import org.apache.openjpa.event.RemoteCommitEvent;
 
 public class TestDataCacheOptimisticLockRecovery
     extends SingleEMFTestCase {
 
     private int pk;
+    private int remoteCommitEventStaleCount = 0;
+    private Object staleOid;
 
     public void setUp() {
         setUp("openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
             OptimisticLockInstance.class);
+
+        emf.getConfiguration().getRemoteCommitEventManager().addListener(
+            new RemoteCommitListener() {
+                public void afterCommit(RemoteCommitEvent e) {
+                    if (e.getPayloadType() ==
+                        RemoteCommitEvent.PAYLOAD_LOCAL_STALE_DETECTION) {
+                        remoteCommitEventStaleCount++;
+                        staleOid = e.getUpdatedObjectIds().iterator().next();
+                    }
+                }
+
+                public void close() {
+                }
+            }
+        );
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -59,6 +78,9 @@ public class TestDataCacheOptimisticLockRecovery
         em = emf.createEntityManager();
         em.getTransaction().begin();
         OptimisticLockInstance oli = em.find(OptimisticLockInstance.class, pk);
+        Object oid = OpenJPAPersistence.toOpenJPAObjectId(
+            OpenJPAPersistence.getMetaData(oli),
+            OpenJPAPersistence.cast(em).getObjectId(oli));
         int firstOpLockValue = oli.getOpLock();
         em.lock(oli, LockModeType.READ);
 
@@ -90,7 +112,11 @@ public class TestDataCacheOptimisticLockRecovery
                 em.getTransaction().rollback();
         }
 
-        // 4. obtain the object in a new persistence context and
+        // 4. check that the corresponding remote commit event was fired
+        assertEquals(1, remoteCommitEventStaleCount);
+        assertEquals(oid, staleOid);
+
+        // 5. obtain the object in a new persistence context and
         // assert that the oplock column is set to the one that
         // happened in the out-of-band transaction
         em.close();
@@ -102,14 +128,13 @@ public class TestDataCacheOptimisticLockRecovery
         assertEquals("data cache is not being cleared when oplock "
             + "violations occur", secondOpLockValue, oli.getOpLock());
 
-        // 5. get a read lock on the instance and commit the tx; this
+        // 6. get a read lock on the instance and commit the tx; this
         // time it should go through
         em.getTransaction().begin();
         em.lock(oli, LockModeType.READ);
         try {
             em.getTransaction().commit();
         } catch (RollbackException e) {
-            e.printStackTrace();
             throw e;
         } finally {
             if (em.getTransaction().isActive())

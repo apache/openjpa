@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Collections;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.Broker;
@@ -114,6 +115,17 @@ public class RemoteCommitEventManager
         RemoteCommitListener listen = (RemoteCommitListener) listener;
         RemoteCommitEvent ev = (RemoteCommitEvent) event;
         listen.afterCommit(ev);
+    }
+
+    /**
+     * Fire an event to local listeners only notifying them of a detected
+     * stale record.
+     */
+    public void fireLocalStaleNotification(Object oid) {
+        RemoteCommitEvent ev = new RemoteCommitEvent(
+            RemoteCommitEvent.PAYLOAD_LOCAL_STALE_DETECTION,
+            null, null, Collections.singleton(oid), null);
+        fireEvent(ev);
     }
 
     //////////////////////////////////////

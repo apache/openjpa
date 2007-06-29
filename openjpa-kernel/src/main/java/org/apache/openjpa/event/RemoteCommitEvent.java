@@ -40,12 +40,12 @@ public class RemoteCommitEvent
     implements Externalizable {
 
     /**
-     * Names of added classes, upated and deleted Object IDs.
+     * Names of added classes, updated and deleted Object IDs.
      */
     public static final int PAYLOAD_OIDS = 0;
 
     /**
-     * Names of added classes, added, upated and deleted Object IDs.
+     * Names of added classes, added, updated and deleted Object IDs.
      */
     public static final int PAYLOAD_OIDS_WITH_ADDS = 1;
 
@@ -53,6 +53,16 @@ public class RemoteCommitEvent
      * Names of added, updated, and deleted classes only.
      */
     public static final int PAYLOAD_EXTENTS = 2;
+
+    /**
+     * The local {@link BrokerFactory} detected that local data is out of date
+     * with the data store. Stale object IDs will be in t he updated set,
+     * although it is possible that records were actually deleted, rather than
+     * updated.
+     *
+     * @since 1.0.0
+     */
+    public static final int PAYLOAD_LOCAL_STALE_DETECTION = 3;
 
     private static final Localizer s_loc = Localizer.forPackage
         (RemoteCommitEvent.class);
@@ -114,7 +124,9 @@ public class RemoteCommitEvent
 
     /**
      * When the event type is not PAYLOAD_EXTENTS, return the set of
-     * object IDs for updated objects.
+     * object IDs for updated objects. When the event type is
+     * PAYLOAD_LOCAL_STALE_DETECTION, items in this list may actually have
+     * been deleted from the database.
      */
     public Collection getUpdatedObjectIds() {
         if (_payload == PAYLOAD_EXTENTS)
