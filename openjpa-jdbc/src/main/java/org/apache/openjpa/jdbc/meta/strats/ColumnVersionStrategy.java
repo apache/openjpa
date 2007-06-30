@@ -101,6 +101,7 @@ public abstract class ColumnVersionStrategy
         tmplate.setName("versn");
 
         Column[] cols = info.getColumns(vers, new Column[]{ tmplate }, adapt);
+        cols[0].setVersionStrategy(this);
         vers.setColumns(cols);
         vers.setColumnIO(info.getColumnIO());
 

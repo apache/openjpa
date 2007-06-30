@@ -26,22 +26,26 @@ import java.util.Arrays;
 import java.util.StringTokenizer;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.schema.Sequence;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.OpenJPAException;
+import org.apache.openjpa.util.UnsupportedException;
 
 /**
  * Dictionary for IBM DB2 database.
  */
 public class DB2Dictionary
     extends AbstractDB2Dictionary {
+    private static final Localizer _loc = Localizer.forPackage
+        (DB2Dictionary.class);
 
     public String optimizeClause = "optimize for";
     public String rowClause = "row";
-    private int db2ServerType = 0;
-    private static final int db2ISeriesV5R3OrEarlier = 1;
-    private static final int db2UDBV81OrEarlier = 2;
-    private static final int db2ZOSV8xOrLater = 3;
-    private static final int db2UDBV82OrLater = 4;
-    private static final int db2ISeriesV5R4OrLater = 5;
+    protected int db2ServerType = 0;
+    protected static final int db2ISeriesV5R3OrEarlier = 1;
+    protected static final int db2UDBV81OrEarlier = 2;
+    protected static final int db2ZOSV8xOrLater = 3;
+    protected static final int db2UDBV82OrLater = 4;
+    protected static final int db2ISeriesV5R4OrLater = 5;
 	private static final String forUpdateOfClause = "FOR UPDATE OF";
     private static final String withRSClause = "WITH RS";
     private static final String withRRClause = "WITH RR";
@@ -50,6 +54,10 @@ public class DB2Dictionary
     private static final String useKeepExclusiveLockClause
         = "USE AND KEEP EXCLUSIVE LOCKS";
     private static final String forReadOnlyClause = "FOR READ ONLY";
+    protected String databaseProductName = null;
+    protected String databaseProductVersion = null;
+    protected int maj = 0;
+    protected int min = 0;
 
     public DB2Dictionary() {
         platform = "DB2";
@@ -70,6 +78,8 @@ public class DB2Dictionary
         varbinaryTypeName = "BLOB(1M)";
         clobTypeName = "CLOB(1M)";
         longVarcharTypeName = "LONG VARCHAR";
+        datePrecision = MICRO;
+        storeCharsAsNumbers = false;
 
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "LONG VARCHAR FOR BIT DATA", "LONG VARCHAR", "LONG VARGRAPHIC",
@@ -186,48 +196,78 @@ public class DB2Dictionary
     	super.connectedConfiguration(conn);
 
     	DatabaseMetaData metaData = conn.getMetaData();
-    	if (isJDBC3(metaData)) {
-			int maj = metaData.getDatabaseMajorVersion();
-	    	int min = metaData.getDatabaseMinorVersion();
+        databaseProductName = metaData.getDatabaseProductName();
+        databaseProductVersion = metaData.getDatabaseProductVersion();
+        
+        // Determine the type of DB2 database
+        // First check for AS/400
+        getProductVersionMajorMinorForISeries();
 
-	    	// Determine the type of DB2 database
-	    	if (isDB2ISeriesV5R3OrEarlier(metaData))
-	    	    db2ServerType = db2ISeriesV5R3OrEarlier;
-	    	else if (isDB2UDBV81OrEarlier(metaData,maj,min))
-	    	    db2ServerType = db2UDBV81OrEarlier;
-	    	else if (isDB2ZOSV8xOrLater(metaData,maj))
-	    	    db2ServerType = db2ZOSV8xOrLater;
-	    	else if (isDB2UDBV82OrLater(metaData,maj,min))
-	    	    db2ServerType = db2UDBV82OrLater;
-	    	else if (isDB2ISeriesV5R4OrLater(metaData))
-	    	    db2ServerType = db2ISeriesV5R4OrLater;
+        if (maj > 0) {
+            if (isDB2ISeriesV5R3OrEarlier())
+                db2ServerType = db2ISeriesV5R3OrEarlier;
+            else if (isDB2ISeriesV5R4OrLater())
+                db2ServerType = db2ISeriesV5R4OrLater;
+        }
+        
+    	if (db2ServerType == 0) {
+    	    if (isJDBC3(metaData)) {
+    	        maj = metaData.getDatabaseMajorVersion();
+    	        min = metaData.getDatabaseMinorVersion();
+    	    }
+    	    else
+    	        getProductVersionMajorMinor();
 
-	    	if (maj >= 9 || (maj == 8 && min >= 2)) {
-	    		supportsLockingWithMultipleTables = true;
-	    		supportsLockingWithInnerJoin = true;
-	    		supportsLockingWithOuterJoin = true;
-	    		forUpdateClause = "WITH RR USE AND KEEP UPDATE LOCKS";
-	    		if (maj >=9)
-	    		    supportsXMLColumn = true;
-	    	}
+    	    // Determine the type of DB2 database for ZOS & UDB
+    	    if (isDB2UDBV81OrEarlier())
+    	        db2ServerType = db2UDBV81OrEarlier;
+    	    else if (isDB2ZOSV8xOrLater())
+    	        db2ServerType = db2ZOSV8xOrLater;
+    	    else if (isDB2UDBV82OrLater())
+    	        db2ServerType = db2UDBV82OrLater;
+        }
 
-            if (metaData.getDatabaseProductVersion().indexOf("DSN") != -1) {
-                // DB2 Z/OS
-                characterColumnSize = 255;
-                lastGeneratedKeyQuery = "SELECT IDENTITY_VAL_LOCAL() FROM "
-                    + "SYSIBM.SYSDUMMY1";
-                nextSequenceQuery = "SELECT NEXTVAL FOR {0} FROM "
-                    + "SYSIBM.SYSDUMMY1";
-                sequenceSQL = "SELECT SCHEMA AS SEQUENCE_SCHEMA, "
-                    + "NAME AS SEQUENCE_NAME FROM SYSIBM.SYSSEQUENCES";
-                sequenceSchemaSQL = "SCHEMA = ?";
-                sequenceNameSQL = "NAME = ?";
-                if (maj == 8) {
-                    // DB2 Z/OS Version 8: no bigint support, hence map Java
-                    // long to decimal
-                    bigintTypeName = "DECIMAL(31,0)";
-                }
-            }
+        // verify that databae product is supported
+        if (db2ServerType == 0 || maj == 0)
+            throw new UnsupportedException(_loc.get("db-not-supported",
+                new Object[] {databaseProductName, databaseProductVersion }));                    
+
+    	if (maj >= 9 || (maj == 8 && min >= 2)) {
+    	    supportsLockingWithMultipleTables = true;
+    	    supportsLockingWithInnerJoin = true;
+    	    supportsLockingWithOuterJoin = true;
+    	    forUpdateClause = "WITH RR USE AND KEEP UPDATE LOCKS";
+    	    if (maj >=9)
+    	        supportsXMLColumn = true;
+    	}
+
+        // platform specific settings
+        switch (db2ServerType) {
+        case  db2ZOSV8xOrLater:
+            // DB2 Z/OS 
+            characterColumnSize = 255;
+            lastGeneratedKeyQuery = "SELECT IDENTITY_VAL_LOCAL() FROM "
+                + "SYSIBM.SYSDUMMY1";
+            nextSequenceQuery = "SELECT NEXTVAL FOR {0} FROM "
+                + "SYSIBM.SYSDUMMY1";
+            sequenceSQL = "SELECT SCHEMA AS SEQUENCE_SCHEMA, "
+                + "NAME AS SEQUENCE_NAME FROM SYSIBM.SYSSEQUENCES";
+            sequenceSchemaSQL = "SCHEMA = ?";
+            sequenceNameSQL = "NAME = ?";
+            if (maj == 8)
+                // DB2 Z/OS Version 8: no bigint support, hence map Java
+                // long to decimal
+                bigintTypeName = "DECIMAL(31,0)";
+            break;
+        case db2ISeriesV5R3OrEarlier:
+        case db2ISeriesV5R4OrLater:
+            validationSQL = "SELECT DISTINCT(CURRENT TIMESTAMP) FROM "
+                + "QSYS2.SYSTABLES";
+            sequenceSQL = "SELECT SEQUENCE_SCHEMA, "
+                + "SEQUENCE_NAME FROM QSYS2.SYSSEQUENCES";
+            sequenceSchemaSQL = "SEQUENCE_SCHEMA = ?";
+            sequenceNameSQL = "SEQUENCE_NAME = ?";
+            break;
         }
     }
 
@@ -291,68 +331,101 @@ public class DB2Dictionary
         return forUpdateString.toString();
     }
 
-    public boolean isDB2UDBV82OrLater(DatabaseMetaData metadata, int maj,
-        int min) throws SQLException {
+    public boolean isDB2UDBV82OrLater() throws SQLException {
         boolean match = false;
-        if (metadata.getDatabaseProductVersion().indexOf("SQL") != -1
+        if ((databaseProductVersion.indexOf("SQL") != -1
+            || databaseProductName.indexOf("DB2/") != -1)
             && ((maj == 8 && min >= 2) ||(maj >= 8)))
             match = true;
         return match;
     }
 
-    public boolean isDB2ZOSV8xOrLater(DatabaseMetaData metadata, int maj)
+    public boolean isDB2ZOSV8xOrLater()
        throws SQLException {
        boolean match = false;
-       if (metadata.getDatabaseProductVersion().indexOf("DSN") != -1
+       if ((databaseProductVersion.indexOf("DSN") != -1
+           || databaseProductName.indexOf("DB2/") == -1)
            && maj >= 8)
            match = true;
         return match;
     }
 
-    public boolean isDB2ISeriesV5R3OrEarlier(DatabaseMetaData metadata)
+    public boolean isDB2ISeriesV5R3OrEarlier()
        throws SQLException {
        boolean match = false;
-       if (metadata.getDatabaseProductVersion().indexOf("AS") != -1
-           && generateVersionNumber(metadata.getDatabaseProductVersion())
-           <= 530)
+       if (databaseProductName.indexOf("AS") != -1
+           && maj == 5 && min <=3)
            match = true;
        return match;
     }
 
-    public boolean isDB2ISeriesV5R4OrLater(DatabaseMetaData metadata)
+    public boolean isDB2ISeriesV5R4OrLater()
        throws SQLException {
        boolean match = false;
-       if (metadata.getDatabaseProductVersion().indexOf("AS") != -1
-           && generateVersionNumber(metadata.getDatabaseProductVersion())
-           >= 540)
+       if (databaseProductName.indexOf("AS") != -1
+           && maj >= 5 && min >=4)
            match = true;
       return match;
     }
 
-    public boolean isDB2UDBV81OrEarlier(DatabaseMetaData metadata, int maj,
-        int min) throws SQLException {
+    public boolean isDB2UDBV81OrEarlier() throws SQLException {
         boolean match = false;
-        if (metadata.getDatabaseProductVersion().indexOf("SQL") != -1 &&
+        if ((databaseProductVersion.indexOf("SQL") != -1 
+           || databaseProductName.indexOf("DB2/") != -1) &&
            ((maj == 8 && min <= 1)|| maj < 8))
             match = true;
         return match;
     }
 
-    /** Get the version number for the ISeries
+    /** Get the version Major/Minor for the ISeries
      */
-    protected  int generateVersionNumber(String versionString) {
-        String s = versionString.substring(versionString.indexOf('V'));
-        s = s.toUpperCase();
-        int i = -1;
-        StringTokenizer stringtokenizer = new StringTokenizer(s, "VRM", false);
-        if (stringtokenizer.countTokens() == 3)
-        {
-            String s1 = stringtokenizer.nextToken();
-            s1 = s1 + stringtokenizer.nextToken();
-            s1 = s1 + stringtokenizer.nextToken();
-            i = Integer.parseInt(s1);
+    private void getProductVersionMajorMinorForISeries() {
+        // ISeries    DBProdName                 DB2 UDB for AS/400
+        //   (Toolbox)DBProdVersion              05.04.0000 V5R4m0
+        // ISeries                               DB2 UDB for AS/400
+        //   (Native)                            V5R4M0
+        if (databaseProductName.indexOf("AS") != -1) {
+            String s = databaseProductVersion.substring(databaseProductVersion
+                .indexOf('V'));
+            s = s.toUpperCase();
+
+            StringTokenizer stringtokenizer = new StringTokenizer(s, "VRM"
+                , false);
+            if (stringtokenizer.countTokens() == 3) {
+                String s1 = stringtokenizer.nextToken();
+                maj = Integer.parseInt(s1);
+                String s2 =  stringtokenizer.nextToken();
+                min = Integer.parseInt(s2);
+            }
         }
-        return i;
+    }
+    
+    private void getProductVersionMajorMinor() {
+        // Incase JDBC driver version is lower than 3
+        // use following info to determine Major and Minor 
+        //                        CLI    vs      JCC
+        // ZDBV8 DBProdName       DB2            DB2
+        //       DBProdVersion    08.01.0005     DSN08015
+        // ZDBV9                  DB2            DB2
+        //                        09.01.0005     DSN09015
+        // WinV9                  DB2/NT         DB2/NT
+        //                        09.01.0000     SQL09010
+        // SolarisV9                             DB2/SUN64
+        //                                       SQL0901
+        // Linux                  DB2/LINUX      DB2/LINUX
+        //                        09.01.0000     SQL0901
+        if (databaseProductVersion.indexOf("09") != -1) {
+            maj = 9;
+            if (databaseProductVersion.indexOf("01") != -1) {
+                min = 1;
+            }
+        } else if (databaseProductVersion.indexOf("08") != -1) {
+            maj = 8;
+            min = 2;
+            if (databaseProductVersion.indexOf("01") != -1) {
+                min = 1;
+            }
+        }
     }
 
     public SQLBuffer toSelect(Select sel, boolean forUpdate,

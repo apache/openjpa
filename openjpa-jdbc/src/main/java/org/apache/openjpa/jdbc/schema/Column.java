@@ -28,6 +28,7 @@ import java.sql.Types;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
+import org.apache.openjpa.jdbc.meta.VersionStrategy;
 import org.apache.openjpa.meta.JavaTypes;
 import serp.util.Numbers;
 
@@ -70,7 +71,8 @@ public class Column
 
     private int _index = 0;
     private boolean _pk = false;
-
+    private VersionStrategy _versionStrategy = null;
+    
     /**
      * Default constructor.
      */
@@ -714,5 +716,13 @@ public class Column
      */
     public boolean isXML() {
         return _typeName != null && _typeName.startsWith("XML");
+    }
+
+    public VersionStrategy getVersionStrategy() {
+        return _versionStrategy;
+    }
+
+    public void setVersionStrategy(VersionStrategy strategy) {
+        this._versionStrategy = strategy;
     }
 }
