@@ -451,14 +451,7 @@ void set_clause() : { }
 
 void update_item() #UPDATEITEM : { }
 {
-	update_field() EQ() new_value()
-}
-
-
-void update_field() #UPDATEFIELD : { }
-{
-	// identification_variable() (<DOT> path_component())+
-	[LOOKAHEAD(1) identification_variable() <DOT>] path_component()
+	path() EQ() new_value()
 }
 
 
