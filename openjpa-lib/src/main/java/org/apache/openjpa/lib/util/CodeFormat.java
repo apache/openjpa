@@ -308,6 +308,22 @@ public final class CodeFormat implements Cloneable {
         return tabs.toString();
     }
 
+
+    /**
+     * Returns parametrized type string for given type(s).
+     */
+    public String getParametrizedType(String[] typenames) {
+        StringBuffer buf = new StringBuffer ();
+        buf.append("<");
+        for (int i = 0; i < typenames.length; i++) {
+            if (i > 0)
+                buf.append(", ");
+            buf.append(typenames[i]);
+        }
+        buf.append(">");
+        return buf.toString();
+    }
+
     /**
      * Return the field name for given suggested name, possibly adding
      * leading underscore.

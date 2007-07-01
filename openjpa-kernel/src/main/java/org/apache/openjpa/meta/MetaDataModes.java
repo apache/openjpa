@@ -32,4 +32,5 @@ public interface MetaDataModes {
     public static final int MODE_MAPPING = 2;
     public static final int MODE_QUERY = 4;
     public static final int MODE_MAPPING_INIT = 8;
+    public static final int MODE_ANN_MAPPING = 16;
 }

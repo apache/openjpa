@@ -539,6 +539,26 @@ directory. Defaults to the current directory.
                     </listitem>
                     <listitem>
                         <para>
+<literal>-metadata/-md &lt;class | package | none&gt;</literal>: Specify the
+level the metadata should be generated at. Defaults to generating a single
+package-level metadata file. Set to <literal>none</literal> to disable orm.xml
+generation.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>-annotations/-ann &lt;true/t | false/f&gt;</literal>: Set to true to
+generate JPA annotations in generated java classes. 
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>-accessType/-access &lt;field | property&gt;</literal>: Change access
+type for generated annotations. Defaults to field access.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 <literal>-useSchemaName/-sn &lt;true/t | false/f&gt;</literal>: Set this flag
 to <literal>true</literal> to include the schema as well as table name in the
 name of each generated class. This can be useful when dealing with multiple
@@ -584,6 +604,13 @@ those tables.
 <literal>-inverseRelations/-ir &lt;true/t | false/f&gt;</literal>: Set to
 <literal>false</literal> to prevent the creation of inverse 1-many/1-1 relations
 for every many-1/1-1 relation detected.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>-useGenericCollections/-gc &lt;true/t | false/f&gt;</literal>: Set to
+true to use generic collections on OneToMany and ManyToMany relations (requires
+JDK 1.5 or higher).
                         </para>
                     </listitem>
                     <listitem>
@@ -672,8 +699,9 @@ property in the specified reverse customizer, and set to the given value.
                 <para>
 Running the tool will generate <filename>.java</filename> files for each
 generated class (and its application identity class, if applicable), along with
-an <filename>orm.xml</filename> file containing the corresponding persistence 
-metadata.
+JPA annotations (if enabled by setting <literal>-annotations true</literal>),
+or an <filename>orm.xml</filename> file (if not disabled with <literal>
+-metadata none</literal>) containing the corresponding persistence metadata.
                 </para>
             </listitem>
             <listitem>
@@ -688,9 +716,9 @@ After you are satisfied with the generated classes and their mappings, you
 should first compile the classes with <literal>javac</literal>, <literal>
 jikes</literal>, or your favorite Java compiler. Make sure the classes are 
 located in the directory corresponding to the <literal>-package</literal> flag 
-you gave the reverse mapping tool.  Next, move the generated <filename>
-orm.xml</filename> file to a <filename>META-INF</filename> directory within a
-directory in your classpath.  Finally, enhance the classes
+you gave the reverse mapping tool.  Next, if you have generated an <filename>
+orm.xml</filename>, move that file to a <filename>META-INF</filename> directory
+within a directory in your classpath.  Finally, enhance the classes
 if necessary (see <xref linkend="ref_guide_pc_enhance"/> ).
                 </para>
             </listitem>

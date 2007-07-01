@@ -126,6 +126,15 @@ public class PersistenceMetaDataFactory
     }
 
     /**
+     * Create a new annotation serializer.
+     */
+    protected AnnotationPersistenceMetaDataSerializer
+        newAnnotationSerializer() {
+        return new AnnotationPersistenceMetaDataSerializer
+            (repos.getConfiguration());
+    }
+
+    /**
      * Return XML metadata parser, creating it if it does not already exist.
      */
     public XMLPersistenceMetaDataParser getXMLParser() {

@@ -24,8 +24,10 @@ import java.io.Writer;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.util.CodeFormat;
 import org.apache.openjpa.lib.util.Files;
@@ -307,27 +309,47 @@ public class CodeGenerator {
             propertyName = propertyName.substring(1);
         String fieldType = Strings.getClassName(fmd.getDeclaredType());
 
+        String keyType = null;
+        String elementType = null;
+        String paramType = "";
+        if (useGenericCollections()) {
+            if (fmd.getDeclaredTypeCode() == JavaTypes.COLLECTION) {
+                Class elmCls = fmd.getElement().getDeclaredType();
+                elementType = Strings.getClassName(elmCls);
+                paramType = decs.getParametrizedType(
+                    new String[] {elementType});
+            } else if (fmd.getDeclaredTypeCode() == JavaTypes.MAP) {
+                Class keyCls = fmd.getKey().getDeclaredType();
+                Class elmCls = fmd.getElement().getDeclaredType();
+                keyType = Strings.getClassName(keyCls);
+                elementType = Strings.getClassName(elmCls);
+                paramType = decs.getParametrizedType(
+                    new String[] {keyType, elementType});
+            }
+        }
+
         String fieldValue = getInitialValue(fmd);
         if (fieldValue == null) {
             if ("Set".equals(fieldType))
-                fieldValue = "new HashSet" + decs.getParens();
+                fieldValue = "new HashSet" + paramType + decs.getParens();
             else if ("TreeSet".equals(fieldType))
-                fieldValue = "new TreeSet" + decs.getParens();
+                fieldValue = "new TreeSet" + paramType + decs.getParens();
             else if ("Collection".equals(fieldType))
-                fieldValue = "new ArrayList" + decs.getParens();
+                fieldValue = "new ArrayList" + paramType + decs.getParens();
             else if ("Map".equals(fieldType))
-                fieldValue = "new HashMap" + decs.getParens();
+                fieldValue = "new HashMap" + paramType + decs.getParens();
             else if ("TreeMap".equals(fieldType))
-                fieldValue = "new TreeMap" + decs.getParens();
-            else if (fmd.getDeclaredTypeCode() == JavaTypes.COLLECTION
-                || fmd.getDeclaredTypeCode() == JavaTypes.MAP)
-                fieldValue = "new " + fieldType + decs.getParens();
+                fieldValue = "new TreeMap" + paramType + decs.getParens();
+            else if (fmd.getDeclaredTypeCode() == JavaTypes.COLLECTION ||
+                fmd.getDeclaredTypeCode() == JavaTypes.MAP)
+                fieldValue = "new " + fieldType + paramType + decs.getParens();
             else
                 fieldValue = "";
         }
         if (fieldValue.length() > 0)
             fieldValue = " = " + fieldValue;
 
+        boolean fieldAccess = !usePropertyBasedAccess();
         String custom = getDeclaration(fmd);
         if (decs.length() > 0)
             decs.endl();
@@ -339,12 +361,18 @@ public class CodeGenerator {
             templ.setParameter("capFieldName", capFieldName);
             templ.setParameter("propertyName", propertyName);
             templ.setParameter("fieldType", fieldType);
+            templ.setParameter("keyType", keyType);
+            templ.setParameter("elementType", elementType);
             templ.setParameter("fieldValue", fieldValue);
             decs.append(templ.toString());
         } else {
+            if (fieldAccess)
+                writeAnnotations(decs, getFieldAnnotations(fmd), 1);
             decs.tab().append("private ").append(fieldType).
-                append(" ").append(fieldName).append(fieldValue).
-                append(";");
+                append(paramType).append(" ").append(fieldName).
+                append(fieldValue).append(";");
+            if (fieldAccess)
+                decs.endl();
         }
 
         custom = getFieldCode(fmd);
@@ -357,11 +385,16 @@ public class CodeGenerator {
             templ.setParameter("capFieldName", capFieldName);
             templ.setParameter("propertyName", propertyName);
             templ.setParameter("fieldType", fieldType);
+            templ.setParameter("keyType", keyType);
+            templ.setParameter("elementType", elementType);
             templ.setParameter("fieldValue", fieldValue);
             code.append(templ.toString());
         } else {
             // getter
-            code.tab().append("public ").append(fieldType).append(" ");
+            if (!fieldAccess)
+                writeAnnotations(code, getFieldAnnotations(fmd), 1);
+            code.tab().append("public ").append(fieldType).append(paramType).
+                 append(" ");
             if ("boolean".equalsIgnoreCase(fieldType))
                 code.append("is");
             else
@@ -374,8 +407,8 @@ public class CodeGenerator {
 
             // setter
             code.tab().append("public void set").append(capFieldName);
-            code.openParen(true).append(fieldType).append(" ").
-                append(propertyName).closeParen();
+            code.openParen(true).append(fieldType).append(paramType).
+                append(" ").append(propertyName).closeParen();
             code.openBrace(2).endl();
             code.tab(2);
             if (propertyName.equals(fieldName))
@@ -403,6 +436,7 @@ public class CodeGenerator {
             append(" * ").append(getClass().getName()).endl().
             append(" */").endl();
 
+        writeAnnotations(code, getClassAnnotations(), 0);
         code.append("public class ").append(className);
         if (extendsName.length() > 0)
             code.extendsDec(1).append(" ").append(extendsName);
@@ -424,6 +458,21 @@ public class CodeGenerator {
         closeClassBrace(code);
 
         return code.toString();
+    }
+
+    /**
+     * Appends the given list of annotations to code buffer.
+     */
+    private void writeAnnotations (CodeFormat code, List ann,
+        int tabLevel) {
+        if (ann == null || ann.size() == 0)
+            return;
+        for (Iterator i = ann.iterator(); i.hasNext();) {
+            if (tabLevel > 0)
+                code.tab(tabLevel);
+            String s = (String) i.next();
+            code.append(s).endl();
+        }
     }
 
     /**
@@ -503,6 +552,9 @@ public class CodeGenerator {
      * <li>${capFieldName}: The capitalized field name.</li>
      * <li>${propertyName}: The field name without leading '_', if any.</li>
      * <li>${fieldType}: The field's type name.</li>
+     * <li>${keyType}: Key type name for maps, null otherwise.</li>
+     * <li>${elementType}: Element type name for collections, null otherwise.
+     * </li>
      * <li>${fieldValue}: The field's initial value, in the form
      * " = &lt;value&gt;", or empty string if none.</li>
      * </ul> Returns null by default.
@@ -521,6 +573,9 @@ public class CodeGenerator {
      * <li>${capFieldName}: The capitalized field name.</li>
      * <li>${propertyName}: The field name without leading '_', if any.</li>
      * <li>${fieldType}: The field's type name.</li>
+     * <li>${keyType}: Key type name for maps, null otherwise.</li>
+     * <li>${elementType}: Element type name for collections, null otherwise.
+     * </li>
      * <li>${fieldValue}: The field's initial value, in the form
      * "= &lt;value&gt;", or empty string if none.</li>
      * </ul>
@@ -529,4 +584,37 @@ public class CodeGenerator {
 	{
 		return null;
 	}
+
+    /**
+     * Whether to use property-based access on generated code.
+     * Defaults to false (field-based).
+     */    
+    protected boolean usePropertyBasedAccess () {
+        return false;
+    }
+
+    /**
+     * Return class-level annotations. Returns null by default.
+     */
+    protected List getClassAnnotations() {
+        return null;
+    }
+
+    /**
+     * Return field-level annotations. Returns null by default.
+     */
+    protected List getFieldAnnotations(FieldMetaData field) {
+        return null;
+    }
+
+    /**
+     * Whether to use generic collections on one-to-many and many-to-many
+     * relations instead of untyped collections.
+     *
+     * Override in descendants to change default behavior.
+     */
+    protected boolean useGenericCollections() {
+        return false;
+    }
+
 }

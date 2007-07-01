@@ -192,7 +192,10 @@ public abstract class AbstractCFMetaDataFactory
         Parser parser;
         if (mode != MODE_QUERY) {
             int sermode = (isMappingOnlyFactory()) ? mode : mode | MODE_META;
-            ser = newSerializer();
+            if ((mode & MODE_ANN_MAPPING) != 0)
+                ser = newAnnotationSerializer();
+            else
+                ser = newSerializer();
             ser.setMode(sermode);
             if (metaFiles != null) {
                 parser = newParser(false);
@@ -231,7 +234,10 @@ public abstract class AbstractCFMetaDataFactory
             for (int i = 0; !qFiles && i < queries.length; i++)
                 qFiles = queries[i].getSourceMode() == MODE_QUERY;
             if (qFiles) {
-                ser = newSerializer();
+                if ((mode & MODE_ANN_MAPPING) != 0)
+                    ser = newAnnotationSerializer();
+                else
+                    ser = newSerializer();
                 ser.setMode(MODE_QUERY);
                 if (queryFiles != null) {
                     parser = newParser(false);
@@ -542,6 +548,11 @@ public abstract class AbstractCFMetaDataFactory
      * Create a new metadata serializer.
      */
     protected abstract Serializer newSerializer();
+
+    /**
+     * Create a new annotation metadata serializer.
+     */
+    protected abstract Serializer newAnnotationSerializer();
 
     /**
      * Return the metadata that defines the given query, if any.

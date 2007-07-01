@@ -123,6 +123,14 @@ public class ReverseMappingToolTask
     }
 
     /**
+     * Set whether to use generic collections on one-to-many and many-to-many
+     * relations instead of untyped collections.
+     */
+    public void setUseGenericCollections(boolean useGenericCollections) {
+        flags.useGenericCollections = useGenericCollections; 
+    }
+
+    /**
      * Set the SQL type map overrides.
      */
     public void setTypeMap(String typeMap) {
@@ -202,6 +210,22 @@ public class ReverseMappingToolTask
     }
 
     /**
+     * Whether to generate annotations along with generated code. Defaults
+     * to false.
+     */
+    public void setGenerateAnnotations(boolean genAnnotations) {
+        flags.generateAnnotations = genAnnotations;
+    }
+
+    /**
+     * Whether to use field or property-based access on generated code.
+     * Defaults to field-based access.
+     */
+    public void setAccessType(AccessType accessType) {
+        flags.accessType = accessType.getValue();
+    }
+    
+    /**
      * Set a customizer class to use.
      */
     public void setCustomizerClass(String customizerClass) {
@@ -255,6 +279,18 @@ public class ReverseMappingToolTask
             return new String[]{
                 "package",
                 "class",
+                "none"
+            };
+        }
+    }
+
+    public static class AccessType
+        extends EnumeratedAttribute {
+
+        public String[] getValues() {
+            return new String[]{
+                "field",
+                "property"
             };
         }
     }

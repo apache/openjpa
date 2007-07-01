@@ -136,8 +136,15 @@ public class ReverseMappingTool
      */
     public static final int TABLE_SUBCLASS = 5;
 
+    public static final String LEVEL_NONE = "none";
     public static final String LEVEL_PACKAGE = "package";
     public static final String LEVEL_CLASS = "class";
+
+    /**
+     * Access type for generated source, defaults to field-based access.
+     */
+    public static final String ACCESS_TYPE_FIELD = "field";
+    public static final String ACCESS_TYPE_PROPERTY = "property";
 
     private static Localizer _loc = Localizer.forPackage
         (ReverseMappingTool.class);
@@ -176,6 +183,7 @@ public class ReverseMappingTool
     private SchemaGroup _schema = null;
     private boolean _nullAsObj = false;
     private boolean _blobAsObj = false;
+    private boolean _useGenericColl = false;
     private Properties _typeMap = null;
     private boolean _useFK = false;
     private boolean _useSchema = false;
@@ -186,6 +194,8 @@ public class ReverseMappingTool
     private String _idSuffix = "Id";
     private boolean _inverse = true;
     private boolean _detachable = false;
+    private boolean _genAnnotations = false;
+    private String _accessType = ACCESS_TYPE_FIELD;
     private CodeFormat _format = null;
     private ReverseCustomizer _custom = null;
     private String _discStrat = null;
@@ -195,6 +205,9 @@ public class ReverseMappingTool
     // the customizer so that we don't attempt to use them again; doing so can
     // mess up certain customizers (bug 881)
     private Set _abandonedFieldNames = null;
+
+    // generated annotations, key = metadata, val = list of annotations
+    private Map _annos = null;
 
     /**
      * Constructor. Supply configuration.
@@ -324,6 +337,22 @@ public class ReverseMappingTool
      */
     public void setBlobAsObject(boolean blobAsObj) {
         _blobAsObj = blobAsObj;
+    }
+
+    /**
+     * Whether to use generic collections on one-to-many and many-to-many
+     * relations instead of untyped collections.
+     */
+    public boolean getUseGenericCollections() {
+        return _useGenericColl;
+    }
+
+    /**
+     * Whether to use generic collections on one-to-many and many-to-many
+     * relations instead of untyped collections.
+     */
+    public void setUseGenericCollections(boolean useGenericCollections) {
+        _useGenericColl = useGenericCollections; 
     }
 
     /**
@@ -476,6 +505,39 @@ public class ReverseMappingTool
      */
     public void setVersionStrategy(String versionStrat) {
         _versStrat = versionStrat;
+    }
+
+    /**
+     * Whether to generate annotations along with generated code. Defaults
+     * to false.
+     */
+    public boolean getGenerateAnnotations() {
+        return _genAnnotations;
+    }
+
+    /**
+     * Whether to generate annotations along with generated code. Defaults
+     * to false.
+     */
+    public void setGenerateAnnotations(boolean genAnnotations) {
+        _genAnnotations = genAnnotations;
+    }
+
+    /**
+     * Whether to use field or property-based access on generated code.
+     * Defaults to field-based access.
+     */
+    public String getAccessType() {
+        return _accessType;
+    }
+
+    /**
+     * Whether to use field or property-based access on generated code.
+     * Defaults to field-based access.
+     */
+    public void setAccessType(String accessType) {
+        this._accessType = ACCESS_TYPE_PROPERTY.equalsIgnoreCase(accessType) ?
+            ACCESS_TYPE_PROPERTY : ACCESS_TYPE_FIELD;
     }
 
     /**
@@ -784,7 +846,11 @@ public class ReverseMappingTool
                 _log.info(_loc.get("class-code", mappings[i]));
 
             ApplicationIdTool aid = newApplicationIdTool(mappings[i]);
-            gen = new ReverseCodeGenerator(mappings[i], aid);
+            if (getGenerateAnnotations())
+                gen = new AnnotatedCodeGenerator(mappings[i], aid);
+            else
+                gen = new ReverseCodeGenerator(mappings[i], aid);
+
             gen.generateCode();
 
             if (output == null) {
@@ -850,6 +916,31 @@ public class ReverseMappingTool
             if (mappings[i].getSourceFile() != null)
                 files.add(mappings[i].getSourceFile());
         return files;
+    }
+
+    public void buildAnnotations() {
+        Map output = new HashMap();
+        // pretend mappings are all resolved
+        ClassMapping[] mappings = getMappings();
+        for (int i = 0; i < mappings.length; i++)
+            mappings[i].setResolve(MODE_META | MODE_MAPPING, true);
+
+        // store in user's configured IO
+        MetaDataFactory mdf = _conf.newMetaDataFactoryInstance();
+        mdf.setRepository(getRepository());
+        mdf.setStoreDirectory(_dir);
+        mdf.store(mappings, new QueryMetaData[0], new SequenceMetaData[0],
+            MODE_META | MODE_MAPPING | MODE_ANN_MAPPING, output);
+        _annos = output;
+    }
+
+    /**
+     * Returns a list of stringified annotations for specified meta.
+     */
+    protected List getAnnotationsForMeta(Object meta) {
+        if (null == _annos)
+            return null;
+        return (List) _annos.get(meta);
     }
 
     /**
@@ -1619,6 +1710,7 @@ public class ReverseMappingTool
         tool.setUseForeignKeyName(getUseForeignKeyName());
         tool.setNullableAsObject(getNullableAsObject());
         tool.setBlobAsObject(getBlobAsObject());
+        tool.setUseGenericCollections(getUseGenericCollections());
         tool.setPrimaryKeyOnJoin(getPrimaryKeyOnJoin());
         tool.setUseDataStoreIdentity(getUseDataStoreIdentity());
         tool.setUseBuiltinIdentityClass(getUseBuiltinIdentityClass());
@@ -1626,6 +1718,7 @@ public class ReverseMappingTool
         tool.setIdentityClassSuffix(getIdentityClassSuffix());
         tool.setInverseRelations(getInverseRelations());
         tool.setDetachable(getDetachable());
+        tool.setGenerateAnnotations(getGenerateAnnotations());
         tool.setCustomizer(getCustomizer());
         tool.setCodeFormat(getCodeFormat());
         return tool;
@@ -1667,6 +1760,9 @@ public class ReverseMappingTool
      * type instead.</li>
      * <li><i>-blobAsObject/-bo &lt;true/t | false/f&gt;</i>: Set to true
      * to make all binary columns map to Object rather than byte[].</li>
+     * <li><i>-useGenericCollections/-gc &lt;true/t | false/f&gt;</i>: Set to
+     * true to use generic collections on OneToMany and ManyToMany relations
+     * (requires JDK 1.5 or higher).</li>
      * <li><i>-typeMap/-typ &lt;types&gt;</i>: Default mapping of SQL type
      * names to Java classes.</li>
      * <li><i>-primaryKeyOnJoin/-pkj &lt;true/t | false/f&gt;</i>: Set to true
@@ -1690,9 +1786,13 @@ public class ReverseMappingTool
      * discriminator strategy to place on base classes.</li>
      * <li><i>-versionStrategy/-vs &lt;strategy&gt;</i>: The default
      * version strategy to place on base classes.</li>
-     * <li><i>-metadata/-md &lt;class | package&gt;</i>: Specify the level the
-     * metadata should be generated at. Defaults to generating a
+     * <li><i>-metadata/-md &lt;class | package | none&gt;</i>: Specify the
+     * level the metadata should be generated at. Defaults to generating a
      * single package-level metadata file.</li>
+     * <li><i>-annotations/-ann &lt;true/t | false/f&gt;</i>: Set to true to
+     * generate JPA annotations in generated code.</li>
+     * <li><i>-accessType/-access &lt;field | property&gt;</i>: Change access
+     * type for generated annotations. Defaults to field access.</li>
      * <li><i>-customizerClass/-cc &lt;class name&gt;</i>: The full class
      * name of a {@link ReverseCustomizer} implementation to use to
      * customize the reverse mapping process. Optional.</li>
@@ -1749,6 +1849,8 @@ public class ReverseMappingTool
             ("nullableAsObject", "no", flags.nullableAsObject);
         flags.blobAsObject = opts.removeBooleanProperty
             ("blobAsObject", "bo", flags.blobAsObject);
+        flags.useGenericCollections = opts.removeBooleanProperty
+            ("useGenericCollections", "gc", flags.useGenericCollections);
         flags.primaryKeyOnJoin = opts.removeBooleanProperty
             ("primaryKeyOnJoin", "pkj", flags.primaryKeyOnJoin);
         flags.useDataStoreIdentity = opts.removeBooleanProperty
@@ -1768,7 +1870,11 @@ public class ReverseMappingTool
         flags.versionStrategy = opts.removeProperty
             ("versionStrategy", "vs", flags.versionStrategy);
         flags.metaDataLevel = opts.removeProperty
-            ("metadata", "md", flags.metaDataLevel);
+            ("metadata", "md", flags.metaDataLevel);        
+        flags.generateAnnotations = opts.removeBooleanProperty
+            ("annotations", "ann", flags.generateAnnotations);
+        flags.accessType = opts.removeProperty
+            ("accessType", "access", flags.accessType);
 
         String typeMap = opts.removeProperty("typeMap", "typ", null);
         if (typeMap != null)
@@ -1869,6 +1975,7 @@ public class ReverseMappingTool
         tool.setUseForeignKeyName(flags.useForeignKeyName);
         tool.setNullableAsObject(flags.nullableAsObject);
         tool.setBlobAsObject(flags.blobAsObject);
+        tool.setUseGenericCollections(flags.useGenericCollections);
         tool.setTypeMap(flags.typeMap);
         tool.setPrimaryKeyOnJoin(flags.primaryKeyOnJoin);
         tool.setUseDataStoreIdentity(flags.useDataStoreIdentity);
@@ -1877,16 +1984,24 @@ public class ReverseMappingTool
         tool.setIdentityClassSuffix(flags.identityClassSuffix);
         tool.setInverseRelations(flags.inverseRelations);
         tool.setDetachable(flags.detachable);
+        tool.setGenerateAnnotations(flags.generateAnnotations);
+        tool.setAccessType(flags.accessType);
         tool.setCustomizer(flags.customizer);
         tool.setCodeFormat(flags.format);
 
         // run
         log.info(_loc.get("revtool-map"));
         tool.run();
+        if (flags.generateAnnotations) {
+            log.info(_loc.get("revtool-gen-annos"));
+            tool.buildAnnotations();
+        }
         log.info(_loc.get("revtool-write-code"));
         tool.recordCode();
-        log.info(_loc.get("revtool-write-metadata"));
-        tool.recordMetaData(LEVEL_CLASS.equals(flags.metaDataLevel));
+        if (!LEVEL_NONE.equals(flags.metaDataLevel)) {
+            log.info(_loc.get("revtool-write-metadata"));
+            tool.recordMetaData(LEVEL_CLASS.equals(flags.metaDataLevel));
+        }
     }
 
     /**
@@ -1900,6 +2015,7 @@ public class ReverseMappingTool
         public boolean useForeignKeyName = false;
         public boolean nullableAsObject = false;
         public boolean blobAsObject = false;
+        public boolean useGenericCollections = false;
         public Properties typeMap = null;
         public boolean primaryKeyOnJoin = false;
         public boolean useDataStoreIdentity = false;
@@ -1908,6 +2024,8 @@ public class ReverseMappingTool
         public String identityClassSuffix = "Id";
         public boolean inverseRelations = true;
         public boolean detachable = false;
+        public boolean generateAnnotations = false;
+        public String accessType = ACCESS_TYPE_FIELD;
         public String metaDataLevel = LEVEL_PACKAGE;
         public String discriminatorStrategy = null;
         public String versionStrategy = null;
@@ -1983,8 +2101,8 @@ public class ReverseMappingTool
     private class ReverseCodeGenerator
         extends CodeGenerator {
 
-        private final ClassMapping _mapping;
-        private final ApplicationIdTool _appid;
+        protected final ClassMapping _mapping;
+        protected final ApplicationIdTool _appid;
 
         public ReverseCodeGenerator(ClassMapping mapping,
             ApplicationIdTool aid) {
@@ -2046,5 +2164,37 @@ public class ReverseMappingTool
                 return null;
             return _custom.getFieldCode((FieldMapping) field);
         }
+
+        protected boolean useGenericCollections() {
+            return _useGenericColl;
+        }
+    }
+
+    private class AnnotatedCodeGenerator
+        extends ReverseCodeGenerator {
+
+        public AnnotatedCodeGenerator (ClassMapping mapping,
+            ApplicationIdTool aid) {
+            super (mapping, aid);
+        }
+
+        public Set getImportPackages() {
+            Set pkgs = super.getImportPackages();
+            pkgs.add("javax.persistence");
+            return pkgs;
+        }
+
+        protected List getClassAnnotations() {
+            return getAnnotationsForMeta(_mapping);
+        }
+
+        protected List getFieldAnnotations(FieldMetaData field) {
+            return getAnnotationsForMeta(field);
+        }
+
+        protected boolean usePropertyBasedAccess () {
+            return ACCESS_TYPE_PROPERTY.equals(_accessType);
+        }
+
     }
 }
