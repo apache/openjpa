@@ -717,7 +717,7 @@ public class ObjectIdStateManager
                         getMetaData().getDescribedType()));
             } catch (Exception e) {
                 if (e instanceof PrivilegedActionException)
-                    e = ((PrivilegedActionException)e).getException();
+                    e = ((PrivilegedActionException) e).getException();
                 throw new GeneralException(e);
             }
         } else if (_oid == null)

@@ -40,15 +40,15 @@ public class ClassResolverImpl
         // class (the bootstrap loader is the parent of the system loader)
         ClassLoader contextLoader = null;
         if (contextClass != null) {
-            contextLoader = (ClassLoader)AccessController.doPrivileged( 
+            contextLoader = (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getClassLoaderAction(contextClass)); 
             if (contextLoader == null)
-                contextLoader = (ClassLoader)AccessController.doPrivileged( 
+                contextLoader = (ClassLoader) AccessController.doPrivileged(
                     J2DoPrivHelper.getSystemClassLoaderAction()); 
         }
 
         // if there is only one unique loader, just return it
-        ClassLoader threadLoader = (ClassLoader)AccessController.doPrivileged( 
+        ClassLoader threadLoader = (ClassLoader) AccessController.doPrivileged(
             J2DoPrivHelper.getContextClassLoaderAction());
         if ((contextLoader == null || contextLoader == threadLoader)
             && (envLoader == null || envLoader == threadLoader))

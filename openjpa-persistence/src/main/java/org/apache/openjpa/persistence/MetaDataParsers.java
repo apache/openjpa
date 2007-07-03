@@ -77,7 +77,7 @@ class MetaDataParsers {
         for (LifecycleCallbacks lc: callbacks) {
             if (!(lc instanceof MethodLifecycleCallbacks))
                 continue;
-            Method exists = ((MethodLifecycleCallbacks)lc).getCallbackMethod();
+            Method exists = ((MethodLifecycleCallbacks) lc).getCallbackMethod();
             if (!exists.getDeclaringClass().equals(method.getDeclaringClass()))
                 continue;
 

@@ -1251,7 +1251,7 @@ public class FieldMetaData
             if (e instanceof OpenJPAException)
                 throw (OpenJPAException) e;
             if (e instanceof PrivilegedActionException)
-                e = ((PrivilegedActionException)e).getException();
+                e = ((PrivilegedActionException) e).getException();
             throw new MetaDataException(_loc.get("factory-err", this,
                 Exceptions.toString(val), e.toString())).setCause(e);
         }
@@ -1975,7 +1975,7 @@ public class FieldMetaData
                 IOException ioe = new IOException(e.getMessage());
                 ioe.initCause(e);
                 throw ioe;
-            } catch( PrivilegedActionException pae ) {
+            } catch (PrivilegedActionException pae) {
                 IOException ioe = new IOException(
                     pae.getException().getMessage());
                 ioe.initCause(pae);

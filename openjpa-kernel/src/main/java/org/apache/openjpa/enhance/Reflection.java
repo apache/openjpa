@@ -118,8 +118,8 @@ public class Reflection {
      */
     private static Method getDeclaredMethod(Class cls, String name,
         Class param) {
-        Method[] methods = (Method[])AccessController.doPrivileged( 
-            J2DoPrivHelper.getDeclaredMethodsAction( cls ));
+        Method[] methods = (Method[]) AccessController.doPrivileged(
+            J2DoPrivHelper.getDeclaredMethodsAction(cls));
         for (int i = 0 ; i < methods.length; i++) {
     	    if (name.equals(methods[i].getName())) {
                 Class[] methodParams = methods[i].getParameterTypes();
@@ -163,8 +163,8 @@ public class Reflection {
      * @since 0.9.8
      */
     private static Field getDeclaredField(Class cls, String name) {
-        Field[] fields = (Field[])AccessController.doPrivileged( 
-            J2DoPrivHelper.getDeclaredFieldsAction( cls ));
+        Field[] fields = (Field[]) AccessController.doPrivileged(
+            J2DoPrivHelper.getDeclaredFieldsAction(cls));
         for (int i = 0 ; i < fields.length; i++) {
     	    if (name.equals(fields[i].getName()))
 		        return fields[i];

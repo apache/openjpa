@@ -165,7 +165,7 @@ public class ConfigurationImpl
      */
     public boolean loadGlobals() {
         MultiClassLoader loader = new MultiClassLoader();
-        loader.addClassLoader((ClassLoader)AccessController.doPrivileged( 
+        loader.addClassLoader((ClassLoader) AccessController.doPrivileged(
             J2DoPrivHelper.getContextClassLoaderAction()));
         loader.addClassLoader(getClass().getClassLoader());
         ConfigurationProvider provider = ProductDerivations.loadGlobals(loader);
@@ -175,7 +175,7 @@ public class ConfigurationImpl
         // let system properties override other globals
         try {
             fromProperties(new HashMap(
-                (Properties)AccessController.doPrivileged( 
+                (Properties) AccessController.doPrivileged(
                     J2DoPrivHelper.getPropertiesAction())));
         } catch (SecurityException se) {
             // security manager might disallow
@@ -418,7 +418,7 @@ public class ConfigurationImpl
                 descs.add(new MethodDescriptor(read));
             }
         }
-        _mds = (MethodDescriptor[])descs.
+        _mds = (MethodDescriptor[]) descs.
             toArray(new MethodDescriptor[descs.size()]);
         return _mds;
     }

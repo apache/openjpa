@@ -127,7 +127,8 @@ class ConstPath
             action = itr.next();
             if (action instanceof Class) {
                 try {
-                    cstate.value = Filters.convert(cstate.value, (Class)action);
+                    cstate.value = Filters.convert(cstate.value,
+                        (Class) action);
                     continue;
                 } catch (ClassCastException cce) {
                     failed = true;

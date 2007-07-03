@@ -59,8 +59,8 @@ public class TestSelectForUpdateOverride
             em.find(AllFieldTypes.class, 0);
             assertEquals(1, sql.size());
             if (dict instanceof DB2Dictionary) {
-                if ((((DB2Dictionary)dict).getDb2ServerType() == 1)
-                    || (((DB2Dictionary)dict).getDb2ServerType()== 2)) {
+                if ((((DB2Dictionary) dict).getDb2ServerType() == 1)
+                    || (((DB2Dictionary) dict).getDb2ServerType()== 2)) {
                     assertEquals(1, sql.size());
                     assertSQL("SELECT t0.booleanField, t0.byteField, "
                         + "t0.charField, t0.dateField, t0.doubleField,"
@@ -70,8 +70,8 @@ public class TestSelectForUpdateOverride
                         + " FOR UPDATE OF optimize for 1 row");
                 }
                 // it is DB2 v82 or later
-                else if ((((DB2Dictionary)dict).getDb2ServerType() == 3)
-                    || (((DB2Dictionary)dict).getDb2ServerType() == 4)) {
+                else if ((((DB2Dictionary) dict).getDb2ServerType() == 3)
+                    || (((DB2Dictionary) dict).getDb2ServerType() == 4)) {
                     assertEquals(1, sql.size());
                     assertSQL("SELECT t0.booleanField, t0.byteField, "
                         + "t0.charField, t0.dateField, t0.doubleField,"
@@ -81,7 +81,7 @@ public class TestSelectForUpdateOverride
                         + " FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS" 
                         + " optimize for 1 row");
                 }
-                else if (((DB2Dictionary)dict).getDb2ServerType() == 5) {
+                else if (((DB2Dictionary) dict).getDb2ServerType() == 5) {
                     assertEquals(1, sql.size());
                     assertSQL("SELECT t0.booleanField, t0.byteField, "
                         + "t0.charField, t0.dateField, t0.doubleField,"

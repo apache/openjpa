@@ -64,7 +64,7 @@ public class Main {
 
         // Go through each of the entities and print out each of their
         // messages, as well as the date on which it was created 
-        for (Message m : (List<Message>)q.getResultList()) {
+        for (Message m : (List<Message>) q.getResultList()) {
             System.out.println(m.getMessage()
                 + " (created on: " + m.getCreated() + ")"); 
         }

@@ -476,7 +476,7 @@ public class DB2Dictionary
                     "[Errp=" + getSqlErrpMethd.invoke(sqlca, new Object[]{})
                     + ", Errd=" + errdStr);
 
-            String Warn = new String((char[])getSqlWarnMethd.
+            String Warn = new String((char[]) getSqlWarnMethd.
                     invoke(sqlca, new Object[]{}));
             if(Warn.trim().length() != 0)
                 exceptionMsg = exceptionMsg.concat(", Warn=" +Warn + "]" );

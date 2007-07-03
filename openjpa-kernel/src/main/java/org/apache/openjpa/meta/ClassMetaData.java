@@ -845,8 +845,8 @@ public class ClassMetaData
         if (getDeclaredField(field) != null)
             return true;
         if (_staticFields == null) {
-            Field[] fields = (Field[])AccessController.doPrivileged( 
-                J2DoPrivHelper.getDeclaredFieldsAction( _type )); 
+            Field[] fields = (Field[]) AccessController.doPrivileged(
+                J2DoPrivHelper.getDeclaredFieldsAction(_type)); 
             Set names = new HashSet((int) (fields.length * 1.33 + 1));
             for (int i = 0; i < fields.length; i++)
                 if (Modifier.isStatic(fields[i].getModifiers()))

@@ -1419,10 +1419,10 @@ public class ApplicationIdTool {
             name = Strings.getPackageName(context) + "." + name;
 
         // first try with regular class loader
-        ClassLoader loader = (ClassLoader)AccessController.doPrivileged( 
+        ClassLoader loader = (ClassLoader) AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(context)); 
         if (loader == null)
-            loader = (ClassLoader)AccessController.doPrivileged( 
+            loader = (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction()); 
         try {
             return Class.forName(name, false, loader);

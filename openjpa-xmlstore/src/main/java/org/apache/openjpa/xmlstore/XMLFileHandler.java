@@ -80,10 +80,10 @@ public class XMLFileHandler {
      */
     public Collection load(ClassMetaData meta) {
         File f = getFile(meta);
-        if (!((Boolean)AccessController.doPrivileged( 
-            J2DoPrivHelper.existsAction( f ))).booleanValue() || 
-            ((Long)AccessController.doPrivileged( 
-            J2DoPrivHelper.lengthAction( f ))).longValue() == 0)
+        if (!((Boolean) AccessController.doPrivileged(
+            J2DoPrivHelper.existsAction(f))).booleanValue() || 
+            ((Long) AccessController.doPrivileged(
+            J2DoPrivHelper.lengthAction(f))).longValue() == 0)
             return Collections.EMPTY_SET;
         try {
             return read(f);
@@ -133,10 +133,10 @@ public class XMLFileHandler {
             throw new InternalException();
 
         File f = getFile(meta);
-        if (!((Boolean)AccessController.doPrivileged( 
-            J2DoPrivHelper.existsAction( f.getParentFile() ))).booleanValue())
-            AccessController.doPrivileged( 
-                J2DoPrivHelper.mkdirsAction( f.getParentFile() ));
+        if (!((Boolean) AccessController.doPrivileged(
+            J2DoPrivHelper.existsAction(f.getParentFile()))).booleanValue())
+            AccessController.doPrivileged(
+                J2DoPrivHelper.mkdirsAction(f.getParentFile()));
 
         FileWriter fw = null;
         try {

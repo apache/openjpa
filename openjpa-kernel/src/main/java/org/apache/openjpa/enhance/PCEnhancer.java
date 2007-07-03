@@ -133,7 +133,7 @@ public class PCEnhancer {
     static {
         Class[] classes = Services.getImplementorClasses(
             AuxiliaryEnhancer.class, 
-            (ClassLoader)AccessController.doPrivileged( 
+            (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getClassLoaderAction(AuxiliaryEnhancer.class)));
         List auxEnhancers = new ArrayList(classes.length);
         for (int i = 0; i < classes.length; i++) {
@@ -484,7 +484,7 @@ public class PCEnhancer {
      * Package-protected and static for testing.
      */
     static BCField getReturnedField(BCMethod meth) {
-        return findField(meth, ((Code)AccessController.doPrivileged( 
+        return findField(meth, ((Code) AccessController.doPrivileged(
             J2DoPrivHelper.newCodeAction())).xreturn()
             .setType(meth.getReturnType()), false);
     }
@@ -494,7 +494,7 @@ public class PCEnhancer {
      * Package-protected and static for testing.
      */
     static BCField getAssignedField(BCMethod meth) {
-        return findField(meth, ((Code)AccessController.doPrivileged( 
+        return findField(meth, ((Code) AccessController.doPrivileged(
             J2DoPrivHelper.newCodeAction())).putfield(), true);
     }
 
@@ -596,7 +596,7 @@ public class PCEnhancer {
      */
     private void replaceAndValidateFieldAccess() {
         // create template putfield/getfield instructions to search for
-        Code template = (Code)AccessController.doPrivileged( 
+        Code template = (Code) AccessController.doPrivileged(
             J2DoPrivHelper.newCodeAction());
         Instruction put = template.putfield();
         Instruction get = template.getfield();
@@ -1204,55 +1204,55 @@ public class PCEnhancer {
         try {
             // pcGetGenericContext
             translateFromStateManagerMethod(
-                (Method)AccessController.doPrivileged(
+                (Method) AccessController.doPrivileged(
                     J2DoPrivHelper.getDeclaredMethodAction(
                         SMTYPE, "get" + CONTEXTNAME, (Class[]) null)));
     
             // pcFetchObjectId
             translateFromStateManagerMethod(
-                (Method)AccessController.doPrivileged(
+                (Method) AccessController.doPrivileged(
                     J2DoPrivHelper.getDeclaredMethodAction(
                         SMTYPE, "fetchObjectId", (Class[]) null)));
     
             // pcIsDeleted
             translateFromStateManagerMethod(
-                (Method)AccessController.doPrivileged(
+                (Method) AccessController.doPrivileged(
                     J2DoPrivHelper.getDeclaredMethodAction(
                         SMTYPE, "isDeleted", (Class[]) null)));
     
             // pcIsDirty
             translateFromStateManagerMethod(
-                (Method)AccessController.doPrivileged(
+                (Method) AccessController.doPrivileged(
                     J2DoPrivHelper.getDeclaredMethodAction(
                         SMTYPE, "isDirty", (Class[]) null)));
     
             // pcIsNew
             translateFromStateManagerMethod(
-                (Method)AccessController.doPrivileged(
+                (Method) AccessController.doPrivileged(
                     J2DoPrivHelper.getDeclaredMethodAction(
                         SMTYPE, "isNew", (Class[]) null)));
     
             // pcIsPersistent
             translateFromStateManagerMethod(
-                (Method)AccessController.doPrivileged(
+                (Method) AccessController.doPrivileged(
                     J2DoPrivHelper.getDeclaredMethodAction(
                         SMTYPE, "isPersistent", (Class[]) null)));
     
             // pcIsTransactional
             translateFromStateManagerMethod(
-                (Method)AccessController.doPrivileged(
+                (Method) AccessController.doPrivileged(
                     J2DoPrivHelper.getDeclaredMethodAction(
                         SMTYPE, "isTransactional", (Class[]) null)));
     
             // pcSerializing
             translateFromStateManagerMethod(
-                (Method)AccessController.doPrivileged(
+                (Method) AccessController.doPrivileged(
                     J2DoPrivHelper.getDeclaredMethodAction(
                         SMTYPE, "serializing", (Class[]) null)));
     
             // pcDirty
             translateFromStateManagerMethod(
-                (Method)AccessController.doPrivileged(
+                (Method) AccessController.doPrivileged(
                     J2DoPrivHelper.getDeclaredMethodAction(
                         SMTYPE, "dirty", new Class[]{ String.class })));
     
@@ -1265,8 +1265,8 @@ public class PCEnhancer {
             code.areturn();
             code.calculateMaxStack();
             code.calculateMaxLocals();
-        } catch( PrivilegedActionException pae ) {
-             throw (NoSuchMethodException)pae.getException();
+        } catch (PrivilegedActionException pae) {
+             throw (NoSuchMethodException) pae.getException();
         }
     }
 
@@ -2195,8 +2195,8 @@ public class PCEnhancer {
         try {
             method = (Method) AccessController.doPrivileged(
                 J2DoPrivHelper.getDeclaredMethodAction(owner, name, params));
-        } catch( PrivilegedActionException pae ) {
-             throw (NoSuchMethodException)pae.getException();
+        } catch (PrivilegedActionException pae) {
+             throw (NoSuchMethodException) pae.getException();
         }
         return method;
     }
@@ -2497,7 +2497,7 @@ public class PCEnhancer {
             code.vreturn();
         }
 
-        Instruction tmplate = ((Code)AccessController.doPrivileged( 
+        Instruction tmplate = ((Code) AccessController.doPrivileged(
             J2DoPrivHelper.newCodeAction())).vreturn();
         JumpInstruction toret;
         Instruction ret;
@@ -2766,7 +2766,7 @@ public class PCEnhancer {
         if (clinit != null) {
             code = clinit.getCode(true);
             if (replaceLast) {
-                Code template = (Code)AccessController.doPrivileged( 
+                Code template = (Code) AccessController.doPrivileged(
                     J2DoPrivHelper.newCodeAction());
                 code.searchForward(template.vreturn());
                 code.previous();
@@ -2808,8 +2808,8 @@ public class PCEnhancer {
         if (clone == null) {
             // add clone support for base classes
             // which also implement cloneable
-            if (!((Boolean)AccessController.doPrivileged( 
-                    J2DoPrivHelper.isInstanceOfAction( _pc, Cloneable.class )))
+            if (!((Boolean) AccessController.doPrivileged(
+                    J2DoPrivHelper.isInstanceOfAction(_pc, Cloneable.class)))
                     .booleanValue()
                 || !superName.equals(Object.class.getName()))
                 return;
@@ -2838,7 +2838,7 @@ public class PCEnhancer {
         }
 
         // create template super.clone () instruction to match against
-        Instruction template = ((Code)AccessController.doPrivileged( 
+        Instruction template = ((Code) AccessController.doPrivileged(
             J2DoPrivHelper.newCodeAction())).invokespecial()
             .setMethod(superName, "clone", Object.class.getName(), null);
 

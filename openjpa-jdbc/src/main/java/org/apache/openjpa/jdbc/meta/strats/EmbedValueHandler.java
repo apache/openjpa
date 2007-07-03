@@ -60,7 +60,7 @@ public abstract class EmbedValueHandler
         for (int i = 0; i < fms.length; i++) {
             if (fms[i].getManagement() != FieldMapping.MANAGE_PERSISTENT)
                 continue;
-            if (!(fms[i].getStrategy()instanceof Embeddable))
+            if (!(fms[i].getStrategy() instanceof Embeddable))
                 throw new MetaDataException(_loc.get("not-embeddable",
                     vm, fms[i]));
 

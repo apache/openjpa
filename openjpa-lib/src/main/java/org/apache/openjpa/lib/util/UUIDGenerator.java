@@ -88,7 +88,7 @@ public class UUIDGenerator {
     // when it overflows
     private static long _lastMillis = 0L;
     private static final int MAX_14BIT = 0x3FFF;
-    private static short _seq = (short)RANDOM.nextInt(MAX_14BIT);
+    private static short _seq = (short) RANDOM.nextInt(MAX_14BIT);
 
     /*
      * Static initializer to get the IP address of the host machine.
@@ -216,7 +216,7 @@ public class UUIDGenerator {
     private static void incrementSequence() {
         // increment, but if it's greater than its 14-bits, reset it
         if (++_seq > MAX_14BIT) {
-            _seq = (short)RANDOM.nextInt(MAX_14BIT);  // semi-random
+            _seq = (short) RANDOM.nextInt(MAX_14BIT);  // semi-random
         }
     }
 

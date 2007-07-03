@@ -1078,12 +1078,12 @@ public class MappingTool
             Class[] types = Services.getImplementorClasses(ImportExport.class);
             ImportExport[] instances = new ImportExport[types.length];
             for (int i = 0; i < types.length; i++)
-                instances[i] = (ImportExport)AccessController.doPrivileged(
+                instances[i] = (ImportExport) AccessController.doPrivileged(
                     J2DoPrivHelper.newInstanceAction(types[i]));
             return instances;
         } catch (Throwable t) {
             if (t instanceof PrivilegedActionException)
-                t = ((PrivilegedActionException)t).getException();
+                t = ((PrivilegedActionException) t).getException();
             throw new InternalException(_loc.get("importexport-instantiate"),t);
         }
     }

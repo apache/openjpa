@@ -109,7 +109,7 @@ public class PersistenceProductDerivation
     @Override
     public boolean afterSpecificationSet(Configuration c) {
       if (!(c instanceof OpenJPAConfigurationImpl)
-         || !SPEC_JPA.equals(((OpenJPAConfiguration)c).getSpecification()))
+         || !SPEC_JPA.equals(((OpenJPAConfiguration) c).getSpecification()))
           return false;
  
         OpenJPAConfigurationImpl conf = (OpenJPAConfigurationImpl) c;
@@ -248,23 +248,23 @@ public class PersistenceProductDerivation
         String name, Map m, ClassLoader loader, boolean explicit)
         throws IOException {
         if (loader == null)
-            loader = (ClassLoader)AccessController.doPrivileged( 
+            loader = (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
 
         Enumeration<URL> urls = null;
         try {
-            urls = (Enumeration)AccessController.doPrivileged( 
+            urls = (Enumeration) AccessController.doPrivileged(
                 J2DoPrivHelper.getResourcesAction(loader, rsrc)); 
             if (!urls.hasMoreElements()) {
                 if (!rsrc.startsWith("META-INF"))
-                    urls = (Enumeration)AccessController.doPrivileged( 
+                    urls = (Enumeration) AccessController.doPrivileged(
                         J2DoPrivHelper.getResourcesAction(
                             loader, "META-INF/" + rsrc)); 
                 if (!urls.hasMoreElements())
                     return null;
             }
-        } catch( PrivilegedActionException pae ) {
-            throw (IOException)pae.getException();
+        } catch (PrivilegedActionException pae) {
+            throw (IOException) pae.getException();
         }
 
         ConfigurationParser parser = new ConfigurationParser(m);
@@ -346,7 +346,7 @@ public class PersistenceProductDerivation
             return true;
 
         if (loader == null)
-            loader = (ClassLoader)AccessController.doPrivileged( 
+            loader = (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
         try {
             if (PersistenceProviderImpl.class.isAssignableFrom

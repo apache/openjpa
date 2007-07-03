@@ -361,7 +361,7 @@ public class ClassMappingInfo
         Table table = cm.getTable();
         Collection result = new ArrayList();
         while (uniqueConstraints.hasNext()) {
-            Unique template = (Unique)uniqueConstraints.next();
+            Unique template = (Unique) uniqueConstraints.next();
             Column[] templateColumns = template.getColumns();
             Column[] uniqueColumns = new Column[templateColumns.length];
             boolean missingColumn = true;
@@ -380,7 +380,7 @@ public class ClassMappingInfo
             if (unique != null)
                 result.add(unique);
         }
-        return (Unique[])result.toArray(new Unique[result.size()]);
+        return (Unique[]) result.toArray(new Unique[result.size()]);
     }   
     
     public File getSourceFile() {

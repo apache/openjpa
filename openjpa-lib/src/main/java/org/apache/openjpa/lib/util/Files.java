@@ -51,17 +51,17 @@ public class Files {
      * the file does not exist or a backup could not be created, returns null.
      */
     public static File backup(File file, boolean copy) {
-        if (file == null || !((Boolean)AccessController.doPrivileged( 
-            J2DoPrivHelper.existsAction( file ))).booleanValue())
+        if (file == null || !((Boolean) AccessController.doPrivileged(
+            J2DoPrivHelper.existsAction(file))).booleanValue())
             return null;
 
         // create new file object copy so we don't modify the original
-        String aPath = (String)AccessController.doPrivileged( 
-            J2DoPrivHelper.getAbsolutePathAction( file ));
+        String aPath = (String) AccessController.doPrivileged(
+            J2DoPrivHelper.getAbsolutePathAction(file));
         File clone = new File(aPath);
         File bk = new File(aPath + "~");
-        if (!((Boolean)AccessController.doPrivileged( 
-            J2DoPrivHelper.renameToAction( clone, bk ))).booleanValue())
+        if (!((Boolean) AccessController.doPrivileged(
+            J2DoPrivHelper.renameToAction(clone, bk))).booleanValue())
             return null;
         if (copy) {
             try {
@@ -83,17 +83,17 @@ public class Files {
             return null;
         if (!backup.getName().endsWith("~"))
             backup = new File(backup.getPath() + "~");
-        if (!((Boolean)AccessController.doPrivileged( 
-            J2DoPrivHelper.existsAction( backup ))).booleanValue())
+        if (!((Boolean) AccessController.doPrivileged(
+            J2DoPrivHelper.existsAction(backup))).booleanValue())
             return null;
 
         // create new file object copy so we don't modify the original
-        String path = (String)AccessController.doPrivileged( 
-            J2DoPrivHelper.getAbsolutePathAction( backup )); 
+        String path = (String) AccessController.doPrivileged(
+            J2DoPrivHelper.getAbsolutePathAction(backup)); 
         File clone = new File(path);
         File orig = new File(path.substring(0, path.length() - 1));
-        if (!((Boolean)AccessController.doPrivileged( 
-            J2DoPrivHelper.renameToAction( clone, orig ))).booleanValue())
+        if (!((Boolean) AccessController.doPrivileged(
+            J2DoPrivHelper.renameToAction(clone, orig))).booleanValue())
             return null;
         if (copy) {
             try {
@@ -132,7 +132,7 @@ public class Files {
         if (innerIdx != -1)
             name = name.substring(0, innerIdx);
 
-        URL rsrc = (URL)AccessController.doPrivileged( 
+        URL rsrc = (URL) AccessController.doPrivileged(
             J2DoPrivHelper.getResourceAction(cls, name + ext)); 
         if (rsrc != null && rsrc.getProtocol().equals("file"))
             return new File(URLDecoder.decode(rsrc.getFile()));
@@ -148,34 +148,34 @@ public class Files {
      */
     public static File getPackageFile(File base, String pkg, boolean mkdirs) {
         if (base == null)
-            base = new File((String)AccessController.doPrivileged( 
+            base = new File((String) AccessController.doPrivileged(
                 J2DoPrivHelper.getPropertyAction("user.dir")));
         if (StringUtils.isEmpty(pkg)) {
-            if (mkdirs && !((Boolean)AccessController.doPrivileged( 
-                J2DoPrivHelper.existsAction( base ))).booleanValue())
+            if (mkdirs && !((Boolean) AccessController.doPrivileged(
+                J2DoPrivHelper.existsAction(base))).booleanValue())
                 AccessController.doPrivileged(
-                    J2DoPrivHelper.mkdirsAction( base ));
+                    J2DoPrivHelper.mkdirsAction(base));
             return base;
         }
 
         pkg = pkg.replace('.', File.separatorChar);
         File file = null;
         try {
-            if (((String)AccessController.doPrivileged( 
-                J2DoPrivHelper.getCanonicalPathAction( base ))).endsWith(pkg))
+            if (((String) AccessController.doPrivileged(
+                J2DoPrivHelper.getCanonicalPathAction(base))).endsWith(pkg))
                 file = base;
             else
                 file = new File(base, pkg);
-        } catch( PrivilegedActionException pae ) {
+        } catch (PrivilegedActionException pae) {
             throw new NestableRuntimeException(
-                (IOException)pae.getException());
+                (IOException) pae.getException());
         } catch (IOException ioe) {
             throw new NestableRuntimeException(ioe);
         }
 
-        if (mkdirs && !((Boolean)AccessController.doPrivileged( 
-            J2DoPrivHelper.existsAction( file ))).booleanValue())
-            AccessController.doPrivileged(J2DoPrivHelper.mkdirsAction( file ));
+        if (mkdirs && !((Boolean) AccessController.doPrivileged(
+            J2DoPrivHelper.existsAction(file))).booleanValue())
+            AccessController.doPrivileged(J2DoPrivHelper.mkdirsAction(file));
         return file;
     }
 
@@ -195,21 +195,21 @@ public class Files {
             return null;
 
         File file = new File(name);
-        if (((Boolean)AccessController.doPrivileged( 
-            J2DoPrivHelper.existsAction( file ))).booleanValue())
+        if (((Boolean) AccessController.doPrivileged(
+            J2DoPrivHelper.existsAction(file))).booleanValue())
             return file;
 
         if (loader == null)
-            loader = (ClassLoader)AccessController.doPrivileged( 
+            loader = (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
-        URL url = (URL)AccessController.doPrivileged( 
+        URL url = (URL) AccessController.doPrivileged(
             J2DoPrivHelper.getResourceAction(loader, name)); 
         if (url != null) {
             String urlFile = url.getFile();
             if (urlFile != null) {
                 File rsrc = new File(URLDecoder.decode(urlFile));
-                if (((Boolean)AccessController.doPrivileged( 
-                    J2DoPrivHelper.existsAction( rsrc ))).booleanValue())
+                if (((Boolean) AccessController.doPrivileged(
+                    J2DoPrivHelper.existsAction(rsrc))).booleanValue())
                     return rsrc;
             }
         }
@@ -257,7 +257,7 @@ public class Files {
             return (FileOutputStream) AccessController.doPrivileged(
                 J2DoPrivHelper.newFileOutputStreamAction(
                     getFile(file, loader)));
-        } catch( PrivilegedActionException pae ) {
+        } catch (PrivilegedActionException pae) {
             throw new NestableRuntimeException(pae.getException());
         } catch (IOException ioe) {
             throw new NestableRuntimeException(ioe);
@@ -269,8 +269,8 @@ public class Files {
      */
     public static boolean copy(File from, File to) throws IOException {
         if (from == null || to == null ||
-            !((Boolean)AccessController.doPrivileged( 
-                J2DoPrivHelper.existsAction( from ))).booleanValue())
+            !((Boolean) AccessController.doPrivileged(
+                J2DoPrivHelper.existsAction(from))).booleanValue())
             return false;
 
         FileInputStream in = null;
@@ -285,8 +285,8 @@ public class Files {
             for (int b; (b = inbuf.read()) != -1; outbuf.write(b)) ;
             outbuf.flush();
             return true;
-        } catch( PrivilegedActionException pae ) {
-            throw (FileNotFoundException)pae.getException();
+        } catch (PrivilegedActionException pae) {
+            throw (FileNotFoundException) pae.getException();
         } finally {
             if (in != null)
                 try {

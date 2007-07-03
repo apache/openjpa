@@ -161,7 +161,7 @@ public abstract class AbstractTask extends MatchingTask {
             _conf = newConfiguration();
         if (_conf.getPropertiesResource() == null) {
             ConfigurationProvider cp = ProductDerivations.loadDefaults
-                ((ClassLoader)AccessController.doPrivileged(
+                ((ClassLoader) AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(_conf.getClass())));
             if (cp != null)
                 cp.setInto(_conf);
@@ -191,8 +191,8 @@ public abstract class AbstractTask extends MatchingTask {
                 File f = new File(dsFiles[j]);
                 if (!f.isFile())
                     f = new File(ds.getBasedir(), dsFiles[j]);
-                files.add((String)AccessController.doPrivileged(
-                    J2DoPrivHelper.getAbsolutePathAction( f )));
+                files.add((String) AccessController.doPrivileged(
+                    J2DoPrivHelper.getAbsolutePathAction(f)));
             }
         }
         return (String[]) files.toArray(new String[files.size()]);

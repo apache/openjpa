@@ -82,7 +82,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
             if (cls != null)
             {
                 ClassLoader clsLoader = (ClassLoader)
-                    AccessController.doPrivileged( 
+                    AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(cls));
                 if (clsLoader != null)
                     multi.addClassLoader(clsLoader);
@@ -155,11 +155,11 @@ public class ClassMetaDataIterator implements MetaDataIterator {
             _url = -1;
             _urls.clear();
             try {
-                e = (Enumeration)AccessController.doPrivileged( 
+                e = (Enumeration) AccessController.doPrivileged(
                     J2DoPrivHelper.getResourcesAction(
                         _loader, (String) _locs.get(_loc)));
-            } catch( PrivilegedActionException pae ) {
-                throw (IOException)pae.getException();
+            } catch (PrivilegedActionException pae) {
+                throw (IOException) pae.getException();
             }    
             while (e.hasMoreElements())
                 _urls.add(e.nextElement());
@@ -177,10 +177,10 @@ public class ClassMetaDataIterator implements MetaDataIterator {
         if (_url == -1 || _url >= _urls.size())
             throw new IllegalStateException();
         try {
-            return (InputStream)AccessController.doPrivileged(
+            return (InputStream) AccessController.doPrivileged(
                 J2DoPrivHelper.openStreamAction((URL) _urls.get(_url)));
-        } catch( PrivilegedActionException pae ) {
-            throw (IOException)pae.getException();
+        } catch (PrivilegedActionException pae) {
+            throw (IOException) pae.getException();
         }
     }
 
@@ -189,8 +189,8 @@ public class ClassMetaDataIterator implements MetaDataIterator {
             throw new IllegalStateException();
         File file = new File(URLDecoder.decode(((URL) _urls.get(_url)).
             getFile()));
-        return (((Boolean)AccessController.doPrivileged( 
-            J2DoPrivHelper.existsAction( file ))).booleanValue()) ? file:null;
+        return (((Boolean) AccessController.doPrivileged(
+            J2DoPrivHelper.existsAction(file))).booleanValue()) ? file:null;
     }
 
     public void close() {

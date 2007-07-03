@@ -187,7 +187,7 @@ public abstract class AbstractMetaDataDefaults
             FieldMetaData fmd;
             for (int i = 0; i < fieldNames.length; i ++) {
                 if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
-                    member = (Field)AccessController.doPrivileged(
+                    member = (Field) AccessController.doPrivileged(
                         J2DoPrivHelper.getDeclaredFieldAction(
                             cls,fieldNames[i])); 
                 else
@@ -205,7 +205,7 @@ public abstract class AbstractMetaDataDefaults
             throw ke;
         } catch (Exception e) {
             if (e instanceof PrivilegedActionException)
-                e = ((PrivilegedActionException)e).getException();
+                e = ((PrivilegedActionException) e).getException();
             throw new UserException(e);
         }
     }
@@ -217,11 +217,11 @@ public abstract class AbstractMetaDataDefaults
         Member[] members;
         boolean iface = meta.getDescribedType().isInterface();
         if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD && !iface)
-            members = (Field[])AccessController.doPrivileged( 
+            members = (Field[]) AccessController.doPrivileged(
                 J2DoPrivHelper.getDeclaredFieldsAction(
                     meta.getDescribedType())); 
         else
-            members = (Method[])AccessController.doPrivileged( 
+            members = (Method[]) AccessController.doPrivileged(
                 J2DoPrivHelper.getDeclaredMethodsAction(
                     meta.getDescribedType())); 
 
@@ -332,7 +332,7 @@ public abstract class AbstractMetaDataDefaults
             throw ke;
         } catch (Exception e) {
             if (e instanceof PrivilegedActionException)
-                e = ((PrivilegedActionException)e).getException();
+                e = ((PrivilegedActionException) e).getException();
             throw new InternalException(e);
         }
     }

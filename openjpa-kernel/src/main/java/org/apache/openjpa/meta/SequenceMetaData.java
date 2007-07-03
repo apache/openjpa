@@ -255,7 +255,7 @@ public class SequenceMetaData
             String clsName = plugin.getClassName();
 
             Class cls = Class.forName(clsName, true,
-                (ClassLoader)AccessController.doPrivileged( 
+                (ClassLoader) AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(Seq.class)));
             StringBuffer props = new StringBuffer();
             if (plugin.getProperties() != null)
@@ -281,7 +281,7 @@ public class SequenceMetaData
             throw ke;
         } catch (Exception e) {
             if (e instanceof PrivilegedActionException)
-                e = ((PrivilegedActionException)e).getException();
+                e = ((PrivilegedActionException) e).getException();
             throw new MetaDataException(_loc.get("cant-init-seq", _name)).
                 setCause(e);
         }

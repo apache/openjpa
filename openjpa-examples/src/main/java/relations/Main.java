@@ -135,33 +135,33 @@ public class Main {
 
         // Go through each of the entities and print out each of their
         // messages, as well as the date on which it was created 
-        for (Deity m : (List<Deity>)q.getResultList()) {
+        for (Deity m : (List<Deity>) q.getResultList()) {
             System.out.println(m.getName());
         }
 
         q = em.createQuery("select x from Deity x "
             + "where x.father.name = 'Zeus'");
 
-        for (Deity m : (List<Deity>)q.getResultList()) {
+        for (Deity m : (List<Deity>) q.getResultList()) {
             System.out.println("Child of Zeus: " + m.getName());
         }
 
         q = em.createNamedQuery("siblings").
             setParameter(1, em.getReference(Deity.class, "Rhea"));
 
-        for (Deity m : (List<Deity>)em.createNamedQuery("siblings").
+        for (Deity m : (List<Deity>) em.createNamedQuery("siblings").
             setParameter(1, em.getReference(Deity.class, "Rhea")).
             getResultList()) {
             System.out.println("Siblings of Rhea: " + m.getName());
         }
 
-        for (Deity m : (List<Deity>)em.createNamedQuery("half-siblings").
+        for (Deity m : (List<Deity>) em.createNamedQuery("half-siblings").
             setParameter(1, em.getReference(Deity.class, "Apollo")).
             getResultList()) {
             System.out.println("Half-siblings of Apollo: " + m.getName());
         }
 
-        for (Deity m : (List<Deity>)em.createNamedQuery("cousins").
+        for (Deity m : (List<Deity>) em.createNamedQuery("cousins").
             setParameter(1, em.getReference(Deity.class, "Leto")).
             getResultList()) {
             System.out.println("Cousins of Leto: " + m.getName());

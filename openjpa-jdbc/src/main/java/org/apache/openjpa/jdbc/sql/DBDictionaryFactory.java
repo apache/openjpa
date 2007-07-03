@@ -121,14 +121,14 @@ public class DBDictionaryFactory {
         DBDictionary dict = null;
         try {
             Class c = Class.forName(dclass, true,
-                (ClassLoader)AccessController.doPrivileged( 
+                (ClassLoader) AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(
                         DBDictionary.class)));
-            dict = (DBDictionary)AccessController.doPrivileged(
+            dict = (DBDictionary) AccessController.doPrivileged(
                 J2DoPrivHelper.newInstanceAction(c));
         } catch (Exception e) {
             if (e instanceof PrivilegedActionException)
-                e = ((PrivilegedActionException)e).getException();
+                e = ((PrivilegedActionException) e).getException();
             throw new UserException(e).setFatal(true);
         }
 

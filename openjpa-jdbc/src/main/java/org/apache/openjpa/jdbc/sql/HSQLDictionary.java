@@ -223,7 +223,7 @@ public class HSQLDictionary
         // HSQL has a bug where it cannot store a double if it is
         // exactly the same as Long.MAX_VALUE or MIN_VALUE
         if (val == Long.MAX_VALUE || val == Long.MIN_VALUE) {
-            stmnt.setLong(idx, (long)val);
+            stmnt.setLong(idx, (long) val);
         } else  {
             super.setDouble(stmnt, idx, val, col);
         }

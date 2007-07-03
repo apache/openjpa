@@ -88,7 +88,7 @@ public class ProxyManagerImpl
         if (JavaVersions.VERSION >= 5) {
             try {
                 Class queue = Class.forName("java.util.Queue", false,
-                    (ClassLoader)AccessController.doPrivileged( 
+                    (ClassLoader) AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(
                             Collection.class)));
                 _stdCollections.put(queue, LinkedList.class);
@@ -502,9 +502,9 @@ public class ProxyManagerImpl
         } catch (InstantiationException ie) {
             throw new UnsupportedException(_loc.get("cant-newinstance", 
                 cls.getSuperclass().getName()));
-        } catch( PrivilegedActionException pae ) {
+        } catch (PrivilegedActionException pae) {
             Exception e = pae.getException();
-            if( e instanceof InstantiationException)
+            if (e instanceof InstantiationException)
                 throw new UnsupportedException(_loc.get("cant-newinstance", 
                     cls.getSuperclass().getName()));
             else
@@ -519,9 +519,9 @@ public class ProxyManagerImpl
      * classes.
      */
     private static ClassLoader getMostDerivedLoader(Class c1, Class c2) {
-        ClassLoader l1 = (ClassLoader)AccessController.doPrivileged( 
+        ClassLoader l1 = (ClassLoader) AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(c1)); 
-        ClassLoader l2 = (ClassLoader)AccessController.doPrivileged( 
+        ClassLoader l2 = (ClassLoader) AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(c2)); 
         if (l1 == l2)
             return l1;
@@ -530,10 +530,10 @@ public class ProxyManagerImpl
         if (l2 == null)
             return l1;
         
-        for (ClassLoader p = (ClassLoader)AccessController.doPrivileged( 
-                J2DoPrivHelper.getParentAction( l1 )); p != null;
-                p = (ClassLoader)AccessController.doPrivileged( 
-                    J2DoPrivHelper.getParentAction( p )))
+        for (ClassLoader p = (ClassLoader) AccessController.doPrivileged(
+                J2DoPrivHelper.getParentAction(l1)); p != null;
+                p = (ClassLoader) AccessController.doPrivileged(
+                    J2DoPrivHelper.getParentAction(p)))
             if (p == l2)
                 return l1;
         return l2;
@@ -1588,7 +1588,7 @@ public class ProxyManagerImpl
     public static void main(String[] args) 
         throws ClassNotFoundException, IOException {
         File dir = Files.getClassFile(ProxyManagerImpl.class);
-        dir = (dir == null) ? new File((String)AccessController.doPrivileged( 
+        dir = (dir == null) ? new File((String) AccessController.doPrivileged(
             J2DoPrivHelper.getPropertyAction("user.dir")))
             : dir.getParentFile();
 

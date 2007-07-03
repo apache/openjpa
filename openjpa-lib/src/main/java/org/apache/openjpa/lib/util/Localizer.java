@@ -100,7 +100,7 @@ public class Localizer {
             return loc;
         else {
             loc = new Localizer(pkg, file, locale, 
-                cls == null ? null:(ClassLoader)AccessController.doPrivileged( 
+                cls == null ? null:(ClassLoader) AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(cls))); 
             _localizers.put(key, loc);
             return loc;

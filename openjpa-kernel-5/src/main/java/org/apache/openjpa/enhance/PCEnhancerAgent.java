@@ -57,7 +57,7 @@ public class PCEnhancerAgent {
         conf.setConnectionFactoryName(null);
         // set single class resolver
         final ClassLoader tmpLoader = new TemporaryClassLoader(
-            (ClassLoader)AccessController.doPrivileged( 
+            (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction()));
         conf.setClassResolver(new ClassResolver() {
             public ClassLoader getClassLoader(Class context, ClassLoader env) {

@@ -123,7 +123,7 @@ public class DiscriminatorMappingInfo
         // set io before syncing cols
         setColumnIO(disc.getColumnIO());
         syncColumns(disc, disc.getColumns(), disc.getValue() != null
-            && !(disc.getValue()instanceof String));
+            && !(disc.getValue() instanceof String));
         syncIndex(disc, disc.getIndex());
         if (disc.getValue() == Discriminator.NULL)
             _value = "null";
@@ -131,7 +131,7 @@ public class DiscriminatorMappingInfo
             _value = disc.getValue().toString();
 
         if (disc.getStrategy() == null
-            || disc.getStrategy()instanceof SuperclassDiscriminatorStrategy)
+            || disc.getStrategy() instanceof SuperclassDiscriminatorStrategy)
             return;
 
         // explicit discriminator strategy if:

@@ -298,7 +298,7 @@ public class CFMetaDataParser extends XMLMetaDataParser {
             return null;
 
         if (loader == null)
-            loader = (ClassLoader)AccessController.doPrivileged( 
+            loader = (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
         boolean fullName = name.indexOf('.') != -1;
         boolean noPackage = StringUtils.isEmpty(pkg);

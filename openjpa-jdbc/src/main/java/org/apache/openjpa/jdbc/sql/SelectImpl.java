@@ -1213,7 +1213,7 @@ public class SelectImpl
         int count = 0;
         for (int i = 0; i < toCols.length; i++, count++) {
             if (pks == null)
-                val = (oid == null) ? null : Numbers.valueOf(((Id)oid).getId());
+                val = (oid == null) ? null : Numbers.valueOf(((Id) oid).getId());
             else {
                 // must be app identity; use pk index to get correct pk value
                 join = mapping.assertJoinable(toCols[i]);
@@ -2796,7 +2796,7 @@ public class SelectImpl
                     Object id = (ident && _idents != null) ? _idents.get(i)
                         : _ids.get(i);
                     Object alias = _aliases.get(id);
-                    if (id instanceof Column && ((Column)id).isXML())
+                    if (id instanceof Column && ((Column) id).isXML())
                         alias = alias + _dict.getStringVal;
                         
                     String as = null;

@@ -73,7 +73,7 @@ public class XMLValueHandler
             m.marshal( val, result );
             return result.toString();
         }
-        catch(JAXBException je) {
+        catch (JAXBException je) {
             throw new InternalException(je);
         }
     }
@@ -89,7 +89,7 @@ public class XMLValueHandler
             return u.unmarshal(new StreamSource(new StringReader
                     (val.toString())));
         }
-        catch(JAXBException je) {
+        catch (JAXBException je) {
             throw new InternalException(je);
         }
     }

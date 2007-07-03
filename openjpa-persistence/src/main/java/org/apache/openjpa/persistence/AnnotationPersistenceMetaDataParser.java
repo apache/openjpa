@@ -661,17 +661,17 @@ public class AnnotationPersistenceMetaDataParser
             cls = cls.getEnclosingClass();
 
         String rsrc = StringUtils.replace(cls.getName(), ".", "/");
-        ClassLoader loader = (ClassLoader)AccessController.doPrivileged( 
+        ClassLoader loader = (ClassLoader) AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(cls)); 
         if (loader == null)
-            loader = (ClassLoader)AccessController.doPrivileged( 
+            loader = (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getSystemClassLoaderAction()); 
         if (loader == null)
             return null;
-        URL url = (URL)AccessController.doPrivileged( 
+        URL url = (URL) AccessController.doPrivileged(
             J2DoPrivHelper.getResourceAction(loader, rsrc + ".java")); 
         if (url == null) {
-            url = (URL)AccessController.doPrivileged( 
+            url = (URL) AccessController.doPrivileged(
                 J2DoPrivHelper.getResourceAction(loader, rsrc + ".class")); 
             if (url == null)
                 return null;
@@ -756,7 +756,7 @@ public class AnnotationPersistenceMetaDataParser
             else
                 meta.setDetachedState(detached.fieldName());
         } else {
-            Field[] fields = (Field[])AccessController.doPrivileged( 
+            Field[] fields = (Field[]) AccessController.doPrivileged(
                 J2DoPrivHelper.getDeclaredFieldsAction(
                     meta.getDescribedType())); 
             for (int i = 0; i < fields.length; i++)
@@ -798,8 +798,8 @@ public class AnnotationPersistenceMetaDataParser
         MethodKey key;
         Set<MethodKey> seen = new HashSet<MethodKey>();
         do {
-            for (Method m : (Method[])AccessController.doPrivileged( 
-                J2DoPrivHelper.getDeclaredMethodsAction( sup ))) {
+            for (Method m : (Method[]) AccessController.doPrivileged(
+                J2DoPrivHelper.getDeclaredMethodsAction(sup))) {
                 mods = m.getModifiers();
                 if (Modifier.isStatic(mods) || Modifier.isFinal(mods) ||
                     Object.class.equals(m.getDeclaringClass()))
@@ -1050,7 +1050,7 @@ public class AnnotationPersistenceMetaDataParser
                     break;
                 case LOAD_FETCH_GROUP:
                 	if (isMetaDataMode())
-                		fmd.setLoadFetchGroup(((LoadFetchGroup)anno).value());
+                		fmd.setLoadFetchGroup(((LoadFetchGroup) anno).value());
                 	break;
                 case LRS:
                     if (isMetaDataMode())

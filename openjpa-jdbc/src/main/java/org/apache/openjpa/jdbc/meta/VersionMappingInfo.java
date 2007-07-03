@@ -73,7 +73,7 @@ public class VersionMappingInfo
         syncIndex(version, version.getIndex());
 
         if (version.getStrategy() == null
-            || version.getStrategy()instanceof SuperclassVersionStrategy)
+            || version.getStrategy() instanceof SuperclassVersionStrategy)
             return;
 
         // explicit version strategy if:

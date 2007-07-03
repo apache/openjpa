@@ -49,7 +49,7 @@ public class ProductDerivations {
     private static final Throwable[] _derivationErrors;
     private static String[] _prefixes;
     static {
-        ClassLoader l = (ClassLoader)AccessController.doPrivileged( 
+        ClassLoader l = (ClassLoader) AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(ProductDerivation.class)); 
         _derivationNames = Services.getImplementors(ProductDerivation.class, l);
         _derivationErrors = new Throwable[_derivationNames.length];
@@ -64,7 +64,7 @@ public class ProductDerivations {
                 derivations.add(d);
             } catch (Throwable t) {
                 if (t instanceof PrivilegedActionException)
-                    t = ((PrivilegedActionException)t).getException();
+                    t = ((PrivilegedActionException) t).getException();
                 _derivationErrors[i] = t;
             }
         }
@@ -235,7 +235,7 @@ public class ProductDerivations {
         if (StringUtils.isEmpty(resource))
             return null;
         if (loader == null)
-            loader = (ClassLoader)AccessController.doPrivileged( 
+            loader = (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
         ConfigurationProvider provider = null;
         StringBuffer errs = null;
@@ -266,7 +266,7 @@ public class ProductDerivations {
         if (file == null)
             return null;
         if (loader == null)
-            loader = (ClassLoader)AccessController.doPrivileged( 
+            loader = (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
         ConfigurationProvider provider = null;
         StringBuffer errs = null;
@@ -281,8 +281,8 @@ public class ProductDerivations {
                 errs.append(_derivations[i].getClass().getName() + ":" + t);
             }
         }
-        String aPath = (String)AccessController.doPrivileged( 
-            J2DoPrivHelper.getAbsolutePathAction( file ));
+        String aPath = (String) AccessController.doPrivileged(
+            J2DoPrivHelper.getAbsolutePathAction(file));
         reportErrors(errs, aPath);
         throw new MissingResourceException(aPath, 
             ProductDerivations.class.getName(), aPath);
@@ -308,7 +308,7 @@ public class ProductDerivations {
     private static ConfigurationProvider load(ClassLoader loader, 
        boolean globals) {
         if (loader == null)
-            loader = (ClassLoader)AccessController.doPrivileged( 
+            loader = (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
         
         ConfigurationProvider provider = null;

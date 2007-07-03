@@ -77,7 +77,7 @@ class InterfaceImplGenerator {
         if (impl != null)
             return impl;
 
-        ClassLoader parentLoader = (ClassLoader)AccessController.doPrivileged( 
+        ClassLoader parentLoader = (ClassLoader) AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(iface)); 
         BCClassLoader loader = new BCClassLoader(_project, parentLoader);
         BCClassLoader enhLoader = new BCClassLoader(_enhProject, parentLoader);
@@ -87,7 +87,7 @@ class InterfaceImplGenerator {
         if (sup != null) {
             bc.setSuperclass(sup.getInterfaceImpl());
             enhLoader = new BCClassLoader(_enhProject,
-                (ClassLoader)AccessController.doPrivileged( 
+                (ClassLoader) AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(
                         sup.getInterfaceImpl())));
         }
@@ -170,8 +170,8 @@ class InterfaceImplGenerator {
      */
     private void invalidateNonBeanMethods(BCClass bc, Class iface, 
         Set methods) {
-        Method[] meths = (Method[])AccessController.doPrivileged( 
-            J2DoPrivHelper.getDeclaredMethodsAction( iface )); 
+        Method[] meths = (Method[]) AccessController.doPrivileged(
+            J2DoPrivHelper.getDeclaredMethodsAction(iface)); 
         BCMethod meth;
         Code code;
         Class type = _repos.getMetaDataFactory().getDefaults().
@@ -208,7 +208,7 @@ class InterfaceImplGenerator {
             return (Method) AccessController.doPrivileged(
                 J2DoPrivHelper.getDeclaredMethodAction(
                     iface, name, arg == null ? null : new Class[]{arg}));
-        } catch( PrivilegedActionException pae ) {
+        } catch (PrivilegedActionException pae) {
             throw new InternalException (_loc.get ("interface-mismatch", name));
         }
     }
@@ -218,7 +218,7 @@ class InterfaceImplGenerator {
             return true;
         try {
             Method meth = (Method) AccessController.doPrivileged(
-                J2DoPrivHelper.getDeclaredMethodAction( iface, "is" +
+                J2DoPrivHelper.getDeclaredMethodAction(iface, "is" +
                     StringUtils.capitalize(fmd.getName()), (Class[]) null));
             return meth == null;
         } catch (PrivilegedActionException pae) {}

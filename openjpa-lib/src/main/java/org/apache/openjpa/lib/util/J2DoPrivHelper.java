@@ -74,31 +74,31 @@ import serp.bytecode.Code;
  * 2) Methods with no exception thrown. PrivilegedAction is returned from
  *    J2DoPrivHelper.*Action(). E.g.
  *      
- *    ClassLoader loader = (ClassLoader)AccessController.doPrivileged( 
- *                             J2DoPrivHelper.getClassLoaderAction( clazz ));
+ *    ClassLoader loader = (ClassLoader) AccessController.doPrivileged(
+ *                             J2DoPrivHelper.getClassLoaderAction(clazz));
  *                               
  *    ClassLoader loader = (ClassLoader) (System.getSecurityManager() == null)
  *                         ? clazz.getClassLoader()
- *                         : AccessController.doPrivileged( 
- *                             J2DoPrivHelper.getClassLoaderAction( clazz ));
+ *                         : AccessController.doPrivileged(
+ *                             J2DoPrivHelper.getClassLoaderAction(clazz));
  * 3) Methods with exception thrown. PrivilegedExceptionAction is returned
  *    from J2DoPrivHelper.*Action(). E.g.
  *    
  *    try {
  *      method = (Method) AccessController.doPrivileged(
  *        J2DoPrivHelper.getDeclaredMethodAction(clazz, name, parameterType));
- *    } catch( PrivilegedActionException pae ) {
- *      throw (NoSuchMethodException)pae.getException();
+ *    } catch (PrivilegedActionException pae) {
+ *      throw (NoSuchMethodException) pae.getException();
  *    }
  *    
  *    try {
- *      method = ( System.getSecurityManager() == null )
+ *      method = (System.getSecurityManager() == null)
  *        ? clazz.getDeclaredMethod(name,parameterType)
  *        : (Method) AccessController.doPrivileged(
  *            J2DoPrivHelper.getDeclaredMethodAction(
  *              clazz, name, parameterType));
- *    } catch( PrivilegedActionException pae ) {
- *        throw (NoSuchMethodException)pae.getException()
+ *    } catch (PrivilegedActionException pae) {
+ *        throw (NoSuchMethodException) pae.getException()
  *    }                               
  * </xmp> 
  * @author Albert Lee
@@ -409,7 +409,7 @@ public abstract class J2DoPrivHelper {
     public static final PrivilegedAction lengthAction(final File f) {
         return new PrivilegedAction() {
             public Object run() {
-                return new Long( f.length() );
+                return new Long(f.length());
             }
         };
     }

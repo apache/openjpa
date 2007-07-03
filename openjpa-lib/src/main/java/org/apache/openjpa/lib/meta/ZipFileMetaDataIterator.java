@@ -61,8 +61,8 @@ public class ZipFileMetaDataIterator
             try {
                 _file = (ZipFile) AccessController.doPrivileged(
                     J2DoPrivHelper.getContentAction(con));
-            } catch( PrivilegedActionException pae ) {
-                 throw (IOException)pae.getException();
+            } catch (PrivilegedActionException pae) {
+                 throw (IOException) pae.getException();
             }
         }
         _filter = filter;

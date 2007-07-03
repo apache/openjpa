@@ -185,10 +185,10 @@ public class LogFactoryImpl
                 _out = new PrintStream((FileOutputStream)
                     AccessController.doPrivileged(
                         J2DoPrivHelper.newFileOutputStreamAction(
-                            (String)AccessController.doPrivileged( 
-                                J2DoPrivHelper.getCanonicalPathAction( f )),
+                            (String) AccessController.doPrivileged(
+                                J2DoPrivHelper.getCanonicalPathAction(f)),
                             true)));
-            } catch( PrivilegedActionException pae ) {
+            } catch (PrivilegedActionException pae) {
                 throw new IllegalArgumentException(_loc.get("log-bad-file",
                         file) + " " + pae.getException());
             } catch (IOException ioe) {

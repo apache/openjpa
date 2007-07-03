@@ -55,7 +55,7 @@ public final class Utils {
     static {
         NanoTimer timer = null;
         try {
-            String nanoTimerClassName = (String)AccessController.doPrivileged( 
+            String nanoTimerClassName = (String) AccessController.doPrivileged(
                 J2DoPrivHelper.getPropertyAction(providerProp)); 
             if (nanoTimerClassName != null) {
                 Class cls = Class.forName(nanoTimerClassName);

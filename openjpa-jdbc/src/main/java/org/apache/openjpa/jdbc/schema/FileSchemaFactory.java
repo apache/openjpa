@@ -79,7 +79,7 @@ public class FileSchemaFactory
     }
 
     public SchemaGroup readSchema() {
-        URL url = (URL)AccessController.doPrivileged( 
+        URL url = (URL) AccessController.doPrivileged(
             J2DoPrivHelper.getResourceAction(_loader, _fileName)); 
         if (url == null)
             return new SchemaGroup();

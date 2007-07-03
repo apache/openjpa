@@ -30,7 +30,7 @@ public class ManyOneCompoundIdOwnerId implements Serializable {
 	static {
 		// register persistent class in JVM
 		try { Class.forName("org.apache.openjpa.persistence.relations.ManyOneCompoundIdOwner"); }
-		catch(Exception e) {}
+		catch (Exception e) {}
 	}
 
 	public long entityId;

@@ -252,11 +252,11 @@ public class PersistenceMetaDataDefaults
             return ClassMetaData.ACCESS_UNKNOWN;
 
         int access = 0;
-        if (usesAccess((Field[])AccessController.doPrivileged( 
-            J2DoPrivHelper.getDeclaredFieldsAction( cls ))))
+        if (usesAccess((Field[]) AccessController.doPrivileged(
+            J2DoPrivHelper.getDeclaredFieldsAction(cls))))
             access |= ClassMetaData.ACCESS_FIELD;
-        if (usesAccess((Method[])AccessController.doPrivileged( 
-            J2DoPrivHelper.getDeclaredMethodsAction( cls ))))
+        if (usesAccess((Method[]) AccessController.doPrivileged(
+            J2DoPrivHelper.getDeclaredMethodsAction(cls))))
             access |= ClassMetaData.ACCESS_PROPERTY;
         return (access == 0) ? getAccessType(cls.getSuperclass()) : access;
     }

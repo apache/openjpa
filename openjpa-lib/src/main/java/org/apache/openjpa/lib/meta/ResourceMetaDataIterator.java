@@ -65,15 +65,15 @@ public class ResourceMetaDataIterator implements MetaDataIterator {
         }
 
         try {
-            Enumeration e = (Enumeration)AccessController.doPrivileged( 
+            Enumeration e = (Enumeration) AccessController.doPrivileged(
                 J2DoPrivHelper.getResourcesAction(loader, rsrc));
             while (e.hasMoreElements()) {
                 if (_urls == null)
                     _urls = new ArrayList(3);
                 _urls.add(e.nextElement());
             }
-        } catch( PrivilegedActionException pae ) {
-            throw (IOException)pae.getException();
+        } catch (PrivilegedActionException pae) {
+            throw (IOException) pae.getException();
         }
     }
 
@@ -91,10 +91,10 @@ public class ResourceMetaDataIterator implements MetaDataIterator {
         if (_url == -1 || _url >= _urls.size())
             throw new IllegalStateException();
         try {
-            return (InputStream)AccessController.doPrivileged(
+            return (InputStream) AccessController.doPrivileged(
                 J2DoPrivHelper.openStreamAction((URL) _urls.get(_url)));
-        } catch( PrivilegedActionException pae ) {
-            throw (IOException)pae.getException();
+        } catch (PrivilegedActionException pae) {
+            throw (IOException) pae.getException();
         }
     }
 
@@ -103,8 +103,8 @@ public class ResourceMetaDataIterator implements MetaDataIterator {
             throw new IllegalStateException();
         File file = new File(URLDecoder.decode(((URL) _urls.get(_url)).
             getFile()));
-        return (((Boolean)AccessController.doPrivileged( 
-            J2DoPrivHelper.existsAction( file ))).booleanValue()) ? file :null;
+        return (((Boolean) AccessController.doPrivileged(
+            J2DoPrivHelper.existsAction(file))).booleanValue()) ? file :null;
     }
 
     public void close() {

@@ -48,14 +48,14 @@ public class MappingRepositoryValue
         // we need to manually perform the instantiation
         try {
             Class cls = Strings.toClass(clsName,
-                (ClassLoader)AccessController.doPrivileged( 
+                (ClassLoader) AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(type)));        
             return cls.getConstructor(new Class[]{ JDBCConfiguration.class }).
                 newInstance(new Object[]{ conf });
         } catch (RuntimeException e) {
             throw e;
         } catch (InvocationTargetException e) {
-            if (e.getTargetException()instanceof RuntimeException)
+            if (e.getTargetException() instanceof RuntimeException)
                 throw(RuntimeException) e.getTargetException();
 
             // fall back to default behavior for better error reporting

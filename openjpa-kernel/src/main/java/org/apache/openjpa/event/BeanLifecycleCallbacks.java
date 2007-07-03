@@ -67,7 +67,7 @@ public class BeanLifecycleCallbacks
                 J2DoPrivHelper.newInstanceAction(cls));
         } catch (Throwable t) {
             if (t instanceof PrivilegedActionException)
-                t = ((PrivilegedActionException )t).getException();            
+                t = ((PrivilegedActionException) t).getException();            
             throw new UserException(_loc.get("bean-constructor",
                 cls.getName()), t);
         }

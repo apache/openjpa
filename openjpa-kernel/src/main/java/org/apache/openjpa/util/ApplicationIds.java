@@ -194,7 +194,7 @@ public class ApplicationIds {
                 J2DoPrivHelper.newInstanceAction(oidType));
         } catch (Throwable t) {
             if (t instanceof PrivilegedActionException)
-                t = ((PrivilegedActionException)t).getException();
+                t = ((PrivilegedActionException) t).getException();
             throw new GeneralException(t);
         }
 
@@ -328,7 +328,7 @@ public class ApplicationIds {
                 J2DoPrivHelper.newInstanceAction(oidType));
         } catch (Throwable t) {
             if (t instanceof PrivilegedActionException)
-                t = ((PrivilegedActionException)t).getException();
+                t = ((PrivilegedActionException) t).getException();
             throw new GeneralException(t);
         }
 

@@ -103,8 +103,8 @@ public class MethodLifecycleCallbacks
     protected static Method getMethod(Class cls, String method, Class[] args) {
         Class currentClass = cls;
         do {
-            Method[] methods = (Method[])AccessController.doPrivileged( 
-                J2DoPrivHelper.getDeclaredMethodsAction( currentClass )); 
+            Method[] methods = (Method[]) AccessController.doPrivileged(
+                J2DoPrivHelper.getDeclaredMethodsAction(currentClass)); 
             for (int i = 0; i < methods.length; i++) {
                 if (!method.equals(methods[i].getName()))
                     continue;

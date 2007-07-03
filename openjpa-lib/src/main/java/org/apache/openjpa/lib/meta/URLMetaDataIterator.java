@@ -64,10 +64,10 @@ public class URLMetaDataIterator implements MetaDataIterator {
         if (_url == null)
             return null;
         try {
-            return (InputStream)AccessController.doPrivileged(
+            return (InputStream) AccessController.doPrivileged(
                 J2DoPrivHelper.openStreamAction(_url));
-        } catch( PrivilegedActionException pae ) {
-            throw (IOException)pae.getException();
+        } catch (PrivilegedActionException pae) {
+            throw (IOException) pae.getException();
         }
     }
 
@@ -77,8 +77,8 @@ public class URLMetaDataIterator implements MetaDataIterator {
         if (_url == null)
             return null;
         File file = new File(URLDecoder.decode(_url.getPath()));
-        return (((Boolean)AccessController.doPrivileged( 
-            J2DoPrivHelper.existsAction( file ))).booleanValue()) ? file:null;
+        return (((Boolean) AccessController.doPrivileged(
+            J2DoPrivHelper.existsAction(file))).booleanValue()) ? file:null;
     }
 
     public void close() {

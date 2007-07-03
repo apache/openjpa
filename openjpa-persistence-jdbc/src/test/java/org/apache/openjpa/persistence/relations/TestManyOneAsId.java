@@ -343,7 +343,8 @@ public class TestManyOneAsId
             + "where e.longId = :cid and e.entityId.id = :id");
         q.setParameter("cid", cid);
         q.setParameter("id", id);
-        ManyOneCompoundIdOwner pc = (ManyOneCompoundIdOwner)q.getSingleResult();
+        ManyOneCompoundIdOwner pc = (ManyOneCompoundIdOwner)
+            q.getSingleResult();
         assertNotNull(pc);
         assertEquals("cparent", pc.getName());
         em.close();

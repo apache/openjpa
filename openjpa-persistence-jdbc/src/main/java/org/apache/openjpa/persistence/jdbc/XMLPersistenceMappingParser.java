@@ -886,10 +886,10 @@ public class XMLPersistenceMappingParser
      * ClassMappingInfo. 
      */
     private void endUniqueConstraint() {
-        Unique unique = (Unique)popElement();
+        Unique unique = (Unique) popElement();
         Object current = currentElement();
         if (current instanceof ClassMapping && _secondaryTable == null)
-            ((ClassMapping)current).getMappingInfo().addUnique(unique);
+            ((ClassMapping) current).getMappingInfo().addUnique(unique);
     }
     
     /**
@@ -899,7 +899,7 @@ public class XMLPersistenceMappingParser
     private boolean endColumnName() {
         Object current = currentElement();
         if (current instanceof Unique) {
-            Unique unique = (Unique)current;
+            Unique unique = (Unique) current;
             Column column = new Column();
             column.setName(this.currentText());
             unique.addColumn(column);

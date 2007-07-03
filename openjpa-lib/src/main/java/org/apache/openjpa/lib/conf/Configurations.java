@@ -212,8 +212,8 @@ public class Configurations {
             return AccessController.doPrivileged(
                 J2DoPrivHelper.newInstanceAction(cls));
         } catch (Exception e) {
-            if( e instanceof PrivilegedActionException) {
-                e = ((PrivilegedActionException)e).getException();   
+            if (e instanceof PrivilegedActionException) {
+                e = ((PrivilegedActionException) e).getException();   
             }
             RuntimeException re = new NestableRuntimeException(_loc.get
                 ("obj-create", cls).getMessage(), e);
@@ -236,32 +236,32 @@ public class Configurations {
         // we always prefer the thread loader, because it's the only thing we
         // can access that isn't bound to the OpenJPA classloader, unless
         // the conf object is of a custom class
-        ClassLoader ctxLoader = (ClassLoader)AccessController.doPrivileged( 
+        ClassLoader ctxLoader = (ClassLoader) AccessController.doPrivileged(
             J2DoPrivHelper.getContextClassLoaderAction());
         if (loader == null) {
             if (ctxLoader != null)
                 return ctxLoader;
             if (conf != null)
-                return (ClassLoader)AccessController.doPrivileged( 
+                return (ClassLoader) AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(conf.getClass())); 
             return Configurations.class.getClassLoader();
         }
 
         for (ClassLoader parent = ctxLoader; parent != null; 
-            parent = (ClassLoader)AccessController.doPrivileged( 
-                J2DoPrivHelper.getParentAction( parent ))) {
+            parent = (ClassLoader) AccessController.doPrivileged(
+                J2DoPrivHelper.getParentAction(parent))) {
             if (parent == loader)
                 return ctxLoader;
         }
         if (conf != null) {
             for (ClassLoader parent = (ClassLoader)
-                AccessController.doPrivileged( 
+                AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(conf.getClass())); 
                 parent != null; 
-                parent = (ClassLoader)AccessController.doPrivileged( 
-                    J2DoPrivHelper.getParentAction( parent ))) {
+                parent = (ClassLoader) AccessController.doPrivileged(
+                    J2DoPrivHelper.getParentAction(parent))) {
                 if (parent == loader)
-                    return (ClassLoader)AccessController.doPrivileged( 
+                    return (ClassLoader) AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(conf.getClass())); 
             }
         }

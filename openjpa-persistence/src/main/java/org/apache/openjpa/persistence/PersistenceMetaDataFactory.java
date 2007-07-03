@@ -440,12 +440,12 @@ public class PersistenceMetaDataFactory
     private File defaultXMLFile() {
         ClassLoader loader = repos.getConfiguration().
             getClassResolverInstance().getClassLoader(getClass(), null);
-        URL rsrc = (URL)AccessController.doPrivileged( 
+        URL rsrc = (URL) AccessController.doPrivileged(
             J2DoPrivHelper.getResourceAction(loader, "META-INF/orm.xml"));
         if (rsrc != null) {
             File file = new File(rsrc.getFile());
-            if (((Boolean)AccessController.doPrivileged( 
-                J2DoPrivHelper.existsAction( file ))).booleanValue())
+            if (((Boolean) AccessController.doPrivileged(
+                J2DoPrivHelper.existsAction(file))).booleanValue())
                 return file;
         }
         return new File("orm.xml");

@@ -214,8 +214,8 @@ public class ClassArgParser {
                 return new String[]{ getFromClassFile(file) };
             if (arg.endsWith(".java"))
                 return new String[]{ getFromJavaFile(file) };
-            if (((Boolean)AccessController.doPrivileged( 
-                J2DoPrivHelper.existsAction( file ))).booleanValue()) {
+            if (((Boolean) AccessController.doPrivileged(
+                J2DoPrivHelper.existsAction(file))).booleanValue()) {
                 Collection col = getFromMetaDataFile(file);
                 return (String[]) col.toArray(new String[col.size()]);
             }
@@ -303,8 +303,8 @@ public class ClassArgParser {
             fin = (FileInputStream) AccessController.doPrivileged(
                 J2DoPrivHelper.newFileInputStreamAction(file));
             return getFromClass(fin);
-        } catch( PrivilegedActionException pae ) {
-            throw (FileNotFoundException)pae.getException();
+        } catch (PrivilegedActionException pae) {
+            throw (FileNotFoundException) pae.getException();
         } finally {
             if (fin != null)
                 try {

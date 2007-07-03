@@ -42,7 +42,7 @@ public class StoreFacadeTypeRegistry {
      */
     public void registerImplementation(Class facadeType, Class storeType, 
         Class implType) {
-        Object key = (storeType == null) ? (Object)facadeType 
+        Object key = (storeType == null) ? (Object) facadeType 
             : new Key(facadeType, storeType);
         _impls.put(key, implType);
     }

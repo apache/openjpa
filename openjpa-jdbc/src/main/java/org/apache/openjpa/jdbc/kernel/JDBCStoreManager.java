@@ -252,7 +252,7 @@ public class JDBCStoreManager
         FetchConfiguration fetch, Object context) {
         ConnectionInfo info = (ConnectionInfo) context;
         try {
-            return initializeState(sm, state, (JDBCFetchConfiguration)fetch, 
+            return initializeState(sm, state, (JDBCFetchConfiguration) fetch, 
                 info);
         } catch (ClassNotFoundException cnfe) {
             throw new UserException(cnfe);

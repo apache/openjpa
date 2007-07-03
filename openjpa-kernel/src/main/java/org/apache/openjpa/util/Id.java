@@ -78,7 +78,7 @@ public final class Id
      */
     public Id(String str, ClassLoader loader) {
         if (loader == null)
-            loader = (ClassLoader)AccessController.doPrivileged( 
+            loader = (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
 
         if (str == null)

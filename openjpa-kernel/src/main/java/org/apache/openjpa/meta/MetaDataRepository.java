@@ -401,7 +401,7 @@ public class MetaDataRepository
             if ((_validate & VALIDATE_RUNTIME) != 0) {
                 try {
                     Class.forName(cls.getName(), true,
-                        (ClassLoader)AccessController.doPrivileged( 
+                        (ClassLoader) AccessController.doPrivileged(
                             J2DoPrivHelper.getClassLoaderAction(cls)));
                 } catch (Throwable t) {
                 }
@@ -980,7 +980,7 @@ public class MetaDataRepository
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("resolve-identity", oidClass));
 
-        ClassLoader cl = (ClassLoader)AccessController.doPrivileged( 
+        ClassLoader cl = (ClassLoader) AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(oidClass)); 
         String className;
         while (oidClass != null && oidClass != Object.class) {

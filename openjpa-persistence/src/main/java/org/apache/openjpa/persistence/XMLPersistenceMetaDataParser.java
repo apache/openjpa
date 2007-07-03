@@ -1121,7 +1121,7 @@ public class XMLPersistenceMetaDataParser
                 }
             } catch (Exception e) {
                 if (e instanceof PrivilegedActionException)
-                    e = ((PrivilegedActionException)e).getException();
+                    e = ((PrivilegedActionException) e).getException();
                 throw getException(_loc.get("invalid-attr", name, meta), e);
             }
 

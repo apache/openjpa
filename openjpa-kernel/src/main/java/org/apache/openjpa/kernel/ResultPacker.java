@@ -252,7 +252,7 @@ public class ResultPacker {
             return user;
         } catch (OpenJPAException ke) {
             throw ke;
-        } catch( PrivilegedActionException pae ) {
+        } catch (PrivilegedActionException pae) {
             throw new UserException(_loc.get("pack-instantiation-err",
                 _resultClass), pae.getException());
         } catch (InstantiationException ie) {

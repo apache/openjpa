@@ -112,7 +112,7 @@ public class DataSourceFactory {
             // see if their driver name is actually a data source
             if (DataSource.class.isAssignableFrom(driverClass)) {
                 return (DataSource) Configurations.newInstance(driver,
-                    conf, props, (ClassLoader)AccessController.doPrivileged( 
+                    conf, props, (ClassLoader) AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(
                             DataSource.class))); 
             }
@@ -156,7 +156,8 @@ public class DataSourceFactory {
 
             // ask the DriverDataSource to provide any additional decorators
             if (ds instanceof DriverDataSource) {
-                List decs = ((DriverDataSource)ds).createConnectionDecorators();
+                List decs = ((DriverDataSource) ds).
+                    createConnectionDecorators();
                 if (decs != null)
                     decorators.addAll(decs);
             }

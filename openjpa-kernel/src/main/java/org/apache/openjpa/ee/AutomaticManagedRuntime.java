@@ -107,7 +107,7 @@ public class AutomaticManagedRuntime
         try {
             mr = new WASManagedRuntime();
         }
-        catch(Throwable t) {
+        catch (Throwable t) {
         }
         WAS= (WASManagedRuntime) mr;
     }

@@ -890,7 +890,7 @@ public class DBDictionary
         else if (col != null && col.getType() == Types.TIME)
             setTime(stmnt, idx, new Time(val.getTime()), null, col);
         else if (val instanceof Timestamp)
-            setTimestamp(stmnt, idx,(Timestamp)val, null, col);   
+            setTimestamp(stmnt, idx,(Timestamp) val, null, col);   
         else
             setTimestamp(stmnt, idx, new Timestamp(val.getTime()), null, col);
     }

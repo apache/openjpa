@@ -369,7 +369,7 @@ public class Options extends TypedProperties {
                 try {
                     inner = AccessController.doPrivileged(
                         J2DoPrivHelper.newInstanceAction(innerType));
-                } catch( PrivilegedActionException pae ) {
+                } catch (PrivilegedActionException pae) {
                     throw pae.getException();
                 }
                 invoke(match[0], setter, new Object[]{ inner });
@@ -455,7 +455,7 @@ public class Options extends TypedProperties {
         try {
             return AccessController.doPrivileged(
                 J2DoPrivHelper.newInstanceAction(subType));
-        } catch( PrivilegedActionException pae ) {
+        } catch (PrivilegedActionException pae) {
             throw pae.getException();
         }
     }

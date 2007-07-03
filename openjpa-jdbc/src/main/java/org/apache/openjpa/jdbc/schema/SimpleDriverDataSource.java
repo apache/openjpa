@@ -171,14 +171,14 @@ public class SimpleDriverDataSource
         try {
             Class c = Class.forName(_connectionDriverName,
                 true, _classLoader);
-            _driver = (Driver)AccessController.doPrivileged(
+            _driver = (Driver) AccessController.doPrivileged(
                 J2DoPrivHelper.newInstanceAction(c));
             return _driver;
         } catch (Exception e) {
             if (e instanceof RuntimeException)
                 throw(RuntimeException) e;
             if (e instanceof PrivilegedActionException)
-                e = ((PrivilegedActionException)e).getException();
+                e = ((PrivilegedActionException) e).getException();
             throw new StoreException(e);
         }
     }

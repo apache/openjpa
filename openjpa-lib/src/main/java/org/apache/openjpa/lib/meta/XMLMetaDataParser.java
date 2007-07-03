@@ -631,7 +631,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         if (_loader != null)
             return _loader;
         if (_curLoader == null)
-            _curLoader = (ClassLoader)AccessController.doPrivileged( 
+            _curLoader = (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
         return _curLoader;
     }

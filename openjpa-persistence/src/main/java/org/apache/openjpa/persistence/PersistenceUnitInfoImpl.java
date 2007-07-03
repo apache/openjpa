@@ -94,7 +94,7 @@ public class PersistenceUnitInfoImpl
 
     public ClassLoader getNewTempClassLoader() {
         return new TemporaryClassLoader(
-            (ClassLoader)AccessController.doPrivileged( 
+            (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction()));
     }
 
@@ -204,7 +204,7 @@ public class PersistenceUnitInfoImpl
         MultiClassLoader loader = new MultiClassLoader();
         loader.addClassLoader(getClass().getClassLoader());
         loader.addClassLoader(MultiClassLoader.THREAD_LOADER);
-        URL url = (URL)AccessController.doPrivileged( 
+        URL url = (URL) AccessController.doPrivileged(
             J2DoPrivHelper.getResourceAction(loader, name));
         if (url != null) {
             addJarFile(url);
@@ -212,7 +212,7 @@ public class PersistenceUnitInfoImpl
         }
 
         // jar file is not a resource; check classpath
-        String[] cp = ((String)AccessController.doPrivileged( 
+        String[] cp = ((String) AccessController.doPrivileged(
             J2DoPrivHelper.getPropertyAction("java.class.path"))) 
             .split(J2DoPrivHelper.getPathSeparator());
         for (int i = 0; i < cp.length; i++) {
