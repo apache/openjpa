@@ -22,6 +22,8 @@ import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
+
 /**
  * The XMLWriter is a writer type for pretty-printing XML.
  * It assumes that the streamed XML will be given without any whitespace,
@@ -32,7 +34,7 @@ import java.io.Writer;
  */
 public class XMLWriter extends FilterWriter {
 
-    private static String _endl = System.getProperty("line.separator");
+    private static String _endl = J2DoPrivHelper.getLineSeparator();
 
     private int _lastChar = ' ';
     private int _lastChar2 = ' ';

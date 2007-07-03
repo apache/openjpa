@@ -20,6 +20,8 @@ package org.apache.openjpa.lib.util;
 
 import java.io.IOException;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -46,7 +48,8 @@ public class MultiClassLoader extends ClassLoader {
      * The standard system class loader.
      */
     public static final ClassLoader SYSTEM_LOADER =
-        ClassLoader.getSystemClassLoader();
+        (ClassLoader)AccessController.doPrivileged( 
+            J2DoPrivHelper.getSystemClassLoaderAction());
 
     private List _loaders = new ArrayList(5);
 
@@ -82,7 +85,8 @@ public class MultiClassLoader extends ClassLoader {
         for (int i = 0; i < loaders.length; i++) {
             loader = (ClassLoader) itr.next();
             if (loader == THREAD_LOADER)
-                loader = Thread.currentThread().getContextClassLoader();
+                loader = (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getContextClassLoaderAction());
             loaders[i] = loader;
         }
         return loaders;
@@ -94,7 +98,8 @@ public class MultiClassLoader extends ClassLoader {
     public ClassLoader getClassLoader(int index) {
         ClassLoader loader = (ClassLoader) _loaders.get(index);
         if (loader == THREAD_LOADER)
-            loader = Thread.currentThread().getContextClassLoader();
+            loader = (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction());
         return loader;
     }
 
@@ -201,7 +206,8 @@ public class MultiClassLoader extends ClassLoader {
         for (Iterator itr = _loaders.iterator(); itr.hasNext();) {
             loader = (ClassLoader) itr.next();
             if (loader == THREAD_LOADER)
-                loader = Thread.currentThread().getContextClassLoader();
+                loader = (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getContextClassLoaderAction());
             try {
                 return Class.forName(name, false, loader);
             } catch (Throwable t) {
@@ -216,12 +222,14 @@ public class MultiClassLoader extends ClassLoader {
         for (Iterator itr = _loaders.iterator(); itr.hasNext();) {
             loader = (ClassLoader) itr.next();
             if (loader == THREAD_LOADER)
-                loader = Thread.currentThread().getContextClassLoader();
+                loader = (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getContextClassLoaderAction());
 
             if (loader == null) // skip 
                 continue;
 
-            rsrc = loader.getResource(name);
+            rsrc = (URL)AccessController.doPrivileged( 
+                J2DoPrivHelper.getResourceAction(loader, name)); 
             if (rsrc != null)
                 return rsrc;
         }
@@ -236,14 +244,21 @@ public class MultiClassLoader extends ClassLoader {
         for (Iterator itr = _loaders.iterator(); itr.hasNext();) {
             loader = (ClassLoader) itr.next();
             if (loader == THREAD_LOADER)
-                loader = Thread.currentThread().getContextClassLoader();
+                loader = (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getContextClassLoaderAction());
+            
 
-            rsrcs = loader.getResources(name);
-            while (rsrcs.hasMoreElements()) {
-                rsrc = rsrcs.nextElement();
-                if (!all.contains(rsrc))
-                    all.addElement(rsrc);
-            }
+            try {
+                rsrcs = (Enumeration)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getResourcesAction(loader, name)); 
+                while (rsrcs.hasMoreElements()) {
+                    rsrc = rsrcs.nextElement();
+                    if (!all.contains(rsrc))
+                        all.addElement(rsrc);
+                }
+            } catch( PrivilegedActionException pae ) {
+                throw (IOException)pae.getException();
+            }                
         }
         return all.elements();
     }

@@ -23,12 +23,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 import serp.util.Strings;
 
@@ -76,8 +79,14 @@ public class ClassMetaDataIterator implements MetaDataIterator {
             multi.addClassLoader(multi.SYSTEM_LOADER);
             multi.addClassLoader(multi.THREAD_LOADER);
             multi.addClassLoader(getClass().getClassLoader());
-            if (cls != null && cls.getClassLoader() != null)
-                multi.addClassLoader(cls.getClassLoader());
+            if (cls != null)
+            {
+                ClassLoader clsLoader = (ClassLoader)
+                    AccessController.doPrivileged( 
+                        J2DoPrivHelper.getClassLoaderAction(cls));
+                if (clsLoader != null)
+                    multi.addClassLoader(clsLoader);
+            }
             loader = multi;
         }
         _loader = loader;
@@ -145,7 +154,13 @@ public class ClassMetaDataIterator implements MetaDataIterator {
 
             _url = -1;
             _urls.clear();
-            e = _loader.getResources((String) _locs.get(_loc));
+            try {
+                e = (Enumeration)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getResourcesAction(
+                        _loader, (String) _locs.get(_loc)));
+            } catch( PrivilegedActionException pae ) {
+                throw (IOException)pae.getException();
+            }    
             while (e.hasMoreElements())
                 _urls.add(e.nextElement());
         }
@@ -161,7 +176,12 @@ public class ClassMetaDataIterator implements MetaDataIterator {
     public InputStream getInputStream() throws IOException {
         if (_url == -1 || _url >= _urls.size())
             throw new IllegalStateException();
-        return ((URL) _urls.get(_url)).openStream();
+        try {
+            return (InputStream)AccessController.doPrivileged(
+                J2DoPrivHelper.openStreamAction((URL) _urls.get(_url)));
+        } catch( PrivilegedActionException pae ) {
+            throw (IOException)pae.getException();
+        }
     }
 
     public File getFile() throws IOException {
@@ -169,7 +189,8 @@ public class ClassMetaDataIterator implements MetaDataIterator {
             throw new IllegalStateException();
         File file = new File(URLDecoder.decode(((URL) _urls.get(_url)).
             getFile()));
-        return (file.exists()) ? file : null;
+        return (((Boolean)AccessController.doPrivileged( 
+            J2DoPrivHelper.existsAction( file ))).booleanValue()) ? file:null;
     }
 
     public void close() {

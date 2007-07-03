@@ -27,10 +27,12 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.security.AccessController;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 
@@ -129,8 +131,8 @@ public class Serialization {
         }
 
         protected void addContextClassLoaders(MultiClassLoader loader) {
-            loader.addClassLoader(Thread.currentThread().
-                getContextClassLoader());
+            loader.addClassLoader((ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction()));
         }
     }
 

@@ -20,11 +20,13 @@ package org.apache.openjpa.kernel;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.AccessController;
 
 import org.apache.openjpa.conf.BrokerFactoryValue;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.MapConfigurationProvider;
 import org.apache.openjpa.lib.conf.ProductDerivations;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.OpenJPAException;
@@ -113,7 +115,9 @@ public class Bootstrap {
         } catch (NoSuchMethodException nsme) {
             // handle cases where there is a mismatch between loaders by falling
             // back to the configuration's class loader for broker resolution
-            cls = getFactoryClass(conf, conf.getClass().getClassLoader());
+            cls = getFactoryClass(conf,
+                (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getClassLoaderAction(conf.getClass()))); 
             meth = cls.getMethod(methodName, FACTORY_ARGS); 
         }
 
@@ -135,7 +139,8 @@ public class Bootstrap {
     private static Class getFactoryClass(ConfigurationProvider conf,
         ClassLoader loader) {
         if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
+            loader = (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction()); 
 
         Object cls = BrokerFactoryValue.get(conf);
         if (cls instanceof Class)

@@ -21,10 +21,13 @@ package org.apache.openjpa.jdbc.meta;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -77,6 +80,7 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.CodeFormat;
 import org.apache.openjpa.lib.util.Files;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -1891,9 +1895,18 @@ public class ReverseMappingTool
         File customFile = Files.getFile
             (opts.removeProperty("customizerProperties", "cp", null), null);
         Properties customProps = new Properties();
-        if (customFile != null && customFile.exists())
-            customProps.load(new FileInputStream(customFile));
-
+        if (customFile != null && ((Boolean)AccessController.doPrivileged( 
+            J2DoPrivHelper.existsAction( customFile ))).booleanValue()) {
+            FileInputStream fis = null;
+            try {
+                fis = (FileInputStream) AccessController.doPrivileged(
+                    J2DoPrivHelper.newFileInputStreamAction(customFile));
+            } catch( PrivilegedActionException pae ) {
+                 throw (FileNotFoundException)pae.getException();
+            }
+            customProps.load(fis);
+        }
+        
         // separate the properties for the customizer and code format
         Options customOpts = new Options();
         Options formatOpts = new Options();

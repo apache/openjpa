@@ -20,8 +20,11 @@ package org.apache.openjpa.lib.meta;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.AccessController;
 import java.util.Properties;
 import java.util.zip.ZipFile;
+
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 import serp.util.Strings;
 
@@ -47,7 +50,8 @@ public class ClasspathMetaDataIterator extends MetaDataIteratorChain {
      */
     public ClasspathMetaDataIterator(String[] dirs, MetaDataFilter filter)
         throws IOException {
-        Properties props = System.getProperties();
+        Properties props = (Properties)AccessController.doPrivileged( 
+            J2DoPrivHelper.getPropertiesAction()); 
         String path = props.getProperty("java.class.path");
         String[] tokens = Strings.split(path,
             props.getProperty("path.separator"), 0);
@@ -57,7 +61,8 @@ public class ClasspathMetaDataIterator extends MetaDataIteratorChain {
                 continue;
 
             File file = new File(tokens[i]);
-            if (!file.exists())
+            if (!((Boolean)AccessController.doPrivileged( 
+                J2DoPrivHelper.existsAction( file ))).booleanValue())
                 continue;
             if (file.isDirectory())
                 addIterator(new FileMetaDataIterator(file, filter));

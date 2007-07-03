@@ -41,6 +41,7 @@ import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.BrokerFactoryEvent;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
@@ -553,7 +554,7 @@ public abstract class AbstractBrokerFactory
                 log.info(getFactoryInitializationBanner());
             if (log.isTraceEnabled()) {
                 Map props = _conf.toProperties(true);
-                String lineSep = System.getProperty("line.separator");
+                String lineSep = J2DoPrivHelper.getLineSeparator();
                 StringBuffer buf = new StringBuffer();
                 Map.Entry entry;
                 for (Iterator itr = props.entrySet().iterator();

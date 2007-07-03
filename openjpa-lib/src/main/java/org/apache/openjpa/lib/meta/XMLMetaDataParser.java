@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,6 +43,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.util.Localizer;
@@ -629,7 +631,8 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         if (_loader != null)
             return _loader;
         if (_curLoader == null)
-            _curLoader = Thread.currentThread().getContextClassLoader();
+            _curLoader = (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction());
         return _curLoader;
     }
 

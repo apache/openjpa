@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
+
 /*
  * Lots of this could be abstracted out into a word-wrapping class.
  */
@@ -46,7 +48,7 @@ public class SQLFormatter {
 
     private boolean multiLine = false;
     private boolean doubleSpace = true;
-    private String newline = System.getProperty("line.separator");
+    private String newline = J2DoPrivHelper.getLineSeparator();
     private int lineLength = 72;
     private String wrapIndent = "        ";
     private String clauseIndent = "    ";
@@ -152,7 +154,7 @@ public class SQLFormatter {
 
                 buf.append(prettyPrintLine(line));
                 for (int i = 0; i < 1 + (getDoubleSpace() ? 1 : 0); i++)
-                    buf.append(System.getProperty("line.separator"));
+                    buf.append(J2DoPrivHelper.getLineSeparator());
             }
 
             return buf.toString();

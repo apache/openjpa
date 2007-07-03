@@ -45,6 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**
  * A {@link ConnectionDecorator} that creates logging connections and
@@ -55,7 +56,7 @@ import org.apache.openjpa.lib.log.Log;
  */
 public class LoggingConnectionDecorator implements ConnectionDecorator {
 
-    private static final String SEP = System.getProperty("line.separator");
+    private static final String SEP = J2DoPrivHelper.getLineSeparator();
 
     private static final int WARN_IGNORE = 0;
     private static final int WARN_LOG_TRACE = 1;

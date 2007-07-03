@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import java.security.AccessController;
 import java.util.Map;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -26,6 +27,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.PersistenceProductDerivation;
 
@@ -50,7 +52,8 @@ public class JDBCPersistenceProductDerivation
     public void validate()
         throws Exception {
         // make sure JPA is available
-        javax.persistence.EntityManagerFactory.class.getClassLoader();
+        AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(
+            javax.persistence.EntityManagerFactory.class));
     }
 
     @Override

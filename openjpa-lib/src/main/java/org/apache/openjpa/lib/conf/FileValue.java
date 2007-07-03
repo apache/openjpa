@@ -19,8 +19,10 @@
 package org.apache.openjpa.lib.conf;
 
 import java.io.File;
+import java.security.AccessController;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**
  * A {@link File} {@link Value}.
@@ -57,7 +59,8 @@ public class FileValue extends Value {
     }
 
     protected String getInternalString() {
-        return (value == null) ? null : value.getAbsolutePath();
+        return (value == null) ? null : (String)AccessController.doPrivileged( 
+            J2DoPrivHelper.getAbsolutePathAction( value ));
     }
 
     protected void setInternalString(String val) {

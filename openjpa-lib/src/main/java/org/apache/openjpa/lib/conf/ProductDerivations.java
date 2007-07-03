@@ -19,6 +19,8 @@
 package org.apache.openjpa.lib.conf;
 
 import java.io.File;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,6 +29,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Services;
 
@@ -46,17 +49,22 @@ public class ProductDerivations {
     private static final Throwable[] _derivationErrors;
     private static String[] _prefixes;
     static {
-        ClassLoader l = ProductDerivation.class.getClassLoader();
+        ClassLoader l = (ClassLoader)AccessController.doPrivileged( 
+            J2DoPrivHelper.getClassLoaderAction(ProductDerivation.class)); 
         _derivationNames = Services.getImplementors(ProductDerivation.class, l);
         _derivationErrors = new Throwable[_derivationNames.length];
         List derivations = new ArrayList(_derivationNames.length);
         for (int i = 0; i < _derivationNames.length; i++) {
             try {
-                ProductDerivation d = (ProductDerivation) Class.
-                    forName(_derivationNames[i], true, l).newInstance();
+                ProductDerivation d = (ProductDerivation)
+                    AccessController.doPrivileged(
+                        J2DoPrivHelper.newInstanceAction(
+                            Class.forName(_derivationNames[i], true, l)));
                 d.validate();
                 derivations.add(d);
             } catch (Throwable t) {
+                if (t instanceof PrivilegedActionException)
+                    t = ((PrivilegedActionException)t).getException();
                 _derivationErrors[i] = t;
             }
         }
@@ -227,7 +235,8 @@ public class ProductDerivations {
         if (StringUtils.isEmpty(resource))
             return null;
         if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
+            loader = (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction());
         ConfigurationProvider provider = null;
         StringBuffer errs = null;
         // most specific to least
@@ -257,7 +266,8 @@ public class ProductDerivations {
         if (file == null)
             return null;
         if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
+            loader = (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction());
         ConfigurationProvider provider = null;
         StringBuffer errs = null;
         // most specific to least
@@ -271,9 +281,11 @@ public class ProductDerivations {
                 errs.append(_derivations[i].getClass().getName() + ":" + t);
             }
         }
-        reportErrors(errs, file.getAbsolutePath());
-        throw new MissingResourceException(file.getAbsolutePath(), 
-            ProductDerivations.class.getName(), file.getAbsolutePath());
+        String aPath = (String)AccessController.doPrivileged( 
+            J2DoPrivHelper.getAbsolutePathAction( file ));
+        reportErrors(errs, aPath);
+        throw new MissingResourceException(aPath, 
+            ProductDerivations.class.getName(), aPath);
     }
    
     /**
@@ -296,7 +308,8 @@ public class ProductDerivations {
     private static ConfigurationProvider load(ClassLoader loader, 
        boolean globals) {
         if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
+            loader = (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction());
         
         ConfigurationProvider provider = null;
         StringBuffer errs = null;

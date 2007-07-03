@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.StringTokenizer;
 
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
+
 /**
  * Many standard components log to {@link OutputStream}s.
  * This wrapper class extends the {@link ByteArrayOutputStream}
@@ -33,7 +35,7 @@ import java.util.StringTokenizer;
  */
 public class LogOutputStream extends ByteArrayOutputStream {
 
-    private static final String _sep = System.getProperty("line.separator");
+    private static final String _sep = J2DoPrivHelper.getLineSeparator();
 
     private final int _level;
     private final Log _log;

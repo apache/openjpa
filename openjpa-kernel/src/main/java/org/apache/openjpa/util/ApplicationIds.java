@@ -20,9 +20,10 @@ package org.apache.openjpa.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.FieldManager;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -30,6 +31,7 @@ import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.ObjectIdStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreManager;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -188,8 +190,11 @@ public class ApplicationIds {
             throw new UserException(_loc.get("objectid-abstract", meta));
         Object copy = null;
         try {
-            copy = oidType.newInstance();
+            copy = AccessController.doPrivileged(
+                J2DoPrivHelper.newInstanceAction(oidType));
         } catch (Throwable t) {
+            if (t instanceof PrivilegedActionException)
+                t = ((PrivilegedActionException)t).getException();
             throw new GeneralException(t);
         }
 
@@ -319,8 +324,11 @@ public class ApplicationIds {
         Class oidType = oid.getClass();
         Object copy = null;
         try {
-            copy = oidType.newInstance();
+            copy = AccessController.doPrivileged(
+                J2DoPrivHelper.newInstanceAction(oidType));
         } catch (Throwable t) {
+            if (t instanceof PrivilegedActionException)
+                t = ((PrivilegedActionException)t).getException();
             throw new GeneralException(t);
         }
 

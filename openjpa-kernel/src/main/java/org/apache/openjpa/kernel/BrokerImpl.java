@@ -20,6 +20,7 @@ package org.apache.openjpa.kernel;
 
 import java.io.Serializable;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -62,6 +63,7 @@ import org.apache.openjpa.event.TransactionEvent;
 import org.apache.openjpa.event.TransactionEventManager;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashMap;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
@@ -256,7 +258,8 @@ public class BrokerImpl
     public void initialize(AbstractBrokerFactory factory,
         DelegatingStoreManager sm, boolean managed, int connMode) {
         _initializeWasInvoked = true;
-        _loader = Thread.currentThread().getContextClassLoader();
+        _loader = (ClassLoader)AccessController.doPrivileged( 
+            J2DoPrivHelper.getContextClassLoaderAction());
         _jca = new JCAHelper();
         _conf = factory.getConfiguration();
         _compat = _conf.getCompatibilityInstance();
@@ -4131,7 +4134,9 @@ public class BrokerImpl
         // 1.5 doesn't initialize classes without a true Class.forName
         if (!PCRegistry.isRegistered(cls)) {
             try {
-                Class.forName(cls.getName(), true, cls.getClassLoader());
+                Class.forName(cls.getName(), true, 
+                    (ClassLoader)AccessController.doPrivileged( 
+                        J2DoPrivHelper.getClassLoaderAction(cls)));
             } catch (Throwable t) {
             }
         }
@@ -4270,8 +4275,12 @@ public class BrokerImpl
             if (intfs[i].getName().equals(PersistenceCapable.class.getName())) {
                 throw new UserException(_loc.get("pc-loader-different",
                     Exceptions.toString(obj),
-                    PersistenceCapable.class.getClassLoader(),
-                    intfs[i].getClassLoader())).setFailedObject(obj);
+                    (ClassLoader)AccessController.doPrivileged( 
+                        J2DoPrivHelper.getClassLoaderAction(
+                            PersistenceCapable.class)),
+                    (ClassLoader)AccessController.doPrivileged( 
+                        J2DoPrivHelper.getClassLoaderAction(intfs[i]))))
+                    .setFailedObject(obj);
             }
         }
 

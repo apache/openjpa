@@ -21,6 +21,7 @@ package org.apache.openjpa.lib.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.AccessController;
 
 import serp.bytecode.lowlevel.ConstantPoolTable;
 

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -27,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UserException;
@@ -117,9 +120,15 @@ public class DBDictionaryFactory {
         String dclass, String props, Connection conn) {
         DBDictionary dict = null;
         try {
-            dict = (DBDictionary) Class.forName(dclass, true,
-                DBDictionary.class.getClassLoader()).newInstance();
+            Class c = Class.forName(dclass, true,
+                (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getClassLoaderAction(
+                        DBDictionary.class)));
+            dict = (DBDictionary)AccessController.doPrivileged(
+                J2DoPrivHelper.newInstanceAction(c));
         } catch (Exception e) {
+            if (e instanceof PrivilegedActionException)
+                e = ((PrivilegedActionException)e).getException();
             throw new UserException(e).setFatal(true);
         }
 
@@ -236,7 +245,7 @@ public class DBDictionaryFactory {
      */
     public static String toString(DatabaseMetaData meta)
         throws SQLException {
-        String lineSep = System.getProperty("line.separator");
+        String lineSep = J2DoPrivHelper.getLineSeparator();
         StringBuffer buf = new StringBuffer();
         try {
             buf.append("catalogSeparator: ")

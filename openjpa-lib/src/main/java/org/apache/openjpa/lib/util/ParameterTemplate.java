@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.security.AccessController;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ import java.util.Map;
  */
 public class ParameterTemplate {
 
-    private static final String SEP = System.getProperty("line.separator");
+    private static final String SEP = J2DoPrivHelper.getLineSeparator();
 
     private final StringBuffer _buf = new StringBuffer();
     private final Map _params = new HashMap();
@@ -210,7 +211,8 @@ public class ParameterTemplate {
                 if (_params.containsKey(param.toString()))
                     copy.append(_params.get(param.toString()));
                 else
-                    copy.append(System.getProperty(param.toString()));
+                    copy.append((String)AccessController.doPrivileged( 
+                        J2DoPrivHelper.getPropertyAction(param.toString())));
                 param = null;
             } else if (param != null)
                 param.append(ch);

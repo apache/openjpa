@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.meta.SourceTracker;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.TemporaryClassLoader;
@@ -91,8 +93,9 @@ public class PersistenceUnitInfoImpl
     }
 
     public ClassLoader getNewTempClassLoader() {
-        return new TemporaryClassLoader(Thread.currentThread().
-            getContextClassLoader());
+        return new TemporaryClassLoader(
+            (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction()));
     }
 
     public String getPersistenceUnitName() {
@@ -201,15 +204,17 @@ public class PersistenceUnitInfoImpl
         MultiClassLoader loader = new MultiClassLoader();
         loader.addClassLoader(getClass().getClassLoader());
         loader.addClassLoader(MultiClassLoader.THREAD_LOADER);
-        URL url = loader.getResource(name);
+        URL url = (URL)AccessController.doPrivileged( 
+            J2DoPrivHelper.getResourceAction(loader, name));
         if (url != null) {
             addJarFile(url);
             return;
         }
 
         // jar file is not a resource; check classpath
-        String[] cp = System.getProperty("java.class.path").
-            split(System.getProperty("path.separator"));
+        String[] cp = ((String)AccessController.doPrivileged( 
+            J2DoPrivHelper.getPropertyAction("java.class.path"))) 
+            .split(J2DoPrivHelper.getPathSeparator());
         for (int i = 0; i < cp.length; i++) {
             if (cp[i].equals(name)
                 || cp[i].endsWith(File.separatorChar + name)) {

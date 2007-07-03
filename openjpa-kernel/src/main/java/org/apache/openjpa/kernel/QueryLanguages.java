@@ -18,10 +18,13 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.kernel.exps.ExpressionParser;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Services;
 import org.apache.openjpa.util.InternalException;
 
@@ -37,11 +40,16 @@ public class QueryLanguages {
     static {
         // Load and cache all the query languages available in the system.
         Class[] classes = Services.getImplementorClasses(
-            ExpressionParser.class, ExpressionParser.class.getClassLoader());
+            ExpressionParser.class,
+            (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getClassLoaderAction(ExpressionParser.class)));
         for (int i = 0; i < classes.length; i++) {
             ExpressionParser ep;
             try {
-                ep = (ExpressionParser) classes[i].newInstance();
+                ep = (ExpressionParser)AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(classes[i]));
+            } catch( PrivilegedActionException pae ) {
+                throw new InternalException(pae.getException());
             } catch (InstantiationException e) {
                 throw new InternalException(e);
             } catch (IllegalAccessException e) {

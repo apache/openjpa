@@ -19,10 +19,13 @@
 package org.apache.openjpa.jdbc.conf;
 
 import java.lang.reflect.InvocationTargetException;
+import java.security.AccessController;
 
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.PluginValue;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
+
 import serp.util.Strings;
 
 /**
@@ -44,7 +47,9 @@ public class MappingRepositoryValue
         // since the MappingRepository takes a JDBConfiguration constructor,
         // we need to manually perform the instantiation
         try {
-            Class cls = Strings.toClass(clsName, type.getClassLoader());
+            Class cls = Strings.toClass(clsName,
+                (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getClassLoaderAction(type)));        
             return cls.getConstructor(new Class[]{ JDBCConfiguration.class }).
                 newInstance(new Object[]{ conf });
         } catch (RuntimeException e) {

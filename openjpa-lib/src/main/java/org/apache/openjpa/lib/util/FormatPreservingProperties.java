@@ -578,7 +578,7 @@ public class FormatPreservingProperties extends Properties {
         }
 
         public void append(String newline) {
-            line.append(System.getProperty("line.separator"));
+            line.append(J2DoPrivHelper.getLineSeparator());
             line.append(newline);
         }
 

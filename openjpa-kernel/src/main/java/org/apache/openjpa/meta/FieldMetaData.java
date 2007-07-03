@@ -28,6 +28,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -50,6 +52,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
@@ -1213,7 +1216,8 @@ public class FieldMetaData
 
         try {
             if (val == null && getNullValue() == NULL_DEFAULT)
-                return getDeclaredType().newInstance();
+                return AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(getDeclaredType())); 
 
             // invoke either the constructor for the field type,
             // or the static type.toField(val[, ctx]) method
@@ -1246,6 +1250,8 @@ public class FieldMetaData
 
             if (e instanceof OpenJPAException)
                 throw (OpenJPAException) e;
+            if (e instanceof PrivilegedActionException)
+                e = ((PrivilegedActionException)e).getException();
             throw new MetaDataException(_loc.get("factory-err", this,
                 Exceptions.toString(val), e.toString())).setCause(e);
         }
@@ -1956,22 +1962,23 @@ public class FieldMetaData
             String memberName = (String) in.readObject();
             try {
                 if (isField)
-                    _member = cls.getDeclaredField(memberName);
+                    _member = (Field) AccessController.doPrivileged(
+                        J2DoPrivHelper.getDeclaredFieldAction(
+                            cls,memberName)); 
                 else {
                     Class[] parameterTypes = (Class[]) in.readObject();
-                    _member = cls.getDeclaredMethod(memberName, parameterTypes);
+                    _member = (Method) AccessController.doPrivileged(
+                        J2DoPrivHelper.getDeclaredMethodAction(
+                            cls, memberName, parameterTypes));
                 }
             } catch (SecurityException e) {
                 IOException ioe = new IOException(e.getMessage());
                 ioe.initCause(e);
                 throw ioe;
-            } catch (NoSuchFieldException e) {
-                IOException ioe = new IOException(e.getMessage());
-                ioe.initCause(e);
-                throw ioe;
-            } catch (NoSuchMethodException e) {
-                IOException ioe = new IOException(e.getMessage());
-                ioe.initCause(e);
+            } catch( PrivilegedActionException pae ) {
+                IOException ioe = new IOException(
+                    pae.getException().getMessage());
+                ioe.initCause(pae);
                 throw ioe;
             }
         }

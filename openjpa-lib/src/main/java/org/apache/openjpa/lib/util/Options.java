@@ -22,6 +22,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -31,6 +33,7 @@ import java.util.Properties;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
+
 import serp.util.Strings;
 
 /**
@@ -363,7 +366,12 @@ public class Options extends TypedProperties {
             // inner instance and set it in object
             if (inner == null && setter != null) {
                 Class innerType = getType(setter)[0];
-                inner = innerType.newInstance();
+                try {
+                    inner = AccessController.doPrivileged(
+                        J2DoPrivHelper.newInstanceAction(innerType));
+                } catch( PrivilegedActionException pae ) {
+                    throw pae.getException();
+                }
                 invoke(match[0], setter, new Object[]{ inner });
             }
             match[0] = inner;
@@ -444,7 +452,12 @@ public class Options extends TypedProperties {
         }
         if (!type.isAssignableFrom(subType))
             throw err;
-        return subType.newInstance();
+        try {
+            return AccessController.doPrivileged(
+                J2DoPrivHelper.newInstanceAction(subType));
+        } catch( PrivilegedActionException pae ) {
+            throw pae.getException();
+        }
     }
 
     /**

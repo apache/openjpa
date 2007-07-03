@@ -25,6 +25,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +50,7 @@ import java.util.TreeSet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Files;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
@@ -84,8 +87,10 @@ public class ProxyManagerImpl
         _stdCollections.put(List.class, ArrayList.class);
         if (JavaVersions.VERSION >= 5) {
             try {
-                Class queue = Class.forName("java.util.Queue", false, 
-                    Collection.class.getClassLoader());
+                Class queue = Class.forName("java.util.Queue", false,
+                    (ClassLoader)AccessController.doPrivileged( 
+                        J2DoPrivHelper.getClassLoaderAction(
+                            Collection.class)));
                 _stdCollections.put(queue, LinkedList.class);
             } catch (Throwable t) {
                 // not really java 5 after all?
@@ -492,10 +497,18 @@ public class ProxyManagerImpl
             if (cons != null)
                 return (Proxy) cls.getConstructor(cons.getParameterTypes()).
                     newInstance(args);
-            return (Proxy) cls.newInstance();
+            return (Proxy) AccessController.doPrivileged(
+                J2DoPrivHelper.newInstanceAction(cls));
         } catch (InstantiationException ie) {
             throw new UnsupportedException(_loc.get("cant-newinstance", 
                 cls.getSuperclass().getName()));
+        } catch( PrivilegedActionException pae ) {
+            Exception e = pae.getException();
+            if( e instanceof InstantiationException)
+                throw new UnsupportedException(_loc.get("cant-newinstance", 
+                    cls.getSuperclass().getName()));
+            else
+                throw new GeneralException(cls.getName()).setCause(e);
         } catch (Throwable t) {
             throw new GeneralException(cls.getName()).setCause(t);
         }
@@ -506,8 +519,10 @@ public class ProxyManagerImpl
      * classes.
      */
     private static ClassLoader getMostDerivedLoader(Class c1, Class c2) {
-        ClassLoader l1 = c1.getClassLoader();
-        ClassLoader l2 = c2.getClassLoader();
+        ClassLoader l1 = (ClassLoader)AccessController.doPrivileged( 
+            J2DoPrivHelper.getClassLoaderAction(c1)); 
+        ClassLoader l2 = (ClassLoader)AccessController.doPrivileged( 
+            J2DoPrivHelper.getClassLoaderAction(c2)); 
         if (l1 == l2)
             return l1;
         if (l1 == null)
@@ -515,7 +530,10 @@ public class ProxyManagerImpl
         if (l2 == null)
             return l1;
         
-        for (ClassLoader p = l1.getParent(); p != null; p = p.getParent())
+        for (ClassLoader p = (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getParentAction( l1 )); p != null;
+                p = (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getParentAction( p )))
             if (p == l2)
                 return l1;
         return l2;
@@ -1570,7 +1588,8 @@ public class ProxyManagerImpl
     public static void main(String[] args) 
         throws ClassNotFoundException, IOException {
         File dir = Files.getClassFile(ProxyManagerImpl.class);
-        dir = (dir == null) ? new File(System.getProperty("user.dir"))
+        dir = (dir == null) ? new File((String)AccessController.doPrivileged( 
+            J2DoPrivHelper.getPropertyAction("user.dir")))
             : dir.getParentFile();
 
         Options opts = new Options();

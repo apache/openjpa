@@ -19,6 +19,8 @@
 package org.apache.openjpa.lib.conf;
 
 import java.io.File;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -34,6 +36,7 @@ import javax.naming.NamingException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.ParseException;
@@ -206,8 +209,12 @@ public class Configurations {
         }
 
         try {
-            return cls.newInstance();
+            return AccessController.doPrivileged(
+                J2DoPrivHelper.newInstanceAction(cls));
         } catch (Exception e) {
+            if( e instanceof PrivilegedActionException) {
+                e = ((PrivilegedActionException)e).getException();   
+            }
             RuntimeException re = new NestableRuntimeException(_loc.get
                 ("obj-create", cls).getMessage(), e);
             if (fatal)
@@ -229,25 +236,33 @@ public class Configurations {
         // we always prefer the thread loader, because it's the only thing we
         // can access that isn't bound to the OpenJPA classloader, unless
         // the conf object is of a custom class
-        ClassLoader ctxLoader = Thread.currentThread().getContextClassLoader();
+        ClassLoader ctxLoader = (ClassLoader)AccessController.doPrivileged( 
+            J2DoPrivHelper.getContextClassLoaderAction());
         if (loader == null) {
             if (ctxLoader != null)
                 return ctxLoader;
             if (conf != null)
-                return conf.getClass().getClassLoader();
+                return (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getClassLoaderAction(conf.getClass())); 
             return Configurations.class.getClassLoader();
         }
 
         for (ClassLoader parent = ctxLoader; parent != null; 
-            parent = parent.getParent()) {
+            parent = (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getParentAction( parent ))) {
             if (parent == loader)
                 return ctxLoader;
         }
         if (conf != null) {
-            for (ClassLoader parent = conf.getClass().getClassLoader(); 
-                parent != null; parent = parent.getParent()) {
+            for (ClassLoader parent = (ClassLoader)
+                AccessController.doPrivileged( 
+                    J2DoPrivHelper.getClassLoaderAction(conf.getClass())); 
+                parent != null; 
+                parent = (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getParentAction( parent ))) {
                 if (parent == loader)
-                    return conf.getClass().getClassLoader();
+                    return (ClassLoader)AccessController.doPrivileged( 
+                        J2DoPrivHelper.getClassLoaderAction(conf.getClass())); 
             }
         }
         return loader;

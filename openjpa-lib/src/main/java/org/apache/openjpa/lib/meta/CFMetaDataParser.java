@@ -18,7 +18,10 @@
  */
 package org.apache.openjpa.lib.meta;
 
+import java.security.AccessController;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -295,7 +298,8 @@ public class CFMetaDataParser extends XMLMetaDataParser {
             return null;
 
         if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
+            loader = (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction());
         boolean fullName = name.indexOf('.') != -1;
         boolean noPackage = StringUtils.isEmpty(pkg);
         try {

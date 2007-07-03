@@ -28,6 +28,7 @@ import java.util.Iterator;
 
 import org.apache.openjpa.conf.OpenJPAVersion;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVersions;
 
 /**
@@ -41,7 +42,7 @@ public class Exceptions {
 
     public static final Throwable[] EMPTY_THROWABLES = new Throwable[0];
 
-    static final String SEP = System.getProperty("line.separator");
+    static final String SEP = J2DoPrivHelper.getLineSeparator();
 
     private static final OutputStream DEV_NULL = new OutputStream() {
         public void write(int b) {

@@ -23,8 +23,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.GeneralException; 
 import org.apache.openjpa.util.UserException; 
@@ -116,7 +118,8 @@ public class Reflection {
      */
     private static Method getDeclaredMethod(Class cls, String name,
         Class param) {
-        Method[] methods = cls.getDeclaredMethods();
+        Method[] methods = (Method[])AccessController.doPrivileged( 
+            J2DoPrivHelper.getDeclaredMethodsAction( cls ));
         for (int i = 0 ; i < methods.length; i++) {
     	    if (name.equals(methods[i].getName())) {
                 Class[] methodParams = methods[i].getParameterTypes();
@@ -160,7 +163,8 @@ public class Reflection {
      * @since 0.9.8
      */
     private static Field getDeclaredField(Class cls, String name) {
-        Field[] fields = cls.getDeclaredFields();
+        Field[] fields = (Field[])AccessController.doPrivileged( 
+            J2DoPrivHelper.getDeclaredFieldsAction( cls ));
         for (int i = 0 ; i < fields.length; i++) {
     	    if (name.equals(fields[i].getName()))
 		        return fields[i];

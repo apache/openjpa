@@ -20,6 +20,7 @@ package org.apache.openjpa.lib.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.AccessController;
 import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
@@ -37,7 +38,8 @@ class StreamResourceBundleProvider implements ResourceBundleProvider {
         ClassLoader loader) {
         String rsrc = name.replace('.', '/') + ".properties";
         if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
+            loader = (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction());
 
         InputStream in = loader.getResourceAsStream(rsrc);
         if (in != null) {

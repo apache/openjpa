@@ -21,6 +21,8 @@ package org.apache.openjpa.persistence;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -42,6 +44,7 @@ import org.apache.openjpa.lib.conf.MapConfigurationProvider;
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.XMLMetaDataParser;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -84,7 +87,8 @@ public class PersistenceProductDerivation
     public void validate()
         throws Exception {
         // make sure JPA is available
-        javax.persistence.EntityManagerFactory.class.getClassLoader();
+        AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(
+            javax.persistence.EntityManagerFactory.class));
     }
     
     @Override
@@ -244,14 +248,23 @@ public class PersistenceProductDerivation
         String name, Map m, ClassLoader loader, boolean explicit)
         throws IOException {
         if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
+            loader = (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction());
 
-        Enumeration<URL> urls = loader.getResources(rsrc);
-        if (!urls.hasMoreElements()) {
-            if (!rsrc.startsWith("META-INF"))
-                urls = loader.getResources("META-INF/" + rsrc);
-            if (!urls.hasMoreElements())
-                return null;
+        Enumeration<URL> urls = null;
+        try {
+            urls = (Enumeration)AccessController.doPrivileged( 
+                J2DoPrivHelper.getResourcesAction(loader, rsrc)); 
+            if (!urls.hasMoreElements()) {
+                if (!rsrc.startsWith("META-INF"))
+                    urls = (Enumeration)AccessController.doPrivileged( 
+                        J2DoPrivHelper.getResourcesAction(
+                            loader, "META-INF/" + rsrc)); 
+                if (!urls.hasMoreElements())
+                    return null;
+            }
+        } catch( PrivilegedActionException pae ) {
+            throw (IOException)pae.getException();
         }
 
         ConfigurationParser parser = new ConfigurationParser(m);
@@ -333,7 +346,8 @@ public class PersistenceProductDerivation
             return true;
 
         if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
+            loader = (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction());
         try {
             if (PersistenceProviderImpl.class.isAssignableFrom
                 (Class.forName(provider, false, loader)))

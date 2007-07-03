@@ -20,6 +20,8 @@ package org.apache.openjpa.meta;
 
 import java.io.File;
 import java.io.Serializable;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.SeqValue;
@@ -28,6 +30,7 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.Closeable;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.util.MetaDataException;
@@ -252,7 +255,8 @@ public class SequenceMetaData
             String clsName = plugin.getClassName();
 
             Class cls = Class.forName(clsName, true,
-                Seq.class.getClassLoader());
+                (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getClassLoaderAction(Seq.class)));
             StringBuffer props = new StringBuffer();
             if (plugin.getProperties() != null)
                 props.append(plugin.getProperties());
@@ -262,7 +266,8 @@ public class SequenceMetaData
             // interface or a factory class
             Seq seq;
             if (Seq.class.isAssignableFrom(cls)) {
-                seq = (Seq) cls.newInstance();
+                seq = (Seq) AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(cls));
                 Configurations.configureInstance(seq,
                     _repos.getConfiguration(), props.toString());
                 seq.setType(_type);
@@ -275,6 +280,8 @@ public class SequenceMetaData
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (Exception e) {
+            if (e instanceof PrivilegedActionException)
+                e = ((PrivilegedActionException)e).getException();
             throw new MetaDataException(_loc.get("cant-init-seq", _name)).
                 setCause(e);
         }

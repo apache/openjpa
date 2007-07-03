@@ -21,14 +21,18 @@ package org.apache.openjpa.lib.meta;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
@@ -112,7 +116,14 @@ public class FileMetaDataIterator implements MetaDataIterator {
     public InputStream getInputStream() throws IOException {
         if (_file == null)
             throw new IllegalStateException();
-        return new FileInputStream(_file);
+        FileInputStream fis = null;
+        try {
+            fis = (FileInputStream) AccessController.doPrivileged(
+                J2DoPrivHelper.newFileInputStreamAction(_file));
+            return fis;
+        } catch( PrivilegedActionException pae ) {
+            throw (FileNotFoundException)pae.getException();
+        }
     }
 
     public File getFile() {
@@ -137,8 +148,15 @@ public class FileMetaDataIterator implements MetaDataIterator {
         }
 
         public byte[] getContent() throws IOException {
-            long len = _file.length();
-            FileInputStream fin = new FileInputStream(_file);
+            long len = ((Long)AccessController.doPrivileged( 
+                J2DoPrivHelper.lengthAction( _file ))).longValue();
+            FileInputStream fin = null;
+            try {
+                fin = (FileInputStream) AccessController.doPrivileged(
+                    J2DoPrivHelper.newFileInputStreamAction(_file));
+            } catch( PrivilegedActionException pae ) {
+                 throw (FileNotFoundException)pae.getException();
+            }
             try {
                 byte[] content;
                 if (len <= 0 || len > Integer.MAX_VALUE) {

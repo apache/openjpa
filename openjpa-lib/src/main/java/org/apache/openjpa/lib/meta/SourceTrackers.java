@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.lib.meta;
 
+import java.security.AccessController;
+
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
@@ -30,7 +33,7 @@ public class SourceTrackers {
     private static final Localizer _loc =
         Localizer.forPackage(SourceTrackers.class);
 
-    private static final String SEP = System.getProperty("line.separator");
+    private static final String SEP = J2DoPrivHelper.getLineSeparator();
 
     /**
      * Create a message appropriate for display to the user describing
@@ -46,7 +49,9 @@ public class SourceTrackers {
         for (int i = 0; i < trackers.length; i++) {
             sourceFilePath = (trackers[i].getSourceFile() == null ?
                 _loc.get("source-tracker-file-unknown").getMessage() :
-                trackers[i].getSourceFile().getAbsolutePath());
+                (String)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getAbsolutePathAction(
+                        trackers[i].getSourceFile())));
             buf.append("  ").append(_loc.get(
                 "source-trackers-location-line-item",
                 trackers[i].getResourceName(), sourceFilePath));

@@ -39,6 +39,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -57,6 +58,7 @@ import org.apache.openjpa.lib.log.LogFactory;
 import org.apache.openjpa.lib.log.LogFactoryImpl;
 import org.apache.openjpa.lib.log.NoneLogFactory;
 import org.apache.openjpa.lib.util.Closeable;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.ParseException;
@@ -99,7 +101,7 @@ import serp.util.Strings;
 public class ConfigurationImpl
     implements Configuration, Externalizable, ValueListener {
 
-    private static final String SEP = System.getProperty("line.separator");
+    private static final String SEP = J2DoPrivHelper.getLineSeparator();
 
     private static final Localizer _loc = Localizer.forPackage
         (ConfigurationImpl.class);
@@ -163,7 +165,8 @@ public class ConfigurationImpl
      */
     public boolean loadGlobals() {
         MultiClassLoader loader = new MultiClassLoader();
-        loader.addClassLoader(Thread.currentThread().getContextClassLoader());
+        loader.addClassLoader((ClassLoader)AccessController.doPrivileged( 
+            J2DoPrivHelper.getContextClassLoaderAction()));
         loader.addClassLoader(getClass().getClassLoader());
         ConfigurationProvider provider = ProductDerivations.loadGlobals(loader);
         if (provider != null)
@@ -171,7 +174,9 @@ public class ConfigurationImpl
 
         // let system properties override other globals
         try {
-            fromProperties(new HashMap(System.getProperties()));
+            fromProperties(new HashMap(
+                (Properties)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getPropertiesAction())));
         } catch (SecurityException se) {
             // security manager might disallow
         }

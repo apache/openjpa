@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -84,11 +85,13 @@ public class Services {
     public static String[] getImplementors(String serviceName,
         ClassLoader loader) {
         if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
+            loader = (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction());
 
         try {
             Set resourceList = new TreeSet();
-            Enumeration resources = loader.getResources(PREFIX + serviceName);
+            Enumeration resources = (Enumeration)AccessController.doPrivileged( 
+                J2DoPrivHelper.getResourcesAction(loader, PREFIX + serviceName)); 
             while (resources.hasMoreElements())
                 addResources((URL) resources.nextElement(), resourceList);
 
@@ -175,7 +178,8 @@ public class Services {
     public static Class[] getImplementorClasses(String serviceName,
         ClassLoader loader, boolean skipMissing) throws ClassNotFoundException {
         if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
+            loader = (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction());
 
         String[] names = getImplementors(serviceName, loader);
         if (names == null)

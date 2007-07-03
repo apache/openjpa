@@ -21,6 +21,8 @@ package org.apache.openjpa.persistence;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -45,6 +47,7 @@ import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.CFMetaDataParser;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.DelegatingMetaDataFactory;
@@ -1096,22 +1099,29 @@ public class XMLPersistenceMetaDataParser
                     String cap = StringUtils.capitalize(name);
                     type = meta.getDescribedType();
                     try {
-                        member = type.getDeclaredMethod("get" + cap,
-                            (Class[]) null); // varargs disambiguate
+                        member = (Method) AccessController.doPrivileged(
+                            J2DoPrivHelper.getDeclaredMethodAction(
+                                type, "get" + cap,
+                                (Class[]) null));// varargs disambiguate
                     } catch (Exception excep) {
                         try {
-                            member = type.getDeclaredMethod("is" + cap,
-                                (Class[]) null);
+                            member = (Method) AccessController.doPrivileged(
+                                J2DoPrivHelper.getDeclaredMethodAction(
+                                    type, "is" + cap, (Class[]) null));
                         } catch (Exception excep2) {
                             throw excep;
                         }
                     }
                     type = ((Method) member).getReturnType();
                 } else {
-                    member = meta.getDescribedType().getDeclaredField(name);
+                    member = (Field) AccessController.doPrivileged(
+                        J2DoPrivHelper.getDeclaredFieldAction(
+                            meta.getDescribedType(), name));
                     type = ((Field) member).getType();
                 }
             } catch (Exception e) {
+                if (e instanceof PrivilegedActionException)
+                    e = ((PrivilegedActionException)e).getException();
                 throw getException(_loc.get("invalid-attr", name, meta), e);
             }
 

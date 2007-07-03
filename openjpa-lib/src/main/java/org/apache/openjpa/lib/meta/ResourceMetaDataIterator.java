@@ -23,11 +23,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 
 /**
@@ -61,11 +64,16 @@ public class ResourceMetaDataIterator implements MetaDataIterator {
             loader = multi;
         }
 
-        Enumeration e = loader.getResources(rsrc);
-        while (e.hasMoreElements()) {
-            if (_urls == null)
-                _urls = new ArrayList(3);
-            _urls.add(e.nextElement());
+        try {
+            Enumeration e = (Enumeration)AccessController.doPrivileged( 
+                J2DoPrivHelper.getResourcesAction(loader, rsrc));
+            while (e.hasMoreElements()) {
+                if (_urls == null)
+                    _urls = new ArrayList(3);
+                _urls.add(e.nextElement());
+            }
+        } catch( PrivilegedActionException pae ) {
+            throw (IOException)pae.getException();
         }
     }
 
@@ -82,7 +90,12 @@ public class ResourceMetaDataIterator implements MetaDataIterator {
     public InputStream getInputStream() throws IOException {
         if (_url == -1 || _url >= _urls.size())
             throw new IllegalStateException();
-        return ((URL) _urls.get(_url)).openStream();
+        try {
+            return (InputStream)AccessController.doPrivileged(
+                J2DoPrivHelper.openStreamAction((URL) _urls.get(_url)));
+        } catch( PrivilegedActionException pae ) {
+            throw (IOException)pae.getException();
+        }
     }
 
     public File getFile() throws IOException {
@@ -90,7 +103,8 @@ public class ResourceMetaDataIterator implements MetaDataIterator {
             throw new IllegalStateException();
         File file = new File(URLDecoder.decode(((URL) _urls.get(_url)).
             getFile()));
-        return (file.exists()) ? file : null;
+        return (((Boolean)AccessController.doPrivileged( 
+            J2DoPrivHelper.existsAction( file ))).booleanValue()) ? file :null;
     }
 
     public void close() {

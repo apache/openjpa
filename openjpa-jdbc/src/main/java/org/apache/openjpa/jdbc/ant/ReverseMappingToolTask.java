@@ -20,6 +20,9 @@ package org.apache.openjpa.jdbc.ant;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,6 +36,7 @@ import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.util.CodeFormat;
 import org.apache.openjpa.lib.util.Files;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.tools.ant.types.EnumeratedAttribute;
 
 /**
@@ -258,14 +262,25 @@ public class ReverseMappingToolTask
         // load customizer properties
         Properties customProps = new Properties();
         File propsFile = Files.getFile(customizerProperties, loader);
-        if (propsFile != null && propsFile.exists())
-            customProps.load(new FileInputStream(propsFile));
+        if (propsFile != null && ((Boolean)AccessController.doPrivileged( 
+            J2DoPrivHelper.existsAction( propsFile ))).booleanValue() ) {
+            FileInputStream fis = null;
+            try {
+                fis = (FileInputStream) AccessController.doPrivileged(
+                    J2DoPrivHelper.newFileInputStreamAction(propsFile));
+            } catch( PrivilegedActionException pae ) {
+                 throw (FileNotFoundException)pae.getException();
+            }
+            customProps.load(fis);
+        }
 
         // create and configure customizer
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         flags.customizer = (ReverseCustomizer) Configurations.
             newInstance(customizerClass, conf, null,
-                ReverseCustomizer.class.getClassLoader());
+                (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getClassLoaderAction(
+                        ReverseCustomizer.class)));
         if (flags.customizer != null)
             flags.customizer.setConfiguration(customProps);
 

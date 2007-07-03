@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.lib.util;
 
+import java.security.AccessController;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
@@ -99,7 +100,8 @@ public class Localizer {
             return loc;
         else {
             loc = new Localizer(pkg, file, locale, 
-                cls == null ? null : cls.getClassLoader());
+                cls == null ? null:(ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getClassLoaderAction(cls))); 
             _localizers.put(key, loc);
             return loc;
         }

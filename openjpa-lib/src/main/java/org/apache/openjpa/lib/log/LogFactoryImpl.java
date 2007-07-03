@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -32,6 +34,7 @@ import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.GenericConfigurable;
 import org.apache.openjpa.lib.util.Files;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
@@ -57,7 +60,7 @@ public class LogFactoryImpl
     public static final String STDOUT = "stdout";
     public static final String STDERR = "stderr";
 
-    private static final String NEWLINE = System.getProperty("line.separator");
+    private static final String NEWLINE = J2DoPrivHelper.getLineSeparator();
 
     /**
      * The time at which this factory was initialized.
@@ -179,8 +182,15 @@ public class LogFactoryImpl
         else {
             File f = Files.getFile(file, null);
             try {
-                _out = new PrintStream(new FileOutputStream
-                    (f.getCanonicalPath(), true));
+                _out = new PrintStream((FileOutputStream)
+                    AccessController.doPrivileged(
+                        J2DoPrivHelper.newFileOutputStreamAction(
+                            (String)AccessController.doPrivileged( 
+                                J2DoPrivHelper.getCanonicalPathAction( f )),
+                            true)));
+            } catch( PrivilegedActionException pae ) {
+                throw new IllegalArgumentException(_loc.get("log-bad-file",
+                        file) + " " + pae.getException());
             } catch (IOException ioe) {
                 throw new IllegalArgumentException(_loc.get("log-bad-file",
                     file) + " " + ioe.toString());

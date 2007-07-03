@@ -19,6 +19,8 @@
 package org.apache.openjpa.jdbc.meta;
 
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.HashMap;
@@ -70,6 +72,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -446,12 +449,18 @@ public class MappingRepository
         try {
             if (strat == null)
                 strat = JavaTypes.classForName(name, cls,
-                    ClassStrategy.class.getClassLoader());
-            ClassStrategy strategy = (ClassStrategy) strat.newInstance();
+                    (ClassLoader)AccessController.doPrivileged( 
+                        J2DoPrivHelper.getClassLoaderAction(
+                            ClassStrategy.class)));
+            ClassStrategy strategy = 
+                (ClassStrategy)AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(strat));
             Configurations.configureInstance(strategy, getConfiguration(),
                 props);
             return strategy;
         } catch (Exception e) {
+            if (e instanceof PrivilegedActionException)
+                e = ((PrivilegedActionException)e).getException();
             throw new MetaDataException(_loc.get("bad-cls-strategy",
                 cls, name), e);
         }
@@ -474,9 +483,12 @@ public class MappingRepository
         name = Configurations.getClassName(name);
         try {
             Class c = JavaTypes.classForName(name, field,
-                FieldStrategy.class.getClassLoader());
+                (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)));
             if (FieldStrategy.class.isAssignableFrom(c)) {
-                FieldStrategy strat = (FieldStrategy) c.newInstance();
+                FieldStrategy strat = (FieldStrategy)
+                    AccessController.doPrivileged(
+                        J2DoPrivHelper.newInstanceAction(c));
                 Configurations.configureInstance(strat, getConfiguration(),
                     props);
                 return strat;
@@ -484,13 +496,16 @@ public class MappingRepository
 
             // must be named handler
             if (installHandlers) {
-                ValueHandler vh = (ValueHandler) c.newInstance();
+                ValueHandler vh = (ValueHandler)AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(c));
                 Configurations.configureInstance(vh, getConfiguration(),
                     props);
                 field.setHandler(vh);
             }
             return new HandlerFieldStrategy();
         } catch (Exception e) {
+            if (e instanceof PrivilegedActionException)
+                e = ((PrivilegedActionException )e).getException();
             throw new MetaDataException(_loc.get("bad-field-strategy",
                 field, name), e);
         }
@@ -541,13 +556,18 @@ public class MappingRepository
             if (strat == null)
                 strat = JavaTypes.classForName(name,
                     discrim.getClassMapping(),
-                    DiscriminatorStrategy.class.getClassLoader());
+                    (ClassLoader)AccessController.doPrivileged( 
+                        J2DoPrivHelper.getClassLoaderAction(
+                            DiscriminatorStrategy.class)));
             DiscriminatorStrategy strategy = (DiscriminatorStrategy)
-                strat.newInstance();
+                AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(strat));
             Configurations.configureInstance(strategy, getConfiguration(),
                 props);
             return strategy;
         } catch (Exception e) {
+            if (e instanceof PrivilegedActionException)
+                e = ((PrivilegedActionException )e).getException();
             throw new MetaDataException(_loc.get("bad-discrim-strategy",
                 discrim.getClassMapping(), name), e);
         }
@@ -598,7 +618,9 @@ public class MappingRepository
             if (strat == null)
                 strat = JavaTypes.classForName(name,
                     version.getClassMapping(),
-                    VersionStrategy.class.getClassLoader());
+                    (ClassLoader)AccessController.doPrivileged( 
+                        J2DoPrivHelper.getClassLoaderAction(
+                            VersionStrategy.class)));
         } catch (Exception e) {
             throw new MetaDataException(_loc.get("bad-version-strategy",
                 version.getClassMapping(), name), e);
@@ -613,11 +635,15 @@ public class MappingRepository
     protected VersionStrategy instantiateVersionStrategy(Class strat,
         Version version, String props) {
         try {
-            VersionStrategy strategy = (VersionStrategy) strat.newInstance();
+            VersionStrategy strategy = (VersionStrategy)
+                AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(strat));
             Configurations.configureInstance(strategy, getConfiguration(),
                 props);
             return strategy;
         } catch (Exception e) {
+            if (e instanceof PrivilegedActionException)
+                e = ((PrivilegedActionException )e).getException();
             throw new MetaDataException(_loc.get("bad-version-strategy",
                 version.getClassMapping(), strat + ""), e);
         }
@@ -914,11 +940,16 @@ public class MappingRepository
         String props = Configurations.getProperties(name);
         name = Configurations.getClassName(name);
         try {
-            Object o = JavaTypes.classForName(name, val,
-                FieldStrategy.class.getClassLoader()).newInstance();
+            Class c = JavaTypes.classForName(name, val,
+                (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)));
+            Object o = AccessController.doPrivileged(
+                J2DoPrivHelper.newInstanceAction(c));
             Configurations.configureInstance(o, getConfiguration(), props);
             return o;
         } catch (Exception e) {
+            if (e instanceof PrivilegedActionException)
+                e = ((PrivilegedActionException )e).getException();
             throw new MetaDataException(_loc.get("bad-mapped-strategy",
                 val, name), e);
         }
@@ -937,15 +968,19 @@ public class MappingRepository
         name = Configurations.getClassName(name);
         try {
             Class c = JavaTypes.classForName(name, val,
-                ValueHandler.class.getClassLoader());
+                (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getClassLoaderAction(ValueHandler.class)));
             if (ValueHandler.class.isAssignableFrom(c)) {
-                ValueHandler vh = (ValueHandler) c.newInstance();
+                ValueHandler vh = (ValueHandler)AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(c));
                 Configurations.configureInstance(vh, getConfiguration(),
                     props);
                 return vh;
             }
             return null; // named field strategy
         } catch (Exception e) {
+            if (e instanceof PrivilegedActionException)
+                e = ((PrivilegedActionException )e).getException();
             throw new MetaDataException(_loc.get("bad-value-handler",
                 val, name), e);
         }

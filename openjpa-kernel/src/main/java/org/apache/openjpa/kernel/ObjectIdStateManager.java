@@ -22,12 +22,14 @@ import java.io.IOException;
 import java.io.ObjectOutput;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.BitSet;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.enhance.Reflection;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -710,8 +712,12 @@ public class ObjectIdStateManager
     private void setValue(int field, Object val, boolean forceInst) {
         if (_oid == null && forceInst) {
             try {
-                _oid = getMetaData().getDescribedType().newInstance();
+                _oid = AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(
+                        getMetaData().getDescribedType()));
             } catch (Exception e) {
+                if (e instanceof PrivilegedActionException)
+                    e = ((PrivilegedActionException)e).getException();
                 throw new GeneralException(e);
             }
         } else if (_oid == null)

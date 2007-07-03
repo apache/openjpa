@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,6 +45,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.ClassArgParser;
 import org.apache.openjpa.lib.util.CodeFormat;
 import org.apache.openjpa.lib.util.Files;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
@@ -438,8 +440,8 @@ public class ApplicationIdTool {
             // indent the entire code block one level to make it
             // a propertly indented innder class
             _code = code.getTab() + Strings.replace(_code,
-                System.getProperty("line.separator"),
-                System.getProperty("line.separator") + code.getTab());
+                J2DoPrivHelper.getLineSeparator(),
+                J2DoPrivHelper.getLineSeparator() + code.getTab());
         }
 
         return true;
@@ -1417,9 +1419,11 @@ public class ApplicationIdTool {
             name = Strings.getPackageName(context) + "." + name;
 
         // first try with regular class loader
-        ClassLoader loader = context.getClassLoader();
+        ClassLoader loader = (ClassLoader)AccessController.doPrivileged( 
+            J2DoPrivHelper.getClassLoaderAction(context)); 
         if (loader == null)
-            loader = Thread.currentThread().getContextClassLoader();
+            loader = (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction()); 
         try {
             return Class.forName(name, false, loader);
         } catch (Throwable t) {

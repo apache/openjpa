@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.ant;
 
+import java.security.AccessController;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.EnumeratedAttribute;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -27,6 +29,7 @@ import org.apache.openjpa.jdbc.schema.SchemaTool;
 import org.apache.openjpa.lib.ant.AbstractTask;
 import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.util.Files;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.MultiLoaderClassResolver;
 
@@ -183,7 +186,8 @@ public class MappingToolTask
 
         MultiLoaderClassResolver resolver = new MultiLoaderClassResolver();
         resolver.addClassLoader(loader);
-        resolver.addClassLoader(MappingTool.class.getClassLoader());
+        resolver.addClassLoader((ClassLoader)AccessController.doPrivileged( 
+            J2DoPrivHelper.getClassLoaderAction(MappingTool.class)));
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         conf.setClassResolver(resolver);
 

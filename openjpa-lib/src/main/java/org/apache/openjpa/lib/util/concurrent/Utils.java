@@ -31,6 +31,8 @@ import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
+
 /**
  * This class groups together the functionality of java.util.concurrent that
  * cannot be fully and reliably implemented in backport, but for which some
@@ -53,15 +55,12 @@ public final class Utils {
     static {
         NanoTimer timer = null;
         try {
-            String nanoTimerClassName = (String)
-                AccessController.doPrivileged(new PrivilegedAction() {
-                    public Object run() {
-                        return System.getProperty(providerProp);
-                    }
-                });
+            String nanoTimerClassName = (String)AccessController.doPrivileged( 
+                J2DoPrivHelper.getPropertyAction(providerProp)); 
             if (nanoTimerClassName != null) {
                 Class cls = Class.forName(nanoTimerClassName);
-                timer = (NanoTimer) cls.newInstance();
+                timer = (NanoTimer)  AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(cls)); 
             }
         } catch (Exception e) {
             System.err.println(

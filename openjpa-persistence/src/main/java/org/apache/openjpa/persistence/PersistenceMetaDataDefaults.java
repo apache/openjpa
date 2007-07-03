@@ -25,6 +25,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -47,6 +48,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.AbstractMetaDataDefaults;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -250,9 +252,11 @@ public class PersistenceMetaDataDefaults
             return ClassMetaData.ACCESS_UNKNOWN;
 
         int access = 0;
-        if (usesAccess(cls.getDeclaredFields()))
+        if (usesAccess((Field[])AccessController.doPrivileged( 
+            J2DoPrivHelper.getDeclaredFieldsAction( cls ))))
             access |= ClassMetaData.ACCESS_FIELD;
-        if (usesAccess(cls.getDeclaredMethods()))
+        if (usesAccess((Method[])AccessController.doPrivileged( 
+            J2DoPrivHelper.getDeclaredMethodsAction( cls ))))
             access |= ClassMetaData.ACCESS_PROPERTY;
         return (access == 0) ? getAccessType(cls.getSuperclass()) : access;
     }
@@ -285,9 +289,11 @@ public class PersistenceMetaDataDefaults
         if (member instanceof Method) {
             try {
                 // check for setters for methods
-                Method setter = meta.getDescribedType().getDeclaredMethod("set"
-                    + StringUtils.capitalize(name), new Class[] { 
-                    ((Method) member).getReturnType() });
+                Method setter = (Method) AccessController.doPrivileged(
+                    J2DoPrivHelper.getDeclaredMethodAction(
+                        meta.getDescribedType(), "set" +
+                        StringUtils.capitalize(name), new Class[] { 
+                            ((Method) member).getReturnType() }));
                 if (setter == null)
                     return false;
             } catch (Exception e) {

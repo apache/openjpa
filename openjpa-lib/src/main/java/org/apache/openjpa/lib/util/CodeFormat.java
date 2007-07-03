@@ -26,7 +26,7 @@ package org.apache.openjpa.lib.util;
  */
 public final class CodeFormat implements Cloneable {
 
-    private static final String _sep = System.getProperty("line.separator");
+    private static final String _sep = J2DoPrivHelper.getLineSeparator();
 
     private String _tab = "\t";
     private boolean _spaceBeforeParen = false;

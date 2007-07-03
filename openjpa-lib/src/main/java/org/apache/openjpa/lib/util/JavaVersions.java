@@ -20,6 +20,7 @@ package org.apache.openjpa.lib.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.security.AccessController;
 
 /**
  * Utilities for dealing with different Java spec versions.
@@ -45,7 +46,8 @@ public class JavaVersions {
     private static Method INIT_CAUSE = null;
 
     static {
-        String specVersion = System.getProperty("java.specification.version");
+        String specVersion = (String)AccessController.doPrivileged( 
+            J2DoPrivHelper.getPropertyAction("java.specification.version")); 
         if ("1.2".equals(specVersion))
             VERSION = 2;
         else if ("1.3".equals(specVersion))

@@ -22,11 +22,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.OpenJPAException;
@@ -185,7 +187,9 @@ public abstract class AbstractMetaDataDefaults
             FieldMetaData fmd;
             for (int i = 0; i < fieldNames.length; i ++) {
                 if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
-                    member = cls.getDeclaredField(fieldNames[i]);
+                    member = (Field)AccessController.doPrivileged(
+                        J2DoPrivHelper.getDeclaredFieldAction(
+                            cls,fieldNames[i])); 
                 else
                     member = Reflection.findGetter(meta.getDescribedType(),
                         fieldNames[i], true);
@@ -200,6 +204,8 @@ public abstract class AbstractMetaDataDefaults
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (Exception e) {
+            if (e instanceof PrivilegedActionException)
+                e = ((PrivilegedActionException)e).getException();
             throw new UserException(e);
         }
     }
@@ -211,9 +217,13 @@ public abstract class AbstractMetaDataDefaults
         Member[] members;
         boolean iface = meta.getDescribedType().isInterface();
         if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD && !iface)
-            members = meta.getDescribedType().getDeclaredFields();
+            members = (Field[])AccessController.doPrivileged( 
+                J2DoPrivHelper.getDeclaredFieldsAction(
+                    meta.getDescribedType())); 
         else
-            members = meta.getDescribedType().getDeclaredMethods();
+            members = (Method[])AccessController.doPrivileged( 
+                J2DoPrivHelper.getDeclaredMethodsAction(
+                    meta.getDescribedType())); 
 
         int mods;
         String name;
@@ -313,12 +323,16 @@ public abstract class AbstractMetaDataDefaults
             //### where the superclass uses a different access type
             if (fmd.getDefiningMetaData().getAccessType() ==
                 ClassMetaData.ACCESS_FIELD)
-                return fmd.getDeclaringType().getDeclaredField(fmd.getName());
+                return (Field) AccessController.doPrivileged(
+                    J2DoPrivHelper.getDeclaredFieldAction(
+                        fmd.getDeclaringType(), fmd.getName())); 
             return Reflection.findGetter(fmd.getDeclaringType(), fmd.getName(),
                 true);
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (Exception e) {
+            if (e instanceof PrivilegedActionException)
+                e = ((PrivilegedActionException)e).getException();
             throw new InternalException(e);
         }
     }

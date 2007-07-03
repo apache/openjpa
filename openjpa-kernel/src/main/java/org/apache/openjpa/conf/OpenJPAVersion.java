@@ -20,8 +20,11 @@ package org.apache.openjpa.conf;
 
 import java.io.File;
 import java.io.InputStream;
+import java.security.AccessController;
 import java.util.Properties;
 import java.util.StringTokenizer;
+
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**
  * This class contains version information for OpenJPA. It uses
@@ -110,7 +113,9 @@ public class OpenJPAVersion {
 
         buf.append("java.class.path:\n");
         StringTokenizer tok = new StringTokenizer
-            (System.getProperty("java.class.path"), File.pathSeparator);
+            ((String)AccessController.doPrivileged( 
+                J2DoPrivHelper.getPropertyAction("java.class.path")),
+            File.pathSeparator);
         while (tok.hasMoreTokens()) {
             buf.append("\t").append(tok.nextToken());
             buf.append("\n");
@@ -132,6 +137,8 @@ public class OpenJPAVersion {
     }
 
     private StringBuffer appendProperty(String prop, StringBuffer buf) {
-        return buf.append(prop).append(": ").append(System.getProperty(prop));
+        return buf.append(prop).append(": ")
+            .append((String)AccessController.doPrivileged( 
+                J2DoPrivHelper.getPropertyAction(prop)));
     }
 }

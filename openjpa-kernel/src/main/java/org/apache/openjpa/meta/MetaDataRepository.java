@@ -19,6 +19,7 @@
 package org.apache.openjpa.meta;
 
 import java.io.Serializable;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,6 +43,7 @@ import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
@@ -398,7 +400,9 @@ public class MetaDataRepository
             // class never registers itself with the system
             if ((_validate & VALIDATE_RUNTIME) != 0) {
                 try {
-                    Class.forName(cls.getName(), true, cls.getClassLoader());
+                    Class.forName(cls.getName(), true,
+                        (ClassLoader)AccessController.doPrivileged( 
+                            J2DoPrivHelper.getClassLoaderAction(cls)));
                 } catch (Throwable t) {
                 }
             }
@@ -976,7 +980,8 @@ public class MetaDataRepository
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("resolve-identity", oidClass));
 
-        ClassLoader cl = oidClass.getClassLoader();
+        ClassLoader cl = (ClassLoader)AccessController.doPrivileged( 
+            J2DoPrivHelper.getClassLoaderAction(oidClass)); 
         String className;
         while (oidClass != null && oidClass != Object.class) {
             className = oidClass.getName();

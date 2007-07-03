@@ -14,11 +14,12 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.ant;
 
 import java.io.File;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -33,17 +34,18 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.ProductDerivations;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Ant tasks all have a nested <code>&lt;config&rt;</code> tag, which uses
  * the configuration as a bean-like task. E.g., you can do:
- * 
- * <code> 
+ *
+ * <code>
  * &lt;mytask&rt;<br />
- * &nbsp;&nbsp;&lt;config connectionUserName="foo"/&rt;<br /> 
+ * &nbsp;&nbsp;&lt;config connectionUserName="foo"/&rt;<br />
  * &lt;/mytask&rt;
- * </code> 
+ * </code>
  *
  * The default configuration for the system will be used if the
  * <code>&lt;config&rt;</code> subtask is excluded.
@@ -159,7 +161,8 @@ public abstract class AbstractTask extends MatchingTask {
             _conf = newConfiguration();
         if (_conf.getPropertiesResource() == null) {
             ConfigurationProvider cp = ProductDerivations.loadDefaults
-                (_conf.getClass().getClassLoader());
+                ((ClassLoader)AccessController.doPrivileged(
+                    J2DoPrivHelper.getClassLoaderAction(_conf.getClass())));
             if (cp != null)
                 cp.setInto(_conf);
         }
@@ -188,7 +191,8 @@ public abstract class AbstractTask extends MatchingTask {
                 File f = new File(dsFiles[j]);
                 if (!f.isFile())
                     f = new File(ds.getBasedir(), dsFiles[j]);
-                files.add(f.getAbsolutePath());
+                files.add((String)AccessController.doPrivileged(
+                    J2DoPrivHelper.getAbsolutePathAction( f )));
             }
         }
         return (String[]) files.toArray(new String[files.size()]);

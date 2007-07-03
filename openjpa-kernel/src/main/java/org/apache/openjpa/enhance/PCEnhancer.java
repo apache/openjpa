@@ -30,6 +30,8 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,6 +52,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.ClassArgParser;
 import org.apache.openjpa.lib.util.BytecodeWriter;
 import org.apache.openjpa.lib.util.Files;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.Services;
@@ -130,11 +133,13 @@ public class PCEnhancer {
     static {
         Class[] classes = Services.getImplementorClasses(
             AuxiliaryEnhancer.class, 
-            AuxiliaryEnhancer.class.getClassLoader());
+            (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getClassLoaderAction(AuxiliaryEnhancer.class)));
         List auxEnhancers = new ArrayList(classes.length);
         for (int i = 0; i < classes.length; i++) {
             try {
-                auxEnhancers.add(classes[i].newInstance());
+                auxEnhancers.add(AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(classes[i])));
 		    } catch (Throwable t) {
                 // aux enhancer may rely on non-existant spec classes, etc
 		    }
@@ -479,8 +484,9 @@ public class PCEnhancer {
      * Package-protected and static for testing.
      */
     static BCField getReturnedField(BCMethod meth) {
-        return findField(meth, new Code().xreturn().setType
-            (meth.getReturnType()), false);
+        return findField(meth, ((Code)AccessController.doPrivileged( 
+            J2DoPrivHelper.newCodeAction())).xreturn()
+            .setType(meth.getReturnType()), false);
     }
 
     /**
@@ -488,7 +494,8 @@ public class PCEnhancer {
      * Package-protected and static for testing.
      */
     static BCField getAssignedField(BCMethod meth) {
-        return findField(meth, new Code().putfield(), true);
+        return findField(meth, ((Code)AccessController.doPrivileged( 
+            J2DoPrivHelper.newCodeAction())).putfield(), true);
     }
 
     /**
@@ -567,7 +574,7 @@ public class PCEnhancer {
         if (_violations == null)
             return;
 
-        String sep = System.getProperty("line.separator");
+        String sep = J2DoPrivHelper.getLineSeparator();
         StringBuffer buf = new StringBuffer();
         for (Iterator itr = _violations.iterator(); itr.hasNext();) {
             buf.append(itr.next());
@@ -589,7 +596,8 @@ public class PCEnhancer {
      */
     private void replaceAndValidateFieldAccess() {
         // create template putfield/getfield instructions to search for
-        Code template = new Code();
+        Code template = (Code)AccessController.doPrivileged( 
+            J2DoPrivHelper.newCodeAction());
         Instruction put = template.putfield();
         Instruction get = template.getfield();
         Instruction stat = template.invokestatic();
@@ -1193,51 +1201,73 @@ public class PCEnhancer {
      */
     private void addStockMethods()
         throws NoSuchMethodException {
-        // pcGetGenericContext
-        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod
-            ("get" + CONTEXTNAME, (Class[]) null));
-
-        // pcFetchObjectId
-        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod
-            ("fetchObjectId", (Class[]) null));
-
-        // pcIsDeleted
-        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod
-            ("isDeleted", (Class[]) null));
-
-        // pcIsDirty
-        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod
-            ("isDirty", (Class[]) null));
-
-        // pcIsNew
-        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod
-            ("isNew", (Class[]) null));
-
-        // pcIsPersistent
-        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod
-            ("isPersistent", (Class[]) null));
-
-        // pcIsTransactional
-        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod
-            ("isTransactional", (Class[]) null));
-
-        // pcSerializing
-        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod
-            ("serializing", (Class[]) null));
-
-        // pcDirty
-        translateFromStateManagerMethod(SMTYPE.getDeclaredMethod("dirty",
-            new Class[]{ String.class }));
-
-        // pcGetStateManager
-        BCMethod meth = _pc.declareMethod(PRE + "GetStateManager",
-            StateManager.class, null);
-        Code code = meth.getCode(true);
-        loadManagedInstance(code, false);
-        code.getfield().setField(SM, StateManager.class);
-        code.areturn();
-        code.calculateMaxStack();
-        code.calculateMaxLocals();
+        try {
+            // pcGetGenericContext
+            translateFromStateManagerMethod(
+                (Method)AccessController.doPrivileged(
+                    J2DoPrivHelper.getDeclaredMethodAction(
+                        SMTYPE, "get" + CONTEXTNAME, (Class[]) null)));
+    
+            // pcFetchObjectId
+            translateFromStateManagerMethod(
+                (Method)AccessController.doPrivileged(
+                    J2DoPrivHelper.getDeclaredMethodAction(
+                        SMTYPE, "fetchObjectId", (Class[]) null)));
+    
+            // pcIsDeleted
+            translateFromStateManagerMethod(
+                (Method)AccessController.doPrivileged(
+                    J2DoPrivHelper.getDeclaredMethodAction(
+                        SMTYPE, "isDeleted", (Class[]) null)));
+    
+            // pcIsDirty
+            translateFromStateManagerMethod(
+                (Method)AccessController.doPrivileged(
+                    J2DoPrivHelper.getDeclaredMethodAction(
+                        SMTYPE, "isDirty", (Class[]) null)));
+    
+            // pcIsNew
+            translateFromStateManagerMethod(
+                (Method)AccessController.doPrivileged(
+                    J2DoPrivHelper.getDeclaredMethodAction(
+                        SMTYPE, "isNew", (Class[]) null)));
+    
+            // pcIsPersistent
+            translateFromStateManagerMethod(
+                (Method)AccessController.doPrivileged(
+                    J2DoPrivHelper.getDeclaredMethodAction(
+                        SMTYPE, "isPersistent", (Class[]) null)));
+    
+            // pcIsTransactional
+            translateFromStateManagerMethod(
+                (Method)AccessController.doPrivileged(
+                    J2DoPrivHelper.getDeclaredMethodAction(
+                        SMTYPE, "isTransactional", (Class[]) null)));
+    
+            // pcSerializing
+            translateFromStateManagerMethod(
+                (Method)AccessController.doPrivileged(
+                    J2DoPrivHelper.getDeclaredMethodAction(
+                        SMTYPE, "serializing", (Class[]) null)));
+    
+            // pcDirty
+            translateFromStateManagerMethod(
+                (Method)AccessController.doPrivileged(
+                    J2DoPrivHelper.getDeclaredMethodAction(
+                        SMTYPE, "dirty", new Class[]{ String.class })));
+    
+            // pcGetStateManager
+            BCMethod meth = _pc.declareMethod(PRE + "GetStateManager",
+                StateManager.class, null);
+            Code code = meth.getCode(true);
+            loadManagedInstance(code, false);
+            code.getfield().setField(SM, StateManager.class);
+            code.areturn();
+            code.calculateMaxStack();
+            code.calculateMaxLocals();
+        } catch( PrivilegedActionException pae ) {
+             throw (NoSuchMethodException)pae.getException();
+        }
     }
 
     /**
@@ -2160,7 +2190,15 @@ public class PCEnhancer {
         // use reflection to return the right method
         String name = prefix + typeName + "Field";
         Class[] params = (Class[]) plist.toArray(new Class[plist.size()]);
-        return owner.getDeclaredMethod(name, params);
+        
+        Method method = null;
+        try {
+            method = (Method) AccessController.doPrivileged(
+                J2DoPrivHelper.getDeclaredMethodAction(owner, name, params));
+        } catch( PrivilegedActionException pae ) {
+             throw (NoSuchMethodException)pae.getException();
+        }
+        return method;
     }
 
     /**
@@ -2459,7 +2497,8 @@ public class PCEnhancer {
             code.vreturn();
         }
 
-        Instruction tmplate = new Code().vreturn();
+        Instruction tmplate = ((Code)AccessController.doPrivileged( 
+            J2DoPrivHelper.newCodeAction())).vreturn();
         JumpInstruction toret;
         Instruction ret;
         code.beforeFirst();
@@ -2727,7 +2766,8 @@ public class PCEnhancer {
         if (clinit != null) {
             code = clinit.getCode(true);
             if (replaceLast) {
-                Code template = new Code();
+                Code template = (Code)AccessController.doPrivileged( 
+                    J2DoPrivHelper.newCodeAction());
                 code.searchForward(template.vreturn());
                 code.previous();
                 code.set(template.nop());
@@ -2768,7 +2808,9 @@ public class PCEnhancer {
         if (clone == null) {
             // add clone support for base classes
             // which also implement cloneable
-            if (!_pc.isInstanceOf(Cloneable.class)
+            if (!((Boolean)AccessController.doPrivileged( 
+                    J2DoPrivHelper.isInstanceOfAction( _pc, Cloneable.class )))
+                    .booleanValue()
                 || !superName.equals(Object.class.getName()))
                 return;
 
@@ -2796,8 +2838,9 @@ public class PCEnhancer {
         }
 
         // create template super.clone () instruction to match against
-        Instruction template = new Code().invokespecial().setMethod
-            (superName, "clone", Object.class.getName(), null);
+        Instruction template = ((Code)AccessController.doPrivileged( 
+            J2DoPrivHelper.newCodeAction())).invokespecial()
+            .setMethod(superName, "clone", Object.class.getName(), null);
 
         // find calls to the template instruction; on match
         // clone will be on stack

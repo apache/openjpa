@@ -19,6 +19,8 @@
 package org.apache.openjpa.jdbc.schema;
 
 import java.io.PrintWriter;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -27,6 +29,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.util.StoreException;
 
 /**
@@ -166,12 +169,16 @@ public class SimpleDriverDataSource
         }
 
         try {
-            _driver = (Driver) Class.forName(_connectionDriverName,
-                true, _classLoader).newInstance();
+            Class c = Class.forName(_connectionDriverName,
+                true, _classLoader);
+            _driver = (Driver)AccessController.doPrivileged(
+                J2DoPrivHelper.newInstanceAction(c));
             return _driver;
         } catch (Exception e) {
             if (e instanceof RuntimeException)
                 throw(RuntimeException) e;
+            if (e instanceof PrivilegedActionException)
+                e = ((PrivilegedActionException)e).getException();
             throw new StoreException(e);
         }
     }

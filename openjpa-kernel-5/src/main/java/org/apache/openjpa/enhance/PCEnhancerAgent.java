@@ -19,10 +19,12 @@
 package org.apache.openjpa.enhance;
 
 import java.lang.instrument.Instrumentation;
+import java.security.AccessController;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.TemporaryClassLoader;
 import org.apache.openjpa.util.ClassResolver;
@@ -54,8 +56,9 @@ public class PCEnhancerAgent {
         conf.setConnectionDriverName(null);
         conf.setConnectionFactoryName(null);
         // set single class resolver
-        final ClassLoader tmpLoader = new TemporaryClassLoader(Thread.
-            currentThread().getContextClassLoader());
+        final ClassLoader tmpLoader = new TemporaryClassLoader(
+            (ClassLoader)AccessController.doPrivileged( 
+                J2DoPrivHelper.getContextClassLoaderAction()));
         conf.setClassResolver(new ClassResolver() {
             public ClassLoader getClassLoader(Class context, ClassLoader env) {
                 return tmpLoader;

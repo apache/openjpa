@@ -23,6 +23,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -42,6 +44,7 @@ import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.AttributesImpl;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Files;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.lib.xml.XMLWriter;
@@ -135,8 +138,10 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
         File backup = Files.backup(file, false);
         if (backup == null) {
             File parent = file.getParentFile();
-            if (parent != null && !parent.exists())
-                parent.mkdirs();
+            if (parent != null && !((Boolean)AccessController.doPrivileged( 
+                J2DoPrivHelper.existsAction( parent ))).booleanValue())
+                AccessController.doPrivileged( 
+                    J2DoPrivHelper.mkdirsAction( parent ));
         }
         return backup;
     }
@@ -191,10 +196,16 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
             _log.info(_loc.get("ser-file", file));
 
         _backup = prepareWrite(file);
-        FileWriter out = new FileWriter(file.getCanonicalPath(),
-            (flags & APPEND) > 0);
-        serialize(out, flags);
-        out.close();
+        try {
+            FileWriter out = new FileWriter(
+                (String)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getCanonicalPathAction( file )),
+                (flags & APPEND) > 0);
+            serialize(out, flags);
+            out.close();
+        } catch( PrivilegedActionException pae ) {
+            throw (IOException)pae.getException();
+        }
     }
 
     public void serialize(Writer out, int flags) throws IOException {

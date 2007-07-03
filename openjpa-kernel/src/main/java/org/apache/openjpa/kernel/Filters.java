@@ -18,10 +18,11 @@
  */
 package org.apache.openjpa.kernel;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -31,10 +32,10 @@ import java.util.List;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UserException;
 import serp.util.Numbers;
@@ -746,9 +747,12 @@ public class Filters {
         Exception cause = null;
         if (hint instanceof String) {
             try {
-                return (AggregateListener) Class.forName((String) hint, true,
-                    loader).newInstance();
+                return (AggregateListener) AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(
+                        Class.forName((String) hint, true, loader)));
             } catch (Exception e) {
+                if (e instanceof PrivilegedActionException)
+                    e = ((PrivilegedActionException)e).getException();
                 cause = e;
             }
         }
@@ -781,10 +785,13 @@ public class Filters {
             AggregateListener[] aggs = new AggregateListener[clss.length];
             try {
                 for (int i = 0; i < clss.length; i++)
-                    aggs[i] = (AggregateListener) Class.forName(clss[i], true,
-                        loader).newInstance();
+                    aggs[i] = (AggregateListener)AccessController.doPrivileged(
+                        J2DoPrivHelper.newInstanceAction(
+                            Class.forName(clss[i], true, loader))); 
                 return aggs;
             } catch (Exception e) {
+                if (e instanceof PrivilegedActionException)
+                    e = ((PrivilegedActionException)e).getException();
                 cause = e;
             }
         }
@@ -806,9 +813,12 @@ public class Filters {
         Exception cause = null;
         if (hint instanceof String) {
             try {
-                return (FilterListener) Class.forName((String) hint, true,
-                    loader).newInstance();
+                return (FilterListener)AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(
+                        Class.forName((String) hint, true, loader))); 
             } catch (Exception e) {
+                if (e instanceof PrivilegedActionException)
+                    e = ((PrivilegedActionException)e).getException();
                 cause = e;
             }
         }
@@ -840,10 +850,13 @@ public class Filters {
             FilterListener[] filts = new FilterListener[clss.length];
             try {
                 for (int i = 0; i < clss.length; i++)
-                    filts[i] = (FilterListener) Class.forName(clss[i], true,
-                        loader).newInstance();
+                    filts[i] = (FilterListener)AccessController.doPrivileged(
+                        J2DoPrivHelper.newInstanceAction(
+                            Class.forName(clss[i], true, loader)));
                 return filts;
             } catch (Exception e) {
+                if (e instanceof PrivilegedActionException)
+                    e = ((PrivilegedActionException)e).getException();
                 cause = e;
             }
         }

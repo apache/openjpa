@@ -20,6 +20,8 @@ package org.apache.openjpa.meta;
 
 import java.lang.reflect.Method;
 import java.io.ByteArrayInputStream;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,6 +30,7 @@ import java.util.WeakHashMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
@@ -74,7 +77,8 @@ class InterfaceImplGenerator {
         if (impl != null)
             return impl;
 
-        ClassLoader parentLoader = iface.getClassLoader();
+        ClassLoader parentLoader = (ClassLoader)AccessController.doPrivileged( 
+            J2DoPrivHelper.getClassLoaderAction(iface)); 
         BCClassLoader loader = new BCClassLoader(_project, parentLoader);
         BCClassLoader enhLoader = new BCClassLoader(_enhProject, parentLoader);
         BCClass bc = _project.loadClass(getClassName(meta));
@@ -82,8 +86,10 @@ class InterfaceImplGenerator {
         ClassMetaData sup = meta.getPCSuperclassMetaData();
         if (sup != null) {
             bc.setSuperclass(sup.getInterfaceImpl());
-            enhLoader = new BCClassLoader(_enhProject, 
-            		sup.getInterfaceImpl().getClassLoader());
+            enhLoader = new BCClassLoader(_enhProject,
+                (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getClassLoaderAction(
+                        sup.getInterfaceImpl())));
         }
 
         FieldMetaData[] fields = meta.getDeclaredFields();
@@ -164,7 +170,8 @@ class InterfaceImplGenerator {
      */
     private void invalidateNonBeanMethods(BCClass bc, Class iface, 
         Set methods) {
-        Method[] meths = iface.getDeclaredMethods();
+        Method[] meths = (Method[])AccessController.doPrivileged( 
+            J2DoPrivHelper.getDeclaredMethodsAction( iface )); 
         BCMethod meth;
         Code code;
         Class type = _repos.getMetaDataFactory().getDefaults().
@@ -198,9 +205,10 @@ class InterfaceImplGenerator {
      */
     private static Method getMethodSafe(Class iface, String name, Class arg) {
         try {
-            return iface.getDeclaredMethod(name, arg == null ? null :
-                new Class[]{arg});
-        } catch (NoSuchMethodException e) {
+            return (Method) AccessController.doPrivileged(
+                J2DoPrivHelper.getDeclaredMethodAction(
+                    iface, name, arg == null ? null : new Class[]{arg}));
+        } catch( PrivilegedActionException pae ) {
             throw new InternalException (_loc.get ("interface-mismatch", name));
         }
     }
@@ -209,10 +217,11 @@ class InterfaceImplGenerator {
         if (fmd.getType() != boolean.class && fmd.getType() != Boolean.class)
             return true;
         try {
-            Method meth = iface.getDeclaredMethod("is" + StringUtils.capitalize
-                (fmd.getName()), (Class[]) null);
+            Method meth = (Method) AccessController.doPrivileged(
+                J2DoPrivHelper.getDeclaredMethodAction( iface, "is" +
+                    StringUtils.capitalize(fmd.getName()), (Class[]) null));
             return meth == null;
-        } catch (NoSuchMethodException e) {}
+        } catch (PrivilegedActionException pae) {}
         return true;
     }
 }

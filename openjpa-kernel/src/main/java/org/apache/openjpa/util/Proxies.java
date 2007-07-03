@@ -18,14 +18,10 @@
  */
 package org.apache.openjpa.util;
 
-import java.io.ObjectStreamException;
-import java.util.AbstractSet;
-import java.util.Iterator;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
+import java.security.AccessController;
 
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
@@ -52,9 +48,11 @@ public class Proxies {
     public static void assertAllowedType(Object value, Class allowed) {
         if (value != null && allowed != null && !allowed.isInstance(value)) {
             throw new UserException(_loc.get("bad-elem-type", new Object[]{
-                allowed.getClassLoader(),
+                (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getClassLoaderAction(allowed)),
                 allowed,
-                value.getClass().getClassLoader(),
+                (ClassLoader)AccessController.doPrivileged( 
+                    J2DoPrivHelper.getClassLoaderAction(value.getClass())),
                 value.getClass()
             }));
         }
