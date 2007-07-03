@@ -39,7 +39,7 @@ public abstract class AbstractConcurrentEventManager implements EventManager {
 
     private static Exception[] EMPTY_EXCEPTIONS = new Exception[0];
 
-    private final Collection _listeners;
+    protected final Collection _listeners;
     private boolean _failFast = false;
 
     /**

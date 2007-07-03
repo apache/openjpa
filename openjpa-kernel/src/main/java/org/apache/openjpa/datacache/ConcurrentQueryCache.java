@@ -90,7 +90,7 @@ public class ConcurrentQueryCache
 
     public void initialize(DataCacheManager mgr) {
         super.initialize(mgr);
-        conf.getRemoteCommitEventManager().addListener(this);
+        conf.getRemoteCommitEventManager().addInternalListener(this);
     }
 
     public void writeLock() {

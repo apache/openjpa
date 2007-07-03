@@ -93,6 +93,21 @@ public class RemoteCommitEventManager
         _transmitPersIds = transmit;
     }
 
+    /**
+     * Adds an OpenJPA-internal listener to this RemoteCommitEventManager.
+     * Listeners so registered will be fired before any that are registered
+     * via {@link #addListener}. This means that the external listeners can
+     * rely on internal caches and data structures being up-to-date by the
+     * time that they are invoked.
+     *
+     * @since 1.0.0
+     */
+    public void addInternalListener(RemoteCommitListener listen) {
+        if (_provider == null)
+            throw new UserException(_loc.get("no-provider"));
+        ((List) _listeners).add(0, listen);
+    }
+
     public void addListener(RemoteCommitListener listen) {
         if (_provider == null)
             throw new UserException(_loc.get("no-provider"));
@@ -120,6 +135,8 @@ public class RemoteCommitEventManager
     /**
      * Fire an event to local listeners only notifying them of a detected
      * stale record.
+     *
+     * @since 1.0.0
      */
     public void fireLocalStaleNotification(Object oid) {
         RemoteCommitEvent ev = new RemoteCommitEvent(
