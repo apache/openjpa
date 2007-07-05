@@ -237,7 +237,6 @@ public class ExpressionStoreQuery
      * Return the commands that will be sent to the datastore in order
      * to execute the query, typically in the database's native language.
      *
-     * @param ex current executor
      * @param base the base type the query should match
      * @param types the independent candidate types
      * @param subclasses true if subclasses should be included in the results
@@ -248,7 +247,7 @@ public class ExpressionStoreQuery
      * @param range result range
      * @return a textual description of the query to execute
      */
-    protected String[] getDataStoreActions(Executor ex, ClassMetaData base,
+    protected String[] getDataStoreActions(ClassMetaData base,
         ClassMetaData[] types, boolean subclasses, ExpressionFactory[] facts,
         QueryExpressions[] parsed, Object[] params, Range range) {
         return StoreQuery.EMPTY_STRINGS;
@@ -696,7 +695,7 @@ public class ExpressionStoreQuery
 
         public String[] getDataStoreActions(StoreQuery q, Object[] params,
             Range range) {
-            return ((ExpressionStoreQuery) q).getDataStoreActions(this, _meta,
+            return ((ExpressionStoreQuery) q).getDataStoreActions(_meta,
                 _metas, _subs, _facts, _exps, params, range);
         }
 
