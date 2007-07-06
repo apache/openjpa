@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Iterator;
 
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.jdbc.kernel.exps.ExpContext;
@@ -62,6 +63,7 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.UserException;
 import serp.util.Numbers;
 
@@ -437,7 +439,11 @@ public class JDBCStoreQuery
         // we cannot execute a bulk delete statement when have mappings in
         // multiple tables, so indicate we want to use in-memory with null
         ClassMapping[] mappings = (ClassMapping[]) metas;
+
+        // specification of the "updates" map indicates that this is
+        // an update query; otherwise, this is a delete statement
         boolean isUpdate = updates != null && updates.size() > 0;
+
         for (int i = 0; i < mappings.length; i++) {
             if (!isSingleTableMapping(mappings[i], subclasses) && !isUpdate)
                 return null;
@@ -471,13 +477,11 @@ public class JDBCStoreQuery
                 subclasses, exps[i], state[i], 
                 JDBCFetchConfiguration.EAGER_NONE);
 
-            // specification of the "udpates" map indicates that this is
-            // an update query; otherwise, this is a delete statement
             // The bulk operation will return null to indicate that the database
             // does not support the request bulk delete operation; in
             // this case, we need to perform the query in-memory and
             // manually delete the instances
-            if (updates == null)
+            if (!isUpdate)
                 sql[i] = dict.toDelete(mappings[i], sel, params);
             else
                 sql[i] = dict.toUpdate(mappings[i], sel, _store, params,

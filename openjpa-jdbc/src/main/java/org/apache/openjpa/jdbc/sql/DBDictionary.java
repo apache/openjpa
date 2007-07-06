@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashMap;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
@@ -1883,12 +1884,23 @@ public class DBDictionary
         sql.append(" SET ");
         ExpContext ctx = new ExpContext(store, params, 
             store.getFetchConfiguration());
+
+        // If the updates map contains any version fields, assume that the
+        // optimistic lock version data is being handled properly by the
+        // caller. Otherwise, give the version indicator an opportunity to
+        // add more update clauses as needed.
+        boolean augmentUpdates = true;
+
         for (Iterator i = updateParams.entrySet().iterator(); i.hasNext();) {
             Map.Entry next = (Map.Entry) i.next();
-            FieldMetaData fmd = (FieldMetaData) next.getKey();
+            FieldMapping fmd = (FieldMapping) next.getKey();
+
+            if (fmd.isVersion())
+                augmentUpdates = false;
+
             Val val = (Val) next.getValue();
 
-            Column col = ((FieldMapping) fmd).getColumns()[0];
+            Column col = fmd.getColumns()[0];
             sql.append(col.getName());
             sql.append(" = ");
 
@@ -1903,6 +1915,21 @@ public class DBDictionary
 
             if (i.hasNext())
                 sql.append(", ");
+        }
+
+        if (augmentUpdates) {
+            ClassMapping meta =
+                ((FieldMapping) updateParams.keySet().iterator().next())
+                    .getDeclaringMapping();
+            Map updates = meta.getVersion().getBulkUpdateValues();
+            for (Iterator iter = updates.entrySet().iterator();
+                iter.hasNext(); ) {
+                Map.Entry e = (Map.Entry) iter.next();
+                Column col = (Column) e.getKey();
+                String val = (String) e.getValue();
+                sql.append(", ").append(col.getName())
+                    .append(" = ").append(val);
+            }
         }
     }
     

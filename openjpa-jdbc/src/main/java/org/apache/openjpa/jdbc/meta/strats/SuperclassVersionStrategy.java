@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -47,5 +48,10 @@ public class SuperclassVersionStrategy
     public int compareVersion(Object v1, Object v2) {
         return vers.getClassMapping().getPCSuperclassMapping().getVersion().
             compareVersion(v1, v2);
+    }
+
+    public Map getBulkUpdateValues() {
+        return vers.getClassMapping().getPCSuperclassMapping().getVersion()
+            .getBulkUpdateValues();
     }
 }

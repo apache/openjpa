@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.jdbc.schema.Column;
 import serp.util.Numbers;
 
 /**
@@ -59,5 +63,13 @@ public class NumberVersionStrategy
         if (version == null)
             return _initial;
         return Numbers.valueOf(((Number) version).intValue() + 1);
+    }
+
+    public Map getBulkUpdateValues() {
+        Column[] cols = vers.getColumns();
+        Map map = new HashMap(cols.length);
+        for (int i = 0; i < cols.length; i++)
+            map.put(cols[i], cols[i].getName() + " + 1");
+        return map;
     }
 }

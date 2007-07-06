@@ -35,6 +35,7 @@ public class OptimisticLockInstance {
     private int oplock;
 
     private String str;
+    private int intField;
 
     protected OptimisticLockInstance() { }
 

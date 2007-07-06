@@ -918,7 +918,14 @@ public class FieldMapping
     }
 
     public Column[] getColumns() {
-        return _val.getColumns();
+        // pcl: 6 July 2007: this seems a bit hacky, but if the mapping is a
+        // version, it will have a NoneFieldMapping (since the version strategy
+        // for the class takes care of it's mapping), and NoneFieldStrategies
+        // do not have columns.
+        if (isVersion())
+            return getDeclaringMapping().getVersion().getColumns();
+        else
+            return _val.getColumns();
     }
 
     public void setColumns(Column[] cols) {

@@ -19,10 +19,12 @@
 package org.apache.openjpa.jdbc.meta;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreManager;
 
@@ -74,4 +76,12 @@ public interface VersionStrategy
      * @see StoreManager#compareVersion
      */
     public int compareVersion(Object v1, Object v2);
+
+    /**
+     * @return a Map<Column,String> specifying how to update each version
+     * column during a bulk update.
+     *
+     * @since 1.0.0
+     */
+    public Map getBulkUpdateValues();
 }

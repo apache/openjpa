@@ -413,8 +413,6 @@ public class QueryResultMapping
                     throw new MetaDataException(_loc.get("untraversable-path",
                         QueryResultMapping.this, _candidate, path));
                 Column[] cols = last.getColumns();
-                if (last.isVersion())
-                    cols = candidate.getVersion().getColumns();
                 assertSingleColumn(cols, path);
                 Column col = cols[0];
                 

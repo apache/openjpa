@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.meta;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -364,5 +365,15 @@ public class Version
 
     public String toString() {
         return _mapping + "<version>";
+    }
+
+    /**
+     * @return a Map<Column,String> specifying how to update each version
+     * column in this instance during a bulk update.
+     *
+     * @since 1.0.0
+     */
+    public Map getBulkUpdateValues() {
+        return _strategy.getBulkUpdateValues();
     }
 }
