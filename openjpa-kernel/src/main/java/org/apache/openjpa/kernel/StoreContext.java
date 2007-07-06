@@ -120,7 +120,7 @@ public interface StoreContext {
      * @param oids the oids of the objects to return
      * @return the objects that were looked up, in the same order as the oids
      * parameter
-     * @see #find(Object,boolean)
+     * @see #find(Object,boolean,call)
      */
     public Object[] findAll(Collection oids, boolean validate,
         FindCallbacks call);
