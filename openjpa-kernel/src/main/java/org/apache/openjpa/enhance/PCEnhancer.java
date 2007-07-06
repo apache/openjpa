@@ -724,7 +724,7 @@ public class PCEnhancer {
         if (_meta != null && _meta.getDescribedType().isInterface())
             return _meta;
 
-        return _repos.getMetaData(owner, null, false);
+        return _repos.getMetaData(_meta.getDescribedType(), null, false);
     }
 
     /**
