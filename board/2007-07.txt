@@ -1,0 +1,30 @@
+2007-07 Status Report for the Apache OpenJPA Project
+
+Highlights
+
+OpenJPA continues to work toward its first release as a TLP, to be called
+OpenJPA 1.0.0. There are currently 46 open issues that have been
+identified as "close before 1.0.0".
+
+Community
+
+The users@openjpa.apache.org mailing list was started upon graduation
+and already has over 100 posts, from 16 unique non-committer posters.
+
+A public face-to-face meeting is being discussed for sometime this summer
+in the bay area. 
+
+Governance
+
+Release naming policy for the first release has been resolved.
+
+Two new committer candidates have surfaced, and the PMC process is under way.
+
+Releases
+
+Legal
+
+Projects
+
+Conferences
+
