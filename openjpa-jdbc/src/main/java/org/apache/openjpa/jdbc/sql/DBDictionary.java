@@ -3839,4 +3839,14 @@ public class DBDictionary
             this.bytes = bytes;
         }
     }
+    
+    /**
+     * Return version column name
+     * @param column
+     * @param tableAlias : this is needed for platform specific version column
+     * @return
+     */
+    public String getVersionColumn(Column column, String tableAlias) {
+        return column.toString();
+    }
 }

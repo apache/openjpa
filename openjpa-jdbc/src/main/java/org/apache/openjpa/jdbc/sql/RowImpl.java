@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.sql;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Array;
@@ -756,7 +757,7 @@ public class RowImpl
             hasVal = true;
         }
 
-        appendWhere(buf);
+        appendWhere(buf, dict);
         return buf.toString();
     }
 
@@ -797,14 +798,14 @@ public class RowImpl
         StringBuffer buf = new StringBuffer();
         buf.append("DELETE FROM ").
             append(dict.getFullName(getTable(), false));
-        appendWhere(buf);
+        appendWhere(buf, dict);
         return buf.toString();
     }
 
     /**
      * Appends the where clause onto the given sql buffer.
      */
-    private void appendWhere(StringBuffer buf) {
+    private void appendWhere(StringBuffer buf, DBDictionary dict) {
         boolean hasWhere = false;
         for (int i = 0; i < _cols.length; i++) {
             if (_vals[getWhereIndex(_cols[i])] == null)
@@ -815,9 +816,13 @@ public class RowImpl
             else
                 buf.append(" AND ");
 
+            // Get platform specific version column name
+            if (_cols[i].getVersionStrategy() != null)
+               buf.append(dict.getVersionColumn(_cols[i], _cols[i]
+                   .getTableName())).append(" = ?");
             // sqlserver seems to have problems using null parameters in the
             // where clause
-            if (_vals[getWhereIndex(_cols[i])] == NULL)
+            else if (_vals[getWhereIndex(_cols[i])] == NULL)
                 buf.append(_cols[i]).append(" IS NULL");
             else if (_types[i] == RAW)
                 buf.append(_cols[i]).append(" = ").append(_vals[i]);
