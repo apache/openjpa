@@ -335,7 +335,7 @@ public class DB2Dictionary
         boolean match = false;
         if ((databaseProductVersion.indexOf("SQL") != -1
             || databaseProductName.indexOf("DB2/") != -1)
-            && ((maj == 8 && min >= 2) ||(maj >= 8)))
+            && ((maj == 8 && min >= 2) || (maj >= 9)))
             match = true;
         return match;
     }
@@ -354,7 +354,7 @@ public class DB2Dictionary
        throws SQLException {
        boolean match = false;
        if (databaseProductName.indexOf("AS") != -1
-           && maj == 5 && min <=3)
+           && ((maj == 5 && min <=3) || maj < 5))
            match = true;
        return match;
     }
@@ -363,7 +363,7 @@ public class DB2Dictionary
        throws SQLException {
        boolean match = false;
        if (databaseProductName.indexOf("AS") != -1
-           && maj >= 5 && min >=4)
+           && (maj >=6 || (maj == 5 && min >=4)))
            match = true;
       return match;
     }
@@ -372,7 +372,7 @@ public class DB2Dictionary
         boolean match = false;
         if ((databaseProductVersion.indexOf("SQL") != -1 
            || databaseProductName.indexOf("DB2/") != -1) &&
-           ((maj == 8 && min <= 1)|| maj < 8))
+           ((maj == 8 && min <= 1) || maj < 8))
             match = true;
         return match;
     }
