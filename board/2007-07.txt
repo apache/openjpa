@@ -18,7 +18,9 @@ Governance
 
 Release naming policy for the first release has been resolved.
 
-Two new committer candidates have surfaced, and the PMC process is under way.
+David Ezzio was voted as a new committer (and new to Apache).
+
+Another new committer candidate has surfaced, and the PMC process is under way.
 
 Releases
 
