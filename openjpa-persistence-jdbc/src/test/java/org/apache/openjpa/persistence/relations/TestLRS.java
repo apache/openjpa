@@ -37,7 +37,7 @@ public class TestLRS
     private long id;
 
     public void setUp() {
-        setUp(LRSEntity.class, BasicEntity.class);
+        setUp(LRSEntity.class, BasicEntity.class, CLEAR_TABLES);
         
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
