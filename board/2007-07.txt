@@ -12,7 +12,9 @@ The users@openjpa.apache.org mailing list was started upon graduation
 and already has over 100 posts, from 16 unique non-committer posters.
 
 A public face-to-face meeting is being discussed for sometime this summer
-in the bay area. 
+in the bay area.  We're hoping that the planning date is far enough out 
+that many interested folks can join. We've invited Bull Pugh (FindBugs)
+to give us a presentation.
 
 Governance
 
@@ -20,13 +22,8 @@ Release naming policy for the first release has been resolved.
 
 David Ezzio was voted as a new committer (and new to Apache).
 
-Another new committer candidate has surfaced, and the PMC process is under way.
+The PMC continues to track contributors with an eye toward making them
+committers.
 
 Releases
-
-Legal
-
-Projects
-
-Conferences
 
