@@ -21,7 +21,6 @@ package org.apache.openjpa.ee;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.security.AccessController;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -40,7 +39,6 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.NoTransactionException;
@@ -65,7 +63,7 @@ import serp.bytecode.Project;
  */
 public class WASManagedRuntime implements ManagedRuntime, Configurable {
 
-    private static Localizer _loc =
+    private static final Localizer _loc =
         Localizer.forPackage(WASManagedRuntime.class);
 
     private Object _extendedTransaction = null;
@@ -100,7 +98,7 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
         javax.transaction.Transaction {
 
         public int getStatus() throws SystemException {
-            int rval = Status.STATUS_UNKNOWN;
+            int rval;
             try {
                 if (getGlobalId() != null) {
                     rval = Status.STATUS_ACTIVE;
@@ -152,14 +150,12 @@ public class WASManagedRuntime implements ManagedRuntime, Configurable {
          *         occurs. byte[] id if a global transaction is active.
          */
         private byte[] getGlobalId() {
-            byte[] rval = null;
             try {
-                rval = (byte[]) _getGlobalId.invoke(_extendedTransaction, null);
+                return (byte[]) _getGlobalId.invoke(_extendedTransaction, null);
             } catch (Exception e) {
                 throw new InvalidStateException(_loc
                     .get("was-reflection-exception")).setCause(e);
             }
-            return rval;
         }
 
         /**
