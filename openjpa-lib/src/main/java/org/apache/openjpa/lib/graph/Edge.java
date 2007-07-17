@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.lib.graph;
 
+import java.util.List;
+
 /**
  * <p>A graph edge.  Includes the from and to nodes, an arbitrary user object,
  * and a weight.  Edges can be either directed or undirected.</p>
@@ -52,6 +54,8 @@ public class Edge {
     private int _type = 0;
     private double _weight = 0;
     private Object _userObj = null;
+    private List _cycle = null;
+    private boolean _removedFromGraph = false;
 
     /**
      * Constructor.
@@ -176,10 +180,39 @@ public class Edge {
     }
 
     /**
+     * List of edges forming a cycle. Only set for TYPE_BACK and TYPE_FORWARD edges.
+     */
+    public List getCycle() {
+        return _cycle;
+    }
+    
+    /**
+     * List of edges forming a cycle. Only set for TYPE_BACK and TYPE_FORWARD edges.
+     */
+    public void setCycle(List cycle) {
+        _cycle = cycle;
+    }
+
+    /**
+     * Returns if this edge is (still) part of the graph.
+     */
+    public boolean isRemovedFromGraph() {
+        return _removedFromGraph;
+    }
+
+    /**
+     * Mark this edge as removed from the graph.
+     */
+    public void setRemovedFromGraph() {
+        this._removedFromGraph = true;
+    }
+
+    /**
      * Clear traversal info.
      */
     public void clearTraversal() {
         _type = 0;
+        _cycle = null;
     }
 
     public String toString() {

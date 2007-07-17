@@ -701,6 +701,19 @@ public class ForeignKey
             && match(getPrimaryKeyColumns(), fkPKCols);
     }
 
+    /**
+     * Checks for non-nullable local columns.
+     */
+    public boolean hasNotNullColumns() {
+      Column[] columns = getColumns();
+      for (int j = 0; j < columns.length; j++) {
+          if (columns[j].isNotNull()) {
+              return true;
+          }
+      }
+      return false;
+    }
+    
     private static boolean match(Column[] cols, Column[] fkCols) {
         if (cols.length != fkCols.length)
             return false;

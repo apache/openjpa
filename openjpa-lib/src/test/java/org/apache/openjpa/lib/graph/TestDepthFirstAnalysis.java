@@ -20,6 +20,7 @@ package org.apache.openjpa.lib.graph;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.openjpa.lib.test.AbstractTestCase;
 
@@ -34,6 +35,10 @@ public class TestDepthFirstAnalysis
     private DepthFirstAnalysis _dfa = null;
 
     public void setUp() {
+        setUpGraph1();   
+    }
+    
+    public void setUpGraph1() {
         Graph graph = new Graph();
         Object node1 = new Object();
         Object node2 = new Object();
@@ -51,15 +56,37 @@ public class TestDepthFirstAnalysis
         _dfa = new DepthFirstAnalysis(graph);
     }
 
+    public void setUpGraph2() {
+        Graph graph = new Graph();
+        Integer node1 = new Integer(5);
+        Integer node2 = new Integer(4);
+        Integer node3 = new Integer(3);
+        Integer node4 = new Integer(2);
+        Integer node5 = new Integer(1);
+        graph.addNode(node1);
+        graph.addNode(node2);
+        graph.addNode(node3);
+        graph.addNode(node4);
+        graph.addNode(node5);
+        graph.addEdge(new Edge(node1, node2, true));
+        graph.addEdge(new Edge(node2, node3, true));
+        graph.addEdge(new Edge(node3, node3, true));
+        graph.addEdge(new Edge(node3, node4, true));
+        graph.addEdge(new Edge(node4, node1, true));
+        graph.addEdge(new Edge(node4, node2, true));
+        graph.addEdge(new Edge(node5, node2, true));
+        _dfa = new DepthFirstAnalysis(graph);
+    }
+
     public void testNodeSorting() {
         Collection nodes = _dfa.getSortedNodes();
         assertEquals(4, nodes.size());
 
-        int time = Integer.MAX_VALUE;
+        int time = 0;
         Object node;
         for (Iterator itr = nodes.iterator(); itr.hasNext();) {
             node = itr.next();
-            assertTrue(time >= _dfa.getFinishedTime(node));
+            assertTrue(time <= _dfa.getFinishedTime(node));
             time = _dfa.getFinishedTime(node);
         }
     }
@@ -74,6 +101,51 @@ public class TestDepthFirstAnalysis
             || edge1.getTo() == edge1.getFrom());
     }
 
+    public void testBackEdges() {
+        setUpGraph2();
+        Collection edges = _dfa.getEdges(Edge.TYPE_BACK);
+        assertEquals(2, edges.size());
+        Iterator itr = edges.iterator();
+        Edge edge0 = (Edge) itr.next();
+        Edge edge1 = (Edge) itr.next();
+        if (edge0.getTo() == edge0.getFrom()) {
+            assertTrue(edge0.getCycle() != null && edge0.getCycle().size() == 1);
+            List cycle = edge1.getCycle();
+            assertTrue(cycle != null && cycle.size() == 4);
+            assertTrue(((Edge)cycle.get(0)).getFrom() == ((Edge)cycle.get(3)).getTo());
+        } else if (edge1.getTo() == edge1.getFrom()) {
+            assertTrue(edge1.getCycle() != null && edge1.getCycle().size() == 1);            
+            assertTrue(edge1 == edge1.getCycle());
+            List cycle = edge0.getCycle();
+            assertTrue(cycle != null && cycle.size() == 4);
+            assertTrue(((Edge)cycle.get(0)).getFrom() == ((Edge)cycle.get(3)).getTo());
+        } else {
+            // should not happen
+            assertFalse(true);
+        }
+    }
+    
+    public void testForwardEdges() {
+        setUpGraph2();
+        Collection edges = _dfa.getEdges(Edge.TYPE_FORWARD);
+        assertEquals(2, edges.size());
+        Iterator itr = edges.iterator();
+        Edge edge0 = (Edge) itr.next();
+        Edge edge1 = (Edge) itr.next();
+        if (edge0.getCycle() == null) {
+            List cycle = edge1.getCycle();
+            assertTrue(cycle != null && cycle.size() == 3);
+            assertTrue(((Edge)cycle.get(0)).getFrom() == ((Edge)cycle.get(2)).getTo());
+        } else if (edge1.getCycle() == null) {
+            List cycle = edge0.getCycle();
+            assertTrue(cycle != null && cycle.size() == 3);
+            assertTrue(((Edge)cycle.get(0)).getFrom() == ((Edge)cycle.get(2)).getTo());
+        } else {
+            // should not happen
+            assertFalse(true);
+        }
+    }
+    
     public static void main(String[] args) {
         main(TestDepthFirstAnalysis.class);
     }

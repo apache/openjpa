@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import org.apache.openjpa.persistence.jdbc.ForeignKey;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Version;
+import javax.persistence.OneToOne;
+import javax.persistence.JoinColumn;
 
 @Entity
 public class EntityD {
@@ -35,6 +39,16 @@ public class EntityD {
 
     private String name;
 
+    @OneToOne
+    @JoinColumn(name = "entitya_id", referencedColumnName = "entitya_id")
+    @ForeignKey
+    private EntityA entityA;
+    
+    @OneToOne
+    @JoinColumn(name = "entityb_id", referencedColumnName = "entityb_id")
+    @ForeignKey
+    private EntityB entityB;
+    
     @Version
     private Integer optLock;
 
@@ -49,6 +63,22 @@ public class EntityD {
         return id;
     }
 
+    public EntityA getEntityA() {
+        return this.entityA;
+    }
+
+    public void setEntityA(EntityA entityA) {
+        this.entityA = entityA;
+    }
+
+    public EntityB getEntityB() {
+        return entityB;
+    }
+
+    public void setEntityB(EntityB entityB) {
+        this.entityB = entityB;
+    }
+    
     public String getName() {
         return this.name;
     }
