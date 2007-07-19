@@ -22,13 +22,17 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UnsupportedException;
+import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 
 /**
  * Dictionary for IBM DB2 database.
@@ -491,5 +495,121 @@ public class DB2Dictionary
 
     public int getDb2ServerType() {
         return db2ServerType;
+    }
+    
+    protected void appendLength(SQLBuffer buf, int type) {
+        if (type == Types.VARCHAR)
+            buf.append("(").append(Integer.toString(characterColumnSize)).
+                append(")");
+    }
+
+    /**
+     * If this dictionary supports XML type,
+     * use this method to append xml predicate.
+     * 
+     * @param buf the SQL buffer to write the comparison
+     * @param op the comparison operation to perform
+     * @param lhs the left hand side of the comparison
+     * @param rhs the right hand side of the comparison
+     * @param lhsxml indicates whether the left operand maps to xml
+     * @param rhsxml indicates whether the right operand maps to xml
+     */
+    public void appendXmlComparison(SQLBuffer buf, String op, FilterValue lhs,
+        FilterValue rhs, boolean lhsxml, boolean rhsxml) {
+        super.appendXmlComparison(buf, op, lhs, rhs, lhsxml, rhsxml);
+        if (lhsxml && rhsxml)
+            appendXmlComparison2(buf, op, lhs, rhs);
+        else if (lhsxml)
+            appendXmlComparison1(buf, op, lhs, rhs);
+        else 
+            appendXmlComparison1(buf, op, rhs, lhs);
+    }
+
+    /**
+     * Append an xml comparison predicate.
+     *
+     * @param buf the SQL buffer to write the comparison
+     * @param op the comparison operation to perform
+     * @param lhs the left hand side of the comparison (maps to xml column)
+     * @param rhs the right hand side of the comparison
+     */
+    private void appendXmlComparison1(SQLBuffer buf, String op, 
+            FilterValue lhs, FilterValue rhs) {
+        boolean castrhs = false;
+        Class rc = Filters.wrap(rhs.getType());
+        int type = 0;
+        if (rhs.isConstant()) {
+            type = getJDBCType(JavaTypes.getTypeCode(rc), false);
+            castrhs = true;
+        }
+        
+        appendXmlExists(buf, lhs);
+
+        buf.append(" ").append(op).append(" ");
+        
+        buf.append("$");
+        if (castrhs)
+            buf.append("Parm");
+        else
+            rhs.appendTo(buf);
+        
+        buf.append("]' PASSING ");
+        appendXmlVar(buf, lhs);
+        buf.append(", ");
+        
+        if (castrhs)
+            appendCast(buf, rhs, type);
+        else
+            rhs.appendTo(buf);
+        
+        buf.append(" AS \"");
+        if (castrhs)
+            buf.append("Parm");
+        else
+            rhs.appendTo(buf);
+        buf.append("\")");
+    }
+    
+    /**
+     * Append an xml comparison predicate. (both operands map to xml column)
+     *
+     * @param buf the SQL buffer to write the comparison
+     * @param op the comparison operation to perform
+     * @param lhs the left hand side of the comparison (maps to xml column)
+     * @param rhs the right hand side of the comparison (maps to xml column)
+     */
+    private void appendXmlComparison2(SQLBuffer buf, String op, 
+            FilterValue lhs, FilterValue rhs) {
+        appendXmlExists(buf, lhs);
+        
+        buf.append(" ").append(op).append(" ");
+        
+        buf.append("$").append(rhs.getColumnAlias(
+            rhs.getFieldMapping().getColumns()[0])).
+            append("/*/");
+        rhs.appendTo(buf);
+        
+        buf.append("]' PASSING ");
+        appendXmlVar(buf, lhs);
+        buf.append(", ");
+        appendXmlVar(buf, rhs);
+        buf.append(")");
+    }
+    
+    private void appendXmlVar(SQLBuffer buf, FilterValue val) {
+        buf.append(val.getColumnAlias(
+            val.getFieldMapping().getColumns()[0])).
+            append(" AS ").
+            append("\"").append(val.getColumnAlias(
+            val.getFieldMapping().getColumns()[0])).
+            append("\"");        
+    }
+    
+    private void appendXmlExists(SQLBuffer buf, FilterValue val) {
+        buf.append("XMLEXISTS('");
+        buf.append("$").append(val.getColumnAlias(
+            val.getFieldMapping().getColumns()[0])).
+            append("/*[");
+        val.appendTo(buf);        
     }
 }

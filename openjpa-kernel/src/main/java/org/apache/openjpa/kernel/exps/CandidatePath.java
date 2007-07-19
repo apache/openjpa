@@ -30,6 +30,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.XMLMapping;
 
 /**
  * A path represents a traversal into fields of a candidate object.
@@ -184,4 +185,14 @@ class CandidatePath
             return ((Traversal) other).field.equals(field);
         }
 	}
+
+    public void get(FieldMetaData fmd, XMLMapping meta) {
+    }
+    
+    public void get(XMLMapping meta, String name) {
+    }
+    
+    public XMLMapping getXmlMapping() {
+        return null;
+    }
 }

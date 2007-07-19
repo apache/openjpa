@@ -52,6 +52,11 @@ public interface Value {
     public boolean isAggregate();
 
     /**
+     * Return true if this value is an XML Path.
+     */
+    public boolean isXPath();
+    
+    /**
      * Return any associated persistent type.
      */
     public ClassMetaData getMetaData();

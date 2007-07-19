@@ -28,6 +28,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
+import org.apache.openjpa.meta.XMLMapping;
 import serp.util.Numbers;
 
 /**
@@ -184,6 +185,15 @@ class StartsWithExpression
         public FieldMapping getFieldMapping() {
             return null;
         }
+        
+        public PCPath getXPath() {
+            return null;
+        }
+        
+        public XMLMapping getXmlMapping() {
+            return null;
+        }
+
     }
 
     /**
@@ -258,6 +268,14 @@ class StartsWithExpression
         }
 
         public FieldMapping getFieldMapping() {
+            return null;
+        }
+        
+        public PCPath getXPath() {
+            return null;
+        }
+        
+        public XMLMapping getXmlMapping() {
             return null;
         }
     }

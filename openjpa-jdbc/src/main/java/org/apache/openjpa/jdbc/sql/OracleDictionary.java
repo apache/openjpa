@@ -1038,4 +1038,63 @@ public class OracleDictionary
             return false;
         }
     }
+    
+    /**
+     * If this dictionary supports XML type,
+     * use this method to append xml predicate.
+     * 
+     * @param buf the SQL buffer to write the comparison
+     * @param op the comparison operation to perform
+     * @param lhs the left hand side of the comparison
+     * @param rhs the right hand side of the comparison
+     */
+    public void appendXmlComparison(SQLBuffer buf, String op, FilterValue lhs,
+        FilterValue rhs, boolean lhsxml, boolean rhsxml) {
+        super.appendXmlComparison(buf, op, lhs, rhs, lhsxml, rhsxml);
+        if (lhsxml && rhsxml)
+            appendXmlComparison2(buf, op, lhs, rhs);
+        else if (lhsxml)
+            appendXmlComparison1(buf, op, lhs, rhs);
+        else 
+            appendXmlComparison1(buf, op, rhs, lhs);
+    }
+    
+    /**
+     * Append an xml comparison predicate
+     *
+     * @param buf the SQL buffer to write the comparison
+     * @param op the comparison operation to perform
+     * @param lhs the left hand side of the comparison (maps to xml column)
+     * @param rhs the right hand side of the comparison
+     */
+    private void appendXmlComparison1(SQLBuffer buf, String op,
+        FilterValue lhs, FilterValue rhs) {
+        appendXmlExtractValue(buf, lhs);
+        buf.append(" ").append(op).append(" ");
+        rhs.appendTo(buf);
+    }
+    
+    /**
+     * Append an xml comparison predicate (both operands map to xml column)
+     *
+     * @param buf the SQL buffer to write the comparison
+     * @param op the comparison operation to perform
+     * @param lhs the left hand side of the comparison (maps to xml column)
+     * @param rhs the right hand side of the comparison (maps to xml column)
+     */
+    private void appendXmlComparison2(SQLBuffer buf, String op, 
+        FilterValue lhs, FilterValue rhs) {
+        appendXmlExtractValue(buf, lhs);
+        buf.append(" ").append(op).append(" ");
+        appendXmlExtractValue(buf, rhs);
+    }
+    
+    private void appendXmlExtractValue(SQLBuffer buf, FilterValue val) {
+        buf.append("extractValue(").
+            append(val.getColumnAlias(
+            val.getFieldMapping().getColumns()[0])).
+            append(",'/*/");
+        val.appendTo(buf);
+        buf.append("')");
+    }
 }

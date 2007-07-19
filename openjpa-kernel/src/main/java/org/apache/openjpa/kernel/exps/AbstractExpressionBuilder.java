@@ -30,6 +30,8 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.XMLMapping;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UnsupportedException;
@@ -243,6 +245,27 @@ public abstract class AbstractExpressionBuilder {
     protected Value traversePath(Path path, String field) {
         return traversePath(path, field, false, false);
     }
+    
+    protected Value traverseXPath(Path path, String field) {
+        XMLMapping meta = path.getXmlMapping();
+        if (meta.getFieldMapping(field) == null) {
+            throw parseException(EX_USER, "no-field",
+                    new Object[]{ meta.getType(), field }, null);
+        }
+        else {
+            // collection-valued xpath is not allowed
+            int type = meta.getFieldMapping(field).getTypeCode();
+            switch (type) {
+                case JavaTypes.ARRAY:
+                case JavaTypes.COLLECTION:
+                case JavaTypes.MAP:
+                    throw new UserException(_loc.get("collection-valued-path",
+                            field));
+            }
+        }
+        path.get(meta, field);
+        return path;
+    }
 
     /**
      * Traverse the given field in the given path.
@@ -271,6 +294,14 @@ public abstract class AbstractExpressionBuilder {
         if (meta != null) {
             addAccessPath(meta);
             path.setMetaData(meta);
+        }
+        else {
+            // xmlsupport xpath
+            XMLMapping xmlmeta = fmd.getRepository().getXMLMetaData(fmd);
+            if (xmlmeta != null) {
+                path.get(fmd, xmlmeta);
+                return path;
+            }
         }
 
         if (meta != null || !pcOnly)
@@ -309,11 +340,11 @@ public abstract class AbstractExpressionBuilder {
 
         if (o1 && !o2) {
             val1.setImplicitType(c2);
-            if (val1.getMetaData() == null)
+            if (val1.getMetaData() == null && !val1.isXPath())
                 val1.setMetaData(val2.getMetaData());
         } else if (!o1 && o2) {
             val2.setImplicitType(c1);
-            if (val2.getMetaData() == null)
+            if (val2.getMetaData() == null && !val1.isXPath())
                 val2.setMetaData(val1.getMetaData());
         } else if (o1 && o2 && expected != null) {
             // we never expect a pc type, so don't bother with metadata

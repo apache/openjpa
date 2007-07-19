@@ -40,6 +40,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.XMLMapping;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -55,6 +56,7 @@ class PCPath
     private static final int BOUND_VAR = 1;
     private static final int UNBOUND_VAR = 2;
     private static final int UNACCESSED_VAR = 3;
+    private static final int XPATH = 4;
 
     private static final Localizer _loc = Localizer.forPackage(PCPath.class);
 
@@ -66,6 +68,7 @@ class PCPath
     private String _varName = null;
     private Class _cast = null;
     private boolean _cid = false;
+    private FieldMetaData _xmlfield = null;
 
     /**
      * Return a path starting with the 'this' ptr.
@@ -168,7 +171,40 @@ class PCPath
     public boolean isKey() {
         return _key;
     }
-
+    
+    public boolean isXPath() {
+        return _type == XPATH;
+    }
+    
+    public String getXPath() {
+        StringBuffer xpath = new StringBuffer();
+        Action action;
+        Iterator itr = _actions.iterator();
+        
+        // Skip variable actions since they are not part of the xpath
+        // until we reach the first xpath action.
+        // The first xpath action maps to the root of an xml document.
+        do 
+            action = (Action) itr.next(); 
+        while (action.op != Action.GET_XPATH);
+        
+        // Skip XmlRootElement:
+        // We can't rely on the accuracy of the name of the root element,
+        // because it could be set to some default by JAXB XML Binding.
+        // The caller(DBDictionary) should start with "/*" or "/*/",
+        // we build the remaining xpath that follows the root element.
+        while (itr.hasNext()) {
+            action = (Action) itr.next();
+            if (((XMLMapping) action.data).getXmlname() != null)                 
+                xpath.append(((XMLMapping) action.data).getXmlname());
+            else
+                xpath.append("*");
+            if (itr.hasNext())
+                xpath.append("/");
+        }
+        return xpath.toString();
+    }
+    
     public String getPath() {
         if (_actions == null)
             return (_varName == null) ? "" : _varName + ".";
@@ -274,6 +310,36 @@ class PCPath
         _cast = null;
         _key = false;
     }
+    
+    public void get(FieldMetaData fmd, XMLMapping meta) {
+        if (_actions == null)
+            _actions = new LinkedList();
+        Action action = new Action();
+        action.op = Action.GET_XPATH;
+        action.data = meta;
+        _actions.add(action);
+        _cast = null;
+        _key = false;;
+        _type = XPATH;
+        _xmlfield = fmd;
+    }
+    
+    public void get(XMLMapping meta, String name) {
+        Action action = new Action();
+        action.op = Action.GET_XPATH;
+        action.data = meta.getFieldMapping(name);
+        _actions.add(action);
+        _cast = null;
+        _key = false;;
+        _type = XPATH;
+    }
+    
+    public XMLMapping getXmlMapping() {
+        Action act = (Action) _actions.getLast();
+        if (act != null)
+            return (XMLMapping) act.data;
+        return null;
+    }
 
     public synchronized void getKey() {
         if (_cid)
@@ -288,7 +354,8 @@ class PCPath
 
     public FieldMetaData last() {
         Action act = lastFieldAction();
-        return (act == null) ? null : (FieldMetaData) act.data;
+        return (act == null) ? null : isXPath() ? _xmlfield :
+            (FieldMetaData) act.data;
     }
 
     /**
@@ -298,6 +365,9 @@ class PCPath
         if (_actions == null)
             return null;
 
+        if (isXPath())
+            return (Action) _actions.getLast();
+        
         ListIterator itr = _actions.listIterator(_actions.size());
         Action prev;
         while (itr.hasPrevious()) {
@@ -313,6 +383,9 @@ class PCPath
         if (_cast != null)
             return _cast;
         Action act = lastFieldAction();
+        if (act != null && act.op == Action.GET_XPATH)
+            return ((XMLMapping) act.data).getType();
+        
         FieldMetaData fld = (act == null) ? null : (FieldMetaData) act.data;
         boolean key = act != null && act.op == Action.GET_KEY;
         if (fld != null) {
@@ -373,7 +446,8 @@ class PCPath
                     rel.getTable());
             } else {
                 // move past the previous field, if any
-                field = (FieldMapping) action.data;
+                field = (action.op == Action.GET_XPATH) ? (FieldMapping) _xmlfield :
+                    (FieldMapping) action.data;
                 if (pstate.field != null) {
                     // if this is the second-to-last field and the last is
                     // the related field this field joins to, no need to
@@ -416,6 +490,9 @@ class PCPath
                         from = from.getJoinablePCSuperclassMapping())
                         pstate.joins = from.joinSuperclass(pstate.joins, false);
                 }
+                // nothing more to do from here on as we encountered an xpath action
+                if (action.op == Action.GET_XPATH)
+                    break;
             }
         }
         if (_varName != null)
@@ -534,6 +611,8 @@ class PCPath
         PathExpState pstate = (PathExpState) state;
         FieldMapping field = (pstate.cmpfield != null) ? pstate.cmpfield 
             : pstate.field;
+        if (isXPath())
+            return val;
         if (field != null) {
             if (_key)
                 return field.toKeyDataStoreValue(val, ctx.store);
@@ -639,6 +718,9 @@ class PCPath
         // (e.g., during a bulk update)
         if (sel == null)
             sql.append(col.getName());
+        else if (_type == XPATH)
+            // if this is an xpath, append xpath string
+            sql.append(getXPath());
         else
             sql.append(sel.getColumnAlias(col, state.joins));
     }
@@ -716,6 +798,7 @@ class PCPath
         public static final int SUBQUERY = 4;
         public static final int UNBOUND_VAR = 5;
         public static final int CAST = 6;
+        public static final int GET_XPATH = 7;
 
         public int op = -1;
         public Object data = null;

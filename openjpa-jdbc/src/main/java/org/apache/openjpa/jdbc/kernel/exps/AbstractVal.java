@@ -41,6 +41,10 @@ abstract class AbstractVal
         return false;
     }
 
+    public boolean isXPath() {
+        return false;
+    }
+
     public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state, 
         Object val) {
         return val;

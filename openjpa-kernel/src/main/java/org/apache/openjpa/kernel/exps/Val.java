@@ -109,6 +109,10 @@ public abstract class Val
     public boolean isAggregate() {
         return false;
     }
+    
+    public boolean isXPath() {
+        return false;
+    }
 
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);

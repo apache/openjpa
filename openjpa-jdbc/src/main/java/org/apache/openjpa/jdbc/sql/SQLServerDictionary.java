@@ -23,8 +23,11 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
+import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.JavaTypes;
 
 /**
  * Dictionary for MS SQLServer.
@@ -133,5 +136,98 @@ public class SQLServerDictionary
                 cols[i].setType(Types.CLOB);
         }
         return cols;
+    }
+    
+    protected void appendLength(SQLBuffer buf, int type) {
+        if (type == Types.VARCHAR)
+            buf.append("(").append(Integer.toString(characterColumnSize)).append(")");
+    }
+
+    /**
+     * If this dictionary supports XML type,
+     * use this method to append xml predicate.
+     * 
+     * @param buf the SQL buffer to write the comparison
+     * @param op the comparison operation to perform
+     * @param lhs the left hand side of the comparison
+     * @param rhs the right hand side of the comparison
+     * @param lhsxml indicates whether the left operand maps to xml
+     * @param rhsxml indicates whether the right operand maps to xml
+     */
+    public void appendXmlComparison(SQLBuffer buf, String op, FilterValue lhs,
+        FilterValue rhs, boolean lhsxml, boolean rhsxml) {
+        super.appendXmlComparison(buf, op, lhs, rhs, lhsxml, rhsxml);
+        if (lhsxml && rhsxml)
+            appendXmlComparison2(buf, op, lhs, rhs);
+        else if (lhsxml)
+            appendXmlComparison1(buf, op, lhs, rhs);
+        else 
+            appendXmlComparison1(buf, op, rhs, lhs);
+    }
+    /**
+     * Append an xml comparison predicate
+     *
+     * @param buf the SQL buffer to write the comparison
+     * @param op the comparison operation to perform
+     * @param lhs the left hand side of the comparison (maps to xml column)
+     * @param rhs the right hand side of the comparison
+     */
+    private void appendXmlComparison1(SQLBuffer buf, String op,
+        FilterValue lhs, FilterValue rhs) {
+        boolean castrhs = rhs.isConstant();
+        if (castrhs)
+            appendXmlValue(buf, lhs);
+        else
+            appendXmlExist(buf, lhs);
+        buf.append(" ").append(op).append(" ");
+        if (castrhs)
+            rhs.appendTo(buf);
+        else {
+            buf.append("sql:column(\"");
+            rhs.appendTo(buf);
+            buf.append("\")").
+                append("]') = 1");
+        }
+    }
+    
+    private void appendXmlExist(SQLBuffer buf, FilterValue lhs) {
+        buf.append(lhs.getColumnAlias(
+            lhs.getFieldMapping().getColumns()[0])).
+            append(".exist('").
+            append("/*[");
+        lhs.appendTo(buf);    
+    }
+    
+    /**
+     * Append an xml comparison predicate (both operands map to xml column)
+     *
+     * @param buf the SQL buffer to write the comparison
+     * @param op the comparison operation to perform
+     * @param lhs the left hand side of the comparison (maps to xml column)
+     * @param rhs the right hand side of the comparison (maps to xml column)
+     */
+    private void appendXmlComparison2(SQLBuffer buf, String op, 
+        FilterValue lhs, FilterValue rhs) {
+        appendXmlValue(buf, lhs);
+        buf.append(" ").append(op).append(" ");
+        appendXmlValue(buf, rhs);
+    }
+    
+    private void appendXmlValue(SQLBuffer buf, FilterValue val) {
+        Class rc = Filters.wrap(val.getType());
+        int type = getJDBCType(JavaTypes.getTypeCode(rc), false);
+        boolean isXmlAttribute = (val.getXmlMapping() == null) ? false
+                : val.getXmlMapping().isXmlAttribute();
+        buf.append(val.getColumnAlias(
+            val.getFieldMapping().getColumns()[0])).
+            append(".value(").
+            append("'(/*/");
+        val.appendTo(buf);
+        if (!isXmlAttribute)
+            buf.append("/text()");
+        buf.append(")[1]','").
+            append(getTypeName(type));
+        appendLength(buf, type);
+        buf.append("')");
     }
 }

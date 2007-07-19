@@ -24,6 +24,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.meta.XMLMapping;
 
 /**
  * Implementation of {@link FilterValue} that wraps a {@link Val}.
@@ -97,5 +98,16 @@ class FilterValueImpl
 
     public FieldMapping getFieldMapping() {
         return (isPath()) ? ((PCPath) _val).getFieldMapping(_state) : null;
+    }
+    
+    public PCPath getXPath() {
+        if (isPath() && ((PCPath) _val).isXPath())
+            return (PCPath) _val;
+        else
+            return null;
+    }
+    
+    public XMLMapping getXmlMapping() {
+        return (getXPath() == null) ? null : getXPath().getXmlMapping();
     }
 }

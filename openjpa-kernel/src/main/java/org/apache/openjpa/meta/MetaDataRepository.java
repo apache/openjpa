@@ -1850,4 +1850,13 @@ public class MetaDataRepository
 				&& StringUtils.equals (name, qk.name);	
 		}
 	}
+    
+    /**
+     * Return XML metadata for a given field metadata
+     * @param fmd
+     * @return null
+     */
+    public XMLMapping getXMLMetaData(FieldMetaData fmd) {
+        return null;
+    }
 }

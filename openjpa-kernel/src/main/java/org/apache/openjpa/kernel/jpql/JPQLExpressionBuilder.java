@@ -1088,7 +1088,7 @@ public class JPQLExpressionBuilder
         if (fmd == null)
             return;
 
-        Class type = fmd.getType();
+        Class type = path.isXPath() ? path.getType() : fmd.getType();
         if (type == null)
             return;
 
@@ -1298,6 +1298,11 @@ public class JPQLExpressionBuilder
         // walk through the children and assemble the path
         boolean allowNull = !inner;
         for (int i = 1; i < node.children.length; i++) {
+            if (path.isXPath()) {
+                for (int j = i; j <node.children.length; j++)
+                    path = (Path) traverseXPath(path, node.children[j].text);
+                return path;
+            }
             path = (Path) traversePath(path, node.children[i].text, pcOnly,
                 allowNull);
 

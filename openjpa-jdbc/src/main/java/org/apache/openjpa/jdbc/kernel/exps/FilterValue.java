@@ -23,6 +23,7 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
+import org.apache.openjpa.meta.XMLMapping;
 
 /**
  * The simplified public view of any non-operator in a query filter,
@@ -103,4 +104,16 @@ public interface FilterValue {
      * return null.
      */
     public FieldMapping getFieldMapping();
+    
+    /**
+     * If this is an XPath, return it,
+     * else return null;
+     */
+    public PCPath getXPath();
+    
+    /**
+     * If this is an XPath, return XML mapping metadata,
+     * else return null;
+     */
+    public XMLMapping getXmlMapping();
 }

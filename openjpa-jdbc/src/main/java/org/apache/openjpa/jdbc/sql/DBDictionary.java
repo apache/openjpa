@@ -84,6 +84,7 @@ import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.jdbc.ConnectionDecorator;
@@ -2456,6 +2457,12 @@ public class DBDictionary
      */
     public void comparison(SQLBuffer buf, String op, FilterValue lhs,
         FilterValue rhs) {
+        boolean lhsxml = lhs.getXPath() != null;
+        boolean rhsxml = rhs.getXPath() != null;
+        if (lhsxml || rhsxml) {
+            appendXmlComparison(buf, op, lhs, rhs, lhsxml, rhsxml);
+            return;
+        }
         boolean castlhs = false;
         boolean castrhs = false;
         Class lc = Filters.wrap(lhs.getType());
@@ -2482,6 +2489,15 @@ public class DBDictionary
             appendCast(buf, rhs, type);
         else
             rhs.appendTo(buf);
+    }
+
+    /**
+     * If this dictionary supports XML type,
+     * use this method to append xml predicate.
+     */
+    public void appendXmlComparison(SQLBuffer buf, String op, FilterValue lhs,
+        FilterValue rhs, boolean lhsxml, boolean rhsxml) {
+        assertSupport(supportsXMLColumn, "SupportsXMLColumn");
     }
 
     /**
@@ -2518,9 +2534,13 @@ public class DBDictionary
         val.appendTo(buf);
         buf.append(mid);
         buf.append(getTypeName(type));
+        appendLength(buf, type);
         buf.append(post);
     }
     
+    protected void appendLength(SQLBuffer buf, int type) {        
+    }
+
     ///////////
     // DDL SQL
     ///////////
