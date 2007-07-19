@@ -170,6 +170,9 @@ public class ProductDerivations {
         for (int i = 0; i < _derivations.length; i++) {
             try {
                 _derivations[i].beforeConfigurationConstruct(cp);
+            } catch (BootstrapException be) {
+            	if (be.isFatal())
+            		throw be;
             } catch (Exception e) {
                 // can't log; no configuration yet
                 e.printStackTrace();
@@ -185,6 +188,9 @@ public class ProductDerivations {
         for (int i = 0; i < _derivations.length; i++) {
             try {
                 _derivations[i].beforeConfigurationLoad(conf);
+            } catch (BootstrapException be) {
+            	if (be.isFatal())
+            		throw be;
             } catch (Exception e) {
                 // logging not configured yet
                 e.printStackTrace();
