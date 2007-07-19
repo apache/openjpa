@@ -3508,7 +3508,7 @@ public class PCEnhancer {
         BCMethod newgetter = _pc.declareMethod(PRE + meth.getName(),
             meth.getReturnType(), meth.getParameterTypes());
         newgetter.setAccessFlags(getter.getAccessFlags());
-        newgetter.makePrivate();
+        newgetter.makeProtected(); 
         transferCodeAttributes(getter, newgetter);
         return getter;
     }
@@ -3539,7 +3539,7 @@ public class PCEnhancer {
         BCMethod newsetter = _pc.declareMethod(PRE + setter.getName(),
             setter.getReturnName(), setter.getParamNames());
         newsetter.setAccessFlags(setter.getAccessFlags());
-        newsetter.makePrivate();
+        newsetter.makeProtected();
         transferCodeAttributes(setter, newsetter);
         return setter;
     }

@@ -391,18 +391,29 @@
                                     <path refid="maven.compile.classpath"/>
                                     <path refid="maven.dependency.classpath"/>
                                 </path>
-								<taskdef name="openjpac" classname=
+                                <taskdef name="openjpac" classname=
                                     "org.apache.openjpa.ant.PCEnhancerTask">
-									<classpath refid="cp"/>
-								</taskdef>
+                                    <classpath refid="cp"/>
+                                </taskdef>
                                 <fileset id="enhance.path.ref"
                                     dir="${project.build.testOutputDirectory}">
                                     <include name="**/*.class"/>
+                                    <exclude name="**/inheritance/serializable/*.class"/>
                                 </fileset>
-								<openjpac>
-									<classpath refid="cp"/>
-									<fileset refid="enhance.path.ref"/>
-								</openjpac>
+                                <openjpac>
+                                    <classpath refid="cp"/>
+                                    <fileset refid="enhance.path.ref"/>
+                                </openjpac>
+                                <!--  Set detach state for serialization tests -->
+                                <openjpac>
+                                    <config detachState="fgs(DetachedStateField=true)"/>
+                                    <classpath refid="cp"/>
+                                    <fileset dir="${project.build.testOutputDirectory}"> 
+                                        <include name="**/inheritance/serializable/*.class"/>
+                                        <!--  include files from orm.xml -->
+                                        <include name="**/xml/*.class"/>
+                                    </fileset>
+                                </openjpac>
                             </tasks>
                         </configuration>
                         <goals>
