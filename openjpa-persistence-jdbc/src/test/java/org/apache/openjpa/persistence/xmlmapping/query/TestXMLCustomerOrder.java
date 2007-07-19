@@ -50,7 +50,8 @@ public class TestXMLCustomerOrder
 
     public void setUp() {
         setUp(org.apache.openjpa.persistence.xmlmapping.entities.Customer.class
-            , org.apache.openjpa.persistence.xmlmapping.entities.Customer.CustomerKey.class
+            , org.apache.openjpa.persistence.xmlmapping.entities.Customer
+                .CustomerKey.class
             , org.apache.openjpa.persistence.xmlmapping.entities.Order.class
             , org.apache.openjpa.persistence.xmlmapping.entities.EAddress.class
             ,  "openjpa.MetaDataRepository"
@@ -89,32 +90,34 @@ public class TestXMLCustomerOrder
         // For platform specific expected sqls are under resources.
         // The generated sql of the test is captured and written to file:
         //     ./TestXMLCustomerOrder.log
-        // This output file contents should match with the platform specfic sqls.        
+        // This output file contents should match with the platform specfic 
+        // sqls.        
         System.out.println("Expected pushdown SQL log file is in: " + sqllog);
         
         sql.clear();
 
         try {
-			em.getTransaction().begin();
-			deleteAllData(em );
-			em.getTransaction().commit();
-			
             em.getTransaction().begin();
-			loadData(em);
-			em.getTransaction().commit();
-			
-			em.close();
-			
-			// By closing and recreating the EntityManager, 
-			// this guarantees that data will be retrieved from 
-			// the database rather than just reused from the 
-			// persistence context created by the load methods above.
-			
-			em = emf.createEntityManager();
-			
-			System.err.println("Main started.");
+            deleteAllData(em );
+            em.getTransaction().commit();
+
+            em.getTransaction().begin();
+            loadData(em);
+            em.getTransaction().commit();
+
+            em.close();
+
+            // By closing and recreating the EntityManager, 
+            // this guarantees that data will be retrieved from 
+            // the database rather than just reused from the 
+            // persistence context created by the load methods above.
+
+            em = emf.createEntityManager();
+
+            System.err.println("Main started.");
             int test=1;
-            List<Address> addrs = em.createQuery("select o.shipAddress from Order o")
+            List<Address> addrs = em.createQuery(
+                "select o.shipAddress from Order o")
                 .getResultList();
             for (Address addr : addrs) {
                 System.out.println("addr= " + addr.toString());
@@ -133,26 +136,26 @@ public class TestXMLCustomerOrder
                 List orders = em.createQuery(qstring).getResultList();
                 printOrders(orders, test++);
             }
-            
+
             // query passing parameters
             qstring = "select o from Order o where o.shipAddress.city = ?1";
             Query q5 = em.createQuery(qstring);
             q5.setParameter(1, "San Jose");
             List orders =q5.getResultList();
             printOrders(orders, test++);
-            
+
             qstring = "select o from Order o where ?1 = o.shipAddress.city";
             Query q6 = em.createQuery(qstring);
             q6.setParameter(1, "San Jose");
             orders = q6.getResultList();
             printOrders(orders, test++);
-            
+
             em.close();
 
             // test updates
             em = emf.createEntityManager();
             testUpdateShipaddress(em, test++);
-            
+
             em.close();
             em = emf.createEntityManager();
 
@@ -189,7 +192,7 @@ public class TestXMLCustomerOrder
             e.printStackTrace();
         }       
     }
-    
+
     private void dumpSql() {
         String out = "./TestXMLCustomerOrder.log";
         try {
@@ -212,56 +215,56 @@ public class TestXMLCustomerOrder
     }
 
     private void loadData(EntityManager em) {
-		
-		ObjectFactory addressFactory = new ObjectFactory();
-		
+
+        ObjectFactory addressFactory = new ObjectFactory();
+
         Customer c2 = new Customer();
         c2.setCid( new Customer.CustomerKey("USA", 2) );
         c2.setName("A&J Auto");
         c2.setRating( CreditRating.GOOD );
         c2.setAddress(new EAddress("2480 Campbell Ave", "Campbell", "CA"
-            , "95123"));
+                , "95123"));
         em.persist(c2);
-        
-		Customer c1 = new Customer();
-		c1.setCid( new Customer.CustomerKey("USA", 1) );
-		c1.setName("Harry's Auto");
-		c1.setRating( CreditRating.GOOD );
-		c1.setAddress( new EAddress("12500 Monterey", "San Jose", "CA"
-            , "95141"));
-		em.persist(c1);
-		
-		Order o1 = new Order(10, 850, false, c1);
-		USAAddress addr1 = addressFactory.createUSAAddress();
-		addr1.setCity("San Jose");
-		addr1.setState("CA");
-		addr1.setZIP(new Integer("95141"));
-		addr1.getStreet().add("12500 Monterey");
-		addr1.setName( c1.getName());
-		o1.setShipAddress(addr1);
-		em.persist(o1);
-		
-		Order o2 = new Order(20, 1000, false, c1);
-		CANAddress addr2 = addressFactory.createCANAddress();
-		addr2.setName(c2.getName());
-		addr2.getStreet().add("123 Warden Road");
-		addr2.setCity("Markham");
-		addr2.setPostalCode("L6G 1C7");
-		addr2.setProvince("ON");
-		o2.setShipAddress(addr2);
-		em.persist(o2);
-	}
-	
+
+        Customer c1 = new Customer();
+        c1.setCid( new Customer.CustomerKey("USA", 1) );
+        c1.setName("Harry's Auto");
+        c1.setRating( CreditRating.GOOD );
+        c1.setAddress( new EAddress("12500 Monterey", "San Jose", "CA"
+                , "95141"));
+        em.persist(c1);
+
+        Order o1 = new Order(10, 850, false, c1);
+        USAAddress addr1 = addressFactory.createUSAAddress();
+        addr1.setCity("San Jose");
+        addr1.setState("CA");
+        addr1.setZIP(new Integer("95141"));
+        addr1.getStreet().add("12500 Monterey");
+        addr1.setName( c1.getName());
+        o1.setShipAddress(addr1);
+        em.persist(o1);
+
+        Order o2 = new Order(20, 1000, false, c1);
+        CANAddress addr2 = addressFactory.createCANAddress();
+        addr2.setName(c2.getName());
+        addr2.getStreet().add("123 Warden Road");
+        addr2.setCity("Markham");
+        addr2.setPostalCode("L6G 1C7");
+        addr2.setProvince("ON");
+        o2.setShipAddress(addr2);
+        em.persist(o2);
+    }
+
     private void testUpdateShipaddress(EntityManager em, int test)
         throws Exception {
         em.getTransaction().begin();
         String query = "select o from Order o where o.shipAddress.city " +
-            "= 'San Jose'";
+        "= 'San Jose'";
         List orders = em.createQuery(query).getResultList(); 
         System.out.println("Before Update: ");
         printOrders(orders, test);
         em.getTransaction().commit();
-        
+
         // update in separate transaction                    
         Order o = (Order) orders.get(0);
         EntityTransaction et = em.getTransaction();
@@ -270,21 +273,21 @@ public class TestXMLCustomerOrder
         addr.setCity("Cupertino");
         if (addr instanceof USAAddress)
             ((USAAddress) addr).setZIP(95014);
-        
+
         // update shipAddress
         o.setShipAddress(addr);
         et.commit();
     }
-	
-	private void deleteAllData(EntityManager em) {
-		em.createQuery("delete from Order o").executeUpdate();
-		em.createQuery("delete from Customer c").executeUpdate();
-	}
 
-	private void printOrder(Order o){
+    private void deleteAllData(EntityManager em) {
+        em.createQuery("delete from Order o").executeUpdate();
+        em.createQuery("delete from Customer c").executeUpdate();
+    }
+
+    private void printOrder(Order o){
         System.out.println(" Customer ID:"+o.getCustomer().getCid());
-		System.out.println(" Order Number:"+o.getOid());
-		System.out.println("Ship to: "+o.getShipAddress().toString());
-		System.out.println();		
-	}
+        System.out.println(" Order Number:"+o.getOid());
+        System.out.println("Ship to: "+o.getShipAddress().toString());
+        System.out.println();		
+    }
 }
