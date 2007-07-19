@@ -433,7 +433,7 @@ public class PersistenceProductDerivation
      * SAX handler capable of parsing an JPA persistence.xml file.
      * Package-protected for testing.
      */
-    static class ConfigurationParser
+    public static class ConfigurationParser
         extends XMLMetaDataParser {
 
         private final Map _map;
