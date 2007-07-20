@@ -21,7 +21,10 @@ package org.apache.openjpa.datacache;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.RemoteCommitEvent;
@@ -439,4 +442,14 @@ public abstract class AbstractDataCache
                 log.warn(s_loc.get("exp-listener-ex"), e);
 		}
 	}
+
+    /**
+     * Returns the objects for the given key List.
+     */
+    public Map getAll(List keys) {
+        Map resultMap = new HashMap(keys.size());
+        for(int i=0; i<keys.size(); i++)
+            resultMap.put(keys.get(i), get(keys.get(i)));
+        return resultMap;
+    }
 }

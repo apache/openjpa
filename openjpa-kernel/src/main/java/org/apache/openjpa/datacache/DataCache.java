@@ -20,6 +20,7 @@ package org.apache.openjpa.datacache;
 
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.openjpa.lib.util.Closeable;
@@ -258,4 +259,9 @@ public interface DataCache
      * Free the resources used by this cache.
 	 */
 	public void close ();
+    
+    /**
+	 * returns objects from the caches for a given list of keys
+     */
+    public Map getAll(List keys);
 }

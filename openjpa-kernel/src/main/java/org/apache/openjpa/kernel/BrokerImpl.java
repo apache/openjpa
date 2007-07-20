@@ -184,6 +184,7 @@ public class BrokerImpl
     private Set _updatedClss = null;
     private Set _deletedClss = null;
     private Set _pending = null;
+    private int findAllDepth = 0;
 
     // track instances that become transactional after the first savepoint
     // (the first uses the transactional cache)
@@ -903,6 +904,8 @@ public class BrokerImpl
      */
     protected Object[] findAll(Collection oids, FetchConfiguration fetch,
         BitSet exclude, Object edata, int flags, FindCallbacks call) {
+        findAllDepth ++;
+
         // throw any exceptions for null oids up immediately
         if (oids == null)
             throw new NullPointerException("oids == null");
@@ -912,7 +915,9 @@ public class BrokerImpl
         // we have to use a map of oid->sm rather than a simple
         // array, so that we make sure not to create multiple sms for equivalent
         // oids if the user has duplicates in the given array
-        _loading = new HashMap((int) (oids.size() * 1.33 + 1));
+        if (_loading == null)
+            _loading = new HashMap((int) (oids.size() * 1.33 + 1));
+
         if (call == null)
             call = this;
         if (fetch == null)
@@ -1007,7 +1012,9 @@ public class BrokerImpl
         } catch (RuntimeException re) {
             throw new GeneralException(re);
         } finally {
-            _loading = null;
+            findAllDepth--;
+            if (findAllDepth == 0)
+                _loading = null;
             endOperation();
         }
     }

@@ -20,6 +20,8 @@ package org.apache.openjpa.datacache;
 
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
@@ -333,4 +335,14 @@ public class DelegatingDataCache
             throw translate(re);
 		}
 	}
+
+    public Map getAll(List keys) {
+        if (_cache == null)
+            return null;
+        try {
+            return _cache.getAll(keys);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 }

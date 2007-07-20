@@ -136,6 +136,7 @@ public class PCDataImpl
         loadImplData(sm);
 
         FieldMetaData[] fmds = sm.getMetaData().getFields();
+        ((StateManagerImpl)sm).setLoading(true);
         for (int i = 0; i < fmds.length; i++) {
             // load intermediate data for all unloaded fields and data for
             // fields in configured fetch groups

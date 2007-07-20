@@ -41,6 +41,7 @@ import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.OptimisticException;
 
 /**
@@ -409,6 +410,8 @@ public class DataCacheStoreManager
             return super.loadAll(sms, state, load, fetch, edata);
 
         Map unloaded = null;
+        List smList = null;
+        Map caches = new HashMap();
         OpenJPAStateManager sm;
         DataCache cache;
         DataCachePCData data;
@@ -422,28 +425,57 @@ public class DataCacheStoreManager
                 continue;
             }
 
-            if (sm.getManagedInstance() == null) {
-                data = cache.get(sm.getObjectId());
-                if (data != null) {
-                    //### the 'data.type' access here probably needs
-                    //### to be addressed for bug 511
-                    sm.initialize(data.getType(), state);
-                    data.load(sm, fetch, edata);
-                } else
-                    unloaded = addUnloaded(sm, null, unloaded);
-            } else if (load != FORCE_LOAD_NONE
+            if (sm.getManagedInstance() == null
+                || load != FORCE_LOAD_NONE
                 || sm.getPCState() == PCState.HOLLOW) {
-                data = cache.get(sm.getObjectId());
-                if (data != null) {
-                    // load unloaded fields
-                    fields = sm.getUnloaded(fetch);
-                    data.load(sm, fields, fetch, edata);
-                    if (fields.length() > 0)
-                        unloaded = addUnloaded(sm, fields, unloaded);
-                } else
-                    unloaded = addUnloaded(sm, null, unloaded);
+                smList = (List) caches.get(cache);
+                if (smList == null) {
+                    smList = new ArrayList();
+                    caches.put(cache, smList);
+                }
+                smList.add(sm);
             } else if (!cache.contains(sm.getObjectId()))
                 unloaded = addUnloaded(sm, null, unloaded);
+        }
+        
+        for (Iterator itr = caches.keySet().iterator(); itr.hasNext();) {
+            cache = (DataCache) itr.next();
+            smList = (List) caches.get(cache);
+            List oidList = new ArrayList(smList.size());
+
+            for (itr=smList.iterator();itr.hasNext();) {
+                sm = (OpenJPAStateManager) itr.next();
+                oidList.add((OpenJPAId) sm.getObjectId());
+            }
+            
+            Map dataMap = cache.getAll(oidList);
+
+            for (itr=smList.iterator();itr.hasNext();) {
+                sm = (OpenJPAStateManager) itr.next();
+                data = (DataCachePCData) dataMap.get(
+                        (OpenJPAId) sm.getObjectId());
+
+                if (sm.getManagedInstance() == null) {
+                    if (data != null) {
+                        //### the 'data.type' access here probably needs
+                        //### to be addressed for bug 511
+                        sm.initialize(data.getType(), state);
+                        data.load(sm, fetch, edata);
+                    } else
+                        unloaded = addUnloaded(sm, null, unloaded);
+                } else if (load != FORCE_LOAD_NONE
+                        || sm.getPCState() == PCState.HOLLOW) {
+                    data = cache.get(sm.getObjectId());
+                    if (data != null) {
+                        // load unloaded fields
+                        fields = sm.getUnloaded(fetch);
+                        data.load(sm, fields, fetch, edata);
+                        if (fields.length() > 0)
+                            unloaded = addUnloaded(sm, fields, unloaded);
+                    } else
+                        unloaded = addUnloaded(sm, null, unloaded);
+                }
+            }
         }
 
         if (unloaded == null)

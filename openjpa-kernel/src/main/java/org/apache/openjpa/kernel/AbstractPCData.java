@@ -75,9 +75,8 @@ public abstract class AbstractPCData
             case JavaTypes.COLLECTION:
                 ProxyDataList c = (ProxyDataList) data;
                 Collection c2 = (Collection) sm.newFieldProxy(fmd.getIndex());
-                for (int i = 0; i < c.size(); i++)
-                    c2.add(toNestedField(sm, fmd.getElement(), c.get(i),
-                        fetch, context));
+                c2 = toNestedFields(sm, fmd.getElement(), (Collection) data,
+                    fetch, context);
                 if (c2 instanceof Proxy) {
                     ChangeTracker ct = ((Proxy) c2).getChangeTracker();
                     if (ct != null)
@@ -87,17 +86,18 @@ public abstract class AbstractPCData
             case JavaTypes.MAP:
                 Map m = (Map) data;
                 Map m2 = (Map) sm.newFieldProxy(fmd.getIndex());
-                Map.Entry e;
-                Object key;
-                Object value;
-                for (Iterator mi = m.entrySet().iterator(); mi.hasNext();) {
-                    e = (Map.Entry) mi.next();
-                    key = toNestedField(sm, fmd.getKey(), e.getKey(),
-                        fetch, context);
-                    value = toNestedField(sm, fmd.getElement(), e.getValue(),
-                        fetch, context);
-                    m2.put(key, value);
-                }
+                Collection keys = new ArrayList (m.size());
+
+                for (Iterator mi = m.entrySet().iterator(); mi.hasNext();)
+                    keys.add(mi.next());
+
+                Object[] keyArray = keys.toArray();
+                Object[] values = toNestedFields(sm, fmd.getElement(),
+                    keys, fetch, context).toArray();
+                int idx = 0;
+                for (Iterator mi = m.entrySet().iterator(); mi.hasNext(); idx++)
+                    m2.put(keyArray[idx], values[idx]);
+
                 return m2;
             case JavaTypes.ARRAY:
                 int length = Array.getLength(data);
@@ -152,12 +152,66 @@ public abstract class AbstractPCData
     }
 
     /**
+     * Transform the given data value to its field value. The data value
+     * may be a key, value, or element of a map or collection.
+     */
+    protected Collection toNestedFields(OpenJPAStateManager sm, 
+        ValueMetaData vmd, Collection data, FetchConfiguration fetch,
+        Object context) {
+        if (data == null)
+            return null;
+
+        Collection ret = new ArrayList(data.size());
+        switch (vmd.getDeclaredTypeCode()) {
+            case JavaTypes.DATE:
+                for (Iterator itr=data.iterator(); itr.hasNext();)
+                    ret.add(((Date)itr.next()).clone());
+                return ret;
+            case JavaTypes.LOCALE:
+                for (Iterator itr=data.iterator(); itr.hasNext();)
+                    ret.add((Locale) itr.next());
+                return ret;
+            case JavaTypes.PC:
+                if (vmd.isEmbedded())
+                    for (Iterator itr=data.iterator(); itr.hasNext();)
+                        ret.add(toEmbeddedField(sm, vmd, itr.next(), fetch
+                            , context));
+                // no break
+            case JavaTypes.PC_UNTYPED:
+                Object[] r = toRelationFields(sm, data, fetch);
+                if (r != null) {
+                    for (int i = 0; i < r.length; i++)
+                        if (r[i] != null)
+                            ret.add(r[i]);
+                        else {
+                           ret.add(sm.getContext().getConfiguration().
+                               getOrphanedKeyActionInstance().
+                               orphan(data, sm, vmd));
+                        }
+                    return ret;
+                }
+            default:
+                return data;
+        }
+    }
+
+    
+    /**
      * Transform the given data into a relation field value. Default
      * implementation assumes the data is an oid.
      */
     protected Object toRelationField(OpenJPAStateManager sm, ValueMetaData vmd,
         Object data, FetchConfiguration fetch, Object context) {
         return sm.getContext().find(data, fetch, null, null, 0);
+    }
+
+    /**
+     * Transform the given data into relation field values. Default
+     * implementation assumes the data is an oid.
+     */
+    protected Object[] toRelationFields(OpenJPAStateManager sm,
+        Object data, FetchConfiguration fetch) {
+        return sm.getContext().findAll((Collection) data, fetch, null, null, 0);
     }
 
     /**
