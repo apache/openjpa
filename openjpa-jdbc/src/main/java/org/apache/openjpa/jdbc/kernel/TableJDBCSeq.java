@@ -76,6 +76,7 @@ public class TableJDBCSeq
     private transient JDBCConfiguration _conf = null;
     private transient Log _log = null;
     private int _alloc = 50;
+    private int _intValue = 1;
     private final Status _stat = new Status();
 
     private String _table = "OPENJPA_SEQUENCE_TABLE";
@@ -167,6 +168,24 @@ public class TableJDBCSeq
      */
     public void setAllocate(int alloc) {
         _alloc = alloc;
+    }
+    
+    /**
+     * Return the number as the initial number for the 
+     * GeneratedValue.TABLE strategy to start with. 
+     * @return an initial number
+     */
+    public int getInitialValue() {        
+        return _intValue;
+    }
+
+    /**
+     * Set the initial number in the table for the GeneratedValue.TABLE
+     * strategy to use as initial number. 
+     * @param intValue. The initial number
+     */
+    public void setInitialValue(int intValue) {
+        _intValue = intValue;
     }
 
     /**
@@ -378,8 +397,8 @@ public class TableJDBCSeq
             append(_pkColumn).append(", ").append(_seqColumn).
             append(") VALUES (").
             appendValue(pk, _pkColumn).append(", ").
-            appendValue(Numbers.valueOf(1), _seqColumn).append(")");
-
+            appendValue(_intValue, _seqColumn).append(")");
+        
         boolean wasAuto = conn.getAutoCommit();
         if (!wasAuto && !suspendInJTA())
             conn.setAutoCommit(true);
