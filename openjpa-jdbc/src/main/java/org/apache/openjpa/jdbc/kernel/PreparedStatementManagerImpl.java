@@ -51,7 +51,7 @@ public class PreparedStatementManagerImpl
     protected final DBDictionary _dict;
 
     // track exceptions
-    private final Collection _exceptions = new LinkedList();
+    protected final Collection _exceptions = new LinkedList();
 
     /**
      * Constructor. Supply connection.
