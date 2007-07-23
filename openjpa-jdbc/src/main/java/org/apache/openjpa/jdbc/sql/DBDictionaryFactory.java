@@ -27,6 +27,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -77,9 +78,9 @@ public class DBDictionaryFactory {
      */
     public static DBDictionary calculateDBDictionary(JDBCConfiguration conf,
         String url, String driver, String props) {
-        String dclass = dictionaryClassForString(url);
+        String dclass = dictionaryClassForString(url, conf);
         if (dclass == null)
-            dclass = dictionaryClassForString(driver);
+            dclass = dictionaryClassForString(driver, conf);
         if (dclass == null)
             return null;
         return newDBDictionary(conf, dclass, props);
@@ -94,10 +95,10 @@ public class DBDictionaryFactory {
         try {
             conn = ds.getConnection();
             DatabaseMetaData meta = conn.getMetaData();
-            String dclass = dictionaryClassForString(meta.getURL());
+            String dclass = dictionaryClassForString(meta.getURL(), conf);
             if (dclass == null)
                 dclass = dictionaryClassForString
-                    (meta.getDatabaseProductName());
+                    (meta.getDatabaseProductName(), conf);
             if (dclass == null)
                 dclass = DBDictionary.class.getName();
             return newDBDictionary(conf, dclass, props, conn);
@@ -170,15 +171,15 @@ public class DBDictionaryFactory {
     /**
      * Guess the dictionary class name to use based on the product string.
      */
-    private static String dictionaryClassForString(String prod) {
+    private static String dictionaryClassForString(String prod, JDBCConfiguration conf) {
         if (StringUtils.isEmpty(prod))
             return null;
         prod = prod.toLowerCase();
 
         if (prod.indexOf("oracle") != -1)
-            return ORACLE_DICT_NAME;
+            return getDBDictionaryPluginValue(conf, "oracle");
         if (prod.indexOf("sqlserver") != -1)
-            return SQLServerDictionary.class.getName();
+            return getDBDictionaryPluginValue(conf, "sqlserver");
         if (prod.indexOf("jsqlconnect") != -1)
             return SQLServerDictionary.class.getName();
         if (prod.indexOf("mysql") != -1)
@@ -223,7 +224,7 @@ public class DBDictionaryFactory {
         // appear in the URL of another database (like if the db is named
         // "testdb2" or something)
         if (prod.indexOf("db2") != -1 || prod.indexOf("as400") != -1)
-            return DB2Dictionary.class.getName();
+            return getDBDictionaryPluginValue(conf, "db2");
 
         // known dbs that we don't support
         if (prod.indexOf("cloudscape") != -1)
@@ -607,5 +608,16 @@ public class DBDictionaryFactory {
         }
 
         return buf.toString();
+    }
+    
+    private static String getDBDictionaryPluginValue(JDBCConfiguration conf
+        , String alias) {
+        String[] aliases = ((JDBCConfigurationImpl) conf)
+            .dbdictionaryPlugin.getAliases();
+        for (int i = 0; i < aliases.length; i++) {
+            if (StringUtils.equals(alias, aliases[i]))
+                return aliases[++i];
+        }
+        return null;
     }
 }
