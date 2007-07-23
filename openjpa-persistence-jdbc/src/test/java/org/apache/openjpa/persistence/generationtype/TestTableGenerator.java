@@ -25,7 +25,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestTableGenerator extends SingleEMFTestCase {
     
     public void setUp() { 
-        setUp(Dog.class);
+        setUp(Dog.class, CLEAR_TABLES);
     }
 
     public void testInitialValue() { 
