@@ -28,7 +28,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
-import org.apache.openjpa.meta.XMLMapping;
+import org.apache.openjpa.meta.XMLMetaData;
 import serp.util.Numbers;
 
 /**
@@ -190,7 +190,7 @@ class StartsWithExpression
             return null;
         }
         
-        public XMLMapping getXmlMapping() {
+        public XMLMetaData getXmlMapping() {
             return null;
         }
 
@@ -275,7 +275,7 @@ class StartsWithExpression
             return null;
         }
         
-        public XMLMapping getXmlMapping() {
+        public XMLMetaData getXmlMapping() {
             return null;
         }
     }

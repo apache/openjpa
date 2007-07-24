@@ -40,7 +40,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.meta.XMLMapping;
+import org.apache.openjpa.meta.XMLMetaData;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -195,8 +195,8 @@ class PCPath
         // we build the remaining xpath that follows the root element.
         while (itr.hasNext()) {
             action = (Action) itr.next();
-            if (((XMLMapping) action.data).getXmlname() != null)                 
-                xpath.append(((XMLMapping) action.data).getXmlname());
+            if (((XMLMetaData) action.data).getXmlname() != null)                 
+                xpath.append(((XMLMetaData) action.data).getXmlname());
             else
                 xpath.append("*");
             if (itr.hasNext())
@@ -311,7 +311,7 @@ class PCPath
         _key = false;
     }
     
-    public void get(FieldMetaData fmd, XMLMapping meta) {
+    public void get(FieldMetaData fmd, XMLMetaData meta) {
         if (_actions == null)
             _actions = new LinkedList();
         Action action = new Action();
@@ -324,7 +324,7 @@ class PCPath
         _xmlfield = fmd;
     }
     
-    public void get(XMLMapping meta, String name) {
+    public void get(XMLMetaData meta, String name) {
         Action action = new Action();
         action.op = Action.GET_XPATH;
         action.data = meta.getFieldMapping(name);
@@ -334,10 +334,10 @@ class PCPath
         _type = XPATH;
     }
     
-    public XMLMapping getXmlMapping() {
+    public XMLMetaData getXmlMapping() {
         Action act = (Action) _actions.getLast();
         if (act != null)
-            return (XMLMapping) act.data;
+            return (XMLMetaData) act.data;
         return null;
     }
 
@@ -384,7 +384,7 @@ class PCPath
             return _cast;
         Action act = lastFieldAction();
         if (act != null && act.op == Action.GET_XPATH)
-            return ((XMLMapping) act.data).getType();
+            return ((XMLMetaData) act.data).getType();
         
         FieldMetaData fld = (act == null) ? null : (FieldMetaData) act.data;
         boolean key = act != null && act.op == Action.GET_KEY;

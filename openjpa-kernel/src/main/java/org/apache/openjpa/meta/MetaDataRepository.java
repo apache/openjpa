@@ -1856,7 +1856,7 @@ public class MetaDataRepository
      * @param fmd
      * @return null
      */
-    public XMLMapping getXMLMetaData(FieldMetaData fmd) {
+    public XMLMetaData getXMLMetaData(FieldMetaData fmd) {
         return null;
     }
 }

@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.openjpa.jdbc.meta.XMLMappingRepository;
 import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.meta.XMLMapping;
+import org.apache.openjpa.meta.XMLMetaData;
 import org.apache.openjpa.meta.XMLFieldMetaData;
 import org.apache.commons.lang.StringUtils;
 
@@ -44,7 +44,7 @@ import org.apache.commons.lang.StringUtils;
  * @author Catalina Wei
  * @since 1.0.0
  */
-public class XMLClassMetaData implements XMLMapping     
+public class XMLClassMetaData implements XMLMetaData     
 {
     private Class _type;
     private int _code = JavaTypes.OBJECT;
@@ -153,8 +153,8 @@ public class XMLClassMetaData implements XMLMapping
         return false;
     }
     
-    public XMLMapping getFieldMapping(String name) {
-        return (XMLMapping) _fieldMap.get(name);
+    public XMLMetaData getFieldMapping(String name) {
+        return (XMLMetaData) _fieldMap.get(name);
     }
     
     public void setType(Class type) {
@@ -193,7 +193,7 @@ public class XMLClassMetaData implements XMLMapping
         for (int i = 0; i < members.length; i++) {
             Member member = members[i];
             AnnotatedElement el = (AnnotatedElement) member;
-            XMLMapping field = null;
+            XMLMetaData field = null;
             if (el.getAnnotation(XmlElement.class) != null) {
                 String xmlname = el.getAnnotation(XmlElement.class).name();
                 // avoid JAXB XML bind default name

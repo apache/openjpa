@@ -31,7 +31,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.meta.XMLMapping;
+import org.apache.openjpa.meta.XMLMetaData;
 import org.apache.openjpa.util.InternalException;
 
 /**
@@ -206,13 +206,13 @@ class ConstPath
         }
     }
     
-    public void get(FieldMetaData fmd, XMLMapping meta) {
+    public void get(FieldMetaData fmd, XMLMetaData meta) {
     }
 
-    public void get(XMLMapping meta, String name) {
+    public void get(XMLMetaData meta, String name) {
     }
 
-    public XMLMapping getXmlMapping() {
+    public XMLMetaData getXmlMapping() {
         return null;
     }
 }

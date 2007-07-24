@@ -26,7 +26,7 @@ import org.apache.commons.lang.StringUtils;
  * @author Catalina Wei
  * @since 1.0.0
  */
-public class XMLFieldMetaData implements XMLMapping {
+public class XMLFieldMetaData implements XMLMetaData {
 
     private String _name;
     private String _xmlname = null;
@@ -105,7 +105,7 @@ public class XMLFieldMetaData implements XMLMapping {
         return _xmltype == ATTRIBUTE;
     }
     
-    public XMLMapping getFieldMapping(String name) {
+    public XMLMetaData getFieldMapping(String name) {
         return null;
     }
 }

@@ -31,7 +31,7 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.meta.XMLMapping;
+import org.apache.openjpa.meta.XMLMetaData;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UnsupportedException;
@@ -247,7 +247,7 @@ public abstract class AbstractExpressionBuilder {
     }
     
     protected Value traverseXPath(Path path, String field) {
-        XMLMapping meta = path.getXmlMapping();
+        XMLMetaData meta = path.getXmlMapping();
         if (meta.getFieldMapping(field) == null) {
             throw parseException(EX_USER, "no-field",
                     new Object[]{ meta.getType(), field }, null);
@@ -297,7 +297,7 @@ public abstract class AbstractExpressionBuilder {
         }
         else {
             // xmlsupport xpath
-            XMLMapping xmlmeta = fmd.getRepository().getXMLMetaData(fmd);
+            XMLMetaData xmlmeta = fmd.getRepository().getXMLMetaData(fmd);
             if (xmlmeta != null) {
                 path.get(fmd, xmlmeta);
                 return path;

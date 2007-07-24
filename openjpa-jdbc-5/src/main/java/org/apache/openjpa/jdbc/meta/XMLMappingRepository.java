@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.XMLClassMetaData;
-import org.apache.openjpa.meta.XMLMapping;
+import org.apache.openjpa.meta.XMLMetaData;
 
 /**
  * Repository of object/relational mapping information.
@@ -34,7 +34,7 @@ import org.apache.openjpa.meta.XMLMapping;
  */
 public class XMLMappingRepository extends MappingRepository {
     // xml mapping
-    protected final XMLMapping[] EMPTY_XMLMETAS;
+    protected final XMLMetaData[] EMPTY_XMLMETAS;
     private final Map _xmlmetas = new HashMap();
 
     public XMLMappingRepository() {
@@ -49,7 +49,7 @@ public class XMLMappingRepository extends MappingRepository {
         return meta;
     }
     
-    public XMLMapping getXMLClassMetaData(Class cls) {
+    public XMLMetaData getXMLClassMetaData(Class cls) {
         synchronized(_xmlmetas) {
             if (_xmlmetas.isEmpty())
                 return null;
@@ -58,8 +58,8 @@ public class XMLMappingRepository extends MappingRepository {
         }
     }
     
-    public XMLMapping getXMLMetaData(FieldMetaData fmd) {
-        XMLMapping xmlmeta = null;
+    public XMLMetaData getXMLMetaData(FieldMetaData fmd) {
+        XMLMetaData xmlmeta = null;
         if (XMLClassMetaData.isXMLMapping(fmd.getDeclaredType())) {
             xmlmeta = getXMLClassMetaData(fmd.getDeclaredType());
             if (xmlmeta == null)
@@ -68,7 +68,7 @@ public class XMLMappingRepository extends MappingRepository {
         return xmlmeta;
     }
     
-    public synchronized void addXMLClassMetaData(Class cls, XMLMapping meta) {
+    public synchronized void addXMLClassMetaData(Class cls, XMLMetaData meta) {
         _xmlmetas.put(cls, meta);
     }    
     
@@ -76,7 +76,7 @@ public class XMLMappingRepository extends MappingRepository {
         return new XMLClassMetaData(fmd.getDeclaredType(), name, this);
     }
         
-    protected XMLMapping[] newXMLClassMetaDataArray(int length) {
+    protected XMLMetaData[] newXMLClassMetaDataArray(int length) {
         return new XMLClassMetaData[length];
     }
 }

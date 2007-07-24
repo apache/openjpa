@@ -26,7 +26,7 @@ import java.io.Serializable;
  * @author Catalina Wei
  * @since 1.0.0
  */
-public interface XMLMapping extends Serializable {
+public interface XMLMetaData extends Serializable {
     /**
      * JAXB XML binding default name
      */
@@ -55,7 +55,7 @@ public interface XMLMapping extends Serializable {
      * @param name the field name.
      * @return XMLMapping.
      */
-    public XMLMapping getFieldMapping(String name); 
+    public XMLMetaData getFieldMapping(String name); 
     
     /**
      * Set type.

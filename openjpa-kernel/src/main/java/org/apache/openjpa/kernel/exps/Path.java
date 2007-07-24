@@ -19,7 +19,7 @@
 package org.apache.openjpa.kernel.exps;
 
 import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.meta.XMLMapping;
+import org.apache.openjpa.meta.XMLMetaData;
 
 /**
  * A path represents a traversal into fields of a candidate object.
@@ -51,7 +51,7 @@ public interface Path
      * @param fmd field maps to xml column
      * @param meta associated xml mapping
      */
-    public void get(FieldMetaData fmd, XMLMapping meta);
+    public void get(FieldMetaData fmd, XMLMetaData meta);
     
     /**
      * Traverse into the gevin xpath name of the current object, and update
@@ -60,11 +60,11 @@ public interface Path
      * @param meta
      * @param name
      */
-    public void get(XMLMapping meta, String name);
+    public void get(XMLMetaData meta, String name);
     
     /**
      * Return the current XPath's xmlmapping metadata.
      * @return Return xmlmapping
      */
-    public XMLMapping getXmlMapping();
+    public XMLMetaData getXmlMapping();
 }
