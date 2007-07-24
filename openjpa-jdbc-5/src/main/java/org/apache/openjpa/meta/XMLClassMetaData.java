@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.openjpa.jdbc.meta.XMLMappingRepository;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.XMLMapping;
-import org.apache.openjpa.meta.XMLMetaData;
+import org.apache.openjpa.meta.XMLFieldMetaData;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -178,8 +178,14 @@ public class XMLClassMetaData implements XMLMapping
 
     private synchronized void populateFromReflection(Class cls, 
         XMLMappingRepository repos) {
-        Member[] members;
-        if (((XmlAccessorType)cls.getAnnotation(XmlAccessorType.class)).value()
+        Member[] members; 
+        Class superclass = cls.getSuperclass();
+
+        // handle inheritance at sub-element level
+        if (superclass.isAnnotationPresent(XmlType.class))
+            populateFromReflection(superclass, repos);
+
+        if (((XmlAccessorType) cls.getAnnotation(XmlAccessorType.class)).value()
                 == XmlAccessType.FIELD)
             members = cls.getDeclaredFields();
         else
@@ -201,7 +207,7 @@ public class XMLClassMetaData implements XMLMapping
                     field.setXmlname(xmlname);
                 }
                 else {
-                    field = new XMLMetaData();
+                    field = new XMLFieldMetaData();
                     field.setXmltype(ELEMENT);
                     field.setXmlname(xmlname);
                     field.setXmlnamespace(el.getAnnotation(XmlElement.class)
@@ -209,8 +215,8 @@ public class XMLClassMetaData implements XMLMapping
                 }
             }
             else if (el.getAnnotation(XmlAttribute.class) != null) {
-                field = new XMLMetaData();
-                field.setXmltype(XMLMetaData.ATTRIBUTE);
+                field = new XMLFieldMetaData();
+                field.setXmltype(XMLFieldMetaData.ATTRIBUTE);
                 String xmlname = el.getAnnotation(XmlAttribute.class).name();
                 // avoid JAXB XML bind default name
                 if (StringUtils.equals(defaultName, xmlname))
