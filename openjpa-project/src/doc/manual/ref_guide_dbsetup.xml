@@ -3265,7 +3265,7 @@ import org.apache.openjpa.persistence.jdbc.*;
 Query q = em.createQuery("select m from Magazine m where m.title = 'JDJ'");
 OpenJPAQuery kq = OpenJPAPersistence.cast(q);
 JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan();
-fetch.setFetchSize(20);
+fetch.setFetchBatchSize(20);
 fetch.setResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
 fetch.setFetchDirection(ResultSet.FETCH_FORWARD);
 fetch.setLRSSize(JDBCFetchPlan.SIZE_LAST);
