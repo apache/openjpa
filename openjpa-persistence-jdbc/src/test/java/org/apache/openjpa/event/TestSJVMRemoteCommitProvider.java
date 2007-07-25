@@ -26,8 +26,6 @@ import javax.persistence.Persistence;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.event.RemoteCommitListener;
-import org.apache.openjpa.event.RemoteCommitEvent;
 
 public class TestSJVMRemoteCommitProvider
     extends PersistenceTestCase {
