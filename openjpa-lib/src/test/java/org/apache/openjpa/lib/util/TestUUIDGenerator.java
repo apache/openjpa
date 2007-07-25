@@ -41,4 +41,13 @@ public class TestUUIDGenerator extends TestCase {
         for (int i = 0; i < 10000; i++)
             assertTrue(seen.add(UUIDGenerator.nextHex()));
     }
+
+    public void testGetTime() {
+        long time = 0;
+        for (int i = 0; i < 10000; i++) {
+            long newTime = UUIDGenerator.getTime();
+            assertTrue(newTime != time);
+            time = newTime;
+        }
+    }
 }

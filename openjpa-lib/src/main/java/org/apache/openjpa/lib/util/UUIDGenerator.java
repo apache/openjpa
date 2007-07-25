@@ -172,10 +172,12 @@ public class UUIDGenerator {
      *
      * @return long timestamp
      */
-    private static long getTime() {
+    // package-visibility for testing
+    static long getTime() {
         long newTime = getUUIDTime();
         if (newTime <= _lastMillis) {
             incrementSequence();
+            newTime = getUUIDTime();
         }
         _lastMillis = newTime;
         return newTime;
