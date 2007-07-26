@@ -751,7 +751,7 @@ public class AnnotationPersistenceMetaDataParser
         if (detached != null) {
             if (!detached.enabled())
                 meta.setDetachedState(null);
-            else if (!StringUtils.isEmpty(detached.fieldName()))
+            else if (StringUtils.isEmpty(detached.fieldName()))
                 meta.setDetachedState(ClassMetaData.SYNTHETIC);
             else
                 meta.setDetachedState(detached.fieldName());

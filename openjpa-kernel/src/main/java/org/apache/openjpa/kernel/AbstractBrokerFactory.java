@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.LinkedList;
 import java.util.List;
+import java.lang.reflect.InvocationTargetException;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
@@ -38,12 +39,14 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAVersion;
 import org.apache.openjpa.datacache.DataCacheStoreManager;
 import org.apache.openjpa.enhance.PCRegistry;
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.BrokerFactoryEvent;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
+import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 import org.apache.openjpa.lib.util.concurrent.ReentrantLock;
@@ -52,6 +55,7 @@ import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.util.InternalException;
 
 /**
  * Abstract implementation of the {@link BrokerFactory}
@@ -216,7 +220,6 @@ public abstract class AbstractBrokerFactory
         }
 
         if (_transactionListeners != null && !_transactionListeners.isEmpty()) {
-            Map.Entry entry;
             for (Iterator itr = _transactionListeners.iterator();
                 itr.hasNext(); ) {
                 broker.addTransactionListener(itr.next());
@@ -236,6 +239,7 @@ public abstract class AbstractBrokerFactory
         // cache persistent type names if not already
         ClassLoader loader = _conf.getClassResolverInstance().
             getClassLoader(getClass(), envLoader);
+        Collection toRedefine = new ArrayList();
         if (_pcClassNames == null) {
             Collection clss = _conf.getMetaDataRepositoryInstance().
                 loadPersistentTypes(false, loader);
@@ -243,25 +247,69 @@ public abstract class AbstractBrokerFactory
                 _pcClassNames = Collections.EMPTY_SET;
             else {
                 _pcClassNames = new ArrayList(clss.size());
-                for (Iterator itr = clss.iterator(); itr.hasNext();)
-                    _pcClassNames.add(((Class) itr.next()).getName());
+                for (Iterator itr = clss.iterator(); itr.hasNext();) {
+                    Class cls = (Class) itr.next();
+                    _pcClassNames.add(cls.getName());
+                    if (needsSub(cls))
+                        toRedefine.add(cls);
+                }
                 _pcClassLoaders = new ReferenceHashSet(ReferenceHashSet.WEAK);
                 _pcClassLoaders.add(loader);
             }
-            return;
-        }
-
-        // reload with this loader
-        if (_pcClassLoaders.add(loader)) {
-            for (Iterator itr = _pcClassNames.iterator(); itr.hasNext();) {
-                try {
-                    Class.forName((String) itr.next(), true, loader);
-                } catch (Throwable t) {
-                    _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME)
-                        .warn(null, t);
+        } else {
+            // reload with this loader
+            if (_pcClassLoaders.add(loader)) {
+                for (Iterator itr = _pcClassNames.iterator(); itr.hasNext();) {
+                    try {
+                        Class cls =
+                            Class.forName((String) itr.next(), true, loader);
+                        if (needsSub(cls))
+                            toRedefine.add(cls);
+                    } catch (Throwable t) {
+                        _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME)
+                            .warn(null, t);
+                    }
                 }
             }
         }
+
+        if (JavaVersions.VERSION >= 5) {
+            try {
+                // This is Java 5 / 6 code. There might be a more elegant
+                // way to bootstrap this into the system, but reflection
+                // will get things working for now. We could potentially
+                // do this by creating a new BrokerFactoryEvent type for
+                // Broker creation, at which point we have an appropriate
+                // classloader to use.
+                Class cls = Class.forName(
+                    "org.apache.openjpa.enhance.ManagedClassSubclasser");
+                cls.getMethod("prepareUnenhancedClasses", new Class[] {
+                        OpenJPAConfiguration.class, Collection.class,
+                        ClassLoader.class
+                    })
+                    .invoke(null, new Object[]{ _conf, toRedefine, envLoader });
+            } catch (NoSuchMethodException e) {
+                // should never happen in a properly-built installation
+                throw new InternalException(e);
+            } catch (IllegalAccessException e) {
+                // should never happen in a properly-built installation
+                throw new InternalException(e);
+            } catch (InvocationTargetException e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof OpenJPAException)
+                    throw (OpenJPAException) cause;
+                else
+                    throw new InternalException(cause);
+            } catch (ClassNotFoundException e) {
+                // should never happen in a properly-built installation
+                throw new InternalException(e);
+            }
+        }
+    }
+
+    private boolean needsSub(Class cls) {
+        return !cls.isInterface()
+            && !PersistenceCapable.class.isAssignableFrom(cls);
     }
 
     public void addLifecycleListener(Object listener, Class[] classes) {
@@ -477,7 +525,7 @@ public abstract class AbstractBrokerFactory
      * current transaction, or returns null if none.
      */
     protected BrokerImpl findTransactionalBroker(String user, String pass) {
-        Transaction trans = null;
+        Transaction trans;
         try {
             trans = _conf.getManagedRuntimeInstance().getTransactionManager().
                 getTransaction();
@@ -626,7 +674,7 @@ public abstract class AbstractBrokerFactory
      * failed objects in the nested exceptions.
      */
     private void assertNoActiveTransaction() {
-        Collection excs = null;
+        Collection excs;
         if (_transactional.isEmpty())
             return;
 
@@ -653,7 +701,7 @@ public abstract class AbstractBrokerFactory
      * @return true if synched with transaction, false otherwise
      */
     boolean syncWithManagedTransaction(BrokerImpl broker, boolean begin) {
-        Transaction trans = null;
+        Transaction trans;
         try {
             TransactionManager tm = broker.getManagedRuntime().
                 getTransactionManager();

@@ -22,6 +22,8 @@ import java.util.Comparator;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.util.ImplHelper;
 
 /**
  * Order by a field in the related type in memory.
@@ -33,10 +35,13 @@ class InMemoryRelatedFieldOrder
 
     private final FieldMetaData _rel;
     private final boolean _asc;
+    private final OpenJPAConfiguration _conf;
 
-    public InMemoryRelatedFieldOrder(FieldMetaData rel, boolean asc) {
+    public InMemoryRelatedFieldOrder(FieldMetaData rel, boolean asc,
+        OpenJPAConfiguration conf) {
         _rel = rel;
         _asc = asc;
+        _conf = conf;
     }
 
     public String getName() {
@@ -54,12 +59,12 @@ class InMemoryRelatedFieldOrder
     public int compare(Object o1, Object o2) {
         if (o1 == o2)
             return 0;
-        if (!(o1 instanceof PersistenceCapable)
-            || !(o2 instanceof PersistenceCapable))
+        if (!(ImplHelper.isManageable(o1))
+            || !(ImplHelper.isManageable(o2)))
             return 0;
 
-        PersistenceCapable pc1 = (PersistenceCapable) o1;
-        PersistenceCapable pc2 = (PersistenceCapable) o2;
+        PersistenceCapable pc1 = ImplHelper.toPersistenceCapable(o1, _conf);
+        PersistenceCapable pc2 = ImplHelper.toPersistenceCapable(o2, _conf);
         OpenJPAStateManager sm1 = (OpenJPAStateManager) pc1.pcGetStateManager();
         OpenJPAStateManager sm2 = (OpenJPAStateManager) pc2.pcGetStateManager();
         if (sm1 == null || sm2 == null)

@@ -39,6 +39,7 @@ import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.OptimisticException;
 import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.util.ImplHelper;
 
 /**
  * Handles attaching instances.
@@ -234,8 +235,9 @@ class AttachManager {
 
         //### need to handle ACT_RUN without also ACT_CASCADE
         ClassMetaData meta = _broker.getConfiguration().
-            getMetaDataRepositoryInstance().getMetaData(toAttach.getClass(),
-            _broker.getClassLoader(), true);
+            getMetaDataRepositoryInstance().getMetaData(
+                ImplHelper.getManagedInstance(toAttach).getClass(),
+                _broker.getClassLoader(), true);
         return getStrategy(toAttach).attach(this, toAttach, meta, into,
             owner, ownerMeta, explicit);
     }
@@ -254,7 +256,8 @@ class AttachManager {
      * Calculate proper attach strategy for instance.
      */
     private AttachStrategy getStrategy(Object toAttach) {
-        PersistenceCapable pc = (PersistenceCapable) toAttach;
+        PersistenceCapable pc = ImplHelper.toPersistenceCapable(toAttach,
+            getBroker().getConfiguration());
         if (pc.pcGetStateManager() instanceof AttachStrategy)
             return (AttachStrategy) pc.pcGetStateManager();
 
@@ -293,7 +296,8 @@ class AttachManager {
      * the (cached) attached copy.
      */
     PersistenceCapable getAttachedCopy(Object pc) {
-        return (PersistenceCapable) _attached.get(pc);
+        return ImplHelper.toPersistenceCapable(_attached.get(pc),
+            getBroker().getConfiguration());
     }
 
     /**

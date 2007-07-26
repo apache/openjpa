@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.util.ImplHelper;
 
 /**
  * Obtaining the object id of a constant.
@@ -48,9 +48,11 @@ class ConstGetObjectId
 
     public Object getValue(Object[] params) {
         Object o = _constant.getValue(params);
-        if (!(o instanceof PersistenceCapable))
+        if (!(ImplHelper.isManageable(o)))
             return null;
-        return ((PersistenceCapable) o).pcFetchObjectId();
+        return (ImplHelper.toPersistenceCapable(o,
+            this.getMetaData().getRepository().getConfiguration()))
+            .pcFetchObjectId();
     }
 
     public Object getValue(ExpContext ctx, ExpState state) {

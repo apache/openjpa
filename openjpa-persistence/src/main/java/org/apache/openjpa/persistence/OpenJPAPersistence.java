@@ -273,9 +273,11 @@ public class OpenJPAPersistence
      */
     public static OpenJPAEntityManager getEntityManager(Object o) {
         try {
-            if (o instanceof PersistenceCapable)
-                return toEntityManager((Broker) ((PersistenceCapable) o).
-                    pcGetGenericContext());
+            if (ImplHelper.isManageable(o)) {
+                PersistenceCapable pc = ImplHelper.toPersistenceCapable(o, null);
+                if (pc != null)
+                    return toEntityManager((Broker) pc.pcGetGenericContext());
+            }
             return null;
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
@@ -290,7 +292,8 @@ public class OpenJPAPersistence
         if (o == null)
             return null;
         EntityManager em = getEntityManager(o);
-        return (em == null) ? null : getMetaData(em, o.getClass());
+        return (em == null) ? null : getMetaData(em,
+            ImplHelper.getManagedInstance(o).getClass());
     }
 
     /**

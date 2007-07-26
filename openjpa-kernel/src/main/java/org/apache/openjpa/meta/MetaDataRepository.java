@@ -38,6 +38,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PCRegistry.RegisterClassListener;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.DynamicPersistenceCapable;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -48,6 +49,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAId;
+import org.apache.openjpa.util.ImplHelper;
 import serp.util.Strings;
 
 /**
@@ -274,9 +276,14 @@ public class MetaDataRepository
      */
     public synchronized ClassMetaData getMetaData(Class cls,
         ClassLoader envLoader, boolean mustExist) {
+        if (cls != null &&
+            DynamicPersistenceCapable.class.isAssignableFrom(cls))
+            cls = cls.getSuperclass();
+
         ClassMetaData meta = getMetaDataInternal(cls, envLoader);
         if (meta == null && mustExist) {
-            if (cls != null && !PersistenceCapable.class.isAssignableFrom(cls))
+            if (cls != null &&
+                !ImplHelper.isManagedType(cls))
                 throw new MetaDataException(_loc.get("no-meta-notpc", cls)).
                     setFatal(false);
 
@@ -824,7 +831,7 @@ public class MetaDataRepository
      * Order by the field value.
      */
     protected Order newValueOrder(FieldMetaData owner, boolean asc) {
-        return new InMemoryValueOrder(asc);
+        return new InMemoryValueOrder(asc, getConfiguration());
     }
 
     /**
@@ -832,7 +839,7 @@ public class MetaDataRepository
      */
     protected Order newRelatedFieldOrder(FieldMetaData owner,
         FieldMetaData rel, boolean asc) {
-        return new InMemoryRelatedFieldOrder(rel, asc);
+        return new InMemoryRelatedFieldOrder(rel, asc, getConfiguration());
     }
 
     /**

@@ -31,6 +31,7 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UnsupportedException;
+import org.apache.openjpa.util.ImplHelper;
 import serp.util.Numbers;
 
 /**
@@ -50,14 +51,15 @@ public class DetachedValueStateManager
     private ClassMetaData _meta;
 
     public DetachedValueStateManager(Object pc, StoreContext ctx) {
-        this((PersistenceCapable) pc, ctx.getConfiguration().
-            getMetaDataRepositoryInstance().getMetaData(pc.getClass(),
+        this(ImplHelper.toPersistenceCapable(pc, ctx.getConfiguration()),
+            ctx.getConfiguration().getMetaDataRepositoryInstance()
+                .getMetaData(ImplHelper.getManagedInstance(pc).getClass(),
             ctx.getClassLoader(), true), ctx);
     }
 
     public DetachedValueStateManager(PersistenceCapable pc, ClassMetaData meta,
         StoreContext ctx) {
-        _pc = (PersistenceCapable) pc;
+        _pc = ImplHelper.toPersistenceCapable(pc, ctx.getConfiguration());
         _meta = meta;
         _ctx = ctx;
     }

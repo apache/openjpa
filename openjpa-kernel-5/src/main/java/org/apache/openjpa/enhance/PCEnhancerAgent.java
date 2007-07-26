@@ -30,24 +30,52 @@ import org.apache.openjpa.lib.util.TemporaryClassLoader;
 import org.apache.openjpa.util.ClassResolver;
 
 /**
- * Java agent that makes persistent classes implement the
- * {@link PersistenceCapable} interface at runtime. The agent is launched
- * at JVM startup from the command line:
- * 
- * <code>java -javaagent:openjpa.jar[=&lt;options&gt;]</code>
+ * <p>Java agent that makes persistent classes work with OpenJPA at runtime.
+ * This is achieved by either running the enhancer on the classes as they
+ * are loaded, or by redefining the classes on the fly.
+ * The agent is launched at JVM startup from the command line:</p>
+ *
+ * <p><code>java -javaagent:openjpa.jar[=&lt;options&gt;]</code>
  *  The options string should be formatted as a OpenJPA plugin, and may
  * contain any properties understood by the OpenJPA enhancer or any
- * configuration properties. For example:
- * 
- * <code>java -javaagent:openjpa.jar</code>
+ * configuration properties. For example:</p>
+ *
+ * <p><code>java -javaagent:openjpa.jar</code></p>
+ *
+ * <p>By default, if specified, the agent runs the OpenJPA enhancer on
+ * all classes listed in the first persistence unit as they are loaded,
+ * and redefines all other persistent classes when they are encountered.
+ * To disable enhancement and rely solely on the redefinition logic, set
+ * the RuntimeEnhancement flag to false. To disable redefinition and rely
+ * solely on pre-deployment or runtime enhancement, set the
+ * RuntimeRedefinition flag to false.
+ * </p>
+ *
+ * <p><code>java -javaagent:openjpa.jar=RuntimeEnhancement=false</code></p>
  *
  * @author Abe White
+ * @author Patrick Linskey
  */
 public class PCEnhancerAgent {
 
     public static void premain(String args, Instrumentation inst) {
-        OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
         Options opts = Configurations.parseProperties(args);
+
+        if (opts.getBooleanProperty(
+            "RuntimeEnhancement", "runtimeEnhancement", true))
+            registerRuntimeEnhancer(inst, opts);
+
+        if (opts.getBooleanProperty("RuntimeRedefinition",
+            "runtimeRedefinition", true)) {
+            InstrumentationFactory.setInstrumentation(inst);
+        } else {
+            InstrumentationFactory.setDynamicallyInstallAgent(false);
+        }
+    }
+
+    private static void registerRuntimeEnhancer(Instrumentation inst,
+        Options opts) {
+        OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
         Configurations.populateConfiguration(conf, opts);
         // don't allow connections
         conf.setConnectionUserName(null);

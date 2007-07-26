@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Broker;
@@ -33,6 +32,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.XMLMetaData;
 import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.util.ImplHelper;
 
 /**
  * A field traversal starting with a constant filter parameter.
@@ -141,8 +141,10 @@ class ConstPath
             // be proxyable
             sm = null;
             tmpBroker = null;
-            if (cstate.value instanceof PersistenceCapable)
-                sm = (OpenJPAStateManager) ((PersistenceCapable) cstate.value).
+            if (ImplHelper.isManageable(cstate.value))
+                sm = (OpenJPAStateManager) (ImplHelper.toPersistenceCapable(
+                    cstate.value,
+                    this.getMetaData().getRepository().getConfiguration())).
                     pcGetStateManager();
             if (sm == null) {
                 tmpBroker = ctx.store.getContext().getBroker();

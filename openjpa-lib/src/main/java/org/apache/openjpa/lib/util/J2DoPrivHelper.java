@@ -601,22 +601,4 @@ public abstract class J2DoPrivHelper {
             }
         };
     }
-
-    /**
-     * Return a PrivilegeAction object for bcClass.isInstanceOf().
-     * 
-     * Requires security policy:
-     *   'permission java.lang.RuntimePermission "getClassLoader";'
-     *   
-     * @return Boolean
-     */
-    public static final PrivilegedAction isInstanceOfAction(
-        final BCClass bcClass, final Class clazz) {
-        return new PrivilegedAction() {
-            public Object run() {
-                return bcClass.isInstanceOf(clazz) ? Boolean.TRUE
-                    : Boolean.FALSE;
-            }
-        };
-    }
 }

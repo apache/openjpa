@@ -26,6 +26,10 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.PCRegistry;
+import org.apache.openjpa.enhance.StateManager;
+import org.apache.openjpa.enhance.ManagedInstanceProvider;
+import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.LockManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -42,6 +46,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueStrategies;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 
 /**
  * Helper for OpenJPA back-ends.
@@ -53,8 +58,31 @@ import org.apache.openjpa.meta.ValueStrategies;
 public class ImplHelper {
 
     // Cache for from/to type assignments
-    private static ConcurrentReferenceHashMap _assignableTypes =
+    private static final Map _assignableTypes =
         new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
+
+    // map of all new unenhanced instances active in this classloader
+    public static final Map _unenhancedInstanceMap =
+        new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD) {
+
+            protected boolean eq(Object x, Object y) {
+                // the Entries in ConcurrentReferenceHashMap delegate back to
+                // eq() in their equals() impls
+                if (x instanceof Map.Entry)
+                    return super.eq(x, y);
+                else
+                    return x == y;
+            }
+
+            protected int hc(Object o) {
+                // the Entries in ConcurrentReferenceHashMap delegate back to
+                // hc() in their hashCode() impls
+                if (o instanceof Map.Entry)
+                    return super.hc(o);
+                else
+                    return System.identityHashCode(o);
+            }
+        };
 
     /**
      * Helper for store manager implementations. This method simply delegates
@@ -185,7 +213,8 @@ public class ImplHelper {
      * @return true if the class is manageable.
      */
     public static boolean isManagedType(Class type) {
-        return PersistenceCapable.class.isAssignableFrom(type);
+        return PersistenceCapable.class.isAssignableFrom(type)
+            || type != null && PCRegistry.isRegistered(type);
     }
 
     /**
@@ -195,7 +224,8 @@ public class ImplHelper {
      * @return true if the instance is a persistent type, false otherwise
      */
     public static boolean isManageable(Object instance) {
-        return instance instanceof PersistenceCapable;
+        return instance instanceof PersistenceCapable
+            || instance != null && PCRegistry.isRegistered(instance.getClass());
     }
 
     /**
@@ -226,5 +256,56 @@ public class ImplHelper {
         }
 
         return isAssignable.booleanValue();
+    }
+
+    /**
+     * @return the persistence-capable instance responsible for managing
+     * <code>o</code>, or <code>null</code> if <code>o</code> is not manageable.
+     * @since 1.0.0
+     */
+    public static PersistenceCapable toPersistenceCapable(Object o, Object ctx){
+        if (o instanceof PersistenceCapable)
+            return (PersistenceCapable) o;
+
+        OpenJPAConfiguration conf = null;
+        if (ctx instanceof OpenJPAConfiguration)
+            conf = (OpenJPAConfiguration) ctx;
+        else if (ctx instanceof StateManager
+            && ((StateManager) ctx).getGenericContext() instanceof StoreContext)
+            conf = ((StoreContext) ((StateManager) ctx).getGenericContext())
+                .getConfiguration();
+
+        if (!isManageable(o))
+            return null;
+
+        // if we had a putIfAbsent() method, we wouldn't need to sync here
+        synchronized (o) {
+            PersistenceCapable pc = (PersistenceCapable)
+                _unenhancedInstanceMap.get(o);
+
+            if (pc != null)
+                return pc;
+
+            // if we don't have a conf passed in, then we can't create a new
+            // ReflectingPC; this will only be the case when invoked from a
+            // context outside of OpenJPA.
+            if (conf == null)
+                return null;
+
+            pc = new ReflectingPersistenceCapable(o, conf);
+            _unenhancedInstanceMap.put(o, pc);
+            return pc;
+        }
+    }
+
+    /**
+     * @return the user-visible representation of <code>o</code>.
+     * @since 1.0.0
+     */
+    public static Object getManagedInstance(Object o) {
+        if (o instanceof ManagedInstanceProvider)
+            return ((ManagedInstanceProvider) o).getManagedInstance();
+        else
+            return o;
     }
 }

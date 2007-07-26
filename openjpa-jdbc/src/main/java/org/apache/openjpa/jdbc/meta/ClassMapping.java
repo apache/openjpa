@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
@@ -55,6 +54,7 @@ import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAId;
+import org.apache.openjpa.util.ImplHelper;
 
 /**
  * Specialization of metadata for relational databases.
@@ -208,9 +208,10 @@ public class ClassMapping
         // from other persistence contexts, so try to get sm directly from
         // instance before asking our context
         OpenJPAStateManager sm;
-        if (obj instanceof PersistenceCapable)
-            sm = (OpenJPAStateManager) ((PersistenceCapable) obj).
-                pcGetStateManager();
+        if (ImplHelper.isManageable(obj))
+            sm = (OpenJPAStateManager) (ImplHelper.toPersistenceCapable(obj,
+                getRepository().getConfiguration()))
+                .pcGetStateManager();
         else
             sm = store.getContext().getStateManager(obj);
         if (sm == null)

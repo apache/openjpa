@@ -58,7 +58,9 @@
                     <archive>
                         <manifestEntries>
                             <Premain-Class>
-                                org.apache.openjpa.enhance.PCEnhancerAgent</Premain-Class>
+                                org.apache.openjpa.enhance.InstrumentationFactory
+                            </Premain-Class>
+                            <Can-Redefine-Classes>true</Can-Redefine-Classes>
                         </manifestEntries>
                     </archive>
                 </configuration>

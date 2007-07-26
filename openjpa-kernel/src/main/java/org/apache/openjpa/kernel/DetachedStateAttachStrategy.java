@@ -28,6 +28,7 @@ import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.OptimisticException;
+import org.apache.openjpa.util.ImplHelper;
 
 /**
  * Handles attaching instances with detached state.
@@ -46,11 +47,13 @@ class DetachedStateAttachStrategy
         if (toAttach == null)
             return null;
 
-        PersistenceCapable pc = (PersistenceCapable) toAttach;
         Broker broker = manager.getBroker();
+        PersistenceCapable pc = ImplHelper.toPersistenceCapable(toAttach,
+            broker.getConfiguration());
         ClassMetaData meta = broker.getConfiguration().
-            getMetaDataRepositoryInstance().getMetaData(toAttach.getClass(),
-            broker.getClassLoader(), true);
+            getMetaDataRepositoryInstance().getMetaData(
+                ImplHelper.getManagedInstance(toAttach).getClass(),
+                broker.getClassLoader(), true);
 
         switch (meta.getIdentityType()) {
             case ClassMetaData.ID_DATASTORE:
@@ -58,7 +61,7 @@ class DetachedStateAttachStrategy
                 if (state == null)
                     return null;
                 return broker
-                    .newObjectId(toAttach.getClass(), (String) state[0]);
+                    .newObjectId(toAttach.getClass(), state[0]);
             case ClassMetaData.ID_APPLICATION:
                 return ApplicationIds.create(pc, meta);
             default:
@@ -68,14 +71,16 @@ class DetachedStateAttachStrategy
 
     protected void provideField(Object toAttach, StateManagerImpl sm,
         int field) {
-        sm.provideField((PersistenceCapable) toAttach, this, field);
+        sm.provideField(ImplHelper.toPersistenceCapable(toAttach,
+            sm.getContext().getConfiguration()), this, field);
     }
 
     public Object attach(AttachManager manager, Object toAttach,
         ClassMetaData meta, PersistenceCapable into, OpenJPAStateManager owner,
         ValueMetaData ownerMeta, boolean explicit) {
         BrokerImpl broker = manager.getBroker();
-        PersistenceCapable pc = (PersistenceCapable) toAttach;
+        PersistenceCapable pc = ImplHelper.toPersistenceCapable(toAttach,
+            manager.getBroker().getConfiguration());
 
         Object[] state = (Object[]) pc.pcGetDetachedState();
         boolean embedded = ownerMeta != null && ownerMeta.isEmbeddedPC();
@@ -103,7 +108,9 @@ class DetachedStateAttachStrategy
         } else if (!embedded && into == null) {
             Object id = getDetachedObjectId(manager, pc);
             if (id != null)
-                into = (PersistenceCapable) broker.find(id, true, null);
+                into =
+                    ImplHelper.toPersistenceCapable(broker.find(id, true, null),
+                        manager.getBroker().getConfiguration());
             if (into == null) {
                 // we mark objects that were new on detach by putting an empty
                 // extra element in their detached state array
@@ -114,7 +121,8 @@ class DetachedStateAttachStrategy
                 // will throw an OVE if it was not PNEW when it was detached
                 if (!isNew)
                     throw new OptimisticException(_loc.get("attach-deleted",
-                        pc.getClass(), id)).setFailedObject(id);
+                        ImplHelper.getManagedInstance(pc).getClass(), id))
+                        .setFailedObject(id);
 
                 // if the instance does not exist, we assume that it was
                 // made persistent in a new transaction, detached, and then
@@ -185,6 +193,6 @@ class DetachedStateAttachStrategy
                     break;
             }
         }
-        return into;
+        return ImplHelper.getManagedInstance(into);
     }
 }

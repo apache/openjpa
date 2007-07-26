@@ -35,6 +35,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.GeneralException;
+import org.apache.openjpa.util.ImplHelper;
 import serp.util.Numbers;
 
 /**
@@ -296,7 +297,8 @@ public class ObjectIdStateManager
     }
 
     public PersistenceCapable getPersistenceCapable() {
-        return (PersistenceCapable) _oid;
+        return ImplHelper.toPersistenceCapable(_oid,
+            _vmd.getRepository().getConfiguration());
     }
 
     public ClassMetaData getMetaData() {

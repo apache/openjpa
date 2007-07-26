@@ -36,6 +36,7 @@ import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.Proxy;
 import org.apache.openjpa.util.UnsupportedException;
+import org.apache.openjpa.util.ImplHelper;
 
 /**
  * Internal state manager for detached instances. Does not fully
@@ -93,12 +94,13 @@ public class DetachedStateManager
         ClassMetaData meta, PersistenceCapable into, OpenJPAStateManager owner,
         ValueMetaData ownerMeta, boolean explicit) {
         BrokerImpl broker = manager.getBroker();
-        StateManagerImpl sm = null;
+        StateManagerImpl sm;
         if (_embedded) {
             if (_dirty.length () > 0)
                 owner.dirty(ownerMeta.getFieldMetaData().getIndex());
             sm = (StateManagerImpl) broker.embed(_pc, _oid, owner, ownerMeta);
-            ((PersistenceCapable) toAttach).pcReplaceStateManager(this);
+            ImplHelper.toPersistenceCapable(toAttach, broker.getConfiguration())
+                .pcReplaceStateManager(this);
         } else {
             PCState state = (_dirty.length() > 0) ? PCState.PDIRTY
                 : PCState.PCLEAN;
@@ -161,8 +163,9 @@ public class DetachedStateManager
             switch (fields[i].getDeclaredTypeCode()) {
                 case JavaTypes.BOOLEAN:
                     if (_dirty.get(i))
-                        sm.settingBooleanField(pc, i, (!loaded.get(i)) ? false
-                            : sm.fetchBooleanField(i), longval == 1, set);
+                        sm.settingBooleanField(pc, i,
+                            (loaded.get(i)) && sm.fetchBooleanField(i),
+                            longval == 1, set);
                     else
                         sm.storeBooleanField(i, longval == 1);
                     break;
@@ -231,7 +234,8 @@ public class DetachedStateManager
                     else {
                         PersistenceCapable toPC = null;
                         if (objval != null && fields[i].isEmbeddedPC())
-                            toPC = (PersistenceCapable) objval;
+                            toPC = ImplHelper.toPersistenceCapable(objval,
+                                broker.getConfiguration());
                         objval = manager.attach(objval, toPC, sm, fields[i],
                             false);
                     }

@@ -249,10 +249,13 @@ public class Exceptions {
      * <code>null</code> otherwise.
      */
     private static Object getObjectId(Object ob) {
-        if (ob instanceof PersistenceCapable
-            && !((PersistenceCapable) ob).pcIsNew())
-            return ((PersistenceCapable) ob).pcFetchObjectId();
+        if (!ImplHelper.isManageable(ob))
+            return null;
+
+        PersistenceCapable pc = ImplHelper.toPersistenceCapable(ob, null);
+        if (pc == null || pc.pcIsNew())
+            return null;
         else
-			return null;
+            return pc.pcFetchObjectId();
 	}
 }

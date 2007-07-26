@@ -735,8 +735,6 @@ public class BrokerImpl
 
     /**
      * Fire given transaction event, handling any exceptions appropriately.
-     *
-     * @return whether events are being processed at this time
      */
     private void fireTransactionEvent(TransactionEvent trans) {
         if (_transEventManager != null)
@@ -792,7 +790,7 @@ public class BrokerImpl
                     // after making instance transactional for locking
                     if (!sm.isTransactional() && useTransactionalState(fetch))
                         sm.transactional();
-                    boolean loaded = false;
+                    boolean loaded;
                     try {
                         loaded = sm.load(fetch, StateManagerImpl.LOAD_FGS, 
                             exclude, edata, false);
@@ -4152,8 +4150,9 @@ public class BrokerImpl
 
     public Object getObjectId(Object obj) {
         assertOpen();
-        if (obj instanceof PersistenceCapable)
-            return ((PersistenceCapable) obj).pcFetchObjectId();
+        if (ImplHelper.isManageable(obj))
+            return (ImplHelper.toPersistenceCapable(obj, _conf))
+                .pcFetchObjectId();
         return null;
     }
 
@@ -4170,58 +4169,62 @@ public class BrokerImpl
 
     public Object getVersion(Object obj) {
         assertOpen();
-        if (obj instanceof PersistenceCapable)
-            return ((PersistenceCapable) obj).pcGetVersion();
+        if (ImplHelper.isManageable(obj))
+            return (ImplHelper.toPersistenceCapable(obj, _conf)).pcGetVersion();
         return null;
     }
 
     public boolean isDirty(Object obj) {
         assertOpen();
-        if (obj instanceof PersistenceCapable)
-            return ((PersistenceCapable) obj).pcIsDirty();
+        if (ImplHelper.isManageable(obj)) {
+            PersistenceCapable pc = ImplHelper.toPersistenceCapable(obj, _conf);
+            return pc.pcIsDirty();
+        }
         return false;
     }
 
     public boolean isTransactional(Object obj) {
         assertOpen();
-        if (obj instanceof PersistenceCapable)
-            return ((PersistenceCapable) obj).pcIsTransactional();
+        if (ImplHelper.isManageable(obj))
+            return (ImplHelper.toPersistenceCapable(obj, _conf))
+                .pcIsTransactional();
         return false;
     }
 
     public boolean isPersistent(Object obj) {
         assertOpen();
-        if (obj instanceof PersistenceCapable)
-            return ((PersistenceCapable) obj).pcIsPersistent();
+        if (ImplHelper.isManageable(obj))
+            return (ImplHelper.toPersistenceCapable(obj, _conf)).pcIsPersistent();
         return false;
     }
 
     public boolean isNew(Object obj) {
         assertOpen();
-        if (obj instanceof PersistenceCapable)
-            return ((PersistenceCapable) obj).pcIsNew();
+        if (ImplHelper.isManageable(obj))
+            return (ImplHelper.toPersistenceCapable(obj, _conf)).pcIsNew();
         return false;
     }
 
     public boolean isDeleted(Object obj) {
         assertOpen();
-        if (obj instanceof PersistenceCapable)
-            return ((PersistenceCapable) obj).pcIsDeleted();
+        if (ImplHelper.isManageable(obj))
+            return (ImplHelper.toPersistenceCapable(obj, _conf)).pcIsDeleted();
         return false;
     }
 
     public boolean isDetached(Object obj) {
-        if (!(obj instanceof PersistenceCapable))
+        if (!(ImplHelper.isManageable(obj)))
             return false;
 
-        PersistenceCapable pc = (PersistenceCapable) obj;
+        PersistenceCapable pc = ImplHelper.toPersistenceCapable(obj, _conf);
         Boolean detached = pc.pcIsDetached();
         if (detached != null)
             return detached.booleanValue();
 
         // last resort: instance is detached if it has a store record
         ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
-            getMetaData(pc.getClass(), _loader, true);
+            getMetaData(ImplHelper.getManagedInstance(pc).getClass(),
+                _loader, true);
         Object oid = ApplicationIds.create(pc, meta);
         if (oid == null)
             return false;
@@ -4241,8 +4244,8 @@ public class BrokerImpl
      */
     protected StateManagerImpl getStateManagerImpl(Object obj,
         boolean assertThisContext) {
-        if (obj instanceof PersistenceCapable) {
-            PersistenceCapable pc = (PersistenceCapable) obj;
+        if (ImplHelper.isManageable(obj)) {
+            PersistenceCapable pc = ImplHelper.toPersistenceCapable(obj, _conf);
             if (pc.pcGetGenericContext() == this)
                 return (StateManagerImpl) pc.pcGetStateManager();
             if (assertThisContext && pc.pcGetGenericContext() != null)
@@ -4272,10 +4275,10 @@ public class BrokerImpl
     protected PersistenceCapable assertPersistenceCapable(Object obj) {
         if (obj == null)
             return null;
-        if (obj instanceof PersistenceCapable)
-            return (PersistenceCapable) obj;
+        if (ImplHelper.isManageable(obj))
+            return ImplHelper.toPersistenceCapable(obj, _conf);
 
-        // check for difference instances of the PersistenceCapable interface
+        // check for different instances of the PersistenceCapable interface
         // and throw a better error that mentions the class loaders
         Class[] intfs = obj.getClass().getInterfaces();
         for (int i = 0; intfs != null && i < intfs.length; i++) {
@@ -4373,6 +4376,7 @@ public class BrokerImpl
         private Map _conflicts = null; // conflict oid -> new sm
         private Map _news = null; // tmp id -> new sm
         private Collection _embeds = null; // embedded/non-persistent sms
+        private Collection _untracked = null; // hard refs to untracked sms
 
         /**
          * Constructor; supply primary cache map.
@@ -4449,6 +4453,12 @@ public class BrokerImpl
                     (orig.getManagedInstance()))).
                     setFailedObject(sm.getManagedInstance());
             }
+
+            if (!sm.isIntercepting()) {
+                if (_untracked == null)
+                    _untracked = new HashSet();
+                _untracked.add(sm);
+            }
         }
 
         /**
@@ -4471,12 +4481,15 @@ public class BrokerImpl
                             _conflicts.put(id, orig); // put back
                     }
                 }
-            } else
-            if ((_embeds == null || !_embeds.remove(sm)) && _news != null) {
+            } else if ((_embeds == null || !_embeds.remove(sm))
+                && _news != null) {
                 orig = _news.remove(id);
                 if (orig != null && orig != sm)
                     _news.put(id, orig); // put back
             }
+
+            if (_untracked != null)
+                _untracked.remove(sm);
         }
 
         /**
@@ -4600,6 +4613,8 @@ public class BrokerImpl
                 _news.clear();
             if (_embeds != null)
                 _embeds.clear();
+            if (_untracked != null)
+                _untracked.clear();
         }
 
         /**

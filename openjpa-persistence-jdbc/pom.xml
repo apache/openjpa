@@ -399,6 +399,8 @@
                                     dir="${project.build.testOutputDirectory}">
                                     <include name="**/*.class"/>
                                     <exclude name="**/inheritance/serializable/*.class"/>
+                                    <exclude name="**/xml/*.class"/>
+                                    <exclude name="**/Unenhanced*.class"/>
                                 </fileset>
                                 <openjpac>
                                     <classpath refid="cp"/>

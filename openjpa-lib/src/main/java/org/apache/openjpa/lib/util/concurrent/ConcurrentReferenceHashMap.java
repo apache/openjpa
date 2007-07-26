@@ -105,8 +105,25 @@ public class ConcurrentReferenceHashMap extends AbstractMap
      */
     private int maxSize = Integer.MAX_VALUE;
 
-    private static boolean eq(Object x, Object y) {
+    /**
+     * Compare two objects. These might be keys, values, or Entry instances.
+     * This implementation uses a normal null-safe object equality algorithm.
+     *
+     * @since 1.0.0
+     */
+    protected boolean eq(Object x, Object y) {
         return x == y || (x != null && x.equals(y));
+    }
+
+    /**
+     * Obtain the hashcode of an object. The object might be a key, a value,
+     * or an Entry. This implementation just delegates to
+     * {@link Object#hashCode}
+     *
+     * @since 1.0.0
+     */
+    protected int hc(Object o) {
+        return o == null ? 0 : o.hashCode();
     }
 
     /**
@@ -251,7 +268,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
             return false;
 
         Entry[] tab = table;
-        int hash = (key == null) ? 0 : key.hashCode();
+        int hash = hc(key);
         int index = (hash & 0x7FFFFFFF) % tab.length;
         for (Entry e = tab[index]; e != null; e = e.getNext())
             if (e.getHash() == hash && eq(key, e.getKey()))
@@ -270,7 +287,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
             return null;
 
         Entry[] tab = table;
-        int hash = (key == null) ? 0 : key.hashCode();
+        int hash = hc(key);
         int index = (hash & 0x7FFFFFFF) % tab.length;
         for (Entry e = tab[index]; e != null; e = e.getNext())
             if ((e.getHash() == hash) && eq(key, e.getKey()))
@@ -331,7 +348,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
             || (value == null && valueType != HARD))
             throw new IllegalArgumentException("Null references not supported");
 
-        int hash = (key == null) ? 0 : key.hashCode();
+        int hash = hc(key);
         synchronized (this) {
             expungeStaleEntries();
 
@@ -413,7 +430,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
         if (key == null && keyType != HARD)
             return null;
 
-        int hash = (key == null) ? 0 : key.hashCode();
+        int hash = hc(key);
         synchronized (this) {
             expungeStaleEntries();
 
@@ -662,7 +679,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
                     Map.Entry entry = (Map.Entry) o;
                     Object key = entry.getKey();
                     Entry[] tab = table;
-                    int hash = (key == null ? 0 : key.hashCode());
+                    int hash = hc(key);
                     int index = (hash & 0x7FFFFFFF) % tab.length;
 
                     for (Entry e = tab[index]; e != null; e = e.getNext())
@@ -678,7 +695,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
                     Object key = entry.getKey();
                     synchronized (ConcurrentReferenceHashMap.this) {
                         Entry[] tab = table;
-                        int hash = (key == null ? 0 : key.hashCode());
+                        int hash = hc(key);
                         int index = (hash & 0x7FFFFFFF) % tab.length;
 
                         for (Entry e = tab[index], prev = null; e != null;
@@ -757,7 +774,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
     /**
      * Hard entry.
      */
-    private static class HardEntry implements Entry {
+    private class HardEntry implements Entry {
 
         private int hash;
         private Object key;
@@ -829,7 +846,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
     /**
      * Weak entry.
      */
-    private static class WeakEntry extends WeakReference implements Entry {
+    private class WeakEntry extends WeakReference implements Entry {
 
         private int hash;
         private Object hard;
@@ -902,7 +919,7 @@ public class ConcurrentReferenceHashMap extends AbstractMap
     /**
      * Soft entry.
      */
-    private static class SoftEntry extends SoftReference implements Entry {
+    private class SoftEntry extends SoftReference implements Entry {
 
         private int hash;
         private Object hard;

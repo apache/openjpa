@@ -61,6 +61,7 @@ import org.apache.openjpa.util.NoResultException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.util.ImplHelper;
 import serp.util.Numbers;
 import serp.util.Strings;
 
@@ -1083,7 +1084,8 @@ public class QueryImpl
 
             OpenJPAStateManager sm = _broker.getStateManager(ob);
             int i = fmd.getIndex();
-            PersistenceCapable into = (PersistenceCapable) ob;
+            PersistenceCapable into = ImplHelper.toPersistenceCapable(ob,
+                _broker.getConfiguration());
 
             // set the actual field in the instance
             int set = OpenJPAStateManager.SET_USER;

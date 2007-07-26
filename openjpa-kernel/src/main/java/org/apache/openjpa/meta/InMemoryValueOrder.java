@@ -23,6 +23,8 @@ import java.util.Comparator;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.util.ApplicationIds;
+import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 
 /**
  * Order by the field value in memory. If the field contains
@@ -36,9 +38,11 @@ class InMemoryValueOrder
     implements Order, Comparator {
 
     private final boolean _asc;
+    private final OpenJPAConfiguration _conf;
 
-    public InMemoryValueOrder(boolean asc) {
+    public InMemoryValueOrder(boolean asc, OpenJPAConfiguration conf) {
         _asc = asc;
+        _conf = conf;
     }
 
     public String getName() {
@@ -63,15 +67,15 @@ class InMemoryValueOrder
 
         // non-pc values must be comparable
         int cmp;
-        if (!(o1 instanceof PersistenceCapable)
-            || !(o2 instanceof PersistenceCapable)) {
+        if (!(ImplHelper.isManageable(o1))
+            || !(ImplHelper.isManageable(o2))) {
             cmp = ((Comparable) o1).compareTo(o2);
             return (_asc) ? cmp : -cmp;
         }
 
         // order on primary key values
-        PersistenceCapable pc1 = (PersistenceCapable) o1;
-        PersistenceCapable pc2 = (PersistenceCapable) o2;
+        PersistenceCapable pc1 = ImplHelper.toPersistenceCapable(o1, _conf);
+        PersistenceCapable pc2 = ImplHelper.toPersistenceCapable(o2, _conf);
         OpenJPAStateManager sm1 = (OpenJPAStateManager) pc1.pcGetStateManager();
         OpenJPAStateManager sm2 = (OpenJPAStateManager) pc2.pcGetStateManager();
         if (sm1 == null || sm2 == null)

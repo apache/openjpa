@@ -32,6 +32,7 @@ import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.StoreException;
+import org.apache.openjpa.util.ImplHelper;
 
 /**
  * Handler for unknown persistence-capable object fields that stores
@@ -77,8 +78,9 @@ public class UntypedPCValueHandler
         // in the past we've been lenient about being able to translate objects
         // from other persistence contexts, so try to get sm directly from
         // instance before asking our context
-        if (val instanceof PersistenceCapable) {
-            PersistenceCapable pc = (PersistenceCapable) val;
+        if (ImplHelper.isManageable(val)) {
+            PersistenceCapable pc = ImplHelper.toPersistenceCapable(val,
+                store.getConfiguration());
             if (pc.pcGetStateManager() != null)
                 return pc.pcGetStateManager();
         }

@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ProxyManager;
@@ -33,7 +34,7 @@ import org.apache.openjpa.util.ProxyManager;
  *
  * @author Abe White
  */
-class SaveFieldManager
+public class SaveFieldManager
     extends ClearFieldManager {
 
     private final StateManagerImpl _sm;
@@ -88,7 +89,7 @@ class SaveFieldManager
      */
     public boolean saveField(int field) {
         // if not loaded we can't save orig value; mark as unloaded on rollback
-        if (!_sm.getLoaded().get(field)) {
+        if (_sm.getLoaded() != null && !_sm.getLoaded().get(field)) {
             _unloaded.set(field);
             return false;
         }
@@ -165,6 +166,24 @@ class SaveFieldManager
         _copyField[0] = field;
         _sm.getPersistenceCapable().pcCopyFields(_state, _copyField);
         return false;
+    }
+
+    /**
+     * Compare the given field.
+     * @return <code>true</code> if the field is the same in the current
+     * state and in the saved state; otherwise, <code>false</code>.
+     */
+    public boolean isFieldEqual(int field, Object current) {
+        // if the field is not available, assume that it has changed.
+        if (_saved == null || !_saved.get(field))
+            return false;
+        if (!(_state.pcGetStateManager() instanceof OpenJPAStateManager))
+            return false;
+
+        OpenJPAStateManager sm = (OpenJPAStateManager)
+            _state.pcGetStateManager();
+        Object old = sm.fetch(field);
+        return current == old || current != null && current.equals(old);
     }
 
     public Object fetchObjectField(int field) {

@@ -177,7 +177,7 @@ public interface StoreManager
      * several objects. Each of the given state managers will be in one of
      * three states, each requiring a different action:
      * <ul>
-     * <li><code>stateManager.getManagedInstance () == null</code>: An
+     * <li><code>stateManager.getO () == null</code>: An
      * uninitialized state manager. Perform the same actions as in
      * {@link #initialize}.
      * <li><code>load != FORCE_LOAD_NONE || stateManager.getPCState ()

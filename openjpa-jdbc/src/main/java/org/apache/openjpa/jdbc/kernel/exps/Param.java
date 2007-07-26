@@ -21,7 +21,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -108,11 +107,11 @@ class Param
         if (other != null && !_container) {
             pstate.sqlValue = other.toDataStoreValue(sel, ctx, otherState, val);
             pstate.otherLength = other.length(sel, ctx, otherState);
-        } else if (val instanceof PersistenceCapable) {
+        } else if (ImplHelper.isManageable(val)) {
             ClassMapping mapping = ctx.store.getConfiguration().
-                getMappingRepositoryInstance().getMapping(val.getClass(), 
+                getMappingRepositoryInstance().getMapping(val.getClass(),
                 ctx.store.getContext().getClassLoader(), true);
-            pstate.sqlValue = mapping.toDataStoreValue(val, 
+            pstate.sqlValue = mapping.toDataStoreValue(val,
                 mapping.getPrimaryKeyColumns(), ctx.store);
             pstate.otherLength = mapping.getPrimaryKeyColumns().length;
         } else

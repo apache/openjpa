@@ -32,6 +32,7 @@ import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.OptimisticException;
+import org.apache.openjpa.util.ImplHelper;
 
 /**
  * Handles attaching instances using version and primary key fields.
@@ -50,26 +51,31 @@ class VersionAttachStrategy
         Object toAttach) {
         Broker broker = manager.getBroker();
         ClassMetaData meta = broker.getConfiguration().
-            getMetaDataRepositoryInstance().getMetaData(toAttach.getClass(),
-            broker.getClassLoader(), true);
-        return ApplicationIds.create((PersistenceCapable) toAttach, meta);
+            getMetaDataRepositoryInstance().getMetaData(
+                ImplHelper.getManagedInstance(toAttach).getClass(),
+                broker.getClassLoader(), true);
+        return ApplicationIds.create(ImplHelper.toPersistenceCapable(toAttach,
+            broker.getConfiguration()),
+            meta);
     }
 
     protected void provideField(Object toAttach, StateManagerImpl sm,
         int field) {
-        sm.provideField((PersistenceCapable) toAttach, this, field);
+        sm.provideField(ImplHelper.toPersistenceCapable(toAttach,
+            sm.getContext().getConfiguration()), this, field);
     }
 
     public Object attach(AttachManager manager, Object toAttach,
         ClassMetaData meta, PersistenceCapable into, OpenJPAStateManager owner,
         ValueMetaData ownerMeta, boolean explicit) {
         BrokerImpl broker = manager.getBroker();
-        PersistenceCapable pc = (PersistenceCapable) toAttach;
+        PersistenceCapable pc = ImplHelper.toPersistenceCapable(toAttach,
+            meta.getRepository().getConfiguration());
 
         boolean embedded = ownerMeta != null && ownerMeta.isEmbeddedPC();
         boolean isNew = !broker.isDetached(pc);
         Object version = null;
-        StateManagerImpl sm = null;
+        StateManagerImpl sm;
 
         // if the state manager for the embedded instance is null, then
         // it should be treated as a new instance (since the
@@ -91,10 +97,13 @@ class VersionAttachStrategy
         } else if (!embedded && into == null) {
             Object id = getDetachedObjectId(manager, toAttach);
             if (id != null)
-                into = (PersistenceCapable) broker.find(id, true, null);
+                into =
+                    ImplHelper.toPersistenceCapable(broker.find(id, true, null),
+                        broker.getConfiguration());
             if (into == null)
                 throw new OptimisticException(_loc.get("attach-version-del",
-                    pc.getClass(), id, version)).setFailedObject(toAttach);
+                    ImplHelper.getManagedInstance(pc).getClass(), id, version))
+                    .setFailedObject(toAttach);
 
             sm = manager.assertManaged(into);
             if (meta.getDescribedType()
@@ -148,7 +157,7 @@ class VersionAttachStrategy
         }
         if (!embedded && !isNew)
             compareVersion(sm, pc);
-        return into;
+        return ImplHelper.getManagedInstance(into);
     }
 
     /**

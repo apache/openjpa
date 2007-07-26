@@ -887,12 +887,10 @@ public interface OpenJPAEntityManager
      * JavaBeans convention, this method will create a concrete implementation
      * according to the metadata that defines the class. If <code>cls</code>
      * is a non-final concrete type that has metadata but does not implement
-     * {@link org.apache.openjpa.enhance.PersistenceCapable}, this method will create a
-     * subclass of the type that does implement
-     * {@link org.apache.openjpa.enhance.PersistenceCapable},
-     * following the property-based persistent attribute access rules, or
-     * will raise an exception if the class does not meet the requirements
-     * for subclassing. Otherwise, this will return an instance of the
+     * {@link PersistenceCapable}, this method will create a subclass of the
+     * type that does implement {@link PersistenceCapable}, and will attempt
+     * to redefine the methods in <code>cls</code> to enable persistent
+     * attribute tracking. Otherwise, this will return an instance of the
      * specified class.
      */
     public <T> T createInstance(Class<T> cls);

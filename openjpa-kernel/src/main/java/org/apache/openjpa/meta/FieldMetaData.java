@@ -47,7 +47,6 @@ import java.util.TimeZone;
 import org.apache.commons.collections.comparators.ComparatorChain;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -62,6 +61,7 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UnsupportedException;
+import org.apache.openjpa.util.ImplHelper;
 import serp.util.Strings;
 
 /**
@@ -174,8 +174,9 @@ public class FieldMetaData
     // Members aren't serializable. Use a proxy that can provide a Member
     // to avoid writing the full Externalizable implementation.
     private transient MemberProvider _backingMember = null;
+    private String _backingFieldName = null;
     
-    // Members aren't serializable. Initializing _extMethod and _factMethod to 
+    // Members aren't serializable. Initializing _extMethod and _factMethod to
     // DEFAULT_METHOD is sufficient to trigger lazy population of these fields.
     private transient Method _extMethod = DEFAULT_METHOD;
     private transient Member _factMethod = DEFAULT_METHOD;
@@ -1586,9 +1587,11 @@ public class FieldMetaData
 
         MetaDataRepository repos = getRepository();
         int validate = repos.getValidate();
+        // ##### what to do here? This should essentially never fail anymore.
+        // ##### Maybe remove the isManagedType check.
         if ((validate & MetaDataRepository.VALIDATE_META) != 0
-            && (!PersistenceCapable.class.isAssignableFrom
-            (_owner.getDescribedType())
+            && (!ImplHelper
+            .isManagedType(_owner.getDescribedType())
             || (validate & MetaDataRepository.VALIDATE_UNENHANCED) == 0)) {
             validateLRS();
             if ((validate & repos.VALIDATE_RUNTIME) == 0)
