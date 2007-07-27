@@ -23,9 +23,12 @@ package org.apache.openjpa.enhance;
  */
 public interface UnenhancedType {
 
+    int getId();
+
     void setStringField(String s);
     String getStringField();
-    int getId();
+
+    String getLazyField();
 
     Object clone() throws CloneNotSupportedException;
 }

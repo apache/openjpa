@@ -27,8 +27,7 @@ import javax.persistence.Basic;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
-
-import org.apache.openjpa.persistence.DetachedState;
+import javax.persistence.FetchType;
 
 @Entity
 @Table(name="UN_PROP")
@@ -39,6 +38,7 @@ public class UnenhancedPropertyAccess
     private int id;
     private int version;
     private String sf = "foo";
+    private String lazyField = "lazy";
 
     @Id @GeneratedValue
     public int getId() {
@@ -58,13 +58,22 @@ public class UnenhancedPropertyAccess
         version = v;
     }
 
+    @Basic
+    public String getStringField() {
+        return sf;
+    }
+
     public void setStringField(String s) {
         sf = s;
     }
 
-    @Basic
-    public String getStringField() {
-        return sf;
+    @Basic(fetch = FetchType.LAZY)
+    public String getLazyField() {
+        return lazyField;
+    }
+
+    public void setLazyField(String s) {
+        lazyField = s;
     }
 
     public boolean equals(Object o) {

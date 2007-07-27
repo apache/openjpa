@@ -35,6 +35,8 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.util.GeneratedClasses;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.JavaTypes;
 import serp.bytecode.BCClass;
 
 /**
@@ -74,7 +76,8 @@ public class ManagedClassSubclasser {
             return Collections.EMPTY_LIST;
 
         Log log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
-        if (ClassRedefiner.canRedefineClasses())
+        boolean redefine = ClassRedefiner.canRedefineClasses();
+        if (redefine)
             log.info(_loc.get("enhance-and-subclass-no-redef-start",
                 classes));
         else
@@ -88,21 +91,24 @@ public class ManagedClassSubclasser {
             final Class cls = (Class) iter.next();
             final PCEnhancer enhancer = new PCEnhancer(conf, cls);
 
-            // set this before enhancement as well as after since enhancement
-            // uses a different metadata repository, and the value of this
-            // setting matters in the enhancement contract.
-            setDetachedState(enhancer.getMetaData());
-
             enhancer.setBytecodeWriter(new BytecodeWriter() {
                 public void write(BCClass bc) throws IOException {
                     ManagedClassSubclasser.write(bc, enhancer, map,
                         cls, subs, ints);
                 }
             });
-            if (ClassRedefiner.canRedefineClasses())
+            if (redefine)
                 enhancer.setRedefine(true);
             enhancer.setCreateSubclass(true);
             enhancer.setAddDefaultConstructor(true);
+
+            // set this before enhancement as well as after since enhancement
+            // uses a different metadata repository, and the metadata config
+            // matters in the enhancement contract. Don't do any warning here,
+            // since we'll issue warnings when we do the final metadata
+            // reconfiguration at the end of this method.
+            configureMetaData(enhancer.getMetaData(), conf, redefine, false);
+
             enhancer.run();
             try {
                 enhancer.record();
@@ -115,14 +121,52 @@ public class ManagedClassSubclasser {
         ClassRedefiner.redefineClasses(conf, map);
         for (Class cls : map.keySet()) {
             setIntercepting(conf, envLoader, cls);
-            configureMetaData(conf, envLoader, cls);
+            configureMetaData(conf, envLoader, cls, redefine);
         }
         for (Class cls : (Collection<Class>) subs)
-            configureMetaData(conf, envLoader, cls);
+            configureMetaData(conf, envLoader, cls, redefine);
         for (Class cls : (Collection<Class>) ints)
             setIntercepting(conf, envLoader, cls);
 
         return subs;
+    }
+
+    private static void configureMetaData(OpenJPAConfiguration conf,
+        ClassLoader envLoader, Class cls, boolean redefineAvailable) {
+        ClassMetaData meta = conf.getMetaDataRepositoryInstance()
+            .getMetaData(cls, envLoader, true);
+        configureMetaData(meta, conf, redefineAvailable, true);
+    }
+
+    private static void configureMetaData(ClassMetaData meta,
+        OpenJPAConfiguration conf, boolean redefineAvailable, boolean warn) {
+
+        setDetachedState(meta);
+
+        if (warn && meta.getAccessType() == ClassMetaData.ACCESS_FIELD
+            && !redefineAvailable) {
+            // only warn about declared fields; superclass fields will be
+            // warned about when the superclass is handled
+            for (FieldMetaData fmd : meta.getDeclaredFields()) {
+                switch (fmd.getTypeCode()) {
+                    case JavaTypes.COLLECTION:
+                    case JavaTypes.MAP:
+                        // we can lazily load these, since we own the
+                        // relationship container
+                        break;
+                    default:
+                        if (!fmd.isInDefaultFetchGroup()
+                            && !(fmd.isVersion() || fmd.isPrimaryKey())) {
+                            Log log = conf.getLog(
+                                OpenJPAConfiguration.LOG_ENHANCE);
+                            log.warn(_loc.get("subclasser-fetch-group-override",
+                                meta.getDescribedType().getName(),
+                                fmd.getName()));
+                            fmd.setInDefaultFetchGroup(true);
+                        }
+                }
+            }
+        }
     }
 
     private static void write(BCClass bc, PCEnhancer enhancer,
@@ -156,13 +200,6 @@ public class ManagedClassSubclasser {
         ClassMetaData meta = conf.getMetaDataRepositoryInstance()
             .getMetaData(cls, envLoader, true);
         meta.setIntercepting(true);
-    }
-
-    private static void configureMetaData(OpenJPAConfiguration conf,
-        ClassLoader envLoader, Class cls) {
-        ClassMetaData meta = conf.getMetaDataRepositoryInstance()
-            .getMetaData(cls, envLoader, true);
-        setDetachedState(meta);
     }
 
     /**

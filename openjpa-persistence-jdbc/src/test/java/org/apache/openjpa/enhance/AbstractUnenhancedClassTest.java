@@ -39,7 +39,6 @@ public abstract class AbstractUnenhancedClassTest
 
     // ##### To do:
     // - clearing in pnew property-access without redefinition
-    // - lazy loading override for -to-one field types
     // - figure out how to auto-test the redefinition code, either in Java 5
     //   or in Java 6
     // - run CTS in the following combinations:
@@ -48,8 +47,7 @@ public abstract class AbstractUnenhancedClassTest
     //   * Java 5 without javaagent
 
     public void setUp() {
-        setUp(getUnenhancedClass(), getUnenhancedSubclass(), CLEAR_TABLES,
-            "openjpa.Log", "Enhance=TRACE");
+        setUp(getUnenhancedClass(), getUnenhancedSubclass(), CLEAR_TABLES);
         // trigger class redefinition
         emf.createEntityManager().close();
     }
@@ -237,17 +235,17 @@ public abstract class AbstractUnenhancedClassTest
             PCEnhancer.toPCSubclassName(getUnenhancedClass()));
     }
 
-    public void testLazyLoadingInUserCreatedInstance()
+    public void testEvictionInUserCreatedInstance()
         throws NoSuchFieldException, IllegalAccessException {
-        lazyLoading(true);
+        evictionHelper(true);
     }
 
-    public void testLazyLoadingInOpenJPACreatedInstance()
+    public void testEvictionInOpenJPACreatedInstance()
         throws NoSuchFieldException, IllegalAccessException {
-        lazyLoading(false);
+        evictionHelper(false);
     }
 
-    private void lazyLoading(boolean userDefined)
+    private void evictionHelper(boolean userDefined)
         throws NoSuchFieldException, IllegalAccessException {
         OpenJPAEntityManager em = emf.createEntityManager();
         UnenhancedType un = newUnenhancedInstance();
@@ -299,6 +297,52 @@ public abstract class AbstractUnenhancedClassTest
             field.setAccessible(true);
             assertEquals("foo", field.get(un));
         }
+
+        em.close();
+    }
+
+    public void testLazyLoading()
+        throws NoSuchFieldException, IllegalAccessException {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        UnenhancedType un = newUnenhancedInstance();
+        em.getTransaction().begin();
+        em.persist(un);
+        em.getTransaction().commit();
+        em.close();
+
+        em = emf.createEntityManager();
+        un = em.find(getUnenhancedClass(), un.getId());
+        assertTrue(getUnenhancedClass() != un.getClass());
+        OpenJPAStateManager sm = (OpenJPAStateManager)
+            ImplHelper.toPersistenceCapable(un, null).pcGetStateManager();
+
+        // we only expect lazy loading to work when we can redefine classes
+        // or when accessing a property-access record that OpenJPA created.
+        if (ClassRedefiner.canRedefineClasses()
+            || (sm.getMetaData().getAccessType() != ClassMetaData.ACCESS_FIELD))
+        {
+            assertFalse(sm.getLoaded()
+                .get(sm.getMetaData().getField("lazyField").getIndex()));
+
+            // make sure that the value was cleared
+            Field field = getUnenhancedClass().getDeclaredField("lazyField");
+            field.setAccessible(true);
+            assertEquals(null, field.get(un));
+        } else {
+            // unredefined field access
+            assertTrue(sm.getLoaded()
+                .get(sm.getMetaData().getField("lazyField").getIndex()));
+
+            // make sure that the value was loaded already
+            Field field = getUnenhancedClass().getDeclaredField("lazyField");
+            field.setAccessible(true);
+            assertEquals("lazy", field.get(un));
+        }
+
+        // make sure that the value is available, one way or another
+        assertEquals("lazy", un.getLazyField());
+        assertTrue(sm.getLoaded()
+            .get(sm.getMetaData().getField("lazyField").getIndex()));
 
         em.close();
     }

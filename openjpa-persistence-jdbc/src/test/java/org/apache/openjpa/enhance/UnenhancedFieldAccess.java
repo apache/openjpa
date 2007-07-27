@@ -26,6 +26,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
+import javax.persistence.Basic;
+import javax.persistence.FetchType;
 
 import org.apache.openjpa.persistence.DetachedState;
 
@@ -39,6 +41,9 @@ public class UnenhancedFieldAccess
     @Version public int version;
     protected String stringField = "foo";
 
+    @Basic(fetch = FetchType.LAZY)
+    private String lazyField = "lazy";
+
     public int getId() {
         return id;
     }
@@ -49,6 +54,10 @@ public class UnenhancedFieldAccess
 
     public String getStringField() {
         return stringField;
+    }
+
+    public String getLazyField() {
+        return lazyField;
     }
 
     public boolean equals(Object o) {
