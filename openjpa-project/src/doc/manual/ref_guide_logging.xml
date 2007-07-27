@@ -89,20 +89,6 @@ having to manipulate logging settings that might also affect runtime behavior.
                 <para>
                 <indexterm>
                     <primary>
-                        configuration
-                    </primary>
-                    <secondary>
-                        log messages
-                    </secondary>
-                </indexterm>
-<literal>openjpa.Configuration</literal>: Messages issued by the configuration
-framework.
-                </para>
-            </listitem>
-            <listitem>
-                <para>
-                <indexterm>
-                    <primary>
                         enhancement
                     </primary>
                     <secondary>
