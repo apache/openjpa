@@ -102,7 +102,7 @@ Compile the classes:
             <listitem>
                 <para>
 You should then proceed to pass in the configuration file you are using to the
-enhancer:
+enhancer: (Optional)
                 </para>
                 <para>
 <userinput>java org.apache.openjpa.enhance.PCEnhancer -p persistence.xml Machine.java Crane.java Bulldozer.java

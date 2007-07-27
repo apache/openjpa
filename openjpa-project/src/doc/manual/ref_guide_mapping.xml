@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <chapter id="ref_guide_mapping">
     <title>
@@ -205,7 +205,7 @@ the action to take on each class. The available actions are:
                 <para>
 <literal>buildSchema</literal>: This is the default action. It
 makes the database schema match your existing mappings. If your provided
-mappings conflict with your class definitions, OpenJPA will fail with an 
+mappings conflict with your class definitions, OpenJPA will fail with an
 informative exception.
                 </para>
             </listitem>
@@ -548,7 +548,7 @@ generation.
                     <listitem>
                         <para>
 <literal>-annotations/-ann &lt;true/t | false/f&gt;</literal>: Set to true to
-generate JPA annotations in generated java classes. 
+generate JPA annotations in generated java classes.
                         </para>
                     </listitem>
                     <listitem>
@@ -677,7 +677,7 @@ the system defaults to a
 <classname>PropertiesReverseCustomizer</classname></ulink>. This customizer
 allows you to specify simple customization options in the properties file given
 with the <literal>-customizerProperties</literal> flag below. We present the
-available property keys <link linkend="ref_guide_pc_reverse_custom"> 
+available property keys <link linkend="ref_guide_pc_reverse_custom">
 below</link>.
                         </para>
                     </listitem>
@@ -714,12 +714,12 @@ generates.
                 <para>
 After you are satisfied with the generated classes and their mappings, you
 should first compile the classes with <literal>javac</literal>, <literal>
-jikes</literal>, or your favorite Java compiler. Make sure the classes are 
-located in the directory corresponding to the <literal>-package</literal> flag 
+jikes</literal>, or your favorite Java compiler. Make sure the classes are
+located in the directory corresponding to the <literal>-package</literal> flag
 you gave the reverse mapping tool.  Next, if you have generated an <filename>
 orm.xml</filename>, move that file to a <filename>META-INF</filename> directory
 within a directory in your classpath.  Finally, enhance the classes
-if necessary (see <xref linkend="ref_guide_pc_enhance"/> ).
+if necessary (see <xref linkend="ref_guide_pc_enhance"/>).
                 </para>
             </listitem>
         </orderedlist>
@@ -929,7 +929,7 @@ In the <emphasis>meet-in-the-middle</emphasis>
 mapping approach, you control both the relational model and the object model. It
 is up to you to define the mappings between these models.  The mapping
 tool's <literal>validate</literal> action is useful to meet-in-the-middle
-mappers. This action verifies that the mapping information for a class matches 
+mappers. This action verifies that the mapping information for a class matches
 the class definition and the existing schema. It throws an informative exception
 when your mappings are incorrect.
         </para>
@@ -986,8 +986,8 @@ schema that matches your object model.
             <para>
 OpenJPA relies on foreign key constraint information at runtime to order SQL
 appropriately. Be sure to set your mapping defaults to reflect your existing
-database constraints, set the schema factory to reflect on the database for 
-constraint information (see <xref linkend="ref_guide_schema_info_factory"/>), 
+database constraints, set the schema factory to reflect on the database for
+constraint information (see <xref linkend="ref_guide_schema_info_factory"/>),
 or use explicit foreign key mappings as described in
 <xref linkend="ref_guide_mapping_jpa_fk"/>.
             </para>
@@ -1015,7 +1015,7 @@ properties (though with different default values), as well as:
                     <listitem>
                         <para>
 <literal>PrependFieldNameToJoinTableInverseJoinColumns</literal>: Whether to
-prepend the owning field name to the names of inverse join columns in join 
+prepend the owning field name to the names of inverse join columns in join
 tables.  Defaults to true per the JPA specification.  Set to false for
 compatibility with older OpenJPA versions which did not prepend the field name.
                         </para>
@@ -1281,8 +1281,8 @@ The bundled mapping factories are:
                 <para>
 <literal>-</literal>: Leaving the <literal> openjpa.jdbc.MappingFactory
 </literal> property unset allows your metadata factory to take over mappings as
-well.  If you are using the default <literal>jpa</literal> metadata factory, 
-OpenJPA will read mapping information from your annotations and 
+well.  If you are using the default <literal>jpa</literal> metadata factory,
+OpenJPA will read mapping information from your annotations and
 <filename>orm.xml</filename> when you leave the mapping factory unspecified.
                 </para>
             </listitem>
@@ -2172,7 +2172,7 @@ public class Subscription {
             </indexterm>
             <para>
 We detailed the <literal>ContainerTable</literal> annotation in
-<xref linkend="ref_guide_mapping_jpa_coll_table"/>. Custom map mappings may 
+<xref linkend="ref_guide_mapping_jpa_coll_table"/>. Custom map mappings may
 also use this annotation to represent a map table.
             </para>
         </section>
@@ -2189,7 +2189,7 @@ batch size.
             </para>
             <para>
 OpenJPA assumes certain columns have indexes or constraints based on your
-mapping defaults, as detailed in <xref linkend="ref_guide_mapping_defaults"/>. 
+mapping defaults, as detailed in <xref linkend="ref_guide_mapping_defaults"/>.
 You can override the configured defaults on individual joins, field
 values, collection elements, map keys, or map values using the annotations
 presented in the following sections.
@@ -2267,7 +2267,7 @@ The <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/ForeignKey.html">
 annotation represents a foreign key on the columns of a field. It is also used
 within the <link linkend="ref_guide_mapping_jpa_coll_table"><classname>
 ContainerTable</classname></link> annotation to set a database foreign key on
-join columns.  To set a constraint to the columns of a collection element, use 
+join columns.  To set a constraint to the columns of a collection element, use
 the
 <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/ElementForeignKey.html">
 <classname> org.apache.openjpa.persistence.jdbc.ElementForeignKey</classname>
@@ -2397,20 +2397,20 @@ entity property mapped to an XML column.
               <para>
 Annotate the entity property using the XMLValueHandler strategy:
 		      </para>
-<programlisting>		         
+<programlisting>
 @Persistent
 @Strategy(&quot;org.apache.openjpa.jdbc.meta.strats.XMLValueHandler&quot;)
 </programlisting>
               <para>
 The default fetch type is EAGER but can be changed to LAZY by using:
               </para>
-<programlisting>           
+<programlisting>
 @Persistence(fetch=FetchType.LAZY)
 </programlisting>
               <para>
 The entity property class is required to have
-jaxb binding annotations.  This is produced when the classes are generated 
-from an xml schema using the jaxb generator XJC.Ensure that <classname>@XmlRootElement</classname> 
+jaxb binding annotations.  This is produced when the classes are generated
+from an xml schema using the jaxb generator XJC.Ensure that <classname>@XmlRootElement</classname>
 appears in the root class. In some case this annotation needs to be added manually if it is missing.
               </para>
               <para>
@@ -2427,8 +2427,8 @@ XML functions.
               </para>
               <para>
 The path expression must be single valued.Path expressions over xml
-mapped classes can only be used in WHERE as an operand to a simple predicate 
-(=  &lt;&gt;  &lt;  &gt;  &gt;=  &lt;=). 
+mapped classes can only be used in WHERE as an operand to a simple predicate
+(=  &lt;&gt;  &lt;  &gt;  &gt;=  &lt;=).
               </para>
               <para>
 Path expressions over XML mapped fields can not be:
@@ -2456,9 +2456,9 @@ used in the FROM , GROUP BY, HAVING, ORDER BY clauses
                   </listitem>
               </itemizedlist>
               <para>
-XML schema must not contain namespace declarations. The EJB query path 
+XML schema must not contain namespace declarations. The EJB query path
 expressions can not refer to java fields generated from XML ANY type or
-XML mixed element types. 
+XML mixed element types.
               </para>
               <para>
 The datatype generated by JAXB must be a valid EJB query type
@@ -2479,7 +2479,7 @@ in which the JPA entity Order has <classname>&lt;shipAddress&gt;</classname> per
 &lt;xs:complexType name=&quot;Address&quot;&gt;
  &lt;xs:sequence&gt;
   &lt;xs:element name=&quot;Name&quot; type=&quot;xs:string&quot; /&gt;
-  &lt;xs:element name=&quot;Street&quot; type=&quot;xs:string&quot; 
+  &lt;xs:element name=&quot;Street&quot; type=&quot;xs:string&quot;
   	minOccurs=&quot;1&quot; maxOccurs=&quot;3&quot; /&gt;
   &lt;xs:element name=&quot;City&quot; type=&quot;xs:string&quot; /&gt;
 &lt;/xs:sequence&gt;
@@ -2524,8 +2524,8 @@ in which the JPA entity Order has <classname>&lt;shipAddress&gt;</classname> per
               </example>
               <para>
 Java classes <link linkend="ref_guide_xmlmapping_address">Address</link>,
-<link linkend="ref_guide_xmlmapping_usaaddress">USAAddress</link> and 
-<link linkend="ref_guide_xmlmapping_canaddress">CANAddress</link> 
+<link linkend="ref_guide_xmlmapping_usaaddress">USAAddress</link> and
+<link linkend="ref_guide_xmlmapping_canaddress">CANAddress</link>
 are produced using jaxb XJC generator from myaddress schema.
               </para>
               <example id="ref_guide_xmlmapping_address">
@@ -2548,12 +2548,12 @@ public class Address {
     protected List&lt;String&gt; street;
     @XmlElement(name = &quot;City&quot;, required = true)
     protected String city;
-    
+
    /**
      * Getter and Setter methods.
-     * 
-     */     
-     ...     
+     *
+     */
+     ...
 }
 </programlisting>
             </example>
@@ -2580,9 +2580,9 @@ public class USAAddress
 
    /**
      * Getter and Setter methods.
-     * 
-     */     
-     ...     
+     *
+     */
+     ...
 }
 </programlisting>
             </example>
@@ -2609,10 +2609,10 @@ public class CANAddress
 
    /**
      * Getter and Setter methods.
-     * 
-     */     
-     ...     
-} 
+     *
+     */
+     ...
+}
 </programlisting>
             </example>
             <example id="ref_guide_xmlmapping_annorder">
@@ -2621,9 +2621,9 @@ public class CANAddress
                 </title>
 <programlisting>
 @Entity
-public class Order { 
+public class Order {
     @Id  private into id;
-    @Persistent  
+    @Persistent
     @Strategy (&quot;org.apache.openjpa.jdbc.meta.strats.XMLValueHandler&quot;)
     private Address shipAddress;
     ...
@@ -2657,12 +2657,12 @@ em.persist(o1);
                     Sample EJB Queries for XML Column mapping
                 </title>
 <programlisting>
-. select o from Order o where o.shipAddress.city = &quot;San Jose&quot; or              
+. select o from Order o where o.shipAddress.city = &quot;San Jose&quot; or
 			      o.shipAddress.city = &quot;San Francisco&quot;  (OK)
-			    
-. select o.shipaAddress from Order o  (OK)   
 
-. select o.shipAddress.city from Order o  (INVALID)  
+. select o.shipaAddress from Order o  (OK)
+
+. select o.shipAddress.city from Order o  (INVALID)
 
 . select o from Order o where o.shipAddress.street = &quot;San Jose&quot;  (INVALID multi valued)
 </programlisting>
@@ -3044,7 +3044,7 @@ array or collection element relations, respectively:
                     </seealso>
                 </indexterm>
                 <para>
-OpenJPA's 
+OpenJPA's
 <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/Strategy.html">
 <classname>org.apache.openjpa.persistence.jdbc.Strategy</classname></ulink>
 extension allows you to specify a custom mapping
@@ -3174,8 +3174,8 @@ or more simple values. All value handlers implement the <classname>
 org.apache.openjpa.jdbc.meta.ValueHandler</classname> interface; see its
 <ulink url="../javadoc/org/apache/openjpa/jdbc/meta/ValueHandler.html"> Javadoc
 </ulink> for details.  Also, examine the built-in handlers in the <filename>
-src/openjpa/jdbc/meta/strats</filename> directory of your OpenJPA source 
-distribution.  Use these functional implementations as examples when you 
+src/openjpa/jdbc/meta/strats</filename> directory of your OpenJPA source
+distribution.  Use these functional implementations as examples when you
 create your own value handlers.
                 </para>
             </section>
@@ -3227,7 +3227,7 @@ MappingDefaults</classname> implementations allows you to globally associate
 field types with their corresponding custom value handler or strategy. OpenJPA
 will automatically use your custom strategies when it encounters a field of the
 associated type. OpenJPA will use your custom value handlers whenever it
-encounters a field of the associated type. 
+encounters a field of the associated type.
 <xref linkend="ref_guide_mapping_defaults"/> described mapping
 defaults in detail.
                 </para>

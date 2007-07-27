@@ -222,7 +222,7 @@ information.
             <para>
 Let's compile the initial classes and see them in action. To do so, we must
 compile the <filename>.java</filename> files, as we would with any Java project,
-and then pass the resulting classes through the OpenJPA enhancer:
+and then optionally pass the resulting classes through the OpenJPA enhancer.
             </para>
             <note>
                 <para>
@@ -387,7 +387,7 @@ You can use any java compiler instead of <command>javac</command>.
                 </listitem>
                 <listitem>
                     <para>
-Enhance the persistent classes.
+Enhance the persistent classes. (Optional)
                     </para>
 <programlisting>
 java org.apache.openjpa.enhance.PCEnhancer Animal.java Dog.java
@@ -396,7 +396,7 @@ java org.apache.openjpa.enhance.PCEnhancer Animal.java Dog.java
 This step runs the OpenJPA enhancer on the <filename>Animal.java</filename> and
 <filename>Dog.java</filename> files mentioned above. See
 <xref linkend="ref_guide_pc_enhance"/> of the Reference Guide for more
-information on the enhancer, including how to use automatic runtime enhancement.
+information on the enhancer, including alternatives to enhancement.
                     </para>
                     <note>
                         <para>
@@ -417,7 +417,7 @@ OpenJPA configuration.
                     Configuring the Datastore
                 </title>
                 <para>
-Now that we've compiled the source files and enhanced the persistent classes,
+Now that we've compiled the source files,
 we're ready to set up the database. <ulink url="http://hsqldb.sourceforge.net">
 Hypersonic SQL</ulink>, a pure Java relational database, is included in the
 OpenJPA distribution. We have included this database because it is simple to set
@@ -819,7 +819,7 @@ javac Rabbit.java
                 </listitem>
                 <listitem>
                     <para>
-Enhance the <classname>Rabbit</classname> class.
+Enhance the <classname>Rabbit</classname> class. (Optional)
                     </para>
 <programlisting>
 java org.apache.openjpa.enhance.PCEnhancer Rabbit.java
@@ -907,7 +907,7 @@ javac Snake.java
                 </listitem>
                 <listitem>
                     <para>
-Enhance the class.
+Enhance the class. (Optional)
                     </para>
 <programlisting>
 java org.apache.openjpa.enhance.PCEnhancer Snake.java
@@ -1118,7 +1118,7 @@ key that joins the rabbit table to the snake table. The rabbit table has an
                 <listitem>
                     <para>
 Compile <filename>Snake.java</filename> and <filename>Rabbit.java</filename> and
-enhance the classes.
+optionally enhance the classes.
                     </para>
 <programlisting>
 javac Snake.java Rabbit.java
@@ -1320,7 +1320,7 @@ nested <filename>ejb</filename> and <filename>jsp</filename> directories:
 javac *.java  ejb/*.java jsp/*.java
 </programlisting>
                 <para>
-Enhance the Car class.
+Enhance the Car class. (Optional)
                 </para>
 <programlisting>
 java org.apache.openjpa.enhance.PCEnhancer Car.java

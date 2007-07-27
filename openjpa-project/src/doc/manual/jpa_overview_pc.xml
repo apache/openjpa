@@ -177,7 +177,7 @@ constructor.
                 <para>
 OpenJPA's <emphasis>enhancer</emphasis> will automatically add a protected
 no-arg constructor to your class when required. Therefore, this restriction does
-not apply when using OpenJPA. See <xref linkend="ref_guide_pc_enhance"/>
+not apply when using the enhancer. See <xref linkend="ref_guide_pc_enhance"/>
 of the Reference Guide for details.
                 </para>
             </note>

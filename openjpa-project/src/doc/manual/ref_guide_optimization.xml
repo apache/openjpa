@@ -170,6 +170,25 @@ OpenJPAEntityManager.setPopulateDataCache</ulink>
                 <row>
                     <entry colname="name">
                         <emphasis role="bold">
+                            Run the OpenJPA enhancer on your persistent classes,
+                            either at build-time or deploy-time.
+                        </emphasis>
+                        <para>
+<emphasis>performance, scalability, memory footprint</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+OpenJPA performs best when your persistent classes have been run through the
+OpenJPA post-compilation bytecode enhancer. When dealing with enhanced classes,
+OpenJPA can make a number of assumptions that reduce memory footprint and
+accelerate persistent data access. When evaluating OpenJPA's performance,
+build-time or deploy-time enhancement should be enabled. See
+<xref linkend="ref_guide_pc_enhance"/> for details.
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
                             Disable logging, performance tracking
                         </emphasis>
                         <para>
