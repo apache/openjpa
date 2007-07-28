@@ -1584,7 +1584,7 @@ public class BrokerImpl
             Collection saved = save.rollback(_savepoints.values());
             if (_savepointCache != null)
                 _savepointCache.clear();
-            if (_transCache != null) {
+            if (hasTransactionalObjects()) {
                 // build up a new collection of states
                 TransactionalCache oldTransCache = _transCache;
                 TransactionalCache newTransCache = new TransactionalCache
@@ -2156,8 +2156,10 @@ public class BrokerImpl
         _fc.setWriteLockLevel(LOCK_NONE);
         _fc.setLockTimeout(-1);
 
-        Collection transStates = _transCache;
-        if (transStates == null)
+        Collection transStates;
+        if (hasTransactionalObjects())
+            transStates = _transCache;
+        else
             transStates = Collections.EMPTY_LIST;
 
         // fire after rollback/commit event
@@ -3750,16 +3752,26 @@ public class BrokerImpl
      * Return a copy of all transactional state managers.
      */
     protected Collection getTransactionalStates() {
-        if (_transCache == null)
+        if (!hasTransactionalObjects())
             return Collections.EMPTY_LIST;
         return _transCache.copy();
+    }
+
+    /**
+     * Whether or not there are any transactional objects in the current
+     * persistence context. If there are any instances with untracked state,
+     * this method will cause those instances to be scanned.
+     */
+    private boolean hasTransactionalObjects() {
+        _cache.dirtyCheck();
+        return _transCache != null;
     }
 
     /**
      * Return a copy of all dirty state managers.
      */
     protected Collection getDirtyStates() {
-        if (_transCache == null)
+        if (!hasTransactionalObjects())
             return Collections.EMPTY_LIST;
 
         return _transCache.copyDirty();
@@ -3823,7 +3835,7 @@ public class BrokerImpl
 
         lock();
         try {
-            if (_transCache == null)
+            if (!hasTransactionalObjects())
                 _transCache = new TransactionalCache(_orderDirty);
             _transCache.addClean(sm);
         } finally {
@@ -3839,6 +3851,8 @@ public class BrokerImpl
         lock();
         try {
             if (_transCache != null)
+                // intentional direct access; we don't want to recompute
+                // dirtiness while removing instances from the transaction
                 _transCache.remove(sm);
             if (_derefCache != null && !sm.isPersistent())
                 _derefCache.remove(sm);
@@ -3866,7 +3880,7 @@ public class BrokerImpl
             lock();
             try {
                 // cache dirty instance
-                if (_transCache == null)
+                if (!hasTransactionalObjects())
                     _transCache = new TransactionalCache(_orderDirty);
                 _transCache.addDirty(sm);
 
@@ -4427,6 +4441,12 @@ public class BrokerImpl
          * Call this method when a new state manager initializes itself.
          */
         public void add(StateManagerImpl sm) {
+            if (!sm.isIntercepting()) {
+                if (_untracked == null)
+                    _untracked = new HashSet();
+                _untracked.add(sm);
+            }
+
             if (!sm.isPersistent() || sm.isEmbedded()) {
                 if (_embeds == null)
                     _embeds = new ReferenceHashSet(ReferenceHashSet.WEAK);
@@ -4452,12 +4472,6 @@ public class BrokerImpl
                     sm.getObjectId(), Exceptions.toString
                     (orig.getManagedInstance()))).
                     setFailedObject(sm.getManagedInstance());
-            }
-
-            if (!sm.isIntercepting()) {
-                if (_untracked == null)
-                    _untracked = new HashSet();
-                _untracked.add(sm);
             }
         }
 
@@ -4623,6 +4637,14 @@ public class BrokerImpl
         public void clearNew() {
             if (_news != null)
                 _news.clear();
+        }
+
+        private void dirtyCheck() {
+            if (_untracked == null)
+                return;
+
+            for (Iterator iter = _untracked.iterator(); iter.hasNext(); )
+                ((StateManagerImpl) iter.next()).dirtyCheck();
         }
     }
 

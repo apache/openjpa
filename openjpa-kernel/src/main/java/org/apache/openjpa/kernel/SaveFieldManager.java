@@ -177,12 +177,13 @@ public class SaveFieldManager
         // if the field is not available, assume that it has changed.
         if (_saved == null || !_saved.get(field))
             return false;
-        if (!(_state.pcGetStateManager() instanceof OpenJPAStateManager))
+        if (!(_state.pcGetStateManager() instanceof StateManagerImpl))
             return false;
 
-        OpenJPAStateManager sm = (OpenJPAStateManager)
-            _state.pcGetStateManager();
-        Object old = sm.fetch(field);
+        StateManagerImpl sm = (StateManagerImpl) _state.pcGetStateManager();
+        SingleFieldManager single = new SingleFieldManager(sm, sm.getBroker());
+        sm.provideField(_state, single, field);
+        Object old = single.fetchObjectField(field);
         return current == old || current != null && current.equals(old);
     }
 

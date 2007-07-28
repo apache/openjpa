@@ -795,8 +795,8 @@ public class StateManagerImpl
         for (int i = 0; i < fmds.length; i++) {
             // pk and version fields cannot be mutated; don't mark them
             // as such. ##### validate?
-            if (!fmds[i].isPrimaryKey()
-                && !fmds[i].isVersion()) {
+            if (!fmds[i].isPrimaryKey() && !fmds[i].isVersion()
+                && _loaded.get(i)) {
                 if (!saved.isFieldEqual(i, fetch(i))) {
                     dirty(i);
                 }
@@ -810,9 +810,6 @@ public class StateManagerImpl
         if (isDeleted())
             return false;
         if (isNew() && !isFlushed())
-            return false;
-        if (getMetaData().getAccessType() != ClassMetaData.ACCESS_FIELD
-            && !(isNew() && isFlushed()))
             return false;
         return true;
     }

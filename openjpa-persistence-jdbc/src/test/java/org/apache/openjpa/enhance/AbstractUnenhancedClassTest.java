@@ -33,6 +33,8 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.event.AbstractLifecycleListener;
+import org.apache.openjpa.event.LifecycleEvent;
 
 public abstract class AbstractUnenhancedClassTest
     extends SingleEMFTestCase {
@@ -59,6 +61,11 @@ public abstract class AbstractUnenhancedClassTest
     protected abstract Class<? extends UnenhancedSubtype> getUnenhancedSubclass();
 
     protected abstract UnenhancedSubtype newUnenhancedSubclassInstance();
+
+    private UnenhancedType newInstance(boolean sub) {
+        return sub ? newUnenhancedSubclassInstance()
+            : newUnenhancedInstance();
+    }
 
     public void testMetaData() {
         ClassMetaData meta = OpenJPAPersistence.getMetaData(emf,
@@ -136,15 +143,23 @@ public abstract class AbstractUnenhancedClassTest
         assertNotNull(em.getObjectId(un));
     }
 
-    public void testOperations() {
-        opsHelper(false);
+    public void testOperationsOnUserDefined() {
+        opsHelper(false, true);
     }
 
-    public void testSubclassOperations() {
-        opsHelper(true);
+    public void testSubclassOperationsOnUserDefined() {
+        opsHelper(true, true);
     }
 
-    private void opsHelper(boolean sub) {
+    public void testOperationsOnOpenJPADefined() {
+        opsHelper(false, false);
+    }
+
+    public void testSubclassOperationsOnOpenJPADefined() {
+        opsHelper(true, false);
+    }
+
+    private void opsHelper(boolean sub, boolean userDefined) {
         OpenJPAEntityManager em = null;
         try {
             UnenhancedType un = newInstance(sub);
@@ -154,22 +169,30 @@ public abstract class AbstractUnenhancedClassTest
             em.persist(un);
             un.setStringField("bar");
             assertEquals("bar", un.getStringField());
+            assertPersistenceContext(em, un, true, true, sub);
             em.flush();
+            assertPersistenceContext(em, un, true, true, sub);
             assertTrue(un.getId() != 0);
             UnenhancedType un2 = em.find(getUnenhancedClass(), un.getId());
             assertSame(un, un2);
             em.getTransaction().commit();
+            assertPersistenceContext(em, un, false, false, sub);
             un2 = em.find(getUnenhancedClass(), un.getId());
             assertSame(un, un2);
-            em.close();
 
-            em = emf.createEntityManager();
+            if (!userDefined) {
+                em.close();
+                em = emf.createEntityManager();
+            }
+
             un = em.find(getUnenhancedClass(), un.getId());
             assertNotNull(un);
-            assertTrue(un instanceof PersistenceCapable);
+            if (!userDefined)
+                assertTrue(un instanceof PersistenceCapable);
             assertEquals("bar", un.getStringField());
             em.getTransaction().begin();
             un.setStringField("baz");
+            assertPersistenceContext(em, un, true, true, sub);
             assertEquals("baz", un.getStringField());
 
             if (sub)
@@ -178,6 +201,11 @@ public abstract class AbstractUnenhancedClassTest
             assertTrue(em.isDirty(un));
             
             em.getTransaction().commit();
+
+            // make sure that the values are still up-to-date after
+            // the commit happens
+            assertEquals("baz", un.getStringField());
+            
             em.close();
 
             em = emf.createEntityManager();
@@ -193,6 +221,17 @@ public abstract class AbstractUnenhancedClassTest
                 em.getTransaction().rollback();
             if (em != null && em.isOpen())
                 em.close();
+        }
+    }
+
+    private void assertPersistenceContext(OpenJPAEntityManager em,
+        UnenhancedType un, boolean transactional, boolean dirty, boolean sub) {
+        assertEquals(transactional, em.getTransactionalObjects().contains(un));
+        assertEquals(dirty, em.getDirtyObjects().contains(un));
+        if (dirty) {
+            Class cls = sub ? getUnenhancedSubclass() : getUnenhancedClass();
+            assertTrue(em.getUpdatedClasses().contains(cls)
+                || em.getPersistedClasses().contains(cls));
         }
     }
 
@@ -480,9 +519,51 @@ public abstract class AbstractUnenhancedClassTest
         em.getTransaction().commit();
     }
 
-    private UnenhancedType newInstance(boolean sub) {
-        return sub ? newUnenhancedSubclassInstance()
-            : newUnenhancedInstance();
+    public void testListenersOnUserDefinedInstance()
+        throws IOException, ClassNotFoundException, CloneNotSupportedException {
+        listenerHelper(true, false);
+    }
+
+    public void testListenersOnUserDefinedSubclassInstance()
+        throws IOException, ClassNotFoundException, CloneNotSupportedException {
+        listenerHelper(true, true);
+    }
+
+    public void testListenersOnOpenJPADefinedInstance()
+        throws IOException, ClassNotFoundException, CloneNotSupportedException {
+        listenerHelper(false, false);
+    }
+
+    public void testListenersOnOpenJPADefinedSubclassInstance()
+        throws IOException, ClassNotFoundException, CloneNotSupportedException {
+        listenerHelper(false, true);
+    }
+
+    private void listenerHelper(boolean userDefined, boolean sub)
+        throws IOException, ClassNotFoundException, CloneNotSupportedException {
+        ListenerImpl listener = new ListenerImpl();
+        emf.addLifecycleListener(listener, (Class[]) null);
+        OpenJPAEntityManager em = emf.createEntityManager();
+        UnenhancedType un = newInstance(sub);
+        em.getTransaction().begin();
+        em.persist(un);
+        em.getTransaction().commit();
+
+        if (!userDefined) {
+            em.close();
+            em = emf.createEntityManager();
+        }
+
+        listener.invoked = false;
+
+        un = em.find(getUnenhancedClass(), un.getId());
+        em.getTransaction().begin();
+        un.setStringField("updated");
+        em.getTransaction().commit();
+        assertTrue(listener.invoked);
+        em.close();
+
+        assertEquals("updated", listener.stringField);
     }
 
     public void testGetMetaDataOfSubtype() {
@@ -498,5 +579,18 @@ public abstract class AbstractUnenhancedClassTest
             emf.getConfiguration(),
             Collections.singleton(getUnenhancedSubclass()), null);
         assertSame(meta, OpenJPAPersistence.getMetaData(emf, subs.get(0)));
+    }
+
+    private class ListenerImpl
+        extends AbstractLifecycleListener {
+
+        String stringField;
+        boolean invoked;
+
+        @Override
+        public void afterStore(LifecycleEvent event) {
+            invoked = true;
+            stringField = ((UnenhancedType) event.getSource()).getStringField();
+        }
     }
 }
