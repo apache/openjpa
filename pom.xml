@@ -332,16 +332,16 @@
     <distributionManagement>
       <repository>
         <id>people.apache.org</id>
-        <url>scp://people.apache.org/www/people.apache.org/repo/m2-incubating-repository/</url>
+        <url>scpexe://${user.name}@people.apache.org/www/people.apache.org/repo/m2-incubating-repository/</url>
       </repository>
       <snapshotRepository>
         <id>people.apache.org</id>
-        <url>scp://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository/</url>
+        <url>scpexe://${user.name}@people.apache.org/www/people.apache.org/repo/m2-snapshot-repository/</url>
         <uniqueVersion>false</uniqueVersion>
       </snapshotRepository>
       <site>
         <id>people.apache.org</id>
-        <url>scpexe://people.apache.org/home/mprudhom/public_html/openjpa/site/</url>
+        <url>scpexe://${user.name}@people.apache.org/home/mprudhom/public_html/openjpa/site/</url>
       </site>
     </distributionManagement>
 </project>
