@@ -412,9 +412,11 @@ public class OpenJPAConfigurationImpl
 
         readLockLevel = addInt("ReadLockLevel");
         aliases =
-            new String[] { "read", String.valueOf(LockLevels.LOCK_READ),
-                "write", String.valueOf(LockLevels.LOCK_WRITE), "none",
-                String.valueOf(LockLevels.LOCK_NONE), };
+            new String[] {
+                "read", String.valueOf(LockLevels.LOCK_READ),
+                "write", String.valueOf(LockLevels.LOCK_WRITE),
+                "none", String.valueOf(LockLevels.LOCK_NONE),
+            };
         readLockLevel.setAliases(aliases);
         readLockLevel.setDefault(aliases[0]);
         readLockLevel.set(LockLevels.LOCK_READ);
@@ -422,9 +424,11 @@ public class OpenJPAConfigurationImpl
 
         writeLockLevel = addInt("WriteLockLevel");
         aliases =
-            new String[] { "read", String.valueOf(LockLevels.LOCK_READ),
-                "write", String.valueOf(LockLevels.LOCK_WRITE), "none",
-                String.valueOf(LockLevels.LOCK_NONE), };
+            new String[] {
+                "read", String.valueOf(LockLevels.LOCK_READ),
+                "write", String.valueOf(LockLevels.LOCK_WRITE),
+                "none", String.valueOf(LockLevels.LOCK_NONE),
+            };
         writeLockLevel.setAliases(aliases);
         writeLockLevel.setDefault(aliases[1]);
         writeLockLevel.set(LockLevels.LOCK_WRITE);
@@ -436,7 +440,8 @@ public class OpenJPAConfigurationImpl
 
         connectionRetainMode = addInt("ConnectionRetainMode");
         aliases =
-            new String[] { "on-demand",
+            new String[] {
+                "on-demand",
                 String.valueOf(ConnectionRetainModes.CONN_RETAIN_DEMAND),
                 "transaction",
                 String.valueOf(ConnectionRetainModes.CONN_RETAIN_TRANS),
@@ -444,7 +449,8 @@ public class OpenJPAConfigurationImpl
                 String.valueOf(ConnectionRetainModes.CONN_RETAIN_ALWAYS),
                 // deprecated
                 "persistence-manager",
-                String.valueOf(ConnectionRetainModes.CONN_RETAIN_ALWAYS), };
+                String.valueOf(ConnectionRetainModes.CONN_RETAIN_ALWAYS),
+            };
         connectionRetainMode.setAliases(aliases);
         connectionRetainMode.setDefault(aliases[0]);
         connectionRetainMode.setAliasListComprehensive(true);
