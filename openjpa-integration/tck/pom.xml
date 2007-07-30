@@ -179,7 +179,8 @@ database.driver=${db.driver}
                         </path>
                         <pathconvert dirsep="/" property="agent" 
                             refid="agent.path"/>
-                        <echo>AGENT: ${agent}</echo>
+                        <property name="agent.properties" value=""/>
+                        <echo>AGENT: ${agent}${agent.properties}</echo>
 
                         <!--
                             Replace the existing javaagent argument (which
@@ -189,7 +190,7 @@ database.driver=${db.driver}
                             persistent classes to work (like the SignatureTest)
                         -->
                         <replace file="${jpatck.config}">
-                            <replacefilter token="-javaagent:${jpa.home}/lib/toplink-essentials-agent.jar" value="-javaagent:${agent} -Dopenjpa.MetaDataFactory=jpa(DefaultAccessType=PROPERTY)"/>
+                            <replacefilter token="-javaagent:${jpa.home}/lib/toplink-essentials-agent.jar" value="-javaagent:${agent}${agent.properties} -Dopenjpa.MetaDataFactory=jpa(DefaultAccessType=PROPERTY)"/>
                         </replace>
 
                         <!-- make a macro for the TCK harness launcher -->
