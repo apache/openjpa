@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -53,12 +54,6 @@ import org.apache.openjpa.util.UserException;
  * @nojavadoc
  */
 public class DBDictionaryFactory {
-
-    // pcl: can't use these classes directly because they rely on native libs
-    private static final String ORACLE_DICT_NAME =
-        "org.apache.openjpa.jdbc.sql.OracleDictionary";
-    private static final String HSQL_DICT_NAME =
-        "org.apache.openjpa.jdbc.sql.HSQLDictionary";
 
     private static final Localizer _loc = Localizer.forPackage
         (DBDictionaryFactory.class);
@@ -171,31 +166,35 @@ public class DBDictionaryFactory {
     /**
      * Guess the dictionary class name to use based on the product string.
      */
-    private static String dictionaryClassForString(String prod, JDBCConfiguration conf) {
+    private static String dictionaryClassForString(String prod
+        , JDBCConfiguration conf) {
         if (StringUtils.isEmpty(prod))
             return null;
         prod = prod.toLowerCase();
 
+        PluginValue dbdictionaryPlugin = ((JDBCConfigurationImpl) conf)
+            .dbdictionaryPlugin;
+
         if (prod.indexOf("oracle") != -1)
-            return getDBDictionaryPluginValue(conf, "oracle");
+            return dbdictionaryPlugin.unalias("oracle");
         if (prod.indexOf("sqlserver") != -1)
-            return getDBDictionaryPluginValue(conf, "sqlserver");
+            return dbdictionaryPlugin.unalias("sqlserver");
         if (prod.indexOf("jsqlconnect") != -1)
-            return SQLServerDictionary.class.getName();
+            return dbdictionaryPlugin.unalias("sqlserver");
         if (prod.indexOf("mysql") != -1)
-            return MySQLDictionary.class.getName();
+            return dbdictionaryPlugin.unalias("mysql");
         if (prod.indexOf("postgres") != -1)
-            return PostgresDictionary.class.getName();
+            return dbdictionaryPlugin.unalias("postgres");
         if (prod.indexOf("sybase") != -1)
-            return SybaseDictionary.class.getName();
+            return dbdictionaryPlugin.unalias("sybase");
         if (prod.indexOf("adaptive server") != -1)
-            return SybaseDictionary.class.getName();
+            return dbdictionaryPlugin.unalias("sybase");
         if (prod.indexOf("informix") != -1)
-            return InformixDictionary.class.getName();
+            return dbdictionaryPlugin.unalias("informix");
         if (prod.indexOf("hsql") != -1)
-            return HSQL_DICT_NAME;
+            return dbdictionaryPlugin.unalias("hsql");
         if (prod.indexOf("foxpro") != -1)
-            return FoxProDictionary.class.getName();
+            return dbdictionaryPlugin.unalias("foxpro");
         if (prod.indexOf("interbase") != -1)
             return InterbaseDictionary.class.getName();
         if (prod.indexOf("jdatastore") != -1)
@@ -203,17 +202,17 @@ public class DBDictionaryFactory {
         if (prod.indexOf("borland") != -1)
             return JDataStoreDictionary.class.getName();
         if (prod.indexOf("access") != -1)
-            return AccessDictionary.class.getName();
+            return dbdictionaryPlugin.unalias("access");
         if (prod.indexOf("pointbase") != -1)
-            return PointbaseDictionary.class.getName();
+            return dbdictionaryPlugin.unalias("pointbase");
         if (prod.indexOf("empress") != -1)
-            return EmpressDictionary.class.getName();
+            return dbdictionaryPlugin.unalias("empress");
         if (prod.indexOf("firebird") != -1)
             return FirebirdDictionary.class.getName();
         if (prod.indexOf("cache") != -1)
             return CacheDictionary.class.getName();
         if (prod.indexOf("derby") != -1)
-            return DerbyDictionary.class.getName();
+            return dbdictionaryPlugin.unalias("derby");
         // test h2 in a special way, because there's a decent chance the string 
         // h2 could appear in the URL of another database
         if (prod.indexOf("jdbc:h2:") != -1)
@@ -224,7 +223,7 @@ public class DBDictionaryFactory {
         // appear in the URL of another database (like if the db is named
         // "testdb2" or something)
         if (prod.indexOf("db2") != -1 || prod.indexOf("as400") != -1)
-            return getDBDictionaryPluginValue(conf, "db2");
+            return dbdictionaryPlugin.unalias("db2");
 
         // known dbs that we don't support
         if (prod.indexOf("cloudscape") != -1)
@@ -236,6 +235,10 @@ public class DBDictionaryFactory {
         if (prod.indexOf("idb") != -1) // instantdb
             return DBDictionary.class.getName();
 
+        String prodClassName = dbdictionaryPlugin.unalias(prod);
+        if (!StringUtils.equals(prod, prodClassName))
+            return prodClassName;
+        
         // give up
         return null;
     }
@@ -608,16 +611,5 @@ public class DBDictionaryFactory {
         }
 
         return buf.toString();
-    }
-    
-    private static String getDBDictionaryPluginValue(JDBCConfiguration conf
-        , String alias) {
-        String[] aliases = ((JDBCConfigurationImpl) conf)
-            .dbdictionaryPlugin.getAliases();
-        for (int i = 0; i < aliases.length; i++) {
-            if (StringUtils.equals(alias, aliases[i]))
-                return aliases[++i];
-        }
-        return null;
     }
 }
