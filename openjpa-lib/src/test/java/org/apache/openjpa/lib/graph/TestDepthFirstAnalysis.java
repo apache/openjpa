@@ -58,23 +58,23 @@ public class TestDepthFirstAnalysis
 
     public void setUpGraph2() {
         Graph graph = new Graph();
-        Integer node1 = new Integer(5);
-        Integer node2 = new Integer(4);
+        Integer node1 = new Integer(1);
+        Integer node2 = new Integer(2);
         Integer node3 = new Integer(3);
-        Integer node4 = new Integer(2);
-        Integer node5 = new Integer(1);
-        graph.addNode(node1);
-        graph.addNode(node2);
-        graph.addNode(node3);
-        graph.addNode(node4);
+        Integer node4 = new Integer(4);
+        Integer node5 = new Integer(5);
+        graph.addNode(node2);  // has to be first node for testcase
         graph.addNode(node5);
-        graph.addEdge(new Edge(node1, node2, true));
-        graph.addEdge(new Edge(node2, node3, true));
+        graph.addNode(node4);
+        graph.addNode(node3);
+        graph.addNode(node1);
+        graph.addEdge(new Edge(node5, node4, true));
+        graph.addEdge(new Edge(node4, node3, true));
         graph.addEdge(new Edge(node3, node3, true));
-        graph.addEdge(new Edge(node3, node4, true));
-        graph.addEdge(new Edge(node4, node1, true));
-        graph.addEdge(new Edge(node4, node2, true));
-        graph.addEdge(new Edge(node5, node2, true));
+        graph.addEdge(new Edge(node3, node2, true));
+        graph.addEdge(new Edge(node2, node5, true));
+        graph.addEdge(new Edge(node2, node4, true));
+        graph.addEdge(new Edge(node1, node4, true));
         _dfa = new DepthFirstAnalysis(graph);
     }
 
@@ -97,8 +97,8 @@ public class TestDepthFirstAnalysis
         Iterator itr = edges.iterator();
         Edge edge0 = (Edge) itr.next();
         Edge edge1 = (Edge) itr.next();
-        assertTrue((edge0.getTo() == edge0.getFrom())
-            || edge1.getTo() == edge1.getFrom());
+        assertTrue((edge0.getTo().equals(edge0.getFrom()))
+                || edge1.getTo().equals(edge1.getFrom()));
     }
 
     public void testBackEdges() {
@@ -108,17 +108,17 @@ public class TestDepthFirstAnalysis
         Iterator itr = edges.iterator();
         Edge edge0 = (Edge) itr.next();
         Edge edge1 = (Edge) itr.next();
-        if (edge0.getTo() == edge0.getFrom()) {
+        if (edge0.getTo().equals(edge0.getFrom())) {
             assertTrue(edge0.getCycle() != null && edge0.getCycle().size() == 1);
             List cycle = edge1.getCycle();
             assertTrue(cycle != null && cycle.size() == 4);
-            assertTrue(((Edge)cycle.get(0)).getFrom() == ((Edge)cycle.get(3)).getTo());
-        } else if (edge1.getTo() == edge1.getFrom()) {
+            assertTrue(((Edge)cycle.get(0)).getFrom().equals(((Edge)cycle.get(3)).getTo()));
+        } else if (edge1.getTo().equals(edge1.getFrom())) {
             assertTrue(edge1.getCycle() != null && edge1.getCycle().size() == 1);            
             assertTrue(edge1 == edge1.getCycle());
             List cycle = edge0.getCycle();
             assertTrue(cycle != null && cycle.size() == 4);
-            assertTrue(((Edge)cycle.get(0)).getFrom() == ((Edge)cycle.get(3)).getTo());
+            assertTrue(((Edge)cycle.get(0)).getFrom().equals(((Edge)cycle.get(3)).getTo()));
         } else {
             // should not happen
             assertFalse(true);
@@ -135,11 +135,11 @@ public class TestDepthFirstAnalysis
         if (edge0.getCycle() == null) {
             List cycle = edge1.getCycle();
             assertTrue(cycle != null && cycle.size() == 3);
-            assertTrue(((Edge)cycle.get(0)).getFrom() == ((Edge)cycle.get(2)).getTo());
+            assertTrue(((Edge)cycle.get(0)).getFrom().equals(((Edge)cycle.get(2)).getTo()));
         } else if (edge1.getCycle() == null) {
             List cycle = edge0.getCycle();
             assertTrue(cycle != null && cycle.size() == 3);
-            assertTrue(((Edge)cycle.get(0)).getFrom() == ((Edge)cycle.get(2)).getTo());
+            assertTrue(((Edge)cycle.get(0)).getFrom().equals(((Edge)cycle.get(2)).getTo()));
         } else {
             // should not happen
             assertFalse(true);

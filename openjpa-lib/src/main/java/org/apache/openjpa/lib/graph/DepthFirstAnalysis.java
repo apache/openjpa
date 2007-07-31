@@ -216,13 +216,13 @@ public class DepthFirstAnalysis {
         
         List cycle;
         int pos = 0;
-        if (path != null && edge.getFrom() != edge.getTo()) {
+        if (path != null && !edge.getFrom().equals(edge.getTo())) {
             // Not a single edge loop
             pos = findNodeInPath(edge.getTo(), path);
             assert (pos >= 0): _loc.get("node-not-on-path", edge, edge.getTo()); 
         } else {
-            assert (edge.getFrom() == edge.getTo()): 
-                    _loc.get("edge-no-loop", edge).getMessage();
+            assert (edge.getFrom().equals(edge.getTo())): 
+                _loc.get("edge-no-loop", edge).getMessage();
             path = null;
         }
         cycle = buildCycle(edge, path, pos); 
@@ -249,8 +249,8 @@ public class DepthFirstAnalysis {
             Edge edge = (Edge) itr.next();
             Object other = edge.getOther(node);
             // Single edge loops are ignored
-            if (node != other) {
-                if (other == cycleTo) {
+            if (!node.equals(other)) {
+                if (other.equals(cycleTo)) {
                     // Cycle complete
                     path.add(edge);
                     found = true;
@@ -279,7 +279,7 @@ public class DepthFirstAnalysis {
         int pos = -1;
         if (path != null) {
             for (int i = 0; i < path.size(); i++) {
-                if (((Edge)path.get(i)).getFrom() == node) {
+                if (((Edge)path.get(i)).getFrom().equals(node)) {
                     pos = i;
                 }
             }

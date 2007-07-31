@@ -21,9 +21,9 @@ package org.apache.openjpa.lib.graph;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -36,8 +36,11 @@ import java.util.Map;
  */
 public class Graph {
 
-    // map each node to list of edges from that node
-    private final Map _nodes = new HashMap();
+    /**
+     * Map each node to list of edges from that node.
+     * Using a LinkedHashMap to ensure order of iterator processing.
+     */ 
+    private final Map _nodes = new LinkedHashMap();
 
     /**
      * Clear the graph.

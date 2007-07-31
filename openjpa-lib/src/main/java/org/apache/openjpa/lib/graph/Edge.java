@@ -106,9 +106,9 @@ public class Edge {
      * given node is not part of this edge.
      */
     public Object getOther(Object node) {
-        if (_to == node)
+        if (_to.equals(node))
             return _from;
-        if (_from == node)
+        if (_from.equals(node))
             return _to;
         return null;
     }
@@ -118,7 +118,7 @@ public class Edge {
      * this method returns true if either side is equal to the given node.
      */
     public boolean isTo(Object node) {
-        return _to == node || (!_directed && _from == node);
+        return _to.equals(node) || (!_directed && _from.equals(node));
     }
 
     /**
@@ -127,7 +127,7 @@ public class Edge {
      * node.
      */
     public boolean isFrom(Object node) {
-        return _from == node || (!_directed && _to == node);
+        return _from.equals(node) || (!_directed && _to.equals(node));
     }
 
     /**
