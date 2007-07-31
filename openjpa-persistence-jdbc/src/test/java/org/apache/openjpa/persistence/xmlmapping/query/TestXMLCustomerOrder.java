@@ -54,12 +54,6 @@ public class TestXMLCustomerOrder
                 .CustomerKey.class
             , org.apache.openjpa.persistence.xmlmapping.entities.Order.class
             , org.apache.openjpa.persistence.xmlmapping.entities.EAddress.class
-            ,  "openjpa.MetaDataRepository"
-            ,  "org.apache.openjpa.jdbc.meta.XMLMappingRepository"
-//            ,  "openjpa.ConnectionDriverName"
-//            ,  "org.apache.commons.dbcp.BasicDataSource"
-//            ,  "openjpa.ConnectionProperties"
-//            ,  "DriverClassName=com.ibm.db2.jcc.DB2Driver,Url=jdbc:db2:testdb"
             );
     }
 

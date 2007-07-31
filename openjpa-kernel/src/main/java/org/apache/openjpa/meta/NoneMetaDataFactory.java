@@ -134,4 +134,7 @@ public class NoneMetaDataFactory
     public Class getUnimplementedExceptionType() {
         return null;
     }
+    
+    public void loadXMLMetaData(FieldMetaData fmd) {
+    }
 }

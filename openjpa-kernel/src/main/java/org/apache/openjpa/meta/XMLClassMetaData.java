@@ -18,68 +18,57 @@
  */
 package org.apache.openjpa.meta;
 
+import java.util.HashMap;
+
 import org.apache.commons.lang.StringUtils;
 
-/**
- * Contains metadata about an xml element or attribute
- *
- * @author Catalina Wei
- * @since 1.0.0
- */
-public class XMLFieldMetaData implements XMLMetaData {
-
-    private String _name;
+public class XMLClassMetaData implements XMLMetaData     
+{
+    private Class _type;
+    private int _code = JavaTypes.OBJECT;
+    private int _xmltype = XMLTYPE;
+    private String _name = null;
     private String _xmlname = null;
     private String _xmlnamespace = null;
-    private Class _decType = Object.class;
-    private int _decCode = JavaTypes.OBJECT;
-    private Class _type = Object.class;
-    private int _code = JavaTypes.OBJECT;
-    private int _xmltype;    
-
-    public XMLFieldMetaData() {        
-    }
+    private boolean _isXMLRootElement = false;
+    private HashMap _fieldMap = new HashMap();
     
-    public XMLFieldMetaData(Class type, String name) {
-        setType(type);
+    /**
+     * Constructor.
+     * 
+     * @param type the class that contains XmlType annotation.
+     * @name  the persistent field name that maps to xml column
+     */
+    public XMLClassMetaData(Class type, String name) {
+        _type = type;
         _name = name;
     }
     
-    public Class getType() {
-        return (_type == null) ? _decType : _type;
-    }
-
-    public void setType(Class type) {
+    /**
+     * Constructor.
+     * 
+     * @param type the class that contains XmlType annotation.
+     */
+    public XMLClassMetaData(Class type) {
         _type = type;
-        if (type != null)
-            setTypeCode(JavaTypes.getTypeCode(type));
     }
 
-    public int getTypeCode() {
-        return (_type == null) ? _decCode : _code;
-    }
-
-    // set JavaTypes code
-    public void setTypeCode(int code) {
-        _code = code;
-    }
-    
     public void setName(String name) {
         _name = name;
     }
     
     public String getName() {
         return _name;
-    }
+    }    
     
     public void setXmlname(String name) {
         _xmlname = name;
     }
     
     public String getXmlname() {
-        return _xmlname;
+        return _isXMLRootElement ? null : _xmlname;
     }
-    
+
     public void setXmlnamespace(String name) {
         // avoid JAXB XML bind default name
         if (!StringUtils.equals(defaultName, name))
@@ -89,34 +78,48 @@ public class XMLFieldMetaData implements XMLMetaData {
     public String getXmlnamespace() {
         return _xmlnamespace;
     }
+
+    public void setXmlRootElement(boolean isXMLRootElement) {
+        _isXMLRootElement = isXMLRootElement;        
+    }
+
+    public boolean isXmlRootElement() {
+        return _isXMLRootElement;
+    }
     
+    public boolean isXmlElement() {
+        return false;
+    }
+    
+    public boolean isXmlAttribute() {
+        return false;
+    }
+    
+    public XMLMetaData getFieldMapping(String name) {
+        return (XMLMetaData) _fieldMap.get(name);
+    }
+    
+    public void setType(Class type) {
+        _type = type;
+    }
+    
+    public Class getType() {
+        return _type;
+    }
+    
+    public int getTypeCode() {
+        return _code;
+    }
+
     public void setXmltype(int type) {
         _xmltype = type;
     }
-    
+
     public int getXmltype() {
         return _xmltype;
     }
     
-    public boolean isXmlRootElement() {
-        return false;
-    }
-    
-    public boolean isXmlElement() {
-        return _xmltype == ELEMENT;
-    }
-    
-    public boolean isXmlAttribute() {
-        return _xmltype == ATTRIBUTE;
-    }
-    
-    public XMLMetaData getFieldMapping(String name) {
-        return null;
-    }
-    
-    public void setXmlRootElement(boolean isXmlRootElement) {
-    }
-
     public void addField(String name, XMLMetaData field) {
+        _fieldMap.put(name, field);
     }
 }

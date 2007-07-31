@@ -144,4 +144,10 @@ public interface MetaDataFactory
      * Add any extension keys used by this instance to the given set.
      */
     public void addFieldExtensionKeys (Collection exts);
+
+    /**
+     * Load XMLClassMetadata for the given class. Loaded
+     * metadata should be added directly to the repository.
+     */
+    public void loadXMLMetaData(FieldMetaData fmd);
 }

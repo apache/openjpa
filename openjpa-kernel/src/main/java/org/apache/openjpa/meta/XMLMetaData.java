@@ -116,4 +116,8 @@ public interface XMLMetaData extends Serializable {
      * @return xmltype
      */
     public int getXmltype();
+    
+    public void setXmlRootElement(boolean isXmlRootElement);
+    
+    public void addField(String name, XMLMetaData field);
 }

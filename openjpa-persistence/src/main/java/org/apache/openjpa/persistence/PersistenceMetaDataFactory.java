@@ -56,6 +56,7 @@ import org.apache.openjpa.meta.MetaDataDefaults;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
+import org.apache.openjpa.meta.XMLMetaData;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.MetaDataException;
 
@@ -75,6 +76,7 @@ public class PersistenceMetaDataFactory
     private final PersistenceMetaDataDefaults _def = 
         new PersistenceMetaDataDefaults();
     private AnnotationPersistenceMetaDataParser _annoParser = null;
+    private AnnotationPersistenceXMLMetaDataParser _annoXMLParser = null;
     private XMLPersistenceMetaDataParser _xmlParser = null;
     private Map<URL, Set> _xml = null; // xml rsrc -> class names
     private Set<URL> _unparsed = null; // xml rsrc
@@ -466,5 +468,43 @@ public class PersistenceMetaDataFactory
 
     public void setInto(Options opts) {
         opts.keySet().retainAll(opts.setInto(_def).keySet());
+    }
+
+    /**
+     * Return JAXB XML annotation parser, 
+     * creating it if it does not already exist.
+     */
+    public AnnotationPersistenceXMLMetaDataParser getXMLAnnotationParser() {
+        if (_annoXMLParser == null) {
+            _annoXMLParser = newXMLAnnotationParser();
+            _annoXMLParser.setRepository(repos);
+        }
+        return _annoXMLParser;
+    }
+
+    /**
+     * Set the JAXB XML annotation parser.
+     */
+    public void setXMLAnnotationParser(
+        AnnotationPersistenceXMLMetaDataParser parser) {
+        if (_annoXMLParser != null)
+            _annoXMLParser.setRepository(null);
+        if (parser != null)
+            parser.setRepository(repos);
+        _annoXMLParser = parser;
+    }
+
+    /**
+     * Create a new JAXB XML annotation parser.
+     */
+    protected AnnotationPersistenceXMLMetaDataParser newXMLAnnotationParser() {
+        return new AnnotationPersistenceXMLMetaDataParser
+            (repos.getConfiguration());
+    }
+
+    public void loadXMLMetaData(FieldMetaData fmd) {
+        AnnotationPersistenceXMLMetaDataParser parser
+            = getXMLAnnotationParser();
+        parser.parse(fmd);
     }
 }

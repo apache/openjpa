@@ -117,6 +117,10 @@ public class MetaDataRepository
     // map of classes to lists of their subclasses
     private final Map _subs = Collections.synchronizedMap(new HashMap());
 
+    // xml mapping
+    protected final XMLMetaData[] EMPTY_XMLMETAS;
+    private final Map _xmlmetas = new HashMap();
+
     private transient OpenJPAConfiguration _conf = null;
     private transient Log _log = null;
     private transient InterfaceImplGenerator _implGen = null;
@@ -148,6 +152,7 @@ public class MetaDataRepository
         EMPTY_METAS = newClassMetaDataArray(0);
         EMPTY_FIELDS = newFieldMetaDataArray(0);
         EMPTY_ORDERS = newOrderArray(0);
+        EMPTY_XMLMETAS = newXMLClassMetaDataArray(0);
     }
 
     /**
@@ -783,6 +788,13 @@ public class MetaDataRepository
      */
     protected FieldMetaData[] newFieldMetaDataArray(int length) {
         return new FieldMetaData[length];
+    }
+
+    /**
+     * Create a new array of the proper xml class metadata subclass.
+     */
+    protected XMLMetaData[] newXMLClassMetaDataArray(int length) {
+        return new XMLClassMetaData[length];
     }
 
     /**
@@ -1861,9 +1873,67 @@ public class MetaDataRepository
     /**
      * Return XML metadata for a given field metadata
      * @param fmd
-     * @return null
+     * @return XML metadata
      */
-    public XMLMetaData getXMLMetaData(FieldMetaData fmd) {
-        return null;
+    public synchronized XMLMetaData getXMLMetaData(FieldMetaData fmd) {
+        Class cls = fmd.getDeclaredType();
+        // check if cached before
+        XMLMetaData xmlmeta = (XMLClassMetaData) _xmlmetas.get(cls);
+        if (xmlmeta != null)
+            return xmlmeta;
+        
+        // load JAXB XML metadata
+        _factory.loadXMLMetaData(fmd);
+        
+        xmlmeta = (XMLClassMetaData) _xmlmetas.get(cls);
+
+        return xmlmeta;
+    }
+
+    /**
+     * Create a new metadata, populate it with default information, add it to
+     * the repository, and return it.
+     *
+     * @param access the access type to use in populating metadata
+     */
+    public XMLClassMetaData addXMLMetaData(Class type, String name) {
+        XMLClassMetaData meta = newXMLClassMetaData(type, name);
+        
+        // synchronize on this rather than the map, because all other methods
+        // that access _xmlmetas are synchronized on this
+        synchronized (this) {
+            _xmlmetas.put(type, meta);
+        }
+        return meta;
+    }
+
+    /**
+     * Return the cached XMLClassMetaData for the given class
+     * Return null if none.
+     */
+    public XMLMetaData getCachedXMLMetaData(Class cls) {
+        return (XMLMetaData) _xmlmetas.get(cls);
+    }
+    
+    /**
+     * Create a new xml class metadata
+     * @param type
+     * @param name
+     * @return a XMLClassMetaData
+     */
+    protected XMLClassMetaData newXMLClassMetaData(Class type, String name) {
+        return new XMLClassMetaData(type, name);
+    }
+    
+    /**
+     * Create a new xml field meta, add it to the fieldMap in the given 
+     *     xml class metadata
+     * @param type
+     * @param name
+     * @param meta
+     * @return a XMLFieldMetaData
+     */
+    public XMLFieldMetaData newXMLFieldMetaData(Class type, String name) {
+        return new XMLFieldMetaData(type, name);
     }
 }

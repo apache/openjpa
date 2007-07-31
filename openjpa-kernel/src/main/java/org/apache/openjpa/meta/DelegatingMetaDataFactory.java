@@ -122,4 +122,8 @@ public class DelegatingMetaDataFactory
     public void addFieldExtensionKeys(Collection exts) {
         _delegate.addFieldExtensionKeys(exts);
     }
+
+    public void loadXMLMetaData(FieldMetaData fmd) {
+        _delegate.loadXMLMetaData(fmd);
+    }
 }
