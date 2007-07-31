@@ -991,8 +991,10 @@ public class AnnotationPersistenceMappingParser
         if (!cols.isEmpty() && cols.size() != 1)
             throw new MetaDataException(_loc.get("num-cols-mismatch", fm,
                 String.valueOf(cols.size()), "1"));
-        if (cols.isEmpty())
+        if (cols.isEmpty()) {
             cols = Arrays.asList(new Column[]{ new Column() });
+            fm.getValueInfo().setColumns(cols);
+        }
 
         Column col = (Column) cols.get(0);
         switch (anno.value()) {
