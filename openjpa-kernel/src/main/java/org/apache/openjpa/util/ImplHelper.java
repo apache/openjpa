@@ -39,7 +39,6 @@ import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.UUIDGenerator;
-import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -244,7 +243,8 @@ public class ImplHelper {
         Boolean isAssignable = null;
         Map assignableTo = (Map) _assignableTypes.get(from);
         if (assignableTo == null) { // "to" cache doesn't exist, so create it...
-            assignableTo = new ConcurrentHashMap();
+            assignableTo = new ConcurrentReferenceHashMap(ReferenceMap.WEAK,
+                    ReferenceMap.HARD);
             _assignableTypes.put(from, assignableTo);
         } else { // "to" cache exists...
             isAssignable = (Boolean) assignableTo.get(to);

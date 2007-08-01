@@ -203,6 +203,23 @@ public class PCRegistry {
     }
 
     /**
+     * De-Register all metadata associated with the given ClassLoader. 
+     * Allows ClassLoaders to be garbage collected.
+     *
+     * @param cl the ClassLoader
+     */
+    public static void deRegister(ClassLoader cl) {
+        synchronized (_metas) {
+            for (Iterator i = _metas.keySet().iterator(); i.hasNext();) {
+                Class pcClass = (Class) i.next();
+                if (pcClass.getClassLoader() == cl) {
+                    _metas.remove(pcClass);
+                }
+            }
+        }
+    }
+    
+    /**
      * Returns a collection of class objects of the registered
      * persistence-capable classes.
      */
