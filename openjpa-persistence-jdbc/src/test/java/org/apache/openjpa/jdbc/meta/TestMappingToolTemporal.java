@@ -21,51 +21,49 @@ package org.apache.openjpa.jdbc.meta;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import javax.persistence.EntityManager;
-
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.simple.TemporalFieldTypes;
-import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
-public class TestMappingToolTemporal extends SQLListenerTestCase {
+public class TestMappingToolTemporal extends SingleEMTestCase {
 
     public void setUp() {
-        setUp(CLEAR_TABLES, TemporalFieldTypes.class);
+        setUp(TemporalFieldTypes.class);
     }
 
     public void testMappingToolTemporal() throws IOException, SQLException {
+        ClassMapping mapping = (ClassMapping) OpenJPAPersistence.cast(emf)
+                .getConfiguration().getMetaDataRepositoryInstance()
+                .getMetaData("TemporalFieldTypes", getClass().getClassLoader(),
+                        true);
 
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        em.persist(new TemporalFieldTypes());
-        em.getTransaction().commit();
-        em.close();
+        assertEquals(java.sql.Types.TIMESTAMP, mapping.getFieldMapping(
+                "dateDefaultField").getValueMapping().getColumns()[0].getType());
 
-        // first check to see if we issued any create table statements at
-        // all; if not, then the table has already been created in the
-        // database, so the subsequent validation of the column types
-        // will fail simply because the table creation isn't happening
-        try {
-            assertSQL("CREATE TABLE TemporalFieldTypes .*");
-        } catch (Throwable t) {
-            return;
-        }
+        assertEquals(java.sql.Types.DATE, mapping.getFieldMapping(
+                "dateDateField").getValueMapping().getColumns()[0].getType());
 
-        assertSQL("CREATE TABLE TemporalFieldTypes "
-                + "(.*dateDefaultField TIMESTAMP.*)");
-        assertSQL("CREATE TABLE TemporalFieldTypes "
-                + "(.*dateDateField DATE.*)");
-        assertSQL("CREATE TABLE TemporalFieldTypes "
-                + "(.*dateTimeField TIME.*)");
-        assertSQL("CREATE TABLE TemporalFieldTypes "
-                + "(.*dateTimestampField TIMESTAMP.*)");
+        assertEquals(java.sql.Types.TIME, mapping.getFieldMapping(
+                "dateTimeField").getValueMapping().getColumns()[0].getType());
 
-        assertSQL("CREATE TABLE TemporalFieldTypes "
-                + "(.*calendarDefaultField TIMESTAMP.*)");
-        assertSQL("CREATE TABLE TemporalFieldTypes "
-                + "(.*calendarDateField DATE.*)");
-        assertSQL("CREATE TABLE TemporalFieldTypes "
-                + "(.*calendarTimeField TIME.*)");
-        assertSQL("CREATE TABLE TemporalFieldTypes "
-                + "(.*calendarTimestampField TIMESTAMP.*)");
+        assertEquals(java.sql.Types.TIMESTAMP, mapping.getFieldMapping(
+                "dateTimestampField").getValueMapping().getColumns()[0]
+                .getType());
+
+        assertEquals(java.sql.Types.TIMESTAMP, mapping.getFieldMapping(
+                "calendarDefaultField").getValueMapping().getColumns()[0]
+                .getType());
+
+        assertEquals(java.sql.Types.DATE, mapping.getFieldMapping(
+                "calendarDateField").getValueMapping().getColumns()[0]
+                .getType());
+
+        assertEquals(java.sql.Types.TIME, mapping.getFieldMapping(
+                "calendarTimeField").getValueMapping().getColumns()[0]
+                .getType());
+
+        assertEquals(java.sql.Types.TIMESTAMP, mapping.getFieldMapping(
+                "calendarTimestampField").getValueMapping().getColumns()[0]
+                .getType());
     }
 }
