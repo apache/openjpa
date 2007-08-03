@@ -164,7 +164,8 @@ public class ProductDerivations {
 
     /**
      * Apply {@link ProductDerivation#beforeConfigurationConstruct} callbacks
-     * to the the given instance. Exceptions are swallowed.
+     * to the the given instance. Exceptions other than fatal
+     * {@link BootstrapException} are swallowed.
      */
     public static void beforeConfigurationConstruct(ConfigurationProvider cp) {
         for (int i = 0; i < _derivations.length; i++) {
@@ -182,7 +183,8 @@ public class ProductDerivations {
 
     /**
      * Apply {@link ProductDerivation#beforeConfigurationLoad} callbacks
-     * to the the given instance. Exceptions are swallowed.
+     * to the the given instance. Exceptions other than fatal
+     * {@link BootstrapException} are swallowed.
      */
     public static void beforeConfigurationLoad(Configuration conf) {
         for (int i = 0; i < _derivations.length; i++) {
@@ -200,12 +202,16 @@ public class ProductDerivations {
 
     /**
      * Apply {@link ProductDerivation#afterSpecificationSet} callbacks
-     * to the the given instance. Exceptions are swallowed.
+     * to the the given instance. Exceptions other than fatal
+     * {@link BootstrapException} are swallowed.
      */
     public static void afterSpecificationSet(Configuration conf) {
         for (int i = 0; i < _derivations.length; i++) {
             try {
                 _derivations[i].afterSpecificationSet(conf);
+            } catch (BootstrapException be) {
+            	if (be.isFatal())
+            		throw be;
             } catch (Exception e) {
                 // logging not configured yet
                 e.printStackTrace();
