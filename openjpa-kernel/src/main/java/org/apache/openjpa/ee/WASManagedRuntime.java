@@ -59,9 +59,10 @@ import serp.bytecode.Project;
  * WASManagedRuntime provides the wrapper classes needed to interact with the
  * WAS proprietary interface and the OpenJPA kernel.
  *
- * @author Michael Dick, Kevin Sutter
+ * @author Kevin Sutter
  */
-public class WASManagedRuntime implements ManagedRuntime, Configurable {
+public class WASManagedRuntime extends AbstractManagedRuntime
+        implements ManagedRuntime, Configurable {
 
     private static final Localizer _loc =
         Localizer.forPackage(WASManagedRuntime.class);

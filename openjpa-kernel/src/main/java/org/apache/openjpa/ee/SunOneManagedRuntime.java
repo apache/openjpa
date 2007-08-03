@@ -26,7 +26,7 @@ import javax.transaction.TransactionManager;
  *
  * @author Marc Prud'hommeaux
  */
-public class SunOneManagedRuntime
+public class SunOneManagedRuntime extends AbstractManagedRuntime
     implements ManagedRuntime {
 
     private Method _switchMeth;

@@ -26,6 +26,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
 
+import org.apache.openjpa.ee.AbstractManagedRuntime;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InternalException;
@@ -40,7 +41,7 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  */
-class LocalManagedRuntime
+class LocalManagedRuntime extends AbstractManagedRuntime
     implements ManagedRuntime, TransactionManager, Transaction {
 
     private static final Localizer _loc = Localizer.forPackage

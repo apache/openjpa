@@ -28,7 +28,7 @@ import javax.transaction.TransactionManager;
  *
  * @author Abe White
  */
-public class JNDIManagedRuntime
+public class JNDIManagedRuntime extends AbstractManagedRuntime
     implements ManagedRuntime {
 
     private String _tmLoc = "java:/TransactionManager";

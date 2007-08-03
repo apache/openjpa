@@ -34,7 +34,7 @@ import org.apache.openjpa.lib.conf.Configuration;
  *
  * @author Marc Prud'hommeaux
  */
-public class InvocationManagedRuntime
+public class InvocationManagedRuntime extends AbstractManagedRuntime
     implements ManagedRuntime, Configurable {
 
     private String _methodName = null;

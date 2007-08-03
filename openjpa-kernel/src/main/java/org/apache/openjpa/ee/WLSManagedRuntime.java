@@ -28,7 +28,7 @@ import javax.transaction.TransactionManager;
  *
  * @author Arunabh Hazarika, Patrick Linskey
  */
-public class WLSManagedRuntime
+public class WLSManagedRuntime extends AbstractManagedRuntime
     implements ManagedRuntime {
 
     private final Method _txHelperMeth;

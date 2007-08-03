@@ -20,6 +20,8 @@ package org.apache.openjpa.ee;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
 import org.apache.openjpa.lib.conf.Configurable;
@@ -47,7 +49,7 @@ import org.apache.openjpa.util.InvalidStateException;
  *
  * @author Marc Prud'hommeaux
  */
-public class AutomaticManagedRuntime
+public class AutomaticManagedRuntime extends AbstractManagedRuntime
     implements ManagedRuntime, Configurable {
 
     private static final String [] JNDI_LOCS = new String []{
@@ -242,6 +244,16 @@ public class AutomaticManagedRuntime
         if (_runtime != null)
             return _runtime.getRollbackCause();
 
+        return null;
+    }
+    
+    public Object getTransactionKey() throws Exception, SystemException {
+        if(_runtime == null) 
+            getTransactionManager();
+        
+        if(_runtime != null )
+            return _runtime.getTransactionKey();
+        
         return null;
     }
 }

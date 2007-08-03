@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.ee;
 
+import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
 /**
@@ -56,4 +57,13 @@ public interface ManagedRuntime {
      */
     public Throwable getRollbackCause()
         throws Exception;
+
+    /**
+     * Returns a transaction key that can be used to associate transactions
+     * and Brokers.
+     * @return the transaction key
+     */
+    public Object getTransactionKey()
+        throws Exception, SystemException;
+    
 }

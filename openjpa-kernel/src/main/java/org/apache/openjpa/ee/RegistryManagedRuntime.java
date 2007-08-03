@@ -45,7 +45,7 @@ public class RegistryManagedRuntime
 
     private String _registryName =
         "java:comp/TransactionSynchronizationRegistry";
-    private TransactionManager _tm = null;
+    private TransactionManagerRegistryFacade _tm = null;
 
     /**
      * Return the cached TransactionManager instance.
@@ -82,6 +82,10 @@ public class RegistryManagedRuntime
 
     public String getRegistryName() {
         return _registryName;
+    }
+
+    public Object getTransactionKey() throws Exception, SystemException {
+        return _tm.getTransactionKey();
     }
 
     /** 
@@ -124,6 +128,10 @@ public class RegistryManagedRuntime
         public int getStatus()
             throws SystemException {
             return _registry.getTransactionStatus();
+        }
+
+        public Object getTransactionKey() {
+            return _registry.getTransactionKey();
         }
 
         //////////////////////////////

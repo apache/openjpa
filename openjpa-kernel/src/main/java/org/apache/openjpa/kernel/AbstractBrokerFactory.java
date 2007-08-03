@@ -38,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAVersion;
 import org.apache.openjpa.datacache.DataCacheStoreManager;
+import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.RemoteCommitEventManager;
@@ -526,9 +527,12 @@ public abstract class AbstractBrokerFactory
      */
     protected BrokerImpl findTransactionalBroker(String user, String pass) {
         Transaction trans;
+        ManagedRuntime mr = _conf.getManagedRuntimeInstance();
+        Object txKey;
         try {
-            trans = _conf.getManagedRuntimeInstance().getTransactionManager().
+            trans = mr.getTransactionManager().
                 getTransaction();
+            txKey = mr.getTransactionKey();
 
             if (trans == null
                 || trans.getStatus() == Status.STATUS_NO_TRANSACTION
@@ -540,7 +544,7 @@ public abstract class AbstractBrokerFactory
             throw new GeneralException(e);
         }
 
-        Collection brokers = (Collection) _transactional.get(trans);
+        Collection brokers = (Collection) _transactional.get(txKey);
         if (brokers != null) {
             // we don't need to synchronize on brokers since one JTA transaction
             // can never be active on multiple concurrent threads.
@@ -703,8 +707,8 @@ public abstract class AbstractBrokerFactory
     boolean syncWithManagedTransaction(BrokerImpl broker, boolean begin) {
         Transaction trans;
         try {
-            TransactionManager tm = broker.getManagedRuntime().
-                getTransactionManager();
+            ManagedRuntime mr = broker.getManagedRuntime();
+            TransactionManager tm = mr.getTransactionManager();
             trans = tm.getTransaction();
             if (trans != null
                 && (trans.getStatus() == Status.STATUS_NO_TRANSACTION
@@ -723,11 +727,13 @@ public abstract class AbstractBrokerFactory
             // we don't need to synchronize on brokers or guard against multiple
             // threads using the same trans since one JTA transaction can never
             // be active on multiple concurrent threads.
-            Collection brokers = (Collection) _transactional.get(trans);
+            Object txKey = mr.getTransactionKey();
+            Collection brokers = (Collection) _transactional.get(txKey);
+            
             if (brokers == null) {
                 brokers = new ArrayList(2);
-                _transactional.put(trans, brokers);
-                trans.registerSynchronization(new RemoveTransactionSync(trans));
+                _transactional.put(txKey, brokers);
+                trans.registerSynchronization(new RemoveTransactionSync(txKey));
             }
             brokers.add(broker);
             
@@ -754,9 +760,9 @@ public abstract class AbstractBrokerFactory
     private class RemoveTransactionSync
         implements Synchronization {
 
-        private final Transaction _trans;
+        private final Object _trans;
 
-        public RemoveTransactionSync(Transaction trans) {
+        public RemoveTransactionSync(Object trans) {
             _trans = trans;
         }
 
