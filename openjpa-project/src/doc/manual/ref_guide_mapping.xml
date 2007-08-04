@@ -294,7 +294,7 @@ schemaAction</literal> to <literal>drop</literal>.
 	                </secondary>
     	        </indexterm>
 <programlisting>
-java org.apache.openjpa.jdbc.meta.MappingTool -sa add,deleteTableContents
+java org.apache.openjpa.jdbc.meta.MappingTool -schemaAction add,deleteTableContents
 </programlisting>
             </example>
             <example id="ref_guide_mapping_mappingtool_dropschema">
@@ -302,7 +302,7 @@ java org.apache.openjpa.jdbc.meta.MappingTool -sa add,deleteTableContents
                     Dropping Mappings and Association Schema
                 </title>
 <programlisting>
-java org.apache.openjpa.jdbc.meta.MappingTool -sa drop Magazine.java
+java org.apache.openjpa.jdbc.meta.MappingTool -schemaAction drop Magazine.java
 </programlisting>
             </example>
         </section>
@@ -339,7 +339,7 @@ This example uses your existing mappings to determine the needed schema, then
 writes the SQL to create that schema to <filename>create.sql</filename>.
                 </para>
 <programlisting>
-java org.apache.openjpa.jdbc.meta.MappingTool -sa build -sql create.sql Magazine.java
+java org.apache.openjpa.jdbc.meta.MappingTool -schemaAction build -sql create.sql Magazine.java
 </programlisting>
             </example>
             <example id="ref_guid_mapping_ddl_part_ddl">
@@ -409,7 +409,7 @@ correspond go the long versions of the tool's command line flags.
 The setting above corresponds to running the following command:
                 </para>
 <programlisting>
-java org.apache.openjpa.jdbc.meta.MappingTool -a buildSchema -fk true
+java org.apache.openjpa.jdbc.meta.MappingTool -action buildSchema -foreignKeys true
 </programlisting>
             </example>
         </section>
@@ -938,7 +938,7 @@ when your mappings are incorrect.
                 Validating Mappings
             </title>
 <programlisting>
-java org.apache.openjpa.jdbc.meta.MappingTool -a validate Magazine.java
+java org.apache.openjpa.jdbc.meta.MappingTool -action validate Magazine.java
 </programlisting>
         </example>
         <para>
