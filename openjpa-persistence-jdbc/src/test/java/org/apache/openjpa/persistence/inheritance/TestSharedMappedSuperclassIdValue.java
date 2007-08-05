@@ -33,15 +33,16 @@ public class TestSharedMappedSuperclassIdValue
     extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(MappedSuperclassBase.class, MappedSuperclassL2.class,
-            EntityL3.class, EntityL3Sibling.class);
+        setUp(CLEAR_TABLES, NoGenMappedSuperclassBase.class, 
+                NoGenMappedSuperclassL2.class, NoGenEntityL3.class, 
+                NoGenEntityL3Sibling.class);
 
-        EntityL3 ent = new EntityL3();
-        ent.setId(1);
+        NoGenEntityL3 ent = new NoGenEntityL3();
+        ent.setId(1L);
         ent.setL2Data(99); 
         ent.setL3Data(100);
-        EntityL3Sibling sib = new EntityL3Sibling();
-        sib.setId(1);
+        NoGenEntityL3Sibling sib = new NoGenEntityL3Sibling();
+        sib.setId(1L);
         sib.setL2Data(100); 
         sib.setSiblingL3Data(101);
 
@@ -55,12 +56,12 @@ public class TestSharedMappedSuperclassIdValue
 
     public void testFind() {
         EntityManager em = emf.createEntityManager();
-        EntityL3 ent = em.find(EntityL3.class, 1L);
+        NoGenEntityL3 ent = em.find(NoGenEntityL3.class, 1L);
         assertNotNull(ent);
         assertEquals(99, ent.getL2Data());
         assertEquals(100, ent.getL3Data());
 
-        EntityL3Sibling sib = em.find(EntityL3Sibling.class, 1L);
+        NoGenEntityL3Sibling sib = em.find(NoGenEntityL3Sibling.class, 1L);
         assertNotNull(sib);
         assertEquals(100, sib.getL2Data());
         assertEquals(101, sib.getSiblingL3Data());
@@ -70,10 +71,10 @@ public class TestSharedMappedSuperclassIdValue
 
     public void testGetReference() {
         EntityManager em = emf.createEntityManager();
-        EntityL3 ent = em.getReference(EntityL3.class, 1L);
+        NoGenEntityL3 ent = em.getReference(NoGenEntityL3.class, 1L);
         assertNotNull(ent);
 
-        EntityL3Sibling sib = em.getReference(EntityL3Sibling.class, 1L);
+        NoGenEntityL3Sibling sib = em.getReference(NoGenEntityL3Sibling.class, 1L);
         assertNotNull(sib);
 
         assertEquals(99, ent.getL2Data());

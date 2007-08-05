@@ -574,10 +574,15 @@ public class StateManagerImpl
             return assign && assignObjectId(!preFlushing, preFlushing);
         }
 
-        // don't assign values to fields with non-default values already
-        if (fmd.getValueStrategy() == ValueStrategies.NONE
-            || !isDefaultValue(field))
+        // Just return if there's no value generation strategy
+        if (fmd.getValueStrategy() == ValueStrategies.NONE)
             return false;
+        
+        // Throw exception if field already has a value assigned.
+        // @GeneratedValue overrides POJO initial values and setter methods
+        if (!isDefaultValue(field) && !fmd.is_generated())
+            throw new InvalidStateException(_loc.get(
+                    "existing-value-override-excep", fmd.getFullName(false)));
 
         // for primary key fields, assign the object id and recache so that
         // to the user, so it looks like the oid always matches the pk fields
@@ -585,8 +590,10 @@ public class StateManagerImpl
             return assignObjectId(!preFlushing, preFlushing);
 
         // for other fields just assign the field or flush if needed
-        if (_broker.getStoreManager().assignField(this, field, preFlushing))
+        if (_broker.getStoreManager().assignField(this, field, preFlushing)) {
+            fmd.set_generated(true);
             return true;
+        }
         if (!preFlushing)
             _broker.flush();
         return !preFlushing;

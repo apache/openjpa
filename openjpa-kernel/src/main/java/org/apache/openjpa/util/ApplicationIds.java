@@ -30,6 +30,7 @@ import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.ObjectIdStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -49,6 +50,8 @@ public class ApplicationIds {
 
     private static final Localizer _loc = Localizer.forPackage
         (ApplicationIds.class);
+    private static final Localizer _loc2 = Localizer.forPackage
+        (StateManagerImpl.class);
 
     /**
      * Return the primary key values for the given object id. The values
@@ -430,15 +433,25 @@ public class ApplicationIds {
     }
 
     /**
-     * Assign generated values to given fields.
+     * Assign generated values to given primary key fields.
      */
     private static boolean assign(OpenJPAStateManager sm, StoreManager store,
         FieldMetaData[] pks, boolean preFlush) {
         for (int i = 0; i < pks.length; i++)
-            if (pks[i].getValueStrategy() != ValueStrategies.NONE
-                && sm.isDefaultValue(pks[i].getIndex())
-                && !store.assignField(sm, pks[i].getIndex(), preFlush))
-                return false;
+            // If we are generating values...
+            if (pks[i].getValueStrategy() != ValueStrategies.NONE) {
+                // If a value already exists on this field, throw exception.
+                // This is considered an application coding error.
+                if (!sm.isDefaultValue(pks[i].getIndex()))
+                    throw new InvalidStateException(_loc2.get(
+                            "existing-value-override-excep", pks[i]
+                                    .getFullName(false)));
+                // Assign the generated value
+                if (store.assignField(sm, pks[i].getIndex(), preFlush))
+                    pks[i].set_generated(true);
+                else
+                    return false;
+            }
         return true;
     }
 
