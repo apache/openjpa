@@ -18,16 +18,24 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Entity;
+import javax.persistence.Version;
 
 import org.apache.openjpa.persistence.PersistentCollection;
 
 @Entity
 public class AllFieldTypes {
-
+    
+    public static enum EnumType {Value1, Value2};
+    
+    // @Basic types
     private short shortField;
     private int intField;
     private boolean booleanField;
@@ -36,8 +44,30 @@ public class AllFieldTypes {
     private char charField;
     private double doubleField;
     private byte byteField;
+    private Short wShortField;
+    private Integer wIntegerField;
+    private Boolean wBooleanField;
+    private Long wLongField;
+    private Float wFloatField;
+    private Character wCharacterField;
+    private Double wDoubleField;
+    private Byte wByteField;
+    private BigInteger bigIntegerField;
+    private BigDecimal bigDecimalField;
     private String stringField;
     private Date dateField;
+    private Calendar calendarField;
+    private java.sql.Date sqlDateField;
+    private java.sql.Time sqlTimeField;
+    private java.sql.Timestamp sqlTimestampField;
+    private byte[] byteLob;
+    private Byte[] wByteLob;
+    private char[] charLob;
+    private Character[] wCharacterLob;
+    private EnumType enumField;
+    private Serializable serializableField;
+    
+    // Additional types
     private Set<String> setOfStrings = new HashSet<String>();
     private String[] arrayOfStrings;
 
@@ -147,5 +177,166 @@ public class AllFieldTypes {
     public int[] getArrayOfInts() {
         return arrayOfInts;
     }
+
+    public BigDecimal getBigDecimalField() {
+        return bigDecimalField;
+    }
+
+    public void setBigDecimalField(BigDecimal bigDecimalField) {
+        this.bigDecimalField = bigDecimalField;
+    }
+
+    public BigInteger getBigIntegerField() {
+        return bigIntegerField;
+    }
+
+    public void setBigIntegerField(BigInteger bigIntegerField) {
+        this.bigIntegerField = bigIntegerField;
+    }
+
+    public byte[] getByteLob() {
+        return byteLob;
+    }
+
+    public void setByteLob(byte[] byteLob) {
+        this.byteLob = byteLob;
+    }
+
+    public Calendar getCalendarField() {
+        return calendarField;
+    }
+
+    public void setCalendarField(Calendar calendarField) {
+        this.calendarField = calendarField;
+    }
+
+    public char[] getCharLob() {
+        return charLob;
+    }
+
+    public void setCharLob(char[] charLob) {
+        this.charLob = charLob;
+    }
+
+    public EnumType getEnumField() {
+        return enumField;
+    }
+
+    public void setEnumField(EnumType enumField) {
+        this.enumField = enumField;
+    }
+
+    public Serializable getSerializableField() {
+        return serializableField;
+    }
+
+    public void setSerializableField(Serializable serializableField) {
+        this.serializableField = serializableField;
+    }
+
+    public java.sql.Date getSqlDateField() {
+        return sqlDateField;
+    }
+
+    public void setSqlDateField(java.sql.Date sqlDateField) {
+        this.sqlDateField = sqlDateField;
+    }
+
+    public java.sql.Time getSqlTimeField() {
+        return sqlTimeField;
+    }
+
+    public void setSqlTimeField(java.sql.Time sqlTimeField) {
+        this.sqlTimeField = sqlTimeField;
+    }
+
+    public java.sql.Timestamp getSqlTimestampField() {
+        return sqlTimestampField;
+    }
+
+    public void setSqlTimestampField(java.sql.Timestamp sqlTimestampField) {
+        this.sqlTimestampField = sqlTimestampField;
+    }
+
+    public Boolean getWBooleanField() {
+        return wBooleanField;
+    }
+
+    public void setWBooleanField(Boolean booleanField) {
+        wBooleanField = booleanField;
+    }
+
+    public Byte getWByteField() {
+        return wByteField;
+    }
+
+    public void setWByteField(Byte byteField) {
+        wByteField = byteField;
+    }
+
+    public Byte[] getWByteLob() {
+        return wByteLob;
+    }
+
+    public void setWByteLob(Byte[] byteLob) {
+        wByteLob = byteLob;
+    }
+
+    public Character getWCharacterField() {
+        return wCharacterField;
+    }
+
+    public void setWCharacterField(Character characterField) {
+        wCharacterField = characterField;
+    }
+
+    public Character[] getWCharacterLob() {
+        return wCharacterLob;
+    }
+
+    public void setWCharacterLob(Character[] characterLob) {
+        wCharacterLob = characterLob;
+    }
+
+    public Double getWDoubleField() {
+        return wDoubleField;
+    }
+
+    public void setWDoubleField(Double doubleField) {
+        wDoubleField = doubleField;
+    }
+
+    public Float getWFloatField() {
+        return wFloatField;
+    }
+
+    public void setWFloatField(Float floatField) {
+        wFloatField = floatField;
+    }
+
+    public Integer getWIntegerField() {
+        return wIntegerField;
+    }
+
+    public void setWIntegerField(Integer integerField) {
+        wIntegerField = integerField;
+    }
+
+    public Long getWLongField() {
+        return wLongField;
+    }
+
+    public void setWLongField(Long longField) {
+        wLongField = longField;
+    }
+
+    public Short getWShortField() {
+        return wShortField;
+    }
+
+    public void setWShortField(Short shortField) {
+        wShortField = shortField;
+    }
+
 }
 

@@ -483,7 +483,8 @@ public class FieldMapping
         _val.resolve(MODE_MAPPING_INIT);
         _key.resolve(MODE_MAPPING_INIT);
         _val.resolve(MODE_MAPPING_INIT);
-        _strategy.initialize();
+        if (_strategy != null)
+            _strategy.initialize();
     }
 
     public void copy(FieldMetaData fmd) {

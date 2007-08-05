@@ -22,6 +22,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -170,6 +171,10 @@ public class FieldMetaData
     private String _extString = null;
     private Map _extValues = Collections.EMPTY_MAP;
     private Map _fieldValues = Collections.EMPTY_MAP;
+    private Boolean _enumField = null;
+    private Boolean _lobField = null;
+    private Boolean _serializableField = null;
+    private boolean _generated = false;
 
     // Members aren't serializable. Use a proxy that can provide a Member
     // to avoid writing the full Externalizable implementation.
@@ -590,7 +595,17 @@ public class FieldMetaData
                 switch (getTypeCode()) {
                     case JavaTypes.OBJECT:
                     case JavaTypes.PC:
+                        if (isSerializable() || isEnum())
+                            _dfg = DFG_TRUE;
+                        else
+                            _dfg = DFG_FALSE;
+                        break;
                     case JavaTypes.ARRAY:
+                        if (isLobArray())
+                            _dfg = DFG_TRUE;
+                        else
+                            _dfg = DFG_FALSE;
+                        break;
                     case JavaTypes.COLLECTION:
                     case JavaTypes.MAP:
                     case JavaTypes.PC_UNTYPED:
@@ -602,6 +617,38 @@ public class FieldMetaData
             }
         }
         return (_dfg & DFG_TRUE) > 0;
+    }
+
+    private boolean isEnum() {
+        if (_enumField == null) {
+            Class dt = getDeclaredType();
+            _enumField = dt.isEnum() ? Boolean.TRUE : Boolean.FALSE;
+        }
+        return _enumField.booleanValue();
+    }
+
+    private boolean isSerializable() {
+        if (_serializableField == null) {
+            Class dt = getDeclaredType();
+            if (Serializable.class.isAssignableFrom(dt))
+                _serializableField = Boolean.TRUE;
+            else
+                _serializableField = Boolean.FALSE;
+        }
+        return _serializableField.booleanValue();
+    }
+
+    private boolean isLobArray() {
+        // check for byte[], Byte[], char[], Character[]
+        if (_lobField == null) {
+            Class dt = getDeclaredType();
+            if (dt == byte[].class || dt == Byte[].class ||
+                dt == char[].class || dt == Character[].class)
+                _lobField = Boolean.TRUE;
+            else
+                _lobField = Boolean.FALSE;
+        }
+        return _lobField.booleanValue();
     }
 
     /**
@@ -1732,6 +1779,10 @@ public class FieldMetaData
         _fieldValues = Collections.EMPTY_MAP;
         _primKey = field.isPrimaryKey();
         _backingMember = field._backingMember;
+        _enumField = field._enumField;
+        _lobField = field._lobField;
+        _serializableField = field._serializableField;
+        _generated = field._generated;
 
         // embedded fields can't be versions
         if (_owner.getEmbeddingMetaData() == null && _version == null)
@@ -1995,5 +2046,13 @@ public class FieldMetaData
             if (!isField)
                 out.writeObject(((Method) _member).getParameterTypes());
         }
+    }
+
+    public boolean is_generated() {
+        return _generated;
+    }
+
+    public void set_generated(boolean _generated) {
+        this._generated = _generated;
     }
 }

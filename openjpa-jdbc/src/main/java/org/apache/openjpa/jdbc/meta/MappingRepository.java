@@ -1009,7 +1009,8 @@ public class MappingRepository
         if (handler instanceof ValueHandler)
             return (ValueHandler) handler;
 
-        if (val.getType() == byte[].class) {
+        if (val.getType() == byte[].class 
+            || val.getType() == Byte[].class) {
             if (_dict.maxEmbeddedBlobSize != -1)
                 warnMaxEmbedded(val, _dict.maxEmbeddedBlobSize);
             return ByteArrayValueHandler.getInstance();

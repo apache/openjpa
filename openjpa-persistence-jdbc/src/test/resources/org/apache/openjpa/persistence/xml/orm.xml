@@ -39,9 +39,18 @@
     </entity>
     <entity name="XmlOverride" class="XmlOverrideEntity">
     	<attributes>
-	    <basic name="name" optional="true"></basic>
-	    <basic name="description" optional="false"></basic>
+	    	<basic name="name" optional="true"></basic>
+	    	<basic name="description" optional="false"></basic>
     	</attributes>
+    </entity>
+    <entity name="AllFieldTypes" 
+        	class="org.apache.openjpa.persistence.simple.AllFieldTypes">
+    	<attributes>
+			<basic name="byteLob" fetch="EAGER"> 
+				<column name="BYTELOB"/>
+				<lob/>
+			</basic>
+		</attributes>
     </entity>
 </entity-mappings>
 
