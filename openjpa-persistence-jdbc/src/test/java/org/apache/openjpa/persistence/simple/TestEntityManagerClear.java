@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import javax.persistence.EntityManager;
-
 import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
@@ -35,6 +33,31 @@ public class TestEntityManagerClear
         setUp(AllFieldTypes.class);
     }
 
+    public void testDetach() {
+        // Create EntityManager and Start a transaction (1)
+        begin();
+
+        // Insert a new object and flush
+        AllFieldTypes testObject1 = new AllFieldTypes();
+        testObject1.setStringField("my test object1");
+        persist(testObject1);
+        em.flush();
+        assertTrue("testObject1 not found in pc", em.contains(testObject1));
+
+        // Insert another object and persist
+        AllFieldTypes testObject2 = new AllFieldTypes();
+        testObject1.setStringField("my test object2");
+        persist(testObject2);
+        assertTrue("testObject2 not found in pc", em.contains(testObject2));
+        
+        // Rollback to clear the PC
+        rollback();
+        
+        assertFalse("testObject1 found in pc", em.contains(testObject1));
+        assertFalse("testObject2 found in pc", em.contains(testObject2));
+        
+    }
+    
     public void testClear() {
         // Create EntityManager and Start a transaction (1)
         begin();
