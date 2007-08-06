@@ -622,7 +622,8 @@ public class FieldMetaData
     private boolean isEnum() {
         if (_enumField == null) {
             Class dt = getDeclaredType();
-            _enumField = dt.isEnum() ? Boolean.TRUE : Boolean.FALSE;
+            _enumField = JavaVersions.isEnumeration(dt)
+                ? Boolean.TRUE : Boolean.FALSE;
         }
         return _enumField.booleanValue();
     }
