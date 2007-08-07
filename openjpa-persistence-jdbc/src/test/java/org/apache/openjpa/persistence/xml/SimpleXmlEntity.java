@@ -20,9 +20,13 @@ package org.apache.openjpa.persistence.xml;
 
 public class SimpleXmlEntity {
 
-    private long id;
+    private String id;
     private int version;
     private String stringField;
+
+    public String getId() {
+        return id;
+    }
 
     public String getStringField() {
         return stringField;

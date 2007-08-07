@@ -28,6 +28,21 @@ public class TestSimpleXmlEntity
         setUp(SimpleXmlEntity.class);
     }
 
+    public void testId() {
+        em.getTransaction().begin();
+        SimpleXmlEntity e = new SimpleXmlEntity();
+        em.persist(e);
+        em.flush();
+        assertNotNull(e.getId());
+        try {
+            Integer.parseInt(e.getId());
+            fail("uuid-based id should not be an integer; was " + e.getId());
+        } catch (NumberFormatException nfe) {
+            // expected
+        }
+        em.getTransaction().rollback();
+    }
+
     public void testNamedQueryInXmlNamedEntity() {
         em.createNamedQuery("SimpleXml.findAll").getResultList();
     }

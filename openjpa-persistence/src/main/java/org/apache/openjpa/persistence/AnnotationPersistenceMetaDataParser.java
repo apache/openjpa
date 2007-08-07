@@ -1110,21 +1110,30 @@ public class AnnotationPersistenceMetaDataParser
      * Sets value generation information for the given field.
      */
     private void parseGeneratedValue(FieldMetaData fmd, GeneratedValue gen) {
-        int strat = getGeneratedValueStrategy(fmd, gen.strategy(),
-            gen.generator());
+        GenerationType strategy = gen.strategy();
+        String generator = gen.generator();
+        parseGeneratedValue(fmd, strategy, generator);
+    }
+
+    /**
+     * Sets value generation information for the given field.
+     */
+    static void parseGeneratedValue(FieldMetaData fmd, GenerationType strategy,
+        String generator) {
+        int strat = getGeneratedValueStrategy(fmd, strategy, generator);
         if (strat != -1)
             fmd.setValueStrategy(strat);
         else {
-            switch (gen.strategy()) {
+            switch (strategy) {
                 case TABLE:
                 case SEQUENCE:
                     // technically we should have separate system table and
                     // sequence generators, but it's easier to just rely on
                     // the system org.apache.openjpa.Sequence setting for both
-                    if (StringUtils.isEmpty(gen.generator()))
+                    if (StringUtils.isEmpty(generator))
                         fmd.setValueSequenceName(SequenceMetaData.NAME_SYSTEM);
                     else
-                        fmd.setValueSequenceName(gen.generator());
+                        fmd.setValueSequenceName(generator);
                     break;
                 case AUTO:
                     fmd.setValueSequenceName(SequenceMetaData.NAME_SYSTEM);
@@ -1133,7 +1142,7 @@ public class AnnotationPersistenceMetaDataParser
                     fmd.setValueStrategy(ValueStrategies.AUTOASSIGN);
                     break;
                 default:
-                    throw new UnsupportedException(gen.strategy().toString());
+                    throw new UnsupportedException(strategy.toString());
             }
         }
     }

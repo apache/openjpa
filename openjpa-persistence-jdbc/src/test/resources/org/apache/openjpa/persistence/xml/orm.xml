@@ -32,7 +32,9 @@
             <query>select o from SimpleXmlEntity o</query>
         </named-query>
         <attributes>
-            <id name="id"/>
+            <id name="id">
+                <generated-value generator="uuid-hex"/>
+            </id>
             <basic name="stringField"/>
             <version name="version"/>
         </attributes>

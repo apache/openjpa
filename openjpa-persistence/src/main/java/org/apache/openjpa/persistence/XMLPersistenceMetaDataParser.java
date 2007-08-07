@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import javax.persistence.CascadeType;
+import javax.persistence.GenerationType;
 import static javax.persistence.CascadeType.*;
 
 import org.apache.commons.lang.StringUtils;
@@ -62,12 +63,9 @@ import org.apache.openjpa.meta.Order;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
-import org.apache.openjpa.meta.ValueStrategies;
 import static org.apache.openjpa.persistence.MetaDataTag.*;
 import static org.apache.openjpa.persistence.PersistenceStrategy.*;
 import org.apache.openjpa.util.ImplHelper;
-import org.apache.openjpa.util.UnsupportedException;
-import serp.util.Strings;
 
 /**
  * Custom SAX parser used by the system to quickly parse persistence i
@@ -992,20 +990,12 @@ public class XMLPersistenceMetaDataParser
 
         String strategy = attrs.getValue("strategy");
         String generator = attrs.getValue("generator");
+        GenerationType type = StringUtils.isEmpty(strategy)
+            ? GenerationType.AUTO : GenerationType.valueOf(strategy);
 
-        // TODO UUID_HEX / UUID_STRING
         FieldMetaData fmd = (FieldMetaData) currentElement();
-        if (StringUtils.isEmpty(strategy) || "AUTO".equals(strategy))
-            fmd.setValueSequenceName(SequenceMetaData.NAME_SYSTEM);
-        else if ("TABLE".equals(strategy) || "SEQUENCE".equals(strategy)) {
-            if (StringUtils.isEmpty(generator))
-                fmd.setValueSequenceName(SequenceMetaData.NAME_SYSTEM);
-            else
-                fmd.setValueSequenceName(generator);
-        } else if ("IDENTITY".equals(strategy))
-            fmd.setValueStrategy(ValueStrategies.AUTOASSIGN);
-        else
-            throw new UnsupportedException(strategy);
+        AnnotationPersistenceMetaDataParser.parseGeneratedValue(fmd, type,
+            generator);
         return true;
     }
 
