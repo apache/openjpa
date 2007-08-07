@@ -67,7 +67,7 @@ public class OpenJPAPersistence
     public static final String EMF_KEY =
         "org.apache.openjpa.persistence.EntityManagerFactory";
 
-    private static Localizer _loc =
+    private static final Localizer _loc =
         Localizer.forPackage(OpenJPAPersistence.class);
 
     
