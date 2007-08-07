@@ -422,8 +422,7 @@ public class ResultSetResult
                     if (col.getType() == Types.BLOB
                         || col.getType() == Types.VARBINARY) {
                         return _dict
-                            .getBlobObject(_rs, ((Number) obj).intValue(),
-                                _store);
+                            .getBlobObject(_rs, col.getIndex(), _store);
                     }
                 }
                 return _dict.getObject(_rs, ((Number) obj).intValue(), null);
@@ -449,7 +448,7 @@ public class ResultSetResult
     protected String getStringInternal(Object obj, Joins joins)
         throws SQLException {
         if (obj instanceof Column && ((Column) obj).getType() == Types.CLOB)
-            return _dict.getClobString(_rs, ((Number) obj).intValue());
+            return _dict.getClobString(_rs, ((Column) obj).getIndex());
         return _dict.getString(_rs, ((Number) obj).intValue());
     }
 

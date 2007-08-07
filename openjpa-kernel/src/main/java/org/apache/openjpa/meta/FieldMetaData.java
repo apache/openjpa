@@ -1564,6 +1564,10 @@ public class FieldMetaData
             getFullName(true));
     }
 
+    public int hashCode() {
+        return getFullName(true).hashCode();
+    }
+
     public int compareTo(Object other) {
         if (other == null)
             return 1;
@@ -2000,7 +2004,7 @@ public class FieldMetaData
         private transient Member _member;
         
         private MemberProvider(Member member) {
-            if (_member instanceof Constructor)
+            if (member instanceof Constructor)
                 throw new IllegalArgumentException();
 
             _member = member;

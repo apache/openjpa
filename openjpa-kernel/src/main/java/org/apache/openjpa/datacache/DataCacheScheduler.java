@@ -50,8 +50,6 @@ public class DataCacheScheduler
     private static final Localizer _loc = Localizer.forPackage
         (DataCacheScheduler.class);
 
-    private static final DateFormat _fom = new SimpleDateFormat("E HH:mm:ss");
-
     private Map _caches = new ConcurrentHashMap();
     private boolean _stop = false;
     private int _interval = 2;
@@ -121,6 +119,7 @@ public class DataCacheScheduler
             _log.trace(_loc.get("scheduler-interval", _interval + ""));
 
         Date lastRun = new Date();
+        DateFormat fom = new SimpleDateFormat("E HH:mm:ss");
         while (!isStopped()) {
             try {
                 Thread.sleep(_interval * 60 * 1000);
@@ -136,7 +135,7 @@ public class DataCacheScheduler
                     if (schedule.matches(lastRun, now)) {
                         if (_log.isTraceEnabled())
                             _log.trace(_loc.get("scheduler-clear",
-                                cache.getName(), _fom.format(now)));
+                                cache.getName(), fom.format(now)));
                         evict(cache);
                     }
                 }
