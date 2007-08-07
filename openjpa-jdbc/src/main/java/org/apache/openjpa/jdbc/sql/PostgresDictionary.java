@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -228,6 +229,15 @@ public class PostgresDictionary
         // postgres actually requires that a boolean be set: it cannot
         // handle a numeric argument.
         stmnt.setBoolean(idx, val);
+    }
+
+    public void setNull(PreparedStatement stmnt, int idx, int colType,
+        Column col)
+        throws SQLException {
+        // OPENJPA-
+        if (colType == Types.BLOB)
+            colType = Types.BINARY;
+        stmnt.setNull(idx, colType);
     }
 
     protected void appendSelectRange(SQLBuffer buf, long start, long end) {
