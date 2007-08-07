@@ -49,6 +49,8 @@ import org.apache.openjpa.persistence.xmlmapping.entities.Customer.CreditRating;
 public class TestXMLCustomerOrder
     extends SQLListenerTestCase {
 
+    private boolean enabled = false;
+
     public void setUp() {
         OpenJPAEntityManagerFactory emf = createEMF();
         DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration())
@@ -57,6 +59,8 @@ public class TestXMLCustomerOrder
         // skip if dictionary has no support for XML column type
         if (!dict.supportsXMLColumn)
             return;
+
+        enabled = true;
 
         setUp(org.apache.openjpa.persistence.xmlmapping.entities.Customer.class
             , org.apache.openjpa.persistence.xmlmapping.entities.Customer
@@ -71,14 +75,14 @@ public class TestXMLCustomerOrder
     }
 
     public void testXMLCustomerOrder() {	
+        // skip if dictionary has no support for XML column type
+        if (!enabled)
+            return;
+
         OpenJPAEntityManager em =
             OpenJPAPersistence.cast(emf.createEntityManager());
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
             .getDBDictionaryInstance();
-
-        // skip if dictionary has no support for XML column type 
-        if (!dict.supportsXMLColumn)
-            return;
 
         String sqllog = TestXMLCustomerOrder.class.getName();
         sqllog = sqllog.replace('.', '/');
