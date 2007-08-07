@@ -34,6 +34,7 @@ import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.*;
 import org.apache.openjpa.persistence.xmlmapping.entities.*;
@@ -49,6 +50,14 @@ public class TestXMLCustomerOrder
     extends SQLListenerTestCase {
 
     public void setUp() {
+        OpenJPAEntityManagerFactory emf = createEMF();
+        DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration())
+            .getDBDictionaryInstance();
+
+        // skip if dictionary has no support for XML column type
+        if (!dict.supportsXMLColumn)
+            return;
+
         setUp(org.apache.openjpa.persistence.xmlmapping.entities.Customer.class
             , org.apache.openjpa.persistence.xmlmapping.entities.Customer
                 .CustomerKey.class
