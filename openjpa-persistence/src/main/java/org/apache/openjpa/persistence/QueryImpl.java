@@ -191,7 +191,13 @@ public class QueryImpl
 
     public OpenJPAQuery setFirstResult(int startPosition) {
         _em.assertNotCloseInvoked();
-        _query.setRange(startPosition, _query.getEndRange());
+        long end;
+        if (_query.getEndRange() == Long.MAX_VALUE)
+            end = Long.MAX_VALUE;
+        else
+            end = startPosition +
+                (_query.getEndRange() - _query.getStartRange());
+        _query.setRange(startPosition, end);
         return this;
     }
 
