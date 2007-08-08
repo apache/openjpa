@@ -37,6 +37,7 @@ import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ClassResolver;
@@ -52,6 +53,9 @@ public class PersistenceProviderImpl
     implements PersistenceProvider {
 
     static final String CLASS_TRANSFORMER_OPTIONS = "ClassTransformerOptions";
+
+    private static final Localizer _loc = Localizer.forPackage(
+        PersistenceProviderImpl.class);
 
     /**
      * Loads the entity manager specified by <code>name</code>, applying
@@ -91,10 +95,16 @@ public class PersistenceProviderImpl
                 return null;
 
             // add enhancer
+            Exception transformerException = null;
             String ctOpts = (String) Configurations.getProperty
                 (CLASS_TRANSFORMER_OPTIONS, pui.getProperties());
-            pui.addTransformer(new ClassTransformerImpl(cp, ctOpts, 
-                pui.getNewTempClassLoader()));
+            try {
+                pui.addTransformer(new ClassTransformerImpl(cp, ctOpts,
+                    pui.getNewTempClassLoader()));
+            } catch (Exception e) {
+                // fail gracefully
+                transformerException = e;
+            }
 
             // if the BrokerImpl hasn't been specified, switch to the
             // non-finalizing one, since anything claiming to be a container
@@ -107,6 +117,11 @@ public class PersistenceProviderImpl
 
             BrokerFactory factory = Bootstrap.newBrokerFactory(cp, 
                 pui.getClassLoader());
+            if (transformerException != null)
+                factory.getConfiguration().getLog(
+                    OpenJPAConfiguration.LOG_RUNTIME).warn(
+                        _loc.get("transformer-registration-error", pui),
+                        transformerException);
             return OpenJPAPersistence.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
