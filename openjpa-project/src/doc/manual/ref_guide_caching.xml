@@ -341,7 +341,7 @@ public void unpinAll(Class cls, Collection oids);
 </programlisting>
             <para>
 Most caches are of limited size. Pinning an identity to the cache ensures that
-the cache will mill not kick the data for the corresponding instance out of the
+the cache will will not kick the data for the corresponding instance out of the
 cache, unless you manually evict it. Note that even after manual eviction, the
 data will get pinned again the next time it is fetched from the store. You can
 only remove a pin and make the data once again available for normal cache
@@ -709,11 +709,11 @@ specification.
                 </listitem>
                 <listitem>
                     <para>
-Invoking <methodname>OpenJPAEntityManager.evict</methodname><emphasis>does not
+Invoking <methodname>OpenJPAEntityManager.evict</methodname><emphasis> does not
 </emphasis> result in the corresponding data being dropped from the data cache,
 unless you have set the proper configuration options as explained above (see
 <xref linkend="ref_guide_cache_pmevict"/>). Other methods related to the
-<classname>EntityManager</classname> cache also do not effect the data cache.
+<classname>EntityManager</classname> cache also do not affect the data cache.
                     </para>
                     <para>
 The data cache assumes that it is up-to-date with respect to the datastore, so
