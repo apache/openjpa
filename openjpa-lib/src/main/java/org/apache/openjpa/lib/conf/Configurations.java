@@ -294,11 +294,13 @@ public class Configurations {
             }
 
             File file = new File(path);
-            if (file.isFile())
+            if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                .isFileAction(file))).booleanValue())
                 provider = ProductDerivations.load(file, anchor, null);
             else {
                 file = new File("META-INF" + File.separatorChar + path);
-                if (file.isFile())
+                if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                    .isFileAction(file))).booleanValue())
                     provider = ProductDerivations.load(file, anchor, null);
                 else
                     provider = ProductDerivations.load(path, anchor, null);

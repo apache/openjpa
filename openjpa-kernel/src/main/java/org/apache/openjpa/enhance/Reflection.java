@@ -192,7 +192,8 @@ public class Reflection {
     private static void makeAccessible(AccessibleObject ao, int mods) {
         try {
             if (!Modifier.isPublic(mods) && !ao.isAccessible())
-                ao.setAccessible(true);
+                AccessController.doPrivileged(J2DoPrivHelper
+                    .setAccessibleAction(ao, true));
         } catch (SecurityException se) {
             throw new UserException(_loc.get("reflect-security", ao)).
                 setFatal(true);

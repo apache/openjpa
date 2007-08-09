@@ -40,6 +40,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -164,7 +165,8 @@ public class ConfigurationImpl
      * {@link ProductDerivation}s, and from System properties.
      */
     public boolean loadGlobals() {
-        MultiClassLoader loader = new MultiClassLoader();
+        MultiClassLoader loader = (MultiClassLoader) AccessController
+            .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction()); 
         loader.addClassLoader((ClassLoader) AccessController.doPrivileged(
             J2DoPrivHelper.getContextClassLoaderAction()));
         loader.addClassLoader(getClass().getClassLoader());

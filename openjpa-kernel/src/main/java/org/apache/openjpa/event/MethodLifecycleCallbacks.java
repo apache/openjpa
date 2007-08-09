@@ -84,7 +84,8 @@ public class MethodLifecycleCallbacks
     public void makeCallback(Object obj, Object arg, int eventType)
         throws Exception {
         if (!_callback.isAccessible())
-            _callback.setAccessible(true);
+            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(
+                _callback, true));
 
         if (_arg)
             _callback.invoke(obj, new Object[]{ arg });

@@ -77,7 +77,8 @@ public class BeanLifecycleCallbacks
         throws Exception {
         Method callback = getCallbackMethod();
         if (!callback.isAccessible())
-            callback.setAccessible(true);
+            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(
+                callback, true));
         if (requiresArgument())
             callback.invoke(_listener, new Object[]{ obj, rel });
         else

@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.util;
 
+import java.security.AccessController;
+
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 
 /**
@@ -28,7 +31,8 @@ import org.apache.openjpa.lib.util.MultiClassLoader;
  */
 public class MultiLoaderClassResolver implements ClassResolver {
 
-    final private MultiClassLoader _loader = new MultiClassLoader();
+    final private MultiClassLoader _loader = (MultiClassLoader) AccessController
+        .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
 
     public MultiLoaderClassResolver() {
     }

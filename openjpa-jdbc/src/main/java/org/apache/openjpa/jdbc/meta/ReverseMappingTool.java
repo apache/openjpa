@@ -179,7 +179,8 @@ public class ReverseMappingTool
     private final Log _log;
     private final Map _tables = new HashMap();
     private final Project _project = new Project();
-    private final BCClassLoader _loader = new BCClassLoader(_project);
+    private final BCClassLoader _loader = (BCClassLoader) AccessController
+        .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(_project));
     private StrategyInstaller _strat = null;
     private String _package = null;
     private File _dir = null;

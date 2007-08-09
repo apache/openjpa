@@ -93,9 +93,9 @@ public class PersistenceUnitInfoImpl
     }
 
     public ClassLoader getNewTempClassLoader() {
-        return new TemporaryClassLoader(
-            (ClassLoader) AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction()));
+        return (ClassLoader) AccessController.doPrivileged(J2DoPrivHelper
+            .newTemporaryClassLoaderAction((ClassLoader) AccessController
+                .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction())));
     }
 
     public String getPersistenceUnitName() {
@@ -201,7 +201,8 @@ public class PersistenceUnitInfoImpl
     }
 
     public void addJarFileName(String name) {
-        MultiClassLoader loader = new MultiClassLoader();
+        MultiClassLoader loader = (MultiClassLoader) AccessController
+            .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
         loader.addClassLoader(getClass().getClassLoader());
         loader.addClassLoader(MultiClassLoader.THREAD_LOADER);
         URL url = (URL) AccessController.doPrivileged(

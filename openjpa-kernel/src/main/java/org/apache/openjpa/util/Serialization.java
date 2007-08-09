@@ -28,6 +28,7 @@ import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.StoreContext;
@@ -104,7 +105,12 @@ public class Serialization {
             throws IOException {
             super(delegate);
             _ctx = ctx;
-            enableReplaceObject(true);
+            AccessController.doPrivileged(new PrivilegedAction() {
+                public Object run() {
+                    enableReplaceObject(true);
+                    return null;
+                }
+            });
         }
 
         protected Object replaceObject(Object obj) {
@@ -123,7 +129,8 @@ public class Serialization {
 
         protected Class resolveClass(ObjectStreamClass desc) 
             throws IOException, ClassNotFoundException {
-            MultiClassLoader loader = new MultiClassLoader();
+            MultiClassLoader loader = (MultiClassLoader) AccessController
+                .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
             addContextClassLoaders(loader);
             loader.addClassLoader(getClass().getClassLoader());
             loader.addClassLoader(MultiClassLoader.SYSTEM_LOADER);
@@ -153,7 +160,12 @@ public class Serialization {
             throws IOException {
             super(delegate);
             _ctx = ctx;
-            enableResolveObject(true);
+            AccessController.doPrivileged(new PrivilegedAction() {
+                public Object run() {
+                    enableResolveObject(true);
+                    return null;
+                }
+            });
         }
 
         protected void addContextClassLoaders(MultiClassLoader loader) {

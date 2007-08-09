@@ -79,17 +79,22 @@ class InterfaceImplGenerator {
 
         ClassLoader parentLoader = (ClassLoader) AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(iface)); 
-        BCClassLoader loader = new BCClassLoader(_project, parentLoader);
-        BCClassLoader enhLoader = new BCClassLoader(_enhProject, parentLoader);
+        BCClassLoader loader = (BCClassLoader) AccessController
+            .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(_project,
+                parentLoader));
+        BCClassLoader enhLoader = (BCClassLoader) AccessController
+            .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(_enhProject,
+                parentLoader));
         BCClass bc = _project.loadClass(getClassName(meta));
         bc.declareInterface(iface);
         ClassMetaData sup = meta.getPCSuperclassMetaData();
         if (sup != null) {
             bc.setSuperclass(sup.getInterfaceImpl());
-            enhLoader = new BCClassLoader(_enhProject,
-                (ClassLoader) AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(
-                        sup.getInterfaceImpl())));
+            enhLoader = (BCClassLoader) AccessController
+                .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(
+                    _enhProject, (ClassLoader) AccessController
+                        .doPrivileged(J2DoPrivHelper.getClassLoaderAction(sup
+                            .getInterfaceImpl()))));
         }
 
         FieldMetaData[] fields = meta.getDeclaredFields();

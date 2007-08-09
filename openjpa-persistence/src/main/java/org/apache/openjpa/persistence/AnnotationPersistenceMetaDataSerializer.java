@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence;
 
 import org.apache.openjpa.lib.meta.SourceTracker;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.log.Log;
@@ -29,6 +30,8 @@ import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.util.InternalException;
 import org.apache.commons.lang.StringUtils;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.*;
 import java.io.File;
 import java.io.IOException;
@@ -1194,10 +1197,15 @@ public class AnnotationPersistenceMetaDataSerializer
     }
 
     public void serialize(File file, int flags) throws IOException {
-        FileWriter out = new FileWriter(file.getCanonicalPath(),
-            (flags & APPEND) > 0);
-        serialize(out, flags);
-        out.close();
+        try {
+            FileWriter out = new FileWriter((String) AccessController
+                .doPrivileged(J2DoPrivHelper.getCanonicalPathAction(file)),
+                (flags & APPEND) > 0);
+            serialize(out, flags);
+            out.close();
+        } catch (PrivilegedActionException pae) {
+            throw (IOException) pae.getException();
+        }
     }
 
     public void serialize(Writer out, int flags) throws IOException {

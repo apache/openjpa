@@ -96,9 +96,10 @@ public class DynamicStorageGenerator {
 
     // the project/classloader for the classes.
     private final Project _project = new Project();
-    private final BCClassLoader _loader = new BCClassLoader(_project,
-        (ClassLoader) AccessController.doPrivileged(
-            J2DoPrivHelper.getClassLoaderAction(DynamicStorage.class)));
+    private final BCClassLoader _loader = (BCClassLoader) AccessController
+        .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(_project,
+            (ClassLoader) AccessController.doPrivileged(J2DoPrivHelper
+                .getClassLoaderAction(DynamicStorage.class))));
 
     /**
      * Generate a generic {@link DynamicStorage} instance with the given

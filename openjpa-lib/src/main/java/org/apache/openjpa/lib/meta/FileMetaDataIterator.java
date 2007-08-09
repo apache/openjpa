@@ -92,7 +92,8 @@ public class FileMetaDataIterator implements MetaDataIterator {
             if (filter.matches(rsrc))
                 metas.add(file);
             else {
-                File[] files = file.listFiles();
+                File[] files = (File[]) AccessController
+                    .doPrivileged(J2DoPrivHelper.listFilesAction(file)); 
                 if (files != null)
                     for (int i = 0; i < files.length; i++)
                         scanned = scan(files[i], filter, rsrc, metas, scanned);
@@ -110,7 +111,8 @@ public class FileMetaDataIterator implements MetaDataIterator {
             throw new NoSuchElementException();
 
         _file = (File) _itr.next();
-        return _file.getAbsoluteFile().toURL();
+        return ((File) AccessController.doPrivileged(J2DoPrivHelper
+            .getAbsoluteFileAction(_file))).toURL();
     }
 
     public InputStream getInputStream() throws IOException {

@@ -271,7 +271,8 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     public void parse(File file) throws IOException {
         if (file == null)
             return;
-        if (!file.isDirectory())
+        if (!((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+            .isDirectoryAction(file))).booleanValue())
             parse(new FileMetaDataIterator(file));
         else {
             String suff = (_suffix == null) ? "" : _suffix;

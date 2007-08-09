@@ -57,7 +57,6 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.Services;
-import org.apache.openjpa.lib.util.TemporaryClassLoader;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -179,14 +178,17 @@ public class PCEnhancer {
      * Constructor. Supply configuration and type to enhance.
      */
     public PCEnhancer(OpenJPAConfiguration conf, Class type) {
-        this(conf, new Project().loadClass(type), (MetaDataRepository) null);
+        this(conf, (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+            .loadProjectClassAction(new Project(), type)),
+            (MetaDataRepository) null);
     }
 
     /**
      * Constructor. Supply configuration and type to enhance.
      */
     public PCEnhancer(OpenJPAConfiguration conf, ClassMetaData type) {
-        this(conf, new Project().loadClass(type.getDescribedType()),
+        this(conf, (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+            .loadProjectClassAction(new Project(), type.getDescribedType())),
             type.getRepository());
     }
 
@@ -726,14 +728,19 @@ public class PCEnhancer {
 
             // if the middle instruction was a getfield, then it's the
             // field that's being accessed
-            if (!findAccessed && prevIns instanceof GetFieldInstruction)
-                cur = ((FieldInstruction) prevIns).getField();
+            if (!findAccessed && prevIns instanceof GetFieldInstruction) {
+                final FieldInstruction fPrevIns = (FieldInstruction) prevIns;
+                cur = (BCField) AccessController.doPrivileged(
+                    J2DoPrivHelper.getFieldInstructionFieldAction(fPrevIns));
                 // if the middle instruction was an xload_1, then the
                 // matched instruction is the field that's being set.
-            else if (findAccessed && prevIns instanceof LoadInstruction
-                && ((LoadInstruction) prevIns).getParam() == 0)
-                cur = ((FieldInstruction) templateIns).getField();
-            else
+            } else if (findAccessed && prevIns instanceof LoadInstruction
+                && ((LoadInstruction) prevIns).getParam() == 0) {
+                final FieldInstruction fTemplateIns =
+                    (FieldInstruction) templateIns;
+                cur = (BCField) AccessController.doPrivileged(J2DoPrivHelper
+                    .getFieldInstructionFieldAction(fTemplateIns));
+            } else
                 return null;
 
             if (field != null && cur != field)
@@ -888,7 +895,10 @@ public class PCEnhancer {
                     // first load the old value for use in the
                     // StateManager.settingXXX method.
                     loadManagedInstance(code, false);
-                    code.getfield().setField(fi.getField());
+                    final FieldInstruction fFi = fi;
+                    code.getfield().setField(
+                        (BCField) AccessController.doPrivileged(J2DoPrivHelper
+                            .getFieldInstructionFieldAction(fFi)));
                     int val = code.getNextLocalsIndex();
                     code.xstore().setLocal(val).setType(fi.getFieldType());
 
@@ -3441,7 +3451,7 @@ public class PCEnhancer {
         code.vreturn();
 
         // inst.pcStateManager.setting<fieldType>Field (inst,
-        //	pcInheritedFieldCount + <index>, inst.<field>, value, 0);
+        //     pcInheritedFieldCount + <index>, inst.<field>, value, 0);
         ifins.setTarget(loadManagedInstance(code, true));
         code.getfield().setField(SM, SMTYPE);
         loadManagedInstance(code, true);
@@ -3569,7 +3579,9 @@ public class PCEnhancer {
         String fieldName = toBackingFieldName(attrName);
 
         // next, find the field in the managed type.
-        BCField[] fields = _managedType.getFields(fieldName);
+        BCField[] fields = (BCField[]) AccessController
+            .doPrivileged(J2DoPrivHelper.getBCClassFieldsAction(_managedType,
+                fieldName)); 
         BCField field = null;
         for (int i = 0; i < fields.length; i++) {
             field = fields[i];
@@ -4284,7 +4296,8 @@ public class PCEnhancer {
             loader = conf.getClassResolverInstance().
                 getClassLoader(PCEnhancer.class, null);
         if (flags.tmpClassLoader)
-            loader = new TemporaryClassLoader(loader);
+            loader = (ClassLoader) AccessController.doPrivileged(J2DoPrivHelper
+                .newTemporaryClassLoaderAction(loader));
 
         if (repos == null) {
             repos = conf.newMetaDataRepositoryInstance();

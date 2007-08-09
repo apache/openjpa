@@ -1366,7 +1366,8 @@ public class ApplicationIdTool {
         ApplicationIdTool tool;
         Class cls;
         ClassMetaData meta;
-        BCClassLoader bc = new BCClassLoader(new Project());
+        BCClassLoader bc = (BCClassLoader) AccessController
+            .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(new Project()));
         for (Iterator itr = classes.iterator(); itr.hasNext();) {
             cls = (Class) itr.next();
             log.info(_loc.get("appid-running", cls));

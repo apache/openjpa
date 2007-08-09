@@ -363,7 +363,8 @@ public abstract class AbstractCFMetaDataFactory
         for (int i = 0; i < metas.length; i++) {
             if (getSourceFile(metas[i]) == null)
                 setSourceFile(metas[i], defaultSourceFile(metas[i]));
-            if (getSourceFile(metas[i]).exists()) {
+            if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                .existsAction(getSourceFile(metas[i])))).booleanValue()) {
                 if (files == null)
                     files = new HashSet();
                 files.add(getSourceFile(metas[i]));
@@ -490,7 +491,8 @@ public abstract class AbstractCFMetaDataFactory
         for (Iterator itr = files.iterator(); itr.hasNext();) {
             file = (File) itr.next();
             if (Files.backup(file, false) != null)
-                file.delete();
+                AccessController
+                    .doPrivileged(J2DoPrivHelper.deleteAction(file));
         }
     }
 
@@ -628,7 +630,8 @@ public abstract class AbstractCFMetaDataFactory
             File file;
             for (Iterator itr = files.iterator(); itr.hasNext();) {
                 file = (File) itr.next();
-                if (file.isDirectory()) {
+                if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                    .isDirectoryAction(file))).booleanValue()) {
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scanning-directory", file));
                     scan(new FileMetaDataIterator(file, newMetaDataFilter()),
@@ -636,8 +639,15 @@ public abstract class AbstractCFMetaDataFactory
                 } else if (file.getName().endsWith(".jar")) {
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scanning-jar", file));
-                    scan(new ZipFileMetaDataIterator(new ZipFile(file),
-                        newMetaDataFilter()), cparser, names, true, file);
+                    try {
+                        ZipFile zFile = (ZipFile) AccessController
+                            .doPrivileged(J2DoPrivHelper
+                                .newZipFileAction(file));
+                        scan(new ZipFileMetaDataIterator(zFile,
+                            newMetaDataFilter()), cparser, names, true, file);
+                    } catch (PrivilegedActionException pae) {
+                        throw (IOException) pae.getException();
+                    }
                 } else {
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scanning-file", file));
@@ -646,8 +656,9 @@ public abstract class AbstractCFMetaDataFactory
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scan-found-names", clss, file));
                     names.addAll(Arrays.asList(clss));
-                    mapPersistentTypeNames(file.getAbsoluteFile().toURL(),
-                        clss);
+                    mapPersistentTypeNames(((File) AccessController
+                        .doPrivileged(J2DoPrivHelper
+                            .getAbsoluteFileAction(file))).toURL(), clss);
                 }
             }
         }
@@ -656,14 +667,19 @@ public abstract class AbstractCFMetaDataFactory
             for (Iterator itr = urls.iterator(); itr.hasNext();) {
                 url = (URL) itr.next();
                 if ("file".equals(url.getProtocol())) {
-                    File file = new File(url.getFile()).getAbsoluteFile();
+                    File file = (File) AccessController
+                        .doPrivileged(J2DoPrivHelper
+                            .getAbsoluteFileAction(new File(url.getFile()))); 
                     if (files != null && files.contains(file)) {
                         continue;
-                    } else if (file.isDirectory()) {
+                    } else if (((Boolean) AccessController
+                        .doPrivileged(J2DoPrivHelper.isDirectoryAction(file)))
+                        .booleanValue()) {
                         if (log.isTraceEnabled())
                             log.trace(_loc.get("scanning-directory", file));
-                        scan(new FileMetaDataIterator(file, newMetaDataFilter()),
-                                cparser, names, true, file);
+                        scan(
+                            new FileMetaDataIterator(file, newMetaDataFilter()),
+                            cparser, names, true, file);
                         continue;
                     }
                 }

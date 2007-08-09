@@ -61,7 +61,6 @@ import serp.bytecode.BCMethod;
 import serp.bytecode.Code;
 import serp.bytecode.JumpInstruction;
 import serp.bytecode.Project;
-import serp.bytecode.BCClassLoader;
 import serp.util.Strings;
 
 /**
@@ -87,10 +86,12 @@ public class ProxyManagerImpl
         _stdCollections.put(List.class, ArrayList.class);
         if (JavaVersions.VERSION >= 5) {
             try {
-                Class queue = Class.forName("java.util.Queue", false,
-                    (ClassLoader) AccessController.doPrivileged(
-                        J2DoPrivHelper.getClassLoaderAction(
-                            Collection.class)));
+                Class queue = (Class) AccessController
+                    .doPrivileged(J2DoPrivHelper.getForNameAction(
+                        "java.util.Queue", false,
+                        (ClassLoader) AccessController
+                            .doPrivileged(J2DoPrivHelper
+                                .getClassLoaderAction(Collection.class))));
                 _stdCollections.put(queue, LinkedList.class);
             } catch (Throwable t) {
                 // not really java 5 after all?

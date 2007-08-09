@@ -31,6 +31,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,6 +48,7 @@ import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
@@ -235,7 +238,8 @@ public class TCPRemoteCommitProvider
                     hostname = host;
                     tmpPort = DEFAULT_PORT;
                 }
-                InetAddress tmpAddress = InetAddress.getByName(hostname);
+                InetAddress tmpAddress = (InetAddress) AccessController
+                    .doPrivileged(J2DoPrivHelper.getByNameAction(hostname)); 
 
                 // bleair: For each address we would rather make use of
                 // the jdk1.4 isLinkLocalAddress () || isLoopbackAddress ().
@@ -260,8 +264,9 @@ public class TCPRemoteCommitProvider
                     }
                 }
             }
-        }
-        finally {
+        } catch (PrivilegedActionException pae) {
+            throw (UnknownHostException) pae.getException();
+        } finally {
             _addressesLock.unlock();
         }
     }
@@ -499,7 +504,12 @@ public class TCPRemoteCommitProvider
             throws IOException {
             _port = port;
             _log = log;
-            _receiveSocket = new ServerSocket(_port);
+            try {
+                _receiveSocket = (ServerSocket) AccessController
+                    .doPrivileged(J2DoPrivHelper.newServerSocketAction(_port));
+            } catch (PrivilegedActionException pae) {
+                throw (IOException) pae.getException();
+            }
             _localhost = InetAddress.getLocalHost().getAddress();
 
             if (_log.isTraceEnabled())
@@ -566,7 +576,8 @@ public class TCPRemoteCommitProvider
                 try {
                     s = null;
                     // Block, waiting to accept new connection from a peer
-                    s = _receiveSocket.accept();
+                    s = (Socket) AccessController.doPrivileged(J2DoPrivHelper
+                        .acceptAction(_receiveSocket));
                     if (_log.isTraceEnabled()) {
                         _log.trace(s_loc.get("tcp-received-connection",
                             s.getInetAddress().getHostAddress()
@@ -578,6 +589,8 @@ public class TCPRemoteCommitProvider
                     receiverThread.start();
                     _receiverThreads.add(receiverThread);
                 } catch (Exception e) {
+                    if (e instanceof PrivilegedActionException)
+                        e = ((PrivilegedActionException) e).getException();
                     if (!(e instanceof SocketException) || _isRunning)
                         if (_log.isWarnEnabled())
                             _log.warn(s_loc.get("tcp-accept-error"), e);
@@ -755,12 +768,19 @@ public class TCPRemoteCommitProvider
         private HostAddress(String host)
             throws UnknownHostException {
             int colon = host.indexOf(':');
-            if (colon != -1) {
-                _address = InetAddress.getByName(host.substring(0, colon));
-                _port = Integer.parseInt(host.substring(colon + 1));
-            } else {
-                _address = InetAddress.getByName(host);
-                _port = DEFAULT_PORT;
+            try {
+                if (colon != -1) {
+                    _address = (InetAddress) AccessController
+                        .doPrivileged(J2DoPrivHelper.getByNameAction(host
+                            .substring(0, colon)));
+                    _port = Integer.parseInt(host.substring(colon + 1));
+                } else {
+                    _address = (InetAddress) AccessController
+                        .doPrivileged(J2DoPrivHelper.getByNameAction(host));
+                    _port = DEFAULT_PORT;
+                }
+            } catch (PrivilegedActionException pae) {
+                throw (UnknownHostException) pae.getException();
             }
             // -1 max wait == as long as it takes
             _socketPool = new GenericObjectPool
@@ -884,12 +904,18 @@ public class TCPRemoteCommitProvider
 
             public Object makeObject()
                 throws IOException {
-                Socket s = new Socket(_address, _port);
-                if (log.isTraceEnabled()) {
-                    log.trace(s_loc.get("tcp-open-connection",
-                        _address + ":" + _port, "" + s.getLocalPort()));
+                try {
+                    Socket s = (Socket) AccessController
+                        .doPrivileged(J2DoPrivHelper.newSocketAction(_address,
+                            _port));
+                    if (log.isTraceEnabled()) {
+                        log.trace(s_loc.get("tcp-open-connection", _address
+                            + ":" + _port, "" + s.getLocalPort()));
+                    }
+                    return s;
+                } catch (PrivilegedActionException pae) {
+                    throw (IOException) pae.getException();
                 }
-                return s;
             }
 
             public void destroyObject(Object obj) {

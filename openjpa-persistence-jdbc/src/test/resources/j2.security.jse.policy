@@ -1,0 +1,62 @@
+// ================================================================
+// Example JSE Java 2 security policy required by OpenJPA.
+//
+//   -Djava.security.manager -Djava.security.policy=C:\j2.security.jse.policy
+
+// ----------------------------------------------------------------
+// Application:  E.g.
+//   -Dapplication=file:///C:/com/my/appl/classes
+
+grant CodeBase "${application}/-" {
+
+    // Allows Persistence.createEntityManagerFacotry() to read META-INF/*
+    permission java.io.FilePermission   "<<ALL FILES>>", "read";
+};
+
+// ----------------------------------------------------------------
+// Derby:  E.g.
+//   -Dderby.base="file:///C:\.m2\repository\org\apache\derby\derby\10.2.2.0
+
+grant CodeBase "${derby.base}/-" {
+
+    permission java.io.FilePermission   "<<ALL FILES>>", "read,write,delete";
+    permission java.lang.RuntimePermission               "createClassLoader";
+    permission java.util.PropertyPermission         "*", "read";
+};
+
+// ----------------------------------------------------------------
+// DB2:  E.g.
+//  -db2.base=file:///C:/sqllib/java
+
+grant CodeBase "${db2.base}/-" {
+
+    permission java.lang.RuntimePermission               "loadLibrary.*";
+    permission java.util.PropertyPermission         "*", "read";
+};
+
+
+// ================================================================
+// The following permissions are required by OpenJPA implementation.
+
+// ----------------------------------------------------------------
+// Serp:  E.g.
+//  -Dserp.base="file:///C:\.m2\repository\net\sourceforge\serp\serp\1.11.0"
+
+grant CodeBase "${serp.base}/-" {
+
+    permission java.io.FilePermission   "<<ALL FILES>>", "read,write";
+    permission java.lang.RuntimePermission               "createClassLoader";
+};
+
+// ----------------------------------------------------------------
+// OpeJPA:  E.g.
+//  -Dopenjpa.base=file:///C:\openjpa.cur\openjpa-all\target
+
+grant CodeBase "${openjpa.base}/-" {
+
+    permission java.io.FilePermission   "<<ALL FILES>>", "read,write";
+    permission java.lang.RuntimePermission               "createClassLoader";
+    permission java.lang.reflect.ReflectPermission       "suppressAccessChecks";
+    permission java.util.PropertyPermission         "*", "read";
+};
+

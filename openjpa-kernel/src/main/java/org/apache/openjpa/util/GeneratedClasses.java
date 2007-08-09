@@ -63,7 +63,9 @@ public class GeneratedClasses {
      * Load the class represented by the given bytecode.
      */
     public static Class loadBCClass(BCClass bc, ClassLoader loader) {
-        BCClassLoader bcloader = new BCClassLoader(bc.getProject(), loader);
+        BCClassLoader bcloader = (BCClassLoader) AccessController
+                .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(bc
+                        .getProject(), loader));
         try {
             Class c = Class.forName(bc.getName(), true, bcloader);
             bc.getProject().clear();

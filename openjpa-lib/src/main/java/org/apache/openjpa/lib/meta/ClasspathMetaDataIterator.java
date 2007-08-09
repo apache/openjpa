@@ -21,6 +21,7 @@ package org.apache.openjpa.lib.meta;
 import java.io.File;
 import java.io.IOException;
 import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.Properties;
 import java.util.zip.ZipFile;
 
@@ -64,11 +65,18 @@ public class ClasspathMetaDataIterator extends MetaDataIteratorChain {
             if (!((Boolean) AccessController.doPrivileged(
                 J2DoPrivHelper.existsAction(file))).booleanValue())
                 continue;
-            if (file.isDirectory())
+            if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                .isDirectoryAction(file))).booleanValue())
                 addIterator(new FileMetaDataIterator(file, filter));
-            else if (tokens[i].endsWith(".jar"))
-                addIterator(new ZipFileMetaDataIterator(new ZipFile(file),
-                    filter));
+            else if (tokens[i].endsWith(".jar")) {
+                try {
+                    ZipFile zFile = (ZipFile) AccessController
+                        .doPrivileged(J2DoPrivHelper.newZipFileAction(file));
+                    addIterator(new ZipFileMetaDataIterator(zFile, filter));
+                } catch (PrivilegedActionException pae) {
+                    throw (IOException) pae.getException();
+                }
+            }
         }
     }
 

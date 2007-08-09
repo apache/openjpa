@@ -23,19 +23,31 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.AccessibleObject;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedExceptionAction;
+import java.util.zip.ZipFile;
+
 import serp.bytecode.BCClass;
+import serp.bytecode.BCClassLoader;
 import serp.bytecode.Code;
+import serp.bytecode.FieldInstruction;
+import serp.bytecode.Project;
 
 /**
  * Helper class to obtain the Privilege(Exception)Action object to perform
  * Java 2 doPrivilege security sensitive function call in the following
  * methods:
  * <ul>
+ * <li>AccessibleObject.setAccessible
+ * <li>Class.forName
  * <li>Class.getClassLoader
  * <li>Class.getDeclaredField
  * <li>Class.getDeclaredFields
@@ -47,21 +59,36 @@ import serp.bytecode.Code;
  * <li>ClassLoader.getResource
  * <li>ClassLoader.getResources
  * <li>ClassLoader.getSystemClassLoader
+ * <li>File.delete
  * <li>File.exists
+ * <li>File.getAbsoluteFile
  * <li>File.getAbsolutePath
  * <li>File.getCanonicalPath
+ * <li>File.listFiles
  * <li>File.length
+ * <li>File.isDirectory
  * <li>File.mkdirs
  * <li>File.renameTo
  * <li>FileInputStream new
  * <li>FileOutputStream new
  * <li>System.getProperties
+ * <li>InetAddress.getByName
+ * <li>MultiClassLoader new
+ * <li>ServerSocket new
+ * <li>Socket new
+ * <li>Socket.accept
  * <li>System.getProperty
  * <li>Thread.getContextClassLoader
+ * <li>TemporaryClassLoader new
  * <li>URL.openStream
  * <li>URLConnection.getContent
+ * <li>ZipFile new
  * <li>serp.bytecode.Code new
- * <li>serp.bytecode.BCClass.isInstanceOf
+ * <li>serp.bytecode.BCClassLoader new
+ * <li>serp.bytecode.BCClass.write
+ * <li>serp.bytecode.BCClass.getFields
+ * <li>serp.bytecode.FieldInstruction.getField
+ * <li>serp.bytecode.Project.loadClass
  * </ul>
  * 
  * If these methods are used, the following sample usage patterns should be
@@ -142,6 +169,45 @@ public abstract class J2DoPrivHelper {
                     });
         }
         return pathSeparator;
+    }
+
+    /**
+     * Return a PrivilegeAction object for aObj.setAccessible().
+     * 
+     * Requires security policy: 'permission java.lang.reflect.ReflectPermission
+     * "suppressAccessChecks";'
+     */
+    public static final PrivilegedAction setAccessibleAction(
+        final AccessibleObject aObj, final boolean flag) {
+        return new PrivilegedAction() {
+            public Object run() {
+                aObj.setAccessible(flag);
+                return (Object) null;
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegeAction object for Class.forName().
+     * 
+     * Notes: doPriv of Class.forName call is required only if the input
+     * classloader argument is null. E.g.
+     * 
+     * Class.forName("x", false, Collection.class.getClassLoader());
+     * 
+     * Requires security policy: 'permission java.lang.RuntimePermission
+     * "getClassLoader";'
+     * 
+     * @return Classloader
+     */
+    public static final PrivilegedExceptionAction getForNameAction(
+        final String className, final boolean initializeBoolean,
+        final ClassLoader classLoader) {
+        return new PrivilegedExceptionAction() {
+            public Object run() throws ClassNotFoundException {
+                return Class.forName(className, initializeBoolean, classLoader);
+            }
+        };
     }
 
     /**
@@ -345,6 +411,22 @@ public abstract class J2DoPrivHelper {
     }
 
     /**
+     * Return a PrivilegeAction object for f.delete().
+     * 
+     * Requires security policy:
+     *   'permission java.io.FilePermission "delete";'
+     * 
+     * @return Boolean
+     */
+    public static final PrivilegedAction deleteAction(final File f) {
+        return new PrivilegedAction() {
+            public Object run() {
+                return f.delete() ? Boolean.TRUE : Boolean.FALSE;
+            }
+        };
+    }
+
+    /**
      * Return a PrivilegeAction object for f.exists().
      * 
      * Requires security policy:
@@ -360,6 +442,22 @@ public abstract class J2DoPrivHelper {
                 } catch (NullPointerException npe) {
                     return Boolean.FALSE;
                 }
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegeAction object for f.getAbsoluteFile().
+     * 
+     * Requires security policy:
+     *   'permission java.util.PropertyPermission "read";'
+     * 
+     * @return File
+     */
+    public static final PrivilegedAction getAbsoluteFileAction(final File f) {
+        return new PrivilegedAction() {
+            public Object run() {
+                return f.getAbsoluteFile();
             }
         };
     }
@@ -399,6 +497,38 @@ public abstract class J2DoPrivHelper {
     }
 
     /**
+     * Return a PrivilegeAction object for f.isDirectory().
+     * 
+     * Requires security policy:
+     *   'permission java.io.FilePermission "read";'
+     * 
+     * @return Boolean
+     */
+    public static final PrivilegedAction isDirectoryAction(final File f) {
+        return new PrivilegedAction() {
+            public Object run() {
+                return f.isDirectory() ? Boolean.TRUE : Boolean.FALSE;
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegeAction object for f.isFile().
+     * 
+     * Requires security policy:
+     *   'permission java.io.FilePermission "read";'
+     * 
+     * @return Boolean
+     */
+    public static final PrivilegedAction isFileAction(final File f) {
+        return new PrivilegedAction() {
+            public Object run() {
+                return f.isFile() ? Boolean.TRUE : Boolean.FALSE;
+            }
+        };
+    }
+
+    /**
      * Return a PrivilegeAction object for f.length().
      * 
      * Requires security policy:
@@ -410,6 +540,22 @@ public abstract class J2DoPrivHelper {
         return new PrivilegedAction() {
             public Object run() {
                 return new Long(f.length());
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegeAction object for f.listFiles().
+     * 
+     * Requires security policy:
+     *   'permission java.io.FilePermission "read";'
+     * 
+     * @return File[]
+     */
+    public static final PrivilegedAction listFilesAction(final File f) {
+        return new PrivilegedAction() {
+            public Object run() {
+                return f.listFiles();
             }
         };
     }
@@ -502,6 +648,78 @@ public abstract class J2DoPrivHelper {
     }
 
     /**
+     * Return a PrivilegedExceptionAction object for InetAdress.getByName().
+     * 
+     * Requires security policy:
+     *   'permission java.net.SocketPermission "connect";'
+     * 
+     * @return InetAddress
+     * @throws UnknownHostException
+     */
+    public static final PrivilegedExceptionAction getByNameAction(
+        final String hostname) throws UnknownHostException {
+        return new PrivilegedExceptionAction() {
+            public Object run() throws UnknownHostException {
+                return InetAddress.getByName(hostname);
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegedExceptionAction object for new Socket().
+     * 
+     * Requires security policy:
+     *   'permission java.net.SocketPermission "connect";'
+     * 
+     * @return Socket
+     * @throws IOException
+     */
+    public static final PrivilegedExceptionAction newSocketAction(
+        final InetAddress host, final int port) throws IOException {
+        return new PrivilegedExceptionAction() {
+            public Object run() throws IOException {
+                return new Socket(host, port);
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegedExceptionAction object for new ServerSocket().
+     * 
+     * Requires security policy:
+     *   'permission java.net.SocketPermission "listen";'
+     * 
+     * @return ServerSocket
+     * @throws IOException
+     */
+    public static final PrivilegedExceptionAction newServerSocketAction(
+        final int port) throws IOException {
+        return new PrivilegedExceptionAction() {
+            public Object run() throws IOException {
+                return new ServerSocket(port);
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegedExceptionAction object for ServerSocket.accept().
+     * 
+     * Requires security policy:
+     *   'permission java.net.SocketPermission "listen";'
+     * 
+     * @return Socket
+     * @throws IOException
+     */
+    public static final PrivilegedExceptionAction acceptAction(
+        final ServerSocket ss) throws IOException {
+        return new PrivilegedExceptionAction() {
+            public Object run() throws IOException {
+                return ss.accept();
+            }
+        };
+    }
+
+    /**
      * Return a PrivilegeAction object for System.getProperties().
      * 
      * Requires security policy:
@@ -587,6 +805,24 @@ public abstract class J2DoPrivHelper {
     }
 
     /**
+     * Return a PrivilegedExceptionAction object for new ZipFile().
+     * 
+     * Requires security policy:
+     *   'permission java.io.FilePermission "read";'
+     * 
+     * @return ZipFile
+     * @throws IOException
+     */
+    public static final PrivilegedExceptionAction newZipFileAction(final File f)
+        throws IOException {
+        return new PrivilegedExceptionAction() {
+            public Object run() throws IOException {
+                return new ZipFile(f);
+            }
+        };
+    }
+
+    /**
      * Return a PrivilegeAction object for new serp.bytecode.Code().
      * 
      * Requires security policy:
@@ -598,6 +834,135 @@ public abstract class J2DoPrivHelper {
         return new PrivilegedAction() {
             public Object run() {
                 return new Code();
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegeAction object for new TemporaryClassLoader().
+     * 
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "createClassLoader";'
+     *   
+     * @return TemporaryClassLoader
+     */
+    public static final PrivilegedAction newTemporaryClassLoaderAction(
+        final ClassLoader parent) {
+        return new PrivilegedAction() {
+            public Object run() {
+                return new TemporaryClassLoader(parent);
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegeAction object for new MultiClassLoader().
+     * 
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "createClassLoader";'
+     *   
+     * @return MultiClassLoader
+     */
+    public static final PrivilegedAction newMultiClassLoaderAction() {
+        return new PrivilegedAction() {
+            public Object run() {
+                return new MultiClassLoader();
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegeAction object for new BCClassLoader().
+     * 
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "createClassLoader";'
+     *   
+     * @return BCClassLoader
+     */
+    public static final PrivilegedAction newBCClassLoaderAction(
+        final Project project, final ClassLoader parent) {
+        return new PrivilegedAction() {
+            public Object run() {
+                return new BCClassLoader(project, parent);
+            }
+        };
+    }
+
+    public static final PrivilegedAction newBCClassLoaderAction(
+        final Project project) {
+        return new PrivilegedAction() {
+            public Object run() {
+                return new BCClassLoader(project);
+            }
+        };
+    }
+    
+    /**
+     * Return a PrivilegedExceptionAction object for BCClass.write().
+     * 
+     * Requires security policy:
+     *   'permission java.io.FilePermission "write";'
+     * 
+     * @return File
+     * @throws IOException
+     */
+    public static final PrivilegedExceptionAction bCClassWrite(
+        final BCClass bc, final File f) throws IOException {
+        return new PrivilegedExceptionAction() {
+            public Object run() throws IOException {
+                bc.write(f);
+                return null;
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegeAction object for BCClass.getFields().
+     * 
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "getClassLoader";'
+     *   
+     * @return BCField
+     */
+    public static final PrivilegedAction getBCClassFieldsAction(
+        final BCClass bcClass, final String fieldName) {
+        return new PrivilegedAction() {
+            public Object run() {
+                return bcClass.getFields(fieldName);
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegeAction object for FieldInstruction.getField().
+     * 
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "getClassLoader";'
+     *   
+     * @return BCField
+     */
+    public static final PrivilegedAction getFieldInstructionFieldAction(
+        final FieldInstruction instruction) {
+        return new PrivilegedAction() {
+            public Object run() {
+                return instruction.getField();
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegeAction object for Project.loadClass().
+     * 
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "createClassLoader";'
+     *   
+     * @return BCClass
+     */
+    public static final PrivilegedAction loadProjectClassAction(
+        final Project project, final Class clazz) {
+        return new PrivilegedAction() {
+            public Object run() {
+                return project.loadClass(clazz);
             }
         };
     }

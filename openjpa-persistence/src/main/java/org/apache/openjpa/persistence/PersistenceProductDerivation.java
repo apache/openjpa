@@ -204,7 +204,8 @@ public class PersistenceProductDerivation
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         String rsrc = null;
         for (int i = 0; i < prefixes.length && StringUtils.isEmpty(rsrc); i++)
-           rsrc = System.getProperty(prefixes[i] + ".properties"); 
+           rsrc = (String) AccessController.doPrivileged(J2DoPrivHelper
+                .getPropertyAction(prefixes[i] + ".properties")); 
         boolean explicit = !StringUtils.isEmpty(rsrc);
         String anchor = null;
         int idx = (!explicit) ? -1 : rsrc.lastIndexOf('#');
