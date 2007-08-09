@@ -3339,7 +3339,8 @@ public class PCEnhancer {
      */
     private void addSubclassGetMethod(FieldMetaData fmd) {
         String methName = getGetterName(fmd);
-        BCMethod getter = _pc.declareMethod(methName, fmd.getType(), null);
+        BCMethod getter = _pc.declareMethod(methName, fmd.getDeclaredType(),
+            null);
         setVisibilityToSuperMethod(getter);
         getter.makePublic();
         Code code = getter.getCode(true);
@@ -3352,8 +3353,8 @@ public class PCEnhancer {
 
         code.aload().setThis();
         code.invokespecial().setMethod(_managedType.getType(), methName,
-            fmd.getType(), null);
-        code.xreturn().setType(fmd.getType());
+            fmd.getDeclaredType(), null);
+        code.xreturn().setType(fmd.getDeclaredType());
         code.calculateMaxLocals();
         code.calculateMaxStack();
     }
