@@ -640,6 +640,159 @@ This code substitutes <literal>JDJ</literal> for the <literal> :titleParam
 </literal> parameter, then executes the query with those values.
             </para>
         </section>
+        <section id="jpa_overview_query_hints">
+            <title>
+                Query Hints
+            </title>
+            <para>
+JPQL provides support for hints which are name/value pairs used to control locking and optimization keywords in sql. 
+The following example shows how to use the JPA hint api to set the <classname>ReadLockMode</classname>  and <classname>ResultCount</classname>  in the OpenJPA fetch plan.  This will result in the sql keywords OPTIMIZE FOR 2 ROWS  and UPDATE to be emitted into the sql provided that a pessimistic LockManager is being used.
+            </para>
+            <example id="jpa_query_hint1">
+                <title>
+                    Query Hints  
+                </title>
+<programlisting>
+...
+Query q = em.createQuery("select m from Magazine m where ... ");
+q.setHint("openjpa.hint.OptimizeResultCount", new Integer(2));
+q.setHint("openjpa.FetchPlan.ReadLockMode","WRITE");
+List r = q.getResultList();
+...
+</programlisting>
+            </example>
+            <para>
+Invalid hints or hints which can not be processed by a particular database are ignored.  Otherwise, invalid hints will result in an ArgumentException being thrown. 
+            </para>
+            <section id="jpa_hints_locking">
+                <title>
+                    Locking Hints
+                </title>
+                <para>
+To avoid deadlock and optimistic update exceptions among multiple updaters, use a pessimistic LockManager, specified in the persistence unit definition, and use a hint name of &quot;openjpa.FetchPlan.ReadLockMode&quot; on queries for entities that must be locked for serialization.   The value of <classname>ReadLockMode</classname> can be either &quot;READ&quot; or &quot;WRITE&quot;.  This results in FOR UPDATE or USE AND KEEP UPDATE LOCKS in sql.
+                </para>
+                <para>
+Using a <classname>ReadLockMode</classname> hint with JPA optimistic locking ( i.e. specifying LockManager = &quot;version&quot;) will result in the entity version field either being reread at end of transaction in the case of a value of &quot;READ&quot; or the version field updated at end of transaction in the case of  &quot;WRITE&quot;.   You must define a version field in the entity mapping when using a version LockManager and using ReadLockMode.   
+                </para>
+                <table>
+                    <title>
+                        Interaction of ReadLockMode hint and LockManager
+                    </title>
+                    <tgroup cols="3" align="left" colsep="1" rowsep="1">
+                    <colspec colname="interaction"/> 
+                    <colspec colname="pessimistic"/> 
+                    <colspec colname="version"/> 
+                    <thead>
+                        <row>
+                            <entry colname="read-lock">
+                                ReadLockMode
+                            </entry>
+                            <entry colname="pessimistic">
+                                LockManager=pessimistic
+                            </entry>
+                            <entry colname="version">
+                                LockManager=version
+                            </entry>
+                        </row>
+                    </thead>
+                     <tbody>
+                         <row>
+                             <entry colname="interaction">
+                                 READ
+                             </entry>
+                             <entry colname="pessimistic">
+                                 sql with UPDATE
+                             </entry>
+                             <entry colname="version">sql without update;
+                             <para>
+reread version field at the end of transaction and check for no change.
+                             </para>
+                             </entry>
+                         </row>
+                         <row>
+                             <entry colname="interaction">
+                                 WRITE
+                             </entry>
+                             <entry colname="pessimistic">
+                                 sql with UPDATE
+                             </entry>
+                             <entry colname="version">
+                                 sql without update; 
+                             <para>
+force update version field at the end of transaction
+                             </para>
+                             </entry>
+                         </row>
+                         <row>
+                             <entry colname="interaction">
+                                 not specified
+                             </entry>
+                             <entry colname="pessimistic">
+                                 sql without update
+                             </entry>
+                             <entry colname="version">
+                                 sql without update
+                             </entry>
+                         </row>
+                    </tbody>
+                    </tgroup>
+                </table>
+            </section>
+            <section id="jpa_hints_resultset">
+                <title>
+                    Result Set Size Hint
+                </title>
+                <para>
+To specify a result set size hint to those databases that support it, specify a hint name of &quot;openjpa.hint.OptimizeResultCount&quot; with an integer value greater than zero.  This causes the sql keyword OPTIMIZE FOR to be generated.
+                </para>
+            </section>
+            <section id="jpa_hints_isolation">
+                <title>
+                    Isolation Level Hint
+                </title>
+                <para>
+To specify an isolation level, specify a hint name of &quot;openjpa.FetchPlan.Isolation&quot;.  The value will be used to specify isolation level using the sql WITH &lt;isolation&gt; clause for those databases that support it.  This hint only works in conjunction with the ReadLockMode hint.
+                </para>
+            </section>
+            <section id="jpa_hints_fetchplan">
+                <title>
+                    Other Fetchplan Hints
+                </title>
+                <para>
+Any property of  an OpenJPA FetchPlan can be changed using a hint by using a name of the form &quot;openjpa.FetchPlan.&quot;&lt;property name&gt;.Valid property names include :
+<classname>MaxFetchDepth</classname>, <classname>FetchBatchSize</classname>, <classname>LockTimeOut</classname>, <classname>EagerFetchMode</classname>, <classname>SubclassFetchMode</classname> and <classname>Isolation</classname>.
+                </para>
+            </section>
+            <section>
+                <title>
+                    Oracle Query Hints
+                </title>
+                <para>
+The hint name &quot;openjpa.hint.OracleSelectHint&quot; can be used to specify a string value of an Oracle query hint that will inserted into sql for an Oracle database.See <xref linkend="dbsupport_oracle_query_hints"/>    for an example.  
+                </para>
+            </section>
+            <section id="jpa_hints_named">
+                <title>
+                    Named Query Hints
+                </title>
+                <para>
+Hints can also be included as part of a NamedQuery definition.
+                </para>
+                <example id="jpa_query_hint2">
+                <title>
+                    Named Query using Hints
+                 </title>
+<programlisting>
+...
+@NamedQuery(name=" magsOverPrice",
+query="SELECT x FROM Magazine x WHERE x.price > ?1",
+hints={ @QueryHint  (name="openjpa.hint.OptimizeResultCount", value="2"),
+        @QueryHint (name="openjpa.FetchPlan.ReadLockMode",value="WRITE")} )
+...
+</programlisting>
+                </example>
+            </section>
+        </section>
         <section id="jpa_overview_query_ordering">
             <title>
                 Ordering
