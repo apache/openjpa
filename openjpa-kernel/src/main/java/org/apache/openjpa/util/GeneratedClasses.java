@@ -50,12 +50,9 @@ public class GeneratedClasses {
         if (l2 == null)
             return l1;
 
-        for (ClassLoader p = (ClassLoader) AccessController.doPrivileged(
-                J2DoPrivHelper.getParentAction(l1)); p != null;
-                p = (ClassLoader) AccessController.doPrivileged(
-                    J2DoPrivHelper.getParentAction(p)))
-            if (p == l2)
-                return l1;
+        if(canLoad(l1, c2)) {
+            return l1;
+        }
         return l2;
     }
 
@@ -73,5 +70,23 @@ public class GeneratedClasses {
         } catch (Throwable t) {
             throw new GeneralException(bc.getName()).setCause(t);
         }
+    }
+    
+    /**
+     * Return true if the given loader will load the same version of a given 
+     * class.  
+     * 
+     * @param loader Classloader to use.
+     * @param clazz  Expected class. 
+     * @return true if loader.load(clazz.getName()) == clazz. Otherwise false.
+     */
+    private static boolean canLoad(ClassLoader loader, Class clazz) {
+        Class loaded = null;
+        try {
+            loaded = loader.loadClass(clazz.getName());
+        } catch (ClassNotFoundException e) {
+            // Rely on caller to handle return value = false.
+        }
+        return clazz == loaded;
     }
 }
