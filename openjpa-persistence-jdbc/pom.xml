@@ -26,7 +26,7 @@
     <packaging>jar</packaging>
     <name>OpenJPA JPA JDBC</name>
     <description>OpenJPA JPA JDBC</description>
-    <url>http://incubator.apache.org/projects/openjpa</url>
+    <url>http://openjpa.apache.org</url>
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>

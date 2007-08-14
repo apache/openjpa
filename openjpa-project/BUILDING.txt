@@ -22,7 +22,7 @@ Apache Maven 2 build too. They are written for use from the console, and are
 known to work on Linux and Mac OSX. They are also reported to work from Windows.
 
 The most up to date version of these instructions may be found on the OpenJPA 
-website at http://incubator.apache.org/openjpa/building-openjpa.html
+website at http://openjpa.apache.org/building-openjpa.html
 
    1. Ensure that you have Java 1.5 installed and in your path by running:
       java -version
@@ -77,7 +77,7 @@ $ svn --version
 svn, version 1.1.4 (r13838)
    compiled Jul 10 2006, 22:17:43
 
-$ svn co https://svn.apache.org/repos/asf/incubator/openjpa/trunk/
+$ svn co https://svn.apache.org/repos/asf/openjpa/trunk/
 
 A  trunk/openjpa-lib
 A  trunk/openjpa-lib/src

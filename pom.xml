@@ -33,6 +33,7 @@
 
     <properties>
         <scm.dir>svn.apache.org/repos/asf/openjpa/trunk</scm.dir>
+        <openjpa.version>${pom.version}</openjpa.version>
     </properties>
 
     <!--
@@ -40,7 +41,7 @@
         See: http://jira.codehaus.org/browse/MNG-624
     -->
     <version>1.0.0-SNAPSHOT</version>
-    <url>http://incubator.apache.org/projects/openjpa</url>
+    <url>http://openjpa.apache.org</url>
     <issueManagement>
         <system>jira</system>
         <url>http://issues.apache.org/jira/browse/OPENJPA</url>
@@ -49,44 +50,44 @@
     <mailingLists>
         <mailingList>
             <name>OpenJPA Developer List</name>
-            <subscribe>open-jpa-dev-subscribe@incubator.apache.org</subscribe>
-            <unsubscribe>open-jpa-dev-unsubscribe@incubator.apache.org</unsubscribe>
-            <post>open-jpa-dev@incubator.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/incubator-open-jpa-dev/</archive>
+            <subscribe>dev-subscribe@apache.org</subscribe>
+            <unsubscribe>dev-unsubscribe@apache.org</unsubscribe>
+            <post>dev@openjpa.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/openjpa-dev/</archive>
+        </mailingList>
+        <mailingList>
+            <name>OpenJPA Users List</name>
+            <subscribe>users-subscribe@apache.org</subscribe>
+            <unsubscribe>users-unsubscribe@apache.org</unsubscribe>
+            <post>users@openjpa.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/openjpa-users/</archive>
         </mailingList>
         <mailingList>
             <name>OpenJPA Commits List</name>
-            <subscribe>open-jpa-commits-subscribe@incubator.apache.org</subscribe>
-            <unsubscribe>open-jpa-commits-unsubscribe@incubator.apache.org</unsubscribe>
-            <post>open-jpa-commits@incubator.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/incubator-open-jpa-commits/</archive>
+            <subscribe>commits-subscribe@openjpa.apache.org</subscribe>
+            <unsubscribe>commits-unsubscribe@openjpa.apache.org</unsubscribe>
+            <post>commits@openjpa.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/openjpa-commits/</archive>
         </mailingList>
     </mailingLists>
     <developers>
-        <developer>
-            <name>Patrick Linskey</name>
-            <id>plinskey</id>
-            <organization>BEA Systems, Inc.</organization>
-            <email>plinskey@bea.com</email>
-        </developer>
-        <developer>
-            <name>Abe White</name>
-            <id>awhite</id>
-            <organization>BEA Systems, Inc.</organization>
-            <email>awhite@bea.com</email>
-        </developer>
-        <developer>
-            <name>Steve Kim</name>
-            <id>stkim</id>
-            <organization>BEA Systems, Inc.</organization>
-            <email>stkim@bea.com</email>
-        </developer>
-        <developer>
-            <name>Marc Prud'hommeaux</name>
-            <id>mprudhom</id>
-            <organization>BEA Systems, Inc.</organization>
-            <email>mprudhom@bea.com</email>
-        </developer>
+        <!--
+            Committer list taken from http://openjpa.apache.org/committers.html
+        -->
+        <developer><name>Abe White</name></developer>
+        <developer><name>Brian McCallister</name></developer>
+        <developer><name>Bryan Noll</name></developer>
+        <developer><name>Craig Russell</name></developer>
+        <developer><name>David Wisneski</name></developer>
+        <developer><name>Eddie O'Neil</name></developer>
+        <developer><name>Geir Magnusson Jr.</name></developer>
+        <developer><name>Kevin Sutter</name></developer>
+        <developer><name>Marc Prud'hommeaux</name></developer>
+        <developer><name>Michael Dick</name></developer>
+        <developer><name>Patrick Linskey</name></developer>
+        <developer><name>Pinaki Poddar</name></developer>
+        <developer><name>Srinivasa Segu</name></developer>
+        <developer><name>Stephen Kim</name></developer>
     </developers>
     <licenses>
         <license>
@@ -212,6 +213,32 @@
         </profile>
 
         <profile>
+            <!--                        
+                Apache License check plugin. Run manually with:
+                    mvn rat:check
+                Or add it to the verify phase with:
+                    mvn verify -Plicense-verify-profile
+            -->  
+            <id>license-verify-profile</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>rat-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
             <id>enable-security</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
@@ -295,6 +322,38 @@
                         <useSystemClassLoader>true</useSystemClassLoader>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>rat-maven-plugin</artifactId>
+                    <configuration>
+                        <excludeSubProjects>false</excludeSubProjects>
+                        <numUnapprovedLicenses>0</numUnapprovedLicenses>
+                        <excludes>
+                            <!--
+                                comments are usupported by
+                                javax.persistence.Persistence
+                            -->
+                            <exclude>**/javax.persistence.spi.PersistenceProvider</exclude>
+
+                            <!--
+                                comments are usupported by our rsrc parser
+                            -->
+                            <exclude>**/*.rsrc</exclude>
+
+                            <!-- General informational files -->
+                            <exclude>openjpa-project/*.txt</exclude>
+                            <exclude>README.txt</exclude>
+                            <exclude>BUILDRELEASE</exclude>
+
+                            <!-- generated content -->
+                            <exclude>**/*.log</exclude>
+                            <exclude>**/rat.txt</exclude>
+                            <exclude>**/*.txt</exclude>
+                            <exclude>**/org.apache.openjpa.revision.properties</exclude>
+                            <exclude>**/target/**/*</exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -331,17 +390,17 @@
 
     <distributionManagement>
       <repository>
-        <id>people.apache.org</id>
-        <url>scpexe://${user.name}@people.apache.org/www/people.apache.org/repo/m2-incubating-repository/</url>
+        <id>local-repository</id>
+        <url>${basedir}/target/site/m2-repository/</url>
       </repository>
       <snapshotRepository>
-        <id>people.apache.org</id>
-        <url>scpexe://${user.name}@people.apache.org/www/people.apache.org/repo/m2-snapshot-repository/</url>
+        <id>local-repository</id>
+        <url>${basedir}/target/site/m2-repository/</url>
         <uniqueVersion>false</uniqueVersion>
       </snapshotRepository>
       <site>
         <id>people.apache.org</id>
-        <url>scpexe://${user.name}@people.apache.org/home/mprudhom/public_html/openjpa/site/</url>
+        <url>scpexe://${user.name}@people.apache.org/www/openjpa.apache.org/builds/${pom.version}</url>
       </site>
     </distributionManagement>
 </project>

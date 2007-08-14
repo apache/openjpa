@@ -48,10 +48,11 @@
         <openjpa.release.keyAlias>
             ${user.name}@apache.org
         </openjpa.release.keyAlias>
+
         <openjpa.assembly.finalName>
             ${artifactId}-${version}</openjpa.assembly.finalName>
         <openjpa.assembly.outputDirectory>
-            ${project.basedir}/target/assembly
+            ${project.basedir}/../target/site/downloads
         </openjpa.assembly.outputDirectory>
 
         <openjpa.assembly.binarySuffix>binary</openjpa.assembly.binarySuffix>
@@ -69,6 +70,7 @@
         <openjpa.assembly.sourceFile>
             ${openjpa.assembly.sourceBase}.zip
         </openjpa.assembly.sourceFile>
+
 
         <docbook.source>${project.basedir}/src/doc/manual</docbook.source>
         <docbook.target>${project.basedir}/target/manual</docbook.target>
@@ -120,7 +122,7 @@
                         </goals>
                         <configuration>
                             <descriptor>source-assembly.xml</descriptor>
-                            <outputDirectory>${project.basedir}/target/assembly</outputDirectory>
+                            <outputDirectory>${openjpa.assembly.outputDirectory}</outputDirectory>
                             <workDirectory>target/work</workDirectory>
                         </configuration>
                     </execution>

@@ -50,22 +50,33 @@
                 <executions>
                     <execution>
                         <id>run-examples</id>
-                        <phase>integration-test</phase>
+                        <phase>process-resources</phase>
+                        <!-- ### <phase>integration-test</phase> -->
                         <configuration>
                         <tasks>
                         <echo>Running OpenJPA Examples</echo>
 
-
                         <property name="examples.base"
                             value="${basedir}/target/examples"/>
                         <mkdir dir="${examples.base}"/>
-                        <unzip overwrite="false" dest="${examples.base}">
-                        <fileset dir="../../openjpa-project/target/assembly">
-                            <include name="openjpa-*${version}-binary.zip"/>
-                        </fileset>
-                        </unzip>
 
-                        <subant inheritAll="false">
+                        <unzip overwrite="false" dest="${examples.base}"
+                            src="../../target/site/downloads/apache-openjpa-${pom.version}-binary.zip"/>
+
+                        <path id="assembly.classpath"> 
+                            <fileset dir="${examples.base}">
+                                <include name="**/*.jar"/>
+                            </fileset>
+                        </path>
+                        <available
+                            classname="org.apache.openjpa.conf.OpenJPAVersion"
+                            classpathref="assembly.classpath"
+                            property="unzip.success"/>
+                        <fail unless="unzip.success">
+                            Could not extract assembly.
+                        </fail>
+
+                        <subant inheritAll="false" failonerror="true">
                             <fileset dir="${examples.base}"
                                 includes="*/examples/*/build.xml"/>
                         </subant>
