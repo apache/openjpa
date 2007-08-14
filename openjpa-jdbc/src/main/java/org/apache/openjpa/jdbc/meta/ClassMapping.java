@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
@@ -190,33 +189,8 @@ public class ClassMapping
             }
         }
         Object oid = ApplicationIds.fromPKValues(vals, cls);
-        if (oid instanceof OpenJPAId) {
-            Class type = cls.getDescribedType();
-            if (!subs)
-                // non-polymorphic relations
-                ((OpenJPAId) oid).setManagedInstanceType(type);
-            else if (cls.getDiscriminator() != null
-                && !StringUtils.equals("none",
-                    cls.getDiscriminator().getStrategy().getAlias())) {
-                // for polymorphic relations,
-                // the type field in the oid is initially set to base type.
-                // If the discriminator value is preset in the current result,
-                // then the type field needs reset based on discriminator value.
-                // If the discriminator value is not present or invalid,
-                // ignore any exceptions being thrown.
-                // The discriminator value can potentially be null in the 
-                // database because the mapping tool does not enforce the 
-                // discriminator column 'not null'.
-                // We can not prevent other non-jpa applications from inserting
-                // a null or invalid discriminator value.
-                res.startDataRequest(cls.getDiscriminator());
-                try {
-                    type = cls.getDiscriminator().getClass(store, cls, res);
-                    ((OpenJPAId) oid).setManagedInstanceType(type);
-                } catch (Exception e) {}
-                res.endDataRequest();  
-            } 
-        }
+        if (!subs && oid instanceof OpenJPAId)
+            ((OpenJPAId) oid).setManagedInstanceType(cls.getDescribedType());
         return oid;
     }
 
