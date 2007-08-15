@@ -19,8 +19,6 @@
 package org.apache.openjpa.enhance;
 
 import java.io.IOException;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
@@ -30,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.BytecodeWriter;
 import org.apache.openjpa.lib.util.Localizer;
@@ -172,19 +169,9 @@ public class ManagedClassSubclasser {
         }
     }
 
-    private static void write(final BCClass bc, PCEnhancer enhancer,
+    private static void write(BCClass bc, PCEnhancer enhancer,
         Map<Class, byte[]> map, Class cls, List subs, List ints)
         throws IOException {
-
-        // #####
-        java.io.File dir = org.apache.openjpa.lib.util.Files.getPackageFile(
-            new java.io.File("subs"), bc.getPackageName(), true);
-        try {
-            AccessController.doPrivileged(J2DoPrivHelper.bCClassWrite(bc,
-                    new java.io.File(dir, bc.getClassName() + ".class")));
-        } catch (PrivilegedActionException pae) {
-            throw (IOException) pae.getException();
-        }
 
         if (bc == enhancer.getManagedTypeBytecode()) {
             // if it was already defined, don't put it in the map,
