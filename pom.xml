@@ -391,11 +391,11 @@
     <distributionManagement>
       <repository>
         <id>local-repository</id>
-        <url>${basedir}/target/site/m2-repository/</url>
+        <url>file://${basedir}/target/site/m2-repository/</url>
       </repository>
       <snapshotRepository>
         <id>local-repository</id>
-        <url>${basedir}/target/site/m2-repository/</url>
+        <url>file://${basedir}/target/site/m2-repository/</url>
         <uniqueVersion>false</uniqueVersion>
       </snapshotRepository>
       <site>
