@@ -170,7 +170,8 @@ public class AnnotationPersistenceXMLMetaDataParser {
     private XMLMetaData parseXMLClassAnnotations() {
         // check immediately whether the class has JAXB XML annotations
         if (_cls == null || xmlTypeClass == null
-            || !_cls.isAnnotationPresent(xmlTypeClass))
+            || !(_cls.isAnnotationPresent(xmlTypeClass)
+                && _cls.isAnnotationPresent(xmlRootElementClass)))
             return null;
 
         // find / create metadata
