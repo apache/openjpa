@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
@@ -189,8 +190,34 @@ public class ClassMapping
             }
         }
         Object oid = ApplicationIds.fromPKValues(vals, cls);
-        if (!subs && oid instanceof OpenJPAId)
-            ((OpenJPAId) oid).setManagedInstanceType(cls.getDescribedType());
+        
+        /**
+         * For polymorphic relations,
+         * the type field in the oid is initially set to base type.
+         * If the discriminator value is preset in the current result,
+         * then the type field needs reset based on the discriminator value.
+         * If the discriminator value is not present or invalid,
+         * ignore any exceptions being thrown.
+         */        
+        if (oid instanceof OpenJPAId) {
+            Class type = cls.getDescribedType();
+            if (!subs)
+                // non-polymorphic relations
+                ((OpenJPAId) oid).setManagedInstanceType(type);
+            else if (cls.getDiscriminator() != null
+                && !StringUtils.equals("none",
+                    cls.getDiscriminator().getStrategy().getAlias())) {
+                // polymorphic relations
+                res.startDataRequest(cls.getDiscriminator());
+                try {
+                    type = cls.getDiscriminator().getClass(store, cls, res);
+                    ((OpenJPAId) oid).setManagedInstanceType(type, true);
+                } catch (Exception e) {
+                    // intentionally ignored
+                }
+                res.endDataRequest();  
+            } 
+        }
         return oid;
     }
 

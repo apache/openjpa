@@ -78,6 +78,14 @@ public abstract class OpenJPAId
     }
 
     /**
+     * Set the exact type of the described instance once it is known.
+     */
+    public void setManagedInstanceType(Class type, boolean subs) {
+        this.type = type;
+        this.subs = subs;
+    }
+
+    /**
      * Return the identity value as an object.
      */
     public abstract Object getIdObject();
