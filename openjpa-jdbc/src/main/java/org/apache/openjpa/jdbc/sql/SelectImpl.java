@@ -124,6 +124,7 @@ public class SelectImpl
     // combined list of selected ids and map of each id to its alias
     protected final Selects _selects = newSelects();
     private List _ordered = null;
+    private List _grouped = null;
 
     // flags
     private int _flags = 0;
@@ -1371,11 +1372,7 @@ public class SelectImpl
 
     public void groupBy(SQLBuffer sql, Joins joins) {
         getJoins(joins, true);
-        if (_grouping == null)
-            _grouping = new SQLBuffer(_dict);
-        else
-            _grouping.append(", ");
-        _grouping.append(sql);
+        groupByAppend(sql.getSQL());
     }
 
     public void groupBy(String sql) {
@@ -1384,11 +1381,7 @@ public class SelectImpl
 
     public void groupBy(String sql, Joins joins) {
         getJoins(joins, true);
-        if (_grouping == null)
-            _grouping = new SQLBuffer(_dict);
-        else
-            _grouping.append(", ");
-        _grouping.append(sql);
+        groupByAppend(sql);
     }
 
     public void groupBy(Column col) {
@@ -1396,13 +1389,8 @@ public class SelectImpl
     }
 
     public void groupBy(Column col, Joins joins) {
-        if (_grouping == null)
-            _grouping = new SQLBuffer(_dict);
-        else
-            _grouping.append(", ");
-
         PathJoins pj = getJoins(joins, true);
-        _grouping.append(getColumnAlias(col, pj));
+        groupByAppend(getColumnAlias(col, pj));
     }
 
     public void groupBy(Column[] cols) {
@@ -1410,16 +1398,22 @@ public class SelectImpl
     }
 
     public void groupBy(Column[] cols, Joins joins) {
-        if (_grouping == null)
-            _grouping = new SQLBuffer(_dict);
-        else
-            _grouping.append(", ");
-
         PathJoins pj = getJoins(joins, true);
         for (int i = 0; i < cols.length; i++) {
-            if (i > 0)
+            groupByAppend(getColumnAlias(cols[i], pj));
+        }
+    }
+    
+    private void groupByAppend(String sql) {
+        if (_grouped == null || !_grouped.contains(sql)) {
+            if (_grouping == null) {
+                _grouping = new SQLBuffer(_dict);
+                _grouped = new ArrayList();
+            } else
                 _grouping.append(", ");
-            _grouping.append(getColumnAlias(cols[i], pj));
+
+            _grouping.append(sql);
+            _grouped.add(sql);
         }
     }
 
