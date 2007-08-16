@@ -88,7 +88,8 @@ public class DB2Dictionary
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "LONG VARCHAR FOR BIT DATA", "LONG VARCHAR", "LONG VARGRAPHIC",
         }));
-
+        systemSchemas = new String(
+                "SYSCAT, SYSIBM, SYSSTAT, SYSIBMADM, SYSTOOLS");
         maxConstraintNameLength = 18;
         maxIndexNameLength = 18;
         maxColumnNameLength = 30;
