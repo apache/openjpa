@@ -803,7 +803,7 @@ public class ConfigurationImpl
         ConfigurationImpl conf = (ConfigurationImpl) other;
         Map p1 = (_props == null) ? toProperties(false) : _props;
         Map p2 = (conf._props == null) ? conf.toProperties(false) : conf._props;
-        return p1.equals(p2);
+        return excludeDynamic(p1).equals(excludeDynamic(p2));
     }
 
     /**
@@ -811,9 +811,8 @@ public class ConfigurationImpl
      * {@link #toProperties}.
      */
     public int hashCode() {
-        if (_props != null)
-            return _props.hashCode();
-        return toProperties(false).hashCode();
+    	Map copy = (_props == null) ? toProperties(false) : _props;
+    	return excludeDynamic(copy).hashCode();
     }
 
     /**
@@ -988,5 +987,36 @@ public class ConfigurationImpl
         PluginListValue val = new PluginListValue(property);
         addValue(val);
         return val;
+    }
+    
+    public void modifyDynamic(String property, Object newValue) {
+    	if (!isDynamic(property)) 
+    		throw new RuntimeException(_loc.get("not-dynamic", property)
+    			.toString());
+    	Value value = getValue(property);
+    	value.setObject(newValue);
+    }
+    
+    public boolean isDynamic(String property) {
+    	Value[] dynamicValues = getDynamicValues();
+    	for (int i=0; i<dynamicValues.length; i++) 
+    		if (dynamicValues[i].getProperty().equals(property))
+    			return true;
+    	return false;
+    }
+    
+    public Value[] getDynamicValues() {
+    	return new Value[0];
+    }
+    
+    Map excludeDynamic(Map map) {
+    	if (map == null)
+    		return null;
+    	Map copy = new HashMap(map);
+    	Value[] dynamicValues = getDynamicValues();
+    	for (int i=0; i<dynamicValues.length; i++) {
+    		Configurations.removeProperty(dynamicValues[i].getProperty(), copy);
+    	}
+    	return copy;
     }
 }

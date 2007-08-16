@@ -1437,4 +1437,9 @@ public class OpenJPAConfigurationImpl
     public Log getConfigurationLog() {
         return getLog(LOG_RUNTIME);
     }
+    
+    public Value[] getDynamicValues() {
+    	return new Value[] {dataCacheTimeout,fetchBatchSize,lockTimeout};
+    }
+
 }
