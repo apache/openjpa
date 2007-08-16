@@ -455,14 +455,47 @@ public class MappingDefaultsImpl
         return null;
     }
 
+    /**
+     * Provides a default value for the given Discriminator. 
+     * 
+     * <P>
+     * The type of the object returned relies on the javaType field being set on 
+     * the Discriminator which is provided.
+     * <TABLE border="2"> 
+     * <TH>JavaType
+     * <TH>Default value
+     * <TBODY>
+     * <TR><TD>{@link JavaTypes.INT}<TD> The hashcode of the entity name</TR>
+     * <TR><TD>{@link JavaTypes.CHAR}<TD>The first character of the entity name 
+     * </TR>
+     * <TR><TD>{@link JavaTypes.STRING}<TD>The entity name</TR>
+     * </TBODY>
+     * </TABLE>
+     * 
+     * @param disc The discriminator that needs a default value
+     * @param adapt 
+     * 
+     * @return A new object containing the generated Discriminator value.
+     */
     public Object getDiscriminatorValue(Discriminator disc, boolean adapt) {
         if (!adapt && !defaultMissingInfo())
             return null;
 
         // WARNING: CHANGING THIS WILL INVALIDATE EXISTING DATA IF DEFAULTING
         // MISSING MAPPING INFO
-        return Strings.getClassName(disc.getClassMapping().
-            getDescribedType());
+        
+        String alias = Strings.getClassName(disc.getClassMapping()
+                .getTypeAlias());
+        
+        switch (disc.getJavaType()) {
+            case JavaTypes.INT:
+                return new Integer(alias.hashCode());
+            case JavaTypes.CHAR:
+                return new Character(alias.charAt(0)); 
+            case JavaTypes.STRING:
+            default:
+                return alias;
+        }
     }
 
     public String getTableName(ClassMapping cls, Schema schema) {

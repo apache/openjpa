@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.meta;
 
 import java.lang.reflect.Modifier;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.SuperclassDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.ValueMapDiscriminatorStrategy;
@@ -28,6 +29,7 @@ import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
@@ -45,7 +47,7 @@ public class DiscriminatorMappingInfo
         (DiscriminatorMappingInfo.class);
 
     private String _value = null;
-
+    
     /**
      * Raw discriminator value string.
      */
@@ -66,28 +68,20 @@ public class DiscriminatorMappingInfo
     public Object getValue(Discriminator discrim, boolean adapt) {
         if (discrim.getValue() != null)
             return discrim.getValue();
-        if (_value == null)
+        if (StringUtils.isEmpty(_value)) {
             return discrim.getMappingRepository().getMappingDefaults().
                 getDiscriminatorValue(discrim, adapt);
-
-        if (_value.length() > 0 && (_value.charAt(0) == '-' 
-            || Character.isDigit(_value.charAt(0)))) {
-            try {
-                if (_value.indexOf('.') == -1)
-                    return new Integer(_value);
-                return new Double(_value);
-            } catch (RuntimeException re) {
-                throw new MetaDataException(_loc.get("bad-discrim-value",
-                    discrim.getClassMapping(), _value));
-            }
         }
-        if ("null".equalsIgnoreCase(_value))
-            return Discriminator.NULL;
-
-        // strip quotes
-        if (_value.length() > 0 && _value.charAt(0) == '\'')
-            return _value.substring(1, _value.length() - 1);
-        return _value;
+        
+        switch(discrim.getJavaType()) { 
+            case JavaTypes.INT:
+                return Integer.valueOf(_value);
+            case JavaTypes.CHAR:
+               return Character.valueOf(_value.charAt(_value.indexOf('\'')+1));
+            case JavaTypes.STRING:
+            default: 
+                return _value;
+        }
     }
 
     /**

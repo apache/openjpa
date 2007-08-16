@@ -33,6 +33,7 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -64,6 +65,8 @@ public class Discriminator
     private Index _idx = null;
     private boolean _subsLoaded = false;
     private Object _value = null;
+    
+    private int _javaType = -1; 
 
     /**
      * Constructor. Supply owning mapping.
@@ -412,5 +415,22 @@ public class Discriminator
 
     public String toString() {
         return _mapping + "<discriminator>";
+    }
+    
+    public void setJavaType(int javaType) {
+        _javaType = javaType;
+    }
+    
+    public int getJavaType() {
+        if (_javaType == -1) {
+            ClassMapping superMapping = _mapping.getPCSuperclassMapping();
+
+            if (superMapping != null && 
+                superMapping.getDiscriminator() != null) {
+                _javaType = superMapping.getDiscriminator().getJavaType();
+            }
+        }
+
+        return _javaType;
     }
 }

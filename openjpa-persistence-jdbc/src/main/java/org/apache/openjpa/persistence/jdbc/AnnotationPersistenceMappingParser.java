@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.jdbc;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Modifier;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,6 +58,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.ClassMappingInfo;
+import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.MappingInfo;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
@@ -262,6 +264,12 @@ public class AnnotationPersistenceMappingParser
                 case DISCRIM_VAL:
                     cm.getDiscriminator().getMappingInfo().setValue
                         (((DiscriminatorValue) anno).value());
+                    if (Modifier.isAbstract(cm.getDescribedType().
+                            getModifiers()) && getLog().isInfoEnabled()) {
+                        getLog().info(
+                            _loc.get("discriminator-on-abstract-class", cm
+                                    .getDescribedType().getName()));
+                    }
                     break;
                 case INHERITANCE:
                     parseInheritance(cm, (Inheritance) anno);
@@ -525,18 +533,22 @@ public class AnnotationPersistenceMappingParser
             col.setName(dcol.name());
         if (!StringUtils.isEmpty(dcol.columnDefinition()))
             col.setTypeName(dcol.columnDefinition());
+        Discriminator discrim = cm.getDiscriminator();
         switch (dcol.discriminatorType()) {
             case CHAR:
                 col.setJavaType(JavaTypes.CHAR);
+                discrim.setJavaType(JavaTypes.CHAR);
                 break;
             case INTEGER:
                 col.setJavaType(JavaTypes.INT);
                 if (dcol.length() != 31)
                     col.setSize(dcol.length());
+                discrim.setJavaType(JavaTypes.INT);
                 break;
             default:
                 col.setJavaType(JavaTypes.STRING);
                 col.setSize(dcol.length());
+                discrim.setJavaType(JavaTypes.STRING);
         }
         cm.getDiscriminator().getMappingInfo().setColumns
             (Arrays.asList(new Column[]{ col }));
