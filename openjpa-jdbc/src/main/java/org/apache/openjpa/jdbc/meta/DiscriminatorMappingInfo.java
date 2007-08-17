@@ -77,7 +77,7 @@ public class DiscriminatorMappingInfo
             case JavaTypes.INT:
                 return Integer.valueOf(_value);
             case JavaTypes.CHAR:
-               return Character.valueOf(_value.charAt(_value.indexOf('\'')+1));
+               return new Character(_value.charAt(_value.indexOf('\'')+1));
             case JavaTypes.STRING:
             default: 
                 return _value;
