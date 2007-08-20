@@ -77,7 +77,7 @@ public interface JDBCFetchPlan
     public int getFetchDirection();
 
     /**
-     * Result set fetch direction. // ##### what to do here?
+     * Result set fetch direction.
      * 
      * @see java.sql.ResultSet
      */
