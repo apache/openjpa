@@ -314,8 +314,7 @@ public abstract class AbstractUnenhancedClassTest
 
             // make sure that the value was cleared...
             Field field = getUnenhancedClass().getDeclaredField(
-                this instanceof TestUnenhancedFieldAccess
-                    ? "stringField" : "sf");
+                isFieldAccessTest() ? "stringField" : "sf");
             field.setAccessible(true);
             assertEquals(null, field.get(un));
 
@@ -331,14 +330,15 @@ public abstract class AbstractUnenhancedClassTest
 
             // make sure that the value was not cleared
             Field field = getUnenhancedClass().getDeclaredField(
-                this instanceof TestUnenhancedFieldAccess
-                    ? "stringField" : "sf");
+                isFieldAccessTest() ? "stringField" : "sf");
             field.setAccessible(true);
             assertEquals("foo", field.get(un));
         }
 
         em.close();
     }
+
+    protected abstract boolean isFieldAccessTest();
 
     public void testLazyLoading()
         throws NoSuchFieldException, IllegalAccessException {

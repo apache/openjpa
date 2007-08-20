@@ -2608,7 +2608,7 @@ public class PCEnhancer {
         Code code = getOrCreateClassInitCode(true);
         if (_meta.getPCSuperclass() != null) {
             if (getCreateSubclass()) {
-                code.constant().setValue(_meta.getFields().length);
+                code.constant().setValue(0);
                 code.putstatic().setField(INHERIT, int.class);
             } else {
                 // pcInheritedFieldCount = <superClass>.pcGetManagedFieldCount()

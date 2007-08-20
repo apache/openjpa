@@ -36,4 +36,8 @@ public class TestUnenhancedFieldAccess
     protected UnenhancedSubtype newUnenhancedSubclassInstance() {
         return new UnenhancedFieldAccessSubclass();
     }
+
+    protected boolean isFieldAccessTest() {
+        return true;
+    }
 }

@@ -128,41 +128,41 @@ public class ApplicationIds {
                     if (!convert && !(val instanceof Byte))
                         throw new ClassCastException("!(x instanceof Byte)");
                     return new ByteId(meta.getDescribedType(),
-                        ((Number) val).byteValue());
+                        val == null ? 0 : ((Number) val).byteValue());
                 case JavaTypes.CHAR:
                 case JavaTypes.CHAR_OBJ:
                     return new CharId(meta.getDescribedType(),
-                        ((Character) val).charValue());
+                        val == null ? 0 : ((Character) val).charValue());
                 case JavaTypes.DOUBLE:
                 case JavaTypes.DOUBLE_OBJ:
                     if (!convert && !(val instanceof Double))
                         throw new ClassCastException("!(x instanceof Double)");
                     return new DoubleId(meta.getDescribedType(),
-                        ((Number) val).doubleValue());
+                        val == null ? 0 : ((Number) val).doubleValue());
                 case JavaTypes.FLOAT:
                 case JavaTypes.FLOAT_OBJ:
                     if (!convert && !(val instanceof Float))
                         throw new ClassCastException("!(x instanceof Float)");
                     return new FloatId(meta.getDescribedType(),
-                        ((Number) val).floatValue());
+                        val == null ? 0 : ((Number) val).floatValue());
                 case JavaTypes.INT:
                 case JavaTypes.INT_OBJ:
                     if (!convert && !(val instanceof Integer))
                         throw new ClassCastException("!(x instanceof Integer)");
                     return new IntId(meta.getDescribedType(),
-                        ((Number) val).intValue());
+                        val == null ? 0 : ((Number) val).intValue());
                 case JavaTypes.LONG:
                 case JavaTypes.LONG_OBJ:
                     if (!convert && !(val instanceof Long))
                         throw new ClassCastException("!(x instanceof Long)");
                     return new LongId(meta.getDescribedType(),
-                        ((Number) val).longValue());
+                        val == null ? 0 : ((Number) val).longValue());
                 case JavaTypes.SHORT:
                 case JavaTypes.SHORT_OBJ:
                     if (!convert && !(val instanceof Short))
                         throw new ClassCastException("!(x instanceof Short)");
                     return new ShortId(meta.getDescribedType(),
-                        ((Number) val).shortValue());
+                        val == null ? 0 : ((Number) val).shortValue());
                 case JavaTypes.STRING:
                     return new StringId(meta.getDescribedType(), (String) val);
                 case JavaTypes.DATE:
