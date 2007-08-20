@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.jdbc;
 import java.util.Collection;
 import javax.persistence.LockModeType;
 
-import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.persistence.FetchPlan;
 
 /**
