@@ -50,8 +50,7 @@
                 <executions>
                     <execution>
                         <id>run-examples</id>
-                        <phase>process-resources</phase>
-                        <!-- ### <phase>integration-test</phase> -->
+                        <phase>integration-test</phase>
                         <configuration>
                         <tasks>
                         <echo>Running OpenJPA Examples</echo>
