@@ -58,16 +58,16 @@ public interface OpenJPAEntityManagerSPI
 
     /**
      * The {@link CallbackType} flag for handling transaction listener
-     * exceptions.
+     * exceptions. The flags provided here will entirely replace the
+     * previous settings.
      */
-    // ##### check for overwrite behavior; javadoc
     public void setTransactionListenerCallbackMode(CallbackType type);
 
     /**
      * The {@link CallbackType} flags for handling transaction listener
-     * exceptions.
+     * exceptions. The flags provided here will entirely replace the
+     * previous settings.
      */
-    // ##### check for overwrite behavior; javadoc
     public void setTransactionListenerCallbackMode(EnumSet<CallbackType> types);
 
     /**
@@ -90,15 +90,15 @@ public interface OpenJPAEntityManagerSPI
 
     /**
      * The {@link CallbackType} flag for handling lifecycle listener
-     * exceptions.
+     * exceptions. The flags provided here will entirely replace the
+     * previous settings.
      */
-    // ##### check for overwrite behavior; javadoc
     public void setLifecycleListenerCallbackMode(CallbackType type);
 
     /**
      * The {@link CallbackType} flags for handling lifecycle listener
-     * exceptions.
+     * exceptions. The flags provided here will entirely replace the
+     * previous settings.
      */
-    // ##### check for overwrite behavior; javadoc
     public void setLifecycleListenerCallbackMode(EnumSet<CallbackType> types);
 }
