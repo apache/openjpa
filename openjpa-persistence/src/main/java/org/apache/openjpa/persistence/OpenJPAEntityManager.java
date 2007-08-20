@@ -34,8 +34,6 @@ import javax.persistence.Query;
 public interface OpenJPAEntityManager
     extends EntityManager {
 
-    // ##### covariant types?
-
     /**
      * Return the factory that produced this entity manager.
      */
