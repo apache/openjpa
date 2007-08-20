@@ -18,11 +18,9 @@
  */
 package org.apache.openjpa.persistence.fields;
 
-import javax.persistence.EntityManager;
-
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 
 public class TestPersistentMapTableConfiguration
@@ -33,7 +31,7 @@ public class TestPersistentMapTableConfiguration
     }
 
     public void testPersistentMapMetaData() {
-        ClassMapping cm = (ClassMapping) OpenJPAPersistence.getMetaData(emf,
+        ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(emf,
             NonstandardMappingEntity.class);
         assertEquals("NONSTD_MAPPING_MAP",
             cm.getFieldMapping("map").getTable().getName());

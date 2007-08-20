@@ -23,10 +23,6 @@ import java.util.Map;
 import java.util.Properties;
 import javax.persistence.EntityManagerFactory;
 
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.kernel.ConnectionRetainModes;
-import org.apache.openjpa.lib.util.Closeable;
-
 /**
  * Interface implemented by OpenJPA entity manager factories.
  *
@@ -35,13 +31,7 @@ import org.apache.openjpa.lib.util.Closeable;
  * @published
  */
 public interface OpenJPAEntityManagerFactory
-    extends EntityManagerFactory, ConnectionRetainModes, Closeable,
-    Serializable {
-
-    /**
-     * Return the configuration for this factory.
-     */
-    public OpenJPAConfiguration getConfiguration();
+    extends EntityManagerFactory, Serializable {
 
     /**
      * Return properties describing this runtime.
@@ -88,39 +78,4 @@ public interface OpenJPAEntityManagerFactory
      * </ul>
      */
     public OpenJPAEntityManager createEntityManager(Map props);
-
-    /**
-     * Register a listener for lifecycle-related events on the specified
-     * classes. If the classes are null, all events will be propagated to
-     * the listener. The listener will be passed on to all new entity
-     * managers. See the <code>org.apache.openjpa.event</code> package for
-     * listener types.
-     *
-     * @since 0.3.3
-     */
-    public void addLifecycleListener(Object listener, Class... classes);
-
-    /**
-     * Remove a listener for lifecycle-related events.
-     *
-     * @since 0.3.3
-     */
-    public void removeLifecycleListener (Object listener);
-
-    /**
-     * Register a listener for transaction-related events on the specified
-     * classes. The listener will be passed on to all new entity
-     * managers. See the <code>org.apache.openjpa.event</code> package for
-     * listener types.
-     *
-     * @since 1.0.0
-     */
-    public void addTransactionListener(Object listener);
-
-    /**
-     * Remove a listener for transaction-related events.
-     *
-     * @since 1.0.0
-     */
-    public void removeTransactionListener (Object listener);
 }

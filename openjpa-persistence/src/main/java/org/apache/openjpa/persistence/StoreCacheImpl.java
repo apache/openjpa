@@ -50,13 +50,16 @@ public class StoreCacheImpl
             PersistenceExceptions.TRANSLATOR);
     }
 
+    /**
+     * Delegate.
+     */
     public DataCache getDelegate() {
         return _cache.getDelegate();
     }
 
     public boolean contains(Class cls, Object oid) {
         return _cache.getDelegate() != null && _cache.contains
-            (OpenJPAPersistence.toOpenJPAObjectId(getMetaData(cls), oid));
+            (JPAFacadeHelper.toOpenJPAObjectId(getMetaData(cls), oid));
     }
 
     public boolean containsAll(Class cls, Object... oids) {
@@ -67,7 +70,7 @@ public class StoreCacheImpl
         if (_cache.getDelegate() == null)
             return oids.isEmpty();
 
-        BitSet set = _cache.containsAll(OpenJPAPersistence.toOpenJPAObjectIds
+        BitSet set = _cache.containsAll(JPAFacadeHelper.toOpenJPAObjectIds
             (getMetaData(cls), oids));
         for (int i = 0; i < oids.size(); i++)
             if (!set.get(i))
@@ -77,7 +80,7 @@ public class StoreCacheImpl
 
     public void pin(Class cls, Object oid) {
         if (_cache.getDelegate() != null)
-            _cache.pin(OpenJPAPersistence.toOpenJPAObjectId(getMetaData(cls), 
+            _cache.pin(JPAFacadeHelper.toOpenJPAObjectId(getMetaData(cls),
                 oid));
     }
 
@@ -87,13 +90,13 @@ public class StoreCacheImpl
 
     public void pinAll(Class cls, Collection oids) {
         if (_cache.getDelegate() != null)
-            _cache.pinAll(OpenJPAPersistence.toOpenJPAObjectIds
+            _cache.pinAll(JPAFacadeHelper.toOpenJPAObjectIds
                 (getMetaData(cls), oids));
     }
 
     public void unpin(Class cls, Object oid) {
         if (_cache.getDelegate() != null)
-            _cache.unpin(OpenJPAPersistence.toOpenJPAObjectId(getMetaData(cls),
+            _cache.unpin(JPAFacadeHelper.toOpenJPAObjectId(getMetaData(cls),
                 oid));
     }
 
@@ -103,13 +106,13 @@ public class StoreCacheImpl
 
     public void unpinAll(Class cls, Collection oids) {
         if (_cache.getDelegate() != null)
-            _cache.unpinAll(OpenJPAPersistence.toOpenJPAObjectIds
+            _cache.unpinAll(JPAFacadeHelper.toOpenJPAObjectIds
                 (getMetaData(cls), oids));
     }
 
     public void evict(Class cls, Object oid) {
         if (_cache.getDelegate() != null)
-            _cache.remove(OpenJPAPersistence.toOpenJPAObjectId(getMetaData(cls),
+            _cache.remove(JPAFacadeHelper.toOpenJPAObjectId(getMetaData(cls),
                 oid));
     }
 
@@ -119,7 +122,7 @@ public class StoreCacheImpl
 
     public void evictAll(Class cls, Collection oids) {
         if (_cache.getDelegate() != null)
-            _cache.removeAll(OpenJPAPersistence.toOpenJPAObjectIds
+            _cache.removeAll(JPAFacadeHelper.toOpenJPAObjectIds
                 (getMetaData(cls), oids));
     }
 

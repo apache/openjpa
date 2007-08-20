@@ -24,7 +24,7 @@ import javax.persistence.OptimisticLockException;
 import javax.persistence.RollbackException;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -54,7 +54,7 @@ public class TestBulkUpdatesAndVersionColumn
     }
 
     public void testOplockFieldMapping() {
-        ClassMapping cm = (ClassMapping) OpenJPAPersistence.getMetaData(
+        ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(
             emf, OptimisticLockInstance.class);
         FieldMapping fm = cm.getFieldMapping("oplock");
         assertEquals(1, fm.getColumns().length);

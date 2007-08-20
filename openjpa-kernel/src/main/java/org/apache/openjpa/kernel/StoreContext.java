@@ -120,7 +120,7 @@ public interface StoreContext {
      * @param oids the oids of the objects to return
      * @return the objects that were looked up, in the same order as the oids
      * parameter
-     * @see #find(Object,boolean,call)
+     * @see #find(Object,boolean,FindCallbacks)
      */
     public Object[] findAll(Collection oids, boolean validate,
         FindCallbacks call);
@@ -373,25 +373,28 @@ public interface StoreContext {
 
     /**
      * Whether memory usage is reduced during this transaction at the expense
-     * of possibly more aggressive data cache evictions.
+     * of tracking changes at the type level instead of the instance level,
+     * resulting in more aggressive cache invalidation.
      *
-     * @since 0.3.4
+     * @since 1.0.0
      */
-    public boolean isLargeTransaction();
+    public boolean isTrackChangesByType();
 
     /**
      * If a large number of objects will be created, modified, or deleted
      * during this transaction setting this option to true will reduce memory
-     * usage if you perform periodic flushes. Upon transaction commit the
-     * data cache will have to more aggressively flush objects. The store cache
-     * will have to flush instances of objects for each class of object
-     * modified during the transaction. A side benefit of large transaction
-     * mode is that smaller update messages can be used for
+     * usage if you perform periodic flushes by tracking changes at the type
+     * level instead of the instance level, resulting in more aggressive cache
+     * invalidation. Upon transaction commit the data cache will have to
+     * more aggressively flush objects. The store cache will have to flush
+     * instances of objects for each class of object modified during the
+     * transaction. A side benefit of large transaction mode is that smaller
+     * update messages can be used for
      * {@link org.apache.openjpa.event.RemoteCommitEvent}s. Defaults to false.
      *
-     * @since 0.3.4
+     * @since 1.0.0
      */
-    public void setLargeTransaction(boolean largeTransaction);
+    public void setTrackChangesByType(boolean largeTransaction);
 
     /**
      * Whether this context is using managed transactions.

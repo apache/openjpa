@@ -35,6 +35,8 @@ import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.*;
 import org.apache.openjpa.persistence.xmlmapping.entities.*;
@@ -52,7 +54,7 @@ public class TestXMLCustomerOrder
     private boolean enabled = false;
 
     public void setUp() {
-        OpenJPAEntityManagerFactory emf = createEMF();
+        OpenJPAEntityManagerFactorySPI emf = createEMF();
         DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration())
             .getDBDictionaryInstance();
 
@@ -79,8 +81,7 @@ public class TestXMLCustomerOrder
         if (!enabled)
             return;
 
-        OpenJPAEntityManager em =
-            OpenJPAPersistence.cast(emf.createEntityManager());
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
             .getDBDictionaryInstance();
 

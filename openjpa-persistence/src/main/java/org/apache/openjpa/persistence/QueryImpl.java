@@ -38,6 +38,7 @@ import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.DelegatingQuery;
 import org.apache.openjpa.kernel.DelegatingResultList;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.rop.ResultList;
@@ -52,7 +53,7 @@ import org.apache.openjpa.enhance.Reflection;
  * @nojavadoc
  */
 public class QueryImpl
-    implements OpenJPAQuery, Serializable {
+    implements OpenJPAQuerySPI, Serializable {
 
     private static final Object[] EMPTY_ARRAY = new Object[0];
 
@@ -91,8 +92,8 @@ public class QueryImpl
         return _query.getLanguage();
     }
 
-    public int getOperation() {
-        return _query.getOperation();
+    public QueryOperationType getOperation() {
+        return QueryOperationType.fromKernelConstant(_query.getOperation());
     }
 
     public FetchPlan getFetchPlan() {
@@ -167,7 +168,7 @@ public class QueryImpl
 
     public OpenJPAQuery setResultClass(Class cls) {
         _em.assertNotCloseInvoked();
-        if (OpenJPAPersistence.isManagedType(_em, cls))
+        if (OpenJPAPersistence.isManagedType(cls))
             _query.setCandidateType(cls, true);
         else
             _query.setResultType(cls);
@@ -222,7 +223,7 @@ public class QueryImpl
     }
 
     private Object execute() {
-        if (_query.getOperation() != OP_SELECT)
+        if (_query.getOperation() != QueryOperations.OP_SELECT)
             throw new InvalidStateException(_loc.get("not-select-query",
                 _query.getQueryString()), null, null, false);
 
@@ -303,7 +304,7 @@ public class QueryImpl
 
     public int executeUpdate() {
         _em.assertNotCloseInvoked();
-        if (_query.getOperation() == OP_DELETE) {
+        if (_query.getOperation() == QueryOperations.OP_DELETE) {
             // handle which types of parameters we are using, if any
             if (_positional != null)
                 return asInt(_query.deleteAll(_positional.toArray()));
@@ -311,7 +312,7 @@ public class QueryImpl
                 return asInt(_query.deleteAll(_named));
             return asInt(_query.deleteAll());
         }
-        if (_query.getOperation() == OP_UPDATE) {
+        if (_query.getOperation() == QueryOperations.OP_UPDATE) {
             // handle which types of parameters we are using, if any
             if (_positional != null)
                 return asInt(_query.updateAll(_positional.toArray()));
@@ -415,12 +416,12 @@ public class QueryImpl
 
     public OpenJPAQuery setParameter(int position, Calendar value,
         TemporalType t) {
-        return setParameter(position, (Object) value);
+        return setParameter(position, value);
     }
 
     public OpenJPAQuery setParameter(int position, Date value,
         TemporalType type) {
-        return setParameter(position, (Object) value);
+        return setParameter(position, value);
     }
 
     public OpenJPAQuery setParameter(int position, Object value) {
@@ -456,12 +457,12 @@ public class QueryImpl
 
     public OpenJPAQuery setParameter(String name, Calendar value,
         TemporalType t) {
-        return setParameter(name, (Object) value);
+        return setParameter(name, value);
     }
 
     public OpenJPAQuery setParameter(String name, Date value,
         TemporalType type) {
-        return setParameter(name, (Object) value);
+        return setParameter(name, value);
     }
 
     public OpenJPAQuery setParameter(String name, Object value) {

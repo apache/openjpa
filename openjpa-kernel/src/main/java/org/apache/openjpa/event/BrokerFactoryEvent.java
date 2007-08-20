@@ -30,7 +30,11 @@ import org.apache.openjpa.kernel.BrokerFactory;
 public class BrokerFactoryEvent
     extends EventObject {
 
-    public final static int BROKER_FACTORY_CREATED = 0;
+    /**
+     * Fired after a {@link BrokerFactory} has been fully created.
+     * This happens after the factory has been made read-only.
+     */
+    public static final int BROKER_FACTORY_CREATED = 0;
 
     private int eventType;
 

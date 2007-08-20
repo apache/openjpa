@@ -42,6 +42,7 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.util.OpenJPAException;
 import serp.util.Strings;
 
@@ -53,7 +54,8 @@ import serp.util.Strings;
  * @nojavadoc
  */
 public class EntityManagerFactoryImpl
-    implements OpenJPAEntityManagerFactory {
+    implements OpenJPAEntityManagerFactory, OpenJPAEntityManagerFactorySPI,
+    Closeable {
 
     private static final Localizer _loc = Localizer.forPackage
         (EntityManagerFactoryImpl.class);
@@ -139,11 +141,11 @@ public class EntityManagerFactoryImpl
         }
     }
 
-    public OpenJPAEntityManager createEntityManager() {
+    public OpenJPAEntityManagerSPI createEntityManager() {
         return createEntityManager(null);
     }
 
-    public OpenJPAEntityManager createEntityManager(Map props) {
+    public OpenJPAEntityManagerSPI createEntityManager(Map props) {
         if (props == null)
             props = Collections.EMPTY_MAP;
         else if (!props.isEmpty())
@@ -195,12 +197,12 @@ public class EntityManagerFactoryImpl
         broker.setAutoDetach(AutoDetach.DETACH_ROLLBACK, true);
         
         broker.setDetachedNew(false);
-        OpenJPAEntityManager em = newEntityManagerImpl(broker);
+        OpenJPAEntityManagerSPI em = newEntityManagerImpl(broker);
 
         // allow setting of other bean properties of EM
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         List<RuntimeException> errs = null;
-        Method setter = null;
+        Method setter;
         String prop, prefix;
         Object val;
         for (Map.Entry entry : (Set<Map.Entry>) props.entrySet()) {
@@ -251,7 +253,7 @@ public class EntityManagerFactoryImpl
             if (errs.size() == 1)
                 throw errs.get(0);
             throw new ArgumentException(_loc.get("bad-em-props"),
-                (Throwable[]) errs.toArray(new Throwable[errs.size()]),
+                errs.toArray(new Throwable[errs.size()]),
                 null, true);
         }
         return em;
@@ -308,9 +310,8 @@ public class EntityManagerFactoryImpl
         if (fetch == null)
             return null;
 
-        FetchConfiguration inner = fetch;
-        if (inner instanceof DelegatingFetchConfiguration)
-            inner = ((DelegatingFetchConfiguration) inner).
+        if (fetch instanceof DelegatingFetchConfiguration)
+            fetch = ((DelegatingFetchConfiguration) fetch).
                 getInnermostDelegate();
 
         try {

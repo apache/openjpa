@@ -24,14 +24,15 @@ import junit.framework.TestCase;
 import org.apache.openjpa.event.BrokerFactoryListener;
 import org.apache.openjpa.event.BrokerFactoryEvent;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 public class TestBrokerFactoryEventManager
     extends TestCase {
 
     public void testCreateEvent() {
-        OpenJPAEntityManagerFactory emf = OpenJPAPersistence.cast(
-            Persistence.createEntityManagerFactory("test"));
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
+            OpenJPAPersistence.cast(
+                Persistence.createEntityManagerFactory("test"));
         ListenerImpl listener = new ListenerImpl();
         emf.getConfiguration().getBrokerFactoryEventManager()
             .addListener(listener);
@@ -44,8 +45,10 @@ public class TestBrokerFactoryEventManager
 
         boolean createEventReceived = false;
 
-        public void afterBrokerFactoryCreate(BrokerFactoryEvent event) {
-            createEventReceived = true;
+        public void eventFired(BrokerFactoryEvent event) {
+            if (event.getEventType()
+                == BrokerFactoryEvent.BROKER_FACTORY_CREATED)
+                createEventReceived = true;
         }
     }
 }

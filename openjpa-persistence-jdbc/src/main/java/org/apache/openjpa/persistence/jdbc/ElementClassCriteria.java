@@ -30,6 +30,7 @@ import java.lang.annotation.Target;
  *
  * @author Abe White
  * @since 0.4.0
+ * @published
  */
 @Target({ METHOD, FIELD })
 @Retention(RUNTIME)

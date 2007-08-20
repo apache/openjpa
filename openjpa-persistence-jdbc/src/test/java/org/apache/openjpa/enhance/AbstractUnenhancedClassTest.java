@@ -29,7 +29,7 @@ import java.lang.reflect.Field;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.ImplHelper;
@@ -68,7 +68,7 @@ public abstract class AbstractUnenhancedClassTest
     }
 
     public void testMetaData() {
-        ClassMetaData meta = OpenJPAPersistence.getMetaData(emf,
+        ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
             getUnenhancedClass());
         assertEquals(ClassRedefiner.canRedefineClasses(),
             meta.isIntercepting());
@@ -567,18 +567,18 @@ public abstract class AbstractUnenhancedClassTest
     }
 
     public void testGetMetaDataOfSubtype() {
-        ClassMetaData meta = OpenJPAPersistence.getMetaData(emf,
+        ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
             getUnenhancedClass());
         List<Class> subs =  ManagedClassSubclasser.prepareUnenhancedClasses(
             emf.getConfiguration(),
             Collections.singleton(getUnenhancedClass()), null);
-        assertSame(meta, OpenJPAPersistence.getMetaData(emf, subs.get(0)));
+        assertSame(meta, JPAFacadeHelper.getMetaData(emf, subs.get(0)));
 
-        meta = OpenJPAPersistence.getMetaData(emf, getUnenhancedSubclass());
+        meta = JPAFacadeHelper.getMetaData(emf, getUnenhancedSubclass());
         subs =  ManagedClassSubclasser.prepareUnenhancedClasses(
             emf.getConfiguration(),
             Collections.singleton(getUnenhancedSubclass()), null);
-        assertSame(meta, OpenJPAPersistence.getMetaData(emf, subs.get(0)));
+        assertSame(meta, JPAFacadeHelper.getMetaData(emf, subs.get(0)));
     }
 
     private class ListenerImpl

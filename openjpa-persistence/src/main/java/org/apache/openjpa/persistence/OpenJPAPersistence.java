@@ -18,146 +18,33 @@
  */
 package org.apache.openjpa.persistence;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.rmi.PortableRemoteObject;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.Broker;
-import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.util.ByteId;
-import org.apache.openjpa.util.CharId;
-import org.apache.openjpa.util.DoubleId;
-import org.apache.openjpa.util.FloatId;
-import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.ImplHelper;
-import org.apache.openjpa.util.IntId;
-import org.apache.openjpa.util.LongId;
-import org.apache.openjpa.util.ObjectId;
-import org.apache.openjpa.util.OpenJPAId;
-import org.apache.openjpa.util.ShortId;
-import org.apache.openjpa.util.StringId;
 
 /**
- * Static helper method for JPA users, including switching
- * between OpenJPA native and Java Persistence APIs.
+ * Static helper methods for JPA users.
  *
  * @author Abe White
  * @published
  * @since 0.4.0
  */
-public class OpenJPAPersistence
-    extends Persistence {
-
-    public static final String EM_KEY =
-        "org.apache.openjpa.persistence.EntityManager";
-    public static final String EMF_KEY =
-        "org.apache.openjpa.persistence.EntityManagerFactory";
+public class OpenJPAPersistence {
 
     private static final Localizer _loc =
         Localizer.forPackage(OpenJPAPersistence.class);
-
-    
-    public static OpenJPAEntityManagerFactory toEntityManagerFactory
-       (BrokerFactory factory) {
-        if (factory == null)
-            return null;
-
-        factory.lock();
-        try {
-            OpenJPAEntityManagerFactory emf = (OpenJPAEntityManagerFactory)
-                factory.getUserObject(EMF_KEY);
-            if (emf == null) {
-                emf = EntityManagerFactoryValue.newFactory(factory);
-                factory.putUserObject(EMF_KEY, emf);
-            }
-            return emf;
-        } catch (Exception e) {
-            throw PersistenceExceptions.toPersistenceException(e);
-        } finally {
-            factory.unlock();
-        }
-    }
-    
-    /**
-     * Return the underlying broker factory for the given persistence manager
-     * factory facade.
-     */
-    public static BrokerFactory toBrokerFactory(EntityManagerFactory emf) {
-        if (emf == null)
-            return null;
-        if (!(emf instanceof EntityManagerFactoryImpl)) {
-            Class c = emf.getClass();
-            try {
-                // either cast here may fail
-                emf = (EntityManagerFactoryImpl) ((OpenJPAEntityManagerFactory)
-                    emf).getUserObject(EMF_KEY);
-            } catch (ClassCastException cce) {
-                throw new ArgumentException(_loc.get
-                    ("cant-convert-brokerfactory", c), null, null, false);
-            }
-        }
-        return ((EntityManagerFactoryImpl) emf).getBrokerFactory();
-    }
-
-    /**
-     * Return a persistence manager facade to the given broker retaining
-     * previously associated persistence context type.
-     */
-    public static OpenJPAEntityManager toEntityManager(Broker broker) {
-        if (broker == null)
-            return null;
-
-        broker.lock();
-        try {
-            OpenJPAEntityManager em = (OpenJPAEntityManager)
-                broker.getUserObject(EM_KEY);
-            if (em == null) {
-                EntityManagerFactoryImpl emf = (EntityManagerFactoryImpl)
-                    toEntityManagerFactory(broker.getBrokerFactory());
-                em = emf.newEntityManagerImpl(broker);
-                broker.putUserObject(EM_KEY, em);
-            }
-            return em;
-        } catch (Exception e) {
-            throw PersistenceExceptions.toPersistenceException(e);
-        } finally {
-            broker.unlock();
-        }
-    }
-
-    /**
-     * Return the underlying broker for the given entity manager facade.
-     */
-    public static Broker toBroker(EntityManager em) {
-        if (em == null)
-            return null;
-        if (!(em instanceof EntityManagerImpl)) {
-            Class c = em.getClass();
-            try {
-                // either cast here may fail
-                em = (EntityManagerImpl) ((OpenJPAEntityManager) em).
-                    getUserObject(EM_KEY);
-            } catch (ClassCastException cce) {
-                throw new ArgumentException(_loc.get("cant-convert-broker", c),
-                    null, null, false);
-            }
-        }
-        return ((EntityManagerImpl) em).getBroker();
-    }
 
     /**
      * Return the OpenJPA facade to the given entity manager factory.
@@ -201,7 +88,8 @@ public class OpenJPAPersistence
         ConfigurationProvider cp = new PersistenceProductDerivation.
             ConfigurationProviderImpl(map);
         try {
-            return toEntityManagerFactory(Bootstrap.getBrokerFactory(cp, null));
+            return JPAFacadeHelper.toEntityManagerFactory(
+                Bootstrap.getBrokerFactory(cp, null));
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
@@ -276,56 +164,10 @@ public class OpenJPAPersistence
             if (ImplHelper.isManageable(o)) {
                 PersistenceCapable pc = ImplHelper.toPersistenceCapable(o, null);
                 if (pc != null)
-                    return toEntityManager((Broker) pc.pcGetGenericContext());
+                    return JPAFacadeHelper.toEntityManager(
+                        (Broker) pc.pcGetGenericContext());
             }
             return null;
-        } catch (Exception e) {
-            throw PersistenceExceptions.toPersistenceException(e);
-        }
-    }
-
-    /**
-     * Returns the {@link ClassMetaData} associated with the
-     * persistent object <code>o</code>.
-     */
-    public static ClassMetaData getMetaData(Object o) {
-        if (o == null)
-            return null;
-        EntityManager em = getEntityManager(o);
-        return (em == null) ? null : getMetaData(em,
-            ImplHelper.getManagedInstance(o).getClass());
-    }
-
-    /**
-     * Returns the {@link ClassMetaData} associated with the
-     * persistent type <code>cls</code>.
-     */
-    public static ClassMetaData getMetaData(EntityManager em, Class cls) {
-        if (em == null)
-            throw new NullPointerException("em == null");
-
-        OpenJPAEntityManager kem = cast(em);
-        try {
-            return kem.getConfiguration().getMetaDataRepositoryInstance().
-                getMetaData(cls, kem.getClassLoader(), false);
-        } catch (Exception e) {
-            throw PersistenceExceptions.toPersistenceException(e);
-        }
-    }
-
-    /**
-     * Returns the {@link ClassMetaData} associated with the
-     * persistent type <code>cls</code>.
-     */
-    public static ClassMetaData getMetaData(EntityManagerFactory emf,
-        Class cls) {
-        if (emf == null)
-            throw new NullPointerException("emf == null");
-
-        OpenJPAEntityManagerFactory kemf = cast(emf);
-        try {
-            return kemf.getConfiguration().getMetaDataRepositoryInstance().
-                getMetaData(cls, null, false);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
@@ -347,132 +189,11 @@ public class OpenJPAPersistence
     /**
      * Returns true if the specified class is an entity or embeddable type.
      */
-    public static boolean isManagedType(EntityManager em, Class cls) {
+    public static boolean isManagedType(Class cls) {
         try {
             return ImplHelper.isManagedType(cls);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
     }
-
-    /**
-     * Returns true if the specified class is an entity or embeddable type.
-     */
-    public static boolean isManagedType(EntityManagerFactory emf, Class cls) {
-        try {
-            return ImplHelper.isManagedType(cls);
-        } catch (Exception e) {
-            throw PersistenceExceptions.toPersistenceException(e);
-        }
-    }
-
-    /**
-     * Translate from a OpenJPA identity object to a Persistence one.
-     */
-    public static Object fromOpenJPAObjectId(Object oid) {
-        if (oid instanceof OpenJPAId)
-            return ((OpenJPAId) oid).getIdObject();
-        return oid;
-    }
-
-    /**
-     * Translate from a Persistence identity object to a OpenJPA one.
-     */
-    public static Object toOpenJPAObjectId(ClassMetaData meta, Object oid) {
-        if (oid == null || meta == null)
-            return null;
-
-        Class cls = meta.getDescribedType();
-        if (meta.getIdentityType() == ClassMetaData.ID_DATASTORE)
-            return new Id(cls, ((Number) oid).longValue());
-
-        if (oid instanceof Byte)
-            return new ByteId(cls, (Byte) oid);
-        if (oid instanceof Character)
-            return new CharId(cls, (Character) oid);
-        if (oid instanceof Double)
-            return new DoubleId(cls, (Double) oid);
-        if (oid instanceof Float)
-            return new FloatId(cls, (Float) oid);
-        if (oid instanceof Integer)
-            return new IntId(cls, (Integer) oid);
-        if (oid instanceof Long)
-            return new LongId(cls, (Long) oid);
-        if (oid instanceof Short)
-            return new ShortId(cls, (Short) oid);
-        if (oid instanceof String)
-            return new StringId(cls, (String) oid);
-        return new ObjectId(cls, oid);
-    }
-
-    /**
-     * Return an array of OpenJPA oids for the given native oid array.
-     */
-    public static Object[] toOpenJPAObjectIds(ClassMetaData meta,
-        Object... oids) {
-        if (oids == null || oids.length == 0)
-            return oids;
-
-        // since the class if fixed for all oids, we can tell if we have to
-        // translate the array based on whether the first oid needs translating
-        Object oid = toOpenJPAObjectId(meta, oids[0]);
-        if (oid == oids[0])
-            return oids;
-
-        Object[] copy = new Object[oids.length];
-        copy[0] = oid;
-        for (int i = 1; i < oids.length; i++)
-            copy[i] = toOpenJPAObjectId(meta, oids[i]);
-        return copy;
-    }
-
-    /**
-     * Return a collection of OpenJPA oids for the given native oid collection.
-     */
-    public static Collection toOpenJPAObjectIds(ClassMetaData meta,
-        Collection oids) {
-        if (oids == null || oids.isEmpty())
-            return oids;
-
-        // since the class if fixed for all oids, we can tell if we have to
-        // translate the array based on whether the first oid needs translating
-        Iterator itr = oids.iterator();
-        Object orig = itr.next();
-        Object oid = toOpenJPAObjectId(meta, orig);
-        if (oid == orig)
-            return oids;
-
-        Collection copy = new ArrayList(oids.size());
-        copy.add(oid);
-        while (itr.hasNext())
-            copy.add(toOpenJPAObjectId(meta, itr.next()));
-        return copy;
-    }
-
-    /**
-     * Translate from a OpenJPA identity class to a native one.
-     */
-    public static Class fromOpenJPAObjectIdClass(Class oidClass) {
-        if (oidClass == null)
-            return null;
-        if (oidClass == Id.class)
-            return Long.class;
-        if (oidClass == ByteId.class)
-            return Byte.class;
-        if (oidClass == CharId.class)
-            return Character.class;
-        if (oidClass == DoubleId.class)
-            return Double.class;
-        if (oidClass == FloatId.class)
-            return Float.class;
-        if (oidClass == IntId.class)
-            return Integer.class;
-        if (oidClass == LongId.class)
-            return Long.class;
-        if (oidClass == ShortId.class)
-            return Short.class;
-        if (oidClass == StringId.class)
-			return String.class;
-		return oidClass;
-	}
 }

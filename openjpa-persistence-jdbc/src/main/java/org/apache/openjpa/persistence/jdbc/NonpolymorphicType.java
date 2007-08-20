@@ -23,9 +23,10 @@ package org.apache.openjpa.persistence.jdbc;
  *
  * @author Abe White
  * @since 0.4.0
+ * @published
  */
 public enum NonpolymorphicType {
-
     EXACT,
     JOINABLE,
-    FALSE };
+    FALSE
+};

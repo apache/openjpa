@@ -24,7 +24,6 @@ import java.security.ProtectionDomain;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
@@ -47,7 +46,8 @@ import org.apache.openjpa.util.ClassResolver;
  * Bootstrapping class that allows the creation of a stand-alone
  * {@link EntityManager}.
  *
- * @see Persistence#createEntityManagerFactory(String,Map)
+ * @see javax.persistence.Persistence#createEntityManagerFactory(String,Map)
+ * @published
  */
 public class PersistenceProviderImpl
     implements PersistenceProvider {
@@ -76,7 +76,7 @@ public class PersistenceProviderImpl
                 return null;
 
             BrokerFactory factory = Bootstrap.newBrokerFactory(cp, null);
-            return OpenJPAPersistence.toEntityManagerFactory(factory);
+            return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
@@ -122,7 +122,7 @@ public class PersistenceProviderImpl
                     OpenJPAConfiguration.LOG_RUNTIME).warn(
                         _loc.get("transformer-registration-error", pui),
                         transformerException);
-            return OpenJPAPersistence.toEntityManagerFactory(factory);
+            return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }

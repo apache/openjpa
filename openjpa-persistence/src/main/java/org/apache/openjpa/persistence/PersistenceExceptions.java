@@ -63,8 +63,8 @@ public class PersistenceExceptions
                     && !throwing) {
                     try {
                         throwing = true;
-                        if (em.isOpen() && em.isActive())
-                            em.setRollbackOnly(re);
+                        if (em.isOpen() && ((EntityManagerImpl) em).isActive())
+                            ((EntityManagerImpl) em).setRollbackOnly(re);
                     } finally {
                         // handle re-entrancy
                         throwing = false;
@@ -243,8 +243,8 @@ public class PersistenceExceptions
         if (o == null)
             return null;
         if (o instanceof Broker)
-            return OpenJPAPersistence.toEntityManager((Broker) o);
-        return OpenJPAPersistence.fromOpenJPAObjectId(o);
+            return JPAFacadeHelper.toEntityManager((Broker) o);
+        return JPAFacadeHelper.fromOpenJPAObjectId(o);
     }
 
     /**

@@ -31,11 +31,6 @@ public interface Extent<T>
     extends Iterable<T> {
 
     /**
-     * Delegate.
-     */
-    public org.apache.openjpa.kernel.Extent getDelegate();
-
-    /**
      * The extent's element type.
      */
     public Class<T> getElementClass();

@@ -44,7 +44,7 @@ public class BrokerFactoryEventManager
     protected void fireEvent(Object event, Object listener) {
         try {
             BrokerFactoryEvent e = (BrokerFactoryEvent) event;
-            ((BrokerFactoryListener) listener).afterBrokerFactoryCreate(e);
+            ((BrokerFactoryListener) listener).eventFired(e);
         } catch (Exception e) {
             _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME).warn(
                 _loc.get("broker-factory-listener-exception"), e);

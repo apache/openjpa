@@ -56,11 +56,6 @@ public interface FetchPlan {
     public static final int DEFAULT = FetchConfiguration.DEFAULT;
 
     /**
-     * Delegate.
-     */
-    public FetchConfiguration getDelegate();
-
-    /**
      * The maximum fetch depth when loading an object.
      */
     public int getMaxFetchDepth();
@@ -90,15 +85,19 @@ public interface FetchPlan {
      * will not be enabled. If this
      * returns <code>false</code>, query caching will not be used
      * even if the datacache plugin is installed.
+     *
+     * @since 1.0.0
      */
-    public boolean getQueryResultCache();
+    public boolean isEnlistInQueryResultCache();
 
     /**
      * Control whether or not query caching is enabled. This has no effect
      * if the datacache plugin is not installed, or if the query cache size
      * is set to zero.
+     *
+     * @since 1.0.0
      */
-    public FetchPlan setQueryResultCache(boolean cache);
+    public FetchPlan setEnlistInQueryResultCache(boolean cache);
 
     /**
      * Returns the names of the fetch groups that this component will use

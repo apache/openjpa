@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.simple.TemporalFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
@@ -32,7 +33,8 @@ public class TestMappingToolTemporal extends SingleEMTestCase {
     }
 
     public void testMappingToolTemporal() throws IOException, SQLException {
-        ClassMapping mapping = (ClassMapping) OpenJPAPersistence.cast(emf)
+        ClassMapping mapping = (ClassMapping)
+            ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(emf))
                 .getConfiguration().getMetaDataRepositoryInstance()
                 .getMetaData("TemporalFieldTypes", getClass().getClassLoader(),
                         true);

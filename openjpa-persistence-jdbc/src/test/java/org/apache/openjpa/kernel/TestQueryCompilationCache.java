@@ -26,9 +26,9 @@ import javax.persistence.Persistence;
 import org.apache.openjpa.kernel.QueryImpl.Compilation;
 import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder.ParsedJPQL;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.simple.NamedEntity;
 
 import junit.framework.TestCase;
@@ -41,8 +41,9 @@ public class TestQueryCompilationCache
         Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types=" 
             + NamedEntity.class.getName() + ")");
-        OpenJPAEntityManagerFactory emf = OpenJPAPersistence.cast(
-            Persistence.createEntityManagerFactory("test", props));
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
+            OpenJPAPersistence.cast(
+                Persistence.createEntityManagerFactory("test", props));
 
         Map cache = emf.getConfiguration().getQueryCompilationCacheInstance();
         cache.clear();

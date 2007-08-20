@@ -18,12 +18,10 @@
  */
 package org.apache.openjpa.conf;
 
-import javax.persistence.Persistence;
-import org.apache.openjpa.persistence.test.*;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests dynamic modification of configuration property.
@@ -32,13 +30,13 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  *
  */
 public class TestDynamicConfiguration extends SingleEMFTestCase {
-	
-	public void testConfigurationIsEqualByValueAndHashCode() {
-		OpenJPAEntityManagerFactory emf1 = createEMF();
+
+    public void testConfigurationIsEqualByValueAndHashCode() {
+		OpenJPAEntityManagerFactorySPI emf1 = createEMF();
 		assertNotNull(emf1);
 		OpenJPAConfiguration conf1 = emf1.getConfiguration();
 		
-		OpenJPAEntityManagerFactory emf2 = createEMF();
+		OpenJPAEntityManagerFactorySPI emf2 = createEMF();
 		assertNotNull(emf2);
 		OpenJPAConfiguration conf2 = emf2.getConfiguration();
 		
@@ -51,8 +49,6 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 	}
 	
 	public void testConfigurationIsReadOnlyAfterFirstConstruction() {
-		OpenJPAEntityManagerFactory emf = createEMF();
-		assertNotNull(emf);
 		OpenJPAConfiguration conf = emf.getConfiguration();
 		assertFalse(conf.isReadOnly());
 		emf.createEntityManager();
@@ -60,8 +56,6 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 	}
 	
 	public void testDynamicValuesCanNotBeChangedDirectly() {
-		OpenJPAEntityManagerFactory emf = createEMF();
-		assertNotNull(emf);
 		emf.createEntityManager();
 		OpenJPAConfiguration conf = emf.getConfiguration();
 		
@@ -80,8 +74,6 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 	}
 	
 	public void testDynamicValuesCanBeChanged() {
-		OpenJPAEntityManagerFactory emf = createEMF();
-		assertNotNull(emf);
 		OpenJPAConfiguration conf = emf.getConfiguration();
 		
 		Value[] dynamicValues = conf.getDynamicValues();
@@ -96,8 +88,6 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 	}
 
 	public void testDynamicValuesAreCorrectlySet() {
-		OpenJPAEntityManagerFactory emf = createEMF();
-		assertNotNull(emf);
 		OpenJPAConfiguration conf = emf.getConfiguration();
 		
 		Value[] dynamicValues = conf.getDynamicValues();
@@ -106,8 +96,6 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 	}
 	
 	public void testDynamicChangeDoesNotChangeHashCode() {
-		OpenJPAEntityManagerFactory emf = createEMF();
-		assertNotNull(emf);
 		OpenJPAConfiguration conf1 = emf.getConfiguration();
 		
 		int oldValue = conf1.getLockTimeout();

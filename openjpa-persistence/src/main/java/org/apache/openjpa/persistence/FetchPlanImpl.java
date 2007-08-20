@@ -82,12 +82,12 @@ public class FetchPlanImpl
         return this;
     }
 
-    public boolean getQueryResultCache() {
-        return _fetch.getQueryCache();
+    public boolean isEnlistInQueryResultCache() {
+        return _fetch.getEnlistInQueryCache();
     }
 
-    public FetchPlan setQueryResultCache(boolean cache) {
-        _fetch.setQueryCache(cache);
+    public FetchPlan setEnlistInQueryResultCache(boolean cache) {
+        _fetch.setEnlistInQueryCache(cache);
         return this;
     }
 

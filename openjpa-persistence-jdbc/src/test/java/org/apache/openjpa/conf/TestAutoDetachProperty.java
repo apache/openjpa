@@ -24,7 +24,6 @@ import javax.persistence.*;
 
 import junit.framework.*;
 
-import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.persistence.*;
 
 public class TestAutoDetachProperty extends TestCase {
@@ -63,17 +62,20 @@ public class TestAutoDetachProperty extends TestCase {
     }
 
     private boolean isAutoDetachingOnClose() {
-        int autoDetachFlags = OpenJPAPersistence.cast(em).getAutoDetach();
-        return (autoDetachFlags & AutoDetach.DETACH_CLOSE) > 0;
+        EnumSet<AutoDetachType> autoDetachFlags =
+            OpenJPAPersistence.cast(em).getAutoDetach();
+        return autoDetachFlags.contains(AutoDetachType.CLOSE);
     }
 
     private boolean isAutoDetachingOnCommit() {
-        int autoDetachFlags = OpenJPAPersistence.cast(em).getAutoDetach();
-        return (autoDetachFlags & AutoDetach.DETACH_COMMIT) > 0;
+        EnumSet<AutoDetachType> autoDetachFlags =
+            OpenJPAPersistence.cast(em).getAutoDetach();
+        return autoDetachFlags.contains(AutoDetachType.COMMIT);
     }
 
     private boolean isAutoDetachingOnNonTxRead() {
-        int autoDetachFlags = OpenJPAPersistence.cast(em).getAutoDetach();
-        return (autoDetachFlags & AutoDetach.DETACH_NONTXREAD) > 0;
+        EnumSet<AutoDetachType> autoDetachFlags =
+            OpenJPAPersistence.cast(em).getAutoDetach();
+        return autoDetachFlags.contains(AutoDetachType.NON_TRANSACTIONAL_READ);
     }
 }

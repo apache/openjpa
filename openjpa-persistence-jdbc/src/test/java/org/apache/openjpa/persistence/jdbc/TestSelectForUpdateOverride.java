@@ -18,14 +18,12 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
-import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.FetchPlan;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.HSQLDictionary;
@@ -42,7 +40,7 @@ public class TestSelectForUpdateOverride
     }
 
     public void testSelectForUpdateOverride() {
-        OpenJPAEntityManager em =
+        OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI)
             OpenJPAPersistence.cast(emf.createEntityManager());
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
             .getDBDictionaryInstance();

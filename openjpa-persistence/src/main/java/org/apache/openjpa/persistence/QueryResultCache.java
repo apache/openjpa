@@ -32,11 +32,6 @@ import org.apache.openjpa.datacache.QueryCache;
 public interface QueryResultCache {
 
     /**
-     * Delegate.
-     */
-    public QueryCache getDelegate();
-
-    /**
      * Pin the given query's result to the cache.
      */
     public void pin(Query q);

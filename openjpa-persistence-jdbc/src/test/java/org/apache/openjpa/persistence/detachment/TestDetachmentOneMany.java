@@ -21,8 +21,8 @@ package org.apache.openjpa.persistence.detachment;
 import javax.persistence.EntityManager;
 
 import junit.textui.TestRunner;
-import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.AutoDetachType;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -41,7 +41,8 @@ public class TestDetachmentOneMany
         long id = createParentAndChildren();
     
         EntityManager em = emf.createEntityManager();
-        OpenJPAPersistence.cast(em).setAutoDetach(AutoDetach.DETACH_NONTXREAD);
+        OpenJPAPersistence.cast(em).setAutoDetach(
+            AutoDetachType.NON_TRANSACTIONAL_READ);
         DetachmentOneManyParent parent = em.find(DetachmentOneManyParent.class,
             id);
         assertNotNull(parent);
@@ -53,7 +54,8 @@ public class TestDetachmentOneMany
         long id = createParentAndChildren();
      
         EntityManager em = emf.createEntityManager();
-        OpenJPAPersistence.cast(em).setAutoDetach(AutoDetach.DETACH_NONTXREAD);
+        OpenJPAPersistence.cast(em).setAutoDetach(
+            AutoDetachType.NON_TRANSACTIONAL_READ);
         DetachmentOneManyParent parent = em.find(DetachmentOneManyParent.class,
             id);
         assertNotNull(parent);
@@ -74,7 +76,8 @@ public class TestDetachmentOneMany
         long id = createParentAndChildren();
         
         EntityManager em = emf.createEntityManager();
-        OpenJPAPersistence.cast(em).setAutoDetach(AutoDetach.DETACH_NONTXREAD);
+        OpenJPAPersistence.cast(em).setAutoDetach(
+            AutoDetachType.NON_TRANSACTIONAL_READ);
         DetachmentOneManyParent parent = em.find(DetachmentOneManyParent.class,
             id);
         assertNotNull(parent);

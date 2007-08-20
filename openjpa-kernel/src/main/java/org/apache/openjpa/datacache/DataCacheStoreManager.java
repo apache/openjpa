@@ -231,7 +231,7 @@ public class DataCacheStoreManager
         // if we were in largeTransaction mode, then we have recorded
         // the classes of updated/deleted objects and these now need to be
         // evicted
-        if (_ctx.isLargeTransaction()) {
+        if (_ctx.isTrackChangesByType()) {
             evictTypes(_ctx.getDeletedTypes());
             evictTypes(_ctx.getUpdatedTypes());
         }
@@ -551,7 +551,7 @@ public class DataCacheStoreManager
         }
 
         // if large transaction mode don't record individual changes
-        if (_ctx.isLargeTransaction())
+        if (_ctx.isTrackChangesByType())
             return exceps;
 
         OpenJPAStateManager sm;

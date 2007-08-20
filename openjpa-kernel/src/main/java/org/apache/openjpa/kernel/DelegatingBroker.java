@@ -21,11 +21,6 @@ package org.apache.openjpa.kernel;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Iterator;
-import javax.resource.ResourceException;
-import javax.resource.cci.ConnectionMetaData;
-import javax.resource.cci.Interaction;
-import javax.resource.cci.LocalTransaction;
-import javax.resource.cci.ResultSetInfo;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.ee.ManagedRuntime;
@@ -749,17 +744,17 @@ public class DelegatingBroker
         }
     }
 
-    public boolean isLargeTransaction() {
+    public boolean isTrackChangesByType() {
         try {
-            return _broker.isLargeTransaction();
+            return _broker.isTrackChangesByType();
         } catch (RuntimeException re) {
             throw translate(re);
         }
     }
 
-    public void setLargeTransaction(boolean largeTransaction) {
+    public void setTrackChangesByType(boolean largeTransaction) {
         try {
-            _broker.setLargeTransaction(largeTransaction);
+            _broker.setTrackChangesByType(largeTransaction);
         } catch (RuntimeException re) {
             throw translate(re);
         }
@@ -1353,42 +1348,6 @@ public class DelegatingBroker
     public void afterCompletion(int status) {
         try {
             _broker.afterCompletion(status);
-        } catch (RuntimeException re) {
-            throw translate(re);
-        }
-    }
-
-    //////////////////////////////////////////
-    // Implementation of Connection interface
-    //////////////////////////////////////////
-
-    public ConnectionMetaData getMetaData()
-        throws ResourceException {
-        try {
-            return _broker.getMetaData();
-        } catch (RuntimeException re) {
-            throw translate(re);
-        }
-    }
-
-    public Interaction createInteraction()
-        throws ResourceException {
-        try {
-            return _broker.createInteraction();
-        } catch (RuntimeException re) {
-            throw translate(re);
-        }
-    }
-
-    public LocalTransaction getLocalTransaction()
-        throws ResourceException {
-        return this;
-    }
-
-    public ResultSetInfo getResultSetInfo()
-        throws ResourceException {
-        try {
-            return _broker.getResultSetInfo();
         } catch (RuntimeException re) {
             throw translate(re);
         }

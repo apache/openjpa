@@ -47,6 +47,9 @@ public class ExtentImpl<T>
             PersistenceExceptions.getRollbackTranslator(em));
     }
 
+    /**
+     * Delegate.
+     */
     public org.apache.openjpa.kernel.Extent getDelegate() {
         return _extent.getDelegate();
     }

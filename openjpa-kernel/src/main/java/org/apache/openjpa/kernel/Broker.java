@@ -19,8 +19,6 @@
 package org.apache.openjpa.kernel;
 
 import java.util.Collection;
-import javax.resource.cci.Connection;
-import javax.resource.cci.LocalTransaction;
 import javax.transaction.Synchronization;
 
 import org.apache.openjpa.ee.ManagedRuntime;
@@ -41,8 +39,7 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  * @author Abe White
  */
 public interface Broker
-    extends Synchronization, Connection, LocalTransaction,
-    javax.resource.spi.LocalTransaction, Closeable, StoreContext,
+    extends Synchronization, Closeable, StoreContext,
     ConnectionRetainModes, DetachState, LockLevels,
     RestoreState, AutoClear, AutoDetach, CallbackModes {
 

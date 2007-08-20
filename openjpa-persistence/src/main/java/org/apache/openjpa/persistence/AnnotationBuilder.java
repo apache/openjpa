@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author Gokhan Ergul
  * @since 1.0.0
+ * @nojavadoc
  */
 public class AnnotationBuilder {
 
@@ -155,46 +156,45 @@ public class AnnotationBuilder {
         return sb.toString();
     }
 
-}
+    class AnnotationEntry {
 
-class AnnotationEntry {
+        String key;
+        Object value;
 
-    String key;
-    Object value;
-
-    AnnotationEntry(String key, Object value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    @SuppressWarnings("unchecked")
-    void toString(StringBuilder sb) {
-        if (null != key)
-            sb.append(key).append("=");
-
-        List.class.getTypeParameters();
-        if (value instanceof List) {
-            sb.append("{");
-            List<AnnotationBuilder> l = (List<AnnotationBuilder>) value;
-            for (Iterator<AnnotationBuilder> i = l.iterator(); i.hasNext();) {
-                AnnotationBuilder ab =  i.next();
-                sb.append(ab.toString());
-                if (i.hasNext())
-                    sb.append(", ");
-            }
-            sb.append("}");
-        } else if (value instanceof Class) {
-            String cls = ((Class) value).getName().replace('$', '.');
-            sb.append(cls).append(".class");
-        } else if (value instanceof String) {
-            sb.append('"').append(value).append('"');
-        } else if (value instanceof Enum) {
-            sb.append(AnnotationBuilder.enumToString((Enum) value));
-        } else if (value instanceof EnumSet) {
-            sb.append(AnnotationBuilder.enumSetToString((EnumSet) value));
-        } else {
-            sb.append(value);
+        AnnotationEntry(String key, Object value) {
+            this.key = key;
+            this.value = value;
         }
-    }
 
+        @SuppressWarnings("unchecked")
+        void toString(StringBuilder sb) {
+            if (null != key)
+                sb.append(key).append("=");
+
+            List.class.getTypeParameters();
+            if (value instanceof List) {
+                sb.append("{");
+                List<AnnotationBuilder> l = (List<AnnotationBuilder>) value;
+                for (Iterator<AnnotationBuilder> i = l.iterator(); i.hasNext();) {
+                    AnnotationBuilder ab =  i.next();
+                    sb.append(ab.toString());
+                    if (i.hasNext())
+                        sb.append(", ");
+                }
+                sb.append("}");
+            } else if (value instanceof Class) {
+                String cls = ((Class) value).getName().replace('$', '.');
+                sb.append(cls).append(".class");
+            } else if (value instanceof String) {
+                sb.append('"').append(value).append('"');
+            } else if (value instanceof Enum) {
+                sb.append(AnnotationBuilder.enumToString((Enum) value));
+            } else if (value instanceof EnumSet) {
+                sb.append(AnnotationBuilder.enumSetToString((EnumSet) value));
+            } else {
+                sb.append(value);
+            }
+        }
+
+    }
 }

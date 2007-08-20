@@ -27,6 +27,8 @@ import javax.persistence.LockModeType;
 import javax.sql.DataSource;
 
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.event.RemoteCommitListener;
 import org.apache.openjpa.event.RemoteCommitEvent;
@@ -78,8 +80,8 @@ public class TestDataCacheOptimisticLockRecovery
         em = emf.createEntityManager();
         em.getTransaction().begin();
         OptimisticLockInstance oli = em.find(OptimisticLockInstance.class, pk);
-        Object oid = OpenJPAPersistence.toOpenJPAObjectId(
-            OpenJPAPersistence.getMetaData(oli),
+        Object oid = JPAFacadeHelper.toOpenJPAObjectId(
+            JPAFacadeHelper.getMetaData(oli),
             OpenJPAPersistence.cast(em).getObjectId(oli));
         int firstOpLockValue = oli.getOpLock();
         em.lock(oli, LockModeType.READ);
@@ -88,8 +90,9 @@ public class TestDataCacheOptimisticLockRecovery
         // via direct SQL in a separate transaction
         int secondOpLockValue = firstOpLockValue + 1;
 
-        DataSource ds = (DataSource) OpenJPAPersistence.cast(em)
-            .getEntityManagerFactory().getConfiguration()
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
+            OpenJPAPersistence.cast(em).getEntityManagerFactory();
+        DataSource ds = (DataSource) emf.getConfiguration()
             .getConnectionFactory();
         Connection c = ds.getConnection();
         c.setAutoCommit(false);
@@ -120,7 +123,7 @@ public class TestDataCacheOptimisticLockRecovery
         // assert that the oplock column is set to the one that
         // happened in the out-of-band transaction
         em.close();
-        em = emf.createEntityManager();
+        em = this.emf.createEntityManager();
         oli = em.find(OptimisticLockInstance.class, pk);
 
         // If this fails, then the data cache has the wrong value.

@@ -49,6 +49,9 @@ public class GeneratorImpl
         _meta = meta;
     }
 
+    /**
+     * Delegate.
+     */
     public Seq getDelegate() {
         return _seq.getDelegate();
     }

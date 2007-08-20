@@ -19,20 +19,10 @@
 package org.apache.openjpa.persistence;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
-
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.ee.ManagedRuntime;
-import org.apache.openjpa.event.CallbackModes;
-import org.apache.openjpa.kernel.AutoClear;
-import org.apache.openjpa.kernel.AutoDetach;
-import org.apache.openjpa.kernel.ConnectionRetainModes;
-import org.apache.openjpa.kernel.DetachState;
-import org.apache.openjpa.kernel.RestoreState;
-import org.apache.openjpa.lib.util.Closeable;
 
 /**
  * Interface implemented by OpenJPA entity managers.
@@ -42,20 +32,14 @@ import org.apache.openjpa.lib.util.Closeable;
  * @published
  */
 public interface OpenJPAEntityManager
-    extends EntityManager, EntityTransaction, javax.resource.cci.Connection,
-    javax.resource.cci.LocalTransaction, javax.resource.spi.LocalTransaction,
-    Closeable, ConnectionRetainModes, DetachState, RestoreState, AutoDetach,
-    AutoClear, CallbackModes {
+    extends EntityManager {
+
+    // ##### covariant types?
 
     /**
      * Return the factory that produced this entity manager.
      */
     public OpenJPAEntityManagerFactory getEntityManagerFactory();
-
-    /**
-     * Return the configuration associated with this entity manager.
-     */
-    public OpenJPAConfiguration getConfiguration();
 
     /**
      * Return the (mutable) fetch plan for loading objects from this
@@ -65,20 +49,13 @@ public interface OpenJPAEntityManager
 
     /**
      * Return the connection retain mode for this entity manager.
-     *
-     * @see ConnectionRetainModes
      */
-    public int getConnectionRetainMode();
+    public ConnectionRetainType getConnectionRetainMode();
 
     /**
      * Whether this entity manager is using managed transactions.
      */
     public boolean isManaged();
-
-    /**
-     * Return the managed runtime in use.
-     */
-    public ManagedRuntime getManagedRuntime();
 
     /**
      * Whether to check for a global transaction upon every managed,
@@ -164,17 +141,13 @@ public interface OpenJPAEntityManager
 
     /**
      * Whether to restore an object's original state on rollback.
-     *
-     * @see RestoreState
      */
-    public int getRestoreState();
+    public RestoreStateType getRestoreState();
 
     /**
      * Whether to restore an object's original state on rollback.
-     *
-     * @see RestoreState
      */
-    public void setRestoreState(int restore);
+    public void setRestoreState(RestoreStateType restoreType);
 
     /**
      * Whether objects retain their persistent state on transaction commit.
@@ -189,47 +162,47 @@ public interface OpenJPAEntityManager
     /**
      * Detach mode constant to determine which fields are part of the
      * detached graph.
-     *
-     * @see DetachState
      */
-    public int getDetachState();
+    public DetachStateType getDetachState();
 
     /**
      * Detach mode constant to determine which fields are part of the
      * detached graph.
-     *
-     * @see DetachState
      */
-    public void setDetachState(int mode);
+    public void setDetachState(DetachStateType type);
 
     /**
      * Whether to clear state when entering a transaction.
-     *
-     * @see AutoClear
      */
-    public int getAutoClear();
+    public AutoClearType getAutoClear();
 
     /**
      * Whether to clear state when entering a transaction.
-     *
-     * @see AutoClear
      */
-    public void setAutoClear(int clear);
+    public void setAutoClear(AutoClearType clearType);
 
     /**
-     * Bit flags marked in {@link AutoDetach} which indicate when persistent
+     * {@link AutoDetachType} values which indicate when persistent
      * managed objects should be automatically detached in-place.
      */
-    public int getAutoDetach();
+    public EnumSet<AutoDetachType> getAutoDetach();
 
     /**
-     * Bit flags marked in {@link AutoDetach} which indicate when persistent
+     * {@link AutoDetachType} values which indicate when persistent
      * managed objects should be automatically detached in-place.
+     * The current value is replaced in its entirety.
      */
-    public void setAutoDetach(int flags);
+    public void setAutoDetach(AutoDetachType value);
 
     /**
-     * Bit flags marked in {@link AutoDetach} which indicate when persistent
+     * {@link AutoDetachType} values which indicate when persistent
+     * managed objects should be automatically detached in-place.
+     * The current value is replaced in its entirety.
+     */
+    public void setAutoDetach(EnumSet<AutoDetachType> values);
+
+    /**
+     * Bit flags marked in {@link AutoDetachType} which indicate when persistent
      * managed objects should be automatically detached in-place.
      */
     public void setAutoDetach(int flag, boolean on);
@@ -264,20 +237,23 @@ public interface OpenJPAEntityManager
 
     /**
      * Whether memory usage is reduced during this transaction at the expense
-     * of possibly more aggressive data cache evictions.
+     * of tracking changes at the type level instead of the instance level,
+     * resulting in more aggressive cache invalidation.
      *
-     * @since 0.3.4
+     * @since 1.0.0
      */
-    public boolean isLargeTransaction();
+    public boolean isTrackChangesByType();
 
     /**
      * If a large number of objects will be created, modified, or deleted
      * during this transaction setting this option to true will reduce memory
-     * usage if you perform periodic flushes.
+     * usage if you perform periodic flushes by tracking changes at the type
+     * level instead of the instance level, resulting in more aggressive cache
+     * invalidation.
      *
-     * @since 0.3.4
+     * @since 1.0.0
      */
-    public void setLargeTransaction(boolean largeTransaction);
+    public void setTrackChangesByType(boolean largeTransaction);
 
     /**
      * Put the specified key-value pair into the map of user objects. Use
@@ -289,56 +265,6 @@ public interface OpenJPAEntityManager
      * Get the value for the specified key from the map of user objects.
      */
     public Object getUserObject(Object key);
-
-    //////////
-    // Events
-    //////////
-
-    /**
-     * Register a listener for transaction-related events.
-     */
-    public void addTransactionListener(Object listener);
-
-    /**
-     * Remove a listener for transaction-related events.
-     */
-    public void removeTransactionListener(Object listener);
-
-    /**
-     * The {@link CallbackModes} flags for handling transaction listener
-     * exceptions.
-     */
-    public int getTransactionListenerCallbackMode();
-
-    /**
-     * The {@link CallbackModes} flags for handling transaction listener
-     * exceptions.
-     */
-    public void setTransactionListenerCallbackMode(int callbackMode);
-
-    /**
-     * Register a listener for lifecycle-related events on the specified
-     * classes. If the classes are null, all events will be propagated to
-     * the listener.
-     */
-    public void addLifecycleListener(Object listener, Class... classes);
-
-    /**
-     * Remove a listener for lifecycle-related events.
-     */
-    public void removeLifecycleListener(Object listener);
-
-    /**
-     * The {@link CallbackModes} flags for handling lifecycle listener
-     * exceptions.
-     */
-    public int getLifecycleListenerCallbackMode();
-
-    /**
-     * The {@link CallbackModes} flags for handling lifecycle listener
-     * exceptions.
-     */
-    public void setLifecycleListenerCallbackMode(int callbackMode);
 
     ///////////
     // Lookups
@@ -383,55 +309,7 @@ public interface OpenJPAEntityManager
     // Transactions
     ////////////////
 
-    /**
-     * Issue a commit and then start a new transaction. This is identical to:
-     * <pre> manager.commit (); manager.begin ();
-     * </pre> except that the entity manager's internal atomic lock is utilized,
-     * so this method can be safely executed from multiple threads.
-     *
-     * @see #commit()
-     * @see #begin()
-     */
-    public void commitAndResume();
-
-    /**
-     * Issue a rollback and then start a new transaction. This is identical to:
-     * <pre> manager.rollback (); manager.begin ();
-     * </pre> except that the entity manager's internal atomic lock is utilized,
-     * so this method can be safely executed from multiple threads.
-     *
-     * @see #rollback()
-     * @see #begin()
-     */
-    public void rollbackAndResume();
-
-    /**
-     * Mark the current transaction for rollback.
-     */
-    public void setRollbackOnly();
-
-    /**
-     * Mark the current transaction for rollback with the specified cause
-     * of the rollback.
-     *
-     * @since 0.9.7
-     */
-    public void setRollbackOnly(Throwable cause);
-
-    /** 
-     * Returns the Throwable that caused the transaction to be
-     * marked for rollback. 
-     *  
-     * @return the Throwable, or null if none was given
-     *
-     * @since 0.9.7
-     */
-    public Throwable getRollbackCause();
-
-    /**
-     * Return whether the current transaction has been marked for rollback.
-     */
-    public boolean getRollbackOnly();
+    public OpenJPAEntityTransaction getTransaction();
 
     /**
      * Set a transactional savepoint where operations after this savepoint

@@ -22,6 +22,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.event.AbstractLifecycleListener;
 import org.apache.openjpa.event.AbstractTransactionListener;
@@ -35,13 +36,13 @@ public class TestBrokerFactoryListenerRegistry
     private int beginCount = 0;
 
     @Override
-    protected void setUp() {
+    public void setUp() {
         super.setUp(AllFieldTypes.class);
     }
 
     @Override
-    protected OpenJPAEntityManagerFactory createEMF(Object... props) {
-        OpenJPAEntityManagerFactory emf = super.createEMF(props);
+    protected OpenJPAEntityManagerFactorySPI createEMF(Object... props) {
+        OpenJPAEntityManagerFactorySPI emf = super.createEMF(props);
         emf.addLifecycleListener(new AbstractLifecycleListener() {
             @Override
             public void beforePersist(LifecycleEvent event) {

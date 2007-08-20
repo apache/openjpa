@@ -26,11 +26,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
-import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.QueryHints;
-import org.apache.openjpa.kernel.QueryOperations;
-import org.apache.openjpa.kernel.exps.AggregateListener;
-import org.apache.openjpa.kernel.exps.FilterListener;
 
 /**
  * Interface implemented by OpenJPA queries.
@@ -40,10 +36,10 @@ import org.apache.openjpa.kernel.exps.FilterListener;
  * @published
  */
 public interface OpenJPAQuery
-    extends Query, QueryOperations, QueryFlushModes, QueryHints {
+    extends Query, QueryHints {
 
     /**
-     * The owning entity manage.
+     * The owning entity manager.
      */
     public OpenJPAEntityManager getEntityManager();
 
@@ -55,7 +51,7 @@ public interface OpenJPAQuery
     /**
      * Query operation type.
      */
-    public int getOperation();
+    public QueryOperationType getOperation();
 
     /**
      * Fetch plan for controlling the loading of results.
@@ -76,26 +72,6 @@ public interface OpenJPAQuery
      * Whether to ignore changes in the current transaction.
      */
     public OpenJPAQuery setIgnoreChanges(boolean ignore);
-
-    /**
-     * Register a filter listener for the query.
-     */
-    public OpenJPAQuery addFilterListener(FilterListener listener);
-
-    /**
-     * Remove a filter listener from the query.
-     */
-    public OpenJPAQuery removeFilterListener(FilterListener listener);
-
-    /**
-     * Register an aggregate listener for the query.
-     */
-    public OpenJPAQuery addAggregateListener(AggregateListener listener);
-
-    /**
-     * Remove an aggregate listener from the query.
-     */
-    public OpenJPAQuery removeAggregateListener(AggregateListener listener);
 
     /**
      * Return the candidate collection, or <code>null</code> if an

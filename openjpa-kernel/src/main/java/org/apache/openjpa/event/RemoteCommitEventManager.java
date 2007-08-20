@@ -168,7 +168,7 @@ public class RemoteCommitEventManager
         Collection updates = null;
         Collection deletes = null;
 
-        if (broker.isLargeTransaction()) {
+        if (broker.isTrackChangesByType()) {
             payload = RemoteCommitEvent.PAYLOAD_EXTENTS;
             addClassNames = toClassNames(event.getPersistedTypes());
             updates = toClassNames(event.getUpdatedTypes());

@@ -18,17 +18,21 @@
  */
 package org.apache.openjpa.persistence.test;
 
-import java.util.Map;
-import java.util.HashMap;
-import javax.persistence.Persistence;
-
-import junit.framework.TestCase;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 public abstract class SingleEMFTestCase
     extends PersistenceTestCase {
 
-    protected OpenJPAEntityManagerFactory emf;
+    protected OpenJPAEntityManagerFactorySPI emf;
+
+    /**
+     * Call {@link #setUp(Object...)} with no arguments so that the emf
+     * set-up happens even if <code>setUp()</code> is not called from the
+     * subclass.
+     */
+    protected void setUp() {
+        setUp(new Object[0]);
+    }
 
     /**
      * Initialize entity manager factory. Put {@link #CLEAR_TABLES} in

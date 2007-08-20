@@ -29,6 +29,7 @@ import javax.persistence.GenerationType;
  *
  * @author Abe White
  * @since 0.4.0
+ * @published
  */
 @Target({ TYPE })
 @Retention(RUNTIME)

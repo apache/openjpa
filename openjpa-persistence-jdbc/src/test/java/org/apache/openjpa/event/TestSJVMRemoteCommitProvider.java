@@ -24,14 +24,15 @@ import java.util.Collections;
 import javax.persistence.Persistence;
 
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
 
 public class TestSJVMRemoteCommitProvider
     extends PersistenceTestCase {
 
-    private OpenJPAEntityManagerFactory emf1;
-    private OpenJPAEntityManagerFactory emf2;
+    private OpenJPAEntityManagerFactorySPI emf1;
+    private OpenJPAEntityManagerFactorySPI emf2;
     private ListenerImpl listen1;
     private ListenerImpl listen2;
 
@@ -40,7 +41,7 @@ public class TestSJVMRemoteCommitProvider
         sjvm1.put("openjpa.RemoteCommitProvider", "sjvm");
         // set this to differentiate emf1 from the other emf below
         sjvm1.put("openjpa.DetachState", "true");
-        emf1 = OpenJPAPersistence.cast(
+        emf1 = (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(
             Persistence.createEntityManagerFactory("test", sjvm1));
         emf1.getConfiguration().getRemoteCommitEventManager().addListener(
             listen1 = new ListenerImpl());
@@ -48,15 +49,15 @@ public class TestSJVMRemoteCommitProvider
         Map sjvm2 = new HashMap();
         sjvm2.put("openjpa.RemoteCommitProvider", "sjvm");
         sjvm2.put("openjpa.DetachState", "false"); // differentiate from above
-        emf2 = OpenJPAPersistence.cast(
+        emf2 = (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(
             Persistence.createEntityManagerFactory("test", sjvm2));
         emf2.getConfiguration().getRemoteCommitEventManager().addListener(
             listen2 = new ListenerImpl());
     }
 
     public void testSJVMRemoteCommitProvider() {
-        assertNotSame(OpenJPAPersistence.toBrokerFactory(emf1),
-            OpenJPAPersistence.toBrokerFactory(emf2));
+        assertNotSame(JPAFacadeHelper.toBrokerFactory(emf1),
+            JPAFacadeHelper.toBrokerFactory(emf2));
         
         emf1.getConfiguration().getRemoteCommitEventManager()
             .getRemoteCommitProvider().broadcast(

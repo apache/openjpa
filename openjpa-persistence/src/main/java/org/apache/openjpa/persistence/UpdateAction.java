@@ -23,8 +23,9 @@ package org.apache.openjpa.persistence;
  *
  * @author Abe White
  * @since 0.4.0
+ * @published
  */
 public enum UpdateAction {
-
     IGNORE,
-    RESTRICT };
+    RESTRICT
+}

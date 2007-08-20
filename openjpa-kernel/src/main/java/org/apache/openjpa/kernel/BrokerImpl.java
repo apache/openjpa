@@ -33,16 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.resource.NotSupportedException;
-import javax.resource.ResourceException;
-import javax.resource.cci.Connection;
-import javax.resource.cci.ConnectionMetaData;
-import javax.resource.cci.Interaction;
-import javax.resource.cci.InteractionSpec;
-import javax.resource.cci.LocalTransaction;
-import javax.resource.cci.Record;
-import javax.resource.cci.ResourceWarning;
-import javax.resource.cci.ResultSetInfo;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 
@@ -160,7 +150,6 @@ public class BrokerImpl
     private ManagedRuntime _runtime = null;
     private LockManager _lm = null;
     private InverseManager _im = null;
-    private JCAHelper _jca = null;
     private ReentrantLock _lock = null;
     private OpCallbacks _call = null;
     private RuntimeExceptionTranslator _extrans = null;
@@ -231,7 +220,8 @@ public class BrokerImpl
     private int _lifeCallbackMode = 0;
 
     private boolean _initializeWasInvoked = false;
-    
+    private static final Object[] EMPTY_OBJECTS = new Object[0];
+
     /**
      * Set the persistence manager's authentication. This is the first
      * method called after construction.
@@ -261,7 +251,6 @@ public class BrokerImpl
         _initializeWasInvoked = true;
         _loader = (ClassLoader) AccessController.doPrivileged(
             J2DoPrivHelper.getContextClassLoaderAction());
-        _jca = new JCAHelper();
         _conf = factory.getConfiguration();
         _compat = _conf.getCompatibilityInstance();
         _factory = factory;
@@ -322,30 +311,6 @@ public class BrokerImpl
      */
     protected Map newManagedObjectCache() {
         return new ReferenceHashMap(ReferenceMap.HARD, ReferenceMap.SOFT);
-    }
-
-    //////////////////////////////////////////
-    // Implementation of Connection interface
-    //////////////////////////////////////////
-
-    public ConnectionMetaData getMetaData()
-        throws ResourceException {
-        return _jca;
-    }
-
-    public Interaction createInteraction()
-        throws ResourceException {
-        return _jca;
-    }
-
-    public LocalTransaction getLocalTransaction()
-        throws ResourceException {
-        return this;
-    }
-
-    public ResultSetInfo getResultSetInfo()
-        throws ResourceException {
-        return _jca;
     }
 
     //////////////////////////////////
@@ -585,11 +550,11 @@ public class BrokerImpl
         _populateDataCache = cache;
     }
 
-    public boolean isLargeTransaction() {
+    public boolean isTrackChangesByType() {
         return _largeTransaction;
     }
 
-    public void setLargeTransaction(boolean largeTransaction) {
+    public void setTrackChangesByType(boolean largeTransaction) {
         assertOpen();
         _largeTransaction = largeTransaction;
     }
@@ -3116,7 +3081,7 @@ public class BrokerImpl
         if (objs == null)
             return null;
         if (objs.isEmpty())
-            return new Object[0];
+            return EMPTY_OBJECTS;
         if (call == null)
             call = _call;
 
@@ -3203,7 +3168,7 @@ public class BrokerImpl
         if (objs == null)
             return null;
         if (objs.isEmpty())
-            return new Object[0];
+            return EMPTY_OBJECTS;
 
         beginOperation(true);
         try {
@@ -4896,108 +4861,6 @@ public class BrokerImpl
                     throw new UnsupportedException();
                 }
             };
-        }
-    }
-
-    /**
-     * Helper class to implement JCA interfaces. This is placed in a
-     * separate class so that its methods do not interfere with the
-     * persistence manager APIs.
-     */
-    private class JCAHelper
-        implements Interaction, ResultSetInfo, ConnectionMetaData {
-        ///////////////////////////////////////////
-        // Implementation of Interaction interface
-        ///////////////////////////////////////////
-
-        public void clearWarnings() {
-        }
-
-        public Record execute(InteractionSpec spec, Record input)
-            throws ResourceException {
-            throw new NotSupportedException("execute");
-        }
-
-        public boolean execute(InteractionSpec spec, Record input,
-            Record output)
-            throws ResourceException {
-            throw new NotSupportedException("execute");
-        }
-
-        public Connection getConnection() {
-            return BrokerImpl.this;
-        }
-
-        public ResourceWarning getWarnings() {
-            return null;
-        }
-
-        public void close() {
-        }
-
-        /////////////////////////////////////////////
-        // Implementation of ResultSetInfo interface
-        /////////////////////////////////////////////
-
-        public boolean deletesAreDetected(int type) {
-            return true;
-        }
-
-        public boolean insertsAreDetected(int type) {
-            return true;
-        }
-
-        public boolean othersDeletesAreVisible(int type) {
-            return true;
-        }
-
-        public boolean othersInsertsAreVisible(int type) {
-            return true;
-        }
-
-        public boolean othersUpdatesAreVisible(int type) {
-            return true;
-        }
-
-        public boolean ownDeletesAreVisible(int type) {
-            return true;
-        }
-
-        public boolean ownInsertsAreVisible(int type) {
-            return true;
-        }
-
-        public boolean ownUpdatesAreVisible(int type) {
-            return true;
-        }
-
-        public boolean supportsResultSetType(int type) {
-            return true;
-        }
-
-        public boolean supportsResultTypeConcurrency(int type,
-            int concurrency) {
-            return true;
-        }
-
-        public boolean updatesAreDetected(int type) {
-            return true;
-        }
-
-        ///////////////////////////////////////////////////
-        // Implementation of ConnectionMetaData interface
-        ///////////////////////////////////////////////////
-
-        public String getEISProductName() {
-            return _conf.getConnectionDriverName();
-        }
-
-        public String getEISProductVersion() {
-            return "";
-        }
-
-        public String getUserName() {
-            return _user;
         }
     }
 }

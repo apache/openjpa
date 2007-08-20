@@ -26,6 +26,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
  * Isolation levels for use in {@link JDBCFetchPlan#setIsolation}.
  *
  * @since 0.9.7
+ * @published
  */
 public enum IsolationLevel {
     DEFAULT(-1),
@@ -41,11 +42,11 @@ public enum IsolationLevel {
         _connectionConstant = connectionConstant;
     }
 
-    protected int getConnectionConstant() {
+    public int getConnectionConstant() {
         return _connectionConstant;
     }
 
-    protected static IsolationLevel fromConnectionConstant(int constant) {
+    public static IsolationLevel fromConnectionConstant(int constant) {
         switch(constant) {
             case -1:
             case JDBCFetchConfiguration.DEFAULT:

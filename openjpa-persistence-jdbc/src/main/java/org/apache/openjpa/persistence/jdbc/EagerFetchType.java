@@ -18,14 +18,43 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
+
 /**
  * Type of fetching to employ.
  *
  * @author Abe White
  * @since 0.4.0
+ * @published
  */
 public enum EagerFetchType {
+    NONE(EagerFetchModes.EAGER_NONE),
+    JOIN(EagerFetchModes.EAGER_JOIN),
+    PARALLEL(EagerFetchModes.EAGER_PARALLEL);
 
-    NONE,
-    JOIN,
-    PARALLEL };
+    private final int eagerFetchConstant;
+
+    private EagerFetchType(int value) {
+        eagerFetchConstant = value;
+    }
+
+    int toKernelConstant() {
+        return eagerFetchConstant;
+    }
+
+    static EagerFetchType fromKernelConstant(int kernelConstant) {
+        switch (kernelConstant) {
+            case EagerFetchModes.EAGER_NONE:
+                return NONE;
+
+            case EagerFetchModes.EAGER_JOIN:
+                return JOIN;
+
+            case EagerFetchModes.EAGER_PARALLEL:
+                return PARALLEL;
+
+            default:
+                throw new IllegalArgumentException(kernelConstant + "");
+        }
+    }
+}

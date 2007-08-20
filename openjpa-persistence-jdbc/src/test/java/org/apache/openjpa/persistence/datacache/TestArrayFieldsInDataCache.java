@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import java.util.Map;
 import java.util.Arrays;
 import javax.persistence.EntityManager;
 
@@ -26,6 +25,8 @@ import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.kernel.PCData;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.StoreCacheImpl;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -54,17 +55,18 @@ public class TestArrayFieldsInDataCache
         // get the external and internal forms of the ID for cache
         // interrogation and data validation
         jpaOid = OpenJPAPersistence.cast(em).getObjectId(aft);
-        internalOid = OpenJPAPersistence.toBroker(em).getObjectId(aft);
+        internalOid = JPAFacadeHelper.toBroker(em).getObjectId(aft);
 
         em.close();
     }
 
     public void testArrayOfStrings() {
         // check that the data cache contains an efficient representation
-        DataCache cache = OpenJPAPersistence.cast(emf).getStoreCache()
-            .getDelegate();
+        StoreCacheImpl storeCache = (StoreCacheImpl)
+            OpenJPAPersistence.cast(emf).getStoreCache();
+        DataCache cache = storeCache.getDelegate();
         PCData data = cache.get(internalOid);
-        ClassMetaData meta = OpenJPAPersistence.getMetaData(emf,
+        ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
             AllFieldTypes.class);
         Object cachedFieldData =
             data.getData(meta.getField("arrayOfStrings").getIndex());
@@ -82,10 +84,11 @@ public class TestArrayFieldsInDataCache
 
     public void testArrayOfInts() {
         // check that the data cache contains an efficient representation
-        DataCache cache = OpenJPAPersistence.cast(emf).getStoreCache()
-            .getDelegate();
+        StoreCacheImpl storeCache = (StoreCacheImpl)
+            OpenJPAPersistence.cast(emf).getStoreCache();
+        DataCache cache = storeCache.getDelegate();
         PCData data = cache.get(internalOid);
-        ClassMetaData meta = OpenJPAPersistence.getMetaData(emf,
+        ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
             AllFieldTypes.class);
         Object cachedFieldData =
             data.getData(meta.getField("arrayOfInts").getIndex());

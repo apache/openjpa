@@ -23,10 +23,11 @@ package org.apache.openjpa.persistence.jdbc;
  *
  * @author Abe White
  * @since 0.4.0
+ * @published
  */
 public enum ForeignKeyAction {
-
     RESTRICT,
     CASCADE,
     NULL,
-    DEFAULT };
+    DEFAULT
+};

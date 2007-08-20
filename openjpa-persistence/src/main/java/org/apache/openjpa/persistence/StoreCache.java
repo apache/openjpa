@@ -34,11 +34,6 @@ public interface StoreCache {
     public static final String NAME_DEFAULT = DataCache.NAME_DEFAULT;
 
     /**
-     * Delegate.
-     */
-    public DataCache getDelegate();
-
-    /**
      * Whether the cache contains data for the given oid.
      */
     public boolean contains(Class cls, Object oid);

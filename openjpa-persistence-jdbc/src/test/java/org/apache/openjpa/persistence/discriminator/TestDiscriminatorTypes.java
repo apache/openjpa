@@ -23,7 +23,6 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestDiscriminatorTypes extends SingleEMFTestCase {
@@ -93,7 +92,7 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
     }
 
     private ClassMapping getMapping(String name) {
-        return (ClassMapping) OpenJPAPersistence.cast(emf).getConfiguration()
+        return (ClassMapping) emf.getConfiguration()
                 .getMetaDataRepositoryInstance().getMetaData(name,
                         getClass().getClassLoader(), true);
     }

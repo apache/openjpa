@@ -32,8 +32,8 @@ import junit.framework.TestCase;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
 
 /**
  * Base test class providing persistence utilities.
@@ -55,7 +55,7 @@ public abstract class PersistenceTestCase
      * @param props list of persistent types used in testing and/or 
      * configuration values in the form key,value,key,value...
      */
-    protected OpenJPAEntityManagerFactory createEMF(Object... props) {
+    protected OpenJPAEntityManagerFactorySPI createEMF(Object... props) {
         Map map = new HashMap(System.getProperties());
         List<Class> types = new ArrayList<Class>();
         boolean prop = false;
@@ -84,7 +84,7 @@ public abstract class PersistenceTestCase
                 "jpa(Types=" + buf.toString() + ")");
         }
 
-        return (OpenJPAEntityManagerFactory) Persistence.
+        return (OpenJPAEntityManagerFactorySPI) Persistence.
             createEntityManagerFactory("test", map);
     }
 
@@ -97,12 +97,12 @@ public abstract class PersistenceTestCase
         if (!emf.isOpen())
             return false;
 
-        for (Iterator iter = ((AbstractBrokerFactory) OpenJPAPersistence
+        for (Iterator iter = ((AbstractBrokerFactory) JPAFacadeHelper
             .toBrokerFactory(emf)).getOpenBrokers().iterator();
             iter.hasNext(); ) {
             Broker b = (Broker) iter.next();
             if (b != null && !b.isClosed()) {
-                EntityManager em = OpenJPAPersistence.toEntityManager(b);
+                EntityManager em = JPAFacadeHelper.toEntityManager(b);
                 if (em.getTransaction().isActive())
                     em.getTransaction().rollback();
                 em.close();
@@ -122,7 +122,7 @@ public abstract class PersistenceTestCase
 
         List<ClassMetaData> metas = new ArrayList<ClassMetaData>(types.length);
         for (Class c : types) {
-            ClassMetaData meta = OpenJPAPersistence.getMetaData(emf, c);
+            ClassMetaData meta = JPAFacadeHelper.getMetaData(emf, c);
             if (meta != null)
                 metas.add(meta);
         }
@@ -136,7 +136,7 @@ public abstract class PersistenceTestCase
     protected void clear(EntityManagerFactory emf) {
         if (emf == null)
             return;
-        clear(emf, ((OpenJPAEntityManagerFactory) emf).getConfiguration().
+        clear(emf, ((OpenJPAEntityManagerFactorySPI) emf).getConfiguration().
             getMetaDataRepositoryInstance().getMetaDatas());
     }
 
@@ -164,7 +164,7 @@ public abstract class PersistenceTestCase
      * Return the entity name for the given type.   
      */
     protected String entityName(EntityManagerFactory emf, Class c) {
-        ClassMetaData meta = OpenJPAPersistence.getMetaData(emf, c);
+        ClassMetaData meta = JPAFacadeHelper.getMetaData(emf, c);
         return (meta == null) ? null : meta.getTypeAlias();
     }
 }

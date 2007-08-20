@@ -33,11 +33,6 @@ public interface Generator {
     public static final String UUID_STRING = "uuid-string";
 
     /**
-     * Delegate.
-     */
-    public Seq getDelegate();
-
-    /**
      * The sequence name.
      */
     public String getName();

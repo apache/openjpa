@@ -46,6 +46,9 @@ public class QueryResultCacheImpl
             PersistenceExceptions.TRANSLATOR);
     }
 
+    /**
+     * Delegate.
+     */
     public QueryCache getDelegate() {
         return _cache.getDelegate();
     }

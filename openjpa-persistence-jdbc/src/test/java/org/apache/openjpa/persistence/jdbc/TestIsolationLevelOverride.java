@@ -22,10 +22,9 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.InvalidStateException;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.HSQLDictionary;
@@ -54,8 +53,7 @@ public class TestIsolationLevelOverride
 
     public void testIsolationLevelOverride(boolean useHintsAndQueries,
         boolean useStringHints) {
-        OpenJPAEntityManager em =
-            OpenJPAPersistence.cast(emf.createEntityManager());
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
             .getDBDictionaryInstance();
 

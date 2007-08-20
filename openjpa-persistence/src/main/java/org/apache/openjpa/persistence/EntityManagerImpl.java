@@ -21,16 +21,11 @@ package org.apache.openjpa.persistence;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
-import javax.resource.ResourceException;
-import javax.resource.cci.ConnectionMetaData;
-import javax.resource.cci.Interaction;
-import javax.resource.cci.LocalTransaction;
-import javax.resource.cci.ResultSetInfo;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -46,6 +41,7 @@ import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
@@ -63,7 +59,8 @@ import org.apache.openjpa.util.UserException;
  * @nojavadoc
  */
 public class EntityManagerImpl
-    implements OpenJPAEntityManager, FindCallbacks, OpCallbacks {
+    implements OpenJPAEntityManagerSPI,
+    FindCallbacks, OpCallbacks, Closeable, OpenJPAEntityTransaction {
 
     private static final Localizer _loc = Localizer.forPackage
         (EntityManagerImpl.class);
@@ -71,6 +68,7 @@ public class EntityManagerImpl
     private final DelegatingBroker _broker;
     private final EntityManagerFactoryImpl _emf;
     private FetchPlan _fetch = null;
+    private static final Object[] EMPTY_OBJECTS = new Object[0];
 
     /**
      * Constructor; supply factory and delegate.
@@ -89,27 +87,6 @@ public class EntityManagerImpl
      */
     public Broker getBroker() {
         return _broker.getDelegate();
-    }
-
-    public ConnectionMetaData getMetaData()
-        throws ResourceException {
-        return _broker.getMetaData();
-    }
-
-    public Interaction createInteraction()
-        throws ResourceException {
-        assertNotCloseInvoked();
-        return _broker.createInteraction();
-    }
-
-    public LocalTransaction getLocalTransaction()
-        throws ResourceException {
-        return this;
-    }
-
-    public ResultSetInfo getResultSetInfo()
-        throws ResourceException {
-        return _broker.getResultSetInfo();
     }
 
     public OpenJPAEntityManagerFactory getEntityManagerFactory() {
@@ -133,8 +110,9 @@ public class EntityManagerImpl
         }
     }
 
-    public int getConnectionRetainMode() {
-        return _broker.getConnectionRetainMode();
+    public ConnectionRetainType getConnectionRetainMode() {
+        return ConnectionRetainType.fromKernelConstant(
+            _broker.getConnectionRetainMode());
     }
 
     public boolean isManaged() {
@@ -211,13 +189,13 @@ public class EntityManagerImpl
         _broker.setOptimistic(val);
     }
 
-    public int getRestoreState() {
-        return _broker.getRestoreState();
+    public RestoreStateType getRestoreState() {
+        return RestoreStateType.fromKernelConstant(_broker.getRestoreState());
     }
 
-    public void setRestoreState(int val) {
+    public void setRestoreState(RestoreStateType val) {
         assertNotCloseInvoked();
-        _broker.setRestoreState(val);
+        _broker.setRestoreState(val.toKernelConstant());
     }
 
     public boolean getRetainState() {
@@ -229,31 +207,36 @@ public class EntityManagerImpl
         _broker.setRetainState(val);
     }
 
-    public int getAutoClear() {
-        return _broker.getAutoClear();
+    public AutoClearType getAutoClear() {
+        return AutoClearType.fromKernelConstant(_broker.getAutoClear());
     }
 
-    public void setAutoClear(int val) {
+    public void setAutoClear(AutoClearType val) {
         assertNotCloseInvoked();
-        _broker.setAutoClear(val);
+        _broker.setAutoClear(val.toKernelConstant());
     }
 
-    public int getDetachState() {
-        return _broker.getDetachState();
+    public DetachStateType getDetachState() {
+        return DetachStateType.fromKernelConstant(_broker.getDetachState());
     }
 
-    public void setDetachState(int mode) {
+    public void setDetachState(DetachStateType type) {
         assertNotCloseInvoked();
-        _broker.setDetachState(mode);
+        _broker.setDetachState(type.toKernelConstant());
     }
 
-    public int getAutoDetach() {
-        return _broker.getAutoDetach();
+    public EnumSet<AutoDetachType> getAutoDetach() {
+        return AutoDetachType.toEnumSet(_broker.getAutoDetach());
     }
 
-    public void setAutoDetach(int flags) {
+    public void setAutoDetach(AutoDetachType flag) {
         assertNotCloseInvoked();
-        _broker.setAutoDetach(flags);
+        _broker.setAutoDetach(AutoDetachType.fromEnumSet(EnumSet.of(flag)));
+    }
+
+    public void setAutoDetach(EnumSet<AutoDetachType> flags) {
+        assertNotCloseInvoked();
+        _broker.setAutoDetach(AutoDetachType.fromEnumSet(flags));
     }
 
     public void setAutoDetach(int flag, boolean on) {
@@ -279,13 +262,13 @@ public class EntityManagerImpl
         _broker.setPopulateDataCache(cache);
     }
 
-    public boolean isLargeTransaction() {
-        return _broker.isLargeTransaction();
+    public boolean isTrackChangesByType() {
+        return _broker.isTrackChangesByType();
     }
 
-    public void setLargeTransaction(boolean largeTransaction) {
+    public void setTrackChangesByType(boolean trackByType) {
         assertNotCloseInvoked();
-        _broker.setLargeTransaction(largeTransaction);
+        _broker.setTrackChangesByType(trackByType);
     }
 
     public Object getUserObject(Object key) {
@@ -307,13 +290,21 @@ public class EntityManagerImpl
         _broker.removeTransactionListener(listener);
     }
 
-    public int getTransactionListenerCallbackMode() {
-        return _broker.getTransactionListenerCallbackMode();
+    public EnumSet<CallbackType> getTransactionListenerCallbackMode() {
+        return CallbackType.toEnumSet(
+            _broker.getTransactionListenerCallbackMode());
     }
 
-    public void setTransactionListenerCallbackMode(int mode) {
+    public void setTransactionListenerCallbackMode(CallbackType type) {
         assertNotCloseInvoked();
-        _broker.setTransactionListenerCallbackMode(mode);
+        _broker.setTransactionListenerCallbackMode(
+            CallbackType.fromEnumSet(EnumSet.of(type)));
+    }
+
+    public void setTransactionListenerCallbackMode(EnumSet<CallbackType> types){
+        assertNotCloseInvoked();
+        _broker.setTransactionListenerCallbackMode(
+            CallbackType.fromEnumSet(types));
     }
 
     public void addLifecycleListener(Object listener, Class... classes) {
@@ -326,13 +317,21 @@ public class EntityManagerImpl
         _broker.removeLifecycleListener(listener);
     }
 
-    public int getLifecycleListenerCallbackMode() {
-        return _broker.getLifecycleListenerCallbackMode();
+    public EnumSet<CallbackType> getLifecycleListenerCallbackMode() {
+        return CallbackType.toEnumSet(
+            _broker.getLifecycleListenerCallbackMode());
     }
 
-    public void setLifecycleListenerCallbackMode(int mode) {
+    public void setLifecycleListenerCallbackMode(CallbackType type) {
         assertNotCloseInvoked();
-        _broker.setLifecycleListenerCallbackMode(mode);
+        _broker.setLifecycleListenerCallbackMode(
+            CallbackType.fromEnumSet(EnumSet.of(type)));
+    }
+
+    public void setLifecycleListenerCallbackMode(EnumSet<CallbackType> types) {
+        assertNotCloseInvoked();
+        _broker.setLifecycleListenerCallbackMode(
+            CallbackType.fromEnumSet(types));
     }
 
     @SuppressWarnings("unchecked")
@@ -382,11 +381,11 @@ public class EntityManagerImpl
         assertNotCloseInvoked();
         if (cls == null)
             return null;
-        return OpenJPAPersistence.fromOpenJPAObjectIdClass
+        return JPAFacadeHelper.fromOpenJPAObjectIdClass
                 (_broker.getObjectIdType(cls));
     }
 
-    public EntityTransaction getTransaction() {
+    public OpenJPAEntityTransaction getTransaction() {
         if (_broker.isManaged())
             throw new InvalidStateException(_loc.get("get-managed-trans"),
                 null, null, false);
@@ -640,7 +639,7 @@ public class EntityManagerImpl
 
     public void evictAll(Extent extent) {
         assertNotCloseInvoked();
-        _broker.evictAll(extent.getDelegate(), this);
+        _broker.evictAll(((ExtentImpl) extent).getDelegate(), this);
     }
 
     @SuppressWarnings("unchecked")
@@ -667,7 +666,7 @@ public class EntityManagerImpl
 
     public Object[] mergeAll(Object... entities) {
         if (entities.length == 0)
-            return new Object[0];
+            return EMPTY_OBJECTS;
         return mergeAll(Arrays.asList(entities)).toArray();
     }
 
@@ -1019,7 +1018,7 @@ public class EntityManagerImpl
 
     public Object getObjectId(Object o) {
         assertNotCloseInvoked();
-        return OpenJPAPersistence.fromOpenJPAObjectId(_broker.getObjectId(o));
+        return JPAFacadeHelper.fromOpenJPAObjectId(_broker.getObjectId(o));
     }
 
     public boolean isDirty(Object o) {
