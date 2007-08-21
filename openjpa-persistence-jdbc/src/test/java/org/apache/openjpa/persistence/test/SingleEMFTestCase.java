@@ -49,7 +49,9 @@ public abstract class SingleEMFTestCase
     /**
      * Closes the entity manager factory.
      */
-    public void tearDown() {
+    public void tearDown() throws Exception {
+        super.tearDown();
+
         if (emf == null)
             return;
 
