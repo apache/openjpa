@@ -109,7 +109,7 @@ public class QueryCacheStoreQuery
         if (qk == null)
             return null;
         FetchConfiguration fetch = getContext().getFetchConfiguration();
-        if (!fetch.getEnlistInQueryCache())
+        if (!fetch.getQueryCacheEnabled())
             return null;
         if (fetch.getReadLockLevel() > LockLevels.LOCK_NONE)
             return null;

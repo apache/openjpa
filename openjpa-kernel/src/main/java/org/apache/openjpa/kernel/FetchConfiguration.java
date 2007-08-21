@@ -129,14 +129,14 @@ public interface FetchConfiguration
      * returns <code>false</code>, query caching will not be used
      * even if the datacache plugin is installed.
      */
-    public boolean getEnlistInQueryCache();
+    public boolean getQueryCacheEnabled();
 
     /**
      * Control whether or not query caching is enabled. This has no effect
      * if the datacache plugin is not installed, or if the query cache size
      * is set to zero.
      */
-    public FetchConfiguration setEnlistInQueryCache(boolean cache);
+    public FetchConfiguration setQueryCacheEnabled(boolean cache);
 
     /**
      * The query automatic flush configuration.

@@ -225,8 +225,8 @@ public class JDBCFetchPlanImpl
     }
 
     @Override
-    public JDBCFetchPlan setEnlistInQueryResultCache(boolean cache) {
-        return (JDBCFetchPlan) super.setEnlistInQueryResultCache(cache);
+    public JDBCFetchPlan setQueryResultCacheEnabled(boolean cache) {
+        return (JDBCFetchPlan) super.setQueryResultCacheEnabled(cache);
     }
 
     @Override

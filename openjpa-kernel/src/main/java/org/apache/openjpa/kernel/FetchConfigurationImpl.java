@@ -150,7 +150,7 @@ public class FetchConfigurationImpl
     public void copy(FetchConfiguration fetch) {
         setFetchBatchSize(fetch.getFetchBatchSize());
         setMaxFetchDepth(fetch.getMaxFetchDepth());
-        setEnlistInQueryCache(fetch.getEnlistInQueryCache());
+        setQueryCacheEnabled(fetch.getQueryCacheEnabled());
         setFlushBeforeQueries(fetch.getFlushBeforeQueries());
         setLockTimeout(fetch.getLockTimeout());
         clearFetchGroups();
@@ -191,11 +191,11 @@ public class FetchConfigurationImpl
         return this;
     }
 
-    public boolean getEnlistInQueryCache() {
+    public boolean getQueryCacheEnabled() {
         return _state.queryCache;
     }
 
-    public FetchConfiguration setEnlistInQueryCache(boolean cache) {
+    public FetchConfiguration setQueryCacheEnabled(boolean cache) {
         _state.queryCache = cache;
         return this;
     }

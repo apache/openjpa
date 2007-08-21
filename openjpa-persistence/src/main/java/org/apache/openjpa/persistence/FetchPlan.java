@@ -88,7 +88,7 @@ public interface FetchPlan {
      *
      * @since 1.0.0
      */
-    public boolean isEnlistInQueryResultCache();
+    public boolean getQueryResultCacheEnabled();
 
     /**
      * Control whether or not query caching is enabled. This has no effect
@@ -97,7 +97,7 @@ public interface FetchPlan {
      *
      * @since 1.0.0
      */
-    public FetchPlan setEnlistInQueryResultCache(boolean cache);
+    public FetchPlan setQueryResultCacheEnabled(boolean cache);
 
     /**
      * Returns the names of the fetch groups that this component will use
