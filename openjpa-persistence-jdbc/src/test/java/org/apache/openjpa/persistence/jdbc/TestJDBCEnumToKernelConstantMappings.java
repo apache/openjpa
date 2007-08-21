@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import java.sql.ResultSet;
+
 import junit.framework.TestCase;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.LRSSizes;
@@ -112,6 +114,51 @@ public class TestJDBCEnumToKernelConstantMappings
         assertEquals(getConstantCount(JoinSyntaxes.class),
             JoinSyntaxType.values().length);
     }
+
+    public void testResultSetType() {
+        assertEquals(ResultSet.TYPE_FORWARD_ONLY,
+            ResultSetType.FORWARD_ONLY.toKernelConstant());
+        assertEquals(ResultSetType.FORWARD_ONLY,
+            ResultSetType.fromKernelConstant(
+                ResultSet.TYPE_FORWARD_ONLY));
+
+        assertEquals(ResultSet.TYPE_SCROLL_INSENSITIVE,
+            ResultSetType.SCROLL_INSENSITIVE.toKernelConstant());
+        assertEquals(ResultSetType.SCROLL_INSENSITIVE,
+            ResultSetType.fromKernelConstant(
+                ResultSet.TYPE_SCROLL_INSENSITIVE));
+
+        assertEquals(ResultSet.TYPE_SCROLL_SENSITIVE,
+            ResultSetType.SCROLL_SENSITIVE.toKernelConstant());
+        assertEquals(ResultSetType.SCROLL_SENSITIVE,
+            ResultSetType.fromKernelConstant(
+                ResultSet.TYPE_SCROLL_SENSITIVE));
+
+        assertEquals(3, ResultSetType.values().length);
+    }
+
+    public void testFetchDirection() {
+        assertEquals(ResultSet.FETCH_FORWARD,
+            FetchDirection.FORWARD.toKernelConstant());
+        assertEquals(FetchDirection.FORWARD,
+            FetchDirection.fromKernelConstant(
+                ResultSet.FETCH_FORWARD));
+
+        assertEquals(ResultSet.FETCH_REVERSE,
+            FetchDirection.REVERSE.toKernelConstant());
+        assertEquals(FetchDirection.REVERSE,
+            FetchDirection.fromKernelConstant(
+                ResultSet.FETCH_REVERSE));
+
+        assertEquals(ResultSet.FETCH_UNKNOWN,
+            FetchDirection.UNKNOWN.toKernelConstant());
+        assertEquals(FetchDirection.UNKNOWN,
+            FetchDirection.fromKernelConstant(
+                ResultSet.FETCH_UNKNOWN));
+
+        assertEquals(3, FetchDirection.values().length);
+    }
+
 
     private int getConstantCount(Class cls) {
         return cls.getDeclaredFields().length;

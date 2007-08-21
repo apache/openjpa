@@ -73,21 +73,21 @@ public class JDBCFetchPlanImpl
         return this;
     }
 
-    public int getResultSetType() {
-        return _fetch.getResultSetType();
+    public ResultSetType getResultSetType() {
+        return ResultSetType.fromKernelConstant(_fetch.getResultSetType());
     }
 
-    public JDBCFetchPlanImpl setResultSetType(int type) {
-        _fetch.setResultSetType(type);
+    public JDBCFetchPlanImpl setResultSetType(ResultSetType type) {
+        _fetch.setResultSetType(type.toKernelConstant());
         return this;
     }
 
-    public int getFetchDirection() {
-        return _fetch.getFetchDirection();
+    public FetchDirection getFetchDirection() {
+        return FetchDirection.fromKernelConstant(_fetch.getFetchDirection());
     }
 
-    public JDBCFetchPlanImpl setFetchDirection(int direction) {
-        _fetch.setFetchDirection(direction);
+    public JDBCFetchPlanImpl setFetchDirection(FetchDirection direction) {
+        _fetch.setFetchDirection(direction.toKernelConstant());
         return this;
     }
 

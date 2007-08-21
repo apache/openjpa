@@ -56,31 +56,23 @@ public interface JDBCFetchPlan
 
     /**
      * Type of JDBC result set to use for query results.
-     * 
-     * @see java.sql.ResultSet
      */
-    public int getResultSetType();
+    public ResultSetType getResultSetType();
 
     /**
      * Type of JDBC result set to use for query results.
-     * 
-     * @see java.sql.ResultSet
      */
-    public JDBCFetchPlan setResultSetType(int type);
+    public JDBCFetchPlan setResultSetType(ResultSetType type);
 
     /**
      * Result set fetch direction.
-     * 
-     * @see java.sql.ResultSet
      */
-    public int getFetchDirection();
+    public FetchDirection getFetchDirection();
 
     /**
      * Result set fetch direction.
-     * 
-     * @see java.sql.ResultSet
      */
-    public JDBCFetchPlan setFetchDirection(int direction);
+    public JDBCFetchPlan setFetchDirection(FetchDirection direction);
 
     /**
      * How to determine the size of a large result set.
