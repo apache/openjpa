@@ -482,6 +482,7 @@ public class OpenJPAConfigurationImpl
         
         runtimeClassOptimization = addBoolean("RuntimeClassOptimization");
         runtimeClassOptimization.setDefault("true");
+        runtimeClassOptimization.set(true);
 
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
