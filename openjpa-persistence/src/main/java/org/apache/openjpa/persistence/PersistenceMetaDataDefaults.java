@@ -296,13 +296,14 @@ public class PersistenceMetaDataDefaults
                         meta.getDescribedType(), "set" +
                         StringUtils.capitalize(name), new Class[] { 
                             ((Method) member).getReturnType() }));
-                if (setter == null) {
+                if (setter == null && !isAnnotatedTransient(member)) {
                     logNoSetter(meta, name, null);
                     return false;
                 }
             } catch (Exception e) {
                 // e.g., NoSuchMethodException
-                logNoSetter(meta, name, e);
+                if (!isAnnotatedTransient(member))
+                    logNoSetter(meta, name, e);
                 return false;
             }
         }
@@ -312,6 +313,11 @@ public class PersistenceMetaDataDefaults
             return false;
         return true;
 	}
+
+    private boolean isAnnotatedTransient(Member member) {
+        return member instanceof AnnotatedElement
+            && ((AnnotatedElement) member).isAnnotationPresent(Transient.class);
+    }
 
     private void logNoSetter(ClassMetaData meta, String name, Exception e) {
         Log log = meta.getRepository().getConfiguration()
