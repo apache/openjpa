@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence;
 
-import org.apache.openjpa.kernel.Seq;
-
 /**
  * Represents a store sequence.
  *

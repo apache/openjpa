@@ -38,6 +38,7 @@ import org.apache.openjpa.meta.XMLMetaData;
  * JAXB xml annotation metadata parser.
  *
  * @author Catalina Wei
+ * @since 1.0.0
  * @nojavadoc
  */
 public class AnnotationPersistenceXMLMetaDataParser {

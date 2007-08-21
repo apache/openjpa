@@ -33,6 +33,7 @@ import org.apache.openjpa.persistence.PersistenceExceptions;
  *
  * @since 0.4.0
  * @author Abe White
+ * @nojavadoc
  */
 public class JDBCFetchPlanImpl
     extends FetchPlanImpl
@@ -91,12 +92,12 @@ public class JDBCFetchPlanImpl
         return this;
     }
 
-    public LRSSize getLRSSize() {
-        return LRSSize.fromKernelConstant(_fetch.getLRSSize());
+    public LRSSizeAlgorithm getLRSSizeAlgorithm() {
+        return LRSSizeAlgorithm.fromKernelConstant(_fetch.getLRSSize());
     }
 
-    public JDBCFetchPlanImpl setLRSSize(LRSSize lrsSize) {
-        _fetch.setLRSSize(lrsSize.toKernelConstant());
+    public JDBCFetchPlanImpl setLRSSizeAlgorithm(LRSSizeAlgorithm lrsSizeAlgorithm) {
+        _fetch.setLRSSize(lrsSizeAlgorithm.toKernelConstant());
         return this;
     }
 

@@ -26,14 +26,14 @@ import org.apache.openjpa.jdbc.kernel.LRSSizes;
  * @since 1.0.0
  * @published
  */
-public enum LRSSize {
+public enum LRSSizeAlgorithm {
     UNKNOWN(LRSSizes.SIZE_UNKNOWN),
     LAST(LRSSizes.SIZE_LAST),
     QUERY(LRSSizes.SIZE_QUERY);
 
     private final int lrsConstant;
 
-    private LRSSize(int value) {
+    private LRSSizeAlgorithm(int value) {
         lrsConstant = value;
     }
 
@@ -41,7 +41,7 @@ public enum LRSSize {
         return lrsConstant;
     }
 
-    static LRSSize fromKernelConstant(int kernelConstant) {
+    static LRSSizeAlgorithm fromKernelConstant(int kernelConstant) {
         switch (kernelConstant) {
             case LRSSizes.SIZE_UNKNOWN:
                 return UNKNOWN;

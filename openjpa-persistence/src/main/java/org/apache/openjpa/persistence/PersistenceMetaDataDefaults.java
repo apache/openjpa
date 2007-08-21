@@ -65,6 +65,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
  *
  * @author Patrick Linskey
  * @author Abe White
+ * @nojavadoc
  */
 public class PersistenceMetaDataDefaults
     extends AbstractMetaDataDefaults {

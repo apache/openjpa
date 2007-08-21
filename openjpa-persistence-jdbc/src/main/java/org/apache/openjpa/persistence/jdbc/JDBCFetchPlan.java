@@ -77,12 +77,12 @@ public interface JDBCFetchPlan
     /**
      * How to determine the size of a large result set.
      */
-    public LRSSize getLRSSize();
+    public LRSSizeAlgorithm getLRSSizeAlgorithm();
 
     /**
      * How to determine the size of a large result set.
      */
-    public JDBCFetchPlan setLRSSize(LRSSize lrsSize);
+    public JDBCFetchPlan setLRSSizeAlgorithm(LRSSizeAlgorithm lrsSizeAlgorithm);
 
     /**
      * SQL join syntax.
