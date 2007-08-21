@@ -1337,24 +1337,24 @@ public interface OpenJPAConfiguration
 	 *
 	 * @since 0.3.2.3
 	 */
-	public void setRetryClassRegistration (boolean warn);
+	public void setRetryClassRegistration(boolean warn);
 
-	/**
-	 * Wrapper for JCA usage of {@link #setRetryClassRegistration(boolean)}.
-	 *
-	 * @since 0.3.2.3
-	 */
-	public void setRetryClassRegistration (Boolean warn);
-
-	/**
-	 * Backwards compatibility options.
-	 */
-	public String getCompatibility ();
+    /**
+     * Wrapper for JCA usage of {@link #setRetryClassRegistration(boolean)}.
+     *
+     * @since 0.3.2.3
+     */
+	public void setRetryClassRegistration(Boolean warn);
 
 	/**
 	 * Backwards compatibility options.
 	 */
-	public void setCompatibility (String compatibility);
+	public String getCompatibility();
+
+	/**
+	 * Backwards compatibility options.
+	 */
+	public void setCompatibility(String compatibility);
 
 	/**
 	 * Backwards compatibility options.
@@ -1395,4 +1395,25 @@ public interface OpenJPAConfiguration
      * @since 1.0.0
      */
     public BrokerFactoryEventManager getBrokerFactoryEventManager();
+
+    /**
+     * Whether or not runtime class optimization is enabled.
+     *
+     * @since 1.0.0
+     */
+    public boolean getRuntimeClassOptimization();
+
+    /**
+     * Whether or not runtime class optimization is enabled.
+     *
+     * @since 1.0.0
+     */
+    public void setRuntimeClassOptimization(Boolean enabled);
+
+    /**
+     * Wrapper for JCA usage of {@link #setRetryClassRegistration(boolean)}.
+     *
+     * @since 1.0.0
+     */
+    public void setRuntimeClassOptimization(boolean enabled);
 }

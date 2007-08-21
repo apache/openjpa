@@ -64,7 +64,8 @@ class Param
 
     public void setImplicitType(Class type) {
         _type = type;
-        _container = (getMetaData() == null || !ImplHelper.isManagedType(type))
+        _container = (getMetaData() == null || !ImplHelper.isManagedType(
+            getMetaData().getRepository().getConfiguration(), type))
             && (Collection.class.isAssignableFrom(type)
             || Map.class.isAssignableFrom(type));
     }

@@ -131,6 +131,7 @@ public class OpenJPAConfigurationImpl
     public ObjectValue orphanedKeyPlugin;
     public ObjectValue compatibilityPlugin;
     public QueryCompilationCacheValue queryCompilationCachePlugin;
+    public BooleanValue runtimeClassOptimization;
 
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -479,6 +480,9 @@ public class OpenJPAConfigurationImpl
             "getQueryCompilationCacheInstance");
         addValue(queryCompilationCachePlugin);
         
+        runtimeClassOptimization = addBoolean("RuntimeClassOptimization");
+        runtimeClassOptimization.setDefault("true");
+
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
         supportedOptions.add(OPTION_OPTIMISTIC);
@@ -1422,6 +1426,19 @@ public class OpenJPAConfigurationImpl
         return _brokerFactoryEventManager;
     }
 
+    public boolean getRuntimeClassOptimization() {
+        return runtimeClassOptimization.get();
+    }
+
+    public void setRuntimeClassOptimization(Boolean enabled) {
+        setRuntimeClassOptimization(enabled.booleanValue());
+    }
+
+    public void setRuntimeClassOptimization(boolean enabled) {
+        assertNotReadOnly();
+        runtimeClassOptimization.set(enabled);
+    }
+
     public void instantiateAll() {
         super.instantiateAll();
         getMetaDataRepositoryInstance();
@@ -1439,7 +1456,6 @@ public class OpenJPAConfigurationImpl
     }
     
     public Value[] getDynamicValues() {
-    	return new Value[] {dataCacheTimeout,fetchBatchSize,lockTimeout};
+    	return new Value[] { dataCacheTimeout, fetchBatchSize, lockTimeout };
     }
-
 }

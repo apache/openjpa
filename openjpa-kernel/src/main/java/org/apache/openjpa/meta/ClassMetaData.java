@@ -1596,10 +1596,8 @@ public class ClassMetaData
 
         int val = _repos.getValidate();
         boolean runtime = (val & _repos.VALIDATE_RUNTIME) != 0;
-        // ##### what to do here? This should essentially never fail anymore.
-        // ##### Maybe remove altogether?
         boolean validate =
-            !ImplHelper.isManagedType(_type)
+            !ImplHelper.isManagedType(getRepository().getConfiguration(), _type)
             || (val & MetaDataRepository.VALIDATE_UNENHANCED) == 0;
 
         // we only do any actions for metadata mode
@@ -1628,10 +1626,8 @@ public class ClassMetaData
             log.trace(_loc.get((embed) ? "resolve-embed-meta" : "resolve-meta",
                 this + "@" + System.identityHashCode(this)));
 
-        // ##### what to do here? This should essentially never fail anymore.
-        // ##### either remove, or convert to warning.
         if (runtime && !_type.isInterface() &&
-            !ImplHelper.isManagedType(_type))
+            !ImplHelper.isManagedType(getRepository().getConfiguration(),_type))
             throw new MetaDataException(_loc.get("not-enhanced", _type));
 
         // are we the target of an embedded value?

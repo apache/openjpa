@@ -1571,7 +1571,7 @@ public class AnnotationPersistenceMetaDataParser
             meta.setQueryString(query.query());
             meta.setLanguage(QueryLanguages.LANG_SQL);
             Class res = query.resultClass();
-            if (ImplHelper.isManagedType(res))
+            if (ImplHelper.isManagedType(getConfiguration(), res))
                 meta.setCandidateType(res);
             else if (!void.class.equals(res))
                 meta.setResultType(res);

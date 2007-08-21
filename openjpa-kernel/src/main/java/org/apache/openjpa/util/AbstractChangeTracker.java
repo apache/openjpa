@@ -201,7 +201,7 @@ public abstract class AbstractChangeTracker
         if (val == null || _identity != null)
             return;
 
-        if (ImplHelper.isManagedType(val.getClass()))
+        if (ImplHelper.isManagedType(null, val.getClass()))
             _identity = Boolean.TRUE;
         else
             _identity = Boolean.FALSE;

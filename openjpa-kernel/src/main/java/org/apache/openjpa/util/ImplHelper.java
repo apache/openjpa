@@ -210,10 +210,13 @@ public class ImplHelper {
      *
      * @param type the class to test
      * @return true if the class is manageable.
+     *
+     * @since 1.0.0
      */
-    public static boolean isManagedType(Class type) {
-        return PersistenceCapable.class.isAssignableFrom(type)
-            || type != null && PCRegistry.isRegistered(type);
+    public static boolean isManagedType(OpenJPAConfiguration conf, Class type) {
+        return (PersistenceCapable.class.isAssignableFrom(type) || conf == null)
+            || (type != null && conf.getRuntimeClassOptimization()
+                && PCRegistry.isRegistered(type));
     }
 
     /**

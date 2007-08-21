@@ -64,7 +64,7 @@ public class Exceptions {
 
         // don't serialize persistent objects exceptions to prevent
         // reading in all the state
-        if (!ImplHelper.isManagedType(ob.getClass()))
+        if (!ImplHelper.isManagedType(null, ob.getClass()))
             return false;
 
         // now do an actual test to see if we will be
@@ -94,7 +94,7 @@ public class Exceptions {
             return ob.getClass().getName() + "-" + oid.toString();
         }
 
-        if (ImplHelper.isManagedType(ob.getClass())) {
+        if (ImplHelper.isManagedType(null, ob.getClass())) {
             // never call toString() on a PersistenceCapable, since
             // it may access persistent fields; fall-back to using
             // the standard object stringification mechanism. New

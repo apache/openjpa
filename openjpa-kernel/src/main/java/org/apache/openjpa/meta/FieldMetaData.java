@@ -1639,11 +1639,9 @@ public class FieldMetaData
 
         MetaDataRepository repos = getRepository();
         int validate = repos.getValidate();
-        // ##### what to do here? This should essentially never fail anymore.
-        // ##### Maybe remove the isManagedType check.
         if ((validate & MetaDataRepository.VALIDATE_META) != 0
-            && (!ImplHelper
-            .isManagedType(_owner.getDescribedType())
+            && (!ImplHelper.isManagedType(repos.getConfiguration(),
+                _owner.getDescribedType())
             || (validate & MetaDataRepository.VALIDATE_UNENHANCED) == 0)) {
             validateLRS();
             if ((validate & repos.VALIDATE_RUNTIME) == 0)

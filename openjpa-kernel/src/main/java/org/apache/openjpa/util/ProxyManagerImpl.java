@@ -610,7 +610,7 @@ public class ProxyManagerImpl
     protected BCClass generateProxyBeanBytecode(Class type, boolean runtime) {
         if (Modifier.isFinal(type.getModifiers()))
             return null;
-        if (ImplHelper.isManagedType(type))
+        if (ImplHelper.isManagedType(null, type))
             return null;
 
         // we can only generate a valid proxy if there is a copy constructor

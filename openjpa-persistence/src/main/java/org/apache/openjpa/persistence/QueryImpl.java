@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -29,12 +30,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.lang.reflect.Method;
 import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.collections.map.LinkedMap;
+import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.DelegatingQuery;
 import org.apache.openjpa.kernel.DelegatingResultList;
 import org.apache.openjpa.kernel.Filters;
@@ -43,7 +44,7 @@ import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.enhance.Reflection;
+import org.apache.openjpa.util.ImplHelper;
 
 /**
  * Implementation of {@link Query} interface.
@@ -168,7 +169,7 @@ public class QueryImpl
 
     public OpenJPAQuery setResultClass(Class cls) {
         _em.assertNotCloseInvoked();
-        if (OpenJPAPersistence.isManagedType(cls))
+        if (ImplHelper.isManagedType(_em.getConfiguration(), cls))
             _query.setCandidateType(cls, true);
         else
             _query.setResultType(cls);

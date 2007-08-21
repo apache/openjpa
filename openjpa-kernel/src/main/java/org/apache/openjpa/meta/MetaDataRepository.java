@@ -288,7 +288,7 @@ public class MetaDataRepository
         ClassMetaData meta = getMetaDataInternal(cls, envLoader);
         if (meta == null && mustExist) {
             if (cls != null &&
-                !ImplHelper.isManagedType(cls))
+                !ImplHelper.isManagedType(_conf, cls))
                 throw new MetaDataException(_loc.get("no-meta-notpc", cls)).
                     setFatal(false);
 

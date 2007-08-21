@@ -189,9 +189,10 @@ public class OpenJPAPersistence {
     /**
      * Returns true if the specified class is an entity or embeddable type.
      */
-    public static boolean isManagedType(Class cls) {
+    public static boolean isManagedType(EntityManager em, Class cls) {
         try {
-            return ImplHelper.isManagedType(cls);
+            return ImplHelper.isManagedType(
+                JPAFacadeHelper.toBroker(em).getConfiguration(), cls);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }

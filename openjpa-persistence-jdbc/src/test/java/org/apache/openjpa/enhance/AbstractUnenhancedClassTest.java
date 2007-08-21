@@ -75,7 +75,7 @@ public abstract class AbstractUnenhancedClassTest
     }
 
     public void testImplHelperCalls() {
-        assertTrue(ImplHelper.isManagedType(getUnenhancedClass()));
+        assertTrue(ImplHelper.isManagedType(null, getUnenhancedClass()));
 
         UnenhancedType un = newUnenhancedInstance();
         assertFalse(un instanceof PersistenceCapable);

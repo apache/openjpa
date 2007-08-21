@@ -62,7 +62,9 @@ public class ManagedClassSubclasser {
      * will need to do state comparisons to detect changes to newly inserted
      * instances after a flush has been called.
      *
-     * @return the new subclasses
+     * @return the new subclasses, or <code>null</code> if subclassing is
+     * disabled in <code>conf</code> or <code>classes</code> is
+     * <code>null</code>.
      *
      * @since 1.0.0
      */
@@ -74,6 +76,8 @@ public class ManagedClassSubclasser {
             return null;
         if (classes.size() == 0)
             return Collections.EMPTY_LIST;
+        if (!conf.getRuntimeClassOptimization())
+            return null;
 
         Log log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
         boolean redefine = ClassRedefiner.canRedefineClasses();

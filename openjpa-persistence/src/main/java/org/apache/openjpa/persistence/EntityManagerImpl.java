@@ -515,7 +515,8 @@ public class EntityManagerImpl
         if (entity == null)
             return false;
         OpenJPAStateManager sm = _broker.getStateManager(entity);
-        if (sm == null && !ImplHelper.isManagedType(entity.getClass()))
+        if (sm == null
+            && !ImplHelper.isManagedType(getConfiguration(), entity.getClass()))
             throw new ArgumentException(_loc.get("not-entity",
                 entity.getClass()), null, null, true);
         return sm != null && !sm.isDeleted();

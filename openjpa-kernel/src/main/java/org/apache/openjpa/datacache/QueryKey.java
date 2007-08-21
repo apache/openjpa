@@ -181,7 +181,8 @@ public class QueryKey
                 case JavaTypes.COLLECTION:
                 case JavaTypes.MAP:
                 case JavaTypes.OBJECT:
-                    if (!ImplHelper.isManagedType(types[i]))
+                    if (!ImplHelper.isManagedType(
+                        q.getStoreContext().getConfiguration(), types[i]))
                         return null;
                     break;
             }

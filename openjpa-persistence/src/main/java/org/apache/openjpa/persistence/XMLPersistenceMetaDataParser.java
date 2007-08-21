@@ -1468,7 +1468,7 @@ public class XMLPersistenceMetaDataParser
         String val = attrs.getValue("result-class");
         if (val != null) {
             Class type = classForName(val);
-            if (ImplHelper.isManagedType(type))
+            if (ImplHelper.isManagedType(getConfiguration(), type))
                 meta.setCandidateType(type);
             else
                 meta.setResultType(type);
