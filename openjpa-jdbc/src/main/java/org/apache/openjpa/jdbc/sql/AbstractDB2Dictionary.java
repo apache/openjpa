@@ -38,7 +38,7 @@ public abstract class AbstractDB2Dictionary
         // in string functions
         toUpperCaseFunction = "UPPER(CAST({0} AS VARCHAR(1000)))";
         toLowerCaseFunction = "LOWER(CAST({0} AS VARCHAR(1000)))";
-        stringLengthFunction = "LENGTH(CAST({0} AS VARCHAR(1000)))";
+        stringLengthFunction = "LENGTH({0})";
         concatenateFunction = "(CAST({0} AS VARCHAR(1000)))||"
             + "(CAST({1} AS VARCHAR(1000)))";
 

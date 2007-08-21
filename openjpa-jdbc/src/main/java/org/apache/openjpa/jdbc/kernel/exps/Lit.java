@@ -28,7 +28,7 @@ import org.apache.openjpa.kernel.exps.Literal;
  *
  * @author Abe White
  */
-class Lit
+public class Lit
     extends Const
     implements Literal {
 

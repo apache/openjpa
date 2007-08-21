@@ -150,8 +150,9 @@ class Trim
         } else {
             func = dict.trimTrailingFunction;
             dict.assertSupport(func != null, "TrimTrailingFunction");
-        }
-
+        }        
+        func = dict.getCastFunction(_val, func);
+        
         int fromPart = func.indexOf("{0}");
         int charPart = func.indexOf("{1}");
         if (charPart == -1)

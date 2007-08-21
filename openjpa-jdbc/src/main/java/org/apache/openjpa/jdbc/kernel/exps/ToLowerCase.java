@@ -43,6 +43,7 @@ class ToLowerCase
         DBDictionary dict = ctx.store.getDBDictionary();
         String func = dict.toLowerCaseFunction;
         dict.assertSupport(func != null, "ToLowerCaseFunction");
+        func = dict.getCastFunction(getValue(), func);
 
         int idx = func.indexOf("{0}");
         buf.append(func.substring(0, idx));

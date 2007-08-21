@@ -43,6 +43,7 @@ class ToUpperCase
         DBDictionary dict = ctx.store.getDBDictionary();
         String func = dict.toUpperCaseFunction;
         dict.assertSupport(func != null, "ToUpperCaseFunction");
+        func = dict.getCastFunction(getValue(), func);
 
         int idx = func.indexOf("{0}");
         buf.append(func.substring(0, idx));

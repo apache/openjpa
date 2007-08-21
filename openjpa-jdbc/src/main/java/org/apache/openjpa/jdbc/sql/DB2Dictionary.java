@@ -25,14 +25,18 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.StringTokenizer;
+
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
+import org.apache.openjpa.jdbc.kernel.exps.Lit;
+import org.apache.openjpa.jdbc.kernel.exps.Param;
+import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.jdbc.schema.Sequence;
+import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UnsupportedException;
-import org.apache.openjpa.kernel.Filters;
-import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 
 /**
  * Dictionary for IBM DB2 database.
@@ -612,5 +616,82 @@ public class DB2Dictionary
             val.getFieldMapping().getColumns()[0])).
             append("/*[");
         val.appendTo(buf);        
+    }
+    
+    /**
+     * add CAST for a scalar function where operand is a param
+     * 
+     * @param func original string
+     * @param target substring to look for
+     * @param asString 
+     * @return updated string (func)
+     */
+    private String addCastAsString(String func, String target, 
+            String asString) {
+        String fstring = func;
+        if (func.indexOf(target) != -1)
+            fstring = func.replace(target, "CAST(" + target + asString);
+        return fstring;
+    }
+
+    /**
+     * add CAST for a function operator where operand is a param
+     * 
+     * @param func function name
+     * @param val type
+     * @return updated string (func)
+     */
+    public String addCastAsType(String func, Val val) {
+        String fstring = null;
+        String type = getTypeName(getJDBCType(JavaTypes.getTypeCode(val
+                .getType()), false));
+        fstring = "CAST(? AS " + type + ")";
+        return fstring;
+    }
+
+    /**
+     * Return the correct CAST function syntax
+     * 
+     * @param val operand of cast
+     * @param func original string
+     * @return a String with the correct CAST function syntax
+     */
+    public String getCastFunction(Val val, String func) {
+        if (val instanceof Lit || val instanceof Param)
+            if (func.indexOf("VARCHAR") == -1)
+                func = addCastAsString(func, "{0}", " AS VARCHAR(1000))");
+        return func;
+    }
+
+    public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
+            FilterValue start) {
+        if (find.getValue() != null) { // non constants
+            buf.append("(LOCATE(CAST((");
+            find.appendTo(buf);
+            buf.append(") AS VARCHAR(1000)), ");
+        } else {
+            // this is a constant
+            buf.append("(LOCATE(");
+            find.appendTo(buf);
+            buf.append(", ");
+        }
+        if (str.getValue() != null) {
+            buf.append("CAST((");
+            str.appendTo(buf);
+            buf.append(") AS VARCHAR(1000))");
+        } else {
+            str.appendTo(buf);
+        }
+        if (start != null) {
+            if (start.getValue() == null) {
+                buf.append(", CAST((");
+                start.appendTo(buf);
+                buf.append(") AS INTEGER) + 1");
+            } else {
+                buf.append(", ");
+                start.appendTo(buf);
+            }
+        }
+        buf.append(") - 1)");
     }
 }

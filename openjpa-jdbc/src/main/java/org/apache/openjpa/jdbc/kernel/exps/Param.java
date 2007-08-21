@@ -33,7 +33,7 @@ import org.apache.openjpa.util.ImplHelper;
  *
  * @author Abe White
  */
-class Param
+public class Param
     extends Const
     implements Parameter {
 

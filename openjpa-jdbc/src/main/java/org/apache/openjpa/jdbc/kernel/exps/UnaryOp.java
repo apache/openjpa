@@ -125,6 +125,7 @@ abstract class UnaryOp
         sql.append(getOperator());
         sql.append("(");
         _val.appendTo(sel, ctx, state, sql, 0);
+        sql.addCastForParam(getOperator(), _val);
         sql.append(")");
     }
 

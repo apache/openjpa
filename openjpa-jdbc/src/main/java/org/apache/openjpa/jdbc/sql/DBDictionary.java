@@ -68,6 +68,8 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.ExpContext;
 import org.apache.openjpa.jdbc.kernel.exps.ExpState;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
+import org.apache.openjpa.jdbc.kernel.exps.Lit;
+import org.apache.openjpa.jdbc.kernel.exps.Param;
 import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -92,7 +94,6 @@ import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
-import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.OpenJPAException;
@@ -2541,6 +2542,18 @@ public class DBDictionary
     protected void appendLength(SQLBuffer buf, int type) {        
     }
 
+    
+    /**
+     * add CAST for a function operator where operand is a param
+     * @param func  function name
+     * @param val 
+     * @return updated func
+     */
+    public String addCastAsType(String func, Val val) {
+        return null;
+    }    
+
+
     ///////////
     // DDL SQL
     ///////////
@@ -3869,4 +3882,16 @@ public class DBDictionary
     public String getVersionColumn(Column column, String tableAlias) {
         return column.toString();
     }
+    
+    /**
+     * Attach CAST to the current function if necessary
+     * 
+     * @param val operand value
+     * @parma func the sql function statement
+     * @return a String with the correct CAST function syntax
+     */
+    public String getCastFunction(Val val, String func) {
+        return func;
+    }
+   
 }

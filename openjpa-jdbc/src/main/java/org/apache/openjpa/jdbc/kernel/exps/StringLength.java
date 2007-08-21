@@ -54,7 +54,8 @@ class StringLength
         DBDictionary dict = ctx.store.getDBDictionary();
         String func = dict.stringLengthFunction;
         dict.assertSupport(func != null, "StringLengthFunction");
-
+        func = dict.getCastFunction(getValue(), func);
+        
         int idx = func.indexOf("{0}");
         buf.append(func.substring(0, idx));
         getValue().appendTo(sel, ctx, state, buf, index);
