@@ -18,39 +18,39 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
-import org.apache.openjpa.jdbc.kernel.LRSSizes;
+import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 
 /**
- * Algorithm to use for computing the size of an LRS relation.
+ * Type of join syntax to use.
  *
  * @since 1.0.0
  * @published
  */
-public enum LRSSizeType {
-    UNKNOWN(LRSSizes.SIZE_UNKNOWN),
-    LAST(LRSSizes.SIZE_LAST),
-    QUERY(LRSSizes.SIZE_QUERY);
+public enum JoinSyntax {
+    SQL92(JoinSyntaxes.SYNTAX_SQL92),
+    TRADITIONAL(JoinSyntaxes.SYNTAX_TRADITIONAL),
+    DATABASE(JoinSyntaxes.SYNTAX_DATABASE);
 
-    private final int lrsConstant;
+    private final int joinSyntaxConstant;
 
-    private LRSSizeType(int value) {
-        lrsConstant = value;
+    private JoinSyntax(int value) {
+        joinSyntaxConstant = value;
     }
 
     int toKernelConstant() {
-        return lrsConstant;
+        return joinSyntaxConstant;
     }
 
-    static LRSSizeType fromKernelConstant(int kernelConstant) {
+    static JoinSyntax fromKernelConstant(int kernelConstant) {
         switch (kernelConstant) {
-            case LRSSizes.SIZE_UNKNOWN:
-                return UNKNOWN;
+            case JoinSyntaxes.SYNTAX_SQL92:
+                return SQL92;
 
-            case LRSSizes.SIZE_LAST:
-                return LAST;
+            case JoinSyntaxes.SYNTAX_TRADITIONAL:
+                return TRADITIONAL;
 
-            case LRSSizes.SIZE_QUERY:
-                return QUERY;
+            case JoinSyntaxes.SYNTAX_DATABASE:
+                return DATABASE;
 
             default:
                 throw new IllegalArgumentException(kernelConstant + "");

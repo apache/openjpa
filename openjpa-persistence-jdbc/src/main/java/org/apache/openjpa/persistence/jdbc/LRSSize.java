@@ -18,40 +18,39 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
-import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
+import org.apache.openjpa.jdbc.kernel.LRSSizes;
 
 /**
- * Type of fetching to employ.
+ * Algorithm to use for computing the size of an LRS relation.
  *
- * @author Abe White
- * @since 0.4.0
+ * @since 1.0.0
  * @published
  */
-public enum EagerFetchType {
-    NONE(EagerFetchModes.EAGER_NONE),
-    JOIN(EagerFetchModes.EAGER_JOIN),
-    PARALLEL(EagerFetchModes.EAGER_PARALLEL);
+public enum LRSSize {
+    UNKNOWN(LRSSizes.SIZE_UNKNOWN),
+    LAST(LRSSizes.SIZE_LAST),
+    QUERY(LRSSizes.SIZE_QUERY);
 
-    private final int eagerFetchConstant;
+    private final int lrsConstant;
 
-    private EagerFetchType(int value) {
-        eagerFetchConstant = value;
+    private LRSSize(int value) {
+        lrsConstant = value;
     }
 
     int toKernelConstant() {
-        return eagerFetchConstant;
+        return lrsConstant;
     }
 
-    static EagerFetchType fromKernelConstant(int kernelConstant) {
+    static LRSSize fromKernelConstant(int kernelConstant) {
         switch (kernelConstant) {
-            case EagerFetchModes.EAGER_NONE:
-                return NONE;
+            case LRSSizes.SIZE_UNKNOWN:
+                return UNKNOWN;
 
-            case EagerFetchModes.EAGER_JOIN:
-                return JOIN;
+            case LRSSizes.SIZE_LAST:
+                return LAST;
 
-            case EagerFetchModes.EAGER_PARALLEL:
-                return PARALLEL;
+            case LRSSizes.SIZE_QUERY:
+                return QUERY;
 
             default:
                 throw new IllegalArgumentException(kernelConstant + "");

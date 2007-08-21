@@ -37,22 +37,22 @@ public interface JDBCFetchPlan
     /**
      * Eager fetch mode in loading relations.
      */
-    public EagerFetchType getEagerFetchMode();
+    public FetchMode getEagerFetchMode();
 
     /**
      * Eager fetch mode in loading relations.
      */
-    public JDBCFetchPlan setEagerFetchMode(EagerFetchType type);
+    public JDBCFetchPlan setEagerFetchMode(FetchMode mode);
 
     /**
      * Eager fetch mode in loading subclasses.
      */
-    public EagerFetchType getSubclassFetchMode();
+    public FetchMode getSubclassFetchMode();
 
     /**
      * Eager fetch mode in loading subclasses.
      */
-    public JDBCFetchPlan setSubclassFetchMode(EagerFetchType type);
+    public JDBCFetchPlan setSubclassFetchMode(FetchMode mode);
 
     /**
      * Type of JDBC result set to use for query results.
@@ -77,22 +77,22 @@ public interface JDBCFetchPlan
     /**
      * How to determine the size of a large result set.
      */
-    public LRSSizeType getLRSSize();
+    public LRSSize getLRSSize();
 
     /**
      * How to determine the size of a large result set.
      */
-    public JDBCFetchPlan setLRSSize(LRSSizeType lrsSize);
+    public JDBCFetchPlan setLRSSize(LRSSize lrsSize);
 
     /**
      * SQL join syntax.
      */
-    public JoinSyntaxType getJoinSyntax();
+    public JoinSyntax getJoinSyntax();
 
     /**
      * SQL join syntax.
      */
-    public JDBCFetchPlan setJoinSyntax(JoinSyntaxType syntax);
+    public JDBCFetchPlan setJoinSyntax(JoinSyntax syntax);
 
     /**
      * The isolation level for queries issued to the database. This overrides

@@ -30,89 +30,89 @@ public class TestJDBCEnumToKernelConstantMappings
 
     public void testEagerFetchModes() {
         assertEquals(EagerFetchModes.EAGER_NONE,
-            EagerFetchType.NONE.toKernelConstant());
-        assertEquals(EagerFetchType.NONE,
-            EagerFetchType.fromKernelConstant(
+            FetchMode.NONE.toKernelConstant());
+        assertEquals(FetchMode.NONE,
+            FetchMode.fromKernelConstant(
                 EagerFetchModes.EAGER_NONE));
-        assertEquals(EagerFetchType.NONE.toKernelConstant(),
-            EagerFetchType.NONE.ordinal());
+        assertEquals(FetchMode.NONE.toKernelConstant(),
+            FetchMode.NONE.ordinal());
 
         assertEquals(EagerFetchModes.EAGER_JOIN,
-            EagerFetchType.JOIN.toKernelConstant());
-        assertEquals(EagerFetchType.JOIN,
-            EagerFetchType.fromKernelConstant(
+            FetchMode.JOIN.toKernelConstant());
+        assertEquals(FetchMode.JOIN,
+            FetchMode.fromKernelConstant(
                 EagerFetchModes.EAGER_JOIN));
-        assertEquals(EagerFetchType.JOIN.toKernelConstant(),
-            EagerFetchType.JOIN.ordinal());
+        assertEquals(FetchMode.JOIN.toKernelConstant(),
+            FetchMode.JOIN.ordinal());
 
         assertEquals(EagerFetchModes.EAGER_PARALLEL,
-            EagerFetchType.PARALLEL.toKernelConstant());
-        assertEquals(EagerFetchType.PARALLEL,
-            EagerFetchType.fromKernelConstant(
+            FetchMode.PARALLEL.toKernelConstant());
+        assertEquals(FetchMode.PARALLEL,
+            FetchMode.fromKernelConstant(
                 EagerFetchModes.EAGER_PARALLEL));
-        assertEquals(EagerFetchType.PARALLEL.toKernelConstant(),
-            EagerFetchType.PARALLEL.ordinal());
+        assertEquals(FetchMode.PARALLEL.toKernelConstant(),
+            FetchMode.PARALLEL.ordinal());
 
         assertEquals(getConstantCount(EagerFetchModes.class),
-            EagerFetchType.values().length);
+            FetchMode.values().length);
     }
 
     public void testLRSSizeType() {
         assertEquals(LRSSizes.SIZE_UNKNOWN,
-            LRSSizeType.UNKNOWN.toKernelConstant());
-        assertEquals(LRSSizeType.UNKNOWN,
-            LRSSizeType.fromKernelConstant(
+            LRSSize.UNKNOWN.toKernelConstant());
+        assertEquals(LRSSize.UNKNOWN,
+            LRSSize.fromKernelConstant(
                 LRSSizes.SIZE_UNKNOWN));
-        assertEquals(LRSSizeType.UNKNOWN.toKernelConstant(),
-            LRSSizeType.UNKNOWN.ordinal());
+        assertEquals(LRSSize.UNKNOWN.toKernelConstant(),
+            LRSSize.UNKNOWN.ordinal());
 
         assertEquals(LRSSizes.SIZE_LAST,
-            LRSSizeType.LAST.toKernelConstant());
-        assertEquals(LRSSizeType.LAST,
-            LRSSizeType.fromKernelConstant(
+            LRSSize.LAST.toKernelConstant());
+        assertEquals(LRSSize.LAST,
+            LRSSize.fromKernelConstant(
                 LRSSizes.SIZE_LAST));
-        assertEquals(LRSSizeType.LAST.toKernelConstant(),
-            LRSSizeType.LAST.ordinal());
+        assertEquals(LRSSize.LAST.toKernelConstant(),
+            LRSSize.LAST.ordinal());
 
         assertEquals(LRSSizes.SIZE_QUERY,
-            LRSSizeType.QUERY.toKernelConstant());
-        assertEquals(LRSSizeType.QUERY,
-            LRSSizeType.fromKernelConstant(
+            LRSSize.QUERY.toKernelConstant());
+        assertEquals(LRSSize.QUERY,
+            LRSSize.fromKernelConstant(
                 LRSSizes.SIZE_QUERY));
-        assertEquals(LRSSizeType.QUERY.toKernelConstant(),
-            LRSSizeType.QUERY.ordinal());
+        assertEquals(LRSSize.QUERY.toKernelConstant(),
+            LRSSize.QUERY.ordinal());
 
         assertEquals(getConstantCount(LRSSizes.class),
-            LRSSizeType.values().length);
+            LRSSize.values().length);
     }
 
     public void testJoinSyntaxType() {
         assertEquals(JoinSyntaxes.SYNTAX_SQL92,
-            JoinSyntaxType.SQL92.toKernelConstant());
-        assertEquals(JoinSyntaxType.SQL92,
-            JoinSyntaxType.fromKernelConstant(
+            JoinSyntax.SQL92.toKernelConstant());
+        assertEquals(JoinSyntax.SQL92,
+            JoinSyntax.fromKernelConstant(
                 JoinSyntaxes.SYNTAX_SQL92));
-        assertEquals(JoinSyntaxType.SQL92.toKernelConstant(),
-            JoinSyntaxType.SQL92.ordinal());
+        assertEquals(JoinSyntax.SQL92.toKernelConstant(),
+            JoinSyntax.SQL92.ordinal());
 
         assertEquals(JoinSyntaxes.SYNTAX_TRADITIONAL,
-            JoinSyntaxType.TRADITIONAL.toKernelConstant());
-        assertEquals(JoinSyntaxType.TRADITIONAL,
-            JoinSyntaxType.fromKernelConstant(
+            JoinSyntax.TRADITIONAL.toKernelConstant());
+        assertEquals(JoinSyntax.TRADITIONAL,
+            JoinSyntax.fromKernelConstant(
                 JoinSyntaxes.SYNTAX_TRADITIONAL));
-        assertEquals(JoinSyntaxType.TRADITIONAL.toKernelConstant(),
-            JoinSyntaxType.TRADITIONAL.ordinal());
+        assertEquals(JoinSyntax.TRADITIONAL.toKernelConstant(),
+            JoinSyntax.TRADITIONAL.ordinal());
 
         assertEquals(JoinSyntaxes.SYNTAX_DATABASE,
-            JoinSyntaxType.DATABASE.toKernelConstant());
-        assertEquals(JoinSyntaxType.DATABASE,
-            JoinSyntaxType.fromKernelConstant(
+            JoinSyntax.DATABASE.toKernelConstant());
+        assertEquals(JoinSyntax.DATABASE,
+            JoinSyntax.fromKernelConstant(
                 JoinSyntaxes.SYNTAX_DATABASE));
-        assertEquals(JoinSyntaxType.DATABASE.toKernelConstant(),
-            JoinSyntaxType.DATABASE.ordinal());
+        assertEquals(JoinSyntax.DATABASE.toKernelConstant(),
+            JoinSyntax.DATABASE.ordinal());
 
         assertEquals(getConstantCount(JoinSyntaxes.class),
-            JoinSyntaxType.values().length);
+            JoinSyntax.values().length);
     }
 
     public void testResultSetType() {

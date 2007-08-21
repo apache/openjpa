@@ -110,8 +110,8 @@ public class EntityManagerImpl
         }
     }
 
-    public ConnectionRetainType getConnectionRetainMode() {
-        return ConnectionRetainType.fromKernelConstant(
+    public ConnectionRetainMode getConnectionRetainMode() {
+        return ConnectionRetainMode.fromKernelConstant(
             _broker.getConnectionRetainMode());
     }
 
@@ -290,21 +290,21 @@ public class EntityManagerImpl
         _broker.removeTransactionListener(listener);
     }
 
-    public EnumSet<CallbackType> getTransactionListenerCallbackMode() {
-        return CallbackType.toEnumSet(
+    public EnumSet<CallbackMode> getTransactionListenerCallbackMode() {
+        return CallbackMode.toEnumSet(
             _broker.getTransactionListenerCallbackMode());
     }
 
-    public void setTransactionListenerCallbackMode(CallbackType type) {
+    public void setTransactionListenerCallbackMode(CallbackMode mode) {
         assertNotCloseInvoked();
         _broker.setTransactionListenerCallbackMode(
-            CallbackType.fromEnumSet(EnumSet.of(type)));
+            CallbackMode.fromEnumSet(EnumSet.of(mode)));
     }
 
-    public void setTransactionListenerCallbackMode(EnumSet<CallbackType> types){
+    public void setTransactionListenerCallbackMode(EnumSet<CallbackMode> modes){
         assertNotCloseInvoked();
         _broker.setTransactionListenerCallbackMode(
-            CallbackType.fromEnumSet(types));
+            CallbackMode.fromEnumSet(modes));
     }
 
     public void addLifecycleListener(Object listener, Class... classes) {
@@ -317,21 +317,21 @@ public class EntityManagerImpl
         _broker.removeLifecycleListener(listener);
     }
 
-    public EnumSet<CallbackType> getLifecycleListenerCallbackMode() {
-        return CallbackType.toEnumSet(
+    public EnumSet<CallbackMode> getLifecycleListenerCallbackMode() {
+        return CallbackMode.toEnumSet(
             _broker.getLifecycleListenerCallbackMode());
     }
 
-    public void setLifecycleListenerCallbackMode(CallbackType type) {
+    public void setLifecycleListenerCallbackMode(CallbackMode mode) {
         assertNotCloseInvoked();
         _broker.setLifecycleListenerCallbackMode(
-            CallbackType.fromEnumSet(EnumSet.of(type)));
+            CallbackMode.fromEnumSet(EnumSet.of(mode)));
     }
 
-    public void setLifecycleListenerCallbackMode(EnumSet<CallbackType> types) {
+    public void setLifecycleListenerCallbackMode(EnumSet<CallbackMode> modes) {
         assertNotCloseInvoked();
         _broker.setLifecycleListenerCallbackMode(
-            CallbackType.fromEnumSet(types));
+            CallbackMode.fromEnumSet(modes));
     }
 
     @SuppressWarnings("unchecked")

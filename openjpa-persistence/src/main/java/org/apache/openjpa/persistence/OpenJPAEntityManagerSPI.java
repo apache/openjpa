@@ -51,24 +51,24 @@ public interface OpenJPAEntityManagerSPI
     public void removeTransactionListener(Object listener);
 
     /**
-     * The {@link CallbackType} flags for handling transaction listener
+     * The {@link CallbackMode} flags for handling transaction listener
      * exceptions.
      */
-    public EnumSet<CallbackType> getTransactionListenerCallbackMode();
+    public EnumSet<CallbackMode> getTransactionListenerCallbackMode();
 
     /**
-     * The {@link CallbackType} flag for handling transaction listener
+     * The {@link CallbackMode} flag for handling transaction listener
      * exceptions. The flags provided here will entirely replace the
      * previous settings.
      */
-    public void setTransactionListenerCallbackMode(CallbackType type);
+    public void setTransactionListenerCallbackMode(CallbackMode mode);
 
     /**
-     * The {@link CallbackType} flags for handling transaction listener
+     * The {@link CallbackMode} flags for handling transaction listener
      * exceptions. The flags provided here will entirely replace the
      * previous settings.
      */
-    public void setTransactionListenerCallbackMode(EnumSet<CallbackType> types);
+    public void setTransactionListenerCallbackMode(EnumSet<CallbackMode> modes);
 
     /**
      * Register a listener for lifecycle-related events on the specified
@@ -83,22 +83,22 @@ public interface OpenJPAEntityManagerSPI
     public void removeLifecycleListener(Object listener);
 
     /**
-     * The {@link CallbackType} flags for handling lifecycle listener
+     * The {@link CallbackMode} flags for handling lifecycle listener
      * exceptions.
      */
-    public EnumSet<CallbackType> getLifecycleListenerCallbackMode();
+    public EnumSet<CallbackMode> getLifecycleListenerCallbackMode();
 
     /**
-     * The {@link CallbackType} flag for handling lifecycle listener
+     * The {@link CallbackMode} flag for handling lifecycle listener
      * exceptions. The flags provided here will entirely replace the
      * previous settings.
      */
-    public void setLifecycleListenerCallbackMode(CallbackType type);
+    public void setLifecycleListenerCallbackMode(CallbackMode mode);
 
     /**
-     * The {@link CallbackType} flags for handling lifecycle listener
+     * The {@link CallbackMode} flags for handling lifecycle listener
      * exceptions. The flags provided here will entirely replace the
      * previous settings.
      */
-    public void setLifecycleListenerCallbackMode(EnumSet<CallbackType> types);
+    public void setLifecycleListenerCallbackMode(EnumSet<CallbackMode> modes);
 }

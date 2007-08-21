@@ -27,14 +27,14 @@ import org.apache.openjpa.kernel.ConnectionRetainModes;
  * @since 1.0.0
  * @published
  */
-public enum ConnectionRetainType {
+public enum ConnectionRetainMode {
     ON_DEMAND(ConnectionRetainModes.CONN_RETAIN_DEMAND),
     TRANSACTION(ConnectionRetainModes.CONN_RETAIN_TRANS),
     ALWAYS(ConnectionRetainModes.CONN_RETAIN_ALWAYS);
 
     private final int connectionRetainConstant;
 
-    private ConnectionRetainType(int value) {
+    private ConnectionRetainMode(int value) {
         connectionRetainConstant = value;
     }
 
@@ -42,7 +42,7 @@ public enum ConnectionRetainType {
         return connectionRetainConstant;
     }
 
-    static ConnectionRetainType fromKernelConstant(int kernelConstant) {
+    static ConnectionRetainMode fromKernelConstant(int kernelConstant) {
         switch (kernelConstant) {
             case ConnectionRetainModes.CONN_RETAIN_DEMAND:
                 return ON_DEMAND;

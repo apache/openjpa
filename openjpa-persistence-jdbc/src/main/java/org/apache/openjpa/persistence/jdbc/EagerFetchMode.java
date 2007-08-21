@@ -35,5 +35,5 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface EagerFetchMode {
 
-    EagerFetchType value() default EagerFetchType.NONE;
+    FetchMode value() default FetchMode.NONE;
 }

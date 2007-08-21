@@ -34,31 +34,31 @@ public class TestEnumToKernelConstantMappings
 
     public void testConnectionRetainModes() {
         assertEquals(ConnectionRetainModes.CONN_RETAIN_ALWAYS,
-            ConnectionRetainType.ALWAYS.toKernelConstant());
-        assertEquals(ConnectionRetainType.ALWAYS,
-            ConnectionRetainType.fromKernelConstant(
+            ConnectionRetainMode.ALWAYS.toKernelConstant());
+        assertEquals(ConnectionRetainMode.ALWAYS,
+            ConnectionRetainMode.fromKernelConstant(
                 ConnectionRetainModes.CONN_RETAIN_ALWAYS));
-        assertEquals(ConnectionRetainType.ALWAYS.toKernelConstant(),
-            ConnectionRetainType.ALWAYS.ordinal());
+        assertEquals(ConnectionRetainMode.ALWAYS.toKernelConstant(),
+            ConnectionRetainMode.ALWAYS.ordinal());
 
         assertEquals(ConnectionRetainModes.CONN_RETAIN_DEMAND,
-            ConnectionRetainType.ON_DEMAND.toKernelConstant());
-        assertEquals(ConnectionRetainType.ON_DEMAND,
-            ConnectionRetainType.fromKernelConstant(
+            ConnectionRetainMode.ON_DEMAND.toKernelConstant());
+        assertEquals(ConnectionRetainMode.ON_DEMAND,
+            ConnectionRetainMode.fromKernelConstant(
                 ConnectionRetainModes.CONN_RETAIN_DEMAND));
-        assertEquals(ConnectionRetainType.ON_DEMAND.toKernelConstant(),
-            ConnectionRetainType.ON_DEMAND.ordinal());
+        assertEquals(ConnectionRetainMode.ON_DEMAND.toKernelConstant(),
+            ConnectionRetainMode.ON_DEMAND.ordinal());
 
         assertEquals(ConnectionRetainModes.CONN_RETAIN_TRANS,
-            ConnectionRetainType.TRANSACTION.toKernelConstant());
-        assertEquals(ConnectionRetainType.TRANSACTION,
-            ConnectionRetainType.fromKernelConstant(
+            ConnectionRetainMode.TRANSACTION.toKernelConstant());
+        assertEquals(ConnectionRetainMode.TRANSACTION,
+            ConnectionRetainMode.fromKernelConstant(
                 ConnectionRetainModes.CONN_RETAIN_TRANS));
-        assertEquals(ConnectionRetainType.TRANSACTION.toKernelConstant(),
-            ConnectionRetainType.TRANSACTION.ordinal());
+        assertEquals(ConnectionRetainMode.TRANSACTION.toKernelConstant(),
+            ConnectionRetainMode.TRANSACTION.ordinal());
 
         assertEquals(getConstantCount(ConnectionRetainModes.class),
-            ConnectionRetainType.values().length);
+            ConnectionRetainMode.values().length);
     }
 
     public void testDetachState() {
@@ -183,45 +183,45 @@ public class TestEnumToKernelConstantMappings
 
     public void testCallbackMode() {
         assertEquals(getConstantCount(CallbackModes.class),
-            CallbackType.values().length);
+            CallbackMode.values().length);
 
-        assertEquals(EnumSet.of(CallbackType.FAIL_FAST),
-            CallbackType.toEnumSet(CallbackModes.CALLBACK_FAIL_FAST));
+        assertEquals(EnumSet.of(CallbackMode.FAIL_FAST),
+            CallbackMode.toEnumSet(CallbackModes.CALLBACK_FAIL_FAST));
         assertEquals(CallbackModes.CALLBACK_FAIL_FAST,
-            CallbackType.fromEnumSet(EnumSet.of(CallbackType.FAIL_FAST)));
+            CallbackMode.fromEnumSet(EnumSet.of(CallbackMode.FAIL_FAST)));
 
-        assertEquals(EnumSet.of(CallbackType.IGNORE),
-            CallbackType.toEnumSet(CallbackModes.CALLBACK_IGNORE));
+        assertEquals(EnumSet.of(CallbackMode.IGNORE),
+            CallbackMode.toEnumSet(CallbackModes.CALLBACK_IGNORE));
         assertEquals(CallbackModes.CALLBACK_IGNORE,
-            CallbackType.fromEnumSet(EnumSet.of(CallbackType.IGNORE)));
+            CallbackMode.fromEnumSet(EnumSet.of(CallbackMode.IGNORE)));
 
-        assertEquals(EnumSet.of(CallbackType.LOG),
-            CallbackType.toEnumSet(CallbackModes.CALLBACK_LOG));
+        assertEquals(EnumSet.of(CallbackMode.LOG),
+            CallbackMode.toEnumSet(CallbackModes.CALLBACK_LOG));
         assertEquals(CallbackModes.CALLBACK_LOG,
-            CallbackType.fromEnumSet(EnumSet.of(CallbackType.LOG)));
+            CallbackMode.fromEnumSet(EnumSet.of(CallbackMode.LOG)));
 
-        assertEquals(EnumSet.of(CallbackType.RETHROW),
-            CallbackType.toEnumSet(CallbackModes.CALLBACK_RETHROW));
+        assertEquals(EnumSet.of(CallbackMode.RETHROW),
+            CallbackMode.toEnumSet(CallbackModes.CALLBACK_RETHROW));
         assertEquals(CallbackModes.CALLBACK_RETHROW,
-            CallbackType.fromEnumSet(EnumSet.of(CallbackType.RETHROW)));
+            CallbackMode.fromEnumSet(EnumSet.of(CallbackMode.RETHROW)));
 
-        assertEquals(EnumSet.of(CallbackType.ROLLBACK),
-            CallbackType.toEnumSet(CallbackModes.CALLBACK_ROLLBACK));
+        assertEquals(EnumSet.of(CallbackMode.ROLLBACK),
+            CallbackMode.toEnumSet(CallbackModes.CALLBACK_ROLLBACK));
         assertEquals(CallbackModes.CALLBACK_ROLLBACK,
-            CallbackType.fromEnumSet(EnumSet.of(CallbackType.ROLLBACK)));
+            CallbackMode.fromEnumSet(EnumSet.of(CallbackMode.ROLLBACK)));
 
 
-        assertEquals(EnumSet.of(CallbackType.ROLLBACK, CallbackType.IGNORE),
-            CallbackType.toEnumSet(CallbackModes.CALLBACK_ROLLBACK
+        assertEquals(EnumSet.of(CallbackMode.ROLLBACK, CallbackMode.IGNORE),
+            CallbackMode.toEnumSet(CallbackModes.CALLBACK_ROLLBACK
                 | CallbackModes.CALLBACK_IGNORE));
         assertEquals(
             CallbackModes.CALLBACK_ROLLBACK | CallbackModes.CALLBACK_IGNORE,
-            CallbackType.fromEnumSet(
-                EnumSet.of(CallbackType.ROLLBACK, CallbackType.IGNORE)));
+            CallbackMode.fromEnumSet(
+                EnumSet.of(CallbackMode.ROLLBACK, CallbackMode.IGNORE)));
 
 
-        assertEquals(EnumSet.allOf(CallbackType.class),
-            CallbackType.toEnumSet(
+        assertEquals(EnumSet.allOf(CallbackMode.class),
+            CallbackMode.toEnumSet(
                 CallbackModes.CALLBACK_FAIL_FAST
                     | CallbackModes.CALLBACK_IGNORE
                     | CallbackModes.CALLBACK_LOG
@@ -232,7 +232,7 @@ public class TestEnumToKernelConstantMappings
                     | CallbackModes.CALLBACK_LOG
                     | CallbackModes.CALLBACK_RETHROW
                     | CallbackModes.CALLBACK_ROLLBACK,
-            CallbackType.fromEnumSet(EnumSet.allOf(CallbackType.class)));
+            CallbackMode.fromEnumSet(EnumSet.allOf(CallbackMode.class)));
     }
 
     public void testQueryOperationTypes() {

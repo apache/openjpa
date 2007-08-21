@@ -745,8 +745,8 @@ public class AnnotationPersistenceMappingParser
     /**
      * Translate the fetch mode enum value to the internal OpenJPA constant.
      */
-    private static int toEagerFetchModeConstant(EagerFetchType type) {
-        switch (type) {
+    private static int toEagerFetchModeConstant(FetchMode mode) {
+        switch (mode) {
             case NONE:
                 return EagerFetchModes.EAGER_NONE;
             case JOIN:

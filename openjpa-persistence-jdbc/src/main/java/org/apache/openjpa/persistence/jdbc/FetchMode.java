@@ -18,39 +18,40 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
-import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
+import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 
 /**
- * Type of join syntax to use.
+ * Type of fetching to employ.
  *
- * @since 1.0.0
+ * @author Abe White
+ * @since 0.4.0
  * @published
  */
-public enum JoinSyntaxType {
-    SQL92(JoinSyntaxes.SYNTAX_SQL92),
-    TRADITIONAL(JoinSyntaxes.SYNTAX_TRADITIONAL),
-    DATABASE(JoinSyntaxes.SYNTAX_DATABASE);
+public enum FetchMode {
+    NONE(EagerFetchModes.EAGER_NONE),
+    JOIN(EagerFetchModes.EAGER_JOIN),
+    PARALLEL(EagerFetchModes.EAGER_PARALLEL);
 
-    private final int joinSyntaxConstant;
+    private final int eagerFetchConstant;
 
-    private JoinSyntaxType(int value) {
-        joinSyntaxConstant = value;
+    private FetchMode(int value) {
+        eagerFetchConstant = value;
     }
 
     int toKernelConstant() {
-        return joinSyntaxConstant;
+        return eagerFetchConstant;
     }
 
-    static JoinSyntaxType fromKernelConstant(int kernelConstant) {
+    static FetchMode fromKernelConstant(int kernelConstant) {
         switch (kernelConstant) {
-            case JoinSyntaxes.SYNTAX_SQL92:
-                return SQL92;
+            case EagerFetchModes.EAGER_NONE:
+                return NONE;
 
-            case JoinSyntaxes.SYNTAX_TRADITIONAL:
-                return TRADITIONAL;
+            case EagerFetchModes.EAGER_JOIN:
+                return JOIN;
 
-            case JoinSyntaxes.SYNTAX_DATABASE:
-                return DATABASE;
+            case EagerFetchModes.EAGER_PARALLEL:
+                return PARALLEL;
 
             default:
                 throw new IllegalArgumentException(kernelConstant + "");

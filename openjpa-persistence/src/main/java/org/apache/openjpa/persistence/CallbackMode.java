@@ -29,7 +29,7 @@ import org.apache.openjpa.event.CallbackModes;
  * @since 1.0.0
  * @published
  */
-public enum CallbackType {
+public enum CallbackMode {
     FAIL_FAST(CallbackModes.CALLBACK_FAIL_FAST),
     IGNORE(CallbackModes.CALLBACK_IGNORE),
     LOG(CallbackModes.CALLBACK_LOG),
@@ -38,29 +38,29 @@ public enum CallbackType {
 
     private final int callbackMode;
 
-    private CallbackType(int value) {
+    private CallbackMode(int value) {
         callbackMode = value;
     }
 
-    public static EnumSet<CallbackType> toEnumSet(int callback) {
-        EnumSet<CallbackType> types = EnumSet.noneOf(CallbackType.class);
+    public static EnumSet<CallbackMode> toEnumSet(int callback) {
+        EnumSet<CallbackMode> modes = EnumSet.noneOf(CallbackMode.class);
         if ((callback & CallbackModes.CALLBACK_FAIL_FAST) != 0)
-            types.add(FAIL_FAST);
+            modes.add(FAIL_FAST);
         if ((callback & CallbackModes.CALLBACK_IGNORE) != 0)
-            types.add(IGNORE);
+            modes.add(IGNORE);
         if ((callback & CallbackModes.CALLBACK_LOG) != 0)
-            types.add(LOG);
+            modes.add(LOG);
         if ((callback & CallbackModes.CALLBACK_RETHROW) != 0)
-            types.add(RETHROW);
+            modes.add(RETHROW);
         if ((callback & CallbackModes.CALLBACK_ROLLBACK) != 0)
-            types.add(ROLLBACK);
-        return types;
+            modes.add(ROLLBACK);
+        return modes;
     }
 
-    public static int fromEnumSet(EnumSet<CallbackType> types) {
+    public static int fromEnumSet(EnumSet<CallbackMode> modes) {
         int callback = 0;
-        for (CallbackType type : types)
-            callback |= type.callbackMode;
+        for (CallbackMode mode : modes)
+            callback |= mode.callbackMode;
         return callback;
     }
 }

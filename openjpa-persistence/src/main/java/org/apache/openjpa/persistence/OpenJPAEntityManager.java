@@ -48,7 +48,7 @@ public interface OpenJPAEntityManager
     /**
      * Return the connection retain mode for this entity manager.
      */
-    public ConnectionRetainType getConnectionRetainMode();
+    public ConnectionRetainMode getConnectionRetainMode();
 
     /**
      * Whether this entity manager is using managed transactions.

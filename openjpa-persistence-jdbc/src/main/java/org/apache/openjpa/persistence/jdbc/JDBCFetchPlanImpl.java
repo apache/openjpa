@@ -55,21 +55,21 @@ public class JDBCFetchPlanImpl
         return _fetch;
     }
 
-    public EagerFetchType getEagerFetchMode() {
-        return EagerFetchType.fromKernelConstant(_fetch.getEagerFetchMode());
+    public FetchMode getEagerFetchMode() {
+        return FetchMode.fromKernelConstant(_fetch.getEagerFetchMode());
     }
 
-    public JDBCFetchPlanImpl setEagerFetchMode(EagerFetchType type) {
-        _fetch.setEagerFetchMode(type.toKernelConstant());
+    public JDBCFetchPlanImpl setEagerFetchMode(FetchMode mode) {
+        _fetch.setEagerFetchMode(mode.toKernelConstant());
         return this;
     }
 
-    public EagerFetchType getSubclassFetchMode() {
-        return EagerFetchType.fromKernelConstant(_fetch.getSubclassFetchMode());
+    public FetchMode getSubclassFetchMode() {
+        return FetchMode.fromKernelConstant(_fetch.getSubclassFetchMode());
     }
 
-    public JDBCFetchPlanImpl setSubclassFetchMode(EagerFetchType type) {
-        _fetch.setSubclassFetchMode(type.toKernelConstant());
+    public JDBCFetchPlanImpl setSubclassFetchMode(FetchMode mode) {
+        _fetch.setSubclassFetchMode(mode.toKernelConstant());
         return this;
     }
 
@@ -91,20 +91,20 @@ public class JDBCFetchPlanImpl
         return this;
     }
 
-    public LRSSizeType getLRSSize() {
-        return LRSSizeType.fromKernelConstant(_fetch.getLRSSize());
+    public LRSSize getLRSSize() {
+        return LRSSize.fromKernelConstant(_fetch.getLRSSize());
     }
 
-    public JDBCFetchPlanImpl setLRSSize(LRSSizeType lrsSize) {
+    public JDBCFetchPlanImpl setLRSSize(LRSSize lrsSize) {
         _fetch.setLRSSize(lrsSize.toKernelConstant());
         return this;
     }
 
-    public JoinSyntaxType getJoinSyntax() {
-        return JoinSyntaxType.fromKernelConstant(_fetch.getJoinSyntax());
+    public JoinSyntax getJoinSyntax() {
+        return JoinSyntax.fromKernelConstant(_fetch.getJoinSyntax());
     }
 
-    public JDBCFetchPlanImpl setJoinSyntax(JoinSyntaxType syntax) {
+    public JDBCFetchPlanImpl setJoinSyntax(JoinSyntax syntax) {
         _fetch.setJoinSyntax(syntax.toKernelConstant());
         return this;
     }

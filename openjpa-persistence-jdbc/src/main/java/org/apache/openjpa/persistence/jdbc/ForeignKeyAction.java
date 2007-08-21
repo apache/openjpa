@@ -30,4 +30,4 @@ public enum ForeignKeyAction {
     CASCADE,
     NULL,
     DEFAULT
-};
+}
