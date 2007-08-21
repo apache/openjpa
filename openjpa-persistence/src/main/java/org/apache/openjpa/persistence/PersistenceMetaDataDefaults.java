@@ -71,7 +71,7 @@ public class PersistenceMetaDataDefaults
 
     private boolean _allowsMultipleMethodsForSameCallback = false;
 
-    private static Localizer _loc = Localizer.forPackage
+    private static final Localizer _loc = Localizer.forPackage
         (PersistenceMetaDataDefaults.class);
 
     private static final Map<Class, PersistenceStrategy> _strats =
