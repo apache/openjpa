@@ -26,6 +26,7 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
+import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.util.CacheMap;
 
 /**
@@ -58,6 +59,18 @@ public class QueryCompilationCacheValue
         
         try {
             map = (Map) super.newInstance(clsName, type, conf, fatal);
+        } catch (ParseException pe) {
+            // OPENJPA256: this class differs from most plugins in that
+            // the plugin type is the standard java interface Map.class (rather
+            // than an openjpa-specific interface), which means that the
+            // ClassLoader used to load the implementation will be the system
+            // class loader; this presents a problem if OpenJPA is not in the
+            // system classpath, so work around the problem by catching
+            // the ParseException (which is what we wrap the
+            // ClassNotFoundException in) and try again, this time using
+            // this class' ClassLoader.
+            map = (Map) super.newInstance(clsName,
+                QueryCompilationCacheValue.class, conf, fatal);
         } catch (IllegalArgumentException iae) {
             // OPENJPA256: this class differs from most plugins in that
             // the plugin type is the standard java interface Map.class (rather

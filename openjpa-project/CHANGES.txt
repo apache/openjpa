@@ -282,6 +282,8 @@ Bugs fixed
        * [OPENJPA-321] - DB2 ABS Casting problem
        * [OPENJPA-322] - Timezone on the Calendar object lost in proxying
        * [OPENJPA-323] - Cleanup some message text
+       * [OPENJPA-256] - java.lang.ClassNotFoundException:
+         org.apache.openjpa.util.CacheMap in a jetty spring environment
 
 Sub-task
 
