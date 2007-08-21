@@ -33,10 +33,7 @@ public class TestEnhancementConfiguration
                 UnenhancedFieldAccess.class, CLEAR_TABLES);
             assertFalse(ImplHelper.isManagedType(emf.getConfiguration(),
                 UnenhancedFieldAccess.class));
-            EntityManager em = emf.createEntityManager();
-            em.getTransaction().begin();
-            em.persist(new UnenhancedFieldAccess());
-            em.getTransaction().rollback();
+            emf.createEntityManager().close();
             fail("should not be possible to fully-initialize a system " +
                 "that depends on unenhanced types but disables runtime" +
                 "redefinition.");

@@ -19,24 +19,25 @@
 package org.apache.openjpa.enhance;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collection;
-import java.util.List;
-import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.lib.util.JavaVersions;
-import org.apache.openjpa.lib.util.BytecodeWriter;
-import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.util.GeneratedClasses;
-import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.lib.util.BytecodeWriter;
+import org.apache.openjpa.lib.util.JavaVersions;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.util.GeneratedClasses;
+import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.util.UserException;
 import serp.bytecode.BCClass;
 
 /**
@@ -62,9 +63,10 @@ public class ManagedClassSubclasser {
      * will need to do state comparisons to detect changes to newly inserted
      * instances after a flush has been called.
      *
-     * @return the new subclasses, or <code>null</code> if subclassing is
-     * disabled in <code>conf</code> or <code>classes</code> is
-     * <code>null</code>.
+     * @return the new subclasses, or <code>null</code> if <code>classes</code>
+     * is <code>null</code>.
+     * @throws UserException if <code>conf</code> requires build-time
+     * enhancement and <code>classes</code> includes unenhanced types.
      *
      * @since 1.0.0
      */
@@ -76,8 +78,16 @@ public class ManagedClassSubclasser {
             return null;
         if (classes.size() == 0)
             return Collections.EMPTY_LIST;
-        if (!conf.getRuntimeClassOptimization())
+        if (!conf.getRuntimeClassOptimization()) {
+            Collection unenhanced = new ArrayList();
+            for (Class cls : classes)
+                if (!PersistenceCapable.class.isAssignableFrom(cls))
+                    unenhanced.add(cls);
+            if (unenhanced.size() > 0)
+                throw new UserException(_loc.get(
+                    "runtime-optimization-disabled", unenhanced));
             return null;
+        }
 
         Log log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
         boolean redefine = ClassRedefiner.canRedefineClasses();
