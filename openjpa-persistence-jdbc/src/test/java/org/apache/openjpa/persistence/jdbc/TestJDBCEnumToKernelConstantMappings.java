@@ -59,31 +59,31 @@ public class TestJDBCEnumToKernelConstantMappings
 
     public void testLRSSizeType() {
         assertEquals(LRSSizes.SIZE_UNKNOWN,
-            LRSSize.UNKNOWN.toKernelConstant());
-        assertEquals(LRSSize.UNKNOWN,
-            LRSSize.fromKernelConstant(
+            LRSSizeAlgorithm.UNKNOWN.toKernelConstant());
+        assertEquals(LRSSizeAlgorithm.UNKNOWN,
+            LRSSizeAlgorithm.fromKernelConstant(
                 LRSSizes.SIZE_UNKNOWN));
-        assertEquals(LRSSize.UNKNOWN.toKernelConstant(),
-            LRSSize.UNKNOWN.ordinal());
+        assertEquals(LRSSizeAlgorithm.UNKNOWN.toKernelConstant(),
+            LRSSizeAlgorithm.UNKNOWN.ordinal());
 
         assertEquals(LRSSizes.SIZE_LAST,
-            LRSSize.LAST.toKernelConstant());
-        assertEquals(LRSSize.LAST,
-            LRSSize.fromKernelConstant(
+            LRSSizeAlgorithm.LAST.toKernelConstant());
+        assertEquals(LRSSizeAlgorithm.LAST,
+            LRSSizeAlgorithm.fromKernelConstant(
                 LRSSizes.SIZE_LAST));
-        assertEquals(LRSSize.LAST.toKernelConstant(),
-            LRSSize.LAST.ordinal());
+        assertEquals(LRSSizeAlgorithm.LAST.toKernelConstant(),
+            LRSSizeAlgorithm.LAST.ordinal());
 
         assertEquals(LRSSizes.SIZE_QUERY,
-            LRSSize.QUERY.toKernelConstant());
-        assertEquals(LRSSize.QUERY,
-            LRSSize.fromKernelConstant(
+            LRSSizeAlgorithm.QUERY.toKernelConstant());
+        assertEquals(LRSSizeAlgorithm.QUERY,
+            LRSSizeAlgorithm.fromKernelConstant(
                 LRSSizes.SIZE_QUERY));
-        assertEquals(LRSSize.QUERY.toKernelConstant(),
-            LRSSize.QUERY.ordinal());
+        assertEquals(LRSSizeAlgorithm.QUERY.toKernelConstant(),
+            LRSSizeAlgorithm.QUERY.ordinal());
 
         assertEquals(getConstantCount(LRSSizes.class),
-            LRSSize.values().length);
+            LRSSizeAlgorithm.values().length);
     }
 
     public void testJoinSyntaxType() {

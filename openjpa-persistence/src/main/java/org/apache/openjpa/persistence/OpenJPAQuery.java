@@ -36,7 +36,12 @@ import org.apache.openjpa.kernel.QueryHints;
  * @published
  */
 public interface OpenJPAQuery
-    extends Query, QueryHints {
+    extends Query {
+
+    /**
+     * Hint key for specifying the number of rows to optimize for.
+     */
+    public static final String HINT_RESULT_COUNT = QueryHints.HINT_RESULT_COUNT;
 
     /**
      * The owning entity manager.

@@ -29,4 +29,4 @@ public enum NonpolymorphicType {
     EXACT,
     JOINABLE,
     FALSE
-};
+}

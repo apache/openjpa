@@ -42,7 +42,7 @@ public enum CallbackMode {
         callbackMode = value;
     }
 
-    public static EnumSet<CallbackMode> toEnumSet(int callback) {
+    static EnumSet<CallbackMode> toEnumSet(int callback) {
         EnumSet<CallbackMode> modes = EnumSet.noneOf(CallbackMode.class);
         if ((callback & CallbackModes.CALLBACK_FAIL_FAST) != 0)
             modes.add(FAIL_FAST);
@@ -57,7 +57,7 @@ public enum CallbackMode {
         return modes;
     }
 
-    public static int fromEnumSet(EnumSet<CallbackMode> modes) {
+    static int fromEnumSet(EnumSet<CallbackMode> modes) {
         int callback = 0;
         for (CallbackMode mode : modes)
             callback |= mode.callbackMode;

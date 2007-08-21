@@ -27,6 +27,7 @@ package org.apache.openjpa.persistence.jdbc;
  * Set of mapping tags used in JPA.
  *
  * @author Abe White
+ * @nojavadoc
  */
 enum MappingTag {
 

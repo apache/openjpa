@@ -23,7 +23,6 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
@@ -68,7 +67,7 @@ public class PersistenceProviderImpl
      * resource or the name of the jar that the resource is contained in.
      * This does no pooling of EntityManagersFactories.
      */
-    public EntityManagerFactory createEntityManagerFactory(String name,
+    public OpenJPAEntityManagerFactory createEntityManagerFactory(String name,
         String resource, Map m) {
         PersistenceProductDerivation pd = new PersistenceProductDerivation();
         try {
@@ -83,11 +82,12 @@ public class PersistenceProviderImpl
         }
     }
 
-    public EntityManagerFactory createEntityManagerFactory(String name, Map m) {
+    public OpenJPAEntityManagerFactory createEntityManagerFactory(String name,
+        Map m) {
         return createEntityManagerFactory(name, null, m);
     }
 
-    public EntityManagerFactory createContainerEntityManagerFactory(
+    public OpenJPAEntityManagerFactory createContainerEntityManagerFactory(
         PersistenceUnitInfo pui, Map m) {
         PersistenceProductDerivation pd = new PersistenceProductDerivation();
         try {
