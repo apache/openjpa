@@ -658,13 +658,6 @@ public class PCEnhancer {
     }
 
     /**
-     * Return the name of the getter method for the given field.
-     */
-    private static String getGetterName(FieldMetaData fmd) {
-        return "get" + StringUtils.capitalize(fmd.getName());
-    }
-
-    /**
      * Return the field returned by the given method, or null if none.
      * Package-protected and static for testing.
      */
@@ -3325,8 +3318,12 @@ public class PCEnhancer {
     }
 
     private boolean setVisibilityToSuperMethod(BCMethod method) {
-        BCMethod superMeth = _managedType.getMethods(method.getName(),
-            method.getParamTypes())[0];
+        BCMethod[] methods = _managedType.getMethods(method.getName(),
+            method.getParamTypes());
+        if (methods.length == 0)
+            throw new UserException(_loc.get("no-accessor",
+                _managedType.getName(), method.getName()));
+        BCMethod superMeth = methods[0];
         if (superMeth.isPrivate()) {
             method.makePrivate();
             return true;
@@ -3348,7 +3345,9 @@ public class PCEnhancer {
      * performs any necessary field tracking.
      */
     private void addSubclassGetMethod(FieldMetaData fmd) {
-        String methName = getGetterName(fmd);
+        String methName = "get" + StringUtils.capitalize(fmd.getName());
+        if (_managedType.getMethods(methName, new Class[0]).length == 0)
+            methName = "is" + StringUtils.capitalize(fmd.getName());
         BCMethod getter = _pc.declareMethod(methName, fmd.getDeclaredType(),
             null);
         setVisibilityToSuperMethod(getter);
