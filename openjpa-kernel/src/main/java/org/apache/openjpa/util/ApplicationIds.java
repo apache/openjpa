@@ -448,7 +448,7 @@ public class ApplicationIds {
                                     .getFullName(false)));
                 // Assign the generated value
                 if (store.assignField(sm, pks[i].getIndex(), preFlush))
-                    pks[i].set_generated(true);
+                    pks[i].setValueGenerated(true);
                 else
                     return false;
             }

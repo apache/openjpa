@@ -580,7 +580,7 @@ public class StateManagerImpl
         
         // Throw exception if field already has a value assigned.
         // @GeneratedValue overrides POJO initial values and setter methods
-        if (!isDefaultValue(field) && !fmd.is_generated())
+        if (!isDefaultValue(field) && !fmd.isValueGenerated())
             throw new InvalidStateException(_loc.get(
                     "existing-value-override-excep", fmd.getFullName(false)));
 
@@ -591,7 +591,7 @@ public class StateManagerImpl
 
         // for other fields just assign the field or flush if needed
         if (_broker.getStoreManager().assignField(this, field, preFlushing)) {
-            fmd.set_generated(true);
+            fmd.setValueGenerated(true);
             return true;
         }
         if (!preFlushing)
