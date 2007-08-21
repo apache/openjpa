@@ -214,9 +214,10 @@ public class ImplHelper {
      * @since 1.0.0
      */
     public static boolean isManagedType(OpenJPAConfiguration conf, Class type) {
-        return (PersistenceCapable.class.isAssignableFrom(type) || conf == null)
-            || (type != null && conf.getRuntimeClassOptimization()
-                && PCRegistry.isRegistered(type));
+        return (PersistenceCapable.class.isAssignableFrom(type)
+            || (type != null
+                && (conf == null || conf.getRuntimeClassOptimization())
+                && PCRegistry.isRegistered(type)));
     }
 
     /**
