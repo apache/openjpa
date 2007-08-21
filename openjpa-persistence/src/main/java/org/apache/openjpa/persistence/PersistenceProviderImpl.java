@@ -28,14 +28,15 @@ import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
 
+import org.apache.openjpa.conf.BrokerValue;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
-import org.apache.openjpa.conf.BrokerValue;
 import org.apache.openjpa.enhance.PCClassFileTransformer;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -117,11 +118,18 @@ public class PersistenceProviderImpl
 
             BrokerFactory factory = Bootstrap.newBrokerFactory(cp, 
                 pui.getClassLoader());
-            if (transformerException != null)
-                factory.getConfiguration().getLog(
-                    OpenJPAConfiguration.LOG_RUNTIME).warn(
-                        _loc.get("transformer-registration-error", pui),
+            if (transformerException != null) {
+                Log log = factory.getConfiguration().getLog(
+                    OpenJPAConfiguration.LOG_RUNTIME);
+                if (log.isTraceEnabled()) {
+                    log.warn(
+                        _loc.get("transformer-registration-error-ex", pui),
                         transformerException);
+                } else {
+                    log.warn(
+                        _loc.get("transformer-registration-error", pui));
+                }
+            }
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
