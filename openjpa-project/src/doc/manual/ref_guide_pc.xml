@@ -353,8 +353,8 @@ accordingly. This may slow down class load times significantly.
                 </listitem>
                 <listitem>
                     <para>
-<literal>runtimeEnhancement</literal>: Boolean controlling whether OpenJPA
-class enhancement should be available in this JVM execution. Default:
+<literal>classLoadEnhancement</literal>: Boolean controlling whether OpenJPA
+load-time class enhancement should be available in this JVM execution. Default:
 <literal>true</literal>
                     </para>
                 </listitem>
@@ -426,7 +426,7 @@ that are not enhanced by thet OpenJPA javaagent. Aside from the requirement
 that you specify a javaagent on the command line, this behavior is exactly the
 same as the Java 6 class retransformation behavior. Of course, since the
 OpenJPA javaagent performs enhancement by default, this will only be available
-if you set the <literal>runtimeEnhancement</literal> javaagent flag to
+if you set the <literal>classLoadEnhancement</literal> javaagent flag to
 <literal>false</literal>, or on any classes that are skipped by the OpenJPA
 runtime enhancement process for some reason.
                 </para></listitem>
