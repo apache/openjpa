@@ -380,6 +380,9 @@ public class DataCacheStoreManager
             return false;
         if (!_ctx.getPopulateDataCache())
             return true;
+        // Do not load changes into cache if the instance has been flushed
+        if (sm.isFlushed())
+            return true;
 
         // make sure that we're not trying to cache an old version
         cache.writeLock();
