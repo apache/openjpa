@@ -29,7 +29,7 @@ public class TestEnhancementConfiguration
     public void testEnhancementConfiguration() {
         try {
             emf = createEMF(
-                "openjpa.RuntimeClassOptimization", "false",
+                "openjpa.RuntimeUnenhancedClasses", "unsupported",
                 UnenhancedFieldAccess.class, CLEAR_TABLES);
             assertFalse(ImplHelper.isManagedType(emf.getConfiguration(),
                 UnenhancedFieldAccess.class));
@@ -38,7 +38,8 @@ public class TestEnhancementConfiguration
                 "that depends on unenhanced types but disables runtime" +
                 "redefinition.");
         } catch (Exception e) {
-            // expected
+            assertTrue(e.getMessage().contains(
+                "This configuration disallows runtime optimization"));
         }
     }
 }

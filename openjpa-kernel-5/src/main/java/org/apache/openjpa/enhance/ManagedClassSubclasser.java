@@ -34,6 +34,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.BytecodeWriter;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -81,18 +82,26 @@ public class ManagedClassSubclasser {
             return null;
         if (classes.size() == 0)
             return Collections.EMPTY_LIST;
-        if (!conf.getRuntimeClassOptimization()) {
+
+        Log log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
+        if (conf.getRuntimeUnenhancedClassesConstant()
+            != RuntimeUnenhancedClasssesModes.SUPPORTED) {
             Collection unenhanced = new ArrayList();
             for (Class cls : classes)
                 if (!PersistenceCapable.class.isAssignableFrom(cls))
                     unenhanced.add(cls);
-            if (unenhanced.size() > 0)
-                throw new UserException(_loc.get(
-                    "runtime-optimization-disabled", unenhanced));
+            if (unenhanced.size() > 0) {
+                Message msg = _loc.get("runtime-optimization-disabled",
+                    unenhanced);
+                if (conf.getRuntimeUnenhancedClassesConstant()
+                    == RuntimeUnenhancedClasssesModes.WARN)
+                    log.warn(msg);
+                else
+                    throw new UserException(msg);
+            }
             return null;
         }
 
-        Log log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
         boolean redefine = ClassRedefiner.canRedefineClasses();
         if (redefine)
             log.info(_loc.get("enhance-and-subclass-no-redef-start",

@@ -1389,31 +1389,63 @@ public interface OpenJPAConfiguration
     public StoreFacadeTypeRegistry getStoreFacadeTypeRegistry();
 
     /**
-     * Return the {@link org.apache.openjpa.event.BrokerFactoryEventManager} associated with this
-     * configuration.
+     * Return the {@link org.apache.openjpa.event.BrokerFactoryEventManager}
+     * associated with this configuration.
      *
      * @since 1.0.0
      */
     public BrokerFactoryEventManager getBrokerFactoryEventManager();
 
     /**
-     * Whether or not runtime class optimization is enabled.
+     * Specifies how OpenJPA handles unenhanced types. Possible values are:
+     * <ul>
+     * <li><code>enabled</code>: Runtime optimization of persistent types
+     * is available. This is the default</li>
+     * <li><code>disabled</code>: Runtime optimization of persistent types
+     * is not available. An exception will be thrown if the system loads with
+     * persistent types that are not enhanced.</li>
+     * <li><code>warn</code>: Runtime optimization of persistent types is
+     * not available, but no exception will be thrown initially. A warning will
+     * be logged instead. It is likely that the system will fail at a later
+     * point. This might be suitable for environments with complex classloader
+     * configurations.</li>
+     * </ul>
      *
      * @since 1.0.0
      */
-    public boolean getRuntimeClassOptimization();
+    public String getRuntimeUnenhancedClasses();
 
     /**
-     * Whether or not runtime class optimization is enabled.
+     * Specifies how OpenJPA handles unenhanced types.
      *
+     * @see {@link #getRuntimeUnenhancedClasses()}
      * @since 1.0.0
      */
-    public void setRuntimeClassOptimization(Boolean enabled);
+    public void setRuntimeUnenhancedClasses(String mode);
 
     /**
-     * Wrapper for JCA usage of {@link #setRetryClassRegistration(boolean)}.
+     * Return the runtime class optimization setting as one of the
+     * following symbolic constants:
+     * <ul>
+     * <li>{@link RuntimeClassOptimizationModes#RUNTIME_OPT_ENABLED}</li>
+     * <li>{@link RuntimeClassOptimizationModes#RUNTIME_OPT_DISABLED}</li>
+     * <li>{@link RuntimeClassOptimizationModes#RUNTIME_OPT_WARN}</li>
+     * </ul>
      *
      * @since 1.0.0
      */
-    public void setRuntimeClassOptimization(boolean enabled);
+    public int getRuntimeUnenhancedClassesConstant();
+
+    /**
+     * Set the runtime class optimization setting as one of the
+     * following symbolic constants:
+     * <ul>
+     * <li>{@link RuntimeClassOptimizationModes#RUNTIME_OPT_ENABLED}</li>
+     * <li>{@link RuntimeClassOptimizationModes#RUNTIME_OPT_DISABLED}</li>
+     * <li>{@link RuntimeClassOptimizationModes#RUNTIME_OPT_WARN}</li>
+     * </ul>
+     *
+     * @since 1.0.0
+     */
+    public void setRuntimeUnenhancedClasses(int mode);
 }
