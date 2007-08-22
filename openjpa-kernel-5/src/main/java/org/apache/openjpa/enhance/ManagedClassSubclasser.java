@@ -23,9 +23,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
@@ -36,6 +38,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.GeneratedClasses;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UserException;
 import serp.bytecode.BCClass;
@@ -101,6 +104,7 @@ public class ManagedClassSubclasser {
         final Map<Class, byte[]> map = new HashMap<Class, byte[]>();
         final List subs = new ArrayList(classes.size());
         final List ints = new ArrayList(classes.size());
+        Set<Class> unspecified = null;
         for (Iterator iter = classes.iterator(); iter.hasNext(); ) {
             final Class cls = (Class) iter.next();
             final PCEnhancer enhancer = new PCEnhancer(conf, cls);
@@ -123,6 +127,9 @@ public class ManagedClassSubclasser {
             // reconfiguration at the end of this method.
             configureMetaData(enhancer.getMetaData(), conf, redefine, false);
 
+            unspecified = collectRelatedUnspecifiedTypes(enhancer.getMetaData(),
+                classes, unspecified);
+
             enhancer.run();
             try {
                 enhancer.record();
@@ -131,6 +138,10 @@ public class ManagedClassSubclasser {
                 throw new InternalException(e);
             }
         }
+
+        if (unspecified != null && !unspecified.isEmpty())
+            throw new UserException(_loc.get("unspecified-unenhanced-types",
+                classes, unspecified));
 
         ClassRedefiner.redefineClasses(conf, map);
         for (Class cls : map.keySet()) {
@@ -143,6 +154,41 @@ public class ManagedClassSubclasser {
             setIntercepting(conf, envLoader, cls);
 
         return subs;
+    }
+
+    private static Set<Class> collectRelatedUnspecifiedTypes(ClassMetaData meta,
+        Collection<? extends Class> classes, Set<Class> unspecified) {
+        unspecified = collectUnspecifiedType(meta.getPCSuperclass(), classes,
+            unspecified);
+
+        for (FieldMetaData fmd : meta.getFields()) {
+            if (fmd.isTransient())
+                continue;
+            if (fmd.isTypePC())
+                unspecified = collectUnspecifiedType(fmd.getType(), classes,
+                    unspecified);
+            if (fmd.getElement() != null && fmd.getElement().isTypePC())
+                unspecified = collectUnspecifiedType(fmd.getElement().getType(),
+                    classes, unspecified);
+            if (fmd.getKey() != null && fmd.getKey().isTypePC())
+                unspecified = collectUnspecifiedType(fmd.getKey().getType(),
+                    classes, unspecified);
+            if (fmd.getValue() != null && fmd.getValue().isTypePC())
+                unspecified = collectUnspecifiedType(fmd.getValue().getType(),
+                    classes, unspecified);
+        }
+        return unspecified;
+    }
+
+    private static Set<Class> collectUnspecifiedType(Class cls,
+        Collection<? extends Class> classes, Set<Class> unspecified) {
+        if (cls != null && !classes.contains(cls)
+            && !ImplHelper.isManagedType(null, cls)) {
+            if (unspecified == null)
+                unspecified = new HashSet<Class>();
+            unspecified.add(cls);
+        }
+        return unspecified;
     }
 
     private static void configureMetaData(OpenJPAConfiguration conf,
