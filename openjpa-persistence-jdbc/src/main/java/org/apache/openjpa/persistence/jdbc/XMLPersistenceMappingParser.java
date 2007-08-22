@@ -932,6 +932,9 @@ public class XMLPersistenceMappingParser
         if (val != null) {
             _discType = Enum.valueOf(DiscriminatorType.class, val);
         }
+        else {
+            _discType = DiscriminatorType.STRING;
+        }
             
 	}
 }
