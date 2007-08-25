@@ -406,6 +406,7 @@
                                 <openjpac>
                                     <classpath refid="cp"/>
                                     <fileset refid="enhance.path.ref"/>
+                                    <config log="DefaultLevel=${openjpa.loglevel}"/>
                                 </openjpac>
                                 <!--  Set detach state for serialization tests -->
                                 <openjpac>
@@ -416,6 +417,7 @@
                                         <!--  include files from orm.xml -->
                                         <include name="**/xml/*.class"/>
                                     </fileset>
+                                    <config log="DefaultLevel=${openjpa.loglevel}"/>
                                 </openjpac>
                             </tasks>
                         </configuration>

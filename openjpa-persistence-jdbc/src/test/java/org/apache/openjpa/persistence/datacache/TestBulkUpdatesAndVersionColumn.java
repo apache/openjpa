@@ -35,7 +35,6 @@ public class TestBulkUpdatesAndVersionColumn
     public void setUp() throws Exception {
         setUp("openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
-            "openjpa.Log", "SQL=TRACE",
             OptimisticLockInstance.class, CLEAR_TABLES);
 
         OpenJPAEntityManager em = emf.createEntityManager();
