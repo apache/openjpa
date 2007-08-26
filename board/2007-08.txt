@@ -6,6 +6,8 @@ OpenJPA continues to work toward its first release as a TLP, to be called
 OpenJPA 1.0.0. A few release candidates have been built and the release
 is imminent.
 
+There are no board issues at the moment.
+
 Community
 
 A public face-to-face meeting was held August 6 and 7, hosted by
