@@ -607,6 +607,17 @@ public final class SQLBuffer
     }
 
     /**
+     * Replace current buffer string with the new string
+     * 
+     * @param start replace start position
+     * @param end replace end position
+     * @param newString
+     */
+    public void replaceSqlString(int start, int end, String newString) {
+        _sql.replace(start, end, newString);
+    }
+    
+    /**
      * Represents a subselect.
      */
     private static class Subselect {

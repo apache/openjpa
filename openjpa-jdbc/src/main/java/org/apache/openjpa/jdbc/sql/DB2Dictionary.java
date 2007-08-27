@@ -696,4 +696,45 @@ public class DB2Dictionary
         }
         buf.append(") - 1)");
     }
+    
+    /** 
+     * Cast the specified value to the specified type.
+     *
+     * @param buf the buffer to append the cast to
+     * @param val the value to cast
+     * @param type the type of the case, e.g. {@link Types#NUMERIC}
+     */
+    public void appendCast(SQLBuffer buf, FilterValue val, int type) {
+
+        // Convert the cast function: "CAST({0} AS {1})"
+        int firstParam = castFunction.indexOf("{0}");
+        String pre = castFunction.substring(0, firstParam); // "CAST("
+        String mid = castFunction.substring(firstParam + 3);
+        int secondParam = mid.indexOf("{1}");
+        String post;
+        if (secondParam > -1) {
+            post = mid.substring(secondParam + 3); // ")"
+            mid = mid.substring(0, secondParam); // " AS "
+        } else
+            post = "";
+
+        // No need to add CAST if the value is a constant
+        if (val instanceof Lit || val instanceof Param) {
+            buf.append(pre);
+            val.appendTo(buf);
+            buf.append(mid);
+            buf.append(getTypeName(type));
+            appendLength(buf, type);
+            buf.append(post);
+        } else {
+            val.appendTo(buf);
+            String sqlString = buf.getSQL(false);
+            if (sqlString.endsWith("?")) {
+                // case "(?" - convert to "CAST(? AS type"
+                String str = "CAST(? AS " + getTypeName(type) + ")";
+                buf.replaceSqlString(sqlString.length() - 1,
+                        sqlString.length(), str);
+            }
+        }
+    }
 }
