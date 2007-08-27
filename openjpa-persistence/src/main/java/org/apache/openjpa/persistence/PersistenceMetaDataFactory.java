@@ -56,7 +56,6 @@ import org.apache.openjpa.meta.MetaDataDefaults;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
-import org.apache.openjpa.meta.XMLMetaData;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.MetaDataException;
 
