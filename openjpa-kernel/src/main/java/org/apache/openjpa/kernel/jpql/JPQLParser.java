@@ -37,7 +37,8 @@ import org.apache.openjpa.util.UserException;
 public class JPQLParser
     implements ExpressionParser {
 
-    private static Localizer _loc = Localizer.forPackage(JPQLParser.class);
+    private static final Localizer _loc =
+        Localizer.forPackage(JPQLParser.class);
     public static final String LANG_JPQL = "javax.persistence.JPQL";
 
     public Object parse(String ql, ExpressionStoreQuery query) {
