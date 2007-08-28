@@ -342,7 +342,7 @@ public abstract class Value implements Cloneable {
     }
 
     /**
-     * Subclasses should call this method when their inernal value changes.
+     * Subclasses should call this method when their internal value changes.
      */
     public void valueChanged() {
         if (listen != null)
