@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
     <properties>
         <scm.dir>svn.apache.org/repos/asf/openjpa/trunk/openjpa-all</scm.dir>
