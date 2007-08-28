@@ -94,10 +94,10 @@ public class PostgresDictionary
         // PostgreSQL requires double-escape for strings
         searchStringEscape = "\\\\";
 
-        maxTableNameLength = 31;
-        maxColumnNameLength = 31;
-        maxIndexNameLength = 31;
-        maxConstraintNameLength = 31;
+        maxTableNameLength = 63;
+        maxColumnNameLength = 63;
+        maxIndexNameLength = 63;
+        maxConstraintNameLength = 63;
         schemaCase = SCHEMA_CASE_LOWER;
         rangePosition = RANGE_POST_LOCK;
         requiresAliasForSubselect = true;
