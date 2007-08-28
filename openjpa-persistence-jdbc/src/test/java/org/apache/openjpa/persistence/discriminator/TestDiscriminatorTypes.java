@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestDiscriminatorTypes extends SingleEMFTestCase {
 
-    protected void setUp() {
+    public void setUp() {
         super.setUp(CharAbstractEntity.class, CharLeafEntity.class,
                 CharRootEntity.class, IntegerAbstractEntity.class,
                 IntegerLeafEntity.class, IntegerRootEntity.class,

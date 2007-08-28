@@ -30,7 +30,7 @@ public class TestAutoDetachProperty extends TestCase {
     private EntityManager em;
     private EntityManagerFactory emf;
 
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         // Don't modify system props, as we are trying to get as close as
         // possible to testing props in persistence.xml
         HashMap props = new HashMap(System.getProperties());
