@@ -271,6 +271,11 @@ public class PostgresDictionary
         return sql;
     }
 
+    protected boolean supportsDeferredUniqueConstraints() {
+        // Postgres only supports deferred foreign key constraints.
+        return false;
+    }
+
     protected String getSequencesSQL(String schemaName, String sequenceName) {
         if (schemaName == null && sequenceName == null)
             return allSequencesSQL;
