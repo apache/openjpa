@@ -30,7 +30,7 @@ public abstract class SingleEMFTestCase
      * set-up happens even if <code>setUp()</code> is not called from the
      * subclass.
      */
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         setUp(new Object[0]);
     }
 
