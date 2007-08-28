@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -219,8 +220,12 @@ public class PersistenceUnitInfoImpl
             if (cp[i].equals(name)
                 || cp[i].endsWith(File.separatorChar + name)) {
                 try {
-                    addJarFile(new File(cp[i]).toURL());
+                    addJarFile((URL) AccessController
+                        .doPrivileged(J2DoPrivHelper
+                            .toURLAction(new File(cp[i]))));
                     return;
+                } catch (PrivilegedActionException pae) {
+                    break;
                 } catch (MalformedURLException mue) {
                     break;
                 }

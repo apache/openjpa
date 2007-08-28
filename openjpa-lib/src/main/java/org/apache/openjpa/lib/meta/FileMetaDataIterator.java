@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -111,8 +112,14 @@ public class FileMetaDataIterator implements MetaDataIterator {
             throw new NoSuchElementException();
 
         _file = (File) _itr.next();
-        return ((File) AccessController.doPrivileged(J2DoPrivHelper
-            .getAbsoluteFileAction(_file))).toURL();
+        try {
+            File f = (File) AccessController.doPrivileged(J2DoPrivHelper
+                .getAbsoluteFileAction(_file));
+            return AccessController.doPrivileged(
+                J2DoPrivHelper.toURLAction(f));
+        } catch (PrivilegedActionException pae) {
+            throw (MalformedURLException) pae.getException();
+        }
     }
 
     public InputStream getInputStream() throws IOException {

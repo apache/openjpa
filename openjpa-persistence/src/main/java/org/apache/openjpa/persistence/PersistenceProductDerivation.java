@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -458,7 +459,12 @@ public class PersistenceProductDerivation
         @Override
         public void parse(File file)
             throws IOException {
-            _source = file.toURL();
+            try {
+                _source = (URL) AccessController.doPrivileged(J2DoPrivHelper
+                    .toURLAction(file));
+            } catch (PrivilegedActionException pae) {
+                throw (MalformedURLException) pae.getException();
+            }
             super.parse(file);
         }
 

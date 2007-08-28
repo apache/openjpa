@@ -517,7 +517,8 @@ public class ProxyManagerImpl
         boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = project.loadClass(getProxyClassName(type, runtime));
+        BCClass bc = (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+            .loadProjectClassAction(project, getProxyClassName(type, runtime))); 
         bc.setSuperclass(type);
         bc.declareInterface(ProxyCollection.class);
  
@@ -554,7 +555,8 @@ public class ProxyManagerImpl
     protected BCClass generateProxyMapBytecode(Class type, boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = project.loadClass(getProxyClassName(type, runtime));
+        BCClass bc = (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+            .loadProjectClassAction(project, getProxyClassName(type, runtime))); 
         bc.setSuperclass(type);
         bc.declareInterface(ProxyMap.class);
  
@@ -573,7 +575,8 @@ public class ProxyManagerImpl
     protected BCClass generateProxyDateBytecode(Class type, boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = project.loadClass(getProxyClassName(type, runtime));
+        BCClass bc = (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+            .loadProjectClassAction(project, getProxyClassName(type, runtime))); 
         bc.setSuperclass(type);
         bc.declareInterface(ProxyDate.class);
  
@@ -592,7 +595,8 @@ public class ProxyManagerImpl
         boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = project.loadClass(getProxyClassName(type, runtime));
+        BCClass bc = (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+            .loadProjectClassAction(project, getProxyClassName(type, runtime))); 
         bc.setSuperclass(type);
         bc.declareInterface(ProxyCalendar.class);
  
@@ -626,7 +630,8 @@ public class ProxyManagerImpl
         }
 
         Project project = new Project(); 
-        BCClass bc = project.loadClass(getProxyClassName(type, runtime));
+        BCClass bc = (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+            .loadProjectClassAction(project, getProxyClassName(type, runtime))); 
         bc.setSuperclass(type);
         bc.declareInterface(ProxyBean.class);
  
