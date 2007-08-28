@@ -3090,7 +3090,7 @@ public class DBDictionary
      * @since 1.1.0
      */
     protected boolean supportsDeferredForeignKeyConstraints() {
-        return supportsUniqueConstraints;
+        return supportsDeferredConstraints;
     }
 
     /**
