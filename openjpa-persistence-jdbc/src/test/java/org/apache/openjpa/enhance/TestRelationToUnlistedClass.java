@@ -18,28 +18,21 @@
  */
 package org.apache.openjpa.enhance;
 
-import javax.persistence.EntityManager;
-
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.apache.openjpa.util.ImplHelper;
 
-public class TestEnhancementConfiguration
+public class TestRelationToUnlistedClass
     extends SingleEMFTestCase {
 
-    public void testEnhancementConfiguration() {
+    public void setUp() {
+        setUp(UnenhancedUnlistedReferer.class, CLEAR_TABLES);
+    }
+
+    public void testRelationToUnlistedClass() {
         try {
-            emf = createEMF(
-                "openjpa.RuntimeUnenhancedClasses", "unsupported",
-                UnenhancedFieldAccess.class, CLEAR_TABLES);
-            assertFalse(ImplHelper.isManagedType(emf.getConfiguration(),
-                UnenhancedFieldAccess.class));
             emf.createEntityManager().close();
-            fail("should not be possible to fully-initialize a system " +
-                "that depends on unenhanced types but disables runtime" +
-                "redefinition.");
+            fail("should not be able to initialize system");
         } catch (Exception e) {
-            assertTrue(e.getMessage().contains(
-                "This configuration disallows runtime optimization"));
+            assertTrue(e.getMessage().startsWith("One or more of the types"));
         }
     }
 }

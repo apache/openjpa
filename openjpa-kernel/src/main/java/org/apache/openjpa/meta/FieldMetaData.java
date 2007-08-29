@@ -2051,11 +2051,11 @@ public class FieldMetaData
         }
     }
 
-    public boolean is_generated() {
+    public boolean isValueGenerated() {
         return _generated;
     }
 
-    public void set_generated(boolean _generated) {
-        this._generated = _generated;
+    public void setValueGenerated(boolean generated) {
+        this._generated = generated;
     }
 }

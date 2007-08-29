@@ -183,17 +183,17 @@ public class DelegatingFetchConfiguration
         }
     }
 
-    public boolean getEnlistInQueryCache() {
+    public boolean getQueryCacheEnabled() {
         try {
-            return _fetch.getEnlistInQueryCache();
+            return _fetch.getQueryCacheEnabled();
         } catch (RuntimeException re) {
             throw translate(re);
         }
     }
 
-    public FetchConfiguration setEnlistInQueryCache(boolean cache) {
+    public FetchConfiguration setQueryCacheEnabled(boolean cache) {
         try {
-            _fetch.setEnlistInQueryCache(cache);
+            _fetch.setQueryCacheEnabled(cache);
             return this;
         } catch (RuntimeException re) {
             throw translate(re);

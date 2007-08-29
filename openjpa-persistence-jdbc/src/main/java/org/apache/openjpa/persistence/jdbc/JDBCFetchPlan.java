@@ -136,7 +136,7 @@ public interface JDBCFetchPlan
     public JDBCFetchPlan removeFields(String... fields);
     public JDBCFetchPlan removeFields(Collection fields);
     public JDBCFetchPlan resetFetchGroups();
-    public JDBCFetchPlan setEnlistInQueryResultCache(boolean cache);
+    public JDBCFetchPlan setQueryResultCacheEnabled(boolean cache);
     public JDBCFetchPlan setFetchBatchSize(int fetchBatchSize);
     public JDBCFetchPlan setLockTimeout(int timeout);
     public JDBCFetchPlan setMaxFetchDepth(int depth);

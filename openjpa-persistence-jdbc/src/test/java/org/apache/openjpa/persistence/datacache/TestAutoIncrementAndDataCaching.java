@@ -16,30 +16,38 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.enhance;
+package org.apache.openjpa.persistence.datacache;
 
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.apache.openjpa.util.ImplHelper;
 
-public class TestEnhancementConfiguration
+public class TestAutoIncrementAndDataCaching
     extends SingleEMFTestCase {
 
-    public void testEnhancementConfiguration() {
-        try {
-            emf = createEMF(
-                "openjpa.RuntimeUnenhancedClasses", "unsupported",
-                UnenhancedFieldAccess.class, CLEAR_TABLES);
-            assertFalse(ImplHelper.isManagedType(emf.getConfiguration(),
-                UnenhancedFieldAccess.class));
-            emf.createEntityManager().close();
-            fail("should not be possible to fully-initialize a system " +
-                "that depends on unenhanced types but disables runtime" +
-                "redefinition.");
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains(
-                "This configuration disallows runtime optimization"));
-        }
+    @Override
+    public void setUp() {
+        setUp(IdentityIdClass.class, CLEAR_TABLES,
+            "openjpa.DataCache", "true",
+            "openjpa.RemoteCommitProvider", "sjvm");
+    }
+
+    public void testSimpleDataCacheOperation() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(new IdentityIdClass());
+        em.getTransaction().commit();
+        em.close();
+    }
+
+    public void testAccessIdBeforeCommit() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        IdentityIdClass o = new IdentityIdClass();
+        em.persist(o);
+        em.getObjectId(o);
+        em.getTransaction().commit();
+        em.close();
     }
 }

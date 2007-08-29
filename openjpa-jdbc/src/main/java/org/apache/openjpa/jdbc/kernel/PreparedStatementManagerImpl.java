@@ -32,8 +32,10 @@ import org.apache.openjpa.jdbc.sql.RowImpl;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.OptimisticException;
+import org.apache.openjpa.meta.ClassMetaData;
 
 /**
  * Basic prepared statement manager implementation.
@@ -119,6 +121,8 @@ public class PreparedStatementManagerImpl
                 mapping.assertJoinable(autoAssign[i]).setAutoAssignedValue(sm,
                     _store, autoAssign[i], val);
             }
+            sm.setObjectId(
+                ApplicationIds.create(sm.getPersistenceCapable(), mapping));
         }
     }
 

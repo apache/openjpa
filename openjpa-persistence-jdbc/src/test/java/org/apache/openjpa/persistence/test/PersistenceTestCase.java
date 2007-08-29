@@ -88,6 +88,10 @@ public abstract class PersistenceTestCase
             createEntityManagerFactory("test", map);
     }
 
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
+
     /**
      * Safely close the given factory.
      */

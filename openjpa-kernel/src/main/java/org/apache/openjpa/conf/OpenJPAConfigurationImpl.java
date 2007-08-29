@@ -53,6 +53,7 @@ import org.apache.openjpa.util.ClassResolver;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.StoreFacadeTypeRegistry;
+import org.apache.openjpa.enhance.RuntimeUnenhancedClasssesModes;
 
 /**
  * Implementation of the {@link OpenJPAConfiguration} interface.
@@ -131,7 +132,7 @@ public class OpenJPAConfigurationImpl
     public ObjectValue orphanedKeyPlugin;
     public ObjectValue compatibilityPlugin;
     public QueryCompilationCacheValue queryCompilationCachePlugin;
-    public BooleanValue runtimeClassOptimization;
+    public IntValue runtimeUnenhancedClasses;
 
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -480,9 +481,18 @@ public class OpenJPAConfigurationImpl
             "getQueryCompilationCacheInstance");
         addValue(queryCompilationCachePlugin);
         
-        runtimeClassOptimization = addBoolean("RuntimeClassOptimization");
-        runtimeClassOptimization.setDefault("true");
-        runtimeClassOptimization.set(true);
+        runtimeUnenhancedClasses = addInt("RuntimeUnenhancedClasses");
+        runtimeUnenhancedClasses.setAliases(new String[] {
+            "supported", String.valueOf(
+                RuntimeUnenhancedClasssesModes.SUPPORTED),
+            "unsupported", String.valueOf(
+                RuntimeUnenhancedClasssesModes.UNSUPPORTED),
+            "warn", String.valueOf(
+                RuntimeUnenhancedClasssesModes.WARN),
+        });
+        runtimeUnenhancedClasses.setDefault("supported");
+        runtimeUnenhancedClasses.setString("supported");
+        runtimeUnenhancedClasses.setAliasListComprehensive(true);
 
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
@@ -1427,17 +1437,22 @@ public class OpenJPAConfigurationImpl
         return _brokerFactoryEventManager;
     }
 
-    public boolean getRuntimeClassOptimization() {
-        return runtimeClassOptimization.get();
+    public String getRuntimeUnenhancedClasses() {
+        return runtimeUnenhancedClasses.getString();
     }
 
-    public void setRuntimeClassOptimization(Boolean enabled) {
-        setRuntimeClassOptimization(enabled.booleanValue());
+    public int getRuntimeUnenhancedClassesConstant() {
+        return runtimeUnenhancedClasses.get();
     }
 
-    public void setRuntimeClassOptimization(boolean enabled) {
+    public void setRuntimeUnenhancedClasses(int mode) {
         assertNotReadOnly();
-        runtimeClassOptimization.set(enabled);
+        runtimeUnenhancedClasses.set(mode);
+    }
+
+    public void setRuntimeUnenhancedClasses(String mode) {
+        assertNotReadOnly();
+        runtimeUnenhancedClasses.setString(mode);
     }
 
     public void instantiateAll() {
