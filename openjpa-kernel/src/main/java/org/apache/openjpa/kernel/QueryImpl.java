@@ -74,7 +74,7 @@ import serp.util.Strings;
 public class QueryImpl
     implements Query {
 
-    private static Localizer _loc = Localizer.forPackage(QueryImpl.class);
+    private static final Localizer _loc = Localizer.forPackage(QueryImpl.class);
 
     private final String _language;
     private final StoreQuery _storeQuery;
@@ -1693,7 +1693,8 @@ public class QueryImpl
     /**
      * Struct of compiled query properties.
      */
-    protected static class Compilation {
+    protected static class Compilation
+        implements Serializable {
 
         public StoreQuery.Executor memory = null;
         public StoreQuery.Executor datastore = null;

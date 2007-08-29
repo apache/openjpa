@@ -73,45 +73,45 @@ public class ReflectingPersistenceCapable
     }
 
     public void pcProvideField(int i) {
+        Object value = getValue(i, o);
         switch (meta.getField(i).getTypeCode()) {
             case JavaTypes.BOOLEAN:
-                sm.providedBooleanField(this, i,
-                    ((Boolean) getValue(i, o)).booleanValue());
+                sm.providedBooleanField(this, i, value == null ? false :
+                    ((Boolean) value).booleanValue());
                 break;
             case JavaTypes.BYTE:
-                sm.providedByteField(this, i,
-                    ((Byte) getValue(i, o)).byteValue());
+                sm.providedByteField(this, i, value == null ? 0 :
+                    ((Byte) value).byteValue());
                 break;
             case JavaTypes.CHAR:
-                sm.providedCharField(this, i,
-                    ((Character) getValue(i, o)).charValue());
+                sm.providedCharField(this, i, value == null ? 0 :
+                    ((Character) value).charValue());
                 break;
             case JavaTypes.DOUBLE:
-                sm.providedDoubleField(this, i,
-                    ((Double) getValue(i, o)).doubleValue());
+                sm.providedDoubleField(this, i, value == null ? 0 :
+                    ((Double) value).doubleValue());
                 break;
             case JavaTypes.FLOAT:
-                sm.providedFloatField(this, i,
-                    ((Float) getValue(i, o)).floatValue());
+                sm.providedFloatField(this, i, value == null ? 0 :
+                    ((Float) value).floatValue());
                 break;
             case JavaTypes.INT:
-                sm.providedIntField(this, i,
-                    ((Integer) getValue(i, o)).intValue());
+                sm.providedIntField(this, i, value == null ? 0 :
+                    ((Integer) value).intValue());
                 break;
             case JavaTypes.LONG:
-                sm.providedLongField(this, i,
-                    ((Long) getValue(i, o)).longValue());
+                sm.providedLongField(this, i, value == null ? 0 :
+                    ((Long) value).longValue());
                 break;
             case JavaTypes.SHORT:
-                sm.providedShortField(this, i,
-                    ((Short) getValue(i, o)).shortValue());
+                sm.providedShortField(this, i, value == null ? 0 :
+                    ((Short) value).shortValue());
                 break;
             case JavaTypes.STRING:
-                sm.providedStringField(this, i,
-                    (String) getValue(i, o));
+                sm.providedStringField(this, i, (String) value);
                 break;
             default:
-                sm.providedObjectField(this, i, getValue(i, o));
+                sm.providedObjectField(this, i, value);
                 break;
         }
     }

@@ -133,6 +133,7 @@ public class OpenJPAConfigurationImpl
     public ObjectValue compatibilityPlugin;
     public QueryCompilationCacheValue queryCompilationCachePlugin;
     public IntValue runtimeUnenhancedClasses;
+    public CacheMarshallersValue cacheMarshallerPlugins;
 
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -295,13 +296,8 @@ public class OpenJPAConfigurationImpl
         mapping = addString("Mapping");
         metaFactoryPlugin = addPlugin("MetaDataFactory", false);
 
-        metaRepositoryPlugin = addPlugin("MetaDataRepository", false);
-        aliases =
-            new String[] { "default",
-                "org.apache.openjpa.meta.MetaDataRepository" };
-        metaRepositoryPlugin.setAliases(aliases);
-        metaRepositoryPlugin.setDefault(aliases[0]);
-        metaRepositoryPlugin.setString(aliases[0]);
+        metaRepositoryPlugin = (ObjectValue)
+            addValue(new MetaDataRepositoryValue());
 
         connectionFactory = addObject("ConnectionFactory");
         connectionFactory.setInstantiatingGetter("getConnectionFactory");
@@ -493,6 +489,9 @@ public class OpenJPAConfigurationImpl
         runtimeUnenhancedClasses.setDefault("supported");
         runtimeUnenhancedClasses.setString("supported");
         runtimeUnenhancedClasses.setAliasListComprehensive(true);
+
+        cacheMarshallerPlugins = (CacheMarshallersValue)
+            addValue(new CacheMarshallersValue(this));
 
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
@@ -1450,6 +1449,19 @@ public class OpenJPAConfigurationImpl
         runtimeUnenhancedClasses.set(mode);
     }
 
+    public String getCacheMarshallers() {
+        return cacheMarshallerPlugins.getString();
+    }
+
+    public void setCacheMarshallers(String marshallers) {
+        assertNotReadOnly();
+        cacheMarshallerPlugins.setString(marshallers);
+    }
+
+    public Map getCacheMarshallerInstances() {
+        return cacheMarshallerPlugins.getInstancesAsMap();
+    }
+
     public void setRuntimeUnenhancedClasses(String mode) {
         assertNotReadOnly();
         runtimeUnenhancedClasses.setString(mode);
@@ -1459,6 +1471,7 @@ public class OpenJPAConfigurationImpl
         super.instantiateAll();
         getMetaDataRepositoryInstance();
         getRemoteCommitEventManager();
+        cacheMarshallerPlugins.initialize();
     }
 
     protected void preClose() {

@@ -18,13 +18,16 @@
  */
 package org.apache.openjpa.kernel.exps;
 
+import java.io.Serializable;
+
 /**
  * Interface for a set of conditions that must be met for the query
  * to be true.
  *
  * @author Abe White
  */
-public interface Expression {
+public interface Expression
+    extends Serializable {
 
     /**
      * Accept a visit from a tree visitor.

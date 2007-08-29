@@ -22,7 +22,6 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.security.AccessController;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -44,7 +43,6 @@ import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.Value;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -70,7 +68,7 @@ public class JPQLExpressionBuilder
     private static final int VAR_PATH = 1;
     private static final int VAR_ERROR = 2;
 
-    private static Localizer _loc = Localizer.forPackage
+    private static final Localizer _loc = Localizer.forPackage
         (JPQLExpressionBuilder.class);
 
     private final Stack contexts = new Stack();
@@ -261,7 +259,7 @@ public class JPQLExpressionBuilder
 
         Expression filter = null;
         filter = and(evalFromClause(root().id == JJTSELECT), filter);
-        filter = and(evalWhereClause(exps), filter);
+        filter = and(evalWhereClause(), filter);
         filter = and(evalSelectClause(exps), filter);
 
         exps.filter = filter == null ? factory.emptyExpression() : filter;
@@ -469,7 +467,7 @@ public class JPQLExpressionBuilder
         }
     }
 
-    private Expression evalWhereClause(QueryExpressions exps) {
+    private Expression evalWhereClause() {
         // evaluate the WHERE clause
         JPQLNode whereNode = root().findChildByID(JJTWHERE, false);
         if (whereNode == null)
@@ -529,10 +527,10 @@ public class JPQLExpressionBuilder
             exp =  and(exp, factory.equal(path, subpath));
         }
 
-        return addJoin(path, alias, inner, exp);
+        return addJoin(path, alias, exp);
     }
 
-    private Expression addJoin(Path path, JPQLNode aliasNode, boolean inner,
+    private Expression addJoin(Path path, JPQLNode aliasNode,
         Expression exp) {
         FieldMetaData fmd = path.last();
 
@@ -1634,8 +1632,11 @@ public class JPQLExpressionBuilder
     public static class ParsedJPQL
         implements Serializable {
 
-        protected final JPQLNode root;
-        protected final String query;
+        // This is only ever used during parse; when ParsedJPQL instances
+        // are serialized, they will have already been parsed.
+        private final transient JPQLNode root;
+
+        private final String query;
         
         // cache of candidate type data. This is stored here in case this  
         // parse tree is reused in a context that does not know what the 
@@ -1651,7 +1652,7 @@ public class JPQLExpressionBuilder
             this.query = query;
         }
 
-        private static final JPQLNode parse(String jpql) {
+        private static JPQLNode parse(String jpql) {
             if (jpql == null)
                 jpql = "";
 

@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -319,7 +320,7 @@ class PCPath
         action.data = meta;
         _actions.add(action);
         _cast = null;
-        _key = false;;
+        _key = false;
         _type = XPATH;
         _xmlfield = fmd;
     }
@@ -330,7 +331,7 @@ class PCPath
         action.data = meta.getFieldMapping(name);
         _actions.add(action);
         _cast = null;
-        _key = false;;
+        _key = false;
         _type = XPATH;
     }
     
@@ -789,7 +790,8 @@ class PCPath
     /**
      * Helper class representing an action.
      */
-    private static class Action {
+    private static class Action
+        implements Serializable {
 
         public static final int GET = 0;
         public static final int GET_OUTER = 1;

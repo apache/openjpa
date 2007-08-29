@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,10 +36,10 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.enhance.DynamicPersistenceCapable;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PCRegistry.RegisterClassListener;
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.enhance.DynamicPersistenceCapable;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -46,10 +47,10 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAId;
-import org.apache.openjpa.util.ImplHelper;
 import serp.util.Strings;
 
 /**
@@ -132,7 +133,7 @@ public class MetaDataRepository
 
     // we buffer up any classes that register themselves to prevent
     // reentrancy errors if classes register during a current parse (common)
-    private final Collection _registered = new ArrayList();
+    private final Collection _registered = new HashSet();
 
     // set of metadatas we're in the process of resolving
     private final SortedSet _resolving = new TreeSet

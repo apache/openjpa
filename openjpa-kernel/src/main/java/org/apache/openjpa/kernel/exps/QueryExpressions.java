@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.kernel.exps;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +36,8 @@ import org.apache.openjpa.meta.FieldMetaData;
  * @since 0.3.2
  * @nojavadoc
  */
-public class QueryExpressions {
+public class QueryExpressions
+    implements Serializable {
 
     public static final int DISTINCT_AUTO = 2 << 0;
     public static final int DISTINCT_TRUE = 2 << 1;

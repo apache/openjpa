@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.kernel.exps;
 
+import java.io.Serializable;
+
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
@@ -26,7 +28,8 @@ import org.apache.openjpa.meta.ClassMetaData;
  *
  * @author Abe White
  */
-public interface Value {
+public interface Value
+    extends Serializable {
 
     /**
      * Return the expected type for this value, or <code>Object</code> if

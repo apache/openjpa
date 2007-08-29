@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +39,8 @@ import org.apache.openjpa.kernel.exps.Value;
  * @author Abe White
  * @nojavadoc
  */
-public class SelectConstructor {
+public class SelectConstructor
+    implements Serializable {
 
     private boolean _extent = false;
 

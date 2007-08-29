@@ -178,9 +178,8 @@ public class FieldMetaData
 
     // Members aren't serializable. Use a proxy that can provide a Member
     // to avoid writing the full Externalizable implementation.
-    private transient MemberProvider _backingMember = null;
-    private String _backingFieldName = null;
-    
+    private MemberProvider _backingMember = null;
+
     // Members aren't serializable. Initializing _extMethod and _factMethod to
     // DEFAULT_METHOD is sufficient to trigger lazy population of these fields.
     private transient Method _extMethod = DEFAULT_METHOD;
@@ -1996,18 +1995,22 @@ public class FieldMetaData
      * Serializable wrapper around a {@link Method} or {@link Field}. For 
      * space considerations, this does not support {@link Constructor}s.
      */
-	private static class MemberProvider 
+	public static class MemberProvider
         implements Externalizable {
 
         private transient Member _member;
-        
-        private MemberProvider(Member member) {
+
+        public MemberProvider() {
+            // for externalization
+        }
+
+        MemberProvider(Member member) {
             if (member instanceof Constructor)
                 throw new IllegalArgumentException();
 
             _member = member;
         }
-        
+
         public Member getMember() {
             return _member;
         }
@@ -2015,13 +2018,13 @@ public class FieldMetaData
         public void readExternal(ObjectInput in)
             throws IOException, ClassNotFoundException {
             boolean isField = in.readBoolean();
-            Class cls = _member.getDeclaringClass();
+            Class cls = (Class) in.readObject();
             String memberName = (String) in.readObject();
             try {
                 if (isField)
                     _member = (Field) AccessController.doPrivileged(
                         J2DoPrivHelper.getDeclaredFieldAction(
-                            cls,memberName)); 
+                            cls, memberName)); 
                 else {
                     Class[] parameterTypes = (Class[]) in.readObject();
                     _member = (Method) AccessController.doPrivileged(

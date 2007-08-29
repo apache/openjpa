@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import java.io.Serializable;
+
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -43,7 +45,7 @@ import org.apache.openjpa.util.UserException;
  * @nojavadoc
  */
 public class JDBCExpressionFactory
-    implements ExpressionFactory {
+    implements ExpressionFactory, Serializable {
 
     private static final Val NULL = new Null();
     private static final Val CURRENT_DATE = new CurrentDate(JavaSQLTypes.DATE);

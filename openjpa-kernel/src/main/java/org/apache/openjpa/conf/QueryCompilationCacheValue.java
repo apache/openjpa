@@ -87,7 +87,8 @@ public class QueryCompilationCacheValue
 
         if (map != null && !(map instanceof Hashtable)
             && !(map instanceof CacheMap)
-            && !(map instanceof ConcurrentMap))
+            && !(map instanceof ConcurrentMap)
+            && !(map.getClass().getName().startsWith("java.util.concurrent")))
             map = Collections.synchronizedMap(map);
         return map;
 	}

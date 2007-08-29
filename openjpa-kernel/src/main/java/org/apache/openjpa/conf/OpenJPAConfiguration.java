@@ -1448,4 +1448,27 @@ public interface OpenJPAConfiguration
      * @since 1.0.0
      */
     public void setRuntimeUnenhancedClasses(int mode);
+
+    /**
+     * A comma-separted list of the plugin strings specifying the
+     * {@link CacheMarshaller}s to use.
+     *
+     * @since 1.1.0
+     */
+    public String getCacheMarshallers();
+
+    /**
+     * A comma-separted list of the plugin strings specifying the
+     * {@link CacheMarshaller}s to use.
+     *
+     * @since 1.1.0
+     */
+    public void setCacheMarshallers(String marshallers);
+
+    /**
+     * Return the cache marshaller listeners.
+     *
+     * @since 1.1.0 
+     */
+    public Map getCacheMarshallerInstances();
 }

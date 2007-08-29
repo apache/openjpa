@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -277,7 +278,7 @@ public class ExpressionStoreQuery
      *
      * @author Marc Prud'hommeaux
      */
-    private static abstract class AbstractExpressionExecutor
+    public static abstract class AbstractExpressionExecutor
         extends AbstractExecutor
         implements Executor {
 
@@ -471,7 +472,7 @@ public class ExpressionStoreQuery
      */
     private static class InMemoryExecutor
         extends AbstractExpressionExecutor
-        implements Executor {
+        implements Executor, Serializable {
 
         private final ClassMetaData _meta;
         private final boolean _subs;
@@ -624,17 +625,17 @@ public class ExpressionStoreQuery
      *
      * @author Marc Prud'hommeaux
      */
-    private static class DataStoreExecutor
+    public static class DataStoreExecutor
         extends AbstractExpressionExecutor
-        implements Executor {
+        implements Executor, Serializable {
 
-        private final ClassMetaData _meta;
-        private final ClassMetaData[] _metas;
-        private final boolean _subs;
-        private final ExpressionParser _parser;
-        private final ExpressionFactory[] _facts;
-        private final QueryExpressions[] _exps;
-        private final Class[] _projTypes;
+        private ClassMetaData _meta;
+        private ClassMetaData[] _metas;
+        private boolean _subs;
+        private ExpressionParser _parser;
+        private ExpressionFactory[] _facts;
+        private QueryExpressions[] _exps;
+        private Class[] _projTypes;
         private Value[] _inMemOrdering;
 
         public DataStoreExecutor(ExpressionStoreQuery q,
