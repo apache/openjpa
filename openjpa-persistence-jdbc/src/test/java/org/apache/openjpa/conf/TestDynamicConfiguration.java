@@ -55,44 +55,40 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		assertTrue(conf.isReadOnly());
 	}
 	
-	public void testDynamicValuesCanNotBeChangedDirectly() {
+	public void testNonDynamicValuesCanNotBeChanged() {
 		emf.createEntityManager();
 		OpenJPAConfiguration conf = emf.getConfiguration();
 		
-		Value[] dynamicValues = conf.getDynamicValues();
-		assertTrue(dynamicValues.length>0);
-		assertTrue(conf.isDynamic("LockTimeout"));
-
-		int oldValue = conf.getLockTimeout();
-		int newValue = oldValue + 10;
+		String oldValue = conf.getConnectionURL();
+		String newValue = "jdbc://mydb:8087/DBDoesNotExist";
 		try {
-			conf.setLockTimeout(newValue);
-			fail("Expected exception to modify configuration directly");
+			conf.setConnectionURL(newValue);
+			fail("Expected exception to modify configuration");
 		} catch (Exception ex) { // good
-			assertEquals(oldValue, conf.getLockTimeout());
+			assertEquals(oldValue, conf.getConnectionURL());
 		}
 	}
 	
 	public void testDynamicValuesCanBeChanged() {
 		OpenJPAConfiguration conf = emf.getConfiguration();
 		
-		Value[] dynamicValues = conf.getDynamicValues();
-		assertTrue(dynamicValues.length>0);
-		assertTrue(conf.isDynamic("LockTimeout"));
-
 		int oldValue = conf.getLockTimeout();
 		int newValue = oldValue + 10;
 		
-		conf.modifyDynamic("LockTimeout", newValue);
+		conf.setLockTimeout(newValue);
 		assertEquals(newValue, conf.getLockTimeout());
 	}
 
 	public void testDynamicValuesAreCorrectlySet() {
 		OpenJPAConfiguration conf = emf.getConfiguration();
 		
-		Value[] dynamicValues = conf.getDynamicValues();
-		assertTrue(dynamicValues.length>0);
-		assertTrue(conf.isDynamic("LockTimeout"));
+		Value lockTimeoutValue = conf.getValue("LockTimeout");
+		assertNotNull(lockTimeoutValue);
+		assertTrue(lockTimeoutValue.isDynamic());
+		
+		Value connectionURLValue = conf.getValue("ConnectionURL");
+		assertNotNull(connectionURLValue);
+		assertFalse(connectionURLValue.isDynamic());
 	}
 	
 	public void testDynamicChangeDoesNotChangeHashCode() {
@@ -101,7 +97,7 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		int oldValue = conf1.getLockTimeout();
 		int newValue = oldValue+10;
 		int oldHash = conf1.hashCode();
-		conf1.modifyDynamic("LockTimeout", newValue);
+		conf1.setLockTimeout(newValue);
 		int newHash = conf1.hashCode();
 		
 		assertEquals(oldHash, newHash);

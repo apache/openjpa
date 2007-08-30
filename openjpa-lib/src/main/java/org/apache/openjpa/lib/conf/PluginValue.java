@@ -65,6 +65,7 @@ public class PluginValue extends ObjectValue {
      * The plugin class name.
      */
     public void setClassName(String name) {
+        assertChangeable();
         String oldName = _name;
         _name = name;
         if (!StringUtils.equals(oldName, name)) {
@@ -118,6 +119,7 @@ public class PluginValue extends ObjectValue {
     }
 
     public void setString(String str) {
+    	assertChangeable();
         _name = Configurations.getClassName(str);
         _name = unalias(_name);
         _props = Configurations.getProperties(str);

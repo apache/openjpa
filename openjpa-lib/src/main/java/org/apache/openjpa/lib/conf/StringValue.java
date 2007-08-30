@@ -48,6 +48,7 @@ public class StringValue extends Value {
      * The internal value.
      */
     public void set(String value) {
+        assertChangeable();
         String oldValue = this.value;
         this.value = value;
         if (!StringUtils.equals(value, oldValue))

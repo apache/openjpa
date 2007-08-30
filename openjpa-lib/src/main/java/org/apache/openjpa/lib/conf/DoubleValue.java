@@ -41,6 +41,7 @@ public class DoubleValue extends Value {
      * The internal value.
      */
     public void set(double value) {
+        assertChangeable();
         double oldValue = this.value;
         this.value = value;
         if (oldValue != value)

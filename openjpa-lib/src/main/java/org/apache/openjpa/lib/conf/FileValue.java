@@ -45,6 +45,7 @@ public class FileValue extends Value {
      * The internal value.
      */
     public void set(File value) {
+        assertChangeable();
         File oldValue = this.value;
         this.value = value;
         if (!ObjectUtils.equals(oldValue, value))

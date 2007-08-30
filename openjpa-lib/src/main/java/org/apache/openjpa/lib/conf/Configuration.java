@@ -74,6 +74,11 @@ public interface Configuration
      * the property's name in XML format (i.e. two-words instead of TwoWords).
      */
     public static final String ATTRIBUTE_XML = "xmlName";
+    
+    public static final int INIT_STATE_LIQUID   = 0;
+    public static final int INIT_STATE_FREEZING = 1;
+    public static final int INIT_STATE_FROZEN   = 2;
+    
 
     /**
      * Return the product name. Defaults to <code>openjpa</code>.
@@ -200,7 +205,7 @@ public interface Configuration
      * Lock down the configuration's state. Attempting to set state on a
      * read-only configuration results in an exception.
      */
-    public void setReadOnly(boolean readOnly);
+    public void setReadOnly(int readOnly);
 
     /**
      * Return true if this configuration is immutable.
@@ -230,21 +235,21 @@ public interface Configuration
      *
      * @since 1.0.0
      */
-    public void modifyDynamic(String property, Object newValue);
-    
-    /**
-     * Affirms if the given property can be modified <em>dynamically</em> i.e.
-     * even after the receiver is {@link #setReadOnly(boolean) frozen}. 
-     *
-     * @since 1.0.0
-     */
-    public boolean isDynamic(String property);
-    
-    /**
-     * Gets the values that can be modified <em>dynamically</em> i.e.
-     * even after the receiver is {@link #setReadOnly(boolean) frozen}. 
-     *
-     * @since 1.0.0
-     */
-    public Value[] getDynamicValues();
+//    public void modifyDynamic(String property, Object newValue);
+//    
+//    /**
+//     * Affirms if the given property can be modified <em>dynamically</em> i.e.
+//     * even after the receiver is {@link #setReadOnly(boolean) frozen}. 
+//     *
+//     * @since 1.0.0
+//     */
+//    public boolean isDynamic(String property);
+//    
+//    /**
+//     * Gets the values that can be modified <em>dynamically</em> i.e.
+//     * even after the receiver is {@link #setReadOnly(boolean) frozen}. 
+//     *
+//     * @since 1.0.0
+//     */
+//    public Value[] getDynamicValues();
 }

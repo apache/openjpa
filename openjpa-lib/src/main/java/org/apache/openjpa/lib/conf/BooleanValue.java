@@ -26,7 +26,7 @@ package org.apache.openjpa.lib.conf;
 public class BooleanValue extends Value {
 
     private boolean value;
-
+    
     public BooleanValue(String prop) {
         super(prop);
         setAliasListComprehensive(true);
@@ -40,6 +40,7 @@ public class BooleanValue extends Value {
      * The internal value.
      */
     public void set(boolean value) {
+        assertChangeable();
         boolean oldValue = this.value;
         this.value = value;
         if (oldValue != value)

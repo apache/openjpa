@@ -66,6 +66,7 @@ public class ObjectValue extends Value {
      * @param derived if true, this value was derived from other properties
      */
     public void set(Object obj, boolean derived) {
+        if (!derived) assertChangeable();
         Object oldValue = _value;
         _value = obj;
         if (!derived && !ObjectUtils.equals(obj, oldValue)) {

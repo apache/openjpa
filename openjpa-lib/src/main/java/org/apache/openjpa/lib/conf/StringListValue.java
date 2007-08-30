@@ -48,6 +48,7 @@ public class StringListValue extends Value {
      * The internal value.
      */
     public void set(String[] values) {
+        assertChangeable();
         _values = (values == null) ? EMPTY : values;
         valueChanged();
     }

@@ -196,7 +196,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
      */
     public void testFreezing() {
         assertTrue(!_conf.isReadOnly());
-        _conf.setReadOnly(true);
+        _conf.setReadOnly(Configuration.INIT_STATE_FROZEN);
         assertTrue(_conf.isReadOnly());
         try {
             _conf.setTestKey("bar");
@@ -276,7 +276,6 @@ public class TestConfigurationImpl extends AbstractTestCase {
         }
 
         public void setTestKey(String val) {
-            assertNotReadOnly();
             _testKey.set(val);
         }
 
@@ -285,8 +284,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
         }
 
         public void setSysKey(String val) {
-            assertNotReadOnly();
-            _sysKey.set(val);
+             _sysKey.set(val);
         }
 
         public String getPluginKey() {
@@ -294,7 +292,6 @@ public class TestConfigurationImpl extends AbstractTestCase {
         }
 
         public void setPluginKey(String val) {
-            assertNotReadOnly();
             _pluginKey.setString(val);
         }
 
@@ -305,7 +302,6 @@ public class TestConfigurationImpl extends AbstractTestCase {
         }
 
         public void setPluginKey(Object val) {
-            assertNotReadOnly();
             _pluginKey.set(val);
         }
 
@@ -314,7 +310,6 @@ public class TestConfigurationImpl extends AbstractTestCase {
         }
 
         public void setObjectKey(Object val) {
-            assertNotReadOnly();
             _objectKey.set(val);
         }
 

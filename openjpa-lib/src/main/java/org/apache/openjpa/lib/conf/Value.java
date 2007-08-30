@@ -34,7 +34,7 @@ public abstract class Value implements Cloneable {
 
     private static final String[] EMPTY_ALIASES = new String[0];
     private static final Localizer s_loc = Localizer.forPackage(Value.class);
-
+    
     private String prop = null;
     private String loadKey = null;
     private String def = null;
@@ -43,6 +43,7 @@ public abstract class Value implements Cloneable {
     private ValueListener listen = null;
     private boolean aliasListComprehensive = false;
     private Class scope = null;
+    private boolean isDynamic = false;
 
     /**
      * Default constructor.
@@ -279,6 +280,7 @@ public abstract class Value implements Cloneable {
      * corresponding value internally.
      */
     public void setString(String val) {
+    	assertChangeable();
         String str = unalias(val);
         try {
             setInternalString(str);
@@ -345,8 +347,45 @@ public abstract class Value implements Cloneable {
      * Subclasses should call this method when their internal value changes.
      */
     public void valueChanged() {
-        if (listen != null)
-            listen.valueChanged(this);
+        if (listen != null) {
+        	listen.valueChanged(this);
+        }
+    }
+    
+    /**
+     * Asserts if this receiver can be changed.
+     * Subclasses <em>must</em> invoke this method before changing its
+     * internal state.
+     * 
+     * This receiver can not be changed if all of the following is true
+     * <LI>this receiver is not dynamic
+     * <LI>ValueListener attached to this receiver is a Configuration
+     * <LI>Configuration is read-only
+     */
+    protected void assertChangeable() {
+    	if (!isDynamic() && listen instanceof Configuration && 
+        	((Configuration)listen).isReadOnly()) {
+        	throw new RuntimeException(s_loc.get("veto-change",
+        		this.getProperty()).toString());
+       	}
+    }
+    
+    /**
+     * Sets if this receiver can be mutated even when the configuration it 
+     * belongs to has been {@link Configuration#isReadOnly() frozen}.
+     *  
+     */
+    public void setDynamic(boolean flag) {
+    	isDynamic = flag;
+    }
+    
+    /**
+     * Affirms if this receiver can be mutated even when the configuration it 
+     * belongs to has been {@link Configuration#isReadOnly() frozen}.
+     *  
+     */
+    public boolean isDynamic() {
+    	return isDynamic; 
     }
 
     public int hashCode() {

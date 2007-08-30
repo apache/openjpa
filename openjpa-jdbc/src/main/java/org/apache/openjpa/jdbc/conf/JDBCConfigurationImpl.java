@@ -328,7 +328,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setSchema(String schema) {
-        assertNotReadOnly();
         this.schema.setString(schema);
     }
 
@@ -337,7 +336,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setSchemas(String schemas) {
-        assertNotReadOnly();
         this.schemas.setString(schemas);
     }
 
@@ -346,7 +344,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setSchemas(String[] schemas) {
-        assertNotReadOnly();
         this.schemas.set(schemas);
     }
 
@@ -355,7 +352,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setTransactionIsolation(String transactionIsolation) {
-        assertNotReadOnly();
         this.transactionIsolation.setString(transactionIsolation);
     }
 
@@ -364,7 +360,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setTransactionIsolation(int transactionIsolation) {
-        assertNotReadOnly();
         this.transactionIsolation.set(transactionIsolation);
     }
 
@@ -373,7 +368,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setResultSetType(String resultSetType) {
-        assertNotReadOnly();
         this.resultSetType.setString(resultSetType);
     }
 
@@ -382,7 +376,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setResultSetType(int resultSetType) {
-        assertNotReadOnly();
         this.resultSetType.set(resultSetType);
     }
 
@@ -391,7 +384,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setFetchDirection(String fetchDirection) {
-        assertNotReadOnly();
         this.fetchDirection.setString(fetchDirection);
     }
 
@@ -400,7 +392,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setFetchDirection(int fetchDirection) {
-        assertNotReadOnly();
         this.fetchDirection.set(fetchDirection);
     }
 
@@ -409,7 +400,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setEagerFetchMode(String eagerFetchMode) {
-        assertNotReadOnly();
         this.eagerFetchMode.setString(eagerFetchMode);
     }
 
@@ -418,7 +408,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setEagerFetchMode(int eagerFetchMode) {
-        assertNotReadOnly();
         this.eagerFetchMode.set(eagerFetchMode);
     }
 
@@ -427,7 +416,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setSubclassFetchMode(String subclassFetchMode) {
-        assertNotReadOnly();
         this.subclassFetchMode.setString(subclassFetchMode);
     }
 
@@ -436,7 +424,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setSubclassFetchMode(int subclassFetchMode) {
-        assertNotReadOnly();
         this.subclassFetchMode.set(subclassFetchMode);
     }
 
@@ -445,7 +432,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setLRSSize(String lrsSize) {
-        assertNotReadOnly();
         this.lrsSize.setString(lrsSize);
     }
 
@@ -454,7 +440,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setLRSSize(int lrsSize) {
-        assertNotReadOnly();
         this.lrsSize.set(lrsSize);
     }
 
@@ -463,7 +448,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setSynchronizeMappings(String synchronizeMappings) {
-        assertNotReadOnly();
         this.synchronizeMappings.set(synchronizeMappings);
     }
 
@@ -472,7 +456,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setJDBCListeners(String jdbcListeners) {
-        assertNotReadOnly();
         jdbcListenerPlugins.setString(jdbcListeners);
     }
 
@@ -481,7 +464,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setJDBCListeners(JDBCListener[] listeners) {
-        assertNotReadOnly();
         jdbcListenerPlugins.set(listeners);
     }
 
@@ -492,7 +474,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setConnectionDecorators(String connectionDecorators) {
-        assertNotReadOnly();
         connectionDecoratorPlugins.setString(connectionDecorators);
     }
 
@@ -501,7 +482,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setConnectionDecorators(ConnectionDecorator[] decorators) {
-        assertNotReadOnly();
         connectionDecoratorPlugins.set(decorators);
     }
 
@@ -514,7 +494,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setDBDictionary(String dbdictionary) {
-        assertNotReadOnly();
         dbdictionaryPlugin.setString(dbdictionary);
     }
 
@@ -529,7 +508,6 @@ public class JDBCConfigurationImpl
             || connectionFactory2.get() != null)
             throw new IllegalStateException();
 
-        assertNotReadOnly();
         dbdictionaryPlugin.set(dbdictionary);
     }
 
@@ -576,7 +554,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setUpdateManager(String updateManager) {
-        assertNotReadOnly();
         updateManagerPlugin.setString(updateManager);
     }
 
@@ -585,7 +562,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setUpdateManager(UpdateManager updateManager) {
-        assertNotReadOnly();
         updateManagerPlugin.set(updateManager);
     }
 
@@ -596,7 +572,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setDriverDataSource(String driverDataSource) {
-        assertNotReadOnly();
         driverDataSourcePlugin.setString(driverDataSource);
     }
 
@@ -610,7 +585,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setSchemaFactory(String schemaFactory) {
-        assertNotReadOnly();
         schemaFactoryPlugin.setString(schemaFactory);
     }
 
@@ -619,7 +593,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setSchemaFactory(SchemaFactory schemaFactory) {
-        assertNotReadOnly();
         schemaFactoryPlugin.set(schemaFactory);
     }
 
@@ -630,7 +603,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setSQLFactory(String sqlFactory) {
-        assertNotReadOnly();
         sqlFactoryPlugin.setString(sqlFactory);
     }
 
@@ -639,7 +611,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setSQLFactory(SQLFactory sqlFactory) {
-        assertNotReadOnly();
         sqlFactoryPlugin.set(sqlFactory);
     }
 
@@ -654,7 +625,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setMappingFactory(String mapping) {
-        assertNotReadOnly();
         mappingFactoryPlugin.setString(mapping);
     }
 
@@ -664,7 +634,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setMappingDefaults(String mapping) {
-        assertNotReadOnly();
         this.mappingDefaultsPlugin.setString(mapping);
     }
 
@@ -673,7 +642,6 @@ public class JDBCConfigurationImpl
     }
 
     public void setMappingDefaults(MappingDefaults mapping) {
-        assertNotReadOnly();
         mappingDefaultsPlugin.set(mapping);
     }
 
@@ -719,7 +687,6 @@ public class JDBCConfigurationImpl
             return;
 
         // override to configure data source
-        assertNotReadOnly();
         if (factory != null) {
             // need to ensure it is decorated before we set the dict
             DecoratingDataSource ds =
@@ -779,7 +746,6 @@ public class JDBCConfigurationImpl
             return;
 
         // override to configure data source
-        assertNotReadOnly();
         if (factory != null) {
             // need to ensure it is decorated before we set the dict
             DecoratingDataSource ds = setupConnectionFactory((DataSource)

@@ -23,6 +23,7 @@ import java.security.AccessController;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Options;
@@ -108,7 +109,7 @@ public class PCEnhancerAgent {
                 return tmpLoader;
             }
         });
-        conf.setReadOnly(true);
+        conf.setReadOnly(Configuration.INIT_STATE_FREEZING);
         conf.instantiateAll(); // avoid threading issues
 
         PCClassFileTransformer transformer = new PCClassFileTransformer

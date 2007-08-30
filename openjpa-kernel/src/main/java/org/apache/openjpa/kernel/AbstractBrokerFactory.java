@@ -43,6 +43,7 @@ import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.BrokerFactoryEvent;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -197,7 +198,7 @@ public abstract class AbstractBrokerFactory
                 loadPersistentTypes(broker.getClassLoader());
             }
             _brokers.add(broker);
-
+            _conf.setReadOnly(Configuration.INIT_STATE_FROZEN);
             return broker;
         } catch (OpenJPAException ke) {
             throw ke;
@@ -632,7 +633,7 @@ public abstract class AbstractBrokerFactory
 
             // freeze underlying configuration and eagerly initialize to
             // avoid synchronization
-            _conf.setReadOnly(true);
+            _conf.setReadOnly(Configuration.INIT_STATE_FREEZING);
             _conf.instantiateAll();
 
             // fire an event for all the broker factory listeners
