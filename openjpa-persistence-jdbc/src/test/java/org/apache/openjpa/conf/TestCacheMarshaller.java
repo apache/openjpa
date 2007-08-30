@@ -31,7 +31,8 @@ public class TestCacheMarshaller
             "default(Id=" + getClass().getName() + ", ValidationPolicy="
                 + OpenJPAVersionAndConfigurationTypeValidationPolicy.class
                     .getName()
-                + ", InputURL=file:" + getClass().getName() + ".ser, OutputFile="
+                + ", InputURL=file:target/" + getClass().getName() + ".ser"
+                + ", OutputFile=target/"
                 + getClass().getName() + ".ser)"
         });
         emf.createEntityManager().close();

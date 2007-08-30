@@ -38,7 +38,8 @@ public class TestCacheMarshallerEndToEnd
     private static final Object[] STORE_PROPS = new Object[] {
         "openjpa.CacheMarshallers",
         "default(Id=" + MetaDataCacheMaintenance.class.getName()
-            + ", OutputFile=" + MetaDataCacheMaintenance.class.getName() +".ser"
+            + ", OutputFile=target/"
+                + MetaDataCacheMaintenance.class.getName() +".ser"
             + ", ConsumeSerializationErrors=false"
             + ", ValidationPolicy="
             + OpenJPAVersionAndConfigurationTypeValidationPolicy.class.getName()
@@ -53,8 +54,8 @@ public class TestCacheMarshallerEndToEnd
     private static final Object[] LOAD_PROPS = new Object[] {
         "openjpa.CacheMarshallers",
         "default(Id=" + MetaDataCacheMaintenance.class.getName()
-            + ", InputURL=file:" + MetaDataCacheMaintenance.class.getName()
-                + ".ser"
+            + ", InputURL=file:target/"
+                + MetaDataCacheMaintenance.class.getName() + ".ser"
             + ", ConsumeSerializationErrors=false"
             + ", ValidationPolicy="
             + OpenJPAVersionAndConfigurationTypeValidationPolicy.class.getName()
