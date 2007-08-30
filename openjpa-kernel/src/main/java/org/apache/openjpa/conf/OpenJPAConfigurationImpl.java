@@ -1386,7 +1386,6 @@ public class OpenJPAConfigurationImpl
     }
 
     public void setCacheMarshallers(String marshallers) {
-        assertNotReadOnly();
         cacheMarshallerPlugins.setString(marshallers);
     }
 
@@ -1395,7 +1394,6 @@ public class OpenJPAConfigurationImpl
     }
 
     public void setRuntimeUnenhancedClasses(String mode) {
-        assertNotReadOnly();
         runtimeUnenhancedClasses.setString(mode);
     }
 
