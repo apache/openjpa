@@ -228,10 +228,11 @@ public class CacheMarshallerImpl
                             getId(), _inputResourceLocation).getMessage());
             }
         } catch (IOException ioe) {
-            throw new IllegalStateException(
+            IllegalStateException ise = new IllegalStateException(
                 _loc.get("cache-marshaller-bad-url", getId(),
-                    _inputResourceLocation)
-                    .getMessage(), ioe);
+                    _inputResourceLocation).getMessage());
+            ise.initCause(ioe);
+            throw ise;
         }
     }
 }
