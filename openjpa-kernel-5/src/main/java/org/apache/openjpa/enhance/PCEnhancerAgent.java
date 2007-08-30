@@ -60,14 +60,24 @@ public class PCEnhancerAgent {
     public static void premain(String args, Instrumentation inst) {
         Options opts = Configurations.parseProperties(args);
 
-        if (opts.getBooleanProperty(
-            "ClassLoadEnhancement", "classLoadEnhancement", true))
+        if (opts.containsKey("ClassLoadEnhancement") ||
+            opts.containsKey("classLoadEnhancement")) {
+            if (opts.getBooleanProperty(
+                "ClassLoadEnhancement", "classLoadEnhancement", true))
+                registerClassLoadEnhancer(inst, opts);
+        }
+        else if (opts.containsKey("RuntimeEnhancement") ||
+            opts.containsKey("runtimeEnhancement")) {
+            // Deprecated property setting
+            if (opts.getBooleanProperty(
+                "RuntimeEnhancement", "runtimeEnhancement", true))
+                registerClassLoadEnhancer(inst, opts);
+        } else {
+            // if neither is set, then we should be turning it on. We need this
+            // logic instead of just a getBooleanProperty() because of the
+            // backwards-compat logic flow.
             registerClassLoadEnhancer(inst, opts);
-
-        // Deprecated property setting
-        if (opts.getBooleanProperty(
-            "RuntimeEnhancement", "runtimeEnhancement", true))
-            registerClassLoadEnhancer(inst, opts);
+        }
 
         if (opts.getBooleanProperty(
             "RuntimeRedefinition", "runtimeRedefinition", true)) {
