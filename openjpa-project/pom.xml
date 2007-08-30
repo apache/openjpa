@@ -44,7 +44,7 @@
     </parent>
 
     <properties>
-        <scm.dir>svn.apache.org/repos/asf/openjpa/branches/1.0.x/openjpa-project</scm.dir>
+        <scm.dir>svn.apache.org/repos/asf/openjpa/trunk/openjpa-project</scm.dir>
         <openjpa.release.keyAlias>
             ${user.name}@apache.org
         </openjpa.release.keyAlias>
