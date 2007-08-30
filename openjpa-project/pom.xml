@@ -71,6 +71,9 @@
             ${openjpa.assembly.sourceBase}.zip
         </openjpa.assembly.sourceFile>
 
+        <parent.site.docs>
+            ${project.basedir}/../target/site/docs
+        </parent.site.docs>
 
         <docbook.source>${project.basedir}/src/doc/manual</docbook.source>
         <docbook.target>${project.basedir}/target/manual</docbook.target>
@@ -191,6 +194,17 @@
                                     <imgSrcPath>
                                         ${docbook.source}/
                                     </imgSrcPath>
+                                    <postProcess>
+                                        <!-- copy to parent module for 
+                                             expanded access in upload -->
+                                        <mkdir dir="${parent.site.docs}"/>
+                                        <copy todir="${parent.site.docs}">
+                                            <fileset
+                                                dir="${docbook.target}">
+                                                <include name="manual.pdf"/>
+                                            </fileset>
+                                        </copy>
+                                    </postProcess>
                                 </configuration>
                             </execution>
                             <execution>
@@ -232,6 +246,16 @@
                                                 <include name="*.*"/>
                                             </fileset>
                                         </copy>
+
+                                        <!-- copy to parent module for 
+                                             expanded access in upload -->
+                                        <mkdir dir="${parent.site.docs}"/>
+                                        <copy todir="${parent.site.docs}">
+                                            <fileset
+                                                dir="${docbook.target}">
+                                                <include name="*.*"/>
+                                            </fileset>
+                                        </copy>
                                     </postProcess>
                                 </configuration>
                             </execution>
@@ -251,6 +275,17 @@
                                     <htmlCustomization>
                                         ${docbook.source}/manual-xhtml.xsl
                                     </htmlCustomization>
+                                    <postProcess>
+                                        <!-- copy to parent module for 
+                                             expanded access in upload -->
+                                        <mkdir dir="${parent.site.docs}"/>
+                                        <copy todir="${parent.site.docs}">
+                                            <fileset
+                                                dir="${docbook.target}">
+                                                <include name="manual.html"/>
+                                            </fileset>
+                                        </copy>
+                                    </postProcess>
                                 </configuration>
                             </execution>
                         </executions>

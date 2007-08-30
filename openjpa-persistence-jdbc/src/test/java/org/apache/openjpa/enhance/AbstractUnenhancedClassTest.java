@@ -510,6 +510,19 @@ public abstract class AbstractUnenhancedClassTest
 
         assertFalse(em.isDetached(un));
         assertTrue(em.isDetached(copy));
+
+        /*
+        ##### need to make detachment algorithm in ReflectingPC smarter
+        // ensure that remove() cannot be invoked on a detached instance
+        try {
+            em.getTransaction().begin();
+            em.remove(copy);
+            fail("remove() cannot be invoked on detached instance");
+        } catch (IllegalArgumentException e) {
+            em.getTransaction().rollback();
+        }
+        */
+
         copy.setStringField("offline update");
 
         em.getTransaction().begin();
