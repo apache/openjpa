@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -26,7 +28,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 @Entity
-public class BidiChild {
+public class BidiChild implements Serializable {
 
     @Id
     @GeneratedValue

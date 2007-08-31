@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 
 @Entity
-public class BidiParent {
+public class BidiParent implements Serializable {
 
     @Id
     @GeneratedValue

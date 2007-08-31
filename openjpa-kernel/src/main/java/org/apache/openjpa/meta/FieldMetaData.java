@@ -594,7 +594,6 @@ public class FieldMetaData
                 // field left as default; dfg setting depends on type
                 switch (getTypeCode()) {
                     case JavaTypes.OBJECT:
-                    case JavaTypes.PC:
                         if (isSerializable() || isEnum())
                             _dfg = DFG_TRUE;
                         else
@@ -608,6 +607,7 @@ public class FieldMetaData
                         break;
                     case JavaTypes.COLLECTION:
                     case JavaTypes.MAP:
+                    case JavaTypes.PC:
                     case JavaTypes.PC_UNTYPED:
                         _dfg = DFG_FALSE;
                         break;
