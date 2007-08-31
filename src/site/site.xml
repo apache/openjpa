@@ -20,7 +20,8 @@
 <project name="OpenJPA">
     <bannerLeft>
         <name>OpenJPA</name>
-    </bannerLeft>     
+    </bannerLeft> 
+    <publishDate format="dd MMM yyyy HH:mm z"/>
     <body>
         <menu name="OpenJPA">
             <item name="Home" href="index.html"/>

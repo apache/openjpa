@@ -32,7 +32,6 @@
     <description>OpenJPA</description>
 
     <properties>
-        <scm.dir>svn.apache.org/repos/asf/openjpa/branches/1.0.x</scm.dir>
         <openjpa.version>${pom.version}</openjpa.version>
     </properties>
 
@@ -50,15 +49,15 @@
     <mailingLists>
         <mailingList>
             <name>OpenJPA Developer List</name>
-            <subscribe>dev-subscribe@apache.org</subscribe>
-            <unsubscribe>dev-unsubscribe@apache.org</unsubscribe>
+            <subscribe>dev-subscribe@openjpa.apache.org</subscribe>
+            <unsubscribe>dev-unsubscribe@openjpa.apache.org</unsubscribe>
             <post>dev@openjpa.apache.org</post>
             <archive>http://mail-archives.apache.org/mod_mbox/openjpa-dev/</archive>
         </mailingList>
         <mailingList>
             <name>OpenJPA Users List</name>
-            <subscribe>users-subscribe@apache.org</subscribe>
-            <unsubscribe>users-unsubscribe@apache.org</unsubscribe>
+            <subscribe>users-subscribe@openjpa.apache.org</subscribe>
+            <unsubscribe>users-unsubscribe@openjpa.apache.org</unsubscribe>
             <post>users@openjpa.apache.org</post>
             <archive>http://mail-archives.apache.org/mod_mbox/openjpa-users/</archive>
         </mailingList>
@@ -70,26 +69,6 @@
             <archive>http://mail-archives.apache.org/mod_mbox/openjpa-commits/</archive>
         </mailingList>
     </mailingLists>
-    <developers>
-        <!--
-            Committer list taken from http://openjpa.apache.org/committers.html
-        -->
-        <developer><name>Abe White</name></developer>
-        <developer><name>Brian McCallister</name></developer>
-        <developer><name>Bryan Noll</name></developer>
-        <developer><name>Catalina Wei</name></developer>
-        <developer><name>Craig Russell</name></developer>
-        <developer><name>David Wisneski</name></developer>
-        <developer><name>Eddie O'Neil</name></developer>
-        <developer><name>Geir Magnusson Jr.</name></developer>
-        <developer><name>Kevin Sutter</name></developer>
-        <developer><name>Marc Prud'hommeaux</name></developer>
-        <developer><name>Michael Dick</name></developer>
-        <developer><name>Patrick Linskey</name></developer>
-        <developer><name>Pinaki Poddar</name></developer>
-        <developer><name>Srinivasa Segu</name></developer>
-        <developer><name>Stephen Kim</name></developer>
-    </developers>
     <licenses>
         <license>
             <name>Apache Software License 2.0</name>
@@ -101,11 +80,6 @@
         <name>Apache Software Foundation</name>
         <url>http://www.apache.org</url>
     </organization>
-    <scm>
-        <connection>scm:svn:http://${scm.dir}</connection>
-        <developerConnection>scm:svn:https://${scm.dir}</developerConnection>
-        <url>https://${scm.dir}</url>
-    </scm>
     <modules>
         <module>openjpa-lib</module>
         <module>openjpa-kernel</module>
@@ -369,11 +343,9 @@
                             <!-- <report>jxr-maven-plugin</report> -->
                             <report>surefire-report-maven-plugin</report>
                             <report>maven-javadoc-plugin</report>
-                            <report>project-team</report>
                             <report>mailing-list</report>
                             <report>issue-tracking</report>
                             <report>license</report>
-                            <report>scm</report>
                         </reports>
                     </reportSet>
                 </reportSets>
