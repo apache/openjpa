@@ -55,14 +55,15 @@ public class ClassRedefiner {
     /**
      * For each element in <code>classes</code>, this method will redefine
      * all the element's methods such that field accesses are intercepted
-     * in-line.
+     * in-line. If {@link #canRedefineClasses()} returns <code>false</code>,
+     * this method is a no-op.
      */
     public static void redefineClasses(OpenJPAConfiguration conf,
         final Map<Class,byte[]> classes) {
-        Log log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
-        if (classes == null || classes.size() == 0)
+        if (classes == null || classes.size() == 0 || !canRedefineClasses())
             return;
 
+        Log log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
         Instrumentation inst = null;
         ClassFileTransformer t = null;
         try {

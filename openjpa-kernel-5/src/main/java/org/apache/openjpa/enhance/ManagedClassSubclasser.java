@@ -104,10 +104,10 @@ public class ManagedClassSubclasser {
 
         boolean redefine = ClassRedefiner.canRedefineClasses();
         if (redefine)
-            log.info(_loc.get("enhance-and-subclass-no-redef-start",
+            log.info(_loc.get("enhance-and-subclass-and-redef-start",
                 classes));
         else
-            log.info(_loc.get("enhance-and-subclass-and-redef-start",
+            log.info(_loc.get("enhance-and-subclass-no-redef-start",
                 classes));
 
         final Map<Class, byte[]> map = new HashMap<Class, byte[]>();
@@ -139,12 +139,14 @@ public class ManagedClassSubclasser {
             unspecified = collectRelatedUnspecifiedTypes(enhancer.getMetaData(),
                 classes, unspecified);
 
-            enhancer.run();
-            try {
-                enhancer.record();
-            } catch (IOException e) {
-                // our impl of BytecodeWriter doesn't throw IOException
-                throw new InternalException(e);
+            int runResult = enhancer.run();
+            if (runResult == PCEnhancer.ENHANCE_PC) {
+                try {
+                    enhancer.record();
+                } catch (IOException e) {
+                    // our impl of BytecodeWriter doesn't throw IOException
+                    throw new InternalException(e);
+                }
             }
         }
 
