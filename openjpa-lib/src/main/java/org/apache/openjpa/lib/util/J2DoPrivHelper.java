@@ -81,6 +81,7 @@ import serp.bytecode.Project;
  * <li>Socket.accept
  * <li>System.getProperty
  * <li>Thread.getContextClassLoader
+ * <li>Thread new
  * <li>TemporaryClassLoader new
  * <li>URL.openStream
  * <li>URLConnection.getContent
@@ -784,6 +785,23 @@ public abstract class J2DoPrivHelper {
         return new PrivilegedAction() {
             public Object run() {
                 return Thread.currentThread().getContextClassLoader();
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegedAction object for new Thread().
+     * 
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "modifyThreadGroup";'
+     * 
+     * @return Thread
+     */
+    public static final PrivilegedAction newThreadAction(
+        final Runnable target, final String name) {
+        return new PrivilegedAction() {
+            public Object run() {
+                return new Thread(target, name);
             }
         };
     }
