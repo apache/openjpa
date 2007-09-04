@@ -95,9 +95,7 @@ public class MetaDataCacheMaintenance {
 
     public void store() {
         MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
-        repos.setSourceMode(MetaDataRepository.MODE_META
-            | MetaDataRepository.MODE_MAPPING
-            | MetaDataRepository.MODE_QUERY);
+        repos.setSourceMode(MetaDataRepository.MODE_ALL);
         Collection types = repos.loadPersistentTypes(devpath, null);
         for (Iterator iter = types.iterator(); iter.hasNext(); )
             repos.getMetaData((Class) iter.next(), null, true);
