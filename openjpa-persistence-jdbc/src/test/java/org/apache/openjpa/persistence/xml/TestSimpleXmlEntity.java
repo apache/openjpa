@@ -53,7 +53,8 @@ public class TestSimpleXmlEntity
             fail("should not be able to execute query using short class name " +
                 "for entity that has an entity name specified");
         } catch (ArgumentException ae) {
-            // expected
+            assertTrue(
+                ae.getMessage().indexOf("Perhaps you meant SimpleXml,") != -1);
         }
     }
 
@@ -67,7 +68,8 @@ public class TestSimpleXmlEntity
             fail("should not be able to execute query using short class name " +
                 "for entity that has an entity name specified");
         } catch (ArgumentException ae) {
-            // expected
+            assertTrue(
+                ae.getMessage().indexOf("Perhaps you meant SimpleXml,") != -1);
         }
     }
 }

@@ -164,11 +164,17 @@ public class JPQLExpressionBuilder
         if (c != null)
             cmd = repos.getMetaData(c, loader, assertValid);
         else if (assertValid)
-            cmd = repos.getMetaData(alias, loader, true);
+            cmd = repos.getMetaData(alias, loader, false);
 
-        if (cmd == null && assertValid)
-            throw parseException(EX_USER, "not-schema-name",
-                new Object[]{ alias }, null);
+        if (cmd == null && assertValid) {
+            String close = repos.getClosestAliasName(alias);
+            if (close != null)
+                throw parseException(EX_USER, "not-schema-name-hint",
+                    new Object[]{ alias, close, repos.getAliasNames() }, null);
+            else
+                throw parseException(EX_USER, "not-schema-name",
+                    new Object[]{ alias, repos.getAliasNames() }, null);
+        }
 
         return cmd;
     }

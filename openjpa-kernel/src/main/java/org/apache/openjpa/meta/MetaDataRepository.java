@@ -47,6 +47,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringDistance;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
@@ -360,8 +361,7 @@ public class MetaDataRepository
         // maybe this is some type we've seen but just isn't valid
         if (_aliases.containsKey(alias)) {
             if (mustExist)
-                throw new MetaDataException(_loc.get("no-alias-meta", alias,
-                    _aliases.toString()));
+                throwNoRegisteredAlias(alias);
             return null;
         }
 
@@ -370,7 +370,43 @@ public class MetaDataRepository
 
         if (!mustExist)
             return null;
-        throw new MetaDataException(_loc.get("no-alias-meta", alias, _aliases));
+        return throwNoRegisteredAlias(alias);
+    }
+
+    private ClassMetaData throwNoRegisteredAlias(String alias) {
+        String close = getClosestAliasName(alias);
+        if (close != null)
+            throw new MetaDataException(
+                _loc.get("no-alias-meta-hint", alias, _aliases, close));
+        else
+            throw new MetaDataException(
+                _loc.get("no-alias-meta", alias, _aliases));
+    }
+
+    /**
+     * @return the nearest match to the specified alias name
+     * @since 1.1.0
+     */
+    public String getClosestAliasName(String alias) {
+        Collection aliases = getAliasNames();
+        return StringDistance.getClosestLevenshteinDistance(alias, aliases);
+    }
+
+    /**
+     * @return the registered alias names
+     * @since 1.1.0
+     */
+    public Collection getAliasNames() {
+        Collection aliases = new HashSet();
+        synchronized (_aliases) {
+            for (Iterator iter = _aliases.entrySet().iterator();
+                iter.hasNext(); ) {
+                Map.Entry e = (Map.Entry) iter.next();
+                if (e.getValue() != null)
+                    aliases.add(e.getKey());
+            }
+        }
+        return aliases;
     }
 
     /**
