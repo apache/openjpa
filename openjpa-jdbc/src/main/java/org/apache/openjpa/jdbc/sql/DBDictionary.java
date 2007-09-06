@@ -1532,7 +1532,7 @@ public class DBDictionary
                 return bitTypeName;
             case Types.BLOB:
                 return blobTypeName;
-            case 16: // JDK 1.4 introduces Types.BOOLEAN, whose value is 16
+            case Types.BOOLEAN:
                 return booleanTypeName;
             case Types.CHAR:
                 return charTypeName;
@@ -2518,7 +2518,7 @@ public class DBDictionary
      * @param val the value to cast
      * @param type the type of the case, e.g. {@link Types#NUMERIC}
      */
-    public void appendCast(SQLBuffer buf, FilterValue val, int type) {
+    public void appendCast(SQLBuffer buf, Object val, int type) {
         // Convert the cast function: "CAST({0} AS {1})"
         int firstParam = castFunction.indexOf("{0}");
         String pre = castFunction.substring(0, firstParam); // "CAST("
@@ -2532,7 +2532,12 @@ public class DBDictionary
             post = "";
 
         buf.append(pre);
-        val.appendTo(buf);
+        if (val instanceof FilterValue)
+            ((FilterValue) val).appendTo(buf);
+        else if (val instanceof SQLBuffer)
+            buf.append(((SQLBuffer) val));
+        else
+            buf.append(val.toString());
         buf.append(mid);
         buf.append(getTypeName(type));
         appendLength(buf, type);
