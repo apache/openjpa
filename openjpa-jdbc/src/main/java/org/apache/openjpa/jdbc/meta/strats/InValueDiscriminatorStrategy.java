@@ -112,7 +112,8 @@ public abstract class InValueDiscriminatorStrategy
             && base.getJoinablePCSubclassMappings().length == 0))
             return base.getDescribedType();
 
-        Object cls = res.getObject(disc.getColumns()[0], -1, null);
+        Object cls =
+                res.getObject(disc.getColumns()[0], disc.getJavaType(), null);
         return getClass(cls, store);
     }
 

@@ -50,7 +50,24 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
         discrim = getMapping("CharRootEntity").getDiscriminator();
         assertEquals(new Character('R'), discrim.getValue());
         assertEquals(JavaTypes.CHAR, discrim.getJavaType());
-
+        
+        CharLeafEntity leaf = new CharLeafEntity();
+        CharRootEntity root = new CharRootEntity();
+        em.getTransaction().begin();
+        em.persist(leaf);
+        em.persist(root);
+        em.getTransaction().commit();
+        
+        em.refresh(leaf);
+        em.refresh(root);
+        
+        em.clear();
+        
+        CharLeafEntity leaf2 = em.find(CharLeafEntity.class, leaf.getId());
+        CharRootEntity root2 = em.find(CharRootEntity.class, root.getId());
+        
+        assertNotNull(leaf2);
+        assertNotNull(root2);
         em.close();
     }
 
@@ -71,6 +88,25 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
         assertEquals(new Integer(10101), discrim.getValue());
         assertEquals(JavaTypes.INT, discrim.getJavaType());
 
+        IntegerLeafEntity leaf = new IntegerLeafEntity();
+        IntegerRootEntity root = new IntegerRootEntity();
+        em.getTransaction().begin();
+        em.persist(leaf);
+        em.persist(root);
+        em.getTransaction().commit();
+        
+        em.refresh(leaf);
+        em.refresh(root);
+        
+        em.clear();
+
+        IntegerLeafEntity leaf2 =
+                em.find(IntegerLeafEntity.class, leaf.getId());
+        IntegerRootEntity root2 =
+                em.find(IntegerRootEntity.class, root.getId());
+        
+        assertNotNull(leaf2);
+        assertNotNull(root2);
         em.close();
     }
 
@@ -88,6 +124,24 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
         discrim = getMapping("StringRootEntity").getDiscriminator();
         assertEquals("StringRoot", discrim.getValue());
         assertEquals(JavaTypes.STRING, discrim.getJavaType());
+        
+        StringLeafEntity leaf = new StringLeafEntity();
+        StringRootEntity root = new StringRootEntity();
+        em.getTransaction().begin();
+        em.persist(leaf);
+        em.persist(root);
+        em.getTransaction().commit();
+        
+        em.refresh(leaf);
+        em.refresh(root);
+        
+        em.clear();
+        
+        StringLeafEntity leaf2 = em.find(StringLeafEntity.class, leaf.getId());
+        StringRootEntity root2 = em.find(StringRootEntity.class, root.getId());
+        
+        assertNotNull(leaf2);
+        assertNotNull(root2);
         em.close();
     }
 
