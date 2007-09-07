@@ -505,6 +505,10 @@ public class SelectImpl
         return (_tables == null) ? Collections.EMPTY_SET : _tables.values();
     }
 
+    public List getSelects() {
+        return Collections.unmodifiableList(_selects);
+    }
+
     public List getSelectAliases() {
         return _selects.getAliases(false, _outer != null);
     }

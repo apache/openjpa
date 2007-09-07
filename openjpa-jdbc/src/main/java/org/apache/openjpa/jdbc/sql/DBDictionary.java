@@ -2272,16 +2272,28 @@ public class DBDictionary
             aliases = sel.getSelectAliases();
 
         Object alias;
-        for (Iterator itr = aliases.iterator(); itr.hasNext();) {
-            alias = itr.next();
-            if (alias instanceof SQLBuffer)
-                selectSQL.append((SQLBuffer) alias);
-            else
-                selectSQL.append(alias.toString());
-            if (itr.hasNext())
+        for (int i = 0; i < aliases.size(); i++) {
+            alias = aliases.get(i);
+            appendSelect(selectSQL, alias, sel, i);
+            if (i < aliases.size() - 1)
                 selectSQL.append(", ");
         }
         return selectSQL;
+    }
+
+    /**
+     * Append <code>elem</code> to <code>selectSQL</code>.
+     * @param selectSQL The SQLBuffer to append to.
+     * @param alias A {@link SQLBuffer} or a {@link String} to append.
+     *
+     * @since 1.1.0
+     */
+    protected void appendSelect(SQLBuffer selectSQL, Object elem, Select sel,
+        int idx) {
+        if (elem instanceof SQLBuffer)
+            selectSQL.append((SQLBuffer) elem);
+        else
+            selectSQL.append(elem.toString());
     }
 
     /**
