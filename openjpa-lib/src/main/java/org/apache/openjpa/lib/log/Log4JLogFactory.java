@@ -49,23 +49,23 @@ public class Log4JLogFactory extends LogFactoryAdapter {
         }
 
         public boolean isTraceEnabled() {
-            return _log.getEffectiveLevel().toInt() >= Level.DEBUG_INT;
+            return _log.isEnabledFor(Level.DEBUG);
         }
 
         public boolean isInfoEnabled() {
-            return _log.getEffectiveLevel().toInt() >= Level.INFO_INT;
+            return _log.isEnabledFor(Level.INFO);
         }
 
         public boolean isWarnEnabled() {
-            return _log.getEffectiveLevel().toInt() >= Level.WARN_INT;
+            return _log.isEnabledFor(Level.WARN);
         }
 
         public boolean isErrorEnabled() {
-            return _log.getEffectiveLevel().toInt() >= Level.ERROR_INT;
+            return _log.isEnabledFor(Level.ERROR);
         }
 
         public boolean isFatalEnabled() {
-            return _log.getEffectiveLevel().toInt() >= Level.FATAL_INT;
+            return _log.isEnabledFor(Level.FATAL);
         }
 
         public void trace(Object o) {
