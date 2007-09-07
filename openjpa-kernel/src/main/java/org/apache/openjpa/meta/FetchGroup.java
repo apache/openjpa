@@ -21,9 +21,11 @@ package org.apache.openjpa.meta;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -74,6 +76,7 @@ public class FetchGroup
     private final ClassMetaData _meta;
     private final boolean _readOnly;
     private List _includes;
+    private Set  _containedBy;
     private Map _depths;
     private Boolean _postLoad;
 
@@ -171,6 +174,32 @@ public class FetchGroup
             }
         }
         return false;
+    }
+    
+    /**
+     * Sets this receiver as one of the included fetch groups of the given
+     * parent. 
+     * The parent fecth grop must include this receiver before this call.
+     * 
+     * @see #includes(String, boolean)
+     * @see #addDeclaredInclude(String) 
+     */
+    public boolean setContainedBy(FetchGroup parent) {
+    	parent.addDeclaredInclude(this.getName());
+    	if (_containedBy==null)
+    		_containedBy = new HashSet();
+    	return _containedBy.add(parent.getName());
+    }
+    
+    /**
+     * Gets the name of the fetch groups in which this receiver has been
+     * included.
+     * 
+     * @see #setContainedBy(FetchGroup)
+     */
+    public String[] getContainedBy() {
+    	return (_containedBy == null) ? new String[0] 
+            : (String[]) _containedBy.toArray(new String[_containedBy.size()]);
     }
 
     /**

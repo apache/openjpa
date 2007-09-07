@@ -875,6 +875,14 @@ public class AnnotationPersistenceMetaDataParser
 
     /**
      * Create fetch groups.
+     * If FetchGroup A includes FetchGroup B, then a bi-link is set between
+     * A and B. Both A and B must be declared in the same Class. 
+     * <br>
+     * Call {@link #parseFetchAttribute(ClassMetaData, 
+     * org.apache.openjpa.meta.FetchGroup, FetchAttribute) only after the
+     * bi-links have been established, because a field f will not only add the
+     * fetch group A which explictly includes f to its custom fetch groups but 
+     * also will also add any fetch group B that includes A.  
      */
     private void parseFetchGroups(ClassMetaData meta, FetchGroup... groups) {
         org.apache.openjpa.meta.FetchGroup fg;
@@ -885,12 +893,25 @@ public class AnnotationPersistenceMetaDataParser
             fg = meta.addDeclaredFetchGroup(group.name());
             if (group.postLoad())
                 fg.setPostLoad(true); 
-            for (String s : group.fetchGroups())
+            for (String s : group.fetchGroups()) {
                 fg.addDeclaredInclude(s);
+            }
+        }
+        
+        for (FetchGroup group:groups) {
+        	fg = meta.getFetchGroup(group.name());
+        	String[] includedFetchGropNames = fg.getDeclaredIncludes();
+        	for (String includedFectchGroupName:includedFetchGropNames)
+        	    meta.getFetchGroup(includedFectchGroupName).setContainedBy(fg);
+        }
+        
+        for (FetchGroup group : groups) {
+            fg = meta.getFetchGroup(group.name());
             for (FetchAttribute attr : group.attributes())
                 parseFetchAttribute(meta, fg, attr);
         }
     }
+    
 
     /**
      * Set a field's fetch group.
@@ -904,6 +925,9 @@ public class AnnotationPersistenceMetaDataParser
                 meta, attr.name()));
 
         field.setInFetchGroup(fg.getName(), true);
+        String[] parentFetchGroups = fg.getContainedBy();
+        for (String parentFetchGroup:parentFetchGroups)
+        	field.setInFetchGroup(parentFetchGroup, true);
         if (attr.recursionDepth() != Integer.MIN_VALUE)
             fg.setRecursionDepth(field, attr.recursionDepth());
     }
