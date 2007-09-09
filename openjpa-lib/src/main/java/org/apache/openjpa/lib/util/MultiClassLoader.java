@@ -246,7 +246,9 @@ public class MultiClassLoader extends ClassLoader {
             if (loader == THREAD_LOADER)
                 loader = (ClassLoader) AccessController.doPrivileged(
                     J2DoPrivHelper.getContextClassLoaderAction());
-            
+
+            if (loader == null) // skip
+                continue;
 
             try {
                 rsrcs = (Enumeration) AccessController.doPrivileged(
