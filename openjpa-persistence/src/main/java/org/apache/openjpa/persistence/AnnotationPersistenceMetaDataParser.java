@@ -109,6 +109,8 @@ import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UnsupportedException;
+import org.apache.openjpa.util.UserException;
+
 import serp.util.Numbers;
 import serp.util.Strings;
 
@@ -897,12 +899,20 @@ public class AnnotationPersistenceMetaDataParser
                 fg.addDeclaredInclude(s);
             }
         }
-        
+        // Add the parent-child style bi-links between fetch groups in a 
+        // separate pass. 
         for (FetchGroup group:groups) {
         	fg = meta.getFetchGroup(group.name());
         	String[] includedFetchGropNames = fg.getDeclaredIncludes();
-        	for (String includedFectchGroupName:includedFetchGropNames)
-        	    meta.getFetchGroup(includedFectchGroupName).addContainedBy(fg);
+        	for (String includedFectchGroupName:includedFetchGropNames) {
+        		org.apache.openjpa.meta.FetchGroup child =
+        	    meta.getFetchGroup(includedFectchGroupName);
+        		if (child == null) 
+        			throw new UserException(_loc.get("missing-included-fg", 
+        				meta.getDescribedType().getName(), fg.getName(),
+        				includedFectchGroupName));
+        		child.addContainedBy(fg);
+        	}
         }
         
         for (FetchGroup group : groups) {
