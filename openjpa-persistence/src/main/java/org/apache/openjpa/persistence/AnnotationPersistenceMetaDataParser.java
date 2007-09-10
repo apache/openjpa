@@ -902,7 +902,7 @@ public class AnnotationPersistenceMetaDataParser
         	fg = meta.getFetchGroup(group.name());
         	String[] includedFetchGropNames = fg.getDeclaredIncludes();
         	for (String includedFectchGroupName:includedFetchGropNames)
-        	    meta.getFetchGroup(includedFectchGroupName).setContainedBy(fg);
+        	    meta.getFetchGroup(includedFectchGroupName).addContainedBy(fg);
         }
         
         for (FetchGroup group : groups) {
@@ -925,9 +925,9 @@ public class AnnotationPersistenceMetaDataParser
                 meta, attr.name()));
 
         field.setInFetchGroup(fg.getName(), true);
-        String[] parentFetchGroups = fg.getContainedBy();
-        for (String parentFetchGroup:parentFetchGroups)
-        	field.setInFetchGroup(parentFetchGroup, true);
+        Set parentFetchGroups = fg.getContainedBy();
+        for (Object parentFetchGroup:parentFetchGroups)
+        	field.setInFetchGroup(parentFetchGroup.toString(), true);
         if (attr.recursionDepth() != Integer.MIN_VALUE)
             fg.setRecursionDepth(field, attr.recursionDepth());
     }
