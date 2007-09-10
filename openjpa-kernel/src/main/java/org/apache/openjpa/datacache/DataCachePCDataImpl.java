@@ -121,7 +121,7 @@ public class DataCachePCDataImpl
 
     protected Object toData(FieldMetaData fmd, Object val, StoreContext ctx) {
         // avoid caching large result set fields
-        if (fmd.isLRS())
+        if (fmd.isLRS() || fmd.isStream())
             return NULL;
         return super.toData(fmd, val, ctx);
     }

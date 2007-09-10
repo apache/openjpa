@@ -20,9 +20,11 @@ package org.apache.openjpa.jdbc.sql;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
@@ -96,6 +98,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.GeneralException;
+import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.ReferentialIntegrityException;
 import org.apache.openjpa.util.Serialization;
@@ -124,6 +127,9 @@ public class DBDictionary
     public static final String CONS_NAME_BEFORE = "before";
     public static final String CONS_NAME_MID = "mid";
     public static final String CONS_NAME_AFTER = "after";
+    
+    public int blobBufferSize = 50;
+    public int clobBufferSize = 50;
 
     protected static final int RANGE_POST_SELECT = 0;
     protected static final int RANGE_PRE_DISTINCT = 1;
@@ -3920,6 +3926,109 @@ public class DBDictionary
         return column.toString();
     }
     
+    public void insertBlobForStreamingLoad(Row row, Column col)
+    throws SQLException {
+        row.setBinaryStream(col, 
+                new ByteArrayInputStream(new byte[0]), 0);
+    }
+    
+    public void insertClobForStreamingLoad(Row row, Column col)
+    throws SQLException {
+        row.setCharacterStream(col,
+                new CharArrayReader(new char[0]), 0);
+    }
+    
+    public void updateBlob(Select sel, JDBCStore store, InputStream is)
+        throws SQLException {
+        SQLBuffer sql = sel.toSelect(true, store.getFetchConfiguration());
+        ResultSet res = null;
+        Connection conn = store.getConnection();
+        PreparedStatement stmnt = null;
+        try {
+            stmnt = sql.prepareStatement(conn, store.getFetchConfiguration(),
+                ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_UPDATABLE);
+            res = stmnt.executeQuery();
+            if (!res.next()) {
+                throw new InternalException(_loc.get("stream-exception"));
+            }
+            Blob blob = res.getBlob(1);
+            OutputStream os = blob.setBinaryStream(1);
+            copy(is, os);
+            os.close();
+            res.updateBlob(1, blob);
+            res.updateRow();
+
+        } catch (IOException ioe) {
+            throw new StoreException(ioe);
+        } finally {
+            if (res != null)
+                try { res.close (); } catch (SQLException e) {}
+            if (stmnt != null)
+                try { stmnt.close (); } catch (SQLException e) {}
+            if (conn != null)
+                try { conn.close (); } catch (SQLException e) {}
+        }
+    }
+    
+    public void updateClob(Select sel, JDBCStore store, Reader reader)
+        throws SQLException {
+        SQLBuffer sql = sel.toSelect(true, store.getFetchConfiguration());
+        ResultSet res = null;
+        Connection conn = store.getConnection();
+        PreparedStatement stmnt = null;
+        try {
+            stmnt = sql.prepareStatement(conn, store.getFetchConfiguration(),
+                ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_UPDATABLE);
+            res = stmnt.executeQuery();
+            if (!res.next()) {
+                throw new InternalException(_loc.get("stream-exception"));
+            }
+            Clob clob = res.getClob(1);
+            Writer writer = clob.setCharacterStream(1);
+            copy(reader, writer);
+            writer.close();
+            res.updateClob(1, clob);
+            res.updateRow();
+
+        } catch (IOException ioe) {
+            throw new StoreException(ioe);
+        } finally {
+            if (res != null) 
+                try { res.close (); } catch (SQLException e) {}
+            if (stmnt != null) 
+                try { stmnt.close (); } catch (SQLException e) {}
+            if (conn != null) 
+                try { conn.close (); } catch (SQLException e) {}
+        }    
+    }
+    
+    protected long copy(InputStream in, OutputStream out) throws IOException {
+        byte[] copyBuffer = new byte[blobBufferSize];
+        long bytesCopied = 0;
+        int read = -1;
+
+        while ((read = in.read(copyBuffer, 0, copyBuffer.length)) != -1) {
+            out.write(copyBuffer, 0, read);
+            bytesCopied += read;
+        }
+        return bytesCopied;
+    }
+    
+    protected long copy(Reader reader, Writer writer) throws IOException {
+        char[] copyBuffer = new char[clobBufferSize];
+        long bytesCopied = 0;
+        int read = -1;
+
+        while ((read = reader.read(copyBuffer, 0, copyBuffer.length)) != -1) {
+            writer.write(copyBuffer, 0, read);
+            bytesCopied += read;
+        }
+
+        return bytesCopied;
+    }
+    
     /**
      * Attach CAST to the current function if necessary
      * 
@@ -3930,5 +4039,4 @@ public class DBDictionary
     public String getCastFunction(Val val, String func) {
         return func;
     }
-   
 }

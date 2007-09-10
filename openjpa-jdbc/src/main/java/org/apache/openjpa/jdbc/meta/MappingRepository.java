@@ -40,6 +40,7 @@ import org.apache.openjpa.jdbc.meta.strats.FlatClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.HandlerFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.ImmutableValueHandler;
+import org.apache.openjpa.jdbc.meta.strats.LobFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedBlobFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedByteArrayFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedCharArrayFieldStrategy;
@@ -866,6 +867,9 @@ public class MappingRepository
                     break;
                 return handlerMapStrategy(field, khandler, vhandler, krel,
                     vrel, installHandlers);
+            case JavaTypes.INPUT_STREAM:
+            case JavaTypes.INPUT_READER:
+                return new LobFieldStrategy();
         }
         return null;
     }

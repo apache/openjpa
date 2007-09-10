@@ -436,11 +436,19 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         _rs.updateBinaryStream(a, in, b);
     }
 
+    public void updateBlob(int a, Blob blob) throws SQLException {
+        _rs.updateBlob(a, blob);
+    }
+    
     public void updateCharacterStream(int a, Reader reader, int b)
         throws SQLException {
         _rs.updateCharacterStream(a, reader, b);
     }
 
+    public void updateClob(int a, Clob clob) throws SQLException {
+       _rs.updateClob(a, clob);
+    }
+    
     public void updateObject(int a, Object ob, int b) throws SQLException {
         _rs.updateObject(a, ob, b);
     }
@@ -643,15 +651,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         throw new UnsupportedOperationException();
     }
 
-    public void updateBlob(int column, Blob blob) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
-
     public void updateBlob(String columnName, Blob blob) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void updateClob(int column, Clob clob) throws SQLException {
         throw new UnsupportedOperationException();
     }
 

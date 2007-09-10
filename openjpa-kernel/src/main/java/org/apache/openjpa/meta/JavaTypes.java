@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.meta;
 
+import java.io.InputStream;
+import java.io.Reader;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -79,6 +81,8 @@ public class JavaTypes {
     public static final int PC_UNTYPED = 27;
     public static final int CALENDAR = 28;
     public static final int OID = 29;
+    public static final int INPUT_STREAM = 30;
+    public static final int INPUT_READER = 31;
 
     private static final Localizer _loc = Localizer.forPackage(JavaTypes.class);
 
@@ -156,9 +160,14 @@ public class JavaTypes {
                 return OBJECT;
             return PC_UNTYPED;
         }
+        if (type.isAssignableFrom(Reader.class))
+            return INPUT_READER;
+        if (type.isAssignableFrom (InputStream.class))
+            return INPUT_STREAM;
+            
         return OBJECT;
     }
-
+ 
     /**
      * Check the given name against the same set of standard packages used
      * when parsing metadata.

@@ -166,6 +166,7 @@ public class FieldMetaData
     private String[] _fgs = null;
     private String   _lfg = null;
     private Boolean _lrs = null;
+    private Boolean _stream = null;
     private String _extName = null;
     private String _factName = null;
     private String _extString = null;
@@ -1027,6 +1028,24 @@ public class FieldMetaData
         _lrs = (lrs) ? Boolean.TRUE : Boolean.FALSE;
     }
 
+    /**
+     * Whether this field is backed by a stream.
+     *
+     * @since 1.1.0
+     */
+    public boolean isStream() {
+        return _stream == Boolean.TRUE && _manage == MANAGE_PERSISTENT;
+    }
+    
+    /**
+     * Whether this field is backed by a stream.
+     *
+     * @since 1.1.0
+     */
+    public void setStream(boolean stream) {
+        _stream = (stream) ? Boolean.TRUE : Boolean.FALSE;
+    }
+    
     /**
      * Whether this field uses intermediate data when loading/storing
      * information through a {@link OpenJPAStateManager}. Defaults to true.

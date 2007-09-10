@@ -49,6 +49,7 @@ import org.apache.openjpa.lib.jdbc.DelegatingDatabaseMetaData;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.StoreException;
+
 import serp.util.Numbers;
 
 /**
@@ -1096,5 +1097,15 @@ public class OracleDictionary
             append(",'/*/");
         val.appendTo(buf);
         buf.append("')");
+    }
+    
+    public void insertBlobForStreamingLoad(Row row, Column col)
+        throws SQLException {
+        row.setNull(col);
+    }
+    
+    public void insertClobForStreamingLoad(Row row, Column col)
+        throws SQLException {
+        row.setNull(col);
     }
 }
