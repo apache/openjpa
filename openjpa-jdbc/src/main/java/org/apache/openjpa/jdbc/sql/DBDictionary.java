@@ -3213,7 +3213,7 @@ public class DBDictionary
      * @since 1.1.0
      */
     protected boolean supportsDeferredUniqueConstraints() {
-        return supportsUniqueConstraints;
+        return supportsDeferredConstraints;
     }
 
     /////////////////////
