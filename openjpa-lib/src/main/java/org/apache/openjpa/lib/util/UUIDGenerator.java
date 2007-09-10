@@ -61,7 +61,7 @@ public class UUIDGenerator {
 
     // offset to move from 1/1/1970, which is 0-time for Java, to gregorian
     // 0-time 10/15/1582, and multiplier to go from 100nsec to msec units
-    private static final long GREG_OFFSET = 0x01b21dd213814000L;
+    private static final long GREG_OFFSET = 0xB1D069B5400L;
     private static final long MILLI_MULT = 10000L;
 
     // type of UUID -- time based
