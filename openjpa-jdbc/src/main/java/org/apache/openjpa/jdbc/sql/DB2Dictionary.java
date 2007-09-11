@@ -50,12 +50,12 @@ public class DB2Dictionary
     public String optimizeClause = "optimize for";
     public String rowClause = "row";
     protected int db2ServerType = 0;
-    protected static final int db2ISeriesV5R3OrEarlier = 1;
-    protected static final int db2UDBV81OrEarlier = 2;
-    protected static final int db2ZOSV8xOrLater = 3;
-    protected static final int db2UDBV82OrLater = 4;
-    protected static final int db2ISeriesV5R4OrLater = 5;
-	private static final String forUpdateOfClause = "FOR UPDATE OF";
+    public static final int db2ISeriesV5R3OrEarlier = 1;
+    public static final int db2UDBV81OrEarlier = 2;
+    public static final int db2ZOSV8xOrLater = 3;
+    public static final int db2UDBV82OrLater = 4;
+    public static final int db2ISeriesV5R4OrLater = 5;
+	private static final String forUpdate = "FOR UPDATE";
     private static final String withRSClause = "WITH RS";
     private static final String withRRClause = "WITH RR";
     private static final String useKeepUpdateLockClause
@@ -286,9 +286,12 @@ public class DB2Dictionary
      * updateClause and isolationLevel hints
      */
     protected String getForUpdateClause(JDBCFetchConfiguration fetch,
-        boolean forUpdate) {
+        boolean isForUpdate) {
         int isolationLevel;
-        StringBuffer forUpdateString = new StringBuffer();
+        // For db2UDBV81OrEarlier and db2ISeriesV5R3OrEarlier:
+        // "optimize for" clause appears before "for update" clause.
+        StringBuffer forUpdateString = new StringBuffer(
+            getOptimizeClause(fetch));
         try {
             // Determine the isolationLevel; the fetch
             // configuration data overrides the persistence.xml value
@@ -297,16 +300,15 @@ public class DB2Dictionary
             else
                 isolationLevel = conf.getTransactionIsolationConstant();
 
-            if (forUpdate) {
+            if (isForUpdate) {
                 switch(db2ServerType) {
                 case db2ISeriesV5R3OrEarlier:
                 case db2UDBV81OrEarlier:
-                    if (isolationLevel ==
-                        Connection.TRANSACTION_READ_UNCOMMITTED) {
-                        forUpdateString.append(" ").append(withRSClause)
-                            .append(" ").append(forUpdateOfClause);
-                    } else
-                        forUpdateString.append(" ").append(forUpdateOfClause);
+                    if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE)
+                        forUpdateString.append(" ").append(forUpdateClause);
+                    else 
+                        forUpdateString.append(" ").append(forUpdate)
+                            .append(" ").append(withRSClause);
                     break;
                 case db2ZOSV8xOrLater:
                 case db2UDBV82OrLater:
@@ -341,7 +343,7 @@ public class DB2Dictionary
         return forUpdateString.toString();
     }
 
-    public boolean isDB2UDBV82OrLater() throws SQLException {
+    public boolean isDB2UDBV82OrLater() {
         boolean match = false;
         if ((databaseProductVersion.indexOf("SQL") != -1
             || databaseProductName.indexOf("DB2/") != -1)
@@ -350,8 +352,7 @@ public class DB2Dictionary
         return match;
     }
 
-    public boolean isDB2ZOSV8xOrLater()
-       throws SQLException {
+    public boolean isDB2ZOSV8xOrLater() {
        boolean match = false;
        if ((databaseProductVersion.indexOf("DSN") != -1
            || databaseProductName.indexOf("DB2/") == -1)
@@ -360,8 +361,7 @@ public class DB2Dictionary
         return match;
     }
 
-    public boolean isDB2ISeriesV5R3OrEarlier()
-       throws SQLException {
+    public boolean isDB2ISeriesV5R3OrEarlier() {
        boolean match = false;
        if (databaseProductName.indexOf("AS") != -1
            && ((maj == 5 && min <=3) || maj < 5))
@@ -369,8 +369,7 @@ public class DB2Dictionary
        return match;
     }
 
-    public boolean isDB2ISeriesV5R4OrLater()
-       throws SQLException {
+    public boolean isDB2ISeriesV5R4OrLater() {
        boolean match = false;
        if (databaseProductName.indexOf("AS") != -1
            && (maj >=6 || (maj == 5 && min >=4)))
@@ -378,7 +377,7 @@ public class DB2Dictionary
       return match;
     }
 
-    public boolean isDB2UDBV81OrEarlier() throws SQLException {
+    public boolean isDB2UDBV81OrEarlier() {
         boolean match = false;
         if ((databaseProductVersion.indexOf("SQL") != -1 
            || databaseProductName.indexOf("DB2/") != -1) &&
@@ -438,17 +437,16 @@ public class DB2Dictionary
         }
     }
 
-    public SQLBuffer toSelect(Select sel, boolean forUpdate,
-        JDBCFetchConfiguration fetch) {
-        SQLBuffer buf = super.toSelect(sel, forUpdate, fetch);
-
-        if (sel.getExpectedResultCount() > 0) {
+    protected String getOptimizeClause(JDBCFetchConfiguration fetch) {
+        if (sel != null && sel.getExpectedResultCount() > 0) {
+            StringBuffer buf = new StringBuffer();
             buf.append(" ").append(optimizeClause).append(" ")
                 .append(String.valueOf(sel.getExpectedResultCount()))
                 .append(" ").append(rowClause);
+            return buf.toString();
         }
 
-        return buf;
+        return "";
     }
 
     public OpenJPAException newStoreException(String msg, SQLException[] causes,

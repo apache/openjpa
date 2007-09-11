@@ -319,6 +319,7 @@ public class DBDictionary
     private Method _setBytes = null;
     private Method _setString = null;
     private Method _setCharStream = null;
+    protected transient Select sel = null;
 
     public DBDictionary() {
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
@@ -1982,6 +1983,7 @@ public class DBDictionary
      */
     public SQLBuffer toSelect(Select sel, boolean forUpdate,
         JDBCFetchConfiguration fetch) {
+        this.sel = sel;
         sel.addJoinClassConditions();
         boolean update = forUpdate && sel.getFromSelect() == null;
         SQLBuffer select = getSelects(sel, false, update);
@@ -2192,11 +2194,11 @@ public class DBDictionary
      * updateClause and isolationLevel hints
      */
     protected String getForUpdateClause(JDBCFetchConfiguration fetch,
-        boolean forUpdate) {
+        boolean isForUpdate) {
         if (fetch != null && fetch.getIsolation() != -1) {
             throw new InvalidStateException(_loc.get(
                 "isolation-level-config-not-supported", getClass().getName()));
-        } else if (forUpdate && !simulateLocking) {
+        } else if (isForUpdate && !simulateLocking) {
             assertSupport(supportsSelectForUpdate, "SupportsSelectForUpdate");
             return forUpdateClause;
         } else {
@@ -3893,5 +3895,4 @@ public class DBDictionary
     public String getCastFunction(Val val, String func) {
         return func;
     }
-   
 }
