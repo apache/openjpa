@@ -78,6 +78,21 @@ public abstract class SQLListenerTestCase
                 + " should not have been executed in SQL statements: " + sql);
     }
 
+    /**
+     * Confirm that the executed SQL String contains the specified sqlExp.
+     *
+     * @param sqlExp the SQL expression. E.g., "SELECT BADCOLUMN .*"
+     */
+    public void assertContainsSQL(String sqlExp) {
+        for (String statement : sql) {
+            if (statement.contains(sqlExp))
+                return;
+        }
+
+        fail("Expected regular expression <" + sqlExp + "> to be"
+            + " contained in SQL statements: " + sql);
+    }
+
     public class Listener
         extends AbstractJDBCListener {
 

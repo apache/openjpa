@@ -81,22 +81,14 @@ public class TestOptimizeForClause
                }     
                if (dict instanceof DB2Dictionary) {
                    assertEquals(1, sql.size());
-                   assertSQL("SELECT t0.id, t0.booleanField, t0.byteField," +
-                       " t0.charField, t0.dateField, t0.doubleField, " +
-                       "t0.floatField, t0.intField, t0.longField, " +
-                       "t0.shortField, t0.stringField FROM AllFieldTypes " +
-                       "t0 WHERE \\(t0.intField = \\?\\)  optimize for 8 row");
+                   assertContainsSQL(" optimize for 8 row");
                }
             }
             else {
                  em.find(AllFieldTypes.class, 0);
                  if (dict instanceof DB2Dictionary ) {
                     assertEquals(1, sql.size());
-                    assertSQL("SELECT t0.booleanField, t0.byteField, " +
-                        "t0.charField, t0.dateField, t0.doubleField, " +
-                        "t0.floatField, t0.intField, t0.longField, " +
-                        "t0.shortField, t0.stringField FROM AllFieldTypes" +
-                        " t0 WHERE t0.id = \\?  optimize for 1 row");
+                    assertContainsSQL(" optimize for 1 row");
                 }
                    
             }
