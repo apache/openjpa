@@ -286,12 +286,12 @@ public class DB2Dictionary
      * updateClause and isolationLevel hints
      */
     protected String getForUpdateClause(JDBCFetchConfiguration fetch,
-        boolean isForUpdate) {
+        boolean isForUpdate, Select sel) {
         int isolationLevel;
         // For db2UDBV81OrEarlier and db2ISeriesV5R3OrEarlier:
         // "optimize for" clause appears before "for update" clause.
         StringBuffer forUpdateString = new StringBuffer(
-            getOptimizeClause(fetch));
+            getOptimizeClause(sel));
         try {
             // Determine the isolationLevel; the fetch
             // configuration data overrides the persistence.xml value
@@ -437,7 +437,7 @@ public class DB2Dictionary
         }
     }
 
-    protected String getOptimizeClause(JDBCFetchConfiguration fetch) {
+    protected String getOptimizeClause(Select sel) {
         if (sel != null && sel.getExpectedResultCount() > 0) {
             StringBuffer buf = new StringBuffer();
             buf.append(" ").append(optimizeClause).append(" ")

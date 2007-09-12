@@ -58,7 +58,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashMap;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
@@ -68,8 +67,6 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.ExpContext;
 import org.apache.openjpa.jdbc.kernel.exps.ExpState;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
-import org.apache.openjpa.jdbc.kernel.exps.Lit;
-import org.apache.openjpa.jdbc.kernel.exps.Param;
 import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -86,7 +83,6 @@ import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.kernel.Filters;
-import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.jdbc.ConnectionDecorator;
@@ -319,7 +315,6 @@ public class DBDictionary
     private Method _setBytes = null;
     private Method _setString = null;
     private Method _setCharStream = null;
-    protected transient Select sel = null;
 
     public DBDictionary() {
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
@@ -1983,7 +1978,6 @@ public class DBDictionary
      */
     public SQLBuffer toSelect(Select sel, boolean forUpdate,
         JDBCFetchConfiguration fetch) {
-        this.sel = sel;
         sel.addJoinClassConditions();
         boolean update = forUpdate && sel.getFromSelect() == null;
         SQLBuffer select = getSelects(sel, false, update);
@@ -1998,7 +1992,7 @@ public class DBDictionary
         SQLBuffer where = getWhere(sel, update);
         return toSelect(select, fetch, from, where, sel.getGrouping(),
             sel.getHaving(), ordering, sel.isDistinct(), forUpdate,
-            sel.getStartIndex(), sel.getEndIndex());
+            sel.getStartIndex(), sel.getEndIndex(), sel);
     }
 
     /**
@@ -2186,7 +2180,20 @@ public class DBDictionary
         boolean distinct, boolean forUpdate, long start, long end) {
         return toOperation(getSelectOperation(fetch), selects, from, where,
             group, having, order, distinct, start, end,
-            getForUpdateClause(fetch, forUpdate));
+            getForUpdateClause(fetch, forUpdate, null));
+    }
+
+    /**
+     * Combine the given components into a SELECT statement.
+     */
+    public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
+        SQLBuffer from, SQLBuffer where, SQLBuffer group,
+        SQLBuffer having, SQLBuffer order,
+        boolean distinct, boolean forUpdate, long start, long end
+        , Select sel) {
+        return toOperation(getSelectOperation(fetch), selects, from, where,
+            group, having, order, distinct, start, end,
+            getForUpdateClause(fetch, forUpdate, sel));
     }
 
     /**
@@ -2194,7 +2201,7 @@ public class DBDictionary
      * updateClause and isolationLevel hints
      */
     protected String getForUpdateClause(JDBCFetchConfiguration fetch,
-        boolean isForUpdate) {
+        boolean isForUpdate, Select sel) {
         if (fetch != null && fetch.getIsolation() != -1) {
             throw new InvalidStateException(_loc.get(
                 "isolation-level-config-not-supported", getClass().getName()));
