@@ -33,14 +33,7 @@ public class TestSelectForUpdateOverride
     extends SQLListenerTestCase {
 
     public void setUp() {
-        setUp(
-//                "openjpa.ConnectionDriverName", 
-//                "org.apache.commons.dbcp.BasicDataSource",
-                
-                "openjpa.ConnectionProperties",
-                "DriverClassName=com.ibm.db2.jcc.DB2Driver,Url=jdbc:db2:demodb"
-                ,"openjpa.jdbc.SynchronizeMappings",
-                AllFieldTypes.class,
+        setUp(AllFieldTypes.class,
             "openjpa.Optimistic", "false",
             "openjpa.LockManager", "pessimistic",
             "openjpa.ReadLockLevel", "none");
