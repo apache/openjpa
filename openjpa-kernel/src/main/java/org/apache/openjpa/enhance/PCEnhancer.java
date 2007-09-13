@@ -696,8 +696,8 @@ public class PCEnhancer {
 
         BCField field = null, cur;
         Instruction templateIns, prevIns, earlierIns;
-        int backupCount = 3;
         while (code.searchForward(template)) {
+            int backupCount = 3;
             templateIns = code.previous();
             if (!code.hasPrevious())
                 return null;
