@@ -3666,7 +3666,7 @@ public class PCEnhancer {
      */
     private String toBackingFieldName(String name) {
         if (_meta.getAccessType() == ClassMetaData.ACCESS_PROPERTY
-            && _attrsToFields.containsKey(name))
+            && _attrsToFields != null && _attrsToFields.containsKey(name))
             name = (String) _attrsToFields.get(name);
         return name;
     }
@@ -3679,7 +3679,7 @@ public class PCEnhancer {
         // meta is null when doing persistence-aware enhancement
         if (_meta != null
             && _meta.getAccessType() == ClassMetaData.ACCESS_PROPERTY
-            && _fieldsToAttrs.containsKey(name))
+            && _fieldsToAttrs != null && _fieldsToAttrs.containsKey(name))
             return (String) _fieldsToAttrs.get(name);
         else
             return name;
