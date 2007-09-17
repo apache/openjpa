@@ -4338,7 +4338,7 @@ public class PCEnhancer {
                 log.trace(_loc.get("enhance-running", o));
 
             if (o instanceof String)
-                bc = project.loadClass((String) o);
+                bc = project.loadClass((String) o, loader);
             else
                 bc = project.loadClass((Class) o);
             enhancer = new PCEnhancer(conf, bc, repos, loader);
