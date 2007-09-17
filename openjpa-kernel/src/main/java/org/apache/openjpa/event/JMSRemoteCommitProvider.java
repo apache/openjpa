@@ -154,7 +154,7 @@ public class JMSRemoteCommitProvider
         connect();
     }
 
-    private void connect() {
+    protected void connect() {
         try {
             Context ctx = newContext();
             TopicConnectionFactory tcf =
