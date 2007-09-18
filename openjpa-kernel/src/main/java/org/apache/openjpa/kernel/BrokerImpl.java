@@ -1430,7 +1430,15 @@ public class BrokerImpl
                 _runtime.getTransactionManager().getTransaction();
             if (trans == null)
                 throw new InvalidStateException(_loc.get("null-trans"));
-            _runtime.setRollbackOnly(cause);
+            // ensure tran is in a valid state to accept the setRollbackOnly
+            int tranStatus = trans.getStatus();
+            if ((tranStatus != Status.STATUS_NO_TRANSACTION)
+                    && (tranStatus != Status.STATUS_ROLLEDBACK)
+                    && (tranStatus != Status.STATUS_COMMITTED))
+                _runtime.setRollbackOnly(cause);
+            else if (_log.isTraceEnabled())
+                _log.trace(_loc.get("invalid-tran-status", new Integer(
+                        tranStatus), "setRollbackOnly"));
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (Exception e) {
