@@ -101,6 +101,7 @@ public class DB2Dictionary
         supportsDeferredConstraints = false;
         supportsDefaultDeleteAction = false;
         supportsAlterTableWithDropColumn = false;
+        supportsMultipleNontransactionalResultSets = false;
 
         supportsNullTableForGetColumns = false;
         requiresCastForMathFunctions = true;
