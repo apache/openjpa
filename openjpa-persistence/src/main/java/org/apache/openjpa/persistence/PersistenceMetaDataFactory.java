@@ -293,18 +293,26 @@ public class PersistenceMetaDataFactory
             return null;
         Collection classes = repos.loadPersistentTypes(false, loader);
         for (Class cls : (Collection<Class>) classes) {
-            if (cls.isAnnotationPresent(NamedQuery.class) && hasNamedQuery
+            if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                .isAnnotationPresentAction(cls, NamedQuery.class)))
+                .booleanValue() && hasNamedQuery
                 (queryName, (NamedQuery) cls.getAnnotation(NamedQuery.class)))
                 return cls;
-            if (cls.isAnnotationPresent(NamedQueries.class) &&
+            if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                .isAnnotationPresentAction(cls, NamedQueries.class)))
+                .booleanValue() &&
                 hasNamedQuery(queryName, ((NamedQueries) cls.
                     getAnnotation(NamedQueries.class)).value()))
                 return cls;
-            if (cls.isAnnotationPresent(NamedNativeQuery.class) &&
+            if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                .isAnnotationPresentAction(cls, NamedNativeQuery.class)))
+                .booleanValue() &&
                 hasNamedNativeQuery(queryName, (NamedNativeQuery) cls.
                     getAnnotation(NamedNativeQuery.class)))
                 return cls;
-            if (cls.isAnnotationPresent(NamedNativeQueries.class) &&
+            if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                .isAnnotationPresentAction(cls, NamedNativeQueries.class)))
+                .booleanValue() &&
                 hasNamedNativeQuery(queryName, ((NamedNativeQueries) cls.
                     getAnnotation(NamedNativeQueries.class)).value()))
                 return cls;
@@ -320,13 +328,17 @@ public class PersistenceMetaDataFactory
         
         Collection classes = repos.loadPersistentTypes(false, loader);
         for (Class cls : (Collection<Class>) classes) {
-            
-            if (cls.isAnnotationPresent(SqlResultSetMapping.class) && 
+
+            if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                .isAnnotationPresentAction(cls, SqlResultSetMapping.class)))
+                .booleanValue() &&
                 hasRSMapping(rsMappingName, (SqlResultSetMapping) cls.
                 getAnnotation(SqlResultSetMapping.class)))
                 return cls;
-            
-            if (cls.isAnnotationPresent(SqlResultSetMappings.class) && 
+
+            if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                .isAnnotationPresentAction(cls, SqlResultSetMappings.class)))
+                .booleanValue() &&
                 hasRSMapping(rsMappingName, ((SqlResultSetMappings) cls.
                 getAnnotation(SqlResultSetMappings.class)).value()))
                 return cls;
