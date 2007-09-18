@@ -3059,7 +3059,7 @@ public class DBDictionary
             return null;
         if (fk.getDeleteAction() == ForeignKey.ACTION_NONE)
             return null;
-        if (fk.isDeferred() && !supportsDeferredConstraints)
+        if (fk.isDeferred() && !supportsDeferredForeignKeyConstraints())
             return null;
         if (!supportsDeleteAction(fk.getDeleteAction())
             || !supportsUpdateAction(fk.getUpdateAction()))
@@ -3096,12 +3096,22 @@ public class DBDictionary
             buf.append(" ON UPDATE ").append(upAction);
         if (fk.isDeferred())
             buf.append(" INITIALLY DEFERRED");
-        if (supportsDeferredConstraints)
+        if (supportsDeferredForeignKeyConstraints())
             buf.append(" DEFERRABLE");
         if (fk.getName() != null
             && CONS_NAME_AFTER.equals(constraintNameMode))
             buf.append(" CONSTRAINT ").append(fk.getName());
         return buf.toString();
+    }
+
+    /**
+     * Whether or not this dictionary supports deferred foreign key constraints.
+     * This implementation returns {@link #supportsUniqueConstraints}.
+     *
+     * @since 1.1.0
+     */
+    protected boolean supportsDeferredForeignKeyConstraints() {
+        return supportsDeferredConstraints;
     }
 
     /**
@@ -3172,7 +3182,7 @@ public class DBDictionary
      */
     protected String getUniqueConstraintSQL(Unique unq) {
         if (!supportsUniqueConstraints
-            || (unq.isDeferred() && !supportsDeferredConstraints))
+            || (unq.isDeferred() && !supportsDeferredUniqueConstraints()))
             return null;
 
         StringBuffer buf = new StringBuffer();
@@ -3186,12 +3196,22 @@ public class DBDictionary
             append(")");
         if (unq.isDeferred())
             buf.append(" INITIALLY DEFERRED");
-        if (supportsDeferredConstraints)
+        if (supportsDeferredUniqueConstraints())
             buf.append(" DEFERRABLE");
         if (unq.getName() != null
             && CONS_NAME_AFTER.equals(constraintNameMode))
             buf.append(" CONSTRAINT ").append(unq.getName());
         return buf.toString();
+    }
+
+    /**
+     * Whether or not this dictionary supports deferred unique constraints.
+     * This implementation returns {@link #supportsUniqueConstraints}.
+     *
+     * @since 1.1.0
+     */
+    protected boolean supportsDeferredUniqueConstraints() {
+        return supportsDeferredConstraints;
     }
 
     /////////////////////

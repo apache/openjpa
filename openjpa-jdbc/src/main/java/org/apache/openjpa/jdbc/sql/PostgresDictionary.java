@@ -94,10 +94,10 @@ public class PostgresDictionary
         // PostgreSQL requires double-escape for strings
         searchStringEscape = "\\\\";
 
-        maxTableNameLength = 31;
-        maxColumnNameLength = 31;
-        maxIndexNameLength = 31;
-        maxConstraintNameLength = 31;
+        maxTableNameLength = 63;
+        maxColumnNameLength = 63;
+        maxIndexNameLength = 63;
+        maxConstraintNameLength = 63;
         schemaCase = SCHEMA_CASE_LOWER;
         rangePosition = RANGE_POST_LOCK;
         requiresAliasForSubselect = true;
@@ -269,6 +269,11 @@ public class PostgresDictionary
         if (seq.getAllocate() > 1)
             sql[0] += " CACHE " + seq.getAllocate();
         return sql;
+    }
+
+    protected boolean supportsDeferredUniqueConstraints() {
+        // Postgres only supports deferred foreign key constraints.
+        return false;
     }
 
     protected String getSequencesSQL(String schemaName, String sequenceName) {
