@@ -778,8 +778,9 @@ public class ConfigurationImpl
     /////////////
 
     /**
-     * Performs an equality check based on the properties returned from
-     * {@link #toProperties}.
+     * Performs an equality check based on equality of values.
+     * {@link Value#equals(Object) Equality} of Values varies if the Value is
+     * {@link Value#isDynamic() dynamic}.  
      */
     public boolean equals(Object other) {
         if (other == this)
@@ -791,18 +792,32 @@ public class ConfigurationImpl
 
         // compare properties
         ConfigurationImpl conf = (ConfigurationImpl) other;
-        Map p1 = (_props == null) ? toProperties(false) : _props;
-        Map p2 = (conf._props == null) ? conf.toProperties(false) : conf._props;
-        return excludeDynamic(p1).equals(excludeDynamic(p2));
+        if (_vals.size() != conf.getValues().length)
+        	return false;
+        Iterator values = _vals.iterator();
+        while (values.hasNext()) {
+        	Value v = (Value)values.next();
+        	Value thatV = conf.getValue(v.getProperty());
+        	if (!v.equals(thatV)) {
+        		return false;
+        	}
+        }
+        return true;
     }
 
     /**
-     * Computes hash code based on the properties returned from
-     * {@link #toProperties}.
+     * Computes hash code based on the hashCodes of the values.
+     * {@link Value#hashCode() HashCode} of a Value varies if the Value is
+     * {@link Value#isDynamic() dynamic}.  
      */
     public int hashCode() {
-    	Map copy = (_props == null) ? toProperties(false) : _props;
-    	return excludeDynamic(copy).hashCode();
+        Iterator values = _vals.iterator();
+        int hash = 0;
+        while (values.hasNext()) {
+        	Value v = (Value)values.next();
+        	hash += v.hashCode();
+        }
+        return hash;
     }
 
     /**
@@ -977,17 +992,5 @@ public class ConfigurationImpl
         PluginListValue val = new PluginListValue(property);
         addValue(val);
         return val;
-    }
-    
-    Map excludeDynamic(Map map) {
-    	if (map == null)
-    		return null;
-    	Map copy = new HashMap(map);
-    	Value[] values = getValues();
-    	for (int i=0; i<values.length; i++) {
-    		if (values[i].isDynamic())
-    			Configurations.removeProperty(values[i].getProperty(), copy);
-    	}
-    	return copy;
     }
 }

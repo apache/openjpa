@@ -110,7 +110,8 @@ public class PluginListValue extends ObjectValue {
         for (int i = 0; i < _names.length; i++) {
             if (i > 0)
                 buf.append(", ");
-            buf.append(Configurations.getPlugin(alias(_names[i]), _props[i]));
+            buf.append(Configurations.getPlugin(alias(_names[i]), 
+            		(i<_props.length) ? _props[i] : null));
         }
         if (buf.length() == 0)
             return null;
