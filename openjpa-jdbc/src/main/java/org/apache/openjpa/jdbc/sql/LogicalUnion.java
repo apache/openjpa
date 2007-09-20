@@ -447,10 +447,6 @@ public class LogicalUnion
             return sel.getTableAliases();
         }
 
-        public List getSelects() {
-            return sel.getSelects();
-        }
-
         public List getSelectAliases() {
             return sel.getSelectAliases();
         }

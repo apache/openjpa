@@ -150,14 +150,6 @@ public interface Select
     public Collection getTableAliases();
 
     /**
-     * Return the actual {@link Val}s and {@link Column}s that were
-     * selected, in the order that they were selected.
-     *
-     * @since 1.1.0
-     */
-    public List getSelects();
-
-    /**
      * Return the aliases of all selected columns and all selected buffers,
      * in the order they were selected. Each alias may be either a string
      * or a {@link SQLBuffer}.

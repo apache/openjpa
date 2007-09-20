@@ -155,33 +155,6 @@ public class DB2Dictionary
             append(" ROWS ONLY");
     }
 
-    protected void appendSelect(SQLBuffer selectSQL, Object alias, Select sel,
-        int idx) {
-        // if this is a literal value, add a cast...
-        Object val = sel.getSelects().get(idx);
-        if (val instanceof Lit)
-            selectSQL.append("CAST(");
-
-        // ... and add the select per super's behavior...
-        super.appendSelect(selectSQL, alias, sel, idx);
-
-        // ... and finish the cast
-        if (val instanceof Lit) {
-            Class c = ((Lit) val).getType();
-            int javaTypeCode = JavaTypes.getTypeCode(c);
-            int jdbcTypeCode = getJDBCType(javaTypeCode, false);
-            String typeName = getTypeName(jdbcTypeCode);
-            selectSQL.append(" AS " + typeName);
-
-            // if the literal is a string, use the default char col size
-            // in the cast statement.
-            if (String.class.equals(c))
-                selectSQL.append("(" + characterColumnSize + ")");
-
-            selectSQL.append(")");
-        }
-    }
-
     public String[] getCreateSequenceSQL(Sequence seq) {
         String[] sql = super.getCreateSequenceSQL(seq);
         if (seq.getAllocate() > 1)
@@ -673,8 +646,6 @@ public class DB2Dictionary
         String fstring = null;
         String type = getTypeName(getJDBCType(JavaTypes.getTypeCode(val
             .getType()), false));
-        if (String.class.equals(val.getType()))
-            type = type + "(" + characterColumnSize + ")";
         fstring = "CAST(? AS " + type + ")";
         return fstring;
     }
@@ -759,10 +730,7 @@ public class DB2Dictionary
             String sqlString = buf.getSQL(false);
             if (sqlString.endsWith("?")) {
                 // case "(?" - convert to "CAST(? AS type"
-                String typeName = getTypeName(type);
-                if (String.class.equals(val.getType()))
-                    typeName = typeName + "(" + characterColumnSize + ")";
-                String str = "CAST(? AS " + typeName + ")";
+                String str = "CAST(? AS " + getTypeName(type) + ")";
                 buf.replaceSqlString(sqlString.length() - 1,
                         sqlString.length(), str);
             }
