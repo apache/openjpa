@@ -26,6 +26,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -438,7 +439,7 @@ public class ProxyManagerImpl
      * Return the cached factory proxy for the given bean type.
      */
     private ProxyBean getFactoryProxyBean(Object orig) {
-        Class type = orig.getClass();
+        final Class type = orig.getClass();
         if (isUnproxyable(type))
             return null;
 
@@ -449,7 +450,12 @@ public class ProxyManagerImpl
                 ProxyBean.class);
             Class pcls = loadBuildTimeProxy(type, l);
             if (pcls == null) {
-                BCClass bc = generateProxyBeanBytecode(type, true);
+                BCClass bc = (BCClass) AccessController
+                    .doPrivileged(new PrivilegedAction() {
+                        public Object run() {
+                            return generateProxyBeanBytecode(type, true);
+                        }
+                    });
                 if (bc != null)
                     pcls = GeneratedClasses.loadBCClass(bc, l);
             }
@@ -517,7 +523,8 @@ public class ProxyManagerImpl
         boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = project.loadClass(getProxyClassName(type, runtime));
+        BCClass bc = (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+            .loadProjectClassAction(project, getProxyClassName(type, runtime))); 
         bc.setSuperclass(type);
         bc.declareInterface(ProxyCollection.class);
  
@@ -554,7 +561,8 @@ public class ProxyManagerImpl
     protected BCClass generateProxyMapBytecode(Class type, boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = project.loadClass(getProxyClassName(type, runtime));
+        BCClass bc = (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+            .loadProjectClassAction(project, getProxyClassName(type, runtime))); 
         bc.setSuperclass(type);
         bc.declareInterface(ProxyMap.class);
  
@@ -573,7 +581,8 @@ public class ProxyManagerImpl
     protected BCClass generateProxyDateBytecode(Class type, boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = project.loadClass(getProxyClassName(type, runtime));
+        BCClass bc = (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+            .loadProjectClassAction(project, getProxyClassName(type, runtime))); 
         bc.setSuperclass(type);
         bc.declareInterface(ProxyDate.class);
  
@@ -592,7 +601,8 @@ public class ProxyManagerImpl
         boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = project.loadClass(getProxyClassName(type, runtime));
+        BCClass bc = (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+            .loadProjectClassAction(project, getProxyClassName(type, runtime))); 
         bc.setSuperclass(type);
         bc.declareInterface(ProxyCalendar.class);
  
@@ -626,7 +636,8 @@ public class ProxyManagerImpl
         }
 
         Project project = new Project(); 
-        BCClass bc = project.loadClass(getProxyClassName(type, runtime));
+        BCClass bc = (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+            .loadProjectClassAction(project, getProxyClassName(type, runtime))); 
         bc.setSuperclass(type);
         bc.declareInterface(ProxyBean.class);
  
@@ -1596,7 +1607,7 @@ public class ProxyManagerImpl
             })); 
         }
 
-        ProxyManagerImpl mgr = new ProxyManagerImpl();
+        final ProxyManagerImpl mgr = new ProxyManagerImpl();
         Class cls;
         BCClass bc;
         for (int i = 0; i < types.size(); i++) {
@@ -1618,8 +1629,15 @@ public class ProxyManagerImpl
                 bc = mgr.generateProxyDateBytecode(cls, false);
             else if (Calendar.class.isAssignableFrom(cls))
                 bc = mgr.generateProxyCalendarBytecode(cls, false);
-            else
-                bc = mgr.generateProxyBeanBytecode(cls, false);
+            else {
+                final Class fCls = cls;
+                bc = (BCClass) AccessController
+                    .doPrivileged(new PrivilegedAction() {
+                        public Object run() {
+                            return mgr.generateProxyBeanBytecode(fCls, false);
+                        }
+                    });
+            }
 
             System.out.println(bc.getName());
             bc.write(new File(dir, bc.getClassName() + ".class"));

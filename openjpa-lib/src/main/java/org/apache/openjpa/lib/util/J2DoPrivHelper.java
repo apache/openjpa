@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.AccessibleObject;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
@@ -69,6 +70,7 @@ import serp.bytecode.Project;
  * <li>File.isDirectory
  * <li>File.mkdirs
  * <li>File.renameTo
+ * <li>File.toURL
  * <li>FileInputStream new
  * <li>FileOutputStream new
  * <li>System.getProperties
@@ -79,6 +81,7 @@ import serp.bytecode.Project;
  * <li>Socket.accept
  * <li>System.getProperty
  * <li>Thread.getContextClassLoader
+ * <li>Thread new
  * <li>TemporaryClassLoader new
  * <li>URL.openStream
  * <li>URLConnection.getContent
@@ -594,6 +597,24 @@ public abstract class J2DoPrivHelper {
     }
 
     /**
+     * Return a PrivilegedExceptionAction object for f.toURL().
+     * 
+     * Requires security policy:
+     *   'permission java.io.FilePermission "read";'
+     *   
+     * @return Boolean
+     * @throws MalformedURLException
+     */
+    public static final PrivilegedExceptionAction toURLAction(final File file)
+        throws MalformedURLException {
+        return new PrivilegedExceptionAction() {
+            public Object run() throws MalformedURLException {
+                return file.toURL();
+            }
+        };
+    }
+
+    /**
      * Return a PrivilegedExceptionAction object for new FileInputStream().
      * 
      * Requires security policy:
@@ -764,6 +785,23 @@ public abstract class J2DoPrivHelper {
         return new PrivilegedAction() {
             public Object run() {
                 return Thread.currentThread().getContextClassLoader();
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegedAction object for new Thread().
+     * 
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "modifyThreadGroup";'
+     * 
+     * @return Thread
+     */
+    public static final PrivilegedAction newThreadAction(
+        final Runnable target, final String name) {
+        return new PrivilegedAction() {
+            public Object run() {
+                return new Thread(target, name);
             }
         };
     }
@@ -963,6 +1001,23 @@ public abstract class J2DoPrivHelper {
         return new PrivilegedAction() {
             public Object run() {
                 return project.loadClass(clazz);
+            }
+        };
+    }
+    
+    /**
+     * Return a PrivilegeAction object for Project.loadClass().
+     * 
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "getClassLoader";'
+     *   
+     * @return BCClass
+     */
+    public static final PrivilegedAction loadProjectClassAction(
+        final Project project, final String clazzName) {
+        return new PrivilegedAction() {
+            public Object run() {
+                return project.loadClass(clazzName);
             }
         };
     }

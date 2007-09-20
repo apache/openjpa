@@ -19,6 +19,7 @@
 package org.apache.openjpa.meta;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -656,9 +657,15 @@ public abstract class AbstractCFMetaDataFactory
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scan-found-names", clss, file));
                     names.addAll(Arrays.asList(clss));
-                    mapPersistentTypeNames(((File) AccessController
+                    File f = (File) AccessController
                         .doPrivileged(J2DoPrivHelper
-                            .getAbsoluteFileAction(file))).toURL(), clss);
+                            .getAbsoluteFileAction(file));
+                    try {
+                        mapPersistentTypeNames(AccessController
+                            .doPrivileged(J2DoPrivHelper.toURLAction(f)), clss);
+                    } catch (PrivilegedActionException pae) {
+                        throw (FileNotFoundException) pae.getException();
+                    }
                 }
             }
         }
