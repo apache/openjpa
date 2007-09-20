@@ -116,7 +116,8 @@ public class PersistenceMetaDataDefaults
         if (member == null)
             return null;
         AnnotatedElement el = (AnnotatedElement) member;
-        if (el.isAnnotationPresent(Transient.class))
+        if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+            .isAnnotationPresentAction(el, Transient.class))).booleanValue())
             return TRANSIENT;
         if (fmd != null
             && fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
@@ -182,7 +183,8 @@ public class PersistenceMetaDataDefaults
         }
 
         //### EJB3: what if defined in XML?
-        if (type.isAnnotationPresent(Embeddable.class))
+        if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+            .isAnnotationPresentAction(type, Embeddable.class))).booleanValue())
             return EMBEDDED;
         if (Serializable.class.isAssignableFrom(type))
             return BASIC;
@@ -271,7 +273,8 @@ public class PersistenceMetaDataDefaults
         Annotation[] annos;
         String name;
         for (int i = 0; i < members.length; i++) {
-            annos = members[i].getAnnotations();
+            annos = (Annotation[]) AccessController.doPrivileged(J2DoPrivHelper
+                .getAnnotationsAction(members[i]));
             for (int j = 0; j < annos.length; j++) {
                 name = annos[j].annotationType().getName();
                 if ((name.startsWith("javax.persistence.")
@@ -317,7 +320,9 @@ public class PersistenceMetaDataDefaults
 
     private boolean isAnnotatedTransient(Member member) {
         return member instanceof AnnotatedElement
-            && ((AnnotatedElement) member).isAnnotationPresent(Transient.class);
+            && ((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                .isAnnotationPresentAction(((AnnotatedElement) member),
+                    Transient.class))).booleanValue();
     }
 
     private void logNoSetter(ClassMetaData meta, String name, Exception e) {

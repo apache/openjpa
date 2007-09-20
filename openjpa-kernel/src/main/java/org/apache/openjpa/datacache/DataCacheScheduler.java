@@ -99,10 +99,9 @@ public class DataCacheScheduler
         _caches.put(cache, schedule);
         _stop = false;
         if (_thread == null) {
-            _thread = (Thread) AccessController
-                .doPrivileged(J2DoPrivHelper.newThreadAction(this, _loc.get(
-                    "scheduler-name").getMessage()));
-            _thread.setDaemon(true);
+            _thread = (Thread) AccessController.doPrivileged(J2DoPrivHelper
+                .newDaemonThreadAction(this, _loc.get("scheduler-name")
+                    .getMessage()));
             _thread.start();
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("scheduler-start", _thread.getName()));

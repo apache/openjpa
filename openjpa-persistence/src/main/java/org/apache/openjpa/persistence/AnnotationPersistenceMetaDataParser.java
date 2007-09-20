@@ -465,9 +465,14 @@ public class AnnotationPersistenceMetaDataParser
         // check immediately whether the user is using any annotations,
         // regardless of mode.  this prevents adding non-entity classes to
         // repository if we're ignoring these annotations in mapping mode
-        if (!_cls.isAnnotationPresent(Entity.class)
-            && !_cls.isAnnotationPresent(Embeddable.class)
-            && !_cls.isAnnotationPresent(MappedSuperclass.class))
+        if (!((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+            .isAnnotationPresentAction(_cls, Entity.class))).booleanValue()
+            && !((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                .isAnnotationPresentAction(_cls, Embeddable.class)))
+                .booleanValue()
+            && !((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                .isAnnotationPresentAction(_cls, MappedSuperclass.class)))
+                .booleanValue())
             return null;
 
         // find / create metadata
@@ -762,7 +767,9 @@ public class AnnotationPersistenceMetaDataParser
                 J2DoPrivHelper.getDeclaredFieldsAction(
                     meta.getDescribedType())); 
             for (int i = 0; i < fields.length; i++)
-                if (fields[i].isAnnotationPresent(DetachedState.class))
+                if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                    .isAnnotationPresentAction(fields[i], DetachedState.class)))
+                    .booleanValue())
                     meta.setDetachedState(fields[i].getName());
         }
     }
@@ -818,7 +825,8 @@ public class AnnotationPersistenceMetaDataParser
 
         MetaDataDefaults def = repos.getMetaDataFactory().getDefaults();
         for (Method m : methods) {
-            for (Annotation anno : m.getDeclaredAnnotations()) {
+            for (Annotation anno : (Annotation[]) AccessController
+                .doPrivileged(J2DoPrivHelper.getDeclaredAnnotationsAction(m))) {
                 MetaDataTag tag = _tags.get(anno.annotationType());
                 if (tag == null)
                     continue;
@@ -956,7 +964,8 @@ public class AnnotationPersistenceMetaDataParser
         fmd.setExplicit(true);
 
         AnnotatedElement el = (AnnotatedElement) member;
-        boolean lob = el.isAnnotationPresent(Lob.class);
+        boolean lob = ((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+            .isAnnotationPresentAction(el, Lob.class))).booleanValue();
         if (isMetaDataMode()) {
             switch (pstrat) {
                 case BASIC:

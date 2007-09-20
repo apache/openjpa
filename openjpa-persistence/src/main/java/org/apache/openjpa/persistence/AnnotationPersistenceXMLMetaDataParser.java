@@ -22,10 +22,12 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.security.AccessController;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.DelegatingMetaDataFactory;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -171,8 +173,11 @@ public class AnnotationPersistenceXMLMetaDataParser {
     private XMLMetaData parseXMLClassAnnotations() {
         // check immediately whether the class has JAXB XML annotations
         if (_cls == null || xmlTypeClass == null
-            || !(_cls.isAnnotationPresent(xmlTypeClass)
-                && _cls.isAnnotationPresent(xmlRootElementClass)))
+            || !(((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                .isAnnotationPresentAction(_cls, xmlTypeClass))).booleanValue()
+                && ((Boolean) AccessController
+                .doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls,
+                    xmlRootElementClass))).booleanValue()))
             return null;
 
         // find / create metadata
@@ -220,7 +225,9 @@ public class AnnotationPersistenceXMLMetaDataParser {
         Class superclass = cls.getSuperclass();
 
         // handle inheritance at sub-element level
-        if (superclass.isAnnotationPresent(xmlTypeClass))
+        if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+            .isAnnotationPresentAction(superclass, xmlTypeClass)))
+            .booleanValue())
             populateFromReflection(superclass, meta);
 
         try {
@@ -240,8 +247,9 @@ public class AnnotationPersistenceXMLMetaDataParser {
                     // avoid JAXB XML bind default name
                     if (StringUtils.equals(XMLMetaData.defaultName, xmlname))
                         xmlname = member.getName();
-                    if (((Field) member).getType()
-                        .isAnnotationPresent(xmlTypeClass)) {
+                    if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                        .isAnnotationPresentAction(((Field) member).getType(),
+                            xmlTypeClass))).booleanValue()) {
                         field = _repos.addXMLMetaData(((Field) member).getType()
                             , member.getName());
                         parseXmlRootElement(((Field) member).getType(), field);

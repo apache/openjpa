@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.jdbc;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,6 +75,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -1058,7 +1060,9 @@ public class AnnotationPersistenceMappingParser
             
             if (xmlTypeClass != null
                 && StringUtils.isEmpty(pcols[i].columnDefinition())
-                && fm.getDeclaredType().isAnnotationPresent(xmlTypeClass)) {
+                && ((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                    .isAnnotationPresentAction(fm.getDeclaredType(),
+                        xmlTypeClass))).booleanValue()) {
                 DBDictionary dict = ((MappingRepository) getRepository())
                     .getDBDictionary();
                 if (dict.supportsXMLColumn)
