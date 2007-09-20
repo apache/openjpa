@@ -20,10 +20,13 @@ package org.apache.openjpa.meta;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -74,6 +77,7 @@ public class FetchGroup
     private final ClassMetaData _meta;
     private final boolean _readOnly;
     private List _includes;
+    private Set  _containedBy;
     private Map _depths;
     private Boolean _postLoad;
 
@@ -105,6 +109,9 @@ public class FetchGroup
         if (fg._includes != null)
             for (Iterator itr = fg._includes.iterator(); itr.hasNext();)
                 addDeclaredInclude((String) itr.next());
+        if (fg._containedBy != null) 
+        	this._containedBy = new HashSet(fg._containedBy);
+        
         if (fg._depths != null) {
             Map.Entry entry;
             for (Iterator itr = fg._depths.entrySet().iterator(); 
@@ -152,7 +159,7 @@ public class FetchGroup
         if (_includes != null) {
             if (_includes.contains(fgName))
                 return true;
-            if (recurse) {
+            if (recurse && _meta!=null) {
                 FetchGroup fg;
                 for (Iterator i = _includes.iterator(); i.hasNext();) {
                     fg = _meta.getFetchGroup((String) i.next());
@@ -171,6 +178,37 @@ public class FetchGroup
             }
         }
         return false;
+    }
+    
+    /**
+     * Adds this receiver as one of the included fetch groups of the given
+     * parent. 
+     * The parent fecth group will include this receiver as a side-effect of
+     * this call.
+     * 
+     * @see #includes(String, boolean)
+     * @see #addDeclaredInclude(String) 
+     * 
+     * @return true if given parent is a new addition. false othrwise.
+     * @since 1.1.1   
+     */
+    public boolean addContainedBy(FetchGroup parent) {
+    	parent.addDeclaredInclude(this.getName());
+    	if (_containedBy==null)
+    		_containedBy = new HashSet();
+    	return _containedBy.add(parent.getName());
+    }
+    
+    /**
+     * Gets the name of the fetch groups in which this receiver has been
+     * included.
+     * 
+     * @see #addContainedBy(FetchGroup)
+     * @since 1.1.1   
+     */
+    public Set getContainedBy() {
+    	return (_containedBy == null) ? Collections.EMPTY_SET :
+            Collections.unmodifiableSet(_containedBy);
     }
 
     /**

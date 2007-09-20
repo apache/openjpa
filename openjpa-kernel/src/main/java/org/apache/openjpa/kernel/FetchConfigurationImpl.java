@@ -604,6 +604,8 @@ public class FetchConfigurationImpl
         int cur;
         for (int i = 0; max != FetchGroup.DEPTH_INFINITE 
             && i < groups.length; i++) {
+            // ignore custom groups that are inactive in this configuration
+            if (!this.hasFetchGroup(groups[i])) continue;
             cur = meta.getFetchGroup(groups[i]).getRecursionDepth(fm);
             if (cur == FetchGroup.DEPTH_INFINITE || cur > max) 
                 max = cur;
@@ -625,7 +627,7 @@ public class FetchConfigurationImpl
             return avail;
         return Math.min(max, avail);
     }
- 
+
     /**
      * Return the relation type of the given field.
      */

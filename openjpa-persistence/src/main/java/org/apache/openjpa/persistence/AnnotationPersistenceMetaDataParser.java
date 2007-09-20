@@ -109,6 +109,8 @@ import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UnsupportedException;
+import org.apache.openjpa.util.UserException;
+
 import serp.util.Numbers;
 import serp.util.Strings;
 
@@ -875,6 +877,14 @@ public class AnnotationPersistenceMetaDataParser
 
     /**
      * Create fetch groups.
+     * If FetchGroup A includes FetchGroup B, then a bi-link is set between
+     * A and B. Both A and B must be declared in the same Class. 
+     * <br>
+     * Call {@link #parseFetchAttribute(ClassMetaData, 
+     * org.apache.openjpa.meta.FetchGroup, FetchAttribute) only after the
+     * bi-links have been established, because a field f will not only add the
+     * fetch group A which explictly includes f to its custom fetch groups but 
+     * also will also add any fetch group B that includes A.  
      */
     private void parseFetchGroups(ClassMetaData meta, FetchGroup... groups) {
         org.apache.openjpa.meta.FetchGroup fg;
@@ -885,12 +895,33 @@ public class AnnotationPersistenceMetaDataParser
             fg = meta.addDeclaredFetchGroup(group.name());
             if (group.postLoad())
                 fg.setPostLoad(true); 
-            for (String s : group.fetchGroups())
+            for (String s : group.fetchGroups()) {
                 fg.addDeclaredInclude(s);
+            }
+        }
+        // Add the parent-child style bi-links between fetch groups in a 
+        // separate pass. 
+        for (FetchGroup group:groups) {
+        	fg = meta.getFetchGroup(group.name());
+        	String[] includedFetchGropNames = fg.getDeclaredIncludes();
+        	for (String includedFectchGroupName:includedFetchGropNames) {
+        		org.apache.openjpa.meta.FetchGroup child =
+        	    meta.getFetchGroup(includedFectchGroupName);
+        		if (child == null) 
+        			throw new UserException(_loc.get("missing-included-fg", 
+        				meta.getDescribedType().getName(), fg.getName(),
+        				includedFectchGroupName));
+        		child.addContainedBy(fg);
+        	}
+        }
+        
+        for (FetchGroup group : groups) {
+            fg = meta.getFetchGroup(group.name());
             for (FetchAttribute attr : group.attributes())
                 parseFetchAttribute(meta, fg, attr);
         }
     }
+    
 
     /**
      * Set a field's fetch group.
@@ -904,6 +935,9 @@ public class AnnotationPersistenceMetaDataParser
                 meta, attr.name()));
 
         field.setInFetchGroup(fg.getName(), true);
+        Set parentFetchGroups = fg.getContainedBy();
+        for (Object parentFetchGroup:parentFetchGroups)
+        	field.setInFetchGroup(parentFetchGroup.toString(), true);
         if (attr.recursionDepth() != Integer.MIN_VALUE)
             fg.setRecursionDepth(field, attr.recursionDepth());
     }
