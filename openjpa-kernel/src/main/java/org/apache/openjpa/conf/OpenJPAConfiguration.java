@@ -611,6 +611,14 @@ public interface OpenJPAConfiguration
      * @since 0.3.0
      */
     public MetaDataRepository getMetaDataRepositoryInstance();
+    
+    /**
+     * Returns true if a metaDataRepository has been created for this 
+     * configuration.
+     * 
+     * @since 1.1.0 1.0.1
+     */
+    public boolean metaDataRepositoryAvailable();
 
     /**
      * Create a new empty metadata repository of the configured type.

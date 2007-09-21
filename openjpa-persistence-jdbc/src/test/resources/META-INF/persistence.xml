@@ -54,4 +54,13 @@
                 value="buildSchema(ForeignKeys=true)"/>
         </properties>
     </persistence-unit>
+    
+    <persistence-unit name="invalid">
+        <properties>
+            <property name="openjpa.ConnectionDriverName"
+                value="org.apache.commons.dbcp.BasicDataSource" />
+            <property name="openjpa.ConnectionProperties"
+                value="DriverClassName=not.a.real.Driver,Url=jdbc:notreal://"/>
+        </properties>
+    </persistence-unit>
 </persistence>

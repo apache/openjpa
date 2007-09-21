@@ -389,9 +389,11 @@ public abstract class AbstractBrokerFactory
                     broker.close();
             }
 
-            // remove metadata repository from listener list
-            PCRegistry.removeRegisterClassListener
-                (_conf.getMetaDataRepositoryInstance());
+            if(_conf.metaDataRepositoryAvailable()) {
+                // remove metadata repository from listener list
+                PCRegistry.removeRegisterClassListener
+                    (_conf.getMetaDataRepositoryInstance());
+            }
 
             _conf.close();
             _closed = true;
