@@ -23,6 +23,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Savepoint;
@@ -162,7 +163,8 @@ public class DelegatingConnection implements Connection, Closeable {
         if (_del != null)
             stmnt = _del.prepareStatement(str, false);
         else
-            stmnt = _conn.prepareStatement(str);
+            stmnt = _conn.prepareStatement(str, ResultSet.TYPE_FORWARD_ONLY, 
+                ResultSet.CONCUR_READ_ONLY);
         if (wrap)
             stmnt = new DelegatingPreparedStatement(stmnt, this);
         return stmnt;
