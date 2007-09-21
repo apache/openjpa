@@ -1736,7 +1736,7 @@ public class DBDictionary
         from.append("(");
         from.append(toSelect(subSelect, null, subFrom, where,
             sel.getGrouping(), sel.getHaving(), null, sel.isDistinct(),
-            false, sel.getStartIndex(), sel.getEndIndex()));
+            false, sel.getStartIndex(), sel.getEndIndex(), true));
         from.append(")");
         if (requiresAliasForSubselect)
             from.append(" ").append(Select.FROM_SELECT_ALIAS);
@@ -2186,6 +2186,19 @@ public class DBDictionary
     /**
      * Combine the given components into a SELECT statement.
      */
+    private SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
+        SQLBuffer from, SQLBuffer where, SQLBuffer group,
+        SQLBuffer having, SQLBuffer order,
+        boolean distinct, boolean forUpdate, long start, long end,
+        boolean subselect) {
+        return toOperation(getSelectOperation(fetch), selects, from, where,
+            group, having, order, distinct, start, end,
+            getForUpdateClause(fetch, forUpdate, null), subselect);
+    }
+
+    /**
+     * Combine the given components into a SELECT statement.
+     */
     public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
         SQLBuffer from, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
@@ -2227,16 +2240,27 @@ public class DBDictionary
         SQLBuffer from, SQLBuffer where, SQLBuffer group, SQLBuffer having,
         SQLBuffer order, boolean distinct, long start, long end,
         String forUpdateClause) {
+        return toOperation(op, selects, from, where, group, having, order,
+            distinct, start, end, forUpdateClause, false);
+    }
+
+    /**
+     * Return the SQL for the given selecting operation.
+     */
+    private SQLBuffer toOperation(String op, SQLBuffer selects,
+        SQLBuffer from, SQLBuffer where, SQLBuffer group, SQLBuffer having,
+        SQLBuffer order, boolean distinct, long start, long end,
+        String forUpdateClause, boolean subselect) {
         SQLBuffer buf = new SQLBuffer(this);
         buf.append(op);
 
         boolean range = start != 0 || end != Long.MAX_VALUE;
         if (range && rangePosition == RANGE_PRE_DISTINCT)
-            appendSelectRange(buf, start, end);
+            appendSelectRange(buf, start, end, subselect);
         if (distinct)
             buf.append(" DISTINCT");
         if (range && rangePosition == RANGE_POST_DISTINCT)
-            appendSelectRange(buf, start, end);
+            appendSelectRange(buf, start, end, subselect);
 
         buf.append(" ").append(selects).append(" FROM ").append(from);
 
@@ -2251,11 +2275,11 @@ public class DBDictionary
         if (order != null && !order.isEmpty())
             buf.append(" ORDER BY ").append(order);
         if (range && rangePosition == RANGE_POST_SELECT)
-            appendSelectRange(buf, start, end);
+            appendSelectRange(buf, start, end, subselect);
         if (forUpdateClause != null)
             buf.append(" ").append(forUpdateClause);
         if (range && rangePosition == RANGE_POST_LOCK)
-            appendSelectRange(buf, start, end);
+            appendSelectRange(buf, start, end, subselect);
         return buf;
     }
 
@@ -2263,7 +2287,8 @@ public class DBDictionary
      * If this dictionary can select ranges,
      * use this method to append the range SQL.
      */
-    protected void appendSelectRange(SQLBuffer buf, long start, long end) {
+    protected void appendSelectRange(SQLBuffer buf, long start, long end
+        , boolean subselect) {
     }
 
     /**

@@ -148,11 +148,14 @@ public class DB2Dictionary
             && super.supportsRandomAccessResultSet(sel, forUpdate);
     }
 
-    protected void appendSelectRange(SQLBuffer buf, long start, long end) {
+    protected void appendSelectRange(SQLBuffer buf, long start, long end,
+        boolean subselect) {
         // appends the literal range string, since DB2 is unable to handle
         // a bound parameter for it
-        buf.append(" FETCH FIRST ").append(Long.toString(end)).
-            append(" ROWS ONLY");
+        // do not generate FETCH FIRST clause for subselect
+        if (!subselect)
+            buf.append(" FETCH FIRST ").append(Long.toString(end)).
+                append(" ROWS ONLY");
     }
 
     public String[] getCreateSequenceSQL(Sequence seq) {
