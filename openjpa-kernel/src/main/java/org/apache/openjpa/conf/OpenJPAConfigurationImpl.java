@@ -852,6 +852,10 @@ public class OpenJPAConfigurationImpl
             metaRepository = newMetaDataRepositoryInstance();
         return metaRepository;
     }
+    
+    public boolean metaDataRepositoryAvailable(){ 
+        return metaRepository != null; 
+    }
 
     public MetaDataRepository newMetaDataRepositoryInstance() {
         return (MetaDataRepository) metaRepositoryPlugin.instantiate(
