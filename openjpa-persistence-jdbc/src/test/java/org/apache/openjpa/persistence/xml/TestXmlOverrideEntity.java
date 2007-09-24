@@ -20,6 +20,9 @@ package org.apache.openjpa.persistence.xml;
 
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -62,6 +65,24 @@ public class TestXmlOverrideEntity extends SingleEMFTestCase {
         em.getTransaction().begin();
         em.remove(em.find(XmlOverrideEntity.class, optional.getId()));
         em.getTransaction().commit();
+        
+        em.close();
+    }
+    
+    
+    public void testColumnOverride() { 
+        EntityManager em = emf.createEntityManager();
+
+        ClassMapping mapping = getMapping("XmlOverride");
+        
+        FieldMapping fm = mapping.getFieldMapping("picture");
+        
+        Column[] columns = fm.getColumns();
+        
+        assertEquals(1, columns.length);
+        assertEquals("pic_xml", columns[0].getName());
+        
+        em.close();
     }
 }
 

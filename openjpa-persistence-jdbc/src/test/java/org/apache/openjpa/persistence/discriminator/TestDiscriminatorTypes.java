@@ -144,10 +144,4 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
         assertNotNull(root2);
         em.close();
     }
-
-    private ClassMapping getMapping(String name) {
-        return (ClassMapping) emf.getConfiguration()
-                .getMetaDataRepositoryInstance().getMetaData(name,
-                        getClass().getClassLoader(), true);
-    }
 }
