@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.test;
 
+import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 public abstract class SingleEMFTestCase
@@ -60,5 +61,11 @@ public abstract class SingleEMFTestCase
         } finally {
             closeEMF(emf);
         }
+    }
+    
+    protected ClassMapping getMapping(String name) {
+        return (ClassMapping) emf.getConfiguration()
+                .getMetaDataRepositoryInstance().getMetaData(name,
+                        getClass().getClassLoader(), true);
     }
 }

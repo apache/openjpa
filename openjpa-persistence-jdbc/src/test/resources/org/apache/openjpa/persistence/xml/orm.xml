@@ -43,6 +43,10 @@
     	<attributes>
 	    	<basic name="name" optional="true"></basic>
 	    	<basic name="description" optional="false"></basic>
+            <basic name="picture" fetch="EAGER"> 
+                <column name="pic_xml"/>
+                <lob/>
+            </basic>
     	</attributes>
     </entity>
     <entity name="AllFieldTypes" 

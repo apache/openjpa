@@ -541,9 +541,9 @@ public class XMLPersistenceMappingParser
         if (_cols != null) {
             switch (fm.getDeclaredTypeCode()) {
                 case JavaTypes.ARRAY:
-                    if (fm.getDeclaredType() == byte[].class
-                        || fm.getDeclaredType() == char[].class
-                        || fm.getDeclaredType() == Character[].class) {
+                    Class type = fm.getDeclaredType();
+                    if (type == byte[].class || type == Byte[].class
+                        || type == char[].class || type == Character[].class ) {
                         fm.getValueInfo().setColumns(_cols);
                         break;
                     }

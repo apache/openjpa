@@ -19,9 +19,11 @@
 package org.apache.openjpa.persistence.xml;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 @Entity
 public class XmlOverrideEntity {
@@ -35,6 +37,10 @@ public class XmlOverrideEntity {
     
     @Basic(optional=true)
     String description;
+    
+    @Column(name="PICTURE")
+    @Lob
+    private Byte[] picture;
 
     public int getId() {
         return id;
@@ -58,6 +64,14 @@ public class XmlOverrideEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Byte[] getPicture() {
+        return picture;
+    }
+
+    public void setPicture(Byte[] picture) {
+        this.picture = picture;
     } 
 }
 
