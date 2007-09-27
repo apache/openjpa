@@ -20,6 +20,9 @@ package org.apache.openjpa.lib.meta;
 
 import java.io.IOException;
 
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.Localizer;
+
 import serp.bytecode.lowlevel.ConstantPoolTable;
 
 /**
@@ -33,6 +36,10 @@ import serp.bytecode.lowlevel.ConstantPoolTable;
 public class ClassAnnotationMetaDataFilter implements MetaDataFilter {
 
     private final String[] _annos;
+    
+    private static final Localizer _loc = Localizer.forPackage
+        (ClassAnnotationMetaDataFilter.class);
+    private Log _log = null;
 
     /**
      * Constructor; supply annotation to match against.
@@ -86,9 +93,16 @@ public class ClassAnnotationMetaDataFilter implements MetaDataFilter {
                 idx += 4 + table.readInt(idx);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
+            /*
+             * This ArrayIndexOutOfBoundsException indicates an incorrectly
+             * formed .class file. We will eat the exception, log a trace
+             * message (if a log exists), and return "false" to indicate there
+             * was no match.
+             */
             Error cfe = new ClassFormatError(rsrc.getName());
             cfe.initCause(e);
-            throw cfe;
+            if (_log != null && _log.isTraceEnabled())
+                _log.trace(_loc.get("class-arg", rsrc.getName()), cfe);
         }
         return false;
     }
@@ -183,5 +197,13 @@ public class ClassAnnotationMetaDataFilter implements MetaDataFilter {
             skipped += 6 + len;
         }
         return skipped;
+    }
+
+    public Log getLog() {
+        return _log;
+    }
+
+    public void setLog(Log _log) {
+        this._log = _log;
     }
 }

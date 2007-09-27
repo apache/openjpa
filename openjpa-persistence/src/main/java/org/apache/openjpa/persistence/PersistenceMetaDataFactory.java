@@ -374,8 +374,11 @@ public class PersistenceMetaDataFactory
 
     @Override
     protected MetaDataFilter newMetaDataFilter() {
-        return new ClassAnnotationMetaDataFilter(new Class[]{
-            Entity.class, Embeddable.class, MappedSuperclass.class });
+        ClassAnnotationMetaDataFilter camdf = new ClassAnnotationMetaDataFilter(
+                new Class[] { Entity.class, Embeddable.class,
+                        MappedSuperclass.class });
+        camdf.setLog(log);
+        return camdf;
     }
 
     /**
