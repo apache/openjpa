@@ -87,7 +87,7 @@ import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
+import org.apache.openjpa.lib.util.J2DoPriv5Helper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.DelegatingMetaDataFactory;
@@ -465,12 +465,12 @@ public class AnnotationPersistenceMetaDataParser
         // check immediately whether the user is using any annotations,
         // regardless of mode.  this prevents adding non-entity classes to
         // repository if we're ignoring these annotations in mapping mode
-        if (!((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+        if (!((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
             .isAnnotationPresentAction(_cls, Entity.class))).booleanValue()
-            && !((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+            && !((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
                 .isAnnotationPresentAction(_cls, Embeddable.class)))
                 .booleanValue()
-            && !((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+            && !((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
                 .isAnnotationPresentAction(_cls, MappedSuperclass.class)))
                 .booleanValue())
             return null;
@@ -669,17 +669,17 @@ public class AnnotationPersistenceMetaDataParser
 
         String rsrc = StringUtils.replace(cls.getName(), ".", "/");
         ClassLoader loader = (ClassLoader) AccessController.doPrivileged(
-            J2DoPrivHelper.getClassLoaderAction(cls)); 
+            J2DoPriv5Helper.getClassLoaderAction(cls)); 
         if (loader == null)
             loader = (ClassLoader) AccessController.doPrivileged(
-                J2DoPrivHelper.getSystemClassLoaderAction()); 
+                J2DoPriv5Helper.getSystemClassLoaderAction()); 
         if (loader == null)
             return null;
         URL url = (URL) AccessController.doPrivileged(
-            J2DoPrivHelper.getResourceAction(loader, rsrc + ".java")); 
+            J2DoPriv5Helper.getResourceAction(loader, rsrc + ".java")); 
         if (url == null) {
             url = (URL) AccessController.doPrivileged(
-                J2DoPrivHelper.getResourceAction(loader, rsrc + ".class")); 
+                J2DoPriv5Helper.getResourceAction(loader, rsrc + ".class")); 
             if (url == null)
                 return null;
         }
@@ -764,10 +764,10 @@ public class AnnotationPersistenceMetaDataParser
                 meta.setDetachedState(detached.fieldName());
         } else {
             Field[] fields = (Field[]) AccessController.doPrivileged(
-                J2DoPrivHelper.getDeclaredFieldsAction(
+                J2DoPriv5Helper.getDeclaredFieldsAction(
                     meta.getDescribedType())); 
             for (int i = 0; i < fields.length; i++)
-                if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                if (((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
                     .isAnnotationPresentAction(fields[i], DetachedState.class)))
                     .booleanValue())
                     meta.setDetachedState(fields[i].getName());
@@ -808,7 +808,7 @@ public class AnnotationPersistenceMetaDataParser
         Set<MethodKey> seen = new HashSet<MethodKey>();
         do {
             for (Method m : (Method[]) AccessController.doPrivileged(
-                J2DoPrivHelper.getDeclaredMethodsAction(sup))) {
+                J2DoPriv5Helper.getDeclaredMethodsAction(sup))) {
                 mods = m.getModifiers();
                 if (Modifier.isStatic(mods) || Modifier.isFinal(mods) ||
                     Object.class.equals(m.getDeclaringClass()))
@@ -826,7 +826,8 @@ public class AnnotationPersistenceMetaDataParser
         MetaDataDefaults def = repos.getMetaDataFactory().getDefaults();
         for (Method m : methods) {
             for (Annotation anno : (Annotation[]) AccessController
-                .doPrivileged(J2DoPrivHelper.getDeclaredAnnotationsAction(m))) {
+                .doPrivileged(J2DoPriv5Helper
+                    .getDeclaredAnnotationsAction(m))) {
                 MetaDataTag tag = _tags.get(anno.annotationType());
                 if (tag == null)
                     continue;
@@ -964,7 +965,7 @@ public class AnnotationPersistenceMetaDataParser
         fmd.setExplicit(true);
 
         AnnotatedElement el = (AnnotatedElement) member;
-        boolean lob = ((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+        boolean lob = ((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
             .isAnnotationPresentAction(el, Lob.class))).booleanValue();
         if (isMetaDataMode()) {
             switch (pstrat) {
