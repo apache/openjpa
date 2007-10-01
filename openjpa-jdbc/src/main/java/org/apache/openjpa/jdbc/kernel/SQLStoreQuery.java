@@ -215,6 +215,9 @@ public class SQLStoreQuery
                 paramList = Collections.EMPTY_LIST;
 
             SQLBuffer buf = new SQLBuffer(dict).append(sql);
+            
+            // we need to make sure we have an active store connection
+            store.getContext().beginStore();
             Connection conn = store.getConnection();
             JDBCFetchConfiguration fetch = (JDBCFetchConfiguration)
                 q.getContext().getFetchConfiguration();
@@ -241,6 +244,8 @@ public class SQLStoreQuery
                     try { stmnt.close(); } catch (SQLException se2) {}
                 try { conn.close(); } catch (SQLException se2) {}
                 throw SQLExceptions.getStore(se, dict);
+            } finally {
+                try { conn.close(); } catch (SQLException se) {}
             }
         }
 
