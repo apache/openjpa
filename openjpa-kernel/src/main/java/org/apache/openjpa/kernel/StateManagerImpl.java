@@ -427,18 +427,22 @@ public class StateManagerImpl
 
         BitSet fields = null;
         FieldMetaData[] fmds = _meta.getFields();
+        Set fgs = null;         
         boolean load;
+        
         for (int i = 0; i < fmds.length; i++) {
-            if (_loaded.get(i) || (exclude != null && exclude.get(i)))
-                continue;
+              if (exclude != null && exclude.get(i))
+                  continue;
 
             switch (mode) {
                 case LOAD_SERIALIZE:
                     load = !fmds[i].isTransient();
                     break;
-                case LOAD_FGS:
-                    load = fetch == null || fetch.requiresFetch(fmds[i]) 
-                        != FetchConfiguration.FETCH_NONE;
+                case LOAD_FGS:                  
+                    load = false;
+                    if (fgs == null)
+                        fgs = new HashSet(fmds.length);
+                    fgs.add(fmds[i]);
                     break;
                 default: // LOAD_ALL
                     load = true;
@@ -449,6 +453,22 @@ public class StateManagerImpl
                     fields = new BitSet(fmds.length);
                 fields.set(i);
             }
+            // post process for the fetchGroup: if there is a
+            // fetchgroup field, then go to the FetchConfiguration
+            // to get the required fetch fields.
+            if (fgs != null) {
+                if (fields == null)
+                    fields = new BitSet(fmds.length);
+                BitSet fgFields = fetch.requiresFetch(fgs, fmds);
+                // merge the fetchgroup required fields to the original
+                // fields only the fields are not already loaded and
+                // are not in the original fields.
+                for (int j = 0; j < fgFields.length(); j++) {
+                    if (fgFields.get(j) && !fields.get(j) && !_loaded.get(j))
+                        fields.set(j);
+                }
+            }
+
         }
         return fields;
     }
