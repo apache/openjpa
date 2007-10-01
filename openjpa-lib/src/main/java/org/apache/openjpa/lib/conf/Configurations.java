@@ -181,30 +181,39 @@ public class Configurations {
 
         Class cls = null; 
 
-        // can't have a null reference in the map, so use symbolic 
-        // constant as key
-        Object key = loader == null ? NULL_LOADER : loader;
-        Map loaderCache = (Map) _loaders.get(key);
-        if (loaderCache == null) { // We don't have a cache for this loader.
-            loaderCache = new ConcurrentHashMap();
-            _loaders.put(key, loaderCache);
-        } else {  // We have a cache for this loader.
-            cls = (Class) loaderCache.get(clsName);
-        }
+        while (cls == null) {
+            // can't have a null reference in the map, so use symbolic
+            // constant as key
+            Object key = loader == null ? NULL_LOADER : loader;
+            Map loaderCache = (Map) _loaders.get(key);
+            if (loaderCache == null) { // We don't have a cache for this loader.
+                loaderCache = new ConcurrentHashMap();
+                _loaders.put(key, loaderCache);
+            } else {  // We have a cache for this loader.
+                cls = (Class) loaderCache.get(clsName);
+            }
 
-        if (cls == null) { // we haven't cached this.
-            try {
-                cls = Strings.toClass(clsName, findDerivedLoader(conf, loader));
-                loaderCache.put(clsName, cls);
-            } catch (RuntimeException re) {
-                if (val != null)
-                    re = getCreateException(clsName, val, re);
-                if (fatal)
-                    throw re;
-                Log log = (conf == null) ? null : conf.getConfigurationLog();
-                if (log != null && log.isErrorEnabled())
-                    log.error(_loc.get("plugin-creation-exception", val), re);
-                return null;
+            if (cls == null) {
+                try {
+                    cls = Strings.toClass(clsName, findDerivedLoader(conf,
+                            loader));
+                    loaderCache.put(clsName, cls);
+                } catch (RuntimeException re) {
+                    if (loader != null)  // Try one more time with loader=null
+                        loader = null;
+                    else {
+                        if (val != null)
+                            re = getCreateException(clsName, val, re);
+                        if (fatal)
+                            throw re;
+                        Log log = (conf == null) ? null : conf
+                                .getConfigurationLog();
+                        if (log != null && log.isErrorEnabled())
+                            log.error(_loc
+                                    .get("plugin-creation-exception", val), re);
+                        return null;
+                    }
+                }
             }
         }
 
