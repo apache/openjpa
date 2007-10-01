@@ -296,8 +296,8 @@ public class TestFetchGroup extends SingleEMTestCase {
         // add fetch fields to the fetch plan - address and description should
         // not be null
         String[] str = {
-                "org.apache.openjpa.persistence.query.FGEmployee.description",
-                "org.apache.openjpa.persistence.query.FGEmployee.address" };
+            "org.apache.openjpa.persistence.fetchgroups.FGEmployee.description",
+            "org.apache.openjpa.persistence.fetchgroups.FGEmployee.address" };
         FGEmployee emp2 = findEmployeeForQuery(oem, oq, 1, true, str, null);
         oem1.clear();
         assertNotNull(emp2.getAddress());
