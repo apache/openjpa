@@ -121,6 +121,7 @@
                 <jdk>1.5</jdk>
             </activation>
             <modules>
+                <module>openjpa-lib-5</module>
                 <module>openjpa-persistence</module>
                 <module>openjpa-persistence-jdbc</module>
                 <module>openjpa-kernel-5</module>
