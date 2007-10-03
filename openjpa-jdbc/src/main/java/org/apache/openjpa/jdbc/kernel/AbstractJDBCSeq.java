@@ -45,7 +45,7 @@ public abstract class AbstractJDBCSeq
 
     protected int type = TYPE_DEFAULT;
     protected Object current = null;
-    private transient Transaction _outerTransaction;
+    private static ThreadLocal _outerTransaction = new ThreadLocal();
 
     /**
      * Records the sequence type.
@@ -155,7 +155,7 @@ public abstract class AbstractJDBCSeq
             try {
                 TransactionManager tm = getConfiguration()
                     .getManagedRuntimeInstance().getTransactionManager();
-                _outerTransaction = tm.suspend();
+                _outerTransaction.set(tm.suspend());
                 tm.begin();
                 return store.getConnection();
             } catch (Exception e) {
@@ -188,13 +188,14 @@ public abstract class AbstractJDBCSeq
                 tm.commit();
                 try { conn.close(); } catch (SQLException se) {}
 
-                if (_outerTransaction != null)
-                    tm.resume(_outerTransaction);
+                Transaction outerTxn = (Transaction)_outerTransaction.get();
+                if (outerTxn != null)
+                    tm.resume(outerTxn);
 
             } catch (Exception e) {
                 throw new StoreException(e);
             } finally {
-                _outerTransaction = null;
+                _outerTransaction.set(null);
             }
         } else {
             try {
