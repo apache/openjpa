@@ -1733,7 +1733,7 @@ public class BrokerImpl
                 detachAllInternal(null);
             }
             if (_operationCount < 1)
-                throw new InternalException();
+                throw new InternalException(_loc.get("multi-threaded-access"));
             return _operationCount == 1;
         } catch (OpenJPAException ke) {
             throw ke;
