@@ -425,7 +425,7 @@ public class AnnotationPersistenceMappingParser
         if (!StringUtils.isEmpty(join.name()))
             col.setName(join.name());
         if (!StringUtils.isEmpty(join.columnDefinition()))
-            col.setName(join.columnDefinition());
+            col.setTypeName(join.columnDefinition());
         if (!StringUtils.isEmpty(join.referencedColumnName()))
             col.setTarget(join.referencedColumnName());
         return col;
@@ -1187,7 +1187,7 @@ public class AnnotationPersistenceMappingParser
         if (!StringUtils.isEmpty(join.name()))
             col.setName(join.name());
         if (!StringUtils.isEmpty(join.columnDefinition()))
-            col.setName(join.columnDefinition());
+            col.setTypeName(join.columnDefinition());
         if (!StringUtils.isEmpty(join.referencedColumnName()))
             col.setTarget(join.referencedColumnName());
         col.setNotNull(!join.nullable());
@@ -1240,7 +1240,7 @@ public class AnnotationPersistenceMappingParser
         if (!StringUtils.isEmpty(join.name()))
             col.setName(join.name());
         if (!StringUtils.isEmpty(join.columnDefinition()))
-            col.setName(join.columnDefinition());
+            col.setTypeName(join.columnDefinition());
         if (!StringUtils.isEmpty(join.referencedColumnName()))
             col.setTarget(join.referencedColumnName());
         if (!StringUtils.isEmpty(join.referencedAttributeName()))
@@ -1346,7 +1346,7 @@ public class AnnotationPersistenceMappingParser
         if (!StringUtils.isEmpty(join.name()))
             col.setName(join.name());
         if (!StringUtils.isEmpty(join.columnDefinition()))
-            col.setName(join.columnDefinition());
+            col.setTypeName(join.columnDefinition());
         if (!StringUtils.isEmpty(join.referencedColumnName()))
             col.setTarget(join.referencedColumnName());
         if (!StringUtils.isEmpty(join.referencedAttributeName()))
