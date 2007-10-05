@@ -1407,9 +1407,9 @@ public interface OpenJPAConfiguration
     /**
      * Specifies how OpenJPA handles unenhanced types. Possible values are:
      * <ul>
-     * <li><code>enabled</code>: Runtime optimization of persistent types
+     * <li><code>supported</code>: Runtime optimization of persistent types
      * is available. This is the default</li>
-     * <li><code>disabled</code>: Runtime optimization of persistent types
+     * <li><code>unsupported</code>: Runtime optimization of persistent types
      * is not available. An exception will be thrown if the system loads with
      * persistent types that are not enhanced.</li>
      * <li><code>warn</code>: Runtime optimization of persistent types is
@@ -1435,9 +1435,9 @@ public interface OpenJPAConfiguration
      * Return the runtime class optimization setting as one of the
      * following symbolic constants:
      * <ul>
-     * <li>{@link RuntimeClassOptimizationModes#RUNTIME_OPT_ENABLED}</li>
-     * <li>{@link RuntimeClassOptimizationModes#RUNTIME_OPT_DISABLED}</li>
-     * <li>{@link RuntimeClassOptimizationModes#RUNTIME_OPT_WARN}</li>
+     * <li>{@link RuntimeUnenhancedClasssesModes#SUPPORTED}</li>
+     * <li>{@link RuntimeUnenhancedClasssesModes#UNSUPPORTED}</li>
+     * <li>{@link RuntimeUnenhancedClasssesModes#WARN}</li>
      * </ul>
      *
      * @since 1.0.0
@@ -1448,9 +1448,9 @@ public interface OpenJPAConfiguration
      * Set the runtime class optimization setting as one of the
      * following symbolic constants:
      * <ul>
-     * <li>{@link RuntimeClassOptimizationModes#RUNTIME_OPT_ENABLED}</li>
-     * <li>{@link RuntimeClassOptimizationModes#RUNTIME_OPT_DISABLED}</li>
-     * <li>{@link RuntimeClassOptimizationModes#RUNTIME_OPT_WARN}</li>
+     * <li>{@link RuntimeUnenhancedClasssesModes#SUPPORTED}</li>
+     * <li>{@link RuntimeUnenhancedClasssesModes#UNSUPPORTED}</li>
+     * <li>{@link RuntimeUnenhancedClasssesModes#WARN}</li>
      * </ul>
      *
      * @since 1.0.0
