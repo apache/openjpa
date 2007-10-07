@@ -733,7 +733,10 @@ public class DB2Dictionary
             String sqlString = buf.getSQL(false);
             if (sqlString.endsWith("?")) {
                 // case "(?" - convert to "CAST(? AS type"
-                String str = "CAST(? AS " + getTypeName(type) + ")";
+                String typeName = getTypeName(type);
+                if (String.class.equals(val.getType()))
+                    typeName = typeName + "(" + characterColumnSize + ")";
+                String str = "CAST(? AS " + typeName + ")";
                 buf.replaceSqlString(sqlString.length() - 1,
                         sqlString.length(), str);
             }
