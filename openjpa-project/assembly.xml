@@ -98,12 +98,10 @@
                 <include>net.sourceforge.serp:serp</include>
                 <include>org.apache.derby:derby</include>
 
-                <include>commons-logging:commons-logging</include>
                 <include>commons-lang:commons-lang</include>
                 <include>commons-collections:commons-collections</include>
                 <include>commons-pool:commons-pool</include>
 
-                <include>org.apache.geronimo.specs:geronimo-jms_1.1_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-jta_1.1_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-jpa_3.0_spec</include>
             </includes>
