@@ -719,6 +719,32 @@ public class ProxyManagerImpl
         code.calculateMaxStack();
         code.calculateMaxLocals();
 
+        /* 
+         * clone (return detached proxy object)
+         * Note:  This method is only being provided to satisfy a quirk with
+         * the IBM JDK -- while comparing Calendar objects, the clone() method
+         * was invoked.  So, we are now overriding the clone() method so as to
+         * provide a detached proxy object (null out the StateManager).
+         */
+        m = bc.declareMethod("clone", Object.class, null);
+        m.makePublic();
+        code = m.getCode(true);
+        code.aload().setThis();
+        code.invokespecial().setMethod(bc.getSuperclassType(), "clone",
+                Object.class, null);  
+        code.checkcast().setType(Proxy.class);  
+        int other = code.getNextLocalsIndex();
+        code.astore().setLocal(other);
+        code.aload().setLocal(other);
+        code.constant().setNull();
+        code.constant().setValue(0);
+        code.invokeinterface().setMethod(Proxy.class, "setOwner", void.class,
+                new Class[] { OpenJPAStateManager.class, int.class });
+        code.aload().setLocal(other);
+        code.areturn();
+        code.calculateMaxStack();
+        code.calculateMaxLocals();
+        
         if (changeTracker) {
             m = bc.declareMethod("getChangeTracker", ChangeTracker.class, null);
             m.makePublic();
