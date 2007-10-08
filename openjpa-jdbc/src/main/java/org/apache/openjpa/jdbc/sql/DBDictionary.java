@@ -3644,11 +3644,11 @@ public class DBDictionary
         fk.setPrimaryKeySchemaName(fkMeta.getString("PKTABLE_SCHEM"));
         fk.setPrimaryKeyTableName(fkMeta.getString("PKTABLE_NAME"));
         fk.setPrimaryKeyColumnName(fkMeta.getString("PKCOLUMN_NAME"));
-        fk.setKeySequence(fkMeta.getInt("KEY_SEQ"));
-        fk.setDeferred(fkMeta.getInt("DEFERRABILITY")
+        fk.setKeySequence(fkMeta.getShort("KEY_SEQ"));
+        fk.setDeferred(fkMeta.getShort("DEFERRABILITY")
             == DatabaseMetaData.importedKeyInitiallyDeferred);
 
-        int del = fkMeta.getInt("DELETE_RULE");
+        int del = fkMeta.getShort("DELETE_RULE");
         switch (del) {
             case DatabaseMetaData.importedKeySetNull:
                 fk.setDeleteAction(ForeignKey.ACTION_NULL);
