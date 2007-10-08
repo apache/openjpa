@@ -130,7 +130,8 @@ public class SchemaToolTask
 
     protected void executeOn(String[] files)
         throws Exception {
-        assertFiles(files);
+        if (SchemaTool.ACTION_IMPORT.equals(flags.action))
+            assertFiles(files);
 
         ClassLoader loader = getClassLoader();
         flags.writer = Files.getWriter(file, loader);
