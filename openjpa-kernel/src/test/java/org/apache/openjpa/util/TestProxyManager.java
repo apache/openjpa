@@ -46,6 +46,7 @@ import java.util.TreeSet;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import org.apache.openjpa.util.Proxy;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
@@ -151,12 +152,20 @@ public class TestProxyManager
      */
     private static void assertSortedSetsEqual(SortedSet s1, SortedSet s2) {
         assertTrue(s1.getClass() == s2.getClass());
+        assertSortedSetsEquals(s1, s2);
+    }  
+
+    /**
+     * Assert that the given sets are exactly the same (minus the class).
+     */
+    private static void assertSortedSetsEquals(SortedSet s1, SortedSet s2) {
         assertEquals(s1.comparator(), s2.comparator());
         assertEquals(s1.size(), s2.size());
         Iterator itr1 = s1.iterator();
         Iterator itr2 = s2.iterator();
         while (itr1.hasNext())
             assertTrue(itr1.next() == itr2.next());
+        assertTrue(s1.equals(s2));
     }  
 
     public void testCopyNullCollection() {
@@ -174,6 +183,16 @@ public class TestProxyManager
         populate(torig);
         assertSortedSetsEqual(new TreeSet(torig), (SortedSet) 
             _mgr.copyCollection(torig));
+    }
+
+    public void testCloneProxyCollection() {
+        // List doesn't support clone()
+        
+        TreeSet torig = (TreeSet) _mgr.newCollectionProxy(TreeSet.class, null, 
+            new CustomComparator());
+        assertTrue(torig.comparator() instanceof CustomComparator);
+        populate(torig);
+        assertSortedSetsEquals(new TreeSet(torig), (SortedSet) torig.clone());
     }
 
     public void testListMethodsProxied() 
@@ -433,6 +452,13 @@ public class TestProxyManager
      */
     private static void assertSortedMapsEqual(SortedMap m1, SortedMap m2) {
         assertTrue(m1.getClass() == m2.getClass());
+        assertSortedMapsEquals(m1, m2);
+    }  
+
+    /**
+     * Assert that the given maps are exactly the same (minus the class).
+     */
+    private static void assertSortedMapsEquals(SortedMap m1, SortedMap m2) {
         assertEquals(m1.comparator(), m2.comparator());
         assertEquals(m1.size(), m2.size());
         Map.Entry entry1;
@@ -445,6 +471,7 @@ public class TestProxyManager
             assertTrue(entry1.getKey() == entry2.getKey());
             assertTrue(entry1.getValue() == entry2.getValue());
         }
+        assertTrue(m1.equals(m2));
     }  
 
     public void testCopyNullMap() {
@@ -462,6 +489,16 @@ public class TestProxyManager
         populate(torig);
         assertSortedMapsEqual(new TreeMap(torig), (SortedMap) 
             _mgr.copyMap(torig));
+    }
+
+    public void testCloneProxyMap() {
+        // Map does not support clone()
+        
+        TreeMap torig = (TreeMap) _mgr.newMapProxy(TreeMap.class, null, null, 
+            new CustomComparator());
+        assertTrue(torig.comparator() instanceof CustomComparator);
+        populate(torig);
+        assertSortedMapsEquals(new TreeMap(torig), (SortedMap) torig.clone());
     }
 
     public void testMapMethodsProxied() 
@@ -551,8 +588,15 @@ public class TestProxyManager
      * Assert that the given dates are exactly the same.
      */
     private static void assertDatesEqual(Date d1, Date d2) {
-        assertTrue(d1.getClass() == d1.getClass());
-        assertEquals(d1, d2);
+        assertTrue(d1.getClass() == d2.getClass());
+        assertDatesEquals(d1, d2);
+    }  
+
+    /**
+     * Assert that the given dates are exactly the same (minus the class).
+     */
+    private static void assertDatesEquals(Date d1, Date d2) {
+        assertTrue(d1.equals(d2));
     }  
 
     public void testCopyNullDate() {
@@ -562,7 +606,13 @@ public class TestProxyManager
     public void testCopyProxyDate() {
         Date orig = (Date) _mgr.newDateProxy(Time.class);
         orig.setTime(1999);
-        assertDatesEqual(new Date(orig.getTime()), (Date) _mgr.copyDate(orig));
+        assertDatesEqual(new Time(orig.getTime()), (Date) _mgr.copyDate(orig));
+    }
+
+    public void testCloneProxyDate() {
+        Date orig = (Date) _mgr.newDateProxy(Time.class);
+        orig.setTime(1999);
+        assertDatesEquals(new Time(orig.getTime()), (Date) orig.clone());
     }
 
     public void testDateMethodsProxied() 
@@ -647,8 +697,15 @@ public class TestProxyManager
      * Assert that the given dates are exactly the same.
      */
     private static void assertCalendarsEqual(Calendar c1, Calendar c2) {
-        assertTrue(c1.getClass() == c1.getClass());
-        assertEquals(c1, c2);
+        assertTrue(c1.getClass() == c2.getClass());
+        assertCalendarsEquals(c1, c2);
+    }  
+
+    /**
+     * Assert that the given dates are exactly the same (minus the class).
+     */
+    private static void assertCalendarsEquals(Calendar c1, Calendar c2) {
+        assertTrue(c1.equals(c2));
     }  
 
     public void testCopyNullCalendar() {
@@ -662,6 +719,15 @@ public class TestProxyManager
         Calendar cal = new GregorianCalendar();
         populate(cal);
         assertCalendarsEqual(cal, _mgr.copyCalendar(orig));
+    }
+
+    public void testCloneProxyCalendar() {
+        Calendar orig = (Calendar) _mgr.newCalendarProxy
+            (GregorianCalendar.class, TimeZone.getTimeZone("CST"));
+        populate(orig);
+        Calendar cal = new GregorianCalendar();
+        populate(cal);
+        assertCalendarsEquals(cal, (Calendar)orig.clone());
     }
 
     public void testCalendarAbstractClassProxy() {
