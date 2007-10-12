@@ -188,9 +188,9 @@ public class MappingToolTask
         flags.sqlWriter = Files.getWriter(sqlFile, loader);
 
         MultiLoaderClassResolver resolver = new MultiLoaderClassResolver();
-        resolver.addClassLoader(loader);
         resolver.addClassLoader((ClassLoader) AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(MappingTool.class)));
+        resolver.addClassLoader(loader);
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         conf.setClassResolver(resolver);
         
