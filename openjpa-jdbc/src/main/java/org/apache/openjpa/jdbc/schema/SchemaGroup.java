@@ -187,6 +187,42 @@ public class SchemaGroup
     }
 
     /**
+     * Find the table with the given name in the group, using '.' as the catalog
+     * separator. Returns null if no table found.
+     */
+    public Table findTable(Schema inSchema, String name) {
+        if (name == null)
+            return null;
+
+        int dotIdx = name.indexOf('.');
+        if (dotIdx != -1) {
+            String schemaName = name.substring(0, dotIdx);
+            name = name.substring(dotIdx + 1);
+            Schema schema = getSchema(schemaName);
+            if (schema != null)
+                return schema.getTable(name);
+        } else {
+            Schema[] schemas = getSchemas();
+            for (int i = 0; i < schemas.length; i++) {
+                Table tab = schemas[i].getTable(name);
+                // if a table is found and it has the same schema
+                // as the input schema , it means that the table
+                // exists. However, if the input schema is null,
+                // then we assume that there is only one table for the
+                // db default schema, in this case, table exists..
+                // We can't handle the case that one entity has schema name
+                // and other entity does not have schema name but both entities
+                // map to the same table.
+                if (tab != null
+                        && (schemas[i] == inSchema || inSchema.getName() == null))
+                    return tab;
+
+            }
+        }
+        return null;
+    }
+
+    /**
      * Return true if the given sequence is known to exist. While
      * {@link #findSequence} may exhibit dynamic behavior in some schema group
      * implementations, this method only returns true if the sequence has been
@@ -242,8 +278,37 @@ public class SchemaGroup
     }
 
     /**
-     * Find all foreign keys exported by a given primary key (all foreign
-     * keys that link to the primary key).
+     * Find the sequence with the given name in the group, using '.' as the
+     * catalog separator. Returns null if no sequence found.
+     */
+    public Sequence findSequence(Schema inSchema, String name) {
+        if (name == null)
+            return null;
+
+        int dotIdx = name.indexOf('.');
+        if (dotIdx != -1) {
+            String schemaName = name.substring(0, dotIdx);
+            name = name.substring(dotIdx + 1);
+            Schema schema = getSchema(schemaName);
+            if (schema != null)
+                return schema.getSequence(name);
+        } else {
+            Schema[] schemas = getSchemas();
+            Sequence seq;
+            for (int i = 0; i < schemas.length; i++) {
+                seq = schemas[i].getSequence(name);
+                if ((seq != null)
+                        && (schemas[i] == inSchema || inSchema.getName() == null))
+                    return seq;
+            }
+
+        }
+        return null;
+    }
+
+    /**
+     * Find all foreign keys exported by a given primary key (all foreign keys
+     * that link to the primary key).
      */
     public ForeignKey[] findExportedForeignKeys(PrimaryKey pk) {
         if (pk == null)

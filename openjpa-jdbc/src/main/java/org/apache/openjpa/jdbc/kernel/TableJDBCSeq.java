@@ -24,11 +24,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.HashMap;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
@@ -77,7 +79,7 @@ public class TableJDBCSeq
     private transient Log _log = null;
     private int _alloc = 50;
     private int _intValue = 1;
-    private final Status _stat = new Status();
+    private final HashMap _stat = new HashMap();
 
     private String _table = "OPENJPA_SEQUENCE_TABLE";
     private String _seqColumnName = "SEQUENCE_VALUE";
@@ -85,6 +87,7 @@ public class TableJDBCSeq
 
     private Column _seqColumn = null;
     private Column _pkColumn = null;
+    private int _schemasIdx = 0;    
 
     /**
      * The sequence table name. Defaults to <code>OPENJPA_SEQUENCE_TABLE</code>.
@@ -212,20 +215,37 @@ public class TableJDBCSeq
         buildTable();
     }
     
+
     public void addSchema(ClassMapping mapping, SchemaGroup group) {
-        // table already exists?
-        if (group.isKnownTable(_table))
-            return;
+        // Since the table is created by openjpa internally
+        // we can create the table for each schema within the PU
+        // in here.
+        
+        Schema[] schemas = group.getSchemas();
+        for (int i = 0; i < schemas.length; i++) {
+            String schemaName = Strings.getPackageName(_table);
+            if (schemaName.length() == 0)
+                schemaName = Schemas.getNewTableSchema(_conf);
+            if (schemaName == null)
+                schemaName = schemas[i].getName();
 
-        String schemaName = Strings.getPackageName(_table);
-        if (schemaName.length() == 0)
-            schemaName = Schemas.getNewTableSchema(_conf);
-
-        // create table in this group
-        Schema schema = group.getSchema(schemaName);
-        if (schema == null)
-            schema = group.addSchema(schemaName);
-        schema.importTable(_pkColumn.getTable());
+            // create table in this group
+            Schema schema = group.getSchema(schemaName);
+            if (schema == null)
+                schema = group.addSchema(schemaName);
+            
+            schema.importTable(_pkColumn.getTable());
+            // build the index for the sequence tables
+            // the index name will the fully qualified table name +_IDX
+            Table tab = schema.getTable(_table); 
+            Index idx = tab.addIndex(tab.getFullName()+"_IDX");
+            idx.setUnique(true);
+            // we need to reset the table name in the column with the
+            // fully qualified name for matching the table name from the
+            // Column.
+            _pkColumn.resetTableName(schemaName+"."+_pkColumn.getTableName());
+            idx.addColumn(_pkColumn);       
+        }
     }
 
     protected Object nextInternal(JDBCStore store, ClassMapping mapping)
@@ -285,8 +305,14 @@ public class TableJDBCSeq
      * Return the appropriate status object for the given class, or null
      * if cannot handle the given class. The mapping may be null.
      */
-    protected Status getStatus(ClassMapping mapping) {
-        return _stat;
+    protected Status getStatus(ClassMapping mapping) {  
+        Status status = (Status)_stat.get(mapping);        
+        if (status == null){ 
+            status = new Status();
+            _stat.put(mapping, status);
+        }
+        return status;
+            
     }
 
     /**
@@ -392,8 +418,9 @@ public class TableJDBCSeq
                 getClass(), mapping));
 
         DBDictionary dict = _conf.getDBDictionaryInstance();
+        String tableName = resolveTableName(mapping, _pkColumn.getTable());
         SQLBuffer insert = new SQLBuffer(dict).append("INSERT INTO ").
-            append(_pkColumn.getTable()).append(" (").
+            append(tableName).append(" (").
             append(_pkColumn).append(", ").append(_seqColumn).
             append(") VALUES (").
             appendValue(pk, _pkColumn).append(", ").
@@ -431,7 +458,8 @@ public class TableJDBCSeq
         SQLBuffer sel = new SQLBuffer(dict).append(_seqColumn);
         SQLBuffer where = new SQLBuffer(dict).append(_pkColumn).append(" = ").
             appendValue(pk, _pkColumn);
-        SQLBuffer tables = new SQLBuffer(dict).append(_seqColumn.getTable());
+        String tableName = resolveTableName(mapping, _seqColumn.getTable());
+        SQLBuffer tables = new SQLBuffer(dict).append(tableName);
 
         SQLBuffer select = dict.toSelect(sel, null, tables, where, null,
             null, null, false, dict.supportsSelectForUpdate, 0, Long.MAX_VALUE);
@@ -467,7 +495,7 @@ public class TableJDBCSeq
             throw new InvalidStateException(_loc.get("bad-seq-type",
                 getClass(), mapping));
 
-        DBDictionary dict = _conf.getDBDictionaryInstance();
+        DBDictionary dict = _conf.getDBDictionaryInstance();        
         SQLBuffer where = new SQLBuffer(dict).append(_pkColumn).append(" = ").
             appendValue(pk, _pkColumn);
 
@@ -486,7 +514,8 @@ public class TableJDBCSeq
 
                 // update the value
                 upd = new SQLBuffer(dict);
-                upd.append("UPDATE ").append(_seqColumn.getTable()).
+                String tableName = resolveTableName(mapping, _seqColumn.getTable());
+                upd.append("UPDATE ").append(tableName).
                     append(" SET ").append(_seqColumn).append(" = ").
                     appendValue(Numbers.valueOf(cur + inc), _seqColumn).
                     append(" WHERE ").append(where).append(" AND ").
@@ -503,7 +532,7 @@ public class TableJDBCSeq
             }
         }
 
-        // setup new sequence range
+        // setup new sequence range        
         synchronized (stat) {
             if (updateStatSeq && stat.seq < cur)
                 stat.seq = cur;
@@ -511,6 +540,21 @@ public class TableJDBCSeq
                 stat.max = cur + inc;
         }
         return true;
+    }
+    /**
+     * Resolve a fully qualified table name
+     * 
+     * @param class
+     *            mapping to get the schema name
+     */
+    public String resolveTableName(ClassMapping mapping, Table table) {
+        String sName = mapping.getTable().getSchemaName();
+        String tableName;
+        if (sName == null)
+            tableName = table.getFullName();
+        else
+            tableName = sName + "." + table.getFullName();
+        return tableName;
     }
 
     /**

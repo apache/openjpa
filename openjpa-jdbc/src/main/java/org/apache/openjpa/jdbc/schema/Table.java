@@ -498,7 +498,7 @@ public class Table
      * Return the table's indexes.
      */
     public Index[] getIndexes() {
-        if (_idxs == null)
+        if (_idxs == null || _idxs.length == 0)
             _idxs = (_idxMap == null) ? Schemas.EMPTY_INDEXES : (Index[])
                 _idxMap.values().toArray(new Index[_idxMap.size()]);
         return _idxs;

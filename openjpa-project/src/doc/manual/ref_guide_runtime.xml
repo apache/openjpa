@@ -1455,7 +1455,10 @@ This <classname>Seq</classname> has the following properties:
                     <listitem>
                         <para>
 <literal>Table</literal>: The name of the sequence number table to use.
-Defaults to <literal>OPENJPA_SEQUENCE_TABLE</literal>.
+Defaults to <literal>OPENJPA_SEQUENCE_TABLE</literal>. If the entities are 
+mapped to the same table name but with different schema name within one 
+PersistenceUnit, one <literal>OPENJPA_SEQUENCE_TABLE</literal> is created 
+for each schema.
                         </para>
                     </listitem>
                     <listitem>
