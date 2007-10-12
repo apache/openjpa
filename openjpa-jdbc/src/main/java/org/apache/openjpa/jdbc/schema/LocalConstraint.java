@@ -93,11 +93,6 @@ public abstract class LocalConstraint
      * Add a column to the constraint.
      */
     public void addColumn(Column col) {
-        if (col == null || !ObjectUtils.equals(col.getTable(), getTable()))
-            throw new InvalidStateException(_loc.get("table-mismatch",
-                col == null ? null : col.getTable(),
-                col == null ? null : getTable()));
-
         if (_colList == null)
             _colList = new ArrayList(3);
         else if (_colList.contains(col))

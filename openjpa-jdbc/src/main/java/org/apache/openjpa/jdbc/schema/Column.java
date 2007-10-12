@@ -180,6 +180,14 @@ public class Column
         _tableName = name;
         _fullName = null;
     }
+    
+    /**
+     * Reset the table name with the fully qualified table name which
+     * includes the schema name
+     */
+    public void resetTableName(String name) {
+        _tableName = name;
+    }
 
     /**
      * The column's schema name.

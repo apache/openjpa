@@ -450,7 +450,7 @@ public class SchemaTool {
             for (int i = 0; i < schemas.length; i++) {
                 seqs = schemas[i].getSequences();
                 for (int j = 0; j < seqs.length; j++) {
-                    if (db.findSequence(seqs[j]) != null)
+                    if (db.findSequence(schemas[i], seqs[j].getFullName()) != null)
                         continue;
 
                     if (createSequence(seqs[j])) {
@@ -473,7 +473,7 @@ public class SchemaTool {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {
                 cols = tabs[j].getColumns();
-                dbTable = db.findTable(tabs[j]);
+                dbTable = db.findTable(schemas[i], tabs[j].getFullName());
                 for (int k = 0; k < cols.length; k++) {
                     if (dbTable != null) {
                         col = dbTable.getColumn(cols[k].getName());
@@ -500,7 +500,7 @@ public class SchemaTool {
                 tabs = schemas[i].getTables();
                 for (int j = 0; j < tabs.length; j++) {
                     pk = tabs[j].getPrimaryKey();
-                    dbTable = db.findTable(tabs[j]);
+                    dbTable = db.findTable(schemas[i], tabs[j].getFullName());
                     if (pk != null && !pk.isLogical() && dbTable != null) {
                         if (dbTable.getPrimaryKey() == null
                             && addPrimaryKey(pk))
@@ -520,7 +520,7 @@ public class SchemaTool {
         for (int i = 0; i < schemas.length; i++) {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {
-                if (db.findTable(tabs[j]) != null)
+                if (db.findTable(schemas[i], tabs[j].getFullName()) != null)
                     continue;
 
                 if (createTable(tabs[j])) {
@@ -546,7 +546,7 @@ public class SchemaTool {
                     continue;
 
                 idxs = tabs[j].getIndexes();
-                dbTable = db.findTable(tabs[j]);
+                dbTable = db.findTable(schemas[i], tabs[j].getFullName());
                 for (int k = 0; k < idxs.length; k++) {
                     if (dbTable != null) {
                         idx = findIndex(dbTable, idxs[k]);
@@ -596,7 +596,7 @@ public class SchemaTool {
                     continue;
 
                 fks = tabs[j].getForeignKeys();
-                dbTable = db.findTable(tabs[j]);
+                dbTable = db.findTable(schemas[i],tabs[j].getFullName());
                 for (int k = 0; k < fks.length; k++) {
                     if (!fks[k].isLogical() && dbTable != null) {
                         fk = findForeignKey(dbTable, fks[k]);

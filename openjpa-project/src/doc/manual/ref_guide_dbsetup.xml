@@ -3299,6 +3299,19 @@ The <literal>Schema</literal> property also establishes the default schema for
 new tables created through OpenJPA tools, such as the mapping tool covered in
 <xref linkend="ref_guide_mapping_mappingtool"/>.
         </para>
+        <para>
+If the entities are mapped to the same table name but with different schema 
+name within one <literal>PersistenceUnit</literal> intentionally, and the 
+strategy of <literal>GeneratedType.AUTO</literal> is used to generate the ID 
+for each entity, a schema name for each entity must be explicitly declared 
+either through the annotation or the mapping.xml file. Otherwise, the mapping 
+tool only creates the tables for those entities with the schema names under 
+each schema. In addition, there will be only one 
+<literal>OPENJPA_SEQUENCE_TABLE</literal> created for all the entities within 
+the <literal>PersistenceUnit</literal> if the entities are not identified 
+with the schema name. 
+Read <xref linkend="ref_guide_sequence"/> in the Reference Guide.
+        </para>
     </section>
     <section id="ref_guide_schema_info">
         <title>

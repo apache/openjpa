@@ -883,6 +883,19 @@ These string constants are defined in
 <ulink url="../javadoc/org/apache/openjpa/persistence/Generator.html">
 <classname>org.apache.openjpa.persistence.Generator</classname></ulink>.
                 </para>
+                 <para>
+If the entities are mapped to the same table name but with different schema 
+name within one <literal>PersistenceUnit</literal> intentionally, and the 
+strategy of <literal>GeneratedType.AUTO</literal> is used to generate the ID 
+for each entity, a schema name for each entity must be explicitly declared 
+either through the annotation or the mapping.xml file. Otherwise, the mapping 
+tool only creates the tables for those entities with the schema names under 
+each schema. In addition, there will be only one 
+<literal>OPENJPA_SEQUENCE_TABLE</literal> created for all the entities within 
+the <literal>PersistenceUnit</literal> if the entities are not identified 
+with the schema name. Read <xref linkend="ref_guide_sequence"/> and 
+<xref linkend="ref_guide_schema_def"/> in the Reference Guide.
+                </para>
             </note>
         </section>
         <section id="jpa_overview_meta_embedid">
