@@ -26,8 +26,7 @@ import java.io.*;
  * Extension of Animal class illustrating inheritance.
  */
 @Entity(name = "DogTable")
-@Table(name = "DOGTABLE", schema = "SCHEMA1")
-@IdClass(DogId.class)
+@Table(name = "DOGTABLES", schema = "SCHEMA1")
 public class DogTable implements Serializable
 
 {
@@ -37,9 +36,6 @@ public class DogTable implements Serializable
             pkColumnValue = "ID2", initialValue = 20, allocationSize = 10)
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "Dog_Gen1")
     private int id2;
-
-    @Id
-    private int datastoreid;
 
     private String name;
 
@@ -53,7 +49,6 @@ public class DogTable implements Serializable
     }
 
     public DogTable(String name) {
-        this.id2 = id2;
         this.name = name;
 
     }
@@ -91,11 +86,4 @@ public class DogTable implements Serializable
         this.domestic = domestic;
     }
 
-    public int getDatastoreid() {
-        return datastoreid;
-    }
-
-    public void setDatastoreid(int datastoreid) {
-        this.datastoreid = datastoreid;
-    }
 }

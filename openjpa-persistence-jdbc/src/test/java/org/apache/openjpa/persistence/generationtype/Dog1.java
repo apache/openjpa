@@ -25,17 +25,13 @@ import java.io.*;
  * Extension of Animal class illustrating inheritance.
  */
 @Entity(name = "Dog1")
-@Table(name = "DOGTAB", schema = "SCHEMA1")
-@IdClass(DogId.class)
+@Table(name = "DOGAUTO", schema = "SCHEMA1")
 public class Dog1 implements Serializable
 
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id2;
-
-    @Id
-    private int datastoreid;
 
     private String name;
 
@@ -86,11 +82,4 @@ public class Dog1 implements Serializable
         this.domestic = domestic;
     }
 
-    public int getDatastoreid() {
-        return datastoreid;
-    }
-
-    public void setDatastoreid(int datastoreid) {
-        this.datastoreid = datastoreid;
-    }
 }

@@ -83,31 +83,29 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
 
         Dog1 dog1 = new Dog1();
         dog1.setName("helloDog1");
-        dog1.setDatastoreid(12);
         dog1.setPrice(12000);
 
         em.persist(dog1);
         Dog1 dog1a = new Dog1();
         dog1a.setName("helloDog2");
-        dog1a.setDatastoreid(15);
         dog1a.setPrice(22000);
         em.persist(dog1a);
         // add dog2
         Dog2 dog2 = new Dog2();
         dog2.setName("helloDog3");
-        dog2.setDatastoreid(12);
         dog2.setPrice(15000);
         em.persist(dog2);
 
         Dog2 dog2a = new Dog2();
         dog2a.setName("helloDog4");
-        dog2a.setDatastoreid(19);
         dog2a.setPrice(25000);
         em.persist(dog2a);
         em.getTransaction().commit();
-        // System.out.println("persist dogs are done");
 
         Dog1 dog1x = em.find(Dog1.class, kem.getObjectId(dog1));
+        // Derby can't guarantee the order of the generated value, therefore,
+        // we can't assert the id based on the order. For db2, we see the id 
+        // value in the right order
         assertTrue(dog1x.getId2() == 1 || dog1x.getId2() == 2);
         assertEquals(dog1x.getName(), "helloDog1");
         dog1x.setName("Dog1");
@@ -162,25 +160,21 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
 
         DogTable dog1 = new DogTable();
         dog1.setName("helloDog1");
-        dog1.setDatastoreid(12);
         dog1.setPrice(12000);
 
         em.persist(dog1);
         DogTable dog1a = new DogTable();
         dog1a.setName("helloDog2");
-        dog1a.setDatastoreid(15);
         dog1a.setPrice(22000);
         em.persist(dog1a);
         // add dog2
         DogTable2 dog2 = new DogTable2();
         dog2.setName("helloDog3");
-        dog2.setDatastoreid(12);
         dog2.setPrice(15000);
         em.persist(dog2);
 
         DogTable2 dog2a = new DogTable2();
         dog2a.setName("helloDog4");
-        dog2a.setDatastoreid(19);
         dog2a.setPrice(25000);
         em.persist(dog2a);
         em.getTransaction().commit();

@@ -25,8 +25,7 @@ import javax.persistence.*;
  * Extension of Animal class illustrating inheritance.
  */
 @Entity(name = "DogTable2")
-@Table(name = "DOGTABLE", schema = "SCHEMA2")
-@IdClass(DogId.class)
+@Table(name = "DOGTABLES", schema = "SCHEMA2")
 public class DogTable2 implements Serializable
 
 {
@@ -36,9 +35,6 @@ public class DogTable2 implements Serializable
             pkColumnValue = "ID2", initialValue = 100, allocationSize = 10)
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "Dog_Gen2")
     private int id2;
-
-    @Id
-    private int datastoreid;
 
     private String name;
 
@@ -52,7 +48,6 @@ public class DogTable2 implements Serializable
     }
 
     public DogTable2(String name) {
-        this.id2 = id2;
         this.name = name;
 
     }
@@ -88,13 +83,5 @@ public class DogTable2 implements Serializable
 
     public void setDomestic(boolean domestic) {
         this.domestic = domestic;
-    }
-
-    public int getDatastoreid() {
-        return datastoreid;
-    }
-
-    public void setDatastoreid(int datastoreid) {
-        this.datastoreid = datastoreid;
     }
 }
