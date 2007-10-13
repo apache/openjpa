@@ -35,6 +35,11 @@
 
         mvn integration-test -Ptck-profile -Djpatck.pkg.dir=com/sun/ts/tests/ejb30/persistence/inheritance/mappedsc/descriptors
 
+    You can also run using another database (e.g., oracle) using command
+    line properties. For example:
+
+        mvn integration-test -Ddb.name=oracle -Ddb.driver=oracle.jdbc.driver.OracleDriver -Ddb.url=jdbc:oracle:thin:@dbhost:1526:dbname -Ddb.username=scott -Ddb.password=tiger -Ddb.jar=/tmp/oracle-jdbc.jar -Dtest=false -Ptck-profile -Djpatck.pkg.dir=com/sun/ts/tests/ejb30/persistence/query/apitests -Djpatck.test=queryAPITest15
+
     The TCK running process will do the following:
 
     1. Fine the TCK zip file and extract it
@@ -100,9 +105,11 @@
                                 <exclude name="**/geronimo-jpa*"/>
                             </fileset>
                             <pathelement path="${java.class.path}"/>
+                            <pathelement path="${db.jar}"/>
                         </path>
                         <pathconvert property="cp.property" refid="cp"/>
 
+                        <property name="db.name" value="derby"/>
                         <property name="db.driver"
                             value="org.apache.derby.jdbc.EmbeddedDriver"/>
                         <property name="db.url"
@@ -160,6 +167,7 @@ database.user=${db.username}
 database.passwd=${db.password}
 database.url=${db.url}
 database.driver=${db.driver}
+databaseName=${db.name}
 
                         </echo>
 
