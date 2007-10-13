@@ -117,6 +117,8 @@
                         <property name="db.username" value="nousername"/>
                         <property name="db.password" value="nopassword"/>
 
+                        <property name="openjpa.log.level" value="WARN"/>
+
                         <property name="jpatck.pkg.dir" value="com"/>
 
                         <property name="jpatck.work.dir"
@@ -137,7 +139,7 @@ openjpa.ConnectionPassword: ${db.password}
 openjpa.FetchBatchSize: -1
 openjpa.Compatibility: StrictIdentityValues=true
 openjpa.Sequence: time
-openjpa.Log: DefaultLevel=WARN
+openjpa.Log: DefaultLevel=${openjpa.log.level}
 openjpa.jdbc.DBDictionary: StoreCharsAsNumbers=false
 openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
                         </echo>
