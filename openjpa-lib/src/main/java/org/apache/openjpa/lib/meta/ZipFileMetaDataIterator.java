@@ -142,7 +142,12 @@ public class ZipFileMetaDataIterator
             content = bout.toByteArray();
         } else {
             content = new byte[(int) size];
-            in.read(content);
+            int offset = 0;
+            int read;
+            while (offset < size &&
+                (read = in.read(content, offset, (int) size - offset)) != -1) {
+                offset += read;
+            }
         }
         in.close();
         return content;
