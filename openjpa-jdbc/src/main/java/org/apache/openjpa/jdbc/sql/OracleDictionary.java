@@ -45,6 +45,7 @@ import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.lib.jdbc.DelegatingDatabaseMetaData;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.util.Localizer;
@@ -353,7 +354,8 @@ public class OracleDictionary
     public SQLBuffer toSelect(SQLBuffer select, JDBCFetchConfiguration fetch,
         SQLBuffer tables, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
-        boolean distinct, boolean forUpdate, long start, long end) {
+        boolean distinct, boolean forUpdate, long start, long end,
+        Select sel) {
         if (!_checkedUpdateBug) {
             ensureDriverVendor();
             if (forUpdate && _driverBehavior == BEHAVE_DATADIRECT31)
@@ -364,7 +366,7 @@ public class OracleDictionary
         // if no range, use standard select
         if (start == 0 && end == Long.MAX_VALUE)
             return super.toSelect(select, fetch, tables, where, group, having,
-                order, distinct, forUpdate, 0, Long.MAX_VALUE);
+                order, distinct, forUpdate, 0, Long.MAX_VALUE, sel);
 
         // if no skip, ordering, or distinct can use rownum directly
         SQLBuffer buf = new SQLBuffer(this);
@@ -373,17 +375,18 @@ public class OracleDictionary
                 buf.append(where).append(" AND ");
             buf.append("ROWNUM <= ").appendValue(end);
             return super.toSelect(select, fetch, tables, buf, group, having,
-                order, distinct, forUpdate, 0, Long.MAX_VALUE);
+                order, distinct, forUpdate, 0, Long.MAX_VALUE, sel);
         }
 
         // if there is ordering, skip, or distinct we have to use subselects
-        SQLBuffer sel = super.toSelect(select, fetch, tables, where,
-            group, having, order, distinct, forUpdate, 0, Long.MAX_VALUE);
+        SQLBuffer newsel = super.toSelect(select, fetch, tables, where,
+            group, having, order, distinct, forUpdate, 0, Long.MAX_VALUE,
+            sel);
 
         // if no skip, can use single nested subselect
         if (start == 0) {
             buf.append(getSelectOperation(fetch) + " * FROM (");
-            buf.append(sel);
+            buf.append(newsel);
             buf.append(") WHERE ROWNUM <= ").appendValue(end);
             return buf;
         }
@@ -392,7 +395,7 @@ public class OracleDictionary
         // where conditions on the rownum
         buf.append(getSelectOperation(fetch)
             + " * FROM (SELECT r.*, ROWNUM RNUM FROM (");
-        buf.append(sel);
+        buf.append(newsel);
         buf.append(") r");
         if (end != Long.MAX_VALUE)
             buf.append(" WHERE ROWNUM <= ").appendValue(end);
