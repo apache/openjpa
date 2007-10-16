@@ -235,8 +235,10 @@ databaseName=${db.name}
 
                                     <sysproperty key="pkg.dir"
                                         value="${jpatck.pkg.dir}"/>
+                                    <!--
                                     <sysproperty key="test"
                                         value="${jpatck.test}"/>
+                                    -->
 
                                     <classpath>
                                         <path refid="cp"/>
