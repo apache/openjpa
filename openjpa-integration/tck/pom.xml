@@ -120,6 +120,7 @@
                         <property name="openjpa.log.level" value="WARN"/>
 
                         <property name="jpatck.pkg.dir" value="com"/>
+                        <property name="jpatck.test" value=""/>
 
                         <property name="jpatck.work.dir"
                             value="${tck.dir}/../work"/>
