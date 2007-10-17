@@ -364,7 +364,7 @@ public class SelectImpl
                     if (log.isWarnEnabled())
                         log.warn(_loc.get("millis-query-timeout"));
                 }
-                stmnt.setQueryTimeout(fetch.getLockTimeout() / 1000);
+                stmnt.setQueryTimeout(timeout / 1000);
             }
             rs = stmnt.executeQuery();
         } catch (SQLException se) {
