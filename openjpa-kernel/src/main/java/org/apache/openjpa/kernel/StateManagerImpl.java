@@ -456,7 +456,7 @@ public class StateManagerImpl
             // post process for the fetchGroup: if there is a
             // fetchgroup field, then go to the FetchConfiguration
             // to get the required fetch fields.
-            if (fgs != null) {
+            if (fgs != null && fetch != null){
                 if (fields == null)
                     fields = new BitSet(fmds.length);
                 BitSet fgFields = fetch.requiresFetch(fgs, fmds);
