@@ -42,6 +42,7 @@ public class SQLServerDictionary
     private static final Localizer _loc = Localizer.forPackage
         (SQLServerDictionary.class);
 
+    private String schemaCase = SCHEMA_CASE_PRESERVE;
     /**
      * Flag whether to treat UNIQUEIDENTIFIER as VARBINARY or VARCHAR
      */
@@ -229,5 +230,12 @@ public class SQLServerDictionary
             append(getTypeName(type));
         appendLength(buf, type);
         buf.append("')");
+    }
+    
+    /**
+     * Return DB specific schemaCase
+     */
+    public String getSchemaCase() {
+        return schemaCase;
     }
 }

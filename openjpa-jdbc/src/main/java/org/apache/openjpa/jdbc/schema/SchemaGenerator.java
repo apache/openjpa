@@ -819,8 +819,10 @@ public class SchemaGenerator {
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("gen-seqs", schemaName, sequenceName));
 
+        // since all the sequences are generated under the default schema
+        // therefore, we can use the null schemaname to search
         Sequence[] seqs = _dict.getSequences(meta, conn.getCatalog(),
-            schemaName, sequenceName, conn);
+            null, sequenceName, conn);
 
         SchemaGroup group = getSchemaGroup();
         Schema schema;
