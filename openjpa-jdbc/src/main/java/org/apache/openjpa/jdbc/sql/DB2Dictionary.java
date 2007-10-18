@@ -94,7 +94,7 @@ public class DB2Dictionary
             "LONG VARCHAR FOR BIT DATA", "LONG VARCHAR", "LONG VARGRAPHIC",
         }));
         systemSchemas = new String(
-                "SYSCAT, SYSIBM, SYSSTAT, SYSIBMADM, SYSTOOLS");
+                "SYSCAT,SYSIBM,SYSSTAT,SYSIBMADM,SYSTOOLS");
         maxConstraintNameLength = 18;
         maxIndexNameLength = 18;
         maxColumnNameLength = 30;

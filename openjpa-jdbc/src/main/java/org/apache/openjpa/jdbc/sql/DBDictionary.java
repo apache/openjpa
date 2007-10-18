@@ -3364,7 +3364,7 @@ public class DBDictionary
         try {
             int idx = 1;
             if (schemaName != null)
-                stmnt.setString(idx++, schemaName);
+                stmnt.setString(idx++, schemaName.toUpperCase());
             if (sequenceName != null)
                 stmnt.setString(idx++, sequenceName);
 
@@ -3708,13 +3708,21 @@ public class DBDictionary
         if (objectName == null)
             return null;
 
-        if (SCHEMA_CASE_LOWER.equals(schemaCase))
+        String scase = getSchemaCase();
+        if (SCHEMA_CASE_LOWER.equals(scase))
             return objectName.toLowerCase();
-        if (SCHEMA_CASE_PRESERVE.equals(schemaCase))
+        if (SCHEMA_CASE_PRESERVE.equals(scase))
             return objectName;
         return objectName.toUpperCase();
     }
-
+    
+    /**
+     * Return DB specific schemaCase 
+     */
+    public String getSchemaCase(){
+        return schemaCase;
+    }
+        
     /**
      * Prepared the connection for metadata operations.
      */
