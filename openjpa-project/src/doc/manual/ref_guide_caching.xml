@@ -639,11 +639,11 @@ import org.apache.openjpa.persistence.*;
 
 // temporarily disable query caching for all queries created from em
 OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
-oem.getFetchPlan ().setQueryResultCache(false);
+oem.getFetchPlan ().setQueryResultCacheEnabled(false);
 
 // re-enable caching for a particular query
 OpenJPAQuery oq = oem.createQuery(...);
-oq.getFetchPlan().setQueryResultCache(true);
+oq.getFetchPlan().setQueryResultCacheEnabled(true);
 </programlisting>
             </example>
         </section>

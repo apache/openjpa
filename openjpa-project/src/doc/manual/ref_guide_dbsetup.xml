@@ -2773,7 +2773,7 @@ import org.apache.openjpa.persistence.jdbc.*;
 Query q = em.createQuery("select m from Magazine m where m.title = 'JDJ'");
 OpenJPAQuery kq = OpenJPAPersistence.cast(q);
 JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan ();
-fetch.setJoinSyntax(JDBCFetchPlan.JOIN_SYNTAX_SQL92);
+fetch.setJoinSyntax(JoinSyntax.SQL92);
 List results = q.getResultList();
 </programlisting>
         </example>
@@ -3266,9 +3266,9 @@ Query q = em.createQuery("select m from Magazine m where m.title = 'JDJ'");
 OpenJPAQuery kq = OpenJPAPersistence.cast(q);
 JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan();
 fetch.setFetchBatchSize(20);
-fetch.setResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
-fetch.setFetchDirection(ResultSet.FETCH_FORWARD);
-fetch.setLRSSize(JDBCFetchPlan.SIZE_LAST);
+fetch.setResultSetType(ResultSetType.SCROLL_INSENSITIVE);
+fetch.setFetchDirection(FetchDirection.FORWARD);
+fetch.setLRSSizeAlgorithm(LRSSizeAlgorithm.LAST);
 List results = q.getResultList();
 </programlisting>
         </example>

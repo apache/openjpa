@@ -1755,8 +1755,8 @@ public void addTransactionListener(Object listener);
 public void removeTransactionListener(Object listener);
 </programlisting>
         <para>
-These <classname>OpenJPAEntityManager</classname> methods allow you to add and
-remove listeners.
+These <classname>OpenJPAEntityManagerSPI</classname> methods allow you to add 
+and remove listeners. These methods are outside the bounds of the published OpenJPA APIs, and are subject to change in the future.
         </para>
         <para>
 For details on the transaction framework, see the <literal>

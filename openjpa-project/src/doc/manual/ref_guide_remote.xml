@@ -125,7 +125,7 @@ concurrency exception.
             </para>
             <para>
 You can stop OpenJPA from assuming the transaction will commit by invoking
-<methodname>OpenJPAEntityManager.setRollbackOnly</methodname> prior to detaching
+<methodname>EntityTransaction.setRollbackOnly</methodname> prior to detaching
 your objects. Setting the <literal>RollbackOnly</literal> flag prevents OpenJPA
 from flushing when detaching dirty objects; instead OpenJPA just runs its
 pre-flush actions (see the <methodname>OpenJPAEntityManager.preFlush
@@ -344,12 +344,18 @@ at runtime.
 for controlling detached state:
             </para>
 <programlisting>
-public static final int DETACH_LOADED;
-public static final int DETACH_FETCH_GROUPS;
-public static final int DETACH_ALL;
-public int getDetachState();
-public void setDetachState(int mode);
+public DetachStateType getDetachState();
+public void setDetachState(DetachStateType type);
 </programlisting>
+            <para>
+The <classname>DetachStateType</classname> enum contains the following values:
+            </para>
+<programlisting>
+enum DetachStateType {
+    FETCH_GROUPS,
+    LOADED,
+    ALL
+}
             <section id="ref_guide_detach_field">
                 <title>
                     Detached State Field

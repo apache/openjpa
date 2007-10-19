@@ -2405,8 +2405,8 @@ import org.apache.openjpa.persistence.jdbc.*;
 Query q = em.createQuery("select p from Person p where p.address.state = 'TX'");
 OpenJPAQuery kq = OpenJPAPersistence.cast(q);
 JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan();
-fetch.setEagerFetchMode(JDBCFetchPlan.EAGER_PARALLEL);
-fetch.setSubclassFetchMode(JDBCFetchPlan.EAGER_JOIN);
+fetch.setEagerFetchMode(FetchMode.PARALLEL);
+fetch.setSubclassFetchMode(FetchMode.JOIN);
 List results = q.getResultList();
 </programlisting>
             </example>
