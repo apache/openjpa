@@ -533,10 +533,10 @@ public class JDBCConfigurationImpl
                 // the DB and use the connection metadata
                 if (dbdictionary == null) {
                     Log log = getLog(LOG_JDBC);
-                    if (log.isInfoEnabled()) {
+                    if (log.isTraceEnabled()) {
                         Localizer loc = Localizer.forPackage
                             (JDBCConfigurationImpl.class);
-                        log.info(loc.get("connecting-for-dictionary"));
+                        log.trace(loc.get("connecting-for-dictionary"));
                     }
 
                     // use the base connection factory rather than the
