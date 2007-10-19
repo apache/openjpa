@@ -136,7 +136,7 @@ configuration property to <literal>non-finalizing</literal>.
         </section>
         <section id="ref_guide_runtime_broker_extension">
             <title>
-                Broker Customization and Finalization
+                Broker Customization and Eviction
             </title>
             <indexterm zone="ref_guide_runtime_broker_extension">
                 <primary>
@@ -196,7 +196,8 @@ The following sections outline the runtime interfaces you can use to access
 OpenJPA-specific functionality from JPA. Each interface contains services and
 convenience methods missing from the JPA specification. OpenJPA strives to use
 the same naming conventions and API patterns as standard JPA methods in all
-extensions, so that OpenJPA JDO APIs feel as much as possible like standard JPA.
+extensions, so that OpenJPA extension APIs feel as much as possible like 
+standard JPA.
         </para>
         <para>
 You may have noticed the examples throughout this document using the
@@ -438,6 +439,23 @@ configuration does not affect the <classname> EntityManagerFactory</classname>.
             <para>
 <xref linkend="ref_guide_fetch"/> includes examples using <classname>
 FetchPlan</classname>s.
+            </para>
+        </section>
+        <section id="ref_guide_runtime_openjpaentitytransaction">
+            <title>
+                OpenJPAEntityTransaction
+            </title>
+            <indexterm zone="ref_guide_runtime_openjpaentitytransaction">
+                <primary>
+                    OpenJPAEntityTransaction
+                </primary>
+            </indexterm>
+            <para>
+<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityTransaction.html">
+<classname>org.apache.openjpa.persistence.OpenJPAEntityTransaction</classname></ulink>
+extends <classname>javax.persistence.EntityTransaction</classname> to provide
+additional transaction-debugging capabilities and some concurrency-related
+commit and rollback features.
             </para>
         </section>
         <section id="ref_guide_runtime_openjpapersistence">
