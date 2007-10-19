@@ -356,6 +356,7 @@ enum DetachStateType {
     LOADED,
     ALL
 }
+</programlisting>
             <section id="ref_guide_detach_field">
                 <title>
                     Detached State Field
