@@ -53,8 +53,10 @@ public interface OpenJPAEntityManagerSPI
     /**
      * The {@link CallbackMode} flags for handling transaction listener
      * exceptions.
+     *
+     * @since 1.1.0
      */
-    public EnumSet<CallbackMode> getTransactionListenerCallbackMode();
+    public EnumSet<CallbackMode> getTransactionListenerCallbackModes();
 
     /**
      * The {@link CallbackMode} flag for handling transaction listener
@@ -85,8 +87,10 @@ public interface OpenJPAEntityManagerSPI
     /**
      * The {@link CallbackMode} flags for handling lifecycle listener
      * exceptions.
+     *
+     * @since 1.1.0
      */
-    public EnumSet<CallbackMode> getLifecycleListenerCallbackMode();
+    public EnumSet<CallbackMode> getLifecycleListenerCallbackModes();
 
     /**
      * The {@link CallbackMode} flag for handling lifecycle listener

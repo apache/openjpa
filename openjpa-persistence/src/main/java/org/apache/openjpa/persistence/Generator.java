@@ -51,4 +51,10 @@ public interface Generator {
      * efficiency.
      */
     public void allocate(int additional);
+
+    /**
+     * @deprecated cast to {@link GeneratorImpl} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public org.apache.openjpa.kernel.Seq getDelegate();
 }

@@ -21,18 +21,29 @@ package org.apache.openjpa.persistence;
 import java.util.Collection;
 import java.util.EnumSet;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
 
+import org.apache.openjpa.event.CallbackModes;
+import org.apache.openjpa.kernel.AutoClear;
+import org.apache.openjpa.kernel.AutoDetach;
+import org.apache.openjpa.kernel.ConnectionRetainModes;
+import org.apache.openjpa.kernel.DetachState;
+import org.apache.openjpa.kernel.RestoreState;
+
 /**
  * Interface implemented by OpenJPA entity managers.
+ *
+ * This interface extends {@link EntityTransaction}, but this extension is
+ * deprecated.
  *
  * @since 0.4.0
  * @author Abe White
  * @published
  */
 public interface OpenJPAEntityManager
-    extends EntityManager {
+    extends EntityManager, EntityTransaction /* deprecated */ {
 
     /**
      * Return the factory that produced this entity manager.
@@ -202,8 +213,10 @@ public interface OpenJPAEntityManager
     /**
      * Bit flags marked in {@link AutoDetachType} which indicate when persistent
      * managed objects should be automatically detached in-place.
+     *
+     * @since 1.1.0
      */
-    public void setAutoDetach(int flag, boolean on);
+    public void setAutoDetach(AutoDetachType value, boolean on);
 
     /**
      * Whether to also evict an object from the store cache when it is
@@ -251,7 +264,7 @@ public interface OpenJPAEntityManager
      *
      * @since 1.0.0
      */
-    public void setTrackChangesByType(boolean largeTransaction);
+    public void setTrackChangesByType(boolean track);
 
     /**
      * Put the specified key-value pair into the map of user objects. Use
@@ -820,4 +833,264 @@ public interface OpenJPAEntityManager
 	 * Returns the current version indicator for <code>o</code>.
 	 */
 	public Object getVersion (Object o);
+
+    /**
+     * @deprecated use the {@link ConnectionRetainMode} enum instead.
+     */
+    public static final int CONN_RETAIN_DEMAND =
+        ConnectionRetainModes.CONN_RETAIN_DEMAND;
+
+    /**
+     * @deprecated use the {@link ConnectionRetainMode} enum instead.
+     */
+    public static final int CONN_RETAIN_TRANS =
+        ConnectionRetainModes.CONN_RETAIN_TRANS;
+
+    /**
+     * @deprecated use the {@link ConnectionRetainMode} enum instead.
+     */
+    public static final int CONN_RETAIN_ALWAYS =
+        ConnectionRetainModes.CONN_RETAIN_ALWAYS;
+
+    /**
+     * @deprecated use the {@link DetachStateType} enum instead.
+     */
+    public static final int DETACH_FETCH_GROUPS =
+        DetachState.DETACH_FETCH_GROUPS;
+
+    /**
+     * @deprecated use the {@link DetachStateType} enum instead.
+     */
+    public static final int DETACH_FGS = DetachState.DETACH_FGS;
+
+    /**
+     * @deprecated use the {@link DetachStateType} enum instead.
+     */
+    public static final int DETACH_LOADED = DetachState.DETACH_LOADED;
+
+    /**
+     * @deprecated use the {@link DetachStateType} enum instead.
+     */
+    public static final int DETACH_ALL = DetachState.DETACH_ALL;
+
+    /**
+     * @deprecated use the {@link RestoreStateType} enum instead.
+     */
+    public static final int RESTORE_NONE = RestoreState.RESTORE_NONE;
+
+    /**
+     * @deprecated use the {@link RestoreStateType} enum instead.
+     */
+    public static final int RESTORE_IMMUTABLE = RestoreState.RESTORE_IMMUTABLE;
+
+    /**
+     * @deprecated use the {@link RestoreStateType} enum instead.
+     */
+    public static final int RESTORE_ALL = RestoreState.RESTORE_ALL;
+
+    /**
+     * @deprecated use the {@link AutoDetachType} enum instead.
+     */
+    public static final int DETACH_CLOSE = AutoDetach.DETACH_CLOSE;
+
+    /**
+     * @deprecated use the {@link AutoDetachType} enum instead.
+     */
+    public static final int DETACH_COMMIT = AutoDetach.DETACH_COMMIT;
+
+    /**
+     * @deprecated use the {@link AutoDetachType} enum instead.
+     */
+    public static final int DETACH_NONTXREAD = AutoDetach.DETACH_NONTXREAD;
+
+    /**
+     * @deprecated use the {@link AutoDetachType} enum instead.
+     */
+    public static final int DETACH_ROLLBACK = AutoDetach.DETACH_ROLLBACK;
+
+    /**
+     * @deprecated use the {@link AutoClearType} enum instead.
+     */
+    public static final int CLEAR_DATASTORE = AutoClear.CLEAR_DATASTORE;
+
+    /**
+     * @deprecated use the {@link AutoClearType} enum instead.
+     */
+    public static final int CLEAR_ALL = AutoClear.CLEAR_ALL;
+
+    /**
+     * @deprecated use the {@link CallbackMode} enum instead.
+     */
+    public static final int CALLBACK_FAIL_FAST =
+        CallbackModes.CALLBACK_FAIL_FAST;
+
+    /**
+     * @deprecated use the {@link CallbackMode} enum instead.
+     */
+    public static final int CALLBACK_IGNORE = CallbackModes.CALLBACK_IGNORE;
+
+    /**
+     * @deprecated use the {@link CallbackMode} enum instead.
+     */
+    public static final int CALLBACK_LOG = CallbackModes.CALLBACK_LOG;
+
+    /**
+     * @deprecated use the {@link CallbackMode} enum instead.
+     */
+    public static final int CALLBACK_RETHROW = CallbackModes.CALLBACK_RETHROW;
+
+    /**
+     * @deprecated use the {@link CallbackMode} enum instead.
+     */
+    public static final int CALLBACK_ROLLBACK = CallbackModes.CALLBACK_ROLLBACK;
+
+    /**
+     * @deprecated cast to {@link OpenJPAEntityManagerSPI} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public org.apache.openjpa.conf.OpenJPAConfiguration getConfiguration();
+
+    /**
+     * @deprecated use {@link #setRestoreState(RestoreStateType)} instead.
+     */
+    public void setRestoreState(int restore);
+
+    /**
+     * @deprecated use {@link #setDetachState(DetachStateType)} instead.
+     */
+    public void setDetachState(int detach);
+
+    /**
+     * @deprecated use {@link #setAutoClear(AutoClearType)} instead.
+     */
+    public void setAutoClear(int autoClear);
+
+    /**
+     * @deprecated use {@link #setAutoDetach(AutoDetachType)} or
+     * {@link #setAutoDetach(java.util.EnumSet)} instead.
+     */
+    public void setAutoDetach(int autoDetachFlags);
+
+    /**
+     * @deprecated use {@link #setAutoDetach(AutoDetachType, boolean)} instead.
+     */
+    public void setAutoDetach(int flag, boolean on);
+
+    /**
+     * @deprecated use {@link #isTrackChangesByType()} instead.
+     */
+    public boolean isLargeTransaction();
+
+    /**
+     * @deprecated use {@link #setTrackChangesByType(boolean)} instead.
+     */
+    public void setLargeTransaction(boolean value);
+
+    /**
+     * @deprecated cast to {@link OpenJPAEntityManagerSPI} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public void addTransactionListener(Object listener);
+
+    /**
+     * @deprecated cast to {@link OpenJPAEntityManagerSPI} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public void removeTransactionListener(Object listener);
+
+    /**
+     * @deprecated cast to {@link OpenJPAEntityManagerSPI} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public int getTransactionListenerCallbackMode();
+
+    /**
+     * @deprecated cast to {@link OpenJPAEntityManagerSPI} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public void setTransactionListenerCallbackMode(int callbackMode);
+
+    /**
+     * @deprecated cast to {@link OpenJPAEntityManagerSPI} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public void addLifecycleListener(Object listener, Class... classes);
+
+    /**
+     * @deprecated cast to {@link OpenJPAEntityManagerSPI} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public void removeLifecycleListener(Object listener);
+
+    /**
+     * @deprecated cast to {@link OpenJPAEntityManagerSPI} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public int getLifecycleListenerCallbackMode();
+
+    /**
+     * @deprecated cast to {@link OpenJPAEntityManagerSPI} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public void setLifecycleListenerCallbackMode(int callbackMode);
+
+    /**
+     * @deprecated use {@link EntityTransaction#begin}
+     * instead: <code>em.getTransaction().begin()</code>
+     */
+    public void begin();
+
+    /**
+     * @deprecated use {@link EntityTransaction#commit}
+     * instead: <code>em.getTransaction().commit()</code>
+     */
+    public void commit();
+
+    /**
+     * @deprecated use {@link EntityTransaction#rollback}
+     * instead: <code>em.getTransaction().rollback()</code>
+     */
+    public void rollback();
+
+    /**
+     * @deprecated use {@link EntityTransaction#isActive}
+     * instead: <code>em.getTransaction().isActive()</code>
+     */
+    public boolean isActive();
+
+    /**
+     * @deprecated use {@link OpenJPAEntityTransaction#commitAndResume} instead:
+     * <code>em.getTransaction().commitAndResume()</code>
+     */
+    public void commitAndResume();
+
+    /**
+     * @deprecated use {@link OpenJPAEntityTransaction#rollbackAndResume}
+     * instead: <code>em.getTransaction().rollbackAndResume()</code>
+     */
+    public void rollbackAndResume();
+
+    /**
+     * @deprecated use {@link EntityTransaction#setRollbackOnly}
+     * instead: <code>em.getTransaction().setRollbackOnly()</code>
+     */
+    public void setRollbackOnly();
+
+    /**
+     * @deprecated use {@link OpenJPAEntityTransaction#setRollbackOnly}
+     * instead: <code>em.getTransaction().setRollbackOnly()</code>
+     */
+    public void setRollbackOnly(Throwable cause);
+
+    /**
+     * @deprecated use {@link OpenJPAEntityTransaction#getRollbackCause}
+     * instead: <code>em.getTransaction().getRollbackCause()</code>
+     */
+    public Throwable getRollbackCause();
+
+    /**
+     * @deprecated use {@link EntityTransaction#getRollbackOnly}
+     * instead: <code>em.getTransaction().getRollbackOnly()</code>
+     */
+    public boolean getRollbackOnly();
 }

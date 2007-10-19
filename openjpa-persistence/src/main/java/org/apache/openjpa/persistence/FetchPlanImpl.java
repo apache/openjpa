@@ -91,6 +91,14 @@ public class FetchPlanImpl
         return this;
     }
 
+    public boolean getQueryResultCache() {
+        return getQueryResultCacheEnabled();
+    }
+
+    public FetchPlan setQueryResultCache(boolean cache) {
+        return setQueryResultCacheEnabled(cache);
+    }
+
     public Collection<String> getFetchGroups() {
         return _fetch.getFetchGroups();
     }

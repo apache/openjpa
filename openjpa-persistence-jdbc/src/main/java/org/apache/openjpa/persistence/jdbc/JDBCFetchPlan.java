@@ -21,6 +21,9 @@ package org.apache.openjpa.persistence.jdbc;
 import java.util.Collection;
 import javax.persistence.LockModeType;
 
+import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
+import org.apache.openjpa.jdbc.kernel.LRSSizes;
+import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.persistence.FetchPlan;
 
 /**
@@ -142,4 +145,85 @@ public interface JDBCFetchPlan
     public JDBCFetchPlan setMaxFetchDepth(int depth);
     public JDBCFetchPlan setReadLockMode(LockModeType mode);
     public JDBCFetchPlan setWriteLockMode(LockModeType mode);
+
+    /**
+     * @deprecated use the {@link FetchMode} enum instead.
+     */
+    public static final int EAGER_NONE = EagerFetchModes.EAGER_NONE;
+
+    /**
+     * @deprecated use the {@link FetchMode} enum instead.
+     */
+    public static final int EAGER_JOIN = EagerFetchModes.EAGER_JOIN;
+
+    /**
+     * @deprecated use the {@link FetchMode} enum instead.
+     */
+    public static final int EAGER_PARALLEL = EagerFetchModes.EAGER_PARALLEL;
+
+    /**
+     * @deprecated use the {@link LRSSizeAlgorithm} enum instead.
+     */
+    public static final int SIZE_UNKNOWN = LRSSizes.SIZE_UNKNOWN;
+
+    /**
+     * @deprecated use the {@link LRSSizeAlgorithm} enum instead.
+     */
+    public static final int SIZE_LAST = LRSSizes.SIZE_LAST;
+
+    /**
+     * @deprecated use the {@link LRSSizeAlgorithm} enum instead.
+     */
+    public static final int SIZE_QUERY = LRSSizes.SIZE_QUERY;
+
+    /**
+     * @deprecated use the {@link JoinSyntax} enum instead.
+     */
+    public static final int SYNTAX_SQL92 = JoinSyntaxes.SYNTAX_SQL92;
+
+    /**
+     * @deprecated use the {@link JoinSyntax} enum instead.
+     */
+    public static final int SYNTAX_TRADITIONAL =
+        JoinSyntaxes.SYNTAX_TRADITIONAL;
+
+    /**
+     * @deprecated use the {@link JoinSyntax} enum instead.
+     */
+    public static final int SYNTAX_DATABASE = JoinSyntaxes.SYNTAX_DATABASE;
+
+    /**
+     * @deprecated use {@link #setEagerFetchMode(FetchMode)} instead.
+     */
+    public JDBCFetchPlan setEagerFetchMode(int mode);
+
+    /**
+     * @deprecated use {@link #setSubclassFetchMode(FetchMode)} instead.
+     */
+    public JDBCFetchPlan setSubclassFetchMode(int mode);
+
+    /**
+     * @deprecated use {@link #setResultSetType(ResultSetType)} instead.
+     */
+    public JDBCFetchPlan setResultSetType(int mode);
+
+    /**
+     * @deprecated use {@link #setFetchDirection(FetchDirection)} instead.
+     */
+    public JDBCFetchPlan setFetchDirection(int direction);
+
+    /**
+     * @deprecated use {@link #getLRSSizeAlgorithm()} instead.
+     */
+    public int getLRSSize();
+
+    /**
+     * @deprecated use {@link #setLRSSizeAlgorithm(LRSSizeAlgorithm)} instead.
+     */
+    public JDBCFetchPlan setLRSSize(int lrsSizeMode);
+
+    /**
+     * @deprecated use {@link #setJoinSyntax(JoinSyntax)} instead.
+     */
+    public JDBCFetchPlan setJoinSyntax(int syntax);
 }

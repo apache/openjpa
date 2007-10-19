@@ -96,4 +96,10 @@ public interface StoreCache {
      * Clear the cache.
      */
     public void evictAll();
+
+    /**
+     * @deprecated cast to {@link StoreCacheImpl} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public DataCache getDelegate();
 }

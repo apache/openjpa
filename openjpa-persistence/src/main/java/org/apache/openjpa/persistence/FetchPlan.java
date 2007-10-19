@@ -100,6 +100,16 @@ public interface FetchPlan {
     public FetchPlan setQueryResultCacheEnabled(boolean cache);
 
     /**
+     * @deprecated use {@link #getQueryResultCacheEnabled()} instead.
+     */
+    public boolean getQueryResultCache();
+
+    /**
+     * @deprecated use {@link #setQueryResultCacheEnabled} instead.
+     */
+    public FetchPlan setQueryResultCache(boolean cache);
+
+    /**
      * Returns the names of the fetch groups that this component will use
      * when loading objects. Defaults to the
      * <code>openjpa.FetchGroups</code> setting.
@@ -278,4 +288,10 @@ public interface FetchPlan {
      * The lock level to use for locking dirtied objects.
      */
     public FetchPlan setWriteLockMode(LockModeType mode);
+
+    /**
+     * @deprecated cast to {@link FetchPlanImpl} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public org.apache.openjpa.kernel.FetchConfiguration getDelegate();
 }

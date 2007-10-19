@@ -198,6 +198,11 @@ public class EntityManagerImpl
         _broker.setRestoreState(val.toKernelConstant());
     }
 
+    public void setRestoreState(int restore) {
+        assertNotCloseInvoked();
+        _broker.setRestoreState(restore);
+    }
+
     public boolean getRetainState() {
         return _broker.getRetainState();
     }
@@ -216,6 +221,11 @@ public class EntityManagerImpl
         _broker.setAutoClear(val.toKernelConstant());
     }
 
+    public void setAutoClear(int autoClear) {
+        assertNotCloseInvoked();
+        _broker.setAutoClear(autoClear);
+    }
+
     public DetachStateType getDetachState() {
         return DetachStateType.fromKernelConstant(_broker.getDetachState());
     }
@@ -223,6 +233,11 @@ public class EntityManagerImpl
     public void setDetachState(DetachStateType type) {
         assertNotCloseInvoked();
         _broker.setDetachState(type.toKernelConstant());
+    }
+
+    public void setDetachState(int detach) {
+        assertNotCloseInvoked();
+        _broker.setDetachState(detach);
     }
 
     public EnumSet<AutoDetachType> getAutoDetach() {
@@ -237,6 +252,16 @@ public class EntityManagerImpl
     public void setAutoDetach(EnumSet<AutoDetachType> flags) {
         assertNotCloseInvoked();
         _broker.setAutoDetach(AutoDetachType.fromEnumSet(flags));
+    }
+
+    public void setAutoDetach(int autoDetachFlags) {
+        assertNotCloseInvoked();
+        _broker.setAutoDetach(autoDetachFlags);
+    }
+
+    public void setAutoDetach(AutoDetachType value, boolean on) {
+        assertNotCloseInvoked();
+        _broker.setAutoDetach(AutoDetachType.fromEnumSet(EnumSet.of(value)),on);
     }
 
     public void setAutoDetach(int flag, boolean on) {
@@ -271,6 +296,14 @@ public class EntityManagerImpl
         _broker.setTrackChangesByType(trackByType);
     }
 
+    public boolean isLargeTransaction() {
+        return isTrackChangesByType();
+    }
+
+    public void setLargeTransaction(boolean value) {
+        setTrackChangesByType(value);
+    }
+
     public Object getUserObject(Object key) {
         return _broker.getUserObject(key);
     }
@@ -290,7 +323,7 @@ public class EntityManagerImpl
         _broker.removeTransactionListener(listener);
     }
 
-    public EnumSet<CallbackMode> getTransactionListenerCallbackMode() {
+    public EnumSet<CallbackMode> getTransactionListenerCallbackModes() {
         return CallbackMode.toEnumSet(
             _broker.getTransactionListenerCallbackMode());
     }
@@ -307,6 +340,14 @@ public class EntityManagerImpl
             CallbackMode.fromEnumSet(modes));
     }
 
+    public int getTransactionListenerCallbackMode() {
+        return _broker.getTransactionListenerCallbackMode();
+    }
+
+    public void setTransactionListenerCallbackMode(int callbackMode) {
+        throw new UnsupportedOperationException();
+    }
+
     public void addLifecycleListener(Object listener, Class... classes) {
         assertNotCloseInvoked();
         _broker.addLifecycleListener(listener, classes);
@@ -317,7 +358,7 @@ public class EntityManagerImpl
         _broker.removeLifecycleListener(listener);
     }
 
-    public EnumSet<CallbackMode> getLifecycleListenerCallbackMode() {
+    public EnumSet<CallbackMode> getLifecycleListenerCallbackModes() {
         return CallbackMode.toEnumSet(
             _broker.getLifecycleListenerCallbackMode());
     }
@@ -332,6 +373,15 @@ public class EntityManagerImpl
         assertNotCloseInvoked();
         _broker.setLifecycleListenerCallbackMode(
             CallbackMode.fromEnumSet(modes));
+    }
+
+    public int getLifecycleListenerCallbackMode() {
+        return _broker.getLifecycleListenerCallbackMode();
+    }
+
+    public void setLifecycleListenerCallbackMode(int callbackMode) {
+        assertNotCloseInvoked();
+        _broker.setLifecycleListenerCallbackMode(callbackMode);
     }
 
     @SuppressWarnings("unchecked")

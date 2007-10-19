@@ -78,4 +78,49 @@ public interface OpenJPAEntityManagerFactory
      * </ul>
      */
     public OpenJPAEntityManager createEntityManager(Map props);
+
+    /**
+     * @deprecated use {@link ConnectionRetainMode} enums instead.
+     */
+    public static final int CONN_RETAIN_DEMAND = 0;
+
+    /**
+     * @deprecated use {@link ConnectionRetainMode} enums instead.
+     */
+    public static final int CONN_RETAIN_TRANS = 1;
+
+    /**
+     * @deprecated use {@link ConnectionRetainMode} enums instead.
+     */
+    public static final int CONN_RETAIN_ALWAYS = 2;
+
+    /**
+     * @deprecated cast to {@link OpenJPAEntityManagerFactorySPI} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public org.apache.openjpa.conf.OpenJPAConfiguration getConfiguration();
+
+    /**
+     * @deprecated cast to {@link OpenJPAEntityManagerFactorySPI} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public void addLifecycleListener(Object listener, Class... classes);
+
+    /**
+     * @deprecated cast to {@link OpenJPAEntityManagerFactorySPI} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public void removeLifecycleListener(Object listener);
+
+    /**
+     * @deprecated cast to {@link OpenJPAEntityManagerFactorySPI} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public void addTransactionListener(Object listener);
+
+    /**
+     * @deprecated cast to {@link OpenJPAEntityManagerFactorySPI} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public void removeTransactionListener(Object listener);
 }

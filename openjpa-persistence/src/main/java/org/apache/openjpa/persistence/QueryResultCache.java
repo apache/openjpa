@@ -55,4 +55,10 @@ public interface QueryResultCache {
      * Evict all result for queries involving the given class.
      */
     public void evictAll(Class cls);
+
+    /**
+     * @deprecated cast to {@link QueryResultCacheImpl} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public QueryCache getDelegate();
 }

@@ -26,7 +26,9 @@ import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
+import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.QueryHints;
+import org.apache.openjpa.kernel.QueryOperations;
 
 /**
  * Interface implemented by OpenJPA queries.
@@ -194,4 +196,63 @@ public interface OpenJPAQuery
      * Return the current flush mode.
 	 */
 	public FlushModeType getFlushMode ();
+
+    /**
+     * @deprecated use the {@link QueryOperationType} instead.
+     */
+    public static final int OP_SELECT = QueryOperations.OP_SELECT;
+
+    /**
+     * @deprecated use the {@link QueryOperationType} instead.
+     */
+    public static final int OP_DELETE = QueryOperations.OP_DELETE;
+
+    /**
+     * @deprecated use the {@link QueryOperationType} instead.
+     */
+    public static final int OP_UPDATE = QueryOperations.OP_DELETE;
+
+    /**
+     * @deprecated use the {@link FlushModeType} enum instead.
+     */
+    public static final int FLUSH_TRUE = QueryFlushModes.FLUSH_TRUE;
+
+    /**
+     * @deprecated use the {@link FlushModeType} enum instead.
+     */
+    public static final int FLUSH_FALSE = QueryFlushModes.FLUSH_FALSE;
+
+    /**
+     * @deprecated use the {@link FlushModeType} enum instead.
+     */
+    public static final int FLUSH_WITH_CONNECTION =
+        QueryFlushModes.FLUSH_WITH_CONNECTION;
+
+    /**
+     * @deprecated cast to {@link QueryImpl} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public OpenJPAQuery addFilterListener(
+        org.apache.openjpa.kernel.exps.FilterListener listener);
+
+    /**
+     * @deprecated cast to {@link QueryImpl} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public OpenJPAQuery removeFilterListener(
+        org.apache.openjpa.kernel.exps.FilterListener listener);
+
+    /**
+     * @deprecated cast to {@link QueryImpl} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public OpenJPAQuery addAggregateListener(
+        org.apache.openjpa.kernel.exps.AggregateListener listener);
+
+    /**
+     * @deprecated cast to {@link QueryImpl} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public OpenJPAQuery removeAggregateListener(
+        org.apache.openjpa.kernel.exps.AggregateListener listener);
 }

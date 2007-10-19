@@ -69,4 +69,10 @@ public interface Extent<T>
      * Close all open iterators that are consuming database resources.
      */
     public void closeAll();
+
+    /**
+     * @deprecated cast to {@link ExtentImpl} instead. This
+     * method pierces the published-API boundary, as does the SPI cast.
+     */
+    public org.apache.openjpa.kernel.Extent getDelegate();
 }
