@@ -178,7 +178,7 @@ with the <link linkend="openjpa.BrokerImpl"><literal>openjpa.BrokerImpl
 </literal></link> configuration property. Set this property to the full class 
 name of your custom subclass. When implementing your subclass, consider the
 finalization issues mentioned in 
-<link linkend="ref_guide_runtime_broker_finalization">. It may be appropriate
+<xref linkend="ref_guide_runtime_broker_finalization"/>. It may be appropriate
 to create a subtype of both 
 <ulink url="../javadoc/org/apache/openjpa/kernel/BrokerImpl.html">
 <classname>org.apache.openjpa.kernel.BrokerImpl</classname></ulink> and
