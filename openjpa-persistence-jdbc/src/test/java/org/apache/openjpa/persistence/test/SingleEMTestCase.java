@@ -47,6 +47,14 @@ public abstract class SingleEMTestCase
         em = emf.createEntityManager(); 
     }
 
+    /** 
+     * Clear the current EntityManager and re-initialize it.
+     */
+    protected void reset() {
+        close();
+        em = emf.createEntityManager(); 
+    }
+
     @Override
     public void tearDown() throws Exception {
         rollback();

@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.util;
 
-import java.util.TimeZone;
-
 /**
  * Interface implemented by all generated proxies on {@link java.util.Calendar}
  * types.

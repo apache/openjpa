@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.simple;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 import javax.persistence.Entity;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -50,6 +51,9 @@ public class TemporalFieldTypes {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Calendar calendarTimestampField;
+
+    private Calendar calendarTimeZoneField =
+        Calendar.getInstance(TimeZone.getTimeZone("Europe/Budapest"));
 
     public void setDateDefaultField(Date date) {
         this.dateDefaultField = date;
@@ -114,4 +118,13 @@ public class TemporalFieldTypes {
     public Calendar getCalendarTimeStampField() {
         return this.calendarTimestampField;
     }
+
+    public void setCalendarTimeZoneField(Calendar calendarTimeZoneField) {
+        this.calendarTimeZoneField = calendarTimeZoneField;
+    }
+
+    public Calendar getCalendarTimeZoneField() {
+        return this.calendarTimeZoneField;
+    }
+
 }
