@@ -87,16 +87,16 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javacc-maven-plugin</artifactId>
-                <version>2.1</version>
+                <version>2.2</version>
                 <executions>
                     <execution>
                         <id>jjtree-jpql</id>
                         <phase>generate-sources</phase>
                         <configuration>
                             <sourceDirectory>
-                                ${basedir}/src/main/jjtree/org/apache/openjpa/kernel/jpql</sourceDirectory>
+                                src/main/jjtree</sourceDirectory>
                             <outputDirectory>
-                                ${project.build.directory}/generated-sources/jjtree/org/apache/openjpa/kernel/jpql</outputDirectory>
+                                ${project.build.directory}/generated-sources/jjtree</outputDirectory>
                             <buildNodeFiles>false</buildNodeFiles>
                         </configuration>
                         <goals>
@@ -108,9 +108,9 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <sourceDirectory>
-                                ${project.build.directory}/generated-sources/jjtree/org/apache/openjpa/kernel/jpql</sourceDirectory>
+                                ${project.build.directory}/generated-sources/jjtree</sourceDirectory>
                             <outputDirectory>
-                                ${project.build.directory}/generated-sources/javacc/org/apache/openjpa/kernel/jpql</outputDirectory>
+                                ${project.build.directory}/generated-sources/javacc</outputDirectory>
                         </configuration>
                         <goals>
                             <goal>javacc</goal>
