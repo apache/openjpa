@@ -63,6 +63,8 @@ import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.UserException;
+
 import serp.util.Strings;
 
 /**
@@ -1232,8 +1234,16 @@ public class FieldMetaData
      */
     public Object getExternalValue(Object val, StoreContext ctx) {
         Map extValues = getExternalValueMap();
-        if (extValues != null)
-            return extValues.get(val);
+        if (extValues != null) {
+            Object foundVal = extValues.get(val);
+            if (foundVal == null) {
+                throw new UserException(_loc.get("bad-externalized-value",
+                        new Object[] { val, extValues.keySet(), this }))
+                        .setFatal(true).setFailedObject(val);
+            } else {
+                return foundVal;
+            }
+        }
 
         Method externalizer = getExternalizerMethod();
         if (externalizer == null)
