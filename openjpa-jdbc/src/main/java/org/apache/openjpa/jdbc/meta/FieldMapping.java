@@ -515,6 +515,13 @@ public class FieldMapping
      */
     public void mapJoin(boolean adapt, boolean joinRequired) {
         Table table = _info.getTable(this, joinRequired, adapt);
+
+        if(table != null && table.equals(getDefiningMapping().getTable())) {
+            // Don't create a join if the field's table is the same as the
+            // class's table. 
+            table = null;
+        }
+
         ForeignKey join = null;
         if (table != null)
             join = _info.getJoin(this, table, adapt);
