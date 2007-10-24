@@ -45,8 +45,21 @@ public class OpenJPAVersion {
     public static final String REVISION_NUMBER;
 
     static {
-        Package pack = OpenJPAVersion.class.getPackage();
-        String vers = pack == null ? null : pack.getImplementationVersion();
+        Properties revisionProps = new Properties();
+        try {
+            InputStream in = OpenJPAVersion.class.getResourceAsStream
+                ("/META-INF/org.apache.openjpa.revision.properties");
+            if (in != null) {
+                try {
+                    revisionProps.load(in);
+                } finally {
+                    in.close();
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        String vers = revisionProps.getProperty("openjpa.version");
         if (vers == null || "".equals(vers.trim()))
             vers = "0.0.0";
         VERSION_NUMBER = vers;
@@ -71,21 +84,7 @@ public class OpenJPAVersion {
             patch = 0;
         }
 
-        String revision = "";
-        try {
-            InputStream in = OpenJPAVersion.class.getResourceAsStream
-                ("/META-INF/org.apache.openjpa.revision.properties");
-            if (in != null) {
-                try {
-                    Properties props = new Properties();
-                    props.load(in);
-                    revision = props.getProperty("revision.number");
-                } finally {
-                    in.close();
-                }
-            }
-        } catch (Exception e) {
-        }
+        String revision = revisionProps.getProperty("revision.number");
 
         MAJOR_RELEASE = major;
         MINOR_RELEASE = minor;

@@ -157,9 +157,11 @@
                                 <property name="subversion.revision"
                                     value="unknown"/>
                                 <echo>Revision: ${subversion.revision}</echo>
+                                <echo>OpenJPA version: ${project.version}</echo>
                                     
                                 <mkdir dir="${outdir}/META-INF"/>
-                                <echo file="${outdir}/META-INF/org.apache.openjpa.revision.properties">revision.number=${subversion.revision}</echo>
+                                <echo file="${outdir}/META-INF/org.apache.openjpa.revision.properties">revision.number=${subversion.revision}
+openjpa.version=${project.version}</echo>
                                 <delete dir="${tmpdir}"/>
                             </tasks>
                         </configuration>
