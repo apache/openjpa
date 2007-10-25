@@ -84,11 +84,6 @@ public abstract class AbstractResultList implements ResultList {
         throw new UnsupportedOperationException();
     }
 
-    protected void finalize() throws Throwable {
-        super.finalize();
-        close();
-    }
-
     protected void assertOpen() {
         if (isClosed())
             throw new NoSuchElementException(_loc.get("closed").getMessage());
