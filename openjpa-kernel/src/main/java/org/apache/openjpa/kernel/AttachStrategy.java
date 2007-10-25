@@ -273,10 +273,8 @@ abstract class AttachStrategy
             if (oid != null)
                 return manager.getBroker().find(oid, false, null);
         }
-        throw new UserException(_loc.get("cant-cascade-attach",
-            Exceptions.toString(toAttach), vmd,
-            Exceptions.toString(sm.getManagedInstance()))).
-            setFailedObject(toAttach);
+        throw new UserException(_loc.get("cant-cascade-attach", vmd))
+            .setFailedObject(toAttach);
     }
 
     /**
