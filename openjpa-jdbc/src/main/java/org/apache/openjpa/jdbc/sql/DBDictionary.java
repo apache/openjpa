@@ -2208,8 +2208,8 @@ public class DBDictionary
     public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
         SQLBuffer from, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
-        boolean distinct, boolean forUpdate, long start, long end
-        , Select sel) {
+        boolean distinct, boolean forUpdate, long start, long end,
+        Select sel) {
         return toOperation(getSelectOperation(fetch), selects, from, where,
             group, having, order, distinct, start, end,
             getForUpdateClause(fetch, forUpdate, sel));
