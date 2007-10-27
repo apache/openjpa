@@ -527,6 +527,7 @@ public class DetachManager
                         break;
                     }
                     // no break
+                case JavaTypes.CALENDAR:
                 case JavaTypes.DATE:
                 case JavaTypes.OBJECT:
                     sm.provideField(getDetachedPersistenceCapable(), this, i);
