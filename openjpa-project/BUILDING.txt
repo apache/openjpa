@@ -103,15 +103,21 @@ $ mvn compile
 [INFO] Scanning for projects...
 [INFO] Reactor build order: 
 [INFO]   OpenJPA
-[INFO]   Utilities
-[INFO]   Kernel
-[INFO]   JDBC
-[INFO]   XML Store
-[INFO]   JDBC 1.5
-[INFO]   Kernel 1.5
-[INFO]   JPA
-[INFO]   JPA JDBC
-[INFO]   OpenJPA Project
+[INFO]   OpenJPA Utilities
+[INFO]   OpenJPA Kernel
+[INFO]   OpenJPA JDBC
+[INFO]   OpenJPA XML Store
+[INFO]   OpenJPA Utilities 1.5
+[INFO]   OpenJPA Kernel 1.5
+[INFO]   OpenJPA JDBC 1.5
+[INFO]   OpenJPA JPA
+[INFO]   OpenJPA JPA JDBC
+[INFO]   OpenJPA Aggregate Jar
+[INFO]   OpenJPA Distribution
+[INFO]   OpenJPA Integration Tests
+[INFO]   OpenJPA Examples Integration Tests
+[INFO]   OpenJPA JPA TCK Integration Tests
+[INFO]   OpenJPA Persistence Examples
 [INFO] -------------------------------------------------------------------------
 [INFO] Building OpenJPA
 [INFO]    task-segment: [compile]
@@ -123,23 +129,29 @@ $ mvn compile
 [INFO] ------------------------------------------------------------------------
 [INFO] Reactor Summary:
 [INFO] ------------------------------------------------------------------------
-[INFO] OpenJPA ............................................... SUCCESS [0.789s]
-[INFO] Utilities ............................................. SUCCESS [3.489s]
-[INFO] Kernel ................................................ SUCCESS [9.347s]
-[INFO] JDBC .................................................. SUCCESS [12.208s]
-[INFO] XML Store ............................................. SUCCESS [1.166s]
-[INFO] JDBC 1.5 .............................................. SUCCESS [1.519s]
-[INFO] Kernel 1.5 ............................................ SUCCESS [0.538s]
-[INFO] JPA ................................................... SUCCESS [2.777s]
-[INFO] JPA JDBC .............................................. SUCCESS [2.151s]
-[INFO] OpenJPA Project ....................................... SUCCESS [1.495s]
+[INFO] OpenJPA ............................................... SUCCESS [0.000s]
+[INFO] OpenJPA Utilities ..................................... SUCCESS [8.766s]
+[INFO] OpenJPA Kernel ........................................ SUCCESS [7.672s]
+[INFO] OpenJPA JDBC .......................................... SUCCESS [5.203s]
+[INFO] OpenJPA XML Store ..................................... SUCCESS [1.047s]
+[INFO] OpenJPA Utilities 1.5 ................................. SUCCESS [0.485s]
+[INFO] OpenJPA Kernel 1.5 .................................... SUCCESS [0.937s]
+[INFO] OpenJPA JDBC 1.5 ...................................... SUCCESS [1.172s]
+[INFO] OpenJPA JPA ........................................... SUCCESS [2.469s]
+[INFO] OpenJPA JPA JDBC ...................................... SUCCESS [2.125s]
+[INFO] OpenJPA Aggregate Jar ................................. SUCCESS [0.016s]
+[INFO] OpenJPA Distribution .................................. SUCCESS [0.125s]
+[INFO] OpenJPA Integration Tests ............................. SUCCESS [0.000s]
+[INFO] OpenJPA Examples Integration Tests .................... SUCCESS [0.000s]
+[INFO] OpenJPA JPA TCK Integration Tests ..................... SUCCESS [0.000s]
+[INFO] OpenJPA Persistence Examples .......................... SUCCESS [1.078s]
 [INFO] ------------------------------------------------------------------------
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESSFUL
 [INFO] ------------------------------------------------------------------------
 [INFO] Total time: 37 seconds
-[INFO] Finished at: Wed Jul 26 11:44:33 PDT 2006
-[INFO] Final Memory: 10M/41M
+[INFO] Finished at: Mon Oct 29 11:44:33 CST 2007
+[INFO] Final Memory: 12M/65M
 [INFO] ------------------------------------------------------------------------
 
 
@@ -149,17 +161,20 @@ $ mvn package -Dtest=false
 
 ...
 
-[INFO] [assembly:assembly {execution: bin}]
-[INFO] Building zip: /tmp/openjpatestbuild/trunk/openjpa-project/target/filtered
--site/resources/downloads/openjpa-0.9.0.zip
+[INFO] [assembly:attached {execution: bin}]
+[INFO] Building zip: /tmp/openjpatestbuild/trunk/openjpa-project/../target/site/
+downloads/apache-openjpa-1.0.1-binary.zip
+[INFO] [assembly:attached {execution: sources}]
+[INFO] Building zip: /tmp/openjpatestbuild/trunk/openjpa-project/../target/site/
+downloads/apache-openjpa-1.0.1-source.zip
 
 ... 
 
 
-$ ls -lh openjpa-project/target/filtered-site/resources/downloads/
+$ ls -lh target/site/downloads/
 
-total 9.2M
--rw-r--r--    1 mprudhom wheel       4.0M Jul 26 11:46 openjpa-0.9.0-sources.zip
--rw-r--r--    1 mprudhom wheel       5.2M Jul 26 11:46 openjpa-0.9.0.zip
+total 13M
+-rw-r--r--   1 leealber None   7.4M Oct 29 16:03 apache-openjpa-1.0.1-binary.zip
+-rw-r--r--   1 leealber None   4.8M Oct 29 16:03 apache-openjpa-1.0.1-source.zip
 
  

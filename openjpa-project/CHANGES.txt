@@ -13,8 +13,8 @@
 
 Overview
 
-   These notes describe the difference between OpenJPA release 1.0.0 and the
-   preceding releases, 0.9.6 and 0.9.7. 1.0.0 is the first major release
+   These notes describe the difference between OpenJPA release 1.0.1 and the
+   preceding releases 0.9.7 and 1.0.0. 1.0.1 is the first maintenance release
    since OpenJPA graduated to an Apache top level project (TLP), and contains
    many new features and bugfixes.
 
@@ -313,3 +313,113 @@ New Feature
          advantage of any third-party cache that provides a way to get
          multiple object in one call by providing a list of keys (oids).
        * [OPENJPA-317] - API formalization pre-1.0
+       
+
+                         OpenJPA 1.0.1 Release Notes
+
+** Bug
+    * [OPENJPA-113] - when you specify columm table="empbean"  in the xml file 
+      entity id or basic type when empbean is the default table name, the 
+      mapping tool generates extra foreign key field (eg.EmpBean_empid) in the 
+      table produced.
+    * [OPENJPA-135] - join fetch not returning duplicate references which not 
+      conforming to ejb3.0 spec
+    * [OPENJPA-209] - Query returning 2 entities w/unidir 1-1 relationship gets 
+      openjpa.persistence.ArgumentException: Address with the same id already 
+      exists in the L1 cache.
+    * [OPENJPA-210] - Query returning 2 entities w/1-1 relationship returns 
+      wrong types in the result list
+    * [OPENJPA-211] - CLONE -java.lang.VerifyError on websphere 6.1 with Spring 
+      2.0.3 and OpenJpa 0.96/0.97
+    * [OPENJPA-251] - org.apache.openjpa.enhance.Reflection.getDeclaredMethod() 
+      has undefined behavior, leading to VM-dependent crashes
+    * [OPENJPA-258] - MetaDataInheritanceComparator is not transitive; 
+      C > B > A > C leads to out-of-memory crash in PCEnhancer
+    * [OPENJPA-282] - Postgresql does not support deferred unique constraints.
+    * [OPENJPA-295] - ArrayIndexOutofBoundsException when under load and within 
+      a managed Transaction
+    * [OPENJPA-316] - Unenhanced OneToMany collection not loaded
+    * [OPENJPA-326] - NPE if a discriminator column is specified without 
+      discriminator type in orm.xml
+    * [OPENJPA-329] - Generic interface may cause the openjpa Reflection code to
+      pickup the wrong getter method
+    * [OPENJPA-331] - Allow BigInteger and other Basic types as Primary Keys
+    * [OPENJPA-335] - Logic in getters for entities with property access causes 
+      the PCEnhancer to hang
+    * [OPENJPA-339] - Java 2 security Access denied in File.toURL() call
+    * [OPENJPA-343] - Do not call setRollbackOnly on inactive Transactions
+    * [OPENJPA-346] - PCEnhancerAgent backwards-compatibility setting 
+      overly-enables enhancement
+    * [OPENJPA-347] - Performance Issue with Lazy Loaded Foreign Keys
+    * [OPENJPA-353] - Character discriminators are not converted correctly if 
+      storeCharsAsNumbers = true
+    * [OPENJPA-355] - OpenJPA Log4J factory incorrectly handles logging level
+    * [OPENJPA-356] - DB2 requires CASTs when parameters appear in SELECT clause
+    * [OPENJPA-357] - Use case where FetchGroup A includes FecthGroup B is not 
+      honoured by fetch operations
+    * [OPENJPA-358] - Recursion Depth for Field f should be calculated w.r.t 
+      active fetch groups and not all fetch groups
+    * [OPENJPA-360] - SQL FOR UPDATE OF incorrectly generated for DB2/NT SQL0816
+    * [OPENJPA-361] - Incorrect GREG_OFFSET offset or inconsistent usage in 
+      UUIDGenerator
+    * [OPENJPA-366] - InternalException thrown in BrokerImpl.endOperation
+    * [OPENJPA-367] - PCEnhancer does not find meta data for entities using pure
+      XML annotation
+    * [OPENJPA-368] - Multithreaded client fails randomly on 
+      EntityManager.persist() with out transaction context.
+    * [OPENJPA-369] - AccessDeclaredMembers RuntimePermission requires by 
+      Solaris JDK with security enabled
+    * [OPENJPA-370] - LoadFetchGroup annotation was not recognized during the 
+      fetch1
+    * [OPENJPA-372] - PCEnhancer throws away its classloader
+    * [OPENJPA-375] - DB2 autoCommit(true) causes Result Set prematurely closed 
+      in WebContainer JEE environment.
+    * [OPENJPA-376] - Need more trace for transaction demarcation
+    * [OPENJPA-377] - RuntimeUnenhancedClasses support can go into a 
+      "half baked" state
+    * [OPENJPA-378] - DB2 SQL incorrectly generating "FETCH FIRST n ROWS ONLY" 
+      in subselects
+    * [OPENJPA-380] - Connecting to database when an unused emf is closed 
+    * [OPENJPA-382] - Overriding column names for Byte[] attributes causes 
+      exception.
+    * [OPENJPA-385] - IndexOutOfBounds exception when parsing ".class" files
+    * [OPENJPA-387] - Getting "java.lang.ClassNotFoundException" when loading 
+      datacache plug-in which is a class outside of OpenJPA package.
+    * [OPENJPA-388] - MappingToolTask can't find persistence meta data. 
+    * [OPENJPA-389] - em.getTransaction().commit() is not issuing database 
+      commit for NativeQuery requesting updates
+    * [OPENJPA-394] - DB2 CAST VARCHAR type missing LENGTH
+    * [OPENJPA-395] - Accessing short Foreign Key metadata fields as ints causes
+      problems on iSeries
+    * [OPENJPA-396] - Cloning Calendar proxies doesn't detach from StateManager
+    * [OPENJPA-397] - schematool ant task always requires files
+    * [OPENJPA-401] - UnsatisfiedLinkError in MappingToolTask when using DB2 
+      JDBC driver 
+    * [OPENJPA-402] - Unable to detect an valid Entity's meta data when the 
+      entity's .class file size is large.
+    * [OPENJPA-403] - LoadFetchGroup patch (OPENJPA-370) introduces NPE
+    * [OPENJPA-405] - need extract space in the message text
+    * [OPENJPA-409] - Quick message updates
+    * [OPENJPA-410] - Change "connecting to dictionary" message from Info to 
+      Trace
+    * [OPENJPA-413] - Fix some message text in the localizer.properties files
+    * [OPENJPA-415] - Garbage collection of AbstractResultList instance closes 
+      active connection
+    * [OPENJPA-416] - Unclear exception if an unknown external value is used
+    * [OPENJPA-420] - JPQL constructor query close the <SELECT DISTINCT> 
+      feature? 
+    * [OPENJPA-421] - OpenJPA generates bad SQL before configuration fully 
+      populated
+    * [OPENJPA-422] - Calendar objects contained in a detached Entity still have
+      a "live" StateManagerImpl
+    * [OPENJPA-423] - Deadlock victim exception getting sequence value with
+      SQLServer
+
+** Sub-task
+    * [OPENJPA-309] - CTS passing in at least JDK6
+    * [OPENJPA-408] - Improve error processing for 
+      openjpa.RuntimeUnenhancedClasses property settings
+
+** Improvement
+    * [OPENJPA-338] - Remove unnecessary CAST in SQL statement for DB2
+
