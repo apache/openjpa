@@ -189,6 +189,7 @@ public class DataSourceFactory {
         DataSource inner = ds.getInnermostDelegate();
         if (inner instanceof DriverDataSource)
             ((DriverDataSource) inner).initDBDictionary(dict);
+        Connection conn = null;
 
         try {
             // add the dictionary as a warning handler on the logging
@@ -219,9 +220,26 @@ public class DataSourceFactory {
 
             // allow the dbdictionary to decorate the connection further
             ds.addDecorator(dict);
+            
+            // ensure dbdictionary to process connectedConfiguration()
+            if (!factory2)
+                conn = ds.getConnection(conf.getConnectionUserName(), conf
+                        .getConnectionPassword());
+            else
+                conn = ds.getConnection(conf.getConnection2UserName(), conf
+                        .getConnection2Password());
+
             return ds;
         } catch (Exception e) {
             throw new StoreException(e).setFatal(true);
+        } finally {
+            if (conn != null)
+                try {
+                    conn.close();
+                } catch (SQLException se) {
+                    // ignore any exception since the connection is not going
+                    // to be used anyway
+                }
         }
     }
 
