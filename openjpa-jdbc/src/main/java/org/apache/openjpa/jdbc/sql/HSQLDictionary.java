@@ -193,7 +193,7 @@ public class HSQLDictionary
         return buf.toString();
     }
 
-    protected SQLBuffer toOperation(String op, SQLBuffer selects,
+    public SQLBuffer toOperation(String op, SQLBuffer selects,
         SQLBuffer from, SQLBuffer where, SQLBuffer group, SQLBuffer having,
         SQLBuffer order, boolean distinct, long start, long end,
         String forUpdateClause) {

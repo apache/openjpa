@@ -2192,7 +2192,7 @@ public class DBDictionary
     /**
      * Combine the given components into a SELECT statement.
      */
-    private SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
+    public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
         SQLBuffer from, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
         boolean distinct, boolean forUpdate, long start, long end,
@@ -2201,6 +2201,16 @@ public class DBDictionary
             group, having, order, distinct, start, end,
             getForUpdateClause(fetch, forUpdate, null), subselect);
     }
+    
+    public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
+            SQLBuffer from, SQLBuffer where, SQLBuffer group,
+            SQLBuffer having, SQLBuffer order,
+            boolean distinct, boolean forUpdate, long start, long end,
+            boolean subselect, boolean checkTableForUpdate) {
+            return toOperation(getSelectOperation(fetch), selects, from, where,
+                group, having, order, distinct, start, end,
+                getForUpdateClause(fetch, forUpdate, null), subselect, checkTableForUpdate);
+        }
 
     /**
      * Combine the given components into a SELECT statement.
@@ -2242,12 +2252,23 @@ public class DBDictionary
     /**
      * Return the SQL for the given selecting operation.
      */
-    protected SQLBuffer toOperation(String op, SQLBuffer selects,
+    public SQLBuffer toOperation(String op, SQLBuffer selects,
         SQLBuffer from, SQLBuffer where, SQLBuffer group, SQLBuffer having,
         SQLBuffer order, boolean distinct, long start, long end,
         String forUpdateClause) {
         return toOperation(op, selects, from, where, group, having, order,
             distinct, start, end, forUpdateClause, false);
+    }
+    
+    /**
+     * Return the SQL for the given selecting operation.
+     */
+    public SQLBuffer toOperation(String op, SQLBuffer selects,
+        SQLBuffer from, SQLBuffer where, SQLBuffer group, SQLBuffer having,
+        SQLBuffer order, boolean distinct, long start, long end,
+        String forUpdateClause, boolean subselect) {
+        return toOperation(op, selects, from, where, group, having, order,
+                distinct, start, end, forUpdateClause, subselect, false);
     }
 
     /**
@@ -2256,7 +2277,7 @@ public class DBDictionary
     private SQLBuffer toOperation(String op, SQLBuffer selects,
         SQLBuffer from, SQLBuffer where, SQLBuffer group, SQLBuffer having,
         SQLBuffer order, boolean distinct, long start, long end,
-        String forUpdateClause, boolean subselect) {
+        String forUpdateClause, boolean subselect, boolean checkTableForUpdate) {
         SQLBuffer buf = new SQLBuffer(this);
         buf.append(op);
 
@@ -2269,6 +2290,12 @@ public class DBDictionary
             appendSelectRange(buf, start, end, subselect);
 
         buf.append(" ").append(selects).append(" FROM ").append(from);
+
+        if (checkTableForUpdate
+                && (StringUtils.isEmpty(forUpdateClause) && !StringUtils
+                        .isEmpty(tableForUpdateClause))) {
+            buf.append(" ").append(tableForUpdateClause);
+        }
 
         if (where != null && !where.isEmpty())
             buf.append(" WHERE ").append(where);

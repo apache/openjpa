@@ -461,8 +461,9 @@ public class TableJDBCSeq
         String tableName = resolveTableName(mapping, _seqColumn.getTable());
         SQLBuffer tables = new SQLBuffer(dict).append(tableName);
 
-        SQLBuffer select = dict.toSelect(sel, null, tables, where, null,
-            null, null, false, dict.supportsSelectForUpdate, 0, Long.MAX_VALUE);
+        SQLBuffer select = dict.toSelect(sel, null, tables, where, null, null,
+                null, false, dict.supportsSelectForUpdate, 0, Long.MAX_VALUE,
+                false, true);
 
         PreparedStatement stmnt = select.prepareStatement(conn);
         ResultSet rs = null;
