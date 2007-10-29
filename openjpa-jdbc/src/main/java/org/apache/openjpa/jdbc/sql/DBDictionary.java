@@ -3982,4 +3982,11 @@ public class DBDictionary
     public String getCastFunction(Val val, String func) {
         return func;
     }
+    
+    /**
+     * Create an index if necessary for some database tables
+     */
+    public void createIndexIfNecessary(Schema schema, String table,
+            Column pkColumn) {
+    }
 }

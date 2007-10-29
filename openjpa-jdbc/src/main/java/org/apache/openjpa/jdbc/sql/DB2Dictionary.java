@@ -31,12 +31,17 @@ import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.kernel.exps.Lit;
 import org.apache.openjpa.jdbc.kernel.exps.Param;
 import org.apache.openjpa.jdbc.kernel.exps.Val;
+import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.Index;
+import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Sequence;
+import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UnsupportedException;
+
 import serp.util.Strings;
 
 /**
@@ -740,6 +745,21 @@ public class DB2Dictionary
                 buf.replaceSqlString(sqlString.length() - 1,
                         sqlString.length(), str);
             }
+        }
+    }
+
+    /**
+     * Create an index if necessary for some database tables
+     */
+    public void createIndexIfNecessary(Schema schema, String table,
+            Column pkColumn) {
+        if (isDB2ZOSV8xOrLater()) {
+            // build the index for the sequence tables
+            // the index name will the fully qualified table name + _IDX
+            Table tab = schema.getTable(table);
+            Index idx = tab.addIndex(tab.getFullName() + "_IDX");
+            idx.setUnique(true);
+            idx.addColumn(pkColumn);
         }
     }
 }

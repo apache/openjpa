@@ -235,16 +235,15 @@ public class TableJDBCSeq
                 schema = group.addSchema(schemaName);
             
             schema.importTable(_pkColumn.getTable());
-            // build the index for the sequence tables
-            // the index name will the fully qualified table name +_IDX
-            Table tab = schema.getTable(_table); 
-            Index idx = tab.addIndex(tab.getFullName()+"_IDX");
-            idx.setUnique(true);
             // we need to reset the table name in the column with the
             // fully qualified name for matching the table name from the
             // Column.
-            _pkColumn.resetTableName(schemaName+"."+_pkColumn.getTableName());
-            idx.addColumn(_pkColumn);       
+            _pkColumn.resetTableName(schemaName + "."
+                    + _pkColumn.getTableName());
+            // some databases require to create an index for the sequence table
+            _conf.getDBDictionaryInstance().createIndexIfNecessary(schema,
+                    _table, _pkColumn);
+         
         }
     }
 
