@@ -41,11 +41,6 @@ public class DataSourceLogs {
     public DataSourceLogs() {
     }
 
-    public DataSourceLogs(Log jdbcLog, Log sqlLog) {
-        _jdbcLog = jdbcLog;
-        _sqlLog = sqlLog;
-    }
-
     /**
      * The log to write JDBC messages to.
      */

@@ -45,6 +45,7 @@ import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
 /**
  * Implementation of {@link Query} interface.
@@ -71,11 +72,10 @@ public class QueryImpl
     /**
      * Constructor; supply factory and delegate.
      */
-    public QueryImpl(EntityManagerImpl em,
+    public QueryImpl(EntityManagerImpl em, RuntimeExceptionTranslator ret,
         org.apache.openjpa.kernel.Query query) {
         _em = em;
-        _query = new DelegatingQuery(query,
-            PersistenceExceptions.getRollbackTranslator(em));
+        _query = new DelegatingQuery(query, ret);
     }
 
     /**

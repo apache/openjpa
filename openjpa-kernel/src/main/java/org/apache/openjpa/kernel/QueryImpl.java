@@ -83,7 +83,7 @@ public class QueryImpl
     private transient ClassLoader _loader = null;
 
     // query has its own internal lock
-    private final ReentrantLock _lock = new ReentrantLock();
+    private final ReentrantLock _lock;
 
     // unparsed state
     private Class _class = null;
@@ -134,6 +134,11 @@ public class QueryImpl
         _fc = (FetchConfiguration) broker.getFetchConfiguration().clone();
         _log = broker.getConfiguration().getLog(OpenJPAConfiguration.LOG_QUERY);
         _storeQuery.setContext(this);
+
+        if (_broker != null && _broker.getMultithreaded())
+            _lock = new ReentrantLock();
+        else
+            _lock = null;
     }
 
     /**
@@ -934,12 +939,6 @@ public class QueryImpl
      * Return whether we should execute this query in memory.
      */
     private boolean isInMemory(int operation) {
-        // if no candidates, create candidate extent
-        if (_collection == null && _extent == null && _class != null) {
-            _extent = _broker.newExtent(_class, _subclasses);
-            _extent.setIgnoreChanges(_ignoreChanges);
-        }
-
         // if there are any dirty instances in the current trans that are
         // involved in this query, we have to execute in memory or flush
         boolean inMem = !_storeQuery.supportsDataStoreExecution()
@@ -1538,12 +1537,12 @@ public class QueryImpl
     }
 
     public void lock() {
-        if (_broker == null || _broker.getMultithreaded())
+        if (_lock != null)
             _lock.lock();
     }
 
     public void unlock() {
-        if (_lock.isLocked())
+        if (_lock != null && _lock.isLocked())
             _lock.unlock();
     }
 
