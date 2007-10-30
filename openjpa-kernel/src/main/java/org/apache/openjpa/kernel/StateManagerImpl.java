@@ -463,10 +463,11 @@ public class StateManagerImpl
                 // merge the fetchgroup required fields to the original
                 // fields only the fields are not already loaded and
                 // are not in the original fields.
-                for (int j = 0; j < fgFields.length(); j++) {
-                    if (fgFields.get(j) && !fields.get(j) && !_loaded.get(j))
-                        fields.set(j);
-                }
+                if (fgFields != null)
+                    for (int j = 0; j < fgFields.length(); j++) {
+                        if (fgFields.get(j) && !fields.get(j) &&!_loaded.get(j))
+                            fields.set(j);
+                    }
             }
 
         }
@@ -597,7 +598,7 @@ public class StateManagerImpl
         // Just return if there's no value generation strategy
         if (fmd.getValueStrategy() == ValueStrategies.NONE)
             return false;
-        
+
         // Throw exception if field already has a value assigned.
         // @GeneratedValue overrides POJO initial values and setter methods
         if (!isDefaultValue(field) && !fmd.isValueGenerated())
@@ -816,7 +817,8 @@ public class StateManagerImpl
 
         SaveFieldManager saved = getSaveFieldManager();
         if (saved == null)
-            throw new InternalException(_loc.get("no-saved-fields"));
+            throw new InternalException(_loc.get("no-saved-fields",
+                getManagedInstance()));
 
         FieldMetaData[] fmds = getMetaData().getFields();
         for (int i = 0; i < fmds.length; i++) {
