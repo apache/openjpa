@@ -32,7 +32,8 @@ public class TestRelationToUnlistedClass
             emf.createEntityManager().close();
             fail("should not be able to initialize system");
         } catch (Exception e) {
-            assertTrue(e.getMessage().startsWith("One or more of the types"));
+            assertTrue(e.getMessage().startsWith(
+                "The following classes were not specified"));
         }
     }
 }
