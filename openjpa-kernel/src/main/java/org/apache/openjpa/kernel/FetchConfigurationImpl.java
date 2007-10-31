@@ -537,7 +537,7 @@ public class FetchConfigurationImpl
     }
     
     public BitSet requiresFetch(Set fgs, FieldMetaData[] fmds) {
-        BitSet fields = null;
+        BitSet fields = new BitSet(fgs.size());
         Iterator itr = fgs.iterator();
         while (itr.hasNext()) {
             fields = includes((FieldMetaData) itr.next(), fmds, fields);
@@ -594,10 +594,8 @@ public class FetchConfigurationImpl
         if ((fmd.isInDefaultFetchGroup() && hasFetchGroup(FetchGroup.NAME_DEFAULT))
                 || hasFetchGroup(FetchGroup.NAME_ALL)
                 || hasField(fmd.getFullName(false))) {
-            if (indirectFetch(fmd) != FETCH_NONE) {
-                fields = new BitSet(fmds.length);
+            if (indirectFetch(fmd) != FETCH_NONE)
                 fields.set(fmd.getIndex());
-            }
             return fields;
         }
         // now we need to see if this field associates with
@@ -605,11 +603,8 @@ public class FetchConfigurationImpl
         String[] fgs = fmd.getCustomFetchGroups();
         for (int i = 0; i < fgs.length; i++) {
             if (hasFetchGroup(fgs[i])) {
-                if (indirectFetch(fmd) != FETCH_NONE) {
-                    if (fields == null)
-                        fields = new BitSet(fmds.length);
+                if (indirectFetch(fmd) != FETCH_NONE)
                     fields.set(fmd.getIndex());
-                }
                 // check whether this field has a loadFetchGroup
                 // if it has a LoadFetchGroup, then we need to get
                 // all the fields that associate with this LoadFetchGroup
@@ -619,11 +614,8 @@ public class FetchConfigurationImpl
                     // merge the loadFetchGroup fields to the retuned fields.
                     if (fldIndex != null && !fldIndex.isEmpty()) {
                         for (int j = 0; j < fldIndex.length(); j++)
-                            if (fldIndex.get(j)) {
-                                if (fields == null)
-                                    fields = new BitSet(fmds.length);
+                            if (fldIndex.get(j))
                                 fields.set(j);
-                            }
                     }
                 }
             }
