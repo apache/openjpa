@@ -35,7 +35,8 @@ public abstract class SQLListenerTestCase
     extends SingleEMFTestCase {
 
     protected List<String> sql = new ArrayList<String>();
-
+    protected int sqlCount;
+    
     @Override
     public void setUp(Object... props) {
         Object[] copy = new Object[props.length + 2];
@@ -92,14 +93,33 @@ public abstract class SQLListenerTestCase
         fail("Expected regular expression <" + sqlExp + "> to be"
             + " contained in SQL statements: " + sql);
     }
+    
+    /**
+     * Gets the number of SQL issued since last reset.
+     */
+    public int getSQLCount() {
+    	return sqlCount;
+    }
+    
+    /**
+     * Resets SQL count.
+     * @return number of SQL counted since last reset.
+     */
+    public int resetSQLCount() {
+    	int tmp = sqlCount;
+    	sqlCount = 0;
+    	return tmp;
+    }
 
     public class Listener
         extends AbstractJDBCListener {
 
         @Override
         public void beforeExecuteStatement(JDBCEvent event) {
-            if (event.getSQL() != null && sql != null)
+            if (event.getSQL() != null && sql != null) {
                 sql.add(event.getSQL());
+                sqlCount++;
+            }
 		}
 	}
 }
