@@ -32,7 +32,7 @@
     <description>OpenJPA</description>
 
     <properties>
-        <scm.dir>svn.apache.org/repos/asf/openjpa/branches/1.0.x</scm.dir>
+        <scm.dir>svn.apache.org/repos/asf/openjpa/branches/1.0.1</scm.dir>
         <openjpa.version>${pom.version}</openjpa.version>
     </properties>
 
