@@ -427,22 +427,18 @@ public class StateManagerImpl
 
         BitSet fields = null;
         FieldMetaData[] fmds = _meta.getFields();
-        Set fgs = null;         
         boolean load;
-        
         for (int i = 0; i < fmds.length; i++) {
-              if (exclude != null && exclude.get(i))
-                  continue;
+            if (_loaded.get(i) || (exclude != null && exclude.get(i)))
+                continue;
 
             switch (mode) {
                 case LOAD_SERIALIZE:
                     load = !fmds[i].isTransient();
                     break;
-                case LOAD_FGS:                  
-                    load = false;
-                    if (fgs == null)
-                        fgs = new HashSet(fmds.length);
-                    fgs.add(fmds[i]);
+                case LOAD_FGS:
+                    load = fetch == null || fetch.requiresFetch(fmds[i]) 
+                        != FetchConfiguration.FETCH_NONE;
                     break;
                 default: // LOAD_ALL
                     load = true;
@@ -453,23 +449,6 @@ public class StateManagerImpl
                     fields = new BitSet(fmds.length);
                 fields.set(i);
             }
-            // post process for the fetchGroup: if there is a
-            // fetchgroup field, then go to the FetchConfiguration
-            // to get the required fetch fields.
-            if (fgs != null && fetch != null) {
-                if (fields == null)
-                    fields = new BitSet(fmds.length);
-                BitSet fgFields = fetch.requiresFetch(fgs, fmds);
-                // merge the fetchgroup required fields to the original
-                // fields only the fields are not already loaded and
-                // are not in the original fields.
-                if (fgFields != null)
-                    for (int j = 0; j < fgFields.length(); j++) {
-                        if (fgFields.get(j) && !fields.get(j) &&!_loaded.get(j))
-                            fields.set(j);
-                    }
-            }
-
         }
         return fields;
     }
@@ -598,7 +577,7 @@ public class StateManagerImpl
         // Just return if there's no value generation strategy
         if (fmd.getValueStrategy() == ValueStrategies.NONE)
             return false;
-
+        
         // Throw exception if field already has a value assigned.
         // @GeneratedValue overrides POJO initial values and setter methods
         if (!isDefaultValue(field) && !fmd.isValueGenerated())
@@ -817,8 +796,7 @@ public class StateManagerImpl
 
         SaveFieldManager saved = getSaveFieldManager();
         if (saved == null)
-            throw new InternalException(_loc.get("no-saved-fields",
-                getManagedInstance()));
+            throw new InternalException(_loc.get("no-saved-fields"));
 
         FieldMetaData[] fmds = getMetaData().getFields();
         for (int i = 0; i < fmds.length; i++) {

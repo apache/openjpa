@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.kernel;
 
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Set;
 
@@ -447,15 +446,7 @@ public class DelegatingFetchConfiguration
             throw translate(re);
         }
     }
-    
-    public BitSet requiresFetch(Set fgs, FieldMetaData[] fmds ){
-        try {
-            return _fetch.requiresFetch(fgs, fmds);
-        } catch (RuntimeException re) {
-            throw translate(re);
-        }
-    }
-    
+
     public boolean requiresLoad() {
         try {
             return _fetch.requiresLoad();

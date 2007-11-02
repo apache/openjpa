@@ -19,7 +19,6 @@
 package org.apache.openjpa.kernel;
 
 import java.io.Serializable;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Set;
 
@@ -346,18 +345,6 @@ public interface FetchConfiguration
      */
     public int requiresFetch(FieldMetaData fm);
 
-    /**
-     * Affirms if the given fields require to be fetched in the context of
-     * the given fetch group set.  Returns a BitSet that contains one of
-     * {@link #FETCH_NONE}, {@link #FETCH_LOAD}, {@link FETCH_REF} for each
-     * field.
-     * 
-     * @param fgs fetch group set
-     * @param fmds array of fields to be examined
-     * @return BitSet that indicates whether fetches are required or not
-     */
-    public BitSet requiresFetch(Set fgs, FieldMetaData[] fmds );
-    
     /**
      * Return false if we know that the object being fetched with this
      * configuration does not require a load, because this configuration came
