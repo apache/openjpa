@@ -21,7 +21,6 @@ package org.apache.openjpa.kernel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -93,7 +92,6 @@ public class FetchConfigurationImpl
     private boolean _load = true;
     private int _availableRecursion;
     private int _availableDepth;
-    private Map _lfgFields = null;
 
     public FetchConfigurationImpl() {
         this(null);
@@ -512,10 +510,6 @@ public class FetchConfigurationImpl
         if (!includes(fm))
             return FETCH_NONE;
         
-        return indirectFetch(fm);
-    }
-    
-    private int indirectFetch(FieldMetaData fm){
         Class type = getRelationType(fm);
         if (type == null)
             return FETCH_LOAD;
@@ -534,15 +528,6 @@ public class FetchConfigurationImpl
         if (StringUtils.equals(_directRelationOwner, fm.getFullName()))
             return FETCH_REF;
         return FETCH_LOAD;
-    }
-    
-    public BitSet requiresFetch(Set fgs, FieldMetaData[] fmds) {
-        BitSet fields = new BitSet(fgs.size());
-        Iterator itr = fgs.iterator();
-        while (itr.hasNext()) {
-            fields = includes((FieldMetaData) itr.next(), fmds, fields);
-        }
-        return fields;
     }
 
     public boolean requiresLoad() {
@@ -582,73 +567,16 @@ public class FetchConfigurationImpl
             || hasField(fmd.getFullName(false)))
             return true;
         String[] fgs = fmd.getCustomFetchGroups();
-        for (int i = 0; i < fgs.length; i++){
+        for (int i = 0; i < fgs.length; i++)
             if (hasFetchGroup(fgs[i]))
                 return true;
-        }
         return false; 
     }
 
-    private BitSet includes(FieldMetaData fmd, FieldMetaData[] fmds,
-            BitSet fields) {
-        if ((fmd.isInDefaultFetchGroup() && hasFetchGroup(FetchGroup.NAME_DEFAULT))
-                || hasFetchGroup(FetchGroup.NAME_ALL)
-                || hasField(fmd.getFullName(false))) {
-            if (indirectFetch(fmd) != FETCH_NONE)
-                fields.set(fmd.getIndex());
-            return fields;
-        }
-        // now we need to see if this field associates with
-        // any fetch groups
-        String[] fgs = fmd.getCustomFetchGroups();
-        for (int i = 0; i < fgs.length; i++) {
-            if (hasFetchGroup(fgs[i])) {
-                if (indirectFetch(fmd) != FETCH_NONE)
-                    fields.set(fmd.getIndex());
-                // check whether this field has a loadFetchGroup
-                // if it has a LoadFetchGroup, then we need to get
-                // all the fields that associate with this LoadFetchGroup
-                String fg = fmd.getLoadFetchGroup();
-                if (fg != null) {
-                    BitSet fldIndex = getLoadFetchGroupFields(fg, fmds);
-                    // merge the loadFetchGroup fields to the retuned fields.
-                    if (fldIndex != null && !fldIndex.isEmpty()) {
-                        for (int j = 0; j < fldIndex.length(); j++)
-                            if (fldIndex.get(j))
-                                fields.set(j);
-                    }
-                }
-            }
-        }
-        return fields;
-    }
-    
     /**
-     * Search the fields for this loadFetchGroup. It basically searches from
-     * each field and check whether this field has the same fetchgroup. If it
-     * has then this field is required to load.
-     */
-    private BitSet getLoadFetchGroupFields(String fg, FieldMetaData[] fmds) {
-        BitSet rtnField = null;
-        if (_lfgFields != null && _lfgFields.containsKey(fg))
-           return (BitSet)_lfgFields.get(fg);
-        for (int i = 0; i < fmds.length; i++) {
-            if (fmds[i].isInFetchGroup(fg)){
-                if (rtnField == null)
-                    rtnField = new BitSet(fmds.length);
-                rtnField.set(i);
-            }
-        }
-        if (_lfgFields == null)
-            _lfgFields = new HashMap(fmds.length);
-        _lfgFields.put(fg,rtnField);
-        return rtnField;
-    }
-    
-    /**
-     * Return the available recursion depth via the given field for the 
+     * Return the available recursion depth via the given field for the
      * given type.
-     * 
+     *
      * @param traverse whether we're traversing the field
      */
     private int getAvailableRecursionDepth(FieldMetaData fm, Class type, 
