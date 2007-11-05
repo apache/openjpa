@@ -369,8 +369,6 @@ New Feature
       EntityManager.persist() with out transaction context.
     * [OPENJPA-369] - AccessDeclaredMembers RuntimePermission requires by 
       Solaris JDK with security enabled
-    * [OPENJPA-370] - LoadFetchGroup annotation was not recognized during the 
-      fetch1
     * [OPENJPA-372] - PCEnhancer throws away its classloader
     * [OPENJPA-375] - DB2 autoCommit(true) causes Result Set prematurely closed 
       in WebContainer JEE environment.
