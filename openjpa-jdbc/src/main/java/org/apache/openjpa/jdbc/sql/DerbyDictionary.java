@@ -63,7 +63,7 @@ public class DerbyDictionary
             "ALIAS", "BIGINT", "BOOLEAN", "CALL", "CLASS",
             "COPY", "DB2J_DEBUG", "EXECUTE", "EXPLAIN",
             "FILE", "FILTER", "GETCURRENTCONNECTION", "INDEX",
-            "INSTANCEOF", "METHOD", "NEW", "OFF", "OUT", "PROPERTIES",
+            "INSTANCEOF", "KEY", "METHOD", "NEW", "OFF", "OUT", "PROPERTIES",
             "PUBLICATION", "RECOMPILE", "REFRESH", "RENAME",
             "RUNTIMESTATISTICS", "STATEMENT", "STATISTICS",
             "TIMING", "WAIT", "XML",
