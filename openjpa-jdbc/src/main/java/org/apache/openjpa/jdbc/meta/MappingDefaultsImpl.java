@@ -70,6 +70,15 @@ public class MappingDefaultsImpl
     private String _discName = null;
     private String _orderName = null;
     private String _nullIndName = null;
+    private boolean _removeHungarianNotation = false;
+
+    public boolean isRemoveHungarianNotation() {
+        return _removeHungarianNotation;
+    }
+
+    public void setRemoveHungarianNotation(boolean removeHungarianNotation) {
+        this._removeHungarianNotation = removeHungarianNotation;
+    }
 
     /**
      * Default base class strategy alias.
@@ -535,8 +544,28 @@ public class MappingDefaultsImpl
      * Correct the given column's name.
      */
     protected void correctName(Table table, Column col) {
-        if (!_defMissing)
-            col.setName(dict.getValidColumnName(col.getName(), table));
+        if (!_defMissing || _removeHungarianNotation)
+        {
+            String name = col.getName();
+            if (_removeHungarianNotation)
+                name = removeHungarianNotation(name);
+            col.setName(dict.getValidColumnName(name, table));
+        }
+    }
+
+    protected String removeHungarianNotation(String columnName) {
+        char[] name = columnName.toCharArray();
+        int newStart = 0;
+
+        for (int i = 0; i < name.length; i++) {
+            if (Character.isUpperCase(name[i]))
+            {
+                newStart = i;
+                break;
+            }
+        }
+
+        return columnName.substring(newStart);
     }
 
     public void populateColumns(Version vers, Table table, Column[] cols) {
@@ -676,6 +705,10 @@ public class MappingDefaultsImpl
         // based on defaults
         if (name == null)
             name = cols[0].getName();
+
+        if (_removeHungarianNotation)
+            name = removeHungarianNotation(name);
+
         return dict.getValidIndexName(name, table);
     }
 
