@@ -42,9 +42,9 @@ public class DerbyDictionary
         substringFunctionName = "SUBSTR";
 
         maxConstraintNameLength = 18;
-        maxIndexNameLength = 18;
+        maxIndexNameLength = 128;
         maxColumnNameLength = 30;
-        maxTableNameLength = 18;
+        maxTableNameLength = 128;
 
         useGetBytesForBlobs = true;
         useSetBytesForBlobs = true;
