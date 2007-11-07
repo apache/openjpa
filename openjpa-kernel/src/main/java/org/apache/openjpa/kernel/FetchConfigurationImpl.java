@@ -118,6 +118,7 @@ public class FetchConfigurationImpl
         OpenJPAConfiguration conf = ctx.getConfiguration();
         setFetchBatchSize(conf.getFetchBatchSize());
         setFlushBeforeQueries(conf.getFlushBeforeQueriesConstant());
+        setLockTimeout(conf.getLockTimeout());
         clearFetchGroups();
         addFetchGroups(Arrays.asList(conf.getFetchGroupsList()));
         setMaxFetchDepth(conf.getMaxFetchDepth());
