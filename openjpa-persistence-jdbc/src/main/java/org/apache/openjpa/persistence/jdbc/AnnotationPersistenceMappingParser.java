@@ -116,6 +116,10 @@ public class AnnotationPersistenceMappingParser
         _tags.put(ColumnResult.class, COLUMN_RESULT);
         _tags.put(DiscriminatorColumn.class, DISCRIM_COL);
         _tags.put(DiscriminatorValue.class, DISCRIM_VAL);
+        _tags.put(ElementColumn.class, ELEM_COL);
+        _tags.put(ElementColumns.class, ELEM_COLS);
+        _tags.put(ElementEmbeddedMapping.class, ELEM_EMBEDDED_MAPPING);
+        _tags.put(ElementStrategy.class, ELEM_STRAT);
         _tags.put(EntityResult.class, ENTITY_RESULT);
         _tags.put(Enumerated.class, ENUMERATED);
         _tags.put(FieldResult.class, FIELD_RESULT);
@@ -123,6 +127,16 @@ public class AnnotationPersistenceMappingParser
         _tags.put(JoinColumn.class, JOIN_COL);
         _tags.put(JoinColumns.class, JOIN_COLS);
         _tags.put(JoinTable.class, JOIN_TABLE);
+        _tags.put(KeyColumn.class, KEY_COL);
+        _tags.put(KeyColumns.class, KEY_COLS);
+        _tags.put(KeyClassCriteria.class, KEY_CLASS_CRIT);
+        _tags.put(KeyEmbeddedMapping.class, KEY_EMBEDDED_MAPPING);
+        _tags.put(KeyForeignKey.class, KEY_FK);
+        _tags.put(KeyIndex.class, KEY_INDEX);
+        _tags.put(KeyJoinColumn.class, KEY_JOIN_COL);
+        _tags.put(KeyJoinColumns.class, KEY_JOIN_COLS);
+        _tags.put(KeyNonpolymorphic.class, KEY_NONPOLY);
+        _tags.put(KeyStrategy.class, KEY_STRAT);
         _tags.put(PrimaryKeyJoinColumn.class, PK_JOIN_COL);
         _tags.put(PrimaryKeyJoinColumns.class, PK_JOIN_COLS);
         _tags.put(SecondaryTable.class, SECONDARY_TABLE);
@@ -157,8 +171,11 @@ public class AnnotationPersistenceMappingParser
         _tags.put(VersionColumn.class, VERSION_COL);
         _tags.put(VersionColumns.class, VERSION_COLS);
         _tags.put(VersionStrategy.class, VERSION_STRAT);
+        _tags.put(XEmbeddedMapping.class, X_EMBEDDED_MAPPING);
         _tags.put(XJoinColumn.class, X_JOIN_COL);
         _tags.put(XJoinColumns.class, X_JOIN_COLS);
+        _tags.put(XMappingOverride.class, X_MAPPING_OVERRIDE);
+        _tags.put(XMappingOverrides.class, X_MAPPING_OVERRIDES);
         _tags.put(XSecondaryTable.class, X_SECONDARY_TABLE);
         _tags.put(XSecondaryTables.class, X_SECONDARY_TABLES);
         _tags.put(XTable.class, X_TABLE);
@@ -337,6 +354,13 @@ public class AnnotationPersistenceMappingParser
                 case VERSION_STRAT:
                     cm.getVersion().getMappingInfo().setStrategy
                         (((VersionStrategy) anno).value());
+                    break;
+                case X_MAPPING_OVERRIDE:
+                    parseMappingOverrides(cm, (XMappingOverride) anno);
+                    break;
+                case X_MAPPING_OVERRIDES:
+                    parseMappingOverrides(cm,
+                        ((XMappingOverrides) anno).value());
                     break;
                 case X_TABLE:
                 case X_SECONDARY_TABLE:
@@ -746,6 +770,108 @@ public class AnnotationPersistenceMappingParser
     }
 
     /**
+     * Parse class-level @XMappingOverride(s).
+     */
+    private void parseMappingOverrides(ClassMapping cm,
+        XMappingOverride... overs) {
+        FieldMapping sup;
+        for (XMappingOverride over : overs) {
+            if (StringUtils.isEmpty(over.name()))
+                throw new MetaDataException(_loc.get("no-override-name", cm));
+            sup = (FieldMapping) cm.getDefinedSuperclassField(over.name());
+            if (sup == null)
+                sup = (FieldMapping) cm.addDefinedSuperclassField(over.name(),
+                    Object.class, Object.class);
+            populate(sup, over);
+        }
+    }
+
+    /**
+     * Populate the given field from override data.
+     */
+    private void populate(FieldMapping fm, XMappingOverride over) {
+        if (over.containerTable().specified())
+            parseContainerTable(fm, over.containerTable());
+        parseColumns(fm, over.columns());
+        parseXJoinColumns(fm, fm.getValueInfo(), true, over.joinColumns());
+        parseElementColumns(fm, over.elementColumns());
+        parseElementJoinColumns(fm, over.elementJoinColumns());
+        parseKeyColumns(fm, over.keyColumns());
+        parseKeyJoinColumns(fm, over.keyJoinColumns());
+    }
+
+    /**
+     * Parse @ElementColumn(s).
+     */
+    private void parseElementColumns(FieldMapping fm, ElementColumn... pcols) {
+        if (pcols.length == 0)
+            return;
+
+        List<Column> cols = new ArrayList<Column>(pcols.length);
+        int unique = 0;
+        for (int i = 0; i < pcols.length; i++) {
+            cols.add(newColumn(pcols[i]));
+            unique |= (pcols[i].unique()) ? TRUE : FALSE;
+        }
+        setColumns(fm, fm.getElementMapping().getValueInfo(), cols, unique);
+    }
+
+    /**
+     * Create a new schema column with information from the given annotation.
+     */
+    private static Column newColumn(ElementColumn anno) {
+        Column col = new Column();
+        if (!StringUtils.isEmpty(anno.name()))
+            col.setName(anno.name());
+        if (!StringUtils.isEmpty(anno.columnDefinition()))
+            col.setTypeName(anno.columnDefinition());
+        if (anno.precision() != 0)
+            col.setSize(anno.precision());
+        else if (anno.length() != 255)
+            col.setSize(anno.length());
+        col.setNotNull(!anno.nullable());
+        col.setDecimalDigits(anno.scale());
+        col.setFlag(Column.FLAG_UNINSERTABLE, !anno.insertable());
+        col.setFlag(Column.FLAG_UNUPDATABLE, !anno.updatable());
+        return col;
+    }
+
+    /**
+     * Parse @KeyJoinColumn(s).
+     */
+    private void parseKeyJoinColumns(FieldMapping fm, KeyJoinColumn... joins) {
+        if (joins.length == 0)
+            return;
+
+        List<Column> cols = new ArrayList<Column>(joins.length);
+        int unique = 0;
+        for (int i = 0; i < joins.length; i++) {
+            cols.add(newColumn(joins[i]));
+            unique |= (joins[i].unique()) ? TRUE : FALSE;
+        }
+        setColumns(fm, fm.getKeyMapping().getValueInfo(), cols, unique);
+    }
+
+    /**
+     *  Create a new schema column with information from the given annotation.
+     */
+    private static Column newColumn(KeyJoinColumn join) {
+        Column col = new Column();
+        if (!StringUtils.isEmpty(join.name()))
+            col.setName(join.name());
+        if (!StringUtils.isEmpty(join.columnDefinition()))
+            col.setName(join.columnDefinition());
+        if (!StringUtils.isEmpty(join.referencedColumnName()))
+            col.setTarget(join.referencedColumnName());
+        if (!StringUtils.isEmpty(join.referencedAttributeName()))
+            col.setTargetField(join.referencedAttributeName());
+        col.setNotNull(!join.nullable());
+        col.setFlag(Column.FLAG_UNINSERTABLE, !join.insertable());
+        col.setFlag(Column.FLAG_UNUPDATABLE, !join.updatable ());
+        return col;
+    }
+    
+    /**
      * Translate the fetch mode enum value to the internal OpenJPA constant.
      */
     private static int toEagerFetchModeConstant(FetchMode mode) {
@@ -823,6 +949,48 @@ public class AnnotationPersistenceMappingParser
                 case JOIN_TABLE:
                     parseJoinTable(fm, (JoinTable) anno);
                     break;
+                case KEY_CLASS_CRIT:
+                    fm.getKeyMapping().getValueInfo().setUseClassCriteria
+                        (((KeyClassCriteria) anno).value());
+                    break;
+                case KEY_COL:
+                    parseKeyColumns(fm, (KeyColumn) anno);
+                    break;
+                case KEY_COLS:
+                    parseKeyColumns(fm, ((KeyColumns) anno).value());
+                    break;
+                case KEY_EMBEDDED_MAPPING:
+                    KeyEmbeddedMapping kembed = (KeyEmbeddedMapping) anno;
+                    parseEmbeddedMapping(fm.getKeyMapping(),
+                        kembed.nullIndicatorColumnName(),
+                        kembed.nullIndicatorAttributeName(),
+                        kembed.overrides());
+                    break;
+                case KEY_FK:
+                    KeyForeignKey kfk = (KeyForeignKey) anno;
+                    parseForeignKey(fm.getKeyMapping().getValueInfo(),
+                        kfk.name(), kfk.enabled(), kfk.deferred(),
+                        kfk.deleteAction(), kfk.updateAction());
+                    break;
+                case KEY_INDEX:
+                    KeyIndex kidx = (KeyIndex) anno;
+                    parseIndex(fm.getKeyMapping().getValueInfo(), kidx.name(),
+                        kidx.enabled(), kidx.unique());
+                    break;
+                case KEY_JOIN_COL:
+                    parseKeyJoinColumns(fm, (KeyJoinColumn) anno);
+                    break;
+                case KEY_JOIN_COLS:
+                    parseKeyJoinColumns(fm, ((KeyJoinColumns) anno).value());
+                    break;
+                case KEY_NONPOLY:
+                    fm.getKeyMapping().setPolymorphic(toPolymorphicConstant
+                        (((KeyNonpolymorphic) anno).value()));
+                    break;
+                case KEY_STRAT:
+                    fm.getKeyMapping().getValueInfo()
+                        .setStrategy(((KeyStrategy) anno).value());
+                    break;
                 case PK_JOIN_COL:
                     parsePrimaryKeyJoinColumns(fm, (PrimaryKeyJoinColumn) anno);
                     break;
@@ -852,6 +1020,19 @@ public class AnnotationPersistenceMappingParser
                     fm.getElementMapping().getValueInfo().setUseClassCriteria
                         (((ElementClassCriteria) anno).value());
                     break;
+                case ELEM_COL:
+                    parseElementColumns(fm, (ElementColumn) anno);
+                    break;
+                case ELEM_COLS:
+                    parseElementColumns(fm, ((ElementColumns) anno).value());
+                    break;
+                case ELEM_EMBEDDED_MAPPING:
+                    ElementEmbeddedMapping ee = (ElementEmbeddedMapping) anno;
+                    parseEmbeddedMapping(fm.getElementMapping(),
+                        ee.nullIndicatorAttributeName(),
+                        ee.nullIndicatorColumnName(),
+                        ee.overrides());
+                    break;
                 case ELEM_FK:
                     ElementForeignKey efk = (ElementForeignKey) anno;
                     parseForeignKey(fm.getElementMapping().getValueInfo(),
@@ -874,6 +1055,10 @@ public class AnnotationPersistenceMappingParser
                     fm.getElementMapping().setPolymorphic(toPolymorphicConstant
                         (((ElementNonpolymorphic) anno).value()));
                     break;
+                case ELEM_STRAT:
+                    fm.getElementMapping().getValueInfo()
+                        .setStrategy(((ElementStrategy) anno).value());
+                    break;
                 case EMBEDDED_MAPPING:
                     parseEmbeddedMapping(fm, (EmbeddedMapping) anno);
                     break;
@@ -894,8 +1079,13 @@ public class AnnotationPersistenceMappingParser
                     fm.getValueInfo().setStrategy(((Strategy) anno).value());
                     break;
                 case UNIQUE:
-                    parseUnique(fm, 
+                    parseUnique(fm,
                         (org.apache.openjpa.persistence.jdbc.Unique) anno);
+                    break;
+                case X_EMBEDDED_MAPPING:
+                    XEmbeddedMapping embed = (XEmbeddedMapping) anno;
+                    parseEmbeddedMapping(fm, embed.nullIndicatorColumnName(),
+                        embed.nullIndicatorAttributeName(), embed.overrides());
                     break;
                 case X_JOIN_COL:
                     parseXJoinColumns(fm, fm.getValueInfo(), true,
@@ -1197,6 +1387,42 @@ public class AnnotationPersistenceMappingParser
     }
 
     /**
+     * Parse @KeyColumn(s).
+     */
+    private void parseKeyColumns(FieldMapping fm, KeyColumn... pcols) {
+        if (pcols.length == 0)
+            return;
+
+        List<Column> cols = new ArrayList<Column>(pcols.length);
+        int unique = 0;
+        for (int i = 0; i < pcols.length; i++) {
+            cols.add(newColumn(pcols[i]));
+            unique |= (pcols[i].unique()) ? TRUE : FALSE;
+        }
+        setColumns(fm, fm.getKeyMapping().getValueInfo(), cols, unique);
+    }
+
+    /**
+     * Create a new schema column with information from the given annotation.
+     */
+    private static Column newColumn(KeyColumn anno) {
+        Column col = new Column();
+        if (!StringUtils.isEmpty(anno.name()))
+            col.setName(anno.name());
+        if (!StringUtils.isEmpty(anno.columnDefinition()))
+            col.setTypeName(anno.columnDefinition());
+        if (anno.precision() != 0)
+            col.setSize(anno.precision());
+        else if (anno.length() != 255)
+            col.setSize(anno.length());
+        col.setNotNull(!anno.nullable());
+        col.setDecimalDigits(anno.scale());
+        col.setFlag(Column.FLAG_UNINSERTABLE, !anno.insertable());
+        col.setFlag(Column.FLAG_UNUPDATABLE, !anno.updatable());
+        return col;
+    }
+
+    /**
      * Parse given @PrimaryKeyJoinColumn annotations.
      */
     private void parsePrimaryKeyJoinColumns(FieldMapping fm,
@@ -1277,6 +1503,41 @@ public class AnnotationPersistenceMappingParser
             return;
 
         ValueMappingInfo info = fm.getValueInfo();
+        populateNullIndicator(nullInd, info);
+    }
+
+    /**
+     * Parse embedded info for the given mapping.
+     */
+    private void parseEmbeddedMapping(ValueMapping vm, 
+        String nullIndicatorAttribute, String nullIndicatorColumn,
+        XMappingOverride[] overrides) {
+        ClassMapping embed = vm.getEmbeddedMapping();
+        if (embed == null)
+            throw new MetaDataException(_loc.get("not-embedded", vm));
+
+        FieldMapping efm;
+        for (XMappingOverride over : overrides) {
+            efm = embed.getFieldMapping(over.name());
+            if (efm == null)
+                throw new MetaDataException(_loc.get("embed-override-name",
+                    vm, over.name()));
+            populate(efm, over);
+        }
+
+        String nullInd = null;
+        if (!StringUtils.isEmpty(nullIndicatorAttribute))
+            nullInd = nullIndicatorAttribute;
+        else if (!StringUtils.isEmpty(nullIndicatorColumn))
+            nullInd = nullIndicatorColumn;
+        if (nullInd == null)
+            return;
+
+        ValueMappingInfo info = vm.getValueInfo();
+        populateNullIndicator(nullInd, info);
+    }
+
+    private void populateNullIndicator(String nullInd, ValueMappingInfo info) {
         if ("false".equals(nullInd))
             info.setCanIndicateNull(false);
         else {

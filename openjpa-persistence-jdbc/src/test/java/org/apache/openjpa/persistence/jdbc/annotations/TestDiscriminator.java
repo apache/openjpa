@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.SubclassJoinDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.ValueMapDiscriminatorStrategy;
@@ -31,11 +32,15 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  * @author Abe White
  */
-public abstract class TestDiscriminator
+public class TestDiscriminator
     extends SingleEMFTestCase {
 
-    public void setUp() {
-        //  #####
+    public void setUp() throws Exception {
+        super.setUp(AnnoTest1.class, AnnoTest2.class, Flat1.class,
+            CLEAR_TABLES);
+        // Commented out since OpenJPA does not have Entity1 and Entity2.
+        // These tests should be ported to use classes that are available
+        // in OpenJPA.
 //        setUp(Entity1.class, Entity2.class, AnnoTest1.class, CLEAR_TABLES);
     }
 
@@ -55,8 +60,9 @@ public abstract class TestDiscriminator
 //    }
 
     public void testJoinedDiscriminatorWithColumn() {
-        ClassMapping cls = ((JDBCConfiguration) emf.getConfiguration()).
-            getMappingRepositoryInstance().getMapping(AnnoTest1.class, 
+        JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
+        MappingRepository repo = conf.getMappingRepositoryInstance();
+        ClassMapping cls = repo.getMapping(AnnoTest1.class, 
             null, true);
         assertTrue(cls.getDiscriminator().getStrategy()
             instanceof ValueMapDiscriminatorStrategy);
