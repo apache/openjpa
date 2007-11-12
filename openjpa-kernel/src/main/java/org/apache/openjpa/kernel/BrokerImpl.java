@@ -255,8 +255,8 @@ public class BrokerImpl
         _compat = _conf.getCompatibilityInstance();
         _factory = factory;
         _log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
-        _cache = new ManagedCache(newManagedObjectCache());
-        _operating = MapBackedSet.decorate(new IdentityMap());
+        _cache = new ManagedCache();
+        initializeOperatingSet();
         _connRetainMode = connMode;
         _managed = managed;
         if (managed)
@@ -293,6 +293,10 @@ public class BrokerImpl
         // synch with the global transaction in progress, if any
         if (_factory.syncWithManagedTransaction(this, false))
             beginInternal();
+    }
+
+    private void initializeOperatingSet() {
+        _operating = MapBackedSet.decorate(new IdentityMap());
     }
 
     public Object clone()
@@ -1587,7 +1591,6 @@ public class BrokerImpl
                     sm.rollback();
                     removeFromTransaction(sm);
                 }
-                oldTransCache.clear();
                 _transCache = newTransCache;
             }
         }
@@ -1742,7 +1745,7 @@ public class BrokerImpl
         } finally {
             _operationCount--;
             if (_operationCount == 0)
-                _operating.clear();
+                initializeOperatingSet();
             unlock();
         }
     }
@@ -1943,7 +1946,7 @@ public class BrokerImpl
 
             // also clear derefed set; the deletes have been recorded
             if (_derefCache != null)
-                _derefCache.clear();
+                _derefCache = null;
         }
 
         // flush to store manager
@@ -2026,7 +2029,7 @@ public class BrokerImpl
         // copy the change set, then clear it for the next iteration
         StateManagerImpl[] states = (StateManagerImpl[]) _transAdditions.
             toArray(new StateManagerImpl[_transAdditions.size()]);
-        _transAdditions.clear();
+        _transAdditions = null;
 
         for (int i = 0; i < states.length; i++)
             states[i].beforeFlush(reason, _call);
@@ -2045,7 +2048,7 @@ public class BrokerImpl
 
         StateManagerImpl[] states = (StateManagerImpl[]) _derefAdditions.
             toArray(new StateManagerImpl[_derefAdditions.size()]);
-        _derefAdditions.clear();
+        _derefAdditions = null;
 
         for (int i = 0; i < states.length; i++)
             deleteDeref(states[i]);
@@ -2151,11 +2154,11 @@ public class BrokerImpl
         // reference to it below
         _transCache = null;
         if (_persistedClss != null)
-            _persistedClss.clear();
+            _persistedClss = null;
         if (_updatedClss != null)
-            _updatedClss.clear();
+            _updatedClss = null;
         if (_deletedClss != null)
-            _deletedClss.clear();
+            _deletedClss = null;
 
         // new cache would get cleared anyway during transitions, but doing so
         // immediately saves us some lookups
@@ -2168,7 +2171,7 @@ public class BrokerImpl
             for (Iterator itr = _derefCache.iterator(); itr.hasNext();)
                 ((StateManagerImpl) itr.next()).setDereferencedDependent
                     (false, false);
-            _derefCache.clear();
+            _derefCache = null;
         }
 
         // peform commit or rollback state transitions on each instance
@@ -4357,9 +4360,9 @@ public class BrokerImpl
     /**
      * Cache of managed objects.
      */
-    private static class ManagedCache {
+    private class ManagedCache {
 
-        private final Map _main; // oid -> sm
+        private Map _main; // oid -> sm
         private Map _conflicts = null; // conflict oid -> new sm
         private Map _news = null; // tmp id -> new sm
         private Collection _embeds = null; // embedded/non-persistent sms
@@ -4368,8 +4371,8 @@ public class BrokerImpl
         /**
          * Constructor; supply primary cache map.
          */
-        public ManagedCache(Map cache) {
-            _main = cache;
+        private ManagedCache() {
+            _main = newManagedObjectCache();
         }
 
         /**
@@ -4593,15 +4596,15 @@ public class BrokerImpl
          * Clear the cache.
          */
         public void clear() {
-            _main.clear();
+            _main = newManagedObjectCache();
             if (_conflicts != null)
-                _conflicts.clear();
+                _conflicts = null;
             if (_news != null)
-                _news.clear();
+                _news = null;
             if (_embeds != null)
-                _embeds.clear();
+                _embeds = null;
             if (_untracked != null)
-                _untracked.clear();
+                _untracked = null;
         }
 
         /**
@@ -4609,7 +4612,7 @@ public class BrokerImpl
          */
         public void clearNew() {
             if (_news != null)
-                _news.clear();
+                _news = null;
         }
 
         private void dirtyCheck() {
@@ -4735,9 +4738,9 @@ public class BrokerImpl
 
         public void clear() {
             if (_dirty != null)
-                _dirty.clear();
+                _dirty = null;
             if (_clean != null)
-                _clean.clear();
+                _clean = null;
         }
 
         public boolean isEmpty() {
