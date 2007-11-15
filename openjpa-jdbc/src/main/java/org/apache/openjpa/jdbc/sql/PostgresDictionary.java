@@ -98,6 +98,7 @@ public class PostgresDictionary
         maxColumnNameLength = 63;
         maxIndexNameLength = 63;
         maxConstraintNameLength = 63;
+        maxAutoAssignNameLength = 63;
         schemaCase = SCHEMA_CASE_LOWER;
         rangePosition = RANGE_POST_LOCK;
         requiresAliasForSubselect = true;
