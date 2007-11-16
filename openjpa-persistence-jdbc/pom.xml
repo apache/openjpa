@@ -402,6 +402,7 @@
                                     <exclude name="**/inheritance/serializable/*.class"/>
                                     <exclude name="**/xml/*.class"/>
                                     <exclude name="**/Unenhanced*.class"/>
+                                    <exclude name="**/AbstractUnenhanced*.class"/>
                                 </fileset>
                                 <openjpac>
                                     <classpath refid="cp"/>
@@ -416,6 +417,7 @@
                                         <include name="**/inheritance/serializable/*.class"/>
                                         <!--  include files from orm.xml -->
                                         <include name="**/xml/*.class"/>
+                                        <exclude name="**/Test*.class"/>
                                     </fileset>
                                     <config log="DefaultLevel=${openjpa.loglevel}"/>
                                 </openjpac>
