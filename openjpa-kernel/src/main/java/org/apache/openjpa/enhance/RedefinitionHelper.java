@@ -18,8 +18,15 @@
  */
 package org.apache.openjpa.enhance;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.Method;
+import java.lang.reflect.Field;
+
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
+import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ImplHelper;
 
 /**
@@ -184,5 +191,47 @@ public class RedefinitionHelper {
         if (sm != null)
             sm.settingObjectField(pc, idx, cur, next,
                 OpenJPAStateManager.SET_USER);
+    }
+
+    /**
+     * Create a container instance that will delegate back to the state
+     * manager to emulate lazy loading. This is used by PC subclasses for
+     * unenhanced types that could not be redefined, and thus do not have
+     * field-interception capabilities. Do this for all collection and
+     * map field types, even if they are in the dfg, in case the fetch
+     * groups are reset at runtime.
+     *
+     * @since 1.1.0
+     */
+    public static void assignLazyLoadProxies(StateManagerImpl sm) {
+        FieldMetaData[] fmds = sm.getMetaData().getFields();
+        for (int i = 0; i < fmds.length; i++) {
+            switch (fmds[i].getTypeCode()) {
+                case JavaTypes.COLLECTION:
+                case JavaTypes.MAP:
+                    PersistenceCapable pc = sm.getPersistenceCapable();
+                    Field field = (Field) fmds[i].getBackingMember();
+                    Reflection.set(pc, field,
+                        newLazyLoadingProxy(fmds[i].getDeclaredType(), i, sm));
+                    break;
+            }
+        }
+    }
+
+    private static Object newLazyLoadingProxy(Class type, final int idx,
+        final StateManagerImpl sm) {
+        InvocationHandler handler = new InvocationHandler() {
+
+            public Object invoke(Object proxy, Method method, Object[] args)
+                throws Throwable {
+                // this will replace the field in the instance, so the dynamic
+                // proxy should only be called the first time a
+                // lazy-load-proxied field is used in normal usage.
+                Object delegate = sm.fetch(idx);
+                return method.invoke(delegate, args);
+            }
+        };
+        return Proxy.newProxyInstance(type.getClassLoader(),
+            new Class[] { type }, handler);
     }
 }

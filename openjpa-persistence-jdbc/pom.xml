@@ -398,6 +398,7 @@
                                 <fileset id="enhance.path.ref"
                                     dir="${project.build.testOutputDirectory}">
                                     <include name="**/*.class"/>
+                                    <exclude name="**/Test*.class"/>
                                     <exclude name="**/inheritance/serializable/*.class"/>
                                     <exclude name="**/xml/*.class"/>
                                     <exclude name="**/Unenhanced*.class"/>

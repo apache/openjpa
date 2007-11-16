@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.enhance;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +35,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.BytecodeWriter;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -249,15 +251,35 @@ public class ManagedClassSubclasser {
             // but do set the metadata accordingly.
             if (enhancer.isAlreadyRedefined())
                 ints.add(bc.getType());
-            else if (JavaVersions.VERSION >= 5)
+            else if (JavaVersions.VERSION >= 5) {
                 map.put(bc.getType(), bc.toByteArray());
+                debugBytecodes(bc);
+            }
         } else {
             if (!enhancer.isAlreadySubclassed()) {
+                debugBytecodes(bc);
+                
                 // this is the new subclass
                 ClassLoader loader = GeneratedClasses.getMostDerivedLoader(
                     cls, PersistenceCapable.class);
                 subs.add(GeneratedClasses.loadBCClass(bc, loader));
             }
+        }
+    }
+
+    private static void debugBytecodes(BCClass bc) throws IOException {
+        // Write the bytecodes to disk for debugging purposes.
+        if ("true".equals(System.getProperty(
+            ManagedClassSubclasser.class.getName() + ".dumpBytecodes")))
+        {
+            File tmp = new File(System.getProperty("java.io.tmpdir"));
+            File dir = new File(tmp, "openjpa");
+            dir = new File(dir, "pcsubclasses");
+            dir.mkdirs();
+            dir = Files.getPackageFile(dir, bc.getPackageName(), true);
+            File f = new File(dir, bc.getClassName() + ".class");
+            System.err.println("Writing to " + f);
+            bc.write(f);
         }
     }
 

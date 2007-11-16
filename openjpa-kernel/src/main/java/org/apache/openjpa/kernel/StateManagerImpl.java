@@ -21,16 +21,25 @@ package org.apache.openjpa.kernel;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.enhance.DynamicPersistenceCapable;
 import org.apache.openjpa.enhance.FieldManager;
+import org.apache.openjpa.enhance.ManagedInstanceProvider;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.RedefinitionHelper;
 import org.apache.openjpa.enhance.StateManager;
-import org.apache.openjpa.enhance.ManagedInstanceProvider;
-import org.apache.openjpa.enhance.DynamicPersistenceCapable;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.lib.util.Localizer;
@@ -43,6 +52,7 @@ import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.Exceptions;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.ObjectNotFoundException;
@@ -50,7 +60,6 @@ import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.UserException;
-import org.apache.openjpa.util.ImplHelper;
 import serp.util.Numbers;
 
 /**
@@ -306,8 +315,11 @@ public class StateManagerImpl
 
         // if this is a non-tracking PC, add a hard ref to the appropriate data
         // sets and give it an opportunity to make a state snapshot.
-        if (!isIntercepting())
+        if (!isIntercepting()) {
             saveFields(true);
+            if (!isNew())
+                RedefinitionHelper.assignLazyLoadProxies(this);
+        }
     }
 
     /**
@@ -315,6 +327,8 @@ public class StateManagerImpl
      * from {@link ClassMetaData#isIntercepting()} in that it checks for
      * property access + subclassing in addition to the redefinition /
      * enhancement checks.
+     *
+     * @since 1.0.0
      */
     public boolean isIntercepting() {
         if (getMetaData().isIntercepting())
