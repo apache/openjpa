@@ -75,7 +75,7 @@ public class ApplicationIdTool {
     private static final String TOKENIZER_CUSTOM = "Tokenizer";
     private static final String TOKENIZER_STD = "StringTokenizer";
 
-    private static Localizer _loc = Localizer.forPackage
+    private static final Localizer _loc = Localizer.forPackage
         (ApplicationIdTool.class);
 
     private final Log _log;
@@ -1282,14 +1282,21 @@ public class ApplicationIdTool {
     public static void main(String[] args)
         throws IOException, ClassNotFoundException {
         Options opts = new Options();
-        args = opts.setFromCmdLine(args);
-        OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
-        try {
-            if (!run(conf, args, opts))
-                System.err.println(_loc.get("appid-usage"));
-        } finally {
-            conf.close();
-        }
+        final String[] arguments = opts.setFromCmdLine(args);
+        boolean ret = Configurations.runAgainstAllAnchors(opts,
+            new Configurations.Runnable() {
+            public boolean run(Options opts)
+                throws ClassNotFoundException, IOException {
+                OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
+                try {
+                    return ApplicationIdTool.run(conf, arguments, opts);
+                } finally {
+                    conf.close();
+                }
+            }
+        });
+        if (!ret)
+            System.err.println(_loc.get("appid-usage"));
     }
 
     /**

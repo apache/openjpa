@@ -168,6 +168,18 @@ META-INF/my-persistence.xml</filename>, you can use:
 <programlisting>
 &lt;tool&gt; -p my-persistence.xml
 </programlisting>
+                <para>
+If you want to run a tool against just one particular persistence unit in
+a configuration file, you can do so by specifying an anchor along with the
+resource. If you do not specify an anchor, the tools will run against all
+the persistence units defined within the specified resource, or the default
+resource if none is specified. If the persistence unit is defined within
+the default resource location, then you can just specify the raw anchor itself:
+                </para>
+<programlisting>
+&lt;tool&gt; -p my-persistence.xml#sales-persistence-unit
+&lt;tool&gt; -p #invoice-persistence-unit
+</programlisting>
             </listitem>
             <listitem>
                 <para>

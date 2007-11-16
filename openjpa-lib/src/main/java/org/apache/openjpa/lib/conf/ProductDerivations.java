@@ -22,8 +22,10 @@ import java.io.File;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -350,6 +352,66 @@ public class ProductDerivations {
             return;
         throw new MissingResourceException(errs.toString(), 
             ProductDerivations.class.getName(), resource);
+    }
+
+    /**
+     * Return a List<String> of all the fully-qualified anchors specified in
+     * <code>propertiesLocation</code>. The return values must be used in
+     * conjunction with <code>propertiesLocation</code>. If there are no
+     * product derivations or if no product derivations could find anchors,
+     * this returns an empty list.
+     *
+     * @since 1.1.0
+     */
+    public static List getFullyQualifiedAnchorsInPropertiesLocation(
+        final String propertiesLocation) {
+        List fqAnchors = new ArrayList();
+        StringBuffer errs = null;
+        for (int i = _derivations.length - 1; i >= 0; i--) {
+            try {
+                if (propertiesLocation == null) {
+                    String loc = _derivations[i].getDefaultResourceLocation();
+                    addAll(fqAnchors, loc,
+                        _derivations[i].getAnchorsInResource(loc));
+                    continue;
+                }
+
+                File f = new File(propertiesLocation);
+                if (((Boolean) J2DoPrivHelper.isFileAction(f).run())
+                    .booleanValue()) {
+                    addAll(fqAnchors, propertiesLocation,
+                        _derivations[i].getAnchorsInFile(f));
+                } else {
+                    f = new File("META-INF" + File.separatorChar
+                        + propertiesLocation);
+                    if (((Boolean) J2DoPrivHelper.isFileAction(f).run())
+                        .booleanValue()) {
+                        addAll(fqAnchors, propertiesLocation,
+                            _derivations[i].getAnchorsInFile(f));
+                    } else {
+                        addAll(fqAnchors, propertiesLocation,
+                            _derivations[i].getAnchorsInResource(
+                                propertiesLocation));
+                    }
+                }
+            } catch (Throwable t) {
+                errs = (errs == null) ? new StringBuffer() : errs.append("\n");
+                errs.append(_derivations[i].getClass().getName() + ":" + t);
+            }
+        }
+        reportErrors(errs, propertiesLocation);
+        return fqAnchors;
+    }
+
+    private static void addAll(Collection collection, String base,
+        Collection newMembers) {
+        if (newMembers == null || collection == null)
+            return;
+        for (Iterator iter = newMembers.iterator(); iter.hasNext(); ) {
+            String fqLoc = base + "#" + iter.next();
+            if (!collection.contains(fqLoc))
+                collection.add(fqLoc);
+        }
     }
 
     /**

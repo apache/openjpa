@@ -54,7 +54,15 @@
                 value="buildSchema(ForeignKeys=true)"/>
         </properties>
     </persistence-unit>
-    
+
+    <persistence-unit name="second-persistence-unit">
+        <class>org.apache.openjpa.enhance.UnenhancedBootstrapInstance</class>
+    </persistence-unit>
+
+    <persistence-unit name="third-persistence-unit">
+        <class>org.apache.openjpa.enhance.UnenhancedBootstrapInstance2</class>
+    </persistence-unit>
+
     <persistence-unit name="invalid">
         <properties>
             <property name="openjpa.ConnectionDriverName"

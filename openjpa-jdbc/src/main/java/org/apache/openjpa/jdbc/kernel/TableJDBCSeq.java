@@ -614,14 +614,20 @@ public class TableJDBCSeq
     public static void main(String[] args)
         throws Exception {
         Options opts = new Options();
-        args = opts.setFromCmdLine(args);
-        JDBCConfiguration conf = new JDBCConfigurationImpl();
-        try {
-            if (!run(conf, args, opts))
-                System.out.println(_loc.get("seq-usage"));
-        } finally {
-            conf.close();
-        }
+        final String[] arguments = opts.setFromCmdLine(args);
+        boolean ret = Configurations.runAgainstAllAnchors(opts,
+            new Configurations.Runnable() {
+            public boolean run(Options opts) throws Exception {
+                JDBCConfiguration conf = new JDBCConfigurationImpl();
+                try {
+                    return TableJDBCSeq.run(conf, arguments, opts);
+                } finally {
+                    conf.close();
+                }
+            }
+        });
+        if (!ret)
+            System.out.println(_loc.get("seq-usage"));
     }
 
     /**

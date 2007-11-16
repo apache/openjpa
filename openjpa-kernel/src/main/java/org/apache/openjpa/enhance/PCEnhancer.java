@@ -4254,17 +4254,29 @@ public class PCEnhancer {
      * not be enhanced. Thus, it is safe to invoke the enhancer on classes
      * that are already enhanced.
      */
-    public static void main(String[] args)
-        throws IOException {
+    public static void main(String[] args) {
         Options opts = new Options();
         args = opts.setFromCmdLine(args);
-        OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
-        try {
-            if (!run(conf, args, opts))
-                System.err.println(_loc.get("enhance-usage"));
-        } finally {
-            conf.close();
-        }
+        if (!run(args, opts))
+            System.err.println(_loc.get("enhance-usage"));
+    }
+
+    /**
+     * Run the tool. Returns false if invalid options given. Runs against all
+     * the persistence units defined in the resource to parse.
+     */
+    public static boolean run(final String[] args, Options opts) {
+        return Configurations.runAgainstAllAnchors(opts,
+            new Configurations.Runnable() {
+            public boolean run(Options opts) throws IOException {
+                OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
+                try {
+                    return PCEnhancer.run(conf, args, opts);
+                } finally {
+                    conf.close();
+                }
+            }
+        });
     }
 
     /**
@@ -4287,8 +4299,12 @@ public class PCEnhancer {
             ("enforcePropertyRestrictions", "epr",
                 flags.enforcePropertyRestrictions);
 
+        // for unit testing
+        BytecodeWriter writer = (BytecodeWriter) opts.get(
+            PCEnhancer.class.getName() + "#bytecodeWriter");
+
         Configurations.populateConfiguration(conf, opts);
-        return run(conf, args, flags, null, null, null);
+        return run(conf, args, flags, null, writer, null);
     }
 
     /**
@@ -4312,7 +4328,7 @@ public class PCEnhancer {
 
         Log log = conf.getLog(OpenJPAConfiguration.LOG_TOOL);
         Collection classes;
-        if (args.length == 0) {
+        if (args == null || args.length == 0) {
             log.info(_loc.get("running-all-classes"));
             classes = repos.getPersistentTypeNames(true, loader);
             if (classes == null) {
@@ -4327,7 +4343,7 @@ public class PCEnhancer {
             for (int i = 0; i < args.length; i++)
                 classes.addAll(Arrays.asList(cap.parseTypes(args[i])));
         }
-        
+
         Project project = new Project();
         BCClass bc;
         PCEnhancer enhancer;

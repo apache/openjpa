@@ -19,6 +19,8 @@
 package org.apache.openjpa.lib.conf;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Abstract no-op product derivation for easy extension.
@@ -55,6 +57,18 @@ public abstract class AbstractProductDerivation
 
     public ConfigurationProvider load(File file, String anchor)
         throws Exception {
+        return null;
+    }
+
+    public String getDefaultResourceLocation() {
+        return null;
+    }
+
+    public List getAnchorsInFile(File file) throws Exception {
+        return null;
+    }
+
+    public List getAnchorsInResource(String resource) throws Exception {
         return null;
     }
 

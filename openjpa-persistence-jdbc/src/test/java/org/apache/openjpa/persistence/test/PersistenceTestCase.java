@@ -52,10 +52,24 @@ public abstract class PersistenceTestCase
      * this list to tell the test framework to delete all table contents
      * before running the tests.
      *
-     * @param props list of persistent types used in testing and/or 
+     * @param props list of persistent types used in testing and/or
      * configuration values in the form key,value,key,value...
      */
     protected OpenJPAEntityManagerFactorySPI createEMF(Object... props) {
+        return createNamedEMF("test", props);
+    }
+
+    /**
+     * Create an entity manager factory for persistence unit <code>pu</code>.
+     * Put {@link #CLEAR_TABLES} in
+     * this list to tell the test framework to delete all table contents
+     * before running the tests.
+     *
+     * @param props list of persistent types used in testing and/or
+     * configuration values in the form key,value,key,value...
+     */
+    protected OpenJPAEntityManagerFactorySPI createNamedEMF(String pu,
+        Object... props) {
         Map map = new HashMap(System.getProperties());
         List<Class> types = new ArrayList<Class>();
         boolean prop = false;
@@ -85,7 +99,7 @@ public abstract class PersistenceTestCase
         }
 
         return (OpenJPAEntityManagerFactorySPI) Persistence.
-            createEntityManagerFactory("test", map);
+            createEntityManagerFactory(pu, map);
     }
 
     public void tearDown() throws Exception {

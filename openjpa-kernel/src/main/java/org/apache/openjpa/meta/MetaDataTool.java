@@ -250,14 +250,20 @@ public class MetaDataTool
     public static void main(String[] args)
         throws IOException {
         Options opts = new Options();
-        args = opts.setFromCmdLine(args);
-        OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
-        try {
-            if (!run(conf, args, opts))
-                System.err.println(_loc.get("tool-usage"));
-        } finally {
-            conf.close();
-        }
+        final String[] arguments = opts.setFromCmdLine(args);
+        boolean ret = Configurations.runAgainstAllAnchors(opts,
+            new Configurations.Runnable() {
+            public boolean run(Options opts) throws Exception {
+                OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
+                try {
+                    return MetaDataTool.run(conf, arguments, opts);
+                } finally {
+                    conf.close();
+                }
+            }
+        });
+        if (!ret)
+            System.err.println(_loc.get("tool-usage"));
     }
 
     /**

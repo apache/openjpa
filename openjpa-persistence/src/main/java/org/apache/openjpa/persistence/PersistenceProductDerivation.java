@@ -200,6 +200,33 @@ public class PersistenceProductDerivation
     }
 
     @Override
+    public String getDefaultResourceLocation() {
+        return RSRC_DEFAULT;
+    }
+
+    @Override
+    public List getAnchorsInFile(File file) throws IOException {
+        ConfigurationParser parser = new ConfigurationParser(null);
+        parser.parse(file);
+        return getUnitNames(parser);
+    }
+
+    private List<String> getUnitNames(ConfigurationParser parser) {
+        List<PersistenceUnitInfoImpl> units = parser.getResults();
+        List<String> names = new ArrayList<String>();
+        for (PersistenceUnitInfoImpl unit : units)
+            names.add(unit.getPersistenceUnitName());
+        return names;
+    }
+
+    @Override
+    public List getAnchorsInResource(String resource) throws Exception {
+        ConfigurationParser parser = new ConfigurationParser(null);
+        parser.parse(resource);
+        return getUnitNames(parser);
+    }
+
+    @Override
     public ConfigurationProvider loadGlobals(ClassLoader loader)
         throws IOException {
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();

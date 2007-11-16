@@ -19,6 +19,8 @@
 package org.apache.openjpa.lib.conf;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Hooks for deriving products with additional functionality.
@@ -90,6 +92,39 @@ public interface ProductDerivation {
      */
     public ConfigurationProvider load(File file, String anchor) 
         throws Exception;
+
+    /**
+     * Return a string identifying the default resource location for this
+     * product derivation, if one exists. If there is no default location,
+     * returns <code>null</code>.
+     *
+     * @since 1.1.0
+     */
+    public String getDefaultResourceLocation();
+
+    /**
+     * Return a List<String> of all the anchors defined in <code>file</code>.
+     * The returned names are not fully-qualified, so must be used in
+     * conjunction with <code>file</code> in calls
+     * to {@link #load(java.io.File, String)}.
+     *
+     * Returns <code>null</code> or an empty list if no anchors could be found.
+     *
+     * @since 1.1.0
+     */
+    public List getAnchorsInFile(File file) throws IOException, Exception;
+
+    /**
+     * Return a List<String> of all the anchors defined in
+     * <code>resource</code>. The returned names are not
+     * fully-qualified, so must be used in conjunction with
+     * <code>resource</code> in calls to {@link #load(java.io.File, String)}.
+     *
+     * Returns <code>null</code> or an empty list if no anchors could be found.
+     *
+     * @since 1.1.0
+     */
+    public List getAnchorsInResource(String resource) throws Exception;
     
     /**
      * Provides the instance with a callback to mutate the initial properties

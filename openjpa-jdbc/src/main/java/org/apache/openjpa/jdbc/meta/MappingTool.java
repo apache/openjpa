@@ -912,17 +912,23 @@ public class MappingTool
      * -f mypackage.orm -a export mypackage.jdo</code></li>
      * </ul>
      */
-    public static void main(String[] args)
+    public static void main(String[] arguments)
         throws IOException, SQLException {
         Options opts = new Options();
-        args = opts.setFromCmdLine(args);
-        JDBCConfiguration conf = new JDBCConfigurationImpl();
-        try {
-            if (!run(conf, args, opts))
-                System.err.println(_loc.get("tool-usage"));
-        } finally {
-            conf.close();
-        }
+        final String[] args = opts.setFromCmdLine(arguments);
+        boolean ret = Configurations.runAgainstAllAnchors(opts,
+            new Configurations.Runnable() {
+            public boolean run(Options opts) throws IOException, SQLException {
+                JDBCConfiguration conf = new JDBCConfigurationImpl();
+                try {
+                    return MappingTool.run(conf, args, opts);
+                } finally {
+                    conf.close();
+                }
+            }
+        });
+        if (!ret)
+            System.err.println(_loc.get("tool-usage"));
     }
 
     /**

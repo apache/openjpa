@@ -21,14 +21,15 @@ package org.apache.openjpa.lib.conf;
 import java.io.File;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.TreeSet;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -43,7 +44,6 @@ import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.lib.util.StringDistance;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
-
 import serp.util.Strings;
 
 /**
@@ -57,7 +57,7 @@ public class Configurations {
     private static final Localizer _loc = Localizer.forPackage
         (Configurations.class);
     
-    private static ConcurrentReferenceHashMap _loaders = new 
+    private static final ConcurrentReferenceHashMap _loaders = new
         ConcurrentReferenceHashMap(ConcurrentReferenceHashMap.WEAK, 
                 ConcurrentReferenceHashMap.HARD);
 
@@ -275,6 +275,35 @@ public class Configurations {
             }
         }
         return loader;
+    }
+
+    /**
+     * Return a List<String> of all the fully-qualified anchors specified in the
+     * properties location listed in <code>opts</code>. If no properties
+     * location is listed in <code>opts</code>, this returns whatever the
+     * product derivations can find in their default configurations.
+     * If the properties location specified in <code>opts</code> already
+     * contains an anchor spec, this returns that anchor. Note that in this
+     * fully-qualified-input case, the logic involving product derivations
+     * and resource parsing is short-circuited, so this method
+     * should not be used as a means to test that a particular anchor is
+     * defined in a given location by invoking with a fully-qualified anchor.
+     *
+     * This does not mutate <code>opts</code>.
+     *
+     * @since 1.1.0
+     */
+    public static List getFullyQualifiedAnchorsInPropertiesLocation(
+        Options opts) {
+        String props = opts.getProperty("properties", "p", null);
+        if (props != null) {
+            int anchorPosition = props.indexOf("#");
+            if (anchorPosition > -1)
+                return Arrays.asList(new String[] { props });
+        }
+
+        return ProductDerivations.getFullyQualifiedAnchorsInPropertiesLocation(
+            props);
     }
 
     /**
@@ -629,5 +658,44 @@ public class Configurations {
             return null;
         return props.remove(ProductDerivations.getConfigurationKey(partialKey,
             props));
+    }
+
+    /**
+     * Runs <code>runnable</code> against all the anchors in the configuration
+     * pointed to by <code>opts</code>. Each invocation gets a fresh clone of 
+     * <code>opts</code> with the <code>properties</code> option set
+     * appropriately.
+     *
+     * @since 1.1.0
+     */
+    public static boolean runAgainstAllAnchors(Options opts,
+        Configurations.Runnable runnable) {
+        List anchors =
+            Configurations.getFullyQualifiedAnchorsInPropertiesLocation(opts);
+
+        // We use 'properties' below; get rid of 'p' to avoid conflicts. This
+        // relies on knowing what getFullyQualifiedAnchorsInPropertiesLocation
+        // looks for.
+        if (opts.containsKey("p"))
+            opts.remove("p");
+
+        boolean ret = true;
+        for (Iterator iter = anchors.iterator(); iter.hasNext(); ) {
+            Options clonedOptions = (Options) opts.clone();
+            clonedOptions.setProperty("properties", iter.next().toString());
+            try {
+                ret &= runnable.run(clonedOptions);
+            } catch (Exception e) {
+                if (!(e instanceof RuntimeException))
+                    throw new RuntimeException(e);
+                else
+                    throw (RuntimeException) e;
+            }
+        }
+        return ret;
+    }
+
+    public interface Runnable {
+        public boolean run(Options opts) throws Exception;
     }
 }
