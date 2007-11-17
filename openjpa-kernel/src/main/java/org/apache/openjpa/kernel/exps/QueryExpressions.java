@@ -83,10 +83,10 @@ public class QueryExpressions
     /**
      * Add an update.
      */
-    public void putUpdate(FieldMetaData fmd, Value val) {
+    public void putUpdate(Path path, Value val) {
         if (updates == Collections.EMPTY_MAP)
             updates = new HashMap();
-        updates.put(fmd, val);
+        updates.put(path, val);
     }
 
     /**

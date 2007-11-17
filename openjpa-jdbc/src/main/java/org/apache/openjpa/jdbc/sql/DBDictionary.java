@@ -85,6 +85,7 @@ import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.jdbc.ConnectionDecorator;
@@ -95,13 +96,13 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.ReferentialIntegrityException;
 import org.apache.openjpa.util.Serialization;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
-import org.apache.openjpa.util.InvalidStateException;
 import serp.util.Numbers;
 import serp.util.Strings;
 
@@ -1897,7 +1898,8 @@ public class DBDictionary
 
         for (Iterator i = updateParams.entrySet().iterator(); i.hasNext();) {
             Map.Entry next = (Map.Entry) i.next();
-            FieldMapping fmd = (FieldMapping) next.getKey();
+            Path path = (Path) next.getKey();
+            FieldMapping fmd = (FieldMapping) path.last();
 
             if (fmd.isVersion())
                 augmentUpdates = false;
@@ -1909,7 +1911,9 @@ public class DBDictionary
             sql.append(" = ");
 
             ExpState state = val.initialize(sel, ctx, 0);
-            val.calculateValue(sel, ctx, state, null, null);
+            // JDBC Paths are always PCPaths; PCPath implements Val
+            ExpState pathState = ((Val) path).initialize(sel, ctx, 0);
+            val.calculateValue(sel, ctx, state, (Val) path, pathState);
 
             // append the value with a null for the Select; i
             // indicates that the
@@ -1922,9 +1926,9 @@ public class DBDictionary
         }
 
         if (augmentUpdates) {
-            ClassMapping meta =
-                ((FieldMapping) updateParams.keySet().iterator().next())
-                    .getDeclaringMapping();
+            Path path = (Path) updateParams.keySet().iterator().next();
+            FieldMapping fm = (FieldMapping) path.last();
+            ClassMapping meta = fm.getDeclaringMapping();
             Map updates = meta.getVersion().getBulkUpdateValues();
             for (Iterator iter = updates.entrySet().iterator();
                 iter.hasNext(); ) {

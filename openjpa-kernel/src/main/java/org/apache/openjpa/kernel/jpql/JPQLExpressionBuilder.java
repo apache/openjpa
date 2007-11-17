@@ -467,9 +467,9 @@ public class JPQLExpressionBuilder
         // handle SET field = value
         JPQLNode[] nodes = root().findChildrenByID(JJTUPDATEITEM);
         for (int i = 0; nodes != null && i < nodes.length; i++) {
-            FieldMetaData field = getPath(firstChild(nodes[i])).last();
+            Path path = getPath(firstChild(nodes[i]));
             Value val = getValue(onlyChild(lastChild(nodes[i])));
-            exps.putUpdate(field, val);
+            exps.putUpdate(path, val);
         }
     }
 

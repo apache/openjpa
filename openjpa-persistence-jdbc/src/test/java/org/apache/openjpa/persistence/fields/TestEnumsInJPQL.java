@@ -39,29 +39,45 @@ public class TestEnumsInJPQL
 
     public void testEnumLiteralInSelect() {
         Query q = em.createQuery("select count(o) from EnumFieldType o where " +
-            "o.enumField = org.apache.openjpa.persistence.fields.SampleEnum.BAR");
+            "o.enumField = " +
+            "org.apache.openjpa.persistence.fields.SampleEnum.BAR");
         assertEquals(1, ((Number) q.getSingleResult()).intValue());
     }
 
-    // fails currently
-    public void xtestEnumLiteralInUpdate() {
+    public void testEnumLiteralInSetInUpdate() {
         testEnumLiteralInSelect();
         em.getTransaction().begin();
         Query q = em.createQuery("update EnumFieldType o set " +
-            "o.enumField = org.apache.openjpa.persistence.fields.SampleEnum.BAZ");
+            "o.enumField = " +
+            "org.apache.openjpa.persistence.fields.SampleEnum.BAZ");
         assertEquals(1, ((Number) q.executeUpdate()).intValue());
         em.getTransaction().commit();
-        postUpdateCheck();
+        postUpdateCheck(true);
     }
 
-    private void postUpdateCheck() {
+    public void testEnumLiteralInWhereInUpdate() {
+        testEnumLiteralInSelect();
+        em.getTransaction().begin();
+        Query q = em.createQuery("update EnumFieldType o set o.intField = 3 " +
+            "where o.enumField = " +
+            "org.apache.openjpa.persistence.fields.SampleEnum.BAR");
+        assertEquals(1, ((Number) q.executeUpdate()).intValue());
+        em.getTransaction().commit();
+        postUpdateCheck(false);
+    }
+
+    private void postUpdateCheck(boolean wasEnumModified) {
         Query q = em.createQuery("select count(o) from EnumFieldType o where " +
-            "o.enumField = org.apache.openjpa.persistence.fields.SampleEnum.BAR");
-        assertEquals(0, ((Number) q.getSingleResult()).intValue());
+            "o.enumField = " +
+            "org.apache.openjpa.persistence.fields.SampleEnum.BAR");
+        assertEquals(wasEnumModified ? 0 : 1,
+            ((Number) q.getSingleResult()).intValue());
 
         q = em.createQuery("select count(o) from EnumFieldType o where " +
-            "o.enumField = org.apache.openjpa.persistence.fields.SampleEnum.BAZ");
-        assertEquals(1, ((Number) q.getSingleResult()).intValue());
+            "o.enumField = " +
+            "org.apache.openjpa.persistence.fields.SampleEnum.BAZ");
+        assertEquals(wasEnumModified ? 1 : 0,
+            ((Number) q.getSingleResult()).intValue());
     }
 
     public void testEnumPositionalParamInSelect() {
@@ -78,15 +94,25 @@ public class TestEnumsInJPQL
         assertEquals(1, ((Number) q.getSingleResult()).intValue());
     }
 
-    // fails currently
-    public void xtestEnumParamInUpdate() {
+    public void testEnumParamInSetInUpdate() {
         testEnumLiteralInSelect();
         em.getTransaction().begin();
         Query q = em.createQuery("update EnumFieldType o set o.enumField = :e");
         q.setParameter("e", SampleEnum.BAZ);
         assertEquals(1, ((Number) q.executeUpdate()).intValue());
         em.getTransaction().commit();
-        postUpdateCheck();
+        postUpdateCheck(true);
+    }
+
+    public void testEnumParamInWhereInUpdate() {
+        testEnumLiteralInSelect();
+        em.getTransaction().begin();
+        Query q = em.createQuery("update EnumFieldType o set o.intField = 3 " +
+            "where o.enumField = :e");
+        q.setParameter("e", SampleEnum.BAR);
+        assertEquals(1, ((Number) q.executeUpdate()).intValue());
+        em.getTransaction().commit();
+        postUpdateCheck(false);
     }
 
     public void xtestInMemory() {
