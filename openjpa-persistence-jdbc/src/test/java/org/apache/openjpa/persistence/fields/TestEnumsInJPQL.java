@@ -30,6 +30,7 @@ public class TestEnumsInJPQL
 
         EnumFieldType o = new EnumFieldType();
         o.setEnumField(SampleEnum.BAR);
+
         em.getTransaction().begin();
         em.persist(o);
         em.getTransaction().commit();
