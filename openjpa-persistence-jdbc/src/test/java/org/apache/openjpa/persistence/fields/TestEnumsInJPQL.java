@@ -114,8 +114,4 @@ public class TestEnumsInJPQL
         em.getTransaction().commit();
         postUpdateCheck(false);
     }
-
-    public void xtestInMemory() {
-        fail("unimplemented");
-    }
 }
