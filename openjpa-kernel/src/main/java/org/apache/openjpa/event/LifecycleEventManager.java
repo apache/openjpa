@@ -568,8 +568,10 @@ public class LifecycleEventManager
                 types |= 2 << LifecycleEvent.BEFORE_DIRTY_FLUSHED;
                 types |= 2 << LifecycleEvent.AFTER_DIRTY_FLUSHED;
             }
-            if (listener instanceof LoadListener)
+            if (listener instanceof LoadListener) {
                 types |= 2 << LifecycleEvent.AFTER_LOAD;
+                types |= 2 << LifecycleEvent.AFTER_REFRESH;
+            }
             if (listener instanceof StoreListener) {
                 types |= 2 << LifecycleEvent.BEFORE_STORE;
                 types |= 2 << LifecycleEvent.AFTER_STORE;
