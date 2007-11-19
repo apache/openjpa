@@ -28,9 +28,11 @@ import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
@@ -326,52 +328,62 @@ public class PersistenceUnitInfoImpl
      */
     public static Map toOpenJPAProperties(PersistenceUnitInfo info) {
         Map map = new HashMap();
+        Set<String> added = new HashSet<String>();
         if (info.getTransactionType() == PersistenceUnitTransactionType.JTA)
-            map.put("openjpa.TransactionMode", "managed");
+            put(map, added, "TransactionMode", "managed");
 
         boolean hasJta = false;
         DataSource ds = info.getJtaDataSource();
         if (ds != null) {
-            map.put("openjpa.ConnectionFactory", ds);
-            map.put("openjpa.ConnectionFactoryMode", "managed");
+            put(map, added, "ConnectionFactory", ds);
+            put(map, added, "ConnectionFactoryMode", "managed");
             hasJta = true;
         } else if (info instanceof PersistenceUnitInfoImpl
             && ((PersistenceUnitInfoImpl) info).getJtaDataSourceName() != null){
-            map.put("openjpa.ConnectionFactoryName", ((PersistenceUnitInfoImpl)
+            put(map, added, "ConnectionFactoryName", ((PersistenceUnitInfoImpl)
                 info).getJtaDataSourceName());
-            map.put("openjpa.ConnectionFactoryMode", "managed");
+            put(map, added, "ConnectionFactoryMode", "managed");
             hasJta = true;
         }
 
         ds = info.getNonJtaDataSource();
         if (ds != null) {
             if (!hasJta)
-                map.put("openjpa.ConnectionFactory", ds);
+                put(map, added, "ConnectionFactory", ds);
             else
-                map.put("openjpa.ConnectionFactory2", ds);
+                put(map, added, "ConnectionFactory2", ds);
         } else if (info instanceof PersistenceUnitInfoImpl
             && ((PersistenceUnitInfoImpl) info).getNonJtaDataSourceName()
             != null) {
             String nonJtaName = ((PersistenceUnitInfoImpl) info).
                 getNonJtaDataSourceName();
             if (!hasJta)
-                map.put("openjpa.ConnectionFactoryName", nonJtaName);
+                put(map, added, "ConnectionFactoryName", nonJtaName);
             else
-                map.put("openjpa.ConnectionFactory2Name", nonJtaName);
+                put(map, added, "ConnectionFactory2Name", nonJtaName);
         }
 
         if (info.getClassLoader() != null)
-            map.put("openjpa.ClassResolver", new ClassResolverImpl
-                (info.getClassLoader()));
+            put(map, added, "ClassResolver", new ClassResolverImpl(
+                info.getClassLoader()));
 
         Properties props = info.getProperties();
         if (props != null) {
+
+            // remove any of the things that were set above
+            for (String key : added) {
+                if (Configurations.containsProperty(key, props))
+                    Configurations.removeProperty(key, props);
+            }
+
+            // add all the non-conflicting props in the <properties> section
             map.putAll(props);
+
             // this isn't a real config property; remove it
             map.remove(PersistenceProviderImpl.CLASS_TRANSFORMER_OPTIONS);
         }
 
-        if (!map.containsKey("openjpa.Id"))
+        if (!Configurations.containsProperty("Id", map))
             map.put("openjpa.Id", info.getPersistenceUnitName());
         
         Properties metaFactoryProps = new Properties();
@@ -432,6 +444,11 @@ public class PersistenceUnitInfoImpl
         if (info.getPersistenceProviderClassName() != null)
             map.put(KEY_PROVIDER, info.getPersistenceProviderClassName());
         return map;
+    }
+
+    private static void put(Map map, Set added, String key, Object val) {
+        map.put("openjpa." + key, val);
+        added.add(key);
     }
 
     // --------------------
