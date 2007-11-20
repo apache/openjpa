@@ -134,6 +134,7 @@ public abstract class AbstractBrokerFactory
      */
     protected AbstractBrokerFactory(OpenJPAConfiguration config) {
         _conf = config;
+        _pcClassLoaders = new ReferenceHashSet(ReferenceHashSet.WEAK);
     }
 
     /**
@@ -255,7 +256,6 @@ public abstract class AbstractBrokerFactory
                     if (needsSub(cls))
                         toRedefine.add(cls);
                 }
-                _pcClassLoaders = new ReferenceHashSet(ReferenceHashSet.WEAK);
                 _pcClassLoaders.add(loader);
             }
         } else {
