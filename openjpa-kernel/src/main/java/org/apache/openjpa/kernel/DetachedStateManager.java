@@ -552,7 +552,8 @@ public class DetachedStateManager
     public void settingStringField(PersistenceCapable pc, int idx, String cur,
         String next, int set) {
         accessingField(idx);
-        if (cur == next || !_loaded.get(idx))
+        if (cur == next || (cur != null && cur.equals(next))
+                || !_loaded.get(idx))
             return;
         lock();
         try {
