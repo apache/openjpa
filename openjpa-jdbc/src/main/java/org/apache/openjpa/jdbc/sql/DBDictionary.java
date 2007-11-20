@@ -2324,8 +2324,8 @@ public class DBDictionary
      * If this dictionary can select ranges,
      * use this method to append the range SQL.
      */
-    protected void appendSelectRange(SQLBuffer buf, long start, long end
-        , boolean subselect) {
+    protected void appendSelectRange(SQLBuffer buf, long start, long end,
+        boolean subselect) {
     }
 
     /**
