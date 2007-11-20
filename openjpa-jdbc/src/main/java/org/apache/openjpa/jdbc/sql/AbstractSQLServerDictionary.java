@@ -108,7 +108,8 @@ public abstract class AbstractSQLServerDictionary
             super.setNull(stmnt, idx, colType, col);
     }
 
-    protected void appendSelectRange(SQLBuffer buf, long start, long end) {
+    protected void appendSelectRange(SQLBuffer buf, long start, long end,
+        boolean subselect) {
         // cannot use a value here, since SQLServer does not support
         // bound parameters in a "TOP" clause
         buf.append(" TOP ").append(Long.toString(end));

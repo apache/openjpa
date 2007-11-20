@@ -185,7 +185,8 @@ public class H2Dictionary extends DBDictionary {
         return cols;
     }
 
-    protected void appendSelectRange(SQLBuffer buf, long start, long end) {
+    protected void appendSelectRange(SQLBuffer buf, long start, long end,
+        boolean subselect) {
         if (end != Long.MAX_VALUE)
             buf.append(" LIMIT ").appendValue(end - start);
         if (start != 0)

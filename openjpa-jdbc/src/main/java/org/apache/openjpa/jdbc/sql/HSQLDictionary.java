@@ -250,7 +250,8 @@ public class HSQLDictionary
         }
     }
 
-    protected void appendSelectRange(SQLBuffer buf, long start, long end) {
+    protected void appendSelectRange(SQLBuffer buf, long start, long end,
+        boolean subselect) {
         // HSQL doesn't parameters in range
         buf.append(" LIMIT ").append(String.valueOf(start)).append(" ");
         if (end == Long.MAX_VALUE)
