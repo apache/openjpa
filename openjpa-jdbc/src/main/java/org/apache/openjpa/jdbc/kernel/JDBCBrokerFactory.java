@@ -26,6 +26,7 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
+import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.MappingTool;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Bootstrap;
@@ -145,14 +146,16 @@ public class JDBCBrokerFactory
         if (StringUtils.isEmpty(action))
             return;
 
-        Collection classes = conf.getMetaDataRepositoryInstance().
-            loadPersistentTypes(false, loader);
+        MappingRepository repo = conf.getMappingRepositoryInstance();
+        Collection classes = repo.loadPersistentTypes(false, loader);
         if (classes.isEmpty())
             return;
 
         String props = Configurations.getProperties(action);
         action = Configurations.getClassName(action);
         MappingTool tool = new MappingTool(conf, action, false);
+        tool.setRepository(repo);
+        tool.setSchemaGroup(tool.getSchemaGroup());
         Configurations.configureInstance(tool, conf, props,
             "SynchronizeMappings");
 
