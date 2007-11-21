@@ -71,4 +71,7 @@
                 value="DriverClassName=not.a.real.Driver,Url=jdbc:notreal://"/>
         </properties>
     </persistence-unit>
+
+    <persistence-unit name="empty-pu">
+    </persistence-unit>
 </persistence>
