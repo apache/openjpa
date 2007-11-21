@@ -154,8 +154,6 @@ public class JDBCBrokerFactory
         String props = Configurations.getProperties(action);
         action = Configurations.getClassName(action);
         MappingTool tool = new MappingTool(conf, action, false);
-        tool.setRepository(repo);
-        tool.setSchemaGroup(tool.getSchemaGroup());
         Configurations.configureInstance(tool, conf, props,
             "SynchronizeMappings");
 
