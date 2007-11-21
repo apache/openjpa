@@ -56,7 +56,15 @@ public abstract class PersistenceTestCase
      * configuration values in the form key,value,key,value...
      */
     protected OpenJPAEntityManagerFactorySPI createEMF(Object... props) {
-        return createNamedEMF("test", props);
+        return createNamedEMF(getPersistenceUnitName(), props);
+    }
+
+    /**
+     * The name of the persistence unit that this test class should use
+     * by default. This defaults to "test".
+     */
+    protected String getPersistenceUnitName() {
+        return "test";
     }
 
     /**
@@ -83,7 +91,7 @@ public abstract class PersistenceTestCase
                     + "SchemaAction='add,deleteTableContents')");
             } else if (props[i] instanceof Class)
                 types.add((Class) props[i]);
-            else
+            else if (props[i] != null)
                 prop = true;
         }
 

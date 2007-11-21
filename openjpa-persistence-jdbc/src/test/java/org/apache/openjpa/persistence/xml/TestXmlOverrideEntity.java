@@ -20,16 +20,51 @@ package org.apache.openjpa.persistence.xml;
 
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.enhance.PCRegistry;
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.InvalidStateException;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestXmlOverrideEntity extends SingleEMFTestCase {
 
-    public void setUp() {
-        setUp(XmlOverrideEntity.class);
+    public void setUp() throws ClassNotFoundException {
+        setUp(CLEAR_TABLES);
+
+        // make sure that XmlOverrideEntity is registered for our metadata tests
+        Class.forName(XmlOverrideEntity.class.getName(), true,
+            XmlOverrideEntity.class.getClassLoader());
+    }
+
+    protected String getPersistenceUnitName() {
+        return "xml-persistence-unit";
+    }
+
+    public void testOverrideHappenedDuringEnhancement()
+        throws ClassNotFoundException {
+        // this mostly tests our test harness. Since XmlOverrideEntity
+        // has annotation-based metadata, it is important that the first
+        // PU in which it gets scanned-and-enhanced knows about overriding.
+        assertTrue(PersistenceCapable.class.isAssignableFrom(
+            XmlOverrideEntity.class));
+        assertEquals("XmlOverride",
+            PCRegistry.getTypeAlias(XmlOverrideEntity.class));
+    }
+
+    public void testOverriddenEntityName() {
+        ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
+            XmlOverrideEntity.class);
+        assertEquals("XmlOverride", meta.getTypeAlias());
+        emf.createEntityManager().close();
+        MetaDataRepository repo = emf.getConfiguration()
+            .getMetaDataRepositoryInstance();
+        assertEquals(meta, repo.getMetaData("XmlOverride",
+            XmlOverrideEntity.class.getClassLoader(), true));
     }
 
     /**

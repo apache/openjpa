@@ -25,7 +25,11 @@ public class TestSimpleXmlEntity
     extends SingleEMTestCase {
 
     public void setUp() {
-        setUp(SimpleXmlEntity.class);
+        setUp(CLEAR_TABLES);
+    }
+
+    protected String getPersistenceUnitName() {
+        return "xml-persistence-unit";
     }
 
     public void testId() {
