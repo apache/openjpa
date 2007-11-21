@@ -47,6 +47,10 @@ public class GeneralException
         super(msg, cause);
     }
 
+    public GeneralException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+
     public int getType() {
         return GENERAL;
     }

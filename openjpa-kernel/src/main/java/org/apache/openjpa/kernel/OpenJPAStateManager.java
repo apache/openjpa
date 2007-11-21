@@ -102,9 +102,11 @@ public interface OpenJPAStateManager
     public OpenJPAStateManager getOwner();
 
     /**
-     * Return the owning value.
+     * Return the owning value's field index
+     *
+     * @since 1.1.0
      */
-    public ValueMetaData getOwnerMetaData();
+    public int getOwnerIndex();
 
     /**
      * Return true if this instance has an owner, meaning it is an embedded

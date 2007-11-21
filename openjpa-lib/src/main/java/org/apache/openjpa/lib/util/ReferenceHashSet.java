@@ -49,7 +49,11 @@ public class ReferenceHashSet implements Set, Serializable {
      */
     public static final int WEAK = 2;
 
-    private static final Object DUMMY_VAL = new Object();
+    private static final Object DUMMY_VAL = new Serializable() {
+        public String toString() {
+            return ReferenceHashSet.class.getName() + ".DUMMY_VAL";
+        }
+    };
 
     private final Set _set;
 

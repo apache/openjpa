@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.lib.util.concurrent;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -35,7 +36,8 @@ import org.apache.openjpa.lib.util.EventManager;
  *
  * @author Abe White
  */
-public abstract class AbstractConcurrentEventManager implements EventManager {
+public abstract class AbstractConcurrentEventManager
+    implements EventManager, Serializable {
 
     private static Exception[] EMPTY_EXCEPTIONS = new Exception[0];
 

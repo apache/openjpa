@@ -22,6 +22,8 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceProvider;
@@ -54,6 +56,7 @@ public class PersistenceProviderImpl
     implements PersistenceProvider {
 
     static final String CLASS_TRANSFORMER_OPTIONS = "ClassTransformerOptions";
+    private static final String EMF_POOL = "EntityManagerFactoryPool";
 
     private static final Localizer _loc = Localizer.forPackage(
         PersistenceProviderImpl.class);
@@ -72,15 +75,35 @@ public class PersistenceProviderImpl
         String resource, Map m) {
         PersistenceProductDerivation pd = new PersistenceProductDerivation();
         try {
+            Object poolValue = Configurations.removeProperty(EMF_POOL, m);
             ConfigurationProvider cp = pd.load(resource, name, m);
             if (cp == null)
                 return null;
 
-            BrokerFactory factory = Bootstrap.newBrokerFactory(cp, null);
+            BrokerFactory factory = getBrokerFactory(cp, poolValue, null);
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
+    }
+
+    private BrokerFactory getBrokerFactory(ConfigurationProvider cp,
+        Object poolValue, ClassLoader loader) {
+        // handle "true" and "false"
+        if (poolValue instanceof String
+            && ("true".equalsIgnoreCase((String) poolValue)
+                || "false".equalsIgnoreCase((String) poolValue)))
+            poolValue = Boolean.valueOf((String) poolValue);
+
+        if (poolValue != null && !(poolValue instanceof Boolean)) {
+            // we only support boolean settings for this option currently.
+            throw new IllegalArgumentException(poolValue.toString());
+        }
+        
+        if (poolValue == null || !((Boolean) poolValue).booleanValue())
+            return Bootstrap.newBrokerFactory(cp, loader);
+        else
+            return Bootstrap.getBrokerFactory(cp, loader);
     }
 
     public OpenJPAEntityManagerFactory createEntityManagerFactory(String name,
@@ -92,6 +115,7 @@ public class PersistenceProviderImpl
         PersistenceUnitInfo pui, Map m) {
         PersistenceProductDerivation pd = new PersistenceProductDerivation();
         try {
+            Object poolValue = Configurations.removeProperty(EMF_POOL, m);
             ConfigurationProvider cp = pd.load(pui, m);
             if (cp == null)
                 return null;
@@ -117,7 +141,7 @@ public class PersistenceProviderImpl
                     BrokerValue.NON_FINALIZING_ALIAS);
             }
 
-            BrokerFactory factory = Bootstrap.newBrokerFactory(cp, 
+            BrokerFactory factory = getBrokerFactory(cp, poolValue,
                 pui.getClassLoader());
             if (transformerException != null) {
                 Log log = factory.getConfiguration().getLog(

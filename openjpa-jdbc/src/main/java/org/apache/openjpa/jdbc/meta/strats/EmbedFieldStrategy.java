@@ -582,8 +582,8 @@ public class EmbedFieldStrategy
             return _owner;
         }
 
-        public ValueMetaData getOwnerMetaData() {
-            return _vmd;
+        public int getOwnerIndex() {
+            return _vmd.getFieldMetaData().getIndex();
         }
 
         public boolean isEmbedded() {

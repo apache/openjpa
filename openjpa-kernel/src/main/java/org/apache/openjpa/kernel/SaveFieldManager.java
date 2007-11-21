@@ -18,13 +18,16 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ProxyManager;
@@ -35,13 +38,14 @@ import org.apache.openjpa.util.ProxyManager;
  * @author Abe White
  */
 public class SaveFieldManager
-    extends ClearFieldManager {
+    extends ClearFieldManager
+    implements Serializable {
 
     private final StateManagerImpl _sm;
     private final BitSet _unloaded;
     private BitSet _saved = null;
     private int[] _copyField = null;
-    private PersistenceCapable _state = null;
+    private transient PersistenceCapable _state = null;
 
     // used to track field value during store/fetch cycle
     private Object _field = null;
@@ -140,7 +144,7 @@ public class SaveFieldManager
         if (_copyField == null)
             _copyField = new int[1];
         _copyField[0] = field;
-        _state.pcCopyFields(_sm.getPersistenceCapable(), _copyField);
+        getState().pcCopyFields(_sm.getPersistenceCapable(), _copyField);
         return false;
     }
 
@@ -164,7 +168,7 @@ public class SaveFieldManager
         if (_copyField == null)
             _copyField = new int[1];
         _copyField[0] = field;
-        _sm.getPersistenceCapable().pcCopyFields(_state, _copyField);
+        _sm.getPersistenceCapable().pcCopyFields(getState(), _copyField);
         return false;
     }
 
@@ -177,12 +181,12 @@ public class SaveFieldManager
         // if the field is not available, assume that it has changed.
         if (_saved == null || !_saved.get(field))
             return false;
-        if (!(_state.pcGetStateManager() instanceof StateManagerImpl))
+        if (!(getState().pcGetStateManager() instanceof StateManagerImpl))
             return false;
 
-        StateManagerImpl sm = (StateManagerImpl) _state.pcGetStateManager();
+        StateManagerImpl sm = (StateManagerImpl) getState().pcGetStateManager();
         SingleFieldManager single = new SingleFieldManager(sm, sm.getBroker());
-        sm.provideField(_state, single, field);
+        sm.provideField(getState(), single, field);
         Object old = single.fetchObjectField(field);
         return current == old || current != null && current.equals(old);
     }
@@ -227,4 +231,15 @@ public class SaveFieldManager
             _saved.clear(field);
 		}
 	}
+
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.defaultWriteObject();
+        _sm.writePC(oos, _state);
+    }
+
+    private void readObject(ObjectInputStream ois)
+        throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        _state = _sm.readPC(ois);
+    }
 }

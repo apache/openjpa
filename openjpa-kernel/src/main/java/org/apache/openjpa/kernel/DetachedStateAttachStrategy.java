@@ -171,8 +171,7 @@ class DetachedStateAttachStrategy
                 BitSet toLoad = (BitSet) fields.clone();
                 toLoad.andNot(sm.getLoaded()); // skip already loaded fields
                 if (toLoad.length() > 0)
-                    sm.loadFields(toLoad, null, LockLevels.LOCK_NONE, null,
-                        false);
+                    sm.loadFields(toLoad, null, LockLevels.LOCK_NONE, null);
                 //### we should calculate lock level above
             }
             Object version = state[offset];

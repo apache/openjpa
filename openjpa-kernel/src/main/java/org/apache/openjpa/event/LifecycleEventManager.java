@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.event;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,7 +45,7 @@ import org.apache.openjpa.meta.MetaDataDefaults;
  * @nojavadoc
  */
 public class LifecycleEventManager
-    implements CallbackModes {
+    implements CallbackModes, Serializable {
 
     private static final Exception[] EMPTY_EXCEPTIONS = new Exception[0];
 

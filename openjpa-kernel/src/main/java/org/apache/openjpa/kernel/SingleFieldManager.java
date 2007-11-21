@@ -20,6 +20,7 @@ package org.apache.openjpa.kernel;
 
 import java.io.IOException;
 import java.io.ObjectOutput;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -50,7 +51,8 @@ import org.apache.openjpa.util.UserException;
  * @author Abe White
  */
 class SingleFieldManager
-    extends TransferFieldManager {
+    extends TransferFieldManager
+    implements Serializable {
 
     private static final Localizer _loc = Localizer.forPackage
         (SingleFieldManager.class);
@@ -235,7 +237,7 @@ class SingleFieldManager
 
         StateManagerImpl sm = _broker.getStateManagerImpl(obj, false);
         if (sm != null && sm.getOwner() == _sm
-            && sm.getOwnerMetaData() == vmd)
+            && sm.getOwnerIndex() == vmd.getFieldMetaData().getIndex())
             sm.release(true);
     }
 
@@ -380,7 +382,8 @@ class SingleFieldManager
         // delete if unknowned or this isn't an embedded field or if owned by us
         StateManagerImpl sm = _broker.getStateManagerImpl(obj, false);
         if (sm != null && (sm.getOwner() == null || !vmd.isEmbeddedPC()
-            || (sm.getOwner() == _sm && sm.getOwnerMetaData() == vmd)))
+            || (sm.getOwner() == _sm
+            && sm.getOwnerIndex() == vmd.getFieldMetaData().getIndex())))
             _broker.delete(sm.getManagedInstance(), sm, call);
     }
 

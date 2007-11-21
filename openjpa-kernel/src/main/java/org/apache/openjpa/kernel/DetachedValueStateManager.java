@@ -88,8 +88,8 @@ public class DetachedValueStateManager
         return null;
     }
 
-    public ValueMetaData getOwnerMetaData() {
-        return null;
+    public int getOwnerIndex() {
+        throw new UnsupportedOperationException();
     }
 
     public boolean isEmbedded() {

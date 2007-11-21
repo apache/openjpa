@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
@@ -91,7 +94,7 @@ import org.apache.openjpa.util.UserException;
  * @author Abe White
  */
 public class BrokerImpl
-    implements Broker, FindCallbacks, Cloneable {
+    implements Broker, FindCallbacks, Cloneable, Serializable {
 
     /**
      * Incremental flush.
@@ -132,30 +135,35 @@ public class BrokerImpl
     private static final int FLAG_RETAINED_CONN = 2 << 10;
     private static final int FLAG_TRANS_ENDING = 2 << 11;
 
+    private static final Object[] EMPTY_OBJECTS = new Object[0];
+
     private static final Localizer _loc =
         Localizer.forPackage(BrokerImpl.class);
 
     //	the store manager in use; this may be a decorator such as a
     //	data cache store manager around the native store manager
-    private DelegatingStoreManager _store = null;
+    private transient DelegatingStoreManager _store = null;
 
-    // ref to producing factory and configuration
-    private AbstractBrokerFactory _factory = null;
-    private OpenJPAConfiguration _conf = null;
-    private Compatibility _compat = null;
     private FetchConfiguration _fc = null;
-    private Log _log = null;
     private String _user = null;
     private String _pass = null;
-    private ManagedRuntime _runtime = null;
-    private LockManager _lm = null;
-    private InverseManager _im = null;
-    private ReentrantLock _lock = null;
-    private OpCallbacks _call = null;
-    private RuntimeExceptionTranslator _extrans = null;
+
+    // these must be rebuilt by the facade layer during its deserialization
+    private transient Log _log = null;
+    private transient Compatibility _compat = null;
+    private transient ManagedRuntime _runtime = null;
+    private transient LockManager _lm = null;
+    private transient InverseManager _im = null;
+    private transient ReentrantLock _lock = null;
+    private transient OpCallbacks _call = null;
+    private transient RuntimeExceptionTranslator _extrans = null;
+
+    // ref to producing factory and configuration
+    private transient AbstractBrokerFactory _factory = null;
+    private transient OpenJPAConfiguration _conf = null;
 
     // cache class loader associated with the broker
-    private ClassLoader _loader = null;
+    private transient ClassLoader _loader = null;
 
     // user state
     private Synchronization _sync = null;
@@ -167,8 +175,11 @@ public class BrokerImpl
     private Set _transAdditions = null;
     private Set _derefCache = null;
     private Set _derefAdditions = null;
-    private Map _loading = null;
-    private Set _operating = null;
+
+    // these are used for method-internal state only
+    private transient Map _loading = null;
+    private transient Set _operating = null;
+
     private Set _persistedClss = null;
     private Set _updatedClss = null;
     private Set _deletedClss = null;
@@ -179,14 +190,15 @@ public class BrokerImpl
     // (the first uses the transactional cache)
     private Set _savepointCache = null;
     private LinkedMap _savepoints = null;
-    private SavepointManager _spm = null;
+    private transient SavepointManager _spm = null;
 
     // track open queries and extents so we can free their resources on close
-    private ReferenceHashSet _queries = null;
-    private ReferenceHashSet _extents = null;
+    private transient ReferenceHashSet _queries = null;
+    private transient ReferenceHashSet _extents = null;
 
-    // track operation stack depth
-    private int _operationCount = 0;
+    // track operation stack depth. Transient because operations cannot
+    // span serialization.
+    private transient int _operationCount = 0;
 
     // options
     private boolean _nontransRead = false;
@@ -210,8 +222,13 @@ public class BrokerImpl
 
     // status
     private int _flags = 0;
-    private boolean _closed = false;
-    private RuntimeException _closedException = null;
+
+    // this is not in status because it should not be serialized
+    private transient boolean _isSerializing = false;
+
+    // transient because closed brokers can't be serialized
+    private transient boolean _closed = false;
+    private transient RuntimeException _closedException = null;
 
     // event managers
     private TransactionEventManager _transEventManager = null;
@@ -219,8 +236,7 @@ public class BrokerImpl
     private LifecycleEventManager _lifeEventManager = null;
     private int _lifeCallbackMode = 0;
 
-    private boolean _initializeWasInvoked = false;
-    private static final Object[] EMPTY_OBJECTS = new Object[0];
+    private transient boolean _initializeWasInvoked = false;
 
     /**
      * Set the persistence manager's authentication. This is the first
@@ -245,17 +261,22 @@ public class BrokerImpl
      * handle interaction with the data store
      * @param managed the transaction mode
      * @param connMode the connection retain mode
+     * @param fromDeserialization whether this call happened because of a
+     * deserialization or creation of a new BrokerImpl.
      */
-    public void initialize(AbstractBrokerFactory factory,
-        DelegatingStoreManager sm, boolean managed, int connMode) {
+    void initialize(AbstractBrokerFactory factory,
+        DelegatingStoreManager sm, boolean managed, int connMode,
+        boolean fromDeserialization) {
         _initializeWasInvoked = true;
         _loader = (ClassLoader) AccessController.doPrivileged(
             J2DoPrivHelper.getContextClassLoaderAction());
-        _conf = factory.getConfiguration();
+        if (!fromDeserialization)
+            _conf = factory.getConfiguration();
         _compat = _conf.getCompatibilityInstance();
         _factory = factory;
         _log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
-        _cache = new ManagedCache();
+        if (!fromDeserialization)
+            _cache = new ManagedCache(this);
         initializeOperatingSet();
         _connRetainMode = connMode;
         _managed = managed;
@@ -264,15 +285,17 @@ public class BrokerImpl
         else
             _runtime = new LocalManagedRuntime(this);
 
-        _lifeEventManager = new LifecycleEventManager();
-        _transEventManager = new TransactionEventManager();
-        int cmode = _conf.getMetaDataRepositoryInstance().
-            getMetaDataFactory().getDefaults().getCallbackMode();
-        setLifecycleListenerCallbackMode(cmode);
-        setTransactionListenerCallbackMode(cmode);
+        if (!fromDeserialization) {
+            _lifeEventManager = new LifecycleEventManager();
+            _transEventManager = new TransactionEventManager();
+            int cmode = _conf.getMetaDataRepositoryInstance().
+                getMetaDataFactory().getDefaults().getCallbackMode();
+            setLifecycleListenerCallbackMode(cmode);
+            setTransactionListenerCallbackMode(cmode);
 
-        // setup default options
-        _factory.configureBroker(this);
+            // setup default options
+            _factory.configureBroker(this);
+        }
 
         // make sure to do this after configuring broker so that store manager
         // can look to broker configuration; we set both store and lock managers
@@ -287,8 +310,10 @@ public class BrokerImpl
 
         if (_connRetainMode == CONN_RETAIN_ALWAYS)
             retainConnection();
-        _fc = _store.newFetchConfiguration();
-        _fc.setContext(this);
+        if (!fromDeserialization) {
+            _fc = _store.newFetchConfiguration();
+            _fc.setContext(this);
+        }
 
         // synch with the global transaction in progress, if any
         if (_factory.syncWithManagedTransaction(this, false))
@@ -749,7 +774,7 @@ public class BrokerImpl
 
             // cached instance?
             StateManagerImpl sm = getStateManagerImplById(oid,
-                (flags & OID_ALLOW_NEW) != 0 || (_flags & FLAG_FLUSHED) != 0);
+                (flags & OID_ALLOW_NEW) != 0 || hasFlushed());
             if (sm != null) {
                 if (!requiresLoad(sm, true, fetch, edata, flags))
                     return call.processReturn(oid, sm);
@@ -911,7 +936,7 @@ public class BrokerImpl
                 // if we don't have a cached instance or it is not transactional
                 // and is hollow or we need to validate, load it
                 sm = getStateManagerImplById(oid, (flags & OID_ALLOW_NEW) != 0
-                    || (_flags & FLAG_FLUSHED) != 0);
+                    || hasFlushed());
                 initialized = sm != null;
                 if (!initialized)
                     sm = newStateManagerImpl(oid, (flags & OID_COPY) != 0);
@@ -984,6 +1009,10 @@ public class BrokerImpl
                 _loading = null;
             endOperation();
         }
+    }
+
+    private boolean hasFlushed() {
+        return (_flags & FLAG_FLUSHED) != 0;
     }
 
     /**
@@ -1457,8 +1486,7 @@ public class BrokerImpl
             if (_savepoints != null && _savepoints.containsKey(name))
                 throw new UserException(_loc.get("savepoint-exists", name));
 
-            if ((_flags & FLAG_FLUSHED) != 0
-                && !_spm.supportsIncrementalFlush())
+            if (hasFlushed() && !_spm.supportsIncrementalFlush())
                 throw new UnsupportedException(_loc.get
                     ("savepoint-flush-not-supported"));
 
@@ -2359,8 +2387,7 @@ public class BrokerImpl
 
                 // an embedded field; notify the owner that the value has
                 // changed by becoming independently persistent
-                sm.getOwner().dirty(sm.getOwnerMetaData().
-                    getFieldMetaData().getIndex());
+                sm.getOwner().dirty(sm.getOwnerIndex());
                 _cache.persist(sm);
                 pc = sm.getPersistenceCapable();
             } else {
@@ -4357,278 +4384,69 @@ public class BrokerImpl
         return (sm == null) ? null : sm.getManagedInstance();
     }
 
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        assertOpen();
+        lock();
+        try {
+            if (isActive()) {
+                if (!getOptimistic())
+                    throw new InvalidStateException(
+                        _loc.get("cant-serialize-pessimistic-broker"));
+                if (hasFlushed())
+                    throw new InvalidStateException(
+                        _loc.get("cant-serialize-flushed-broker"));
+                if (hasConnection())
+                    throw new InvalidStateException(
+                        _loc.get("cant-serialize-connected-broker"));
+            }
+
+            try {
+                _isSerializing = true;
+                out.writeObject(_factory.getPoolKey());
+                out.defaultWriteObject();
+            } finally {
+                _isSerializing = false;
+            }
+        } finally {
+            unlock();
+        }
+    }
+
+    private void readObject(ObjectInputStream in)
+        throws ClassNotFoundException, IOException {
+        Object factoryKey = in.readObject();
+        AbstractBrokerFactory factory =
+            AbstractBrokerFactory.getPooledFactoryForKey(factoryKey);
+
+        // this needs to happen before defaultReadObject so that it's
+        // available for calls to broker.getConfiguration() during
+        // StateManager deserialization
+        _conf = factory.getConfiguration();
+        
+        in.defaultReadObject();
+        factory.initializeBroker(_managed, _connRetainMode, this, true);
+
+        // re-initialize the lock if needed.
+        setMultithreaded(_multithreaded);
+
+        if (isActive() && _runtime instanceof LocalManagedRuntime)
+            ((LocalManagedRuntime) _runtime).begin();
+    }
+
     /**
-     * Cache of managed objects.
+     * Whether or not this broker is in the midst of being serialized.
+     *
+     * @since 1.1.0 
      */
-    private class ManagedCache {
-
-        private Map _main; // oid -> sm
-        private Map _conflicts = null; // conflict oid -> new sm
-        private Map _news = null; // tmp id -> new sm
-        private Collection _embeds = null; // embedded/non-persistent sms
-        private Collection _untracked = null; // hard refs to untracked sms
-
-        /**
-         * Constructor; supply primary cache map.
-         */
-        private ManagedCache() {
-            _main = newManagedObjectCache();
-        }
-
-        /**
-         * Return the instance for the given oid, optionally allowing
-         * new instances.
-         */
-        public StateManagerImpl getById(Object oid, boolean allowNew) {
-            if (oid == null)
-                return null;
-
-            // check main cache for oid
-            StateManagerImpl sm = (StateManagerImpl) _main.get(oid);
-            StateManagerImpl sm2;
-            if (sm != null) {
-                // if it's a new instance, we know it's the only match, because
-                // other pers instances override new instances in _cache
-                if (sm.isNew())
-                    return (allowNew) ? sm : null;
-                if (!allowNew || !sm.isDeleted())
-                    return sm;
-
-                // sm is deleted; check conflict cache
-                if (_conflicts != null) {
-                    sm2 = (StateManagerImpl) _conflicts.get(oid);
-                    if (sm2 != null)
-                        return sm2;
-                }
-            }
-
-            // at this point sm is null or deleted; check the new cache for
-            // any matches. this allows us to match app id objects to new
-            // instances without permanant oids
-            if (allowNew && _news != null && !_news.isEmpty()) {
-                sm2 = (StateManagerImpl) _news.get(oid);
-                if (sm2 != null)
-                    return sm2;
-            }
-            return sm;
-        }
-
-        /**
-         * Call this method when a new state manager initializes itself.
-         */
-        public void add(StateManagerImpl sm) {
-            if (!sm.isIntercepting()) {
-                if (_untracked == null)
-                    _untracked = new HashSet();
-                _untracked.add(sm);
-            }
-
-            if (!sm.isPersistent() || sm.isEmbedded()) {
-                if (_embeds == null)
-                    _embeds = new ReferenceHashSet(ReferenceHashSet.WEAK);
-                _embeds.add(sm);
-                return;
-            }
-
-            // initializing new instance; put in new cache because won't have
-            // permanent oid yet
-            if (sm.isNew()) {
-                if (_news == null)
-                    _news = new HashMap();
-                _news.put(sm.getId(), sm);
-                return;
-            }
-
-            // initializing persistent instance; put in main cache
-            StateManagerImpl orig = (StateManagerImpl) _main.put
-                (sm.getObjectId(), sm);
-            if (orig != null) {
-                _main.put(sm.getObjectId(), orig);
-                throw new UserException(_loc.get("dup-load",
-                    sm.getObjectId(), Exceptions.toString
-                    (orig.getManagedInstance()))).
-                    setFailedObject(sm.getManagedInstance());
-            }
-        }
-
-        /**
-         * Remove the given state manager from the cache when it transitions
-         * to transient.
-         */
-        public void remove(Object id, StateManagerImpl sm) {
-            // if it has a permanent oid, remove from main / conflict cache,
-            // else remove from embedded/nontrans cache, and if not there
-            // remove from new cache
-            Object orig;
-            if (sm.getObjectId() != null) {
-                orig = _main.remove(id);
-                if (orig != sm) {
-                    if (orig != null)
-                        _main.put(id, orig); // put back
-                    if (_conflicts != null) {
-                        orig = _conflicts.remove(id);
-                        if (orig != null && orig != sm)
-                            _conflicts.put(id, orig); // put back
-                    }
-                }
-            } else if ((_embeds == null || !_embeds.remove(sm))
-                && _news != null) {
-                orig = _news.remove(id);
-                if (orig != null && orig != sm)
-                    _news.put(id, orig); // put back
-            }
-
-            if (_untracked != null)
-                _untracked.remove(sm);
-        }
-
-        /**
-         * An embedded or nonpersistent managed instance has been persisted.
-         */
-        public void persist(StateManagerImpl sm) {
-            if (_embeds != null)
-                _embeds.remove(sm);
-        }
-
-        /**
-         * A new instance has just been assigned a permanent oid.
-         */
-        public void assignObjectId(Object id, StateManagerImpl sm) {
-            // if assigning oid, remove from new cache and put in primary; may
-            // not be in new cache if another new instance had same id
-            StateManagerImpl orig = (StateManagerImpl) _news.remove(id);
-            if (orig != null && orig != sm)
-                _news.put(id, orig); // put back
-
-            // put in main cache, but make sure we don't replace another
-            // instance with the same oid
-            orig = (StateManagerImpl) _main.put(sm.getObjectId(), sm);
-            if (orig != null) {
-                _main.put(sm.getObjectId(), orig);
-                if (!orig.isDeleted())
-                    throw new UserException(_loc.get("dup-oid-assign",
-                        sm.getObjectId(), Exceptions.toString
-                        (sm.getManagedInstance()))).
-                        setFailedObject(sm.getManagedInstance());
-
-                // same oid as deleted instance; put in conflict cache
-                if (_conflicts == null)
-                    _conflicts = new HashMap();
-                _conflicts.put(sm.getObjectId(), sm);
-            }
-        }
-
-        /**
-         * A new instance has committed; recache under permanent oid.
-         */
-        public void commitNew(Object id, StateManagerImpl sm) {
-            // if the id didn't change, the instance was already assigned an
-            // id, but it could have been in conflict cache
-            StateManagerImpl orig;
-            if (sm.getObjectId() == id) {
-                orig = (_conflicts == null) ? null
-                    : (StateManagerImpl) _conflicts.remove(id);
-                if (orig == sm) {
-                    orig = (StateManagerImpl) _main.put(id, sm);
-                    if (orig != null && !orig.isDeleted()) {
-                        _main.put(sm.getObjectId(), orig);
-                        throw new UserException(_loc.get("dup-oid-assign",
-                            sm.getObjectId(), Exceptions.toString
-                            (sm.getManagedInstance()))).setFailedObject
-                            (sm.getManagedInstance()).setFatal(true);
-                    }
-                }
-                return;
-            }
-
-            // oid changed, so it must previously have been a new instance
-            // without an assigned oid.  remove it from the new cache; ok if
-            // we end up removing another instance with same id
-            if (_news != null)
-                _news.remove(id);
-
-            // and put into main cache now that id is asssigned
-            orig = (StateManagerImpl) _main.put(sm.getObjectId(), sm);
-            if (orig != null && orig != sm && !orig.isDeleted()) {
-                // put back orig and throw error
-                _main.put(sm.getObjectId(), orig);
-                throw new UserException(_loc.get("dup-oid-assign",
-                    sm.getObjectId(), Exceptions.toString
-                    (sm.getManagedInstance()))).setFailedObject
-                    (sm.getManagedInstance()).setFatal(true);
-            }
-        }
-
-        /**
-         * Return a copy of all cached persistent objects.
-         */
-        public Collection copy() {
-            // proxies not included here because the state manager is always
-            // present in other caches too
-
-            int size = _main.size();
-            if (_conflicts != null)
-                size += _conflicts.size();
-            if (_news != null)
-                size += _news.size();
-            if (_embeds != null)
-                size += _embeds.size();
-            if (size == 0)
-                return Collections.EMPTY_LIST;
-
-            List copy = new ArrayList(size);
-            for (Iterator itr = _main.values().iterator(); itr.hasNext();)
-                copy.add(itr.next());
-            if (_conflicts != null && !_conflicts.isEmpty())
-                for (Iterator itr = _conflicts.values().iterator();
-                    itr.hasNext();)
-                    copy.add(itr.next());
-            if (_news != null && !_news.isEmpty())
-                for (Iterator itr = _news.values().iterator(); itr.hasNext();)
-                    copy.add(itr.next());
-            if (_embeds != null && !_embeds.isEmpty())
-                for (Iterator itr = _embeds.iterator(); itr.hasNext();)
-                    copy.add(itr.next());
-            return copy;
-        }
-
-        /**
-         * Clear the cache.
-         */
-        public void clear() {
-            _main = newManagedObjectCache();
-            if (_conflicts != null)
-                _conflicts = null;
-            if (_news != null)
-                _news = null;
-            if (_embeds != null)
-                _embeds = null;
-            if (_untracked != null)
-                _untracked = null;
-        }
-
-        /**
-         * Clear new instances without permanent oids.
-         */
-        public void clearNew() {
-            if (_news != null)
-                _news = null;
-        }
-
-        private void dirtyCheck() {
-            if (_untracked == null)
-                return;
-
-            for (Iterator iter = _untracked.iterator(); iter.hasNext(); )
-                ((StateManagerImpl) iter.next()).dirtyCheck();
-        }
+    boolean isSerializing() {
+        return _isSerializing;
     }
 
     /**
      * Transactional cache that holds soft refs to clean instances.
      */
-    private static class TransactionalCache
-        implements Set {
+    static class TransactionalCache
+        implements Set, Serializable {
 
         private final boolean _orderDirty;
         private Set _dirty = null;

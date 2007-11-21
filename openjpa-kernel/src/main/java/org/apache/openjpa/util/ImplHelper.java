@@ -304,6 +304,11 @@ public class ImplHelper {
         }
     }
 
+    public static void registerPersistenceCapable(
+        ReflectingPersistenceCapable pc) {
+        _unenhancedInstanceMap.put(pc.getManagedInstance(), pc);
+    }
+
     /**
      * @return the user-visible representation of <code>o</code>.
      * @since 1.0.0

@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,7 +31,7 @@ import java.util.Map;
  * @author Steve Kim
  * @since 0.3.4
  */
-public class OpenJPASavepoint {
+public class OpenJPASavepoint implements Serializable {
 
     private final Broker _broker;
     private final String _name;

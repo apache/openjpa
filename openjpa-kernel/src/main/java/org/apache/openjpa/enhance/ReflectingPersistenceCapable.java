@@ -18,17 +18,23 @@
  */
 package org.apache.openjpa.enhance;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StateManagerImpl;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ApplicationIds;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.ObjectId;
-import org.apache.openjpa.kernel.StateManagerImpl;
 
 /**
  * Implementation of the {@link PersistenceCapable} interface that can handle
@@ -38,12 +44,19 @@ import org.apache.openjpa.kernel.StateManagerImpl;
  * @since 1.0.0
  */
 public class ReflectingPersistenceCapable
-    implements PersistenceCapable, ManagedInstanceProvider {
+    implements PersistenceCapable, ManagedInstanceProvider, Serializable {
 
     private Object o;
     private StateManager sm;
-    private PersistenceCapable pcSubclassInstance;
-    private ClassMetaData meta;
+
+    // this will be reconstituted in readObject()
+    private transient PersistenceCapable pcSubclassInstance;
+
+    // this will reconstituted by a call to pcReplaceStateManager() by the
+    // instance that has a reference to the deserialized data
+    private transient ClassMetaData meta;
+
+    private boolean serializationUserVisible = true;
 
     public ReflectingPersistenceCapable(Object o, OpenJPAConfiguration conf) {
         this.o = o;
@@ -70,6 +83,8 @@ public class ReflectingPersistenceCapable
 
     public void pcReplaceStateManager(StateManager sm) {
         this.sm = sm;
+        if (meta == null && sm instanceof OpenJPAStateManager)
+            meta = ((OpenJPAStateManager) sm).getMetaData();
     }
 
     public void pcProvideField(int i) {
@@ -169,6 +184,10 @@ public class ReflectingPersistenceCapable
     }
 
     public void pcCopyFields(Object fromObject, int[] fieldIndices) {
+        if (fromObject instanceof ReflectingPersistenceCapable)
+            fromObject = ((ReflectingPersistenceCapable) fromObject)
+                .getManagedInstance();
+        
         for(int i = 0; i < fieldIndices.length; i++)
             pcCopyField(fromObject, fieldIndices[i]);
     }
@@ -305,21 +324,23 @@ public class ReflectingPersistenceCapable
         // ##### we can implement this if a state field has been set
     }
 
+    public void pcSetSerializationUserVisible(boolean userVisible) {
+        serializationUserVisible = userVisible;
+    }
+
+    public boolean pcIsSerializationUserVisible() {
+        return serializationUserVisible;
+    }
+
     public Object getManagedInstance() {
         return o;
     }
 
     private Object getValue(int i, Object o) {
         if (meta.getAccessType() == ClassMetaData.ACCESS_PROPERTY) {
-            if (!meta.isIntercepting()) {
-                Method meth = Reflection.findGetter(meta.getDescribedType(),
-                    meta.getField(i).getName(), true);
-                return Reflection.get(o, meth);
-            } else {
-                Field field = Reflection.findField(meta.getDescribedType(),
-                    toFieldName(i), true);
-                return Reflection.get(o, field);
-            }
+            Field field = Reflection.findField(meta.getDescribedType(),
+                toFieldName(i), true);
+            return Reflection.get(o, field);
         } else {
             Field field = (Field) meta.getField(i).getBackingMember();
             return Reflection.get(o, field);
@@ -349,5 +370,18 @@ public class ReflectingPersistenceCapable
             Field field = (Field) meta.getField(i).getBackingMember();
             Reflection.set(o, field, val);
         }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        out.writeObject(meta.getDescribedType());
+    }
+
+    private void readObject(ObjectInputStream in)
+        throws ClassNotFoundException, IOException {
+        in.defaultReadObject();
+        Class type = (Class) in.readObject();
+        pcSubclassInstance = PCRegistry.newInstance(type, null, false);
+        ImplHelper.registerPersistenceCapable(this);
     }
 }

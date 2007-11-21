@@ -19,16 +19,16 @@
 package org.apache.openjpa.kernel;
 
 import java.io.ObjectStreamException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
 import java.util.LinkedList;
 import java.util.List;
-import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import java.util.Properties;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
@@ -41,23 +41,24 @@ import org.apache.openjpa.datacache.DataCacheStoreManager;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.BrokerFactoryEvent;
+import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
+import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
-import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 import org.apache.openjpa.lib.util.concurrent.ReentrantLock;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
+import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
-import org.apache.openjpa.util.InternalException;
 
 /**
  * Abstract implementation of the {@link BrokerFactory}
@@ -114,11 +115,12 @@ public abstract class AbstractBrokerFactory
 
     /**
      * Return an internal factory pool key for the given configuration.
-     * We use the conf properties as given by the user because that is what's
-     * passed to {@link #getPooledFactory} when looking for an existing factory.
      */
-    private static Map toPoolKey(OpenJPAConfiguration conf) {
-        return conf.toProperties(false);
+    private static Object toPoolKey(OpenJPAConfiguration conf) {
+        if (conf.getId() != null)
+            return conf.getId();
+        else
+            return conf.toProperties(false);
     }
 
     /**
@@ -126,7 +128,18 @@ public abstract class AbstractBrokerFactory
      * if none.
      */
     protected static AbstractBrokerFactory getPooledFactory(Map map) {
-        return (AbstractBrokerFactory) _pool.get(map);
+        Object key = Configurations.getProperty("Id", map);
+        if (key == null)
+            key = map;
+        return getPooledFactoryForKey(key);
+    }
+
+    /**
+     * Return the pooled factory matching the given key, or null
+     * if none. The key must be of the form created by {@link #getPoolKey}.
+     */
+    public static AbstractBrokerFactory getPooledFactoryForKey(Object key) {
+        return (AbstractBrokerFactory) _pool.get(key);
     }
 
     /**
@@ -174,38 +187,48 @@ public abstract class AbstractBrokerFactory
             if (findExisting)
                 broker = findBroker(user, pass, managed);
             if (broker == null) {
-                // decorate the store manager for data caching and custom
-                // result object providers; always make sure it's a delegating
-                // store manager, because it's easier for users to deal with
-                // that way
-                StoreManager sm = newStoreManager();
-                DelegatingStoreManager dsm = null;
-                if (_conf.getDataCacheManagerInstance().getSystemDataCache()
-                    != null)
-                    dsm = new DataCacheStoreManager(sm);
-                dsm = new ROPStoreManager((dsm == null) ? sm : dsm);
-
                 broker = newBrokerImpl(user, pass);
-                broker.initialize(this, dsm, managed, connRetainMode);
-                addListeners(broker);
-
-                // if we're using remote events, register the event manager so
-                // that it can broadcast commit notifications from the broker
-                RemoteCommitEventManager remote = _conf.
-                    getRemoteCommitEventManager();
-                if (remote.areRemoteEventsEnabled())
-                    broker.addTransactionListener(remote);
-
-                loadPersistentTypes(broker.getClassLoader());
+                initializeBroker(managed, connRetainMode, broker, false);
             }
-            _brokers.add(broker);
-            _conf.setReadOnly(Configuration.INIT_STATE_FROZEN);
             return broker;
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (RuntimeException re) {
             throw new GeneralException(re);
         }
+    }
+
+    void initializeBroker(boolean managed, int connRetainMode,
+        BrokerImpl broker, boolean fromDeserialization) {
+        assertOpen();
+        makeReadOnly();
+
+        // decorate the store manager for data caching and custom
+        // result object providers; always make sure it's a delegating
+        // store manager, because it's easier for users to deal with
+        // that way
+        StoreManager sm = newStoreManager();
+        DelegatingStoreManager dsm = null;
+        if (_conf.getDataCacheManagerInstance().getSystemDataCache()
+            != null)
+            dsm = new DataCacheStoreManager(sm);
+        dsm = new ROPStoreManager((dsm == null) ? sm : dsm);
+
+        broker.initialize(this, dsm, managed, connRetainMode,
+            fromDeserialization);
+        if (!fromDeserialization)
+            addListeners(broker);
+
+        // if we're using remote events, register the event manager so
+        // that it can broadcast commit notifications from the broker
+        RemoteCommitEventManager remote = _conf.
+            getRemoteCommitEventManager();
+        if (remote.areRemoteEventsEnabled())
+            broker.addTransactionListener(remote);
+
+        loadPersistentTypes(broker.getClassLoader());
+        _brokers.add(broker);
+        _conf.setReadOnly(Configuration.INIT_STATE_FROZEN);
     }
 
     /**
@@ -374,10 +397,10 @@ public abstract class AbstractBrokerFactory
             assertNoActiveTransaction();
 
             // remove from factory pool
-            Map map = toPoolKey(_conf);
+            Object key = toPoolKey(_conf);
             synchronized (_pool) {
-                if (_pool.get(map) == this)
-                    _pool.remove(map);
+                if (_pool.get(key) == this)
+                    _pool.remove(key);
             }
 
             // close all brokers
@@ -754,6 +777,15 @@ public abstract class AbstractBrokerFactory
      */
     public Collection getOpenBrokers() {
         return Collections.unmodifiableCollection(_brokers);
+    }
+
+    /**
+     * @return a key that can be used to obtain this broker factory from the
+     * pool at a later time.
+     * @since 1.1.0
+     */
+    public Object getPoolKey() {
+        return toPoolKey(getConfiguration());
     }
 
     /**

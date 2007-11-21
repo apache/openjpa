@@ -122,6 +122,17 @@ public class PCRegistry {
     }
 
     /**
+     * Return the persistence-capable type for <code>type</code>. This might
+     * be a generated subclass of <code>type</code>.
+     *
+     * @since 1.1.0
+     */
+    public static Class getPCType(Class type) {
+        Meta meta = getMeta(type);
+        return (meta.pc == null) ? null : meta.pc.getClass();
+    }
+
+    /**
      * Create a new identity object for the given
      * <code>PersistenceCapable</code> class.
      */

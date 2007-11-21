@@ -246,6 +246,36 @@ public class PCEnhancer {
     }
 
     /**
+     * Whether or not <code>className</code> is the name for a
+     * dynamically-created persistence-capable subclass.
+     *
+     * @since 1.1.0
+     */
+    public static boolean isPCSubclassName(String className) {
+        return className.startsWith(Strings.getPackageName(PCEnhancer.class))
+            && className.endsWith("$pcsubclass");
+    }
+
+    /**
+     * If <code>className</code> is a dynamically-created persistence-capable
+     * subclass name, returns the name of the class that it subclasses.
+     * Otherwise, returns <code>className</code>.
+     *
+     * @since 1.1.0
+     */
+    public static String toManagedTypeName(String className) {
+        if (isPCSubclassName(className)) {
+            className = className.substring(
+                Strings.getPackageName(PCEnhancer.class).length() + 1);
+            className = className.substring(0, className.lastIndexOf("$"));
+            // this is not correct for nested PCs
+            className = className.replace('$', '.');
+        }
+        
+        return className;
+    }
+
+    /**
      * Constructor. Supply configuration, type, and metadata.
      */
     public PCEnhancer(OpenJPAConfiguration conf, BCClass type,
@@ -2718,6 +2748,9 @@ public class PCEnhancer {
             return;
 
         if (getCreateSubclass()) {
+            // ##### what should happen if a type is Externalizable? It looks
+            // ##### like Externalizable classes will not be serialized as PCs
+            // ##### based on this logic.
             if (!Externalizable.class.isAssignableFrom(
                 _meta.getDescribedType()))
                 addSubclassSerializationCode();

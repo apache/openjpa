@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.ObjectOutputStream;
 import java.sql.Connection;
 import java.util.Collection;
 
@@ -133,6 +136,11 @@ public abstract class AbstractJDBCSavepointManager
         public void save(Collection states) {
             AbstractJDBCSavepointManager.this.setDataStore(this);
             super.save(states);
+        }
+
+        private void writeObject(ObjectOutputStream out)
+            throws IOException {
+            throw new NotSerializableException();
         }
     }
 }

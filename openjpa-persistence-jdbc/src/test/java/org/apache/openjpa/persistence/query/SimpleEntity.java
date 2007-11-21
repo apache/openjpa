@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,7 +44,7 @@ import javax.persistence.Table;
         @FieldResult(name = "value", column = "VALUE") }))
 @Entity(name = "simple")
 @Table(name = "SIMPLE_ENTITY")
-public class SimpleEntity {
+public class SimpleEntity implements Serializable {
 
     @Id
     @GeneratedValue

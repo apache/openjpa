@@ -102,6 +102,7 @@ public abstract class AbstractUnenhancedClassTest
         PersistenceCapable pc = PCRegistry.newInstance(
             getUnenhancedClass(), null, false);
         assertNotNull(pc);
+        assertEquals(pc.getClass(), PCRegistry.getPCType(getUnenhancedClass()));
     }
 
     public void testClearingOnSubtypeInstance() {

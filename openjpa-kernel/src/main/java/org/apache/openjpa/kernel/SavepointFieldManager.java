@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.io.Serializable;
+import java.io.ObjectOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Date;
@@ -37,7 +41,8 @@ import org.apache.openjpa.util.ProxyManager;
  * @since 0.3.4
  */
 class SavepointFieldManager
-    extends ClearFieldManager {
+    extends ClearFieldManager
+    implements Serializable {
 
     private static final Localizer _loc = Localizer.forPackage
         (SavepointFieldManager.class);
@@ -47,7 +52,7 @@ class SavepointFieldManager
     private final BitSet _dirty;
     private final BitSet _flush;
     private final PCState _state;
-    private PersistenceCapable _copy;
+    private transient PersistenceCapable _copy;
 
     private final Object _version;
     private final Object _loadVersion;
@@ -227,4 +232,15 @@ class SavepointFieldManager
         if (curVal != null && _field == null)
             throw new InternalException(_loc.get("no-savepoint-copy", fmd));
 	}
+
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.defaultWriteObject();
+        _sm.writePC(oos, _copy);
+    }
+
+    private void readObject(ObjectInputStream ois)
+        throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        _copy = _sm.readPC(ois);
+    }
 }

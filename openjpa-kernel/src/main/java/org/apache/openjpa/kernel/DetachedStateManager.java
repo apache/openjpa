@@ -145,7 +145,7 @@ public class DetachedStateManager
                 }
             }
             FetchConfiguration fc = broker.getFetchConfiguration();
-            sm.loadFields(load, fc, fc.getWriteLockLevel(), null, true);
+            sm.loadFields(load, fc, fc.getWriteLockLevel(), null);
         }        
         Object origVersion = sm.getVersion();
         sm.setVersion(_version);
@@ -698,7 +698,7 @@ public class DetachedStateManager
         throw new UnsupportedOperationException();
     }
 
-    public ValueMetaData getOwnerMetaData() {
+    public int getOwnerIndex() {
         throw new UnsupportedOperationException();
     }
 

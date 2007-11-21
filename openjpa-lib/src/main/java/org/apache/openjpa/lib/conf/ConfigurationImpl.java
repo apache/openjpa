@@ -648,13 +648,15 @@ public class ConfigurationImpl
         Configurations.removeProperty("properties", remaining);
         
         // now warn if there are any remaining properties that there
-        // is an unhandled prop
+        // is an unhandled prop, and remove the unknown properties
         Map.Entry entry;
         for (Iterator itr = remaining.entrySet().iterator(); itr.hasNext();) {
             entry = (Map.Entry) itr.next();
-            if (entry.getKey() != null)
-                warnInvalidProperty((String) entry.getKey());
-            ser &= entry.getValue() instanceof Serializable;
+            Object key = entry.getKey();
+            if (key != null) {
+                warnInvalidProperty((String) key);
+                map.remove(key);
+            }
         }
 
         // cache properties

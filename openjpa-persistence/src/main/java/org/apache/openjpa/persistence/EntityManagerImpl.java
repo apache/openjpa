@@ -18,6 +18,15 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,6 +39,9 @@ import javax.persistence.Query;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.ee.ManagedRuntime;
+import org.apache.openjpa.enhance.PCEnhancer;
+import org.apache.openjpa.enhance.PCRegistry;
+import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.DelegatingBroker;
 import org.apache.openjpa.kernel.FindCallbacks;
@@ -40,8 +52,8 @@ import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
-import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Closeable;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
@@ -59,30 +71,36 @@ import org.apache.openjpa.util.UserException;
  * @nojavadoc
  */
 public class EntityManagerImpl
-    implements OpenJPAEntityManagerSPI,
+    implements OpenJPAEntityManagerSPI, Externalizable,
     FindCallbacks, OpCallbacks, Closeable, OpenJPAEntityTransaction {
 
     private static final Localizer _loc = Localizer.forPackage
         (EntityManagerImpl.class);
-
-    private final DelegatingBroker _broker;
-    private final EntityManagerFactoryImpl _emf;
-    private FetchPlan _fetch = null;
     private static final Object[] EMPTY_OBJECTS = new Object[0];
+
+    private DelegatingBroker _broker;
+    private EntityManagerFactoryImpl _emf;
+    private FetchPlan _fetch = null;
 
     private RuntimeExceptionTranslator ret =
         PersistenceExceptions.getRollbackTranslator(this);
+
+    public EntityManagerImpl() {
+        // for Externalizable
+    }
 
     /**
      * Constructor; supply factory and delegate.
      */
     public EntityManagerImpl(EntityManagerFactoryImpl factory,
         Broker broker) {
+        initialize(factory, broker);
+    }
+
+    private void initialize(EntityManagerFactoryImpl factory, Broker broker) {
         _emf = factory;
-        RuntimeExceptionTranslator translator =
-            PersistenceExceptions.getRollbackTranslator(this);
-        _broker = new DelegatingBroker(broker, translator);
-        _broker.setImplicitBehavior(this, translator);
+        _broker = new DelegatingBroker(broker, ret);
+        _broker.setImplicitBehavior(this, ret);
     }
 
     /**
@@ -1179,5 +1197,145 @@ public class EntityManagerImpl
         if (!(other instanceof EntityManagerImpl))
             return false;
         return _broker.equals(((EntityManagerImpl) other)._broker);
+    }
+
+    public void readExternal(ObjectInput in)
+        throws IOException, ClassNotFoundException {
+        try {
+            ret = PersistenceExceptions.getRollbackTranslator(this);
+
+            // this assumes that serialized Brokers are from something
+            // that extends AbstractBrokerFactory.
+            Object factoryKey = in.readObject();
+            AbstractBrokerFactory factory =
+                AbstractBrokerFactory.getPooledFactoryForKey(factoryKey);
+            byte[] brokerBytes = (byte[]) in.readObject();
+            ObjectInputStream innerIn = new BrokerBytesInputStream(brokerBytes,
+                factory.getConfiguration());
+
+            Broker broker = (Broker) innerIn.readObject();
+            EntityManagerFactoryImpl emf = (EntityManagerFactoryImpl)
+                JPAFacadeHelper.toEntityManagerFactory(
+                    broker.getBrokerFactory());
+            broker.putUserObject(JPAFacadeHelper.EM_KEY, this);
+            initialize(emf, broker);
+        } catch (RuntimeException re) {
+            try {
+                re = ret.translate(re);
+            } catch (Exception e) {
+                // ignore
+            }
+            throw re;
+        }
+    }
+
+    public void writeExternal(ObjectOutput out) throws IOException {
+        try {
+            // this requires that only AbstractBrokerFactory-sourced
+            // brokers can be serialized
+            Object factoryKey = ((AbstractBrokerFactory) _broker
+                .getBrokerFactory()).getPoolKey();
+            out.writeObject(factoryKey);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream innerOut = new ObjectOutputStream(baos);
+            innerOut.writeObject(_broker.getDelegate());
+            innerOut.flush();
+            out.writeObject(baos.toByteArray());
+        } catch (RuntimeException re) {
+            try {
+                re = ret.translate(re);
+            } catch (Exception e) {
+                // ignore
+            }
+            throw re;
+        }
+    }
+
+    private static class BrokerBytesInputStream extends ObjectInputStream {
+
+        private OpenJPAConfiguration conf;
+
+        BrokerBytesInputStream(byte[] bytes, OpenJPAConfiguration conf)
+            throws IOException {
+            super(new ByteArrayInputStream(bytes));
+            if (conf == null)
+                throw new IllegalArgumentException(
+                    "Illegal null argument to ObjectInputStreamWithLoader");
+            this.conf = conf;
+        }
+
+        /**
+         * Make a primitive array class
+         */
+        private Class primitiveType(char type) {
+            switch (type) {
+                case 'B': return byte.class;
+                case 'C': return char.class;
+                case 'D': return double.class;
+                case 'F': return float.class;
+                case 'I': return int.class;
+                case 'J': return long.class;
+                case 'S': return short.class;
+                case 'Z': return boolean.class;
+                default: return null;
+            }
+        }
+
+        protected Class resolveClass(ObjectStreamClass classDesc)
+            throws IOException, ClassNotFoundException {
+
+            String cname = classDesc.getName();
+            if (cname.startsWith("[")) {
+                // An array
+                Class component;		// component class
+                int dcount;			    // dimension
+                for (dcount=1; cname.charAt(dcount)=='['; dcount++) ;
+                if (cname.charAt(dcount) == 'L') {
+                    component = lookupClass(cname.substring(dcount+1,
+                        cname.length()-1));
+                } else {
+                    if (cname.length() != dcount+1) {
+                        throw new ClassNotFoundException(cname);// malformed
+                    }
+                    component = primitiveType(cname.charAt(dcount));
+                }
+                int dim[] = new int[dcount];
+                for (int i=0; i<dcount; i++) {
+                    dim[i]=0;
+                }
+                return Array.newInstance(component, dim).getClass();
+            } else {
+                return lookupClass(cname);
+            }
+        }
+
+        /**
+         * If this is a generated subclass, look up the corresponding Class
+         * object via metadata.
+         */
+        private Class lookupClass(String className)
+            throws ClassNotFoundException {
+            try {
+                return Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                if (PCEnhancer.isPCSubclassName(className)) {
+                    String superName = PCEnhancer.toManagedTypeName(className);
+                    ClassMetaData[] metas = conf.getMetaDataRepositoryInstance()
+                        .getMetaDatas();
+                    for (int i = 0; i < metas.length; i++) {
+                        if (superName.equals(
+                            metas[i].getDescribedType().getName())) {
+                            return PCRegistry.getPCType(
+                                metas[i].getDescribedType());
+                        }
+                    }
+
+                    // if it's not found, try to look for it anyways
+                    return Class.forName(className);
+                } else {
+                    throw e;
+                }
+            }
+        }
     }
 }
