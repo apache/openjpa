@@ -2414,7 +2414,7 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getNontransactionalWrite
 NontransactionalWrite</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis> <literal>false</literal>
+<emphasis role="bold">Default:</emphasis> <literal>true</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> Whether you can modify persistent
