@@ -42,12 +42,14 @@ public class TestDynamicClassRegistration
         emf = createNamedEMF("empty-pu");
     }
 
-    public void testEnhancedDynamicClassRegistration() {
+    public void testEnhancedDynamicClassRegistration()
+        throws ClassNotFoundException {
         assertTrue(
             PersistenceCapable.class.isAssignableFrom(SimpleEntity.class));
 
-        // trigger class initialization
-        new SimpleEntity();
+        // trigger class initialization. We could just do 'new SimpleEntity()'.
+        Class.forName(SimpleEntity.class.getName(), true,
+            getClass().getClassLoader());
 
         ClassMetaData meta =
             JPAFacadeHelper.getMetaData(emf, SimpleEntity.class);
