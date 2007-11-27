@@ -207,8 +207,13 @@ public class PersistenceProductDerivation
     @Override
     public List getAnchorsInFile(File file) throws IOException {
         ConfigurationParser parser = new ConfigurationParser(null);
-        parser.parse(file);
-        return getUnitNames(parser);
+        try {
+            parser.parse(file);
+            return getUnitNames(parser);
+        } catch (IOException e) {
+            // not all configuration files are XML; return null if unparsable
+            return null;
+        }
     }
 
     private List<String> getUnitNames(ConfigurationParser parser) {
@@ -222,8 +227,13 @@ public class PersistenceProductDerivation
     @Override
     public List getAnchorsInResource(String resource) throws Exception {
         ConfigurationParser parser = new ConfigurationParser(null);
-        parser.parse(resource);
-        return getUnitNames(parser);
+        try {
+            parser.parse(resource);
+            return getUnitNames(parser);
+        } catch (IOException e) {
+            // not all configuration files are XML; return null if unparsable
+            return null;
+        }
     }
 
     @Override
