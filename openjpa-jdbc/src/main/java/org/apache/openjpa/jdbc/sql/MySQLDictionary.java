@@ -107,6 +107,9 @@ public class MySQLDictionary
 
         // MySQL requires double-escape for strings
         searchStringEscape = "\\\\";
+
+        typeModifierSet.addAll(Arrays.asList(new String[] { "UNSIGNED",
+            "ZEROFILL" }));
     }
 
     public String[] getCreateTableSQL(Table table) {

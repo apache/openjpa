@@ -313,6 +313,7 @@ public class DBDictionary
     protected final Set systemSchemaSet = new HashSet();
     protected final Set systemTableSet = new HashSet();
     protected final Set fixedSizeTypeNameSet = new HashSet();
+    protected final Set typeModifierSet = new HashSet();
 
     // when we store values that lose precion, track the types so that the
     // first time it happens we can warn the user
@@ -1596,6 +1597,14 @@ public class DBDictionary
      * override this method to return the unaltered type name for columns of
      * those types (or add the type names to the
      * <code>fixedSizeTypeNameSet</code>).
+     * 
+     * <P>Some databases support "type modifiers" for example the unsigned
+     * "modifier" in MySQL. In these cases the size should go between the type 
+     * and the "modifier", instead of after the modifier. For example 
+     * CREATE table FOO ( myint INT (10) UNSIGNED . . .) instead of 
+     * CREATE table FOO ( myint INT UNSIGNED (10) . . .).
+     * Type modifiers should be added to <code>typeModifierSet</code> in 
+     * subclasses. 
      */
     protected String appendSize(Column col, String typeName) {
         if (fixedSizeTypeNameSet.contains(typeName.toUpperCase()))
@@ -1613,19 +1622,57 @@ public class DBDictionary
             size = buf.toString();
         }
 
-        int idx = typeName.indexOf("{0}");
-        if (idx == -1 && size != null)
-            return typeName + size;
-        if (idx == -1)
-            return typeName;
+        return insertSize(typeName, size);
+    }
 
-        // replace '{0}' with size
-        String ret = typeName.substring(0, idx);
-        if (size != null)
-            ret = ret + size;
-        if (typeName.length() > idx + 3)
-            ret = ret + typeName.substring(idx + 3);
-        return ret;
+    /**
+     * Helper method that inserts a size clause for a given SQL type. 
+     * 
+     * @see appendSize
+     * 
+     * @param typeName  The SQL type ie INT
+     * @param size      The size clause ie (10)
+     * @return          The typeName + size clause. Usually the size clause will 
+     *                  be appended to typeName. If the typeName contains a 
+     *                  marker : {0} or if typeName contains a modifier the 
+     *                  size clause will be inserted appropriately.   
+     */
+    protected String insertSize(String typeName, String size) {
+    	if(StringUtils.isEmpty(size)) { 
+	    	return typeName;
+    	}
+    	
+        int idx = typeName.indexOf("{0}");
+        if (idx != -1) {
+            // replace '{0}' with size
+            String ret = typeName.substring(0, idx);
+            if (size != null)
+                ret = ret + size;
+            if (typeName.length() > idx + 3)
+                ret = ret + typeName.substring(idx + 3);
+            return ret;
+        }
+        if (! typeModifierSet.isEmpty()) {
+            String s;
+            idx = typeName.length();
+            int curIdx = -1;
+            for (Iterator i = typeModifierSet.iterator(); i.hasNext();) {
+                s = (String) i.next();
+                if (typeName.toUpperCase().contains(s)) {
+                    curIdx = typeName.toUpperCase().indexOf(s);
+                    if (curIdx != -1 && curIdx < idx) {
+                        idx = curIdx;
+                    }
+                }
+            }
+            if(idx != typeName.length()) {
+                String ret = typeName.substring(0, idx);
+                ret = ret + size;
+                ret = ret + ' ' + typeName.substring(idx);
+                return ret;
+            }
+        }
+        return typeName + size;
     }
 
     ///////////
