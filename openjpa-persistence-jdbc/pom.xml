@@ -51,40 +51,13 @@
                     <scope>test</scope>
                 </dependency>
             </dependencies>
-
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-surefire-plugin</artifactId>
-                            <configuration>
-                                <argLine>-Xmx500m</argLine>
-                                <systemProperties>
-                                    <property>
-                                        <name>openjpa.Log</name>
-                                        <value>DefaultLevel=${openjpa.loglevel}</value>
-                                    </property>
-                                    <property>
-                                        <name>openjpa.ConnectionDriverName</name>
-                                        <value>org.apache.commons.dbcp.BasicDataSource</value>
-                                    </property>
-                                    <property>
-                                        <name>derby.stream.error.file</name>
-                                        <value>target/derby.log</value>
-                                    </property>
-                                    <property>
-                                        <name>openjpa.ConnectionProperties</name>
-                                        <value>DriverClassName=org.apache.derby.jdbc.EmbeddedDriver,Url=jdbc:derby:target/database/openjpa-derby-database;create=true,MaxActive=100,MaxIdle=0,MaxWait=10000,TestOnBorrow=true</value>
-                                    </property>
-                                </systemProperties>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
+            <properties>
+                <connection.driver.name>org.apache.derby.jdbc.EmbeddedDriver</connection.driver.name>
+                <connection.url>jdbc:derby:target/database/openjpa-derby-database;create=true</connection.url>
+                <connection.username></connection.username>
+                <connection.password></connection.password>
+            </properties>
         </profile>
-
 
         <!-- Profile for testing with HSQL DB -->
         <profile>
@@ -98,34 +71,13 @@
                     <scope>test</scope>
                 </dependency>
             </dependencies>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-surefire-plugin</artifactId>
-                            <configuration>
-                                <systemProperties>
-                                    <property>
-                                        <name>openjpa.Log</name>
-                                        <value>DefaultLevel=${openjpa.loglevel}</value>
-                                    </property>
-                                    <property>
-                                        <name>openjpa.ConnectionDriverName</name>
-                                        <value>org.apache.commons.dbcp.BasicDataSource</value>
-                                    </property>
-                                    <property>
-                                        <name>openjpa.ConnectionProperties</name>
-                                        <value>DriverClassName=org.hsqldb.jdbcDriver,Url=jdbc:hsqldb:target/database/openjpa-hsqldb-database;create=true,MaxActive=100,MaxWait=10000,TestOnBorrow=true</value>
-                                    </property>
-                                </systemProperties>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
+             <properties>
+                <connection.driver.name>org.hsqldb.jdbcDriver</connection.driver.name>
+                <connection.url>jdbc:hsqldb:target/database/openjpa-hsqldb-database;create=true</connection.url>
+                <connection.username>sa</connection.username>
+                <connection.password></connection.password>
+            </properties>
         </profile>
-
 
         <!-- Profile for testing with MySQL DB -->
         <profile>
@@ -135,38 +87,16 @@
                 <dependency>
                     <groupId>mysql</groupId>
                     <artifactId>mysql-connector-java</artifactId>
-                    <version>5.0.4</version>
-                    <scope>test</scope>
+                    <version>5.1.5</version>
                 </dependency>
             </dependencies>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-surefire-plugin</artifactId>
-                            <configuration>
-                                <systemProperties>
-                                    <property>
-                                        <name>openjpa.Log</name>
-                                        <value>DefaultLevel=${openjpa.loglevel}</value>
-                                    </property>
-                                    <property>
-                                        <name>openjpa.ConnectionDriverName</name>
-                                        <value>org.apache.commons.dbcp.BasicDataSource</value>
-                                    </property>
-                                    <property>
-                                        <name>openjpa.ConnectionProperties</name>
-                                        <value>DriverClassName=com.mysql.jdbc.Driver,Url=${openjpa.mysql.url},MaxActive=100,MaxWait=10000,TestOnBorrow=true,Username=${openjpa.mysql.username},Password=${openjpa.mysql.password}</value>
-                                    </property>
-                                </systemProperties>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
+            <properties>
+                <connection.driver.name>com.mysql.jdbc.Driver</connection.driver.name>
+                <connection.url>${openjpa.mysql.url}</connection.url>
+                <connection.username>${openjpa.mysql.username}</connection.username>
+                <connection.password>${openjpa.mysql.password}</connection.password>
+            </properties>
         </profile>
-
 
         <!-- Profile for testing with PostgreSQL DB -->
         <profile>
@@ -180,34 +110,13 @@
                     <scope>test</scope>
                 </dependency>
             </dependencies>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-surefire-plugin</artifactId>
-                            <configuration>
-                                <systemProperties>
-                                    <property>
-                                        <name>openjpa.Log</name>
-                                        <value>DefaultLevel=${openjpa.loglevel}</value>
-                                    </property>
-                                    <property>
-                                        <name>openjpa.ConnectionDriverName</name>
-                                        <value>org.apache.commons.dbcp.BasicDataSource</value>
-                                    </property>
-                                    <property>
-                                        <name>openjpa.ConnectionProperties</name>
-                                        <value>DriverClassName=org.postgresql.Driver,Url=${openjpa.postgresql.url},MaxActive=100,MaxWait=10000,TestOnBorrow=true,Username=${openjpa.postgresql.username},Password=${openjpa.postgresql.password}</value>
-                                    </property>
-                                </systemProperties>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
+            <properties>
+                <connection.driver.name>org.postgresql.Driver</connection.driver.name>
+                <connection.url>${openjpa.postgresql.url}</connection.url>
+                <connection.username>${openjpa.postgresql.username}</connection.username>
+                <connection.password>${openjpa.postgresql.password}</connection.password>
+            </properties>
         </profile>
-
 
         <!-- Profile for testing with SQLServer DB using the jTDS driver -->
         <profile>
@@ -221,34 +130,13 @@
                     <scope>test</scope>
                 </dependency>
             </dependencies>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-surefire-plugin</artifactId>
-                            <configuration>
-                                <systemProperties>
-                                    <property>
-                                        <name>openjpa.Log</name>
-                                        <value>DefaultLevel=${openjpa.loglevel}</value>
-                                    </property>
-                                    <property>
-                                        <name>openjpa.ConnectionDriverName</name>
-                                        <value>org.apache.commons.dbcp.BasicDataSource</value>
-                                    </property>
-                                    <property>
-                                        <name>openjpa.ConnectionProperties</name>
-                                        <value>DriverClassName=net.sourceforge.jtds.jdbc.Driver,Url=${openjpa.sqlserver.url},MaxActive=100,MaxWait=10000,TestOnBorrow=true,Username=${openjpa.sqlserver.username},Password=${openjpa.sqlserver.password}</value>
-                                    </property>
-                                </systemProperties>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
+            <properties>
+                <connection.driver.name>net.sourceforge.jtds.jdbc.Driver</connection.driver.name>
+                <connection.url>${openjpa.sqlserver.url}</connection.url>
+                <connection.username>${openjpa.sqlserver.username}</connection.username>
+                <connection.password>${openjpa.sqlserver.password}</connection.password>
+            </properties>
         </profile>
-
 
         <!-- Profile for testing with Sybase DB using the jTDS driver -->
         <profile>
@@ -262,32 +150,12 @@
                     <scope>test</scope>
                 </dependency>
             </dependencies>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-surefire-plugin</artifactId>
-                            <configuration>
-                                <systemProperties>
-                                    <property>
-                                        <name>openjpa.Log</name>
-                                        <value>DefaultLevel=${openjpa.loglevel}</value>
-                                    </property>
-                                    <property>
-                                        <name>openjpa.ConnectionDriverName</name>
-                                        <value>org.apache.commons.dbcp.BasicDataSource</value>
-                                    </property>
-                                    <property>
-                                        <name>openjpa.ConnectionProperties</name>
-                                        <value>DriverClassName=net.sourceforge.jtds.jdbc.Driver,Url=${openjpa.sybase.url},MaxActive=100,MaxWait=10000,TestOnBorrow=true,Username=${openjpa.sybase.username},Password=${openjpa.sybase.password}</value>
-                                    </property>
-                                </systemProperties>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
+            <properties>
+                <connection.driver.name>net.sourceforge.jtds.jdbc.Driver</connection.driver.name>
+                <connection.url>${openjpa.sybase.url}</connection.url>
+                <connection.username>${openjpa.sybase.username}</connection.username>
+                <connection.password>${openjpa.sybase.password}</connection.password>
+            </properties>
         </profile>
 
         <!-- Profile for testing with a custom DB using a system jar -->
@@ -312,37 +180,57 @@
                     <systemPath>${openjpa.custom.driverjar}</systemPath>
                 </dependency>
             </dependencies>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-surefire-plugin</artifactId>
-                            <configuration>
-                                <systemProperties>
-                                    <property>
-                                        <name>openjpa.Log</name>
-                                        <value>DefaultLevel=${openjpa.loglevel}</value>
-                                    </property>
-                                    <property>
-                                        <name>openjpa.ConnectionDriverName</name>
-                                        <value>org.apache.commons.dbcp.BasicDataSource</value>
-                                    </property>
-                                    <property>
-                                        <name>openjpa.ConnectionProperties</name>
-                                        <value>DriverClassName=${openjpa.custom.driverclass},Url=${openjpa.custom.url},MaxActive=100,MaxWait=10000,TestOnBorrow=true,Username=${openjpa.custom.username},Password=${openjpa.custom.password}</value>
-                                    </property>
-                                </systemProperties>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
+            <properties>
+                <connection.driver.name>${openjpa.custom.driverclass}</connection.driver.name>
+                <connection.url>${openjpa.custom.url}</connection.url>
+                <connection.username>${openjpa.custom.username}</connection.username>
+                <connection.password>${openjpa.custom.password}</connection.password>
+            </properties>
         </profile>
 
+
+        <!-- Profile for testing with a custom DB using two system jars.
+             Some databases (DB2) use more than one jar for their JDBC provider.
+             Functionally this is identical to the previous profile, with a
+             second system dependency added.
+          -->
+        <!--
+            For example, to test with DB2, you might run:
+        mvn test -Dtest=TestPersistence -Ptest-custom2 \
+          -Dopenjpa.custom.driverjar1=$(pwd)/drivers/db2jcc.jar \
+          -Dopenjpa.custom.driverjar2=$(pwd)/drviers/db2jcc_license_cu.jar \
+          -Dopenjpa.custom.driverclass=com.ibm.db2.jcc.DB2Driver \
+          -Dopenjpa.custom.url=jdbc:db2://HOST:PORT/DBNAME \
+          -Dopenjpa.custom.username=USERNAME \
+          -Dopenjpa.custom.password=PASSWORD
+        -->
+        <profile>
+            <id>test-custom2</id>
+            <activation><property><name>test-custom2</name></property></activation>
+            <dependencies>
+                <dependency>
+                    <groupId>openjpa.customdriver1</groupId>
+                    <artifactId>openjpa.customdriver1</artifactId>
+                    <version>1.0</version>
+                    <scope>system</scope>
+                    <systemPath>${openjpa.custom.driverjar1}</systemPath>
+                </dependency>
+                <dependency>
+                    <groupId>openjpa.customdriver2</groupId>
+                    <artifactId>openjpa.customdriver2</artifactId>
+                    <version>1.0</version>
+                    <scope>system</scope>
+                    <systemPath>${openjpa.custom.driverjar2}</systemPath>
+                </dependency>
+            </dependencies>
+            <properties>
+                <connection.driver.name>${openjpa.custom.driverclass}</connection.driver.name>
+                <connection.url>${openjpa.custom.url}</connection.url>
+                <connection.username>${openjpa.custom.username}</connection.username>
+                <connection.password>${openjpa.custom.password}</connection.password>
+            </properties>
+        </profile>
     </profiles>
-
-
 
     <dependencies>
         <dependency>
@@ -428,6 +316,31 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Xmx500m</argLine>
+                    <systemProperties>
+                        <property>
+                            <name>openjpa.Log</name>
+                            <value>DefaultLevel=${openjpa.loglevel}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionDriverName</name>
+                            <value>org.apache.commons.dbcp.BasicDataSource</value>
+                        </property>
+                        <property>
+                            <name>derby.stream.error.file</name>
+                            <value>target/derby.log</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionProperties</name>
+                            <value>DriverClassName=${connection.driver.name},Url=${connection.url},MaxActive=100,MaxIdle=0,MaxWait=10000,TestOnBorrow=true,Username=${connection.username},Password=${connection.password}</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
             </plugin>
         </plugins>
     </build>
