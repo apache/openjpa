@@ -264,7 +264,7 @@ public class BrokerImpl
      * @param fromDeserialization whether this call happened because of a
      * deserialization or creation of a new BrokerImpl.
      */
-    void initialize(AbstractBrokerFactory factory,
+    public void initialize(AbstractBrokerFactory factory,
         DelegatingStoreManager sm, boolean managed, int connMode,
         boolean fromDeserialization) {
         _initializeWasInvoked = true;
