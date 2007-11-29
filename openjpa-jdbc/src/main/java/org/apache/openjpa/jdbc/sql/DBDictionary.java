@@ -1652,13 +1652,13 @@ public class DBDictionary
                 ret = ret + typeName.substring(idx + 3);
             return ret;
         }
-        if (! typeModifierSet.isEmpty()) {
+        if (!typeModifierSet.isEmpty()) {
             String s;
             idx = typeName.length();
             int curIdx = -1;
             for (Iterator i = typeModifierSet.iterator(); i.hasNext();) {
                 s = (String) i.next();
-                if (typeName.toUpperCase().contains(s)) {
+                if (typeName.toUpperCase().indexOf(s) != -1) {
                     curIdx = typeName.toUpperCase().indexOf(s);
                     if (curIdx != -1 && curIdx < idx) {
                         idx = curIdx;
