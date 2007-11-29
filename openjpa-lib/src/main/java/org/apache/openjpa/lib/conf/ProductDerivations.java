@@ -32,6 +32,7 @@ import java.util.MissingResourceException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
+import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Services;
 
@@ -254,19 +255,22 @@ public class ProductDerivations {
         ConfigurationProvider provider = null;
         StringBuffer errs = null;
         // most specific to least
+        Throwable err = null;
         for (int i = _derivations.length - 1; i >= 0; i--) {
             try {
                 provider = _derivations[i].load(resource, anchor, loader);
                 if (provider != null)
                     return provider;
             } catch (Throwable t) {
+                err = t;
                 errs = (errs == null) ? new StringBuffer() : errs.append("\n");
                 errs.append(_derivations[i].getClass().getName() + ":" + t);
             }
         }
-        reportErrors(errs, resource);
-        throw new MissingResourceException(resource, 
-            ProductDerivations.class.getName(), resource);
+        reportErrors(errs, resource, err);
+        throw (MissingResourceException) JavaVersions.initCause
+            (new MissingResourceException(resource,
+                ProductDerivations.class.getName(), resource), err);
     }
 
     /**
@@ -284,6 +288,7 @@ public class ProductDerivations {
                 J2DoPrivHelper.getContextClassLoaderAction());
         ConfigurationProvider provider = null;
         StringBuffer errs = null;
+        Throwable err = null;
         // most specific to least
         for (int i = _derivations.length - 1; i >= 0; i--) {
             try {
@@ -291,15 +296,17 @@ public class ProductDerivations {
                 if (provider != null)
                     return provider;
             } catch (Throwable t) {
+                err = t;
                 errs = (errs == null) ? new StringBuffer() : errs.append("\n");
                 errs.append(_derivations[i].getClass().getName() + ":" + t);
             }
         }
         String aPath = (String) AccessController.doPrivileged(
             J2DoPrivHelper.getAbsolutePathAction(file));
-        reportErrors(errs, aPath);
-        throw new MissingResourceException(aPath, 
-            ProductDerivations.class.getName(), aPath);
+        reportErrors(errs, aPath, err);
+        throw (MissingResourceException) JavaVersions.initCause
+            (new MissingResourceException(aPath,
+                ProductDerivations.class.getName(), aPath), err);
     }
    
     /**
@@ -328,6 +335,7 @@ public class ProductDerivations {
         ConfigurationProvider provider = null;
         StringBuffer errs = null;
         String type = (globals) ? "globals" : "defaults";
+        Throwable err = null;
         // most specific to least
         for (int i = _derivations.length - 1; i >= 0; i--) {
             try {
@@ -336,22 +344,25 @@ public class ProductDerivations {
                 if (provider != null)
                    return provider;
             } catch (Throwable t) {
+                err = t;
                 errs = (errs == null) ? new StringBuffer() : errs.append("\n");
                 errs.append(_derivations[i].getClass().getName() + ":" + t);
             }
         }
-        reportErrors(errs, type);
+        reportErrors(errs, type, err);
         return null;
     }
  
     /**
      * Thrown proper exception for given errors.
      */
-    private static void reportErrors(StringBuffer errs, String resource) {
+    private static void reportErrors(StringBuffer errs, String resource,
+        Throwable nested) {
         if (errs == null)
             return;
-        throw new MissingResourceException(errs.toString(), 
-            ProductDerivations.class.getName(), resource);
+        throw (MissingResourceException) JavaVersions.initCause
+            (new MissingResourceException(errs.toString(),
+                ProductDerivations.class.getName(), resource), nested);
     }
 
     /**
@@ -367,6 +378,7 @@ public class ProductDerivations {
         final String propertiesLocation) {
         List fqAnchors = new ArrayList();
         StringBuffer errs = null;
+        Throwable err = null;
         for (int i = _derivations.length - 1; i >= 0; i--) {
             try {
                 if (propertiesLocation == null) {
@@ -395,11 +407,12 @@ public class ProductDerivations {
                     }
                 }
             } catch (Throwable t) {
+                err = t;
                 errs = (errs == null) ? new StringBuffer() : errs.append("\n");
                 errs.append(_derivations[i].getClass().getName() + ":" + t);
             }
         }
-        reportErrors(errs, propertiesLocation);
+        reportErrors(errs, propertiesLocation, err);
         return fqAnchors;
     }
 
