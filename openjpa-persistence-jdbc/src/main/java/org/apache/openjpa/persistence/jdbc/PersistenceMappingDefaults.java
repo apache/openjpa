@@ -160,6 +160,7 @@ public class PersistenceMappingDefaults
 
         // suffix with '_' + target column
         name += "_" + ((Column) target).getName();
+        name = dict.getValidColumnName(name, foreign);
         col.setName(name);
     }
 
