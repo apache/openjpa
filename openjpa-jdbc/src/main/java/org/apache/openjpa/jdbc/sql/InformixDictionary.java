@@ -111,7 +111,8 @@ public class InformixDictionary
         blobTypeName = "BYTE";
         doubleTypeName = "NUMERIC(32,20)";
         dateTypeName = "DATE";
-        timestampTypeName = "DATE";
+        timeTypeName = "DATETIME HOUR TO SECOND";
+        timestampTypeName = "DATETIME YEAR TO SECOND";
         doubleTypeName = "NUMERIC(32,20)";
         floatTypeName = "REAL";
         bigintTypeName = "NUMERIC(32,0)";
