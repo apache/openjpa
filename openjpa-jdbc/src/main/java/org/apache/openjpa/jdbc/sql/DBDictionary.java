@@ -98,7 +98,6 @@ import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.OpenJPAException;
-import org.apache.openjpa.util.ReferentialIntegrityException;
 import org.apache.openjpa.util.Serialization;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
@@ -150,6 +149,16 @@ public class DBDictionary
     private static final String ZERO_TIMESTAMP_STR =
         "'" + new Timestamp(0) + "'";
 
+    public static final List EMPTY_STRING_LIST = Arrays.asList(new String[]{});
+    public static final List[] SQL_STATE_CODES = 
+    	{EMPTY_STRING_LIST,                     // 0: Default
+    	 Arrays.asList(new String[]{"41000"}),  // 1: LOCK
+    	 EMPTY_STRING_LIST,                     // 2: OBJECT_NOT_FOUND
+    	 EMPTY_STRING_LIST,                     // 3: OPTIMISTIC
+    	 Arrays.asList(new String[]{"23000"}),  // 4: REFERENTIAL_INTEGRITY
+    	 EMPTY_STRING_LIST                      // 5: OBJECT_EXISTS
+    	}; 
+                                              
     private static final Localizer _loc = Localizer.forPackage
         (DBDictionary.class);
 
@@ -4006,11 +4015,30 @@ public class DBDictionary
      */
     public OpenJPAException newStoreException(String msg, SQLException[] causes,
         Object failed) {
-        if (causes.length > 0 && "23000".equals(causes[0].getSQLState()))
-            return new ReferentialIntegrityException(msg).
-                setFailedObject(failed).setNestedThrowables(causes);
+    	if (causes != null && causes.length > 0) {
+    		OpenJPAException ret = SQLExceptions.narrow(msg, causes[0], this);
+    		ret.setFailedObject(failed).setNestedThrowables(causes);
+    		return ret;
+    	}
         return new StoreException(msg).setFailedObject(failed).
             setNestedThrowables(causes);
+    }
+    
+    /**
+     * Gets the list of String, each represents an error that can help 
+     * to narrow down a SQL exception to specific type of StoreException.<br>
+     * For example, error code <code>"23000"</code> represents referential
+     * integrity violation and hence can be narrowed down to 
+     * {@link ReferentialIntegrityException} rather than more general
+     * {@link StoreException}.<br>
+     * JDBC Drivers are not uniform in return values of SQLState for the same
+     * error and hence each database specific Dictionary can specialize.<br>
+     * Default behavior is to return an empty list. 
+     */
+    public List/*<String>*/ getSQLStates(int exceptionType) {
+    	if (exceptionType>=0 && exceptionType<SQL_STATE_CODES.length)
+    		return SQL_STATE_CODES[exceptionType];
+    	return EMPTY_STRING_LIST;
     }
 
     /**

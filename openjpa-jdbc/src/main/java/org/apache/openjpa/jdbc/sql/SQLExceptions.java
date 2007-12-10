@@ -23,7 +23,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.openjpa.lib.util.Localizer.Message;
+import org.apache.openjpa.util.LockException;
+import org.apache.openjpa.util.ObjectExistsException;
+import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.OpenJPAException;
+import org.apache.openjpa.util.OptimisticException;
+import org.apache.openjpa.util.ReferentialIntegrityException;
 import org.apache.openjpa.util.StoreException;
 
 /**
@@ -96,7 +101,7 @@ public class SQLExceptions {
                 setNestedThrowables(ses);
         return dict.newStoreException(msg, ses, failed);
     }
-
+    
     /**
      * Returns an array of {@link SQLException} instances for the
      * specified exception.
@@ -111,5 +116,33 @@ public class SQLExceptions {
             se = se.getNextException();
         }
         return (SQLException[]) errs.toArray(new SQLException[errs.size()]);
+    }
+    
+    /**
+     * Narrows the given SQLException to a specific type of 
+     * {@link StoreException#getSubtype() StoreException} by analyzing the
+     * SQLState code supplied by SQLException. Each database-specific 
+     * {@link DBDictionary dictionary} can supply a set of error codes that will
+     * map to a specific specific type of StoreException via 
+     * {@link DBDictionary#getSQLStates(int) getSQLStates()} method.
+     * The default behavior is to return generic {@link StoreException 
+     * StoreException}.
+     */
+    public static OpenJPAException narrow(String msg, SQLException se, 
+    		DBDictionary dict) {
+        String e = se.getSQLState();
+        if (dict.getSQLStates(StoreException.LOCK).contains(e)) 
+            return new LockException(msg);
+        else if (dict.getSQLStates(StoreException.OBJECT_EXISTS).contains(e))
+            return new ObjectExistsException(msg);
+        else if (dict.getSQLStates(StoreException.OBJECT_NOT_FOUND).contains(e))
+            return new ObjectNotFoundException(msg);
+        else if (dict.getSQLStates(StoreException.OPTIMISTIC).contains(e))
+            return new OptimisticException(msg);
+        else if (dict.getSQLStates(StoreException.REFERENTIAL_INTEGRITY)
+        		.contains(e)) 
+            return new ReferentialIntegrityException(msg);
+        else
+            return new StoreException(msg);
     }
 }

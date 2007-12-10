@@ -146,6 +146,7 @@ public class PersistenceExceptions
                         getFailedObject(ke), ke.isFatal());
                 break;
             case StoreException.OPTIMISTIC:
+            case StoreException.LOCK:
                 e = new org.apache.openjpa.persistence.OptimisticLockException
                     (ke.getMessage(), getNestedThrowables(ke),
                         getFailedObject(ke), ke.isFatal());
