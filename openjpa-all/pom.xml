@@ -91,6 +91,9 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
+                        <manifest>
+                           <mainClass>org.apache.openjpa.conf.OpenJPAVersion</mainClass>
+                        </manifest>
                         <manifestEntries>
                             <Premain-Class>
                                 org.apache.openjpa.enhance.PCEnhancerAgent
