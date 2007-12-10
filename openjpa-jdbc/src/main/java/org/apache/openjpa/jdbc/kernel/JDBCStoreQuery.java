@@ -501,13 +501,14 @@ public class JDBCStoreQuery
                 try {
                     stmnt = sql[i].prepareStatement(conn);
                     count += stmnt.executeUpdate();
+                } catch (SQLException se) {
+                    throw SQLExceptions.getStore(se, sql[i].getSQL(), 
+                    		_store.getDBDictionary());
                 } finally {
                     if (stmnt != null)
                         try { stmnt.close(); } catch (SQLException se) {}
                 }
             }
-        } catch (SQLException se) {
-            throw SQLExceptions.getStore(se, ctx, _store.getDBDictionary());
         } finally {
             try { conn.close(); } catch (SQLException se) {}
         }
