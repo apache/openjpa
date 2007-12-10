@@ -4033,7 +4033,11 @@ public class DBDictionary
      * {@link StoreException}.<br>
      * JDBC Drivers are not uniform in return values of SQLState for the same
      * error and hence each database specific Dictionary can specialize.<br>
-     * Default behavior is to return an empty list. 
+     * 
+     * 
+     * @return an <em>unmodifiable</em> list of Strings representing supposedly 
+     * uniform SQL States for a given type of StoreException. 
+     * Default behavior is to return an empty list.
      */
     public List/*<String>*/ getSQLStates(int exceptionType) {
     	if (exceptionType>=0 && exceptionType<SQL_STATE_CODES.length)
