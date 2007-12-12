@@ -157,9 +157,15 @@ public class PersistenceMappingDefaults
             name = inverses[0].getName();
         else
             name = fm.getDefiningMapping().getTypeAlias();
-
+        String targetName = ((Column) target).getName();
+        String tempName = null;
+        if ((name.length() + targetName.length()) >= dict.maxColumnNameLength)
+            tempName = name.substring(0, dict.maxColumnNameLength
+                    - targetName.length() - 1);
         // suffix with '_' + target column
-        name += "_" + ((Column) target).getName();
+        if (tempName == null)
+            tempName = name;
+        name = tempName + "_" + targetName;
         name = dict.getValidColumnName(name, foreign);
         col.setName(name);
     }
