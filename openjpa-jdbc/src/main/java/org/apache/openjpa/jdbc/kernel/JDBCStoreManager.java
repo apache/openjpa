@@ -105,8 +105,12 @@ public class JDBCStoreManager
     }
 
     public void setContext(StoreContext ctx) {
+    	setContext(ctx, (JDBCConfiguration) ctx.getConfiguration());
+    }
+    
+    public void setContext(StoreContext ctx, JDBCConfiguration conf) {
         _ctx = ctx;
-        _conf = (JDBCConfiguration) ctx.getConfiguration();
+        _conf = conf;
         _dict = _conf.getDBDictionaryInstance();
         _sql = _conf.getSQLFactoryInstance();
 
