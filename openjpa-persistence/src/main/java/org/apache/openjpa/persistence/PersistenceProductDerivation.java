@@ -228,7 +228,14 @@ public class PersistenceProductDerivation
     public List getAnchorsInResource(String resource) throws Exception {
         ConfigurationParser parser = new ConfigurationParser(null);
         try {
-            parser.parse(resource);
+            ClassLoader loader = (ClassLoader) AccessController.doPrivileged(
+                J2DoPrivHelper.getContextClassLoaderAction());
+            List<URL> urls = getResourceURLs(resource, loader);
+            if (urls != null) {
+                for (URL url : urls) {
+                    parser.parse(url);
+                }
+            }
             return getUnitNames(parser);
         } catch (IOException e) {
             // not all configuration files are XML; return null if unparsable
@@ -273,6 +280,27 @@ public class PersistenceProductDerivation
         return null;
     }
 
+    private static List<URL> getResourceURLs(String rsrc, ClassLoader loader)
+        throws IOException {
+        Enumeration<URL> urls = null;
+        try {
+            urls = (Enumeration) AccessController.doPrivileged(
+                J2DoPrivHelper.getResourcesAction(loader, rsrc)); 
+            if (!urls.hasMoreElements()) {
+                if (!rsrc.startsWith("META-INF"))
+                    urls = (Enumeration) AccessController.doPrivileged(
+                        J2DoPrivHelper.getResourcesAction(
+                            loader, "META-INF/" + rsrc)); 
+                if (!urls.hasMoreElements())
+                    return null;
+            }
+        } catch (PrivilegedActionException pae) {
+            throw (IOException) pae.getException();
+        }
+
+        return Collections.list(urls);
+    }
+
     /**
      * Looks through the resources at <code>rsrc</code> for a configuration
      * file that matches <code>name</code> (or an unnamed one if
@@ -290,21 +318,9 @@ public class PersistenceProductDerivation
             loader = (ClassLoader) AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
 
-        Enumeration<URL> urls = null;
-        try {
-            urls = (Enumeration) AccessController.doPrivileged(
-                J2DoPrivHelper.getResourcesAction(loader, rsrc)); 
-            if (!urls.hasMoreElements()) {
-                if (!rsrc.startsWith("META-INF"))
-                    urls = (Enumeration) AccessController.doPrivileged(
-                        J2DoPrivHelper.getResourcesAction(
-                            loader, "META-INF/" + rsrc)); 
-                if (!urls.hasMoreElements())
-                    return null;
-            }
-        } catch (PrivilegedActionException pae) {
-            throw (IOException) pae.getException();
-        }
+        List<URL> urls = getResourceURLs(rsrc, loader);
+        if (urls == null || urls.size() == 0)
+            return null;
 
         ConfigurationParser parser = new ConfigurationParser(m);
         PersistenceUnitInfoImpl pinfo = parseResources(parser, urls, name, 
@@ -335,11 +351,11 @@ public class PersistenceProductDerivation
      * no name given (preferring an unnamed OpenJPA unit to a named one).
      */
     private PersistenceUnitInfoImpl parseResources(ConfigurationParser parser,
-        Enumeration<URL> urls, String name, ClassLoader loader)
+        List<URL> urls, String name, ClassLoader loader)
         throws IOException {
         List<PersistenceUnitInfoImpl> pinfos = 
             new ArrayList<PersistenceUnitInfoImpl>();
-        for (URL url : Collections.list(urls)) {
+        for (URL url : urls) {
             parser.parse(url);
             pinfos.addAll((List<PersistenceUnitInfoImpl>) parser.getResults());
         }
