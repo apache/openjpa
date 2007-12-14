@@ -105,7 +105,7 @@ public class JDBCStoreManager
     }
 
     public void setContext(StoreContext ctx) {
-    	setContext(ctx, (JDBCConfiguration) ctx.getConfiguration());
+        setContext(ctx, (JDBCConfiguration) ctx.getConfiguration());
     }
     
     public void setContext(StoreContext ctx, JDBCConfiguration conf) {
