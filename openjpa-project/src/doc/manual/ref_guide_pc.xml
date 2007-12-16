@@ -87,6 +87,11 @@ When any of these conditions are a factor in your JPA application, use the
 jar-file</literal> elements of JPA's standard XML format to list your persistent
 classes. See <xref linkend="jpa_overview_persistence_xml"/> for details.
         </para>
+        <para>
+Alternately, you can tell OpenJPA to search through your classpath for
+persistent types. This is described in more detail in
+<xref linkend="ref_guide_meta_factory"/>.
+        </para>
         <note>
             <para>
 Listing persistent classes (or their metadata or jar files) is an all-or-nothing
