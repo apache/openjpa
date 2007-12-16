@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -27,6 +29,8 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.util.BigDecimalId;
+import org.apache.openjpa.util.BigIntegerId;
 import org.apache.openjpa.util.ByteId;
 import org.apache.openjpa.util.CharId;
 import org.apache.openjpa.util.DoubleId;
@@ -231,6 +235,10 @@ public class JPAFacadeHelper {
             return new ShortId(cls, (Short) oid);
         if (oid instanceof String)
             return new StringId(cls, (String) oid);
+        if (oid instanceof BigDecimal)
+            return new BigDecimalId(cls, (BigDecimal) oid);
+        if (oid instanceof BigInteger)
+            return new BigIntegerId(cls, (BigInteger) oid);
         return new ObjectId(cls, oid);
     }
 
@@ -301,7 +309,11 @@ public class JPAFacadeHelper {
         if (oidClass == ShortId.class)
             return Short.class;
         if (oidClass == StringId.class)
-			return String.class;
-		return oidClass;
+            return String.class;
+        if (oidClass == BigDecimalId.class)
+            return BigDecimal.class;
+        if (oidClass == BigIntegerId.class)
+            return BigInteger.class;
+        return oidClass;
 	}
 }

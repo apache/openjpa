@@ -46,6 +46,8 @@ import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.xml.Commentable;
+import org.apache.openjpa.util.BigDecimalId;
+import org.apache.openjpa.util.BigIntegerId;
 import org.apache.openjpa.util.ByteId;
 import org.apache.openjpa.util.CharId;
 import org.apache.openjpa.util.DateId;
@@ -481,6 +483,12 @@ public class ClassMetaData
             case JavaTypes.OID:
             case JavaTypes.OBJECT:
                 _objectId = ObjectId.class;
+                break;
+            case JavaTypes.BIGDECIMAL:
+                _objectId = BigDecimalId.class;
+                break;
+            case JavaTypes.BIGINTEGER:
+                _objectId = BigIntegerId.class;
                 break;
         }
         return _objectId;
