@@ -144,7 +144,7 @@ public class JPAFacadeHelper {
                     getUserObject(EM_KEY);
             } catch (ClassCastException cce) {
                 throw new ArgumentException(_loc.get("cant-convert-broker", c),
-                    null, null, false);
+                    new Throwable[] { cce }, null, false);
             }
         }
         return ((EntityManagerImpl) em).getBroker();
