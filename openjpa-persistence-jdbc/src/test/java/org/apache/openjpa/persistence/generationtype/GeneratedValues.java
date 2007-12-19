@@ -20,7 +20,9 @@ package org.apache.openjpa.persistence.generationtype;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
 @Entity
 public class GeneratedValues {
@@ -30,6 +32,16 @@ public class GeneratedValues {
 
     @GeneratedValue
     private long field;
+
+//    @GeneratedValue(strategy= GenerationType.SEQUENCE,
+//        generator="org.apache.openjpa.persistence.generationtype.CustomSeq")
+//    private int customSeqField;
+
+    @GeneratedValue(strategy= GenerationType.SEQUENCE,
+        generator="GeneratedValues.SequenceGeneratorCustomSeq")
+    @SequenceGenerator(name="GeneratedValues.SequenceGeneratorCustomSeq",
+        sequenceName="org.apache.openjpa.persistence.generationtype.CustomSeq()")
+    private int customSeqWithIndirectionField;
 
     public GeneratedValues() {
         super();
@@ -57,4 +69,11 @@ public class GeneratedValues {
         this.field = field;
     }
 
+//    public int getCustomSeqField() {
+//        return customSeqField;
+//    }
+
+    public int getCustomSeqWithIndirectionField() {
+        return customSeqWithIndirectionField;
+    }
 }

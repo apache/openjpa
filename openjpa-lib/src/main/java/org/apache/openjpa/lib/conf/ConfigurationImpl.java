@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import java.awt.Image;
+import java.awt.*;
 import java.beans.BeanDescriptor;
 import java.beans.BeanInfo;
 import java.beans.EventSetDescriptor;
@@ -40,13 +40,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -622,6 +622,14 @@ public class ConfigurationImpl
             _globals = false;
         }
 
+        // copy the input to avoid mutation issues
+        if (map instanceof HashMap)
+            map = (Map) ((HashMap) map).clone();
+        else if (map instanceof Properties)
+            map = (Map) ((Properties) map).clone();
+        else
+            map = new LinkedHashMap(map);
+
         Map remaining = new HashMap(map);
         boolean ser = true;
         Value val;
@@ -646,7 +654,7 @@ public class ConfigurationImpl
         // <prefix>.properties System property; remove that property so we
         // we don't warn about it
         Configurations.removeProperty("properties", remaining);
-        
+
         // now warn if there are any remaining properties that there
         // is an unhandled prop, and remove the unknown properties
         Map.Entry entry;

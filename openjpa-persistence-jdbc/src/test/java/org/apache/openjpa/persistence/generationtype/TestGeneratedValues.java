@@ -102,4 +102,28 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         // should not get here...
         fail();
     }
+
+//    public void testCustomSequenceGenerator() {
+//        EntityManager em = emf.createEntityManager();
+//
+//        GeneratedValues gv = new GeneratedValues();
+//
+//        em.getTransaction().begin();
+//        em.persist(gv);
+//        em.getTransaction().commit();
+//
+//        assertNotEquals(0, gv.getCustomSeqField());
+//    }
+
+    public void testCustomSequenceGeneratorWithIndirection() {
+        EntityManager em = emf.createEntityManager();
+
+        GeneratedValues gv = new GeneratedValues();
+
+        em.getTransaction().begin();
+        em.persist(gv);
+        em.getTransaction().commit();
+
+        assertNotEquals(0, gv.getCustomSeqWithIndirectionField());
+    }
 }
