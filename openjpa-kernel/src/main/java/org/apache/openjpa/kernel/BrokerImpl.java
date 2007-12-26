@@ -323,6 +323,13 @@ public class BrokerImpl
     private void initializeOperatingSet() {
         _operating = MapBackedSet.decorate(new IdentityMap());
     }
+    
+    /**
+     * Gets the unmodifiable set of instances being operated.
+     */
+    protected Set getOperatingSet() {
+    	return Collections.unmodifiableSet(_operating);
+    }
 
     public Object clone()
         throws CloneNotSupportedException {
