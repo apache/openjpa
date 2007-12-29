@@ -16,4 +16,12 @@ COPYRIGHT NOTICES
     Sun Microsystems and licensed under the CDDL 1.0. The source code is
     available at: https://glassfish.dev.java.net/source/browse/glassfish/
 
+* OpenJPA includes the following software copyright 2007 Miroslav Nachev
+
+openjpa-kernel/src/main/java/org/apache/openjpa/util/BigDecimalId.java
+openjpa-kernel/src/main/java/org/apache/openjpa/util/BigIntegerId.java
+openjpa-persistence-jdbc/src/test/java/org/apache/openjpa/persistence/identity/SQLBigIntegerIdEntity.java
+openjpa-persistence-jdbc/src/test/java/org/apache/openjpa/persistence/identity/SQLBigDecimalIdEntity.java
+openjpa-persistence-jdbc/src/test/java/org/apache/openjpa/persistence/identity/TestSQLBigIntegerId.java
+openjpa-persistence-jdbc/src/test/java/org/apache/openjpa/persistence/identity/TestSQLBigDecimalId.java
 
