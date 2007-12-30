@@ -56,21 +56,6 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
-            <!-- create enhancer pre-main attribute -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Premain-Class>
-                                org.apache.openjpa.enhance.InstrumentationFactory
-                            </Premain-Class>
-                            <Can-Redefine-Classes>true</Can-Redefine-Classes>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>
