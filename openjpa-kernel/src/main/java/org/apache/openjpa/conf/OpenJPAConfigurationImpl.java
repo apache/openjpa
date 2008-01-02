@@ -935,7 +935,11 @@ public class OpenJPAConfigurationImpl
         name = StringUtils.trimToNull(name);
         if (name == null)
             return null;
-        return Configurations.lookup(name);
+        try {
+        	return Configurations.lookup(name);
+        } catch (Exception ex) {
+        	return null;
+        }
     }
 
     public void setConnection2UserName(String connection2UserName) {
