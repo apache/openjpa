@@ -215,6 +215,10 @@ public class JDBCStoreManager
         connect(true);
         return _conn;
     }
+    
+    protected DataSource getDataSource() {
+    	return _ds;
+    }
 
     public boolean exists(OpenJPAStateManager sm, Object context) {
         // add where conditions on base class to avoid joins if subclass
