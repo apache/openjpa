@@ -3393,7 +3393,7 @@ And in XML:
                 </para>
 <programlisting>
 &lt;entity class="org.mag.Article"&gt;
-    &lt;table name="ART"&gt;
+    &lt;table name="ART"/&gt;
     &lt;secondary-table name="ART_DATA"&gt;
         &lt;primary-key-join-column name="ART_ID" referenced-column-name="ID"/&gt;
     &lt;/secondary-table&gt;
