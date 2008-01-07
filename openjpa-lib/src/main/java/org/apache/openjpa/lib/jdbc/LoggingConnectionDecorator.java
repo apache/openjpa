@@ -418,7 +418,15 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
          */
         private void logSQL(Statement stmnt) throws SQLException {
             if (_logs.isSQLEnabled())
-                _logs.logSQL("executing " + stmnt, this); 
+                _logs.logSQL("executing " + stmnt, this);
+        }
+
+        /**
+         * Log time elapsed since given start.
+         */
+        private void logBatchSQL(Statement stmnt) throws SQLException {
+            if (_logs.isSQLEnabled())
+                _logs.logSQL("executing batch " + stmnt, this);
         }
 
         /**
@@ -864,7 +872,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             public int[] executeBatch() throws SQLException {
-                logSQL(this);
+                logBatchSQL(this);
                 long start = System.currentTimeMillis();
                 try {
                     return super.executeBatch();
