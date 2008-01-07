@@ -25,7 +25,9 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.AccessController;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -145,7 +147,21 @@ public class Services {
 
     public static Class[] getImplementorClasses(Class serviceClass,
         ClassLoader loader) {
-        return getImplementorClasses(serviceClass.getName(), loader);
+        Set invalid = new HashSet();
+        Class[] classes = getImplementorClasses(serviceClass.getName(), loader);
+
+        // filter out any classes that have any classloader issues wrt.
+        // the specified service class.
+        for (int i = 0; i < classes.length; i++)
+            if (!serviceClass.isAssignableFrom(classes[i]))
+                invalid.add(classes[i]);
+        if (invalid.size() != 0) {
+            List list = new ArrayList(Arrays.asList(classes));
+            list.removeAll(invalid);
+            return (Class[]) list.toArray(new Class[list.size()]);
+        } else {
+            return classes;
+        }
     }
 
     /**
