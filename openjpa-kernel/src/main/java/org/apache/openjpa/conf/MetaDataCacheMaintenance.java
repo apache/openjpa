@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.conf;
 
-import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,8 +26,8 @@ import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.Query;
-import org.apache.openjpa.conf.CacheMarshallersValue;
 import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.QueryMetaData;
@@ -45,19 +44,27 @@ public class MetaDataCacheMaintenance {
     private final BrokerFactory factory;
     private final OpenJPAConfiguration conf;
     private final boolean devpath;
-    private final boolean verbose;
-    private PrintStream out = System.out;
+    private final Log log;
 
+    /**
+     * @deprecated logging is routed to the logging system now.
+     */
     public MetaDataCacheMaintenance(BrokerFactory factory, boolean devpath,
         boolean verbose) {
+        this(factory, devpath);
+    }
+
+    /**
+     * @param factory The {@link BrokerFactory} for which cached metadata
+     * should be built.
+     * @param devpath Whether or not to scan the development environment paths
+     * to find persistent types to store.
+     */
+    public MetaDataCacheMaintenance(BrokerFactory factory, boolean devpath) {
         this.factory = factory;
         this.conf = factory.getConfiguration();
         this.devpath = devpath;
-        this.verbose = verbose;
-    }
-
-    public void setOutputStream(PrintStream out) {
-        this.out = out;
+        this.log = conf.getLog(OpenJPAConfiguration.LOG_TOOL);
     }
 
     public static void main(String[] args) {
@@ -65,13 +72,11 @@ public class MetaDataCacheMaintenance {
         args = opts.setFromCmdLine(args);
         boolean devpath = opts.getBooleanProperty("scanDevPath", "ScanDevPath",
             true);
-        boolean verbose = opts.getBooleanProperty("verbose", "verbose",
-            false);
 
         BrokerFactory factory = Bootstrap.newBrokerFactory();
         try {
             MetaDataCacheMaintenance maint = new MetaDataCacheMaintenance(
-                factory, devpath, verbose);
+                factory, devpath);
 
             if (args.length != 1)
                 usage();
@@ -89,10 +94,15 @@ public class MetaDataCacheMaintenance {
 
     private static int usage() {
         System.err.println("Usage: java MetaDataCacheMaintenance "
-            + "[-scanDevPath t|f] [-verbose t|f] store | dump");
+            + "[-scanDevPath t|f] store | dump");
         return -1;
     }
 
+    /**
+     * The metadata repository for the factory that this instance was
+     * constructed with will be serialized, along with any query
+     * compilations etc. that have been created for the factory.
+     */
     public void store() {
         MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
         repos.setSourceMode(MetaDataRepository.MODE_ALL);
@@ -102,8 +112,8 @@ public class MetaDataCacheMaintenance {
 
         loadQueries();
 
-        out.println("The following data will be stored: ");
-        log(repos, conf.getQueryCompilationCacheInstance(), verbose, out);
+        log.info("The following data will be stored: ");
+        log(repos, conf.getQueryCompilationCacheInstance());
 
         CacheMarshallersValue.getMarshallerById(conf, getClass().getName())
             .store(new Object[] {
@@ -129,10 +139,13 @@ public class MetaDataCacheMaintenance {
             qmd.setInto(q);
             q.compile();
         } catch (Exception e) {
-            out.println("Skipping named query " + qmd.getName() + ": "
-                + e.getMessage());
-            if (verbose)
-                e.printStackTrace(out);
+            if (log.isTraceEnabled()) {
+                log.warn("Skipping named query " + qmd.getName() + ": "
+                    + e.getMessage(), e);
+            } else {
+                log.warn("Skipping named query " + qmd.getName() + ": "
+                    + e.getMessage());
+            }
         }
     }
 
@@ -141,41 +154,40 @@ public class MetaDataCacheMaintenance {
             CacheMarshallersValue.getMarshallerById(conf, getClass().getName())
             .load();
         if (os == null) {
-            out.println("No cached data was found");
+            log.info("No cached data was found");
             return;
         }
         MetaDataRepository repos = (MetaDataRepository) os[0];
         Map qcc = (Map) os[1];
 
-        out.println("The following data was found: ");
-        log(repos, qcc, verbose, out);
+        log.info("The following data was found: ");
+        log(repos, qcc);
     }
 
-    private static void log(MetaDataRepository repos, Map qcc,
-        boolean verbose, PrintStream out) {
+    private void log(MetaDataRepository repos, Map qcc) {
         ClassMetaData[] metas = repos.getMetaDatas();
-        out.println("  Types: " + metas.length);
-        if (verbose)
+        log.info("  Types: " + metas.length);
+        if (log.isTraceEnabled())
             for (int i = 0; i < metas.length; i++)
-                out.println("    " + metas[i].getDescribedType().getName());
+                log.trace("    " + metas[i].getDescribedType().getName());
 
         QueryMetaData[] qmds = repos.getQueryMetaDatas();
-        out.println("  Queries: " + qmds.length);
-        if (verbose)
+        log.info("  Queries: " + qmds.length);
+        if (log.isTraceEnabled())
             for (int i = 0; i < qmds.length; i++)
-                out.println("    " + qmds[i].getName() + ": "
+                log.trace("    " + qmds[i].getName() + ": "
                     + qmds[i].getQueryString());
 
         SequenceMetaData[] smds = repos.getSequenceMetaDatas();
-        out.println("  Sequences: " + smds.length);
-        if (verbose)
+        log.info("  Sequences: " + smds.length);
+        if (log.isTraceEnabled())
             for (int i = 0; i < smds.length; i++)
-                out.println("    " + smds[i].getName());
+                log.trace("    " + smds[i].getName());
 
-        out.println("  Compiled queries: "
+        log.info("  Compiled queries: "
             + (qcc == null ? "0" : "" + qcc.size()));
-        if (verbose && qcc != null)
+        if (log.isTraceEnabled() && qcc != null)
             for (Iterator iter = qcc.keySet().iterator(); iter.hasNext(); )
-                out.println("    " + iter.next());
+                log.trace("    " + iter.next());
     }
 }
