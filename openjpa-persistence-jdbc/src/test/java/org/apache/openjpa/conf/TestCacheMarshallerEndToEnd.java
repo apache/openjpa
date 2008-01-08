@@ -31,6 +31,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.query.NamedQueryEntity;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
+import org.apache.openjpa.lib.log.Log;
 
 public class TestCacheMarshallerEndToEnd
     extends PersistenceTestCase {
@@ -75,22 +76,13 @@ public class TestCacheMarshallerEndToEnd
             emf.getConfiguration(), MetaDataCacheMaintenance.class.getName());
         cm.getOutputFile().delete();
         MetaDataCacheMaintenance maint = new MetaDataCacheMaintenance(
-            JPAFacadeHelper.toBrokerFactory(emf), false, true);
-        final List<String> lines = new ArrayList<String>();
-        PrintStream out = new PrintStream(new ByteArrayOutputStream()) {
-            public void println(String line) {
-                lines.add(line);
-            }
-
-            public void println(Object line) {
-                println(line.toString());
-            }
-        };
-        maint.setOutputStream(out);
+            JPAFacadeHelper.toBrokerFactory(emf), false);
+        LogImpl log = new LogImpl();
+        maint.setLog(log);
         maint.store();
-        assertContains(lines, "    " + AllFieldTypes.class.getName());
-        assertContains(lines, "    " + NamedQueryEntity.class.getName());
-        assertContains(lines, "    NamedQueryEntity.namedQuery");
+        assertContains(log.lines, "    " + AllFieldTypes.class.getName());
+        assertContains(log.lines, "    " + NamedQueryEntity.class.getName());
+        assertContains(log.lines, "    NamedQueryEntity.namedQuery");
         emf.close();
 
         emf = createEMF(LOAD_PROPS);
@@ -111,5 +103,69 @@ public class TestCacheMarshallerEndToEnd
                 return;
         fail("should contain a line starting with " + prefix
             + ": " + lines);
+    }
+
+    private class LogImpl implements Log {
+        private List<String> lines = new ArrayList<String>();
+
+        public boolean isTraceEnabled() {
+            return true;
+        }
+
+        public boolean isInfoEnabled() {
+            return true;
+        }
+
+        public boolean isWarnEnabled() {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean isErrorEnabled() {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean isFatalEnabled() {
+            throw new UnsupportedOperationException();
+        }
+
+        public void trace(Object o) {
+            lines.add(o.toString());
+        }
+
+        public void trace(Object o, Throwable t) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void info(Object o) {
+            lines.add(o.toString());
+        }
+
+        public void info(Object o, Throwable t) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void warn(Object o) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void warn(Object o, Throwable t) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void error(Object o) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void error(Object o, Throwable t) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void fatal(Object o) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void fatal(Object o, Throwable t) {
+            throw new UnsupportedOperationException();
+        }
     }
 }

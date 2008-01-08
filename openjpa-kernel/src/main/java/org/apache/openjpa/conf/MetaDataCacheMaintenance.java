@@ -44,28 +44,7 @@ public class MetaDataCacheMaintenance {
     private final BrokerFactory factory;
     private final OpenJPAConfiguration conf;
     private final boolean devpath;
-    private final Log log;
-
-    /**
-     * @deprecated logging is routed to the logging system now.
-     */
-    public MetaDataCacheMaintenance(BrokerFactory factory, boolean devpath,
-        boolean verbose) {
-        this(factory, devpath);
-    }
-
-    /**
-     * @param factory The {@link BrokerFactory} for which cached metadata
-     * should be built.
-     * @param devpath Whether or not to scan the development environment paths
-     * to find persistent types to store.
-     */
-    public MetaDataCacheMaintenance(BrokerFactory factory, boolean devpath) {
-        this.factory = factory;
-        this.conf = factory.getConfiguration();
-        this.devpath = devpath;
-        this.log = conf.getLog(OpenJPAConfiguration.LOG_TOOL);
-    }
+    private Log log;
 
     public static void main(String[] args) {
         Options opts = new Options();
@@ -90,6 +69,31 @@ public class MetaDataCacheMaintenance {
         } finally {
             factory.close();
         }
+    }
+
+    /**
+     * @deprecated logging is routed to the logging system now.
+     */
+    public MetaDataCacheMaintenance(BrokerFactory factory, boolean devpath,
+        boolean verbose) {
+        this(factory, devpath);
+    }
+
+    /**
+     * @param factory The {@link BrokerFactory} for which cached metadata
+     * should be built.
+     * @param devpath Whether or not to scan the development environment paths
+     * to find persistent types to store.
+     */
+    public MetaDataCacheMaintenance(BrokerFactory factory, boolean devpath) {
+        this.factory = factory;
+        this.conf = factory.getConfiguration();
+        this.devpath = devpath;
+        this.log = conf.getLog(OpenJPAConfiguration.LOG_TOOL);
+    }
+
+    public void setLog(Log log) {
+        this.log = log;
     }
 
     private static int usage() {
