@@ -301,9 +301,7 @@ public class ApplicationIds {
         // oid instance
         if (!Modifier.isAbstract(meta.getDescribedType().getModifiers())
             && !hasPCPrimaryKeyFields(meta)) {
-            Class type = meta.getInterfaceImpl();
-            if (type == null)
-                type = meta.getDescribedType();
+            Class type = meta.getDescribedType();
             PersistenceCapable pc = PCRegistry.newInstance(type, null, oid, 
                  false);
             Object copy = pc.pcNewObjectIdInstance();

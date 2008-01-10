@@ -176,7 +176,9 @@ public class PCEnhancer {
     private boolean _bcsConfigured = false;
 
     /**
-     * Constructor. Supply configuration and type to enhance.
+     * Constructor. Supply configuration and type to enhance. This will look
+     * up the metadata for <code>type</code> from <code>conf</code>'s
+     * repository.
      */
     public PCEnhancer(OpenJPAConfiguration conf, Class type) {
         this(conf, (BCClass) AccessController.doPrivileged(J2DoPrivHelper
@@ -185,12 +187,14 @@ public class PCEnhancer {
     }
 
     /**
-     * Constructor. Supply configuration and type to enhance.
+     * Constructor. Supply configuration and type to enhance. This will look
+     * up the metadata for <code>meta</code> by converting back to a class
+     * and then loading from <code>conf</code>'s repository.
      */
-    public PCEnhancer(OpenJPAConfiguration conf, ClassMetaData type) {
+    public PCEnhancer(OpenJPAConfiguration conf, ClassMetaData meta) {
         this(conf, (BCClass) AccessController.doPrivileged(J2DoPrivHelper
-            .loadProjectClassAction(new Project(), type.getDescribedType())),
-            type.getRepository());
+            .loadProjectClassAction(new Project(), meta.getDescribedType())),
+            meta.getRepository());
     }
 
     /**
@@ -239,6 +243,36 @@ public class PCEnhancer {
         } else
             _repos = repos;
         _meta = _repos.getMetaData(type.getType(), loader, false);
+    }
+
+    /**
+     * Constructor. Supply repository. The repository's configuration will
+     * be used, and the metadata passed in will be used as-is without doing
+     * any additional lookups. This is useful when running the enhancer
+     * during metadata load.
+     *
+     * @param repos a metadata repository to use for metadata access,
+     * or null to create a new reporitory; the repository
+     * from the given configuration isn't used by default
+     * because the configuration might be an
+     * implementation-specific subclass whose metadata
+     * required more than just base metadata files
+     * @param type the bytecode representation fo the type to
+     * enhance; this can be created from any stream or file
+     * @param meta the metadata to use for processing this type.
+     *
+     * @since 1.1.0
+     */
+    public PCEnhancer(MetaDataRepository repos, BCClass type,
+        ClassMetaData meta) {
+        _managedType = type;
+        _pc = type;
+
+        _log = repos.getConfiguration()
+            .getLog(OpenJPAConfiguration.LOG_ENHANCE);
+
+        _repos = repos;
+        _meta = meta;
     }
 
     static String toPCSubclassName(Class cls) {
@@ -453,7 +487,7 @@ public class PCEnhancer {
 
         try {
             // if managed interface, skip
-            if (_managedType.isInterface())
+            if (_pc.isInterface())
                 return ENHANCE_INTERFACE;
 
             // check if already enhanced
@@ -526,8 +560,6 @@ public class PCEnhancer {
                 } else {
                     _isAlreadySubclassed = true;
                 }
-            } else {
-                _pc = _managedType;
             }
 
             _bcsConfigured = true;
@@ -2656,8 +2688,10 @@ public class PCEnhancer {
             }
 
             // pcPCSuperclass = <superClass>;
-            code.classconstant().setClass(getType(_meta.
-                getPCSuperclassMetaData()));
+            // this intentionally calls getDescribedType() directly
+            // instead of PCEnhancer.getType()
+            code.classconstant().setClass(
+                _meta.getPCSuperclassMetaData().getDescribedType());
             code.putstatic().setField(SUPER, Class.class);
         }
 
@@ -2698,7 +2732,7 @@ public class PCEnhancer {
         // PCRegistry.register (cls,
         //	pcFieldNames, pcFieldTypes, pcFieldFlags,
         //  pcPCSuperclass, alias, new XXX ());
-        code.classconstant().setClass(_managedType);
+        code.classconstant().setClass(_meta.getDescribedType());
         code.getstatic().setField(PRE + "FieldNames", String[].class);
         code.getstatic().setField(PRE + "FieldTypes", Class[].class);
         code.getstatic().setField(PRE + "FieldFlags", byte[].class);
@@ -3627,19 +3661,19 @@ public class PCEnhancer {
         // first, see if we can convert the attribute name to a field name
         String fieldName = toBackingFieldName(attrName);
 
-        // next, find the field in the managed type.
-        BCField[] fields = (BCField[]) AccessController
-            .doPrivileged(J2DoPrivHelper.getBCClassFieldsAction(_managedType,
-                fieldName)); 
+        // next, find the field in the managed type hierarchy
         BCField field = null;
-        for (int i = 0; i < fields.length; i++) {
-            field = fields[i];
-            // if we reach a field declared in this type, then this is the
-            // most-masking field, and is the one that we want.
-            // ##### probably should walk up the hierarchy, or check that
-            // ##### serp does that.
-            if (fields[i].getDeclarer() == declarer) {
-                break;
+        outer: for (BCClass bc = _pc; bc != null; bc = bc.getSuperclassBC()) {
+            BCField[] fields = (BCField[]) AccessController
+                .doPrivileged(J2DoPrivHelper.getBCClassFieldsAction(bc,
+                    fieldName));
+            for (int i = 0; i < fields.length; i++) {
+                field = fields[i];
+                // if we reach a field declared in this type, then this is the
+                // most-masking field, and is the one that we want.
+                if (fields[i].getDeclarer() == declarer) {
+                    break outer;
+                }
             }
         }
 

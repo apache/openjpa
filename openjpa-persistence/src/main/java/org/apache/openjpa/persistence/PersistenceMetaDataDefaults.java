@@ -261,7 +261,8 @@ public class PersistenceMetaDataDefaults
             J2DoPriv5Helper.getDeclaredFieldsAction(cls))))
             access |= ClassMetaData.ACCESS_FIELD;
         if (usesAccess((Method[]) AccessController.doPrivileged(
-            J2DoPriv5Helper.getDeclaredMethodsAction(cls))))
+            J2DoPriv5Helper.getDeclaredMethodsAction(cls)))
+            || cls.isInterface()) // OpenJPA managed ifaces must use prop access
             access |= ClassMetaData.ACCESS_PROPERTY;
         return (access == 0) ? getAccessType(cls.getSuperclass()) : access;
     }

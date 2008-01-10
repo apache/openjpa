@@ -40,6 +40,9 @@ public class EmbedValue {
     @JoinColumn(name = "EMB_REL")
     protected EmbedOwner owner;
 
+    @Transient
+    private int transientField;
+
     public void setBasic(String basic) {
         this.basic = basic;
     }

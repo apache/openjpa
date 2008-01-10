@@ -287,6 +287,11 @@ public class MetaDataRepository
             DynamicPersistenceCapable.class.isAssignableFrom(cls))
             cls = cls.getSuperclass();
 
+        // if cls is a generated interface, use the user interface
+        // to locate metadata
+        if (cls != null && _implGen.isImplType(cls))
+            cls = _implGen.toManagedInterface(cls);
+
         ClassMetaData meta = getMetaDataInternal(cls, envLoader);
         if (meta == null && mustExist) {
             if (cls != null &&
@@ -952,7 +957,6 @@ public class MetaDataRepository
             throw new MetaDataException(_loc.get("not-managed-interface", 
                 meta, impl));
         _ifaces.put(meta.getDescribedType(), impl);
-        _metas.put(impl, meta);
         addDeclaredInterfaceImpl(meta, meta.getDescribedType());
         ClassMetaData sup = meta.getPCSuperclassMetaData();
         while (sup != null) {
@@ -964,9 +968,7 @@ public class MetaDataRepository
         }
     }
     
-    synchronized InterfaceImplGenerator getImplGenerator() {
-        if (_implGen == null)
-            _implGen = new InterfaceImplGenerator(this);
+    InterfaceImplGenerator getImplGenerator() {
         return _implGen;
     }
 
@@ -1278,6 +1280,11 @@ public class MetaDataRepository
             cls = classForName((String) itr.next(), clsLoader);
             if (cls != null)
                 classes.add(cls);
+
+            // if the class is an interface, load its metadata to kick
+            // off the impl generator
+            if (cls.isInterface())
+                getMetaData(cls, clsLoader, false);
         }
         return classes;
     }
@@ -1548,6 +1555,8 @@ public class MetaDataRepository
 
     public void endConfiguration() {
         initializeMetaDataFactory();
+        if (_implGen == null)
+            _implGen = new InterfaceImplGenerator(this);
     }
 
     private void initializeMetaDataFactory() {

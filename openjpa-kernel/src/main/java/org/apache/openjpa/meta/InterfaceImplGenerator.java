@@ -114,14 +114,13 @@ class InterfaceImplGenerator {
         // copy the BCClass into the enhancer project.
         bc = _enhProject.loadClass(new ByteArrayInputStream(bc.toByteArray()), 
             loader);
-        PCEnhancer enhancer = new PCEnhancer(_repos.getConfiguration(), bc, 
-            meta);
+        PCEnhancer enhancer = new PCEnhancer(_repos, bc, meta);
 
         int result = enhancer.run();
         if (result != PCEnhancer.ENHANCE_PC)
             throw new InternalException(_loc.get("interface-badenhance", 
                 iface)).setFatal(true);
-        try{
+        try {
             // load the class for real.
             impl = Class.forName(bc.getName(), true, enhLoader);
         } catch (Throwable t) {
@@ -228,5 +227,19 @@ class InterfaceImplGenerator {
             return meth == null;
         } catch (PrivilegedActionException pae) {}
         return true;
+    }
+
+    boolean isImplType(Class cls) {
+        return (cls.getName().endsWith(POSTFIX)
+            && cls.getName().indexOf('$') != -1);
+    }
+
+    public Class toManagedInterface(Class cls) {
+        Class[] ifaces = cls.getInterfaces();
+        for (int i = 0; i < ifaces.length; i++) {
+            if (_impls.get(ifaces[i]) == cls)
+                return ifaces[i];
+        }
+        throw new IllegalArgumentException(cls.getName());
     }
 }

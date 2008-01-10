@@ -2641,8 +2641,6 @@ public class BrokerImpl
             PersistenceCapable copy;
             PCState state;
             Class type = meta.getDescribedType();
-            if (type.isInterface())
-                type = meta.getInterfaceImpl();
             if (obj != null) {
                 // give copy and the original instance the same state manager
                 // so that we can copy fields from one to the other
@@ -4152,11 +4150,7 @@ public class BrokerImpl
     public Object newInstance(Class cls) {
         assertOpen();
 
-        if (cls.isInterface()) {
-            ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
-                getMetaData(cls, _loader, true);
-            cls = meta.getInterfaceImpl();
-        } else if (Modifier.isAbstract(cls.getModifiers()))
+        if (!cls.isInterface() && Modifier.isAbstract(cls.getModifiers()))
             throw new UnsupportedOperationException(_loc.get
                 ("new-abstract", cls).getMessage());
 
@@ -4169,7 +4163,14 @@ public class BrokerImpl
             } catch (Throwable t) {
             }
         }
-        return PCRegistry.newInstance(cls, null, false);
+        try {
+            return PCRegistry.newInstance(cls, null, false);
+        } catch (IllegalStateException ise) {
+            IllegalArgumentException iae =
+                new IllegalArgumentException(ise.getMessage());
+            iae.setStackTrace(ise.getStackTrace());
+            throw iae;
+        }
     }
 
     public Object getObjectId(Object obj) {

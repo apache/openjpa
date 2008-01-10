@@ -180,6 +180,8 @@ public abstract class AbstractMetaDataDefaults
      */
     private boolean populateFromPCRegistry(ClassMetaData meta) {
         Class cls = meta.getDescribedType();
+        if (!PCRegistry.isRegistered(cls))
+            return false;
         try {
             String[] fieldNames = PCRegistry.getFieldNames(cls);
             Class[] fieldTypes = PCRegistry.getFieldTypes(cls);
@@ -198,9 +200,6 @@ public abstract class AbstractMetaDataDefaults
                 populate(fmd);
             }
             return true;
-        } catch (IllegalStateException iae) {
-            // thrown by registry when no metadata available
-            return false;
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (Exception e) {

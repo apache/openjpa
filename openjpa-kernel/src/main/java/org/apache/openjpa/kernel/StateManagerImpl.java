@@ -260,8 +260,6 @@ public class StateManagerImpl
             }
             _meta = sub;
         }
-        if (cls.isInterface())
-            cls = _meta.getInterfaceImpl();
 
         PersistenceCapable inst = PCRegistry.newInstance(cls, this, _oid, true);
         if (inst == null) {
@@ -814,7 +812,8 @@ public class StateManagerImpl
 
         SaveFieldManager saved = getSaveFieldManager();
         if (saved == null)
-            throw new InternalException(_loc.get("no-saved-fields"));
+            throw new InternalException(_loc.get("no-saved-fields",
+                getMetaData().getDescribedType().getName()));
 
         FieldMetaData[] fmds = getMetaData().getFields();
         for (int i = 0; i < fmds.length; i++) {

@@ -483,6 +483,43 @@ a javaagent or in a Java 6 environment.
             </itemizedlist>
         </section>
     </section>
+    <section id="ref_guide_pc_interfaces">
+        <title>Managed Interfaces</title>
+        <indexterm zone="ref_guide_pc_interfaces">
+            <primary>interfaces</primary>
+            <secondary>managed</secondary>
+        </indexterm>
+        <para>
+OpenJPA's managed interface feature allows you to define your object model
+entirely in terms of interfaces, instead of concrete classes. To use this
+feature, you must annotate your managed interfaces with the
+<classname>ManagedInterface</classname> annotation, and use the
+<literal>OpenJPAEntityManager.createInstance(Class)</literal> method to
+create new records. Note that <literal>createInstance()</literal> returns
+unmanaged instances; you must pass them to
+<literal>EntityManager.persist()</literal> to store them in the database.
+        </para>
+        <programlisting>
+@ManagedInterface
+public interface PersonIface {
+    @Id @GeneratedValue
+    int getId();
+    void setId(int id);
+
+    // implicitly persistent per JPA property rules
+    String getName();
+    void setName(String name);
+}
+        </programlisting>
+        <programlisting>
+OpenJPAEntityManager em = ...;
+PersonIface person = em.createInstance(PersonIface.class);
+person.setName("Homer Simpson");
+em.getTransaction().begin();
+em.persist(person);
+em.getTransaction().commit();
+        </programlisting>
+    </section>
     <section id="ref_guide_pc_oid">
         <title>
             Object Identity

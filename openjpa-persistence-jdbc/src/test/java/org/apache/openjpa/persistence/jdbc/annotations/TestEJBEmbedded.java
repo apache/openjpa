@@ -29,6 +29,9 @@ import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedClobFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.StringFieldStrategy;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
 
 /**
  * Test for embedded
@@ -76,6 +79,15 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
         assertEquals("foobar", new String(embed.getBlob()));
         assertEquals(owner, embed.getOwner());
         em.close();
+    }
+
+    public void testEmbeddedMetaData() {
+        ClassMetaData ownerMeta =
+            JPAFacadeHelper.getMetaData(emf, EmbedOwner.class);
+        FieldMetaData fmd = ownerMeta.getField("embed");
+        ClassMetaData embeddedMeta = fmd.getDefiningMetaData();
+        assertNotNull(embeddedMeta);
+        assertNull(embeddedMeta.getField("transientField"));
     }
 
     public void testNull() {

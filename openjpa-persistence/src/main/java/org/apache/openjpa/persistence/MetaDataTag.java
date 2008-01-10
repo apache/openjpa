@@ -77,6 +77,7 @@ public enum MetaDataTag {
     KEY_TYPE,
     LOAD_FETCH_GROUP,
     LRS,
+    MANAGED_INTERFACE,
     READ_ONLY,
     TYPE,
 }

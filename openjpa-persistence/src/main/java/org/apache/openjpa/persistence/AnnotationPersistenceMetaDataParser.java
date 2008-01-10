@@ -172,6 +172,7 @@ public class AnnotationPersistenceMetaDataParser
         _tags.put(KeyType.class, KEY_TYPE);
         _tags.put(LoadFetchGroup.class, LOAD_FETCH_GROUP);
         _tags.put(LRS.class, LRS);
+        _tags.put(ManagedInterface.class, MANAGED_INTERFACE);
         _tags.put(ReadOnly.class, READ_ONLY);
         _tags.put(Type.class, TYPE);
     }
@@ -572,6 +573,10 @@ public class AnnotationPersistenceMetaDataParser
                     if (isMetaDataMode())
                         fgs = ((FetchGroups) anno).value();
                     break;
+                case MANAGED_INTERFACE:
+                    if (isMetaDataMode())
+                        parseManagedInterface(meta, (ManagedInterface) anno);
+                    break;
                 default:
                     throw new UnsupportedException(_loc.get("unsupported", _cls,
                         anno.toString()));
@@ -595,7 +600,8 @@ public class AnnotationPersistenceMetaDataParser
             // scan possibly non-PC hierarchy for callbacks.
             // redundant for PC superclass but we don't know that yet
             // so let LifecycleMetaData determine that
-            if (!Object.class.equals(_cls.getSuperclass())) {
+            if (_cls.getSuperclass() != null &&
+                !Object.class.equals(_cls.getSuperclass())) {
                 recordCallbacks(meta, parseCallbackMethods(_cls.getSuperclass(),
                     null, true, false, getRepository()), null, true);
             }
@@ -750,6 +756,11 @@ public class AnnotationPersistenceMetaDataParser
             meta.setDataCacheName(null);
     }
 
+    private void parseManagedInterface(ClassMetaData meta,
+        ManagedInterface iface) {
+        meta.setManagedInterface(true);
+    }
+
     /**
      * Parse @DetachedState. The annotation may be null.
      */
@@ -798,6 +809,10 @@ public class AnnotationPersistenceMetaDataParser
     public static Collection<LifecycleCallbacks>[] parseCallbackMethods
         (Class cls, Collection<LifecycleCallbacks>[] callbacks, boolean sups,
         boolean listener, MetaDataRepository repos) {
+
+        if (cls == null)
+            throw new IllegalArgumentException("cls cannot be null");
+
         // first sort / filter based on inheritance
         Set<Method> methods = new TreeSet<Method>(MethodComparator.
             getInstance());

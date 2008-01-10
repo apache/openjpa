@@ -28,6 +28,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.util.InvalidStateException;
 
 /**
  * Tracks registered persistence-capable classes.

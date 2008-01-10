@@ -732,6 +732,11 @@ public class ClassMetaData
         if (!_type.isInterface())
             throw new MetaDataException(_loc.get("not-interface", _type));
         _interface = managedInterface ? Boolean.TRUE : Boolean.FALSE;
+
+        // managed interfaces always do proper interception; OpenJPA generates
+        // the implementations.
+        if (isManagedInterface())
+            setIntercepting(true);
     }
 
     /**
@@ -2235,6 +2240,7 @@ public class ClassMetaData
         _extent = (meta.getRequiresExtent()) ? Boolean.TRUE : Boolean.FALSE;
         _embedded = (meta.isEmbeddedOnly()) ? Boolean.TRUE : Boolean.FALSE;
         _interface = (meta.isManagedInterface()) ? Boolean.TRUE : Boolean.FALSE;
+        setIntercepting(meta.isIntercepting());
         _impl = meta.getInterfaceImpl();
         _identity = meta.getIdentityType();
         _idStrategy = meta.getIdentityStrategy();

@@ -557,7 +557,11 @@ public interface Broker
      * an interface or an abstract class whose abstract methods follow the
      * JavaBeans convention, this method will create a concrete implementation
      * according to the metadata that defines the class.
-     * Otherwise, this will return an instance of the specified class.
+     * Otherwise, if <code>cls</code> is a managed type, this will return an
+     * instance of the specified class.
+     *
+     * @throws IllegalArgumentException if <code>cls</code> is not a managed
+     * type or interface.
      */
     public Object newInstance(Class cls);
 
