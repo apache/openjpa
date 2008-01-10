@@ -306,6 +306,10 @@ public class DB2Dictionary
             break;
         case db2ISeriesV5R3OrEarlier:
         case db2ISeriesV5R4OrLater:
+            lastGeneratedKeyQuery = "SELECT IDENTITY_VAL_LOCAL() FROM "
+                + "SYSIBM.SYSDUMMY1";
+            nextSequenceQuery = "SELECT NEXTVAL FOR {0} FROM "
+                + "SYSIBM.SYSDUMMY1";
             validationSQL = "SELECT DISTINCT(CURRENT TIMESTAMP) FROM "
                 + "QSYS2.SYSTABLES";
             sequenceSQL = "SELECT SEQUENCE_SCHEMA, "
