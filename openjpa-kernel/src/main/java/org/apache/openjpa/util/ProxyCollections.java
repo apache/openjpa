@@ -38,7 +38,11 @@ public class ProxyCollections
      */
     public static void beforeAdd(ProxyCollection coll, int index, Object value){
         assertAllowedType(value, coll.getElementType());
-        dirty(coll, true);
+        if (index == coll.size())
+            // optimize for adding to the end
+            beforeAdd(coll, value);
+        else
+            dirty(coll, true);
     }
 
     /**
