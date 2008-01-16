@@ -260,23 +260,6 @@ public class HSQLDictionary
             buf.append(String.valueOf(end - start));
     }
 
-    public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
-        FilterValue end) {
-        buf.append(substringFunctionName).append("((");
-        str.appendTo(buf);
-        buf.append("), (");
-        start.appendTo(buf);
-        buf.append(" + 1)");
-        if (end != null) {
-            buf.append(", (");
-            appendNumericCast(buf, end);
-            buf.append(" - (");
-            appendNumericCast(buf, start);
-            buf.append("))");
-        }
-        buf.append(")");
-    }
-
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
         buf.append("(LOCATE(");

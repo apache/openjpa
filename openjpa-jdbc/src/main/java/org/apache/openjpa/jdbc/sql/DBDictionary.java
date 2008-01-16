@@ -2498,7 +2498,7 @@ public class DBDictionary
         buf.append(substringFunctionName).append("(");
         str.appendTo(buf);
         buf.append(", ");
-        if (start instanceof Number) {
+        if (start.getValue() instanceof Number) {
             long startLong = toLong(start);
             buf.append(Long.toString(startLong + 1));
         } else {
