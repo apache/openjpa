@@ -319,6 +319,7 @@ public class JPQLExpressionBuilder
             JPQLNode node = onlyChild(parent);
             Value proj = getValue(node);
             exps.projections[i] = proj;
+            exps.projectionClauses[i] = assemble(node);
             exps.projectionAliases[i] = nextAlias();
         }
         return exp;
@@ -370,10 +371,12 @@ public class JPQLExpressionBuilder
         if (orderby != null) {
             int ordercount = orderby.getChildCount();
             exps.ordering = new Value[ordercount];
+            exps.orderingClauses = new String[ordercount];
             exps.ascending = new boolean[ordercount];
             for (int i = 0; i < ordercount; i++) {
                 JPQLNode node = orderby.getChild(i);
                 exps.ordering[i] = getValue(firstChild(node));
+                exps.orderingClauses[i] = assemble(firstChild(node));
                 // ommission of ASC/DESC token implies ascending
                 exps.ascending[i] = node.getChildCount() <= 1 ||
                     lastChild(node).id == JJTASCENDING ? true : false;
@@ -1374,7 +1377,7 @@ public class JPQLExpressionBuilder
     private Value getValue(JPQLNode node, int handleVar) {
         Value val = (Value) eval(node);
 
-        // determind how to evauate a variabe
+        // determined how to evaluate a variable
         if (!val.isVariable())
             return val;
         else if (handleVar == VAR_PATH && !(val instanceof Path))
