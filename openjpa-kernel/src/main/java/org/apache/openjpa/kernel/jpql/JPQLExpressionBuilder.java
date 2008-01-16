@@ -1075,13 +1075,13 @@ public class JPQLExpressionBuilder
                 return factory.getCurrentTimestamp();
 
             case JJTSELECTEXTENSION:
-                return eval(node.children[0]);
+                return eval(onlyChild(node));
 
             case JJTGROUPBYEXTENSION:
-                return eval(node.children[0]);
+                return eval(onlyChild(node));
 
             case JJTORDERBYEXTENSION:
-                return eval(node.children[0]);
+                return eval(onlyChild(node));
 
             default:
                 throw parseException(EX_FATAL, "bad-tree",
