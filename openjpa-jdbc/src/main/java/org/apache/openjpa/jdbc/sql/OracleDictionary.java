@@ -157,6 +157,8 @@ public class OracleDictionary
             "LONG", "MAXEXTENTS", "MINUS", "MODE", "NOAUDIT", "NOCOMPRESS",
             "NOWAIT", "OFFLINE", "ONLINE", "PCTFREE", "ROW",
         }));
+
+        substringFunctionName = "SUBSTR";
     }
 
     public void endConfiguration() {
@@ -425,23 +427,6 @@ public class OracleDictionary
         if (hint != null)
             select += " " + hint;
         return select;
-    }
-
-    public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
-        FilterValue end) {
-        buf.append("SUBSTR(");
-        str.appendTo(buf);
-        buf.append(", (");
-        start.appendTo(buf);
-        buf.append(" + 1)");
-        if (end != null) {
-            buf.append(", (");
-            end.appendTo(buf);
-            buf.append(" - ");
-            start.appendTo(buf);
-            buf.append(")");
-        }
-        buf.append(")");
     }
 
     public void setString(PreparedStatement stmnt, int idx, String val,

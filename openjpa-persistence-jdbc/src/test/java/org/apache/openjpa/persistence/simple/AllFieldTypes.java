@@ -25,14 +25,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 import javax.persistence.Entity;
 import javax.persistence.Version;
+import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 
 import org.apache.openjpa.persistence.PersistentCollection;
 
 @Entity
 public class AllFieldTypes {
-    
+
     public static enum EnumType {Value1, Value2};
     
     // @Basic types
@@ -73,6 +77,12 @@ public class AllFieldTypes {
 
     @PersistentCollection
     private int[] arrayOfInts;
+
+    // one-to-one and one-to-many relations to self
+    @OneToOne
+    private AllFieldTypes selfOneOne;
+    @OneToMany
+    private List<AllFieldTypes> selfOneMany = new ArrayList<AllFieldTypes>();
 
     public void setShortField(short shortField) {
         this.shortField = shortField;
@@ -338,5 +348,20 @@ public class AllFieldTypes {
         wShortField = shortField;
     }
 
+    public AllFieldTypes getSelfOneOne() {
+        return selfOneOne;
+    }
+    
+    public void setSelfOneOne(AllFieldTypes selfOneOne) {
+        this.selfOneOne = selfOneOne;
+    }
+
+    public List<AllFieldTypes> getSelfOneMany() {
+        return selfOneMany;
+    }
+
+    public void setSelfOneMany(List<AllFieldTypes> selfOneMany) {
+        this.selfOneMany = selfOneMany;
+    }
 }
 

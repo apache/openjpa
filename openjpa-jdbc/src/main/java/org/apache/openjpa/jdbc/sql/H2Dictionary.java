@@ -193,23 +193,6 @@ public class H2Dictionary extends DBDictionary {
             buf.append(" OFFSET ").appendValue(start);
     }
 
-    public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
-        FilterValue end) {
-        buf.append("SUBSTR(");
-        str.appendTo(buf);
-        buf.append(", (");
-        start.appendTo(buf);
-        buf.append(" + 1)");
-        if (end != null) {
-            buf.append(", (");
-            end.appendTo(buf);
-            buf.append(" - ");
-            start.appendTo(buf);
-            buf.append(")");
-        }
-        buf.append(")");
-    }
-
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
         buf.append("(POSITION(");

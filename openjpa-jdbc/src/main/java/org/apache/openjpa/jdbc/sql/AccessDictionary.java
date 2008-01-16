@@ -63,6 +63,8 @@ public class AccessDictionary
         supportsForeignKeys = false;
         supportsDeferredConstraints = false;
         maxIndexesPerTable = 32;
+
+        substringFunctionName = "MID";
     }
 
     public void setLong(PreparedStatement stmnt, int idx, long val, Column col)
@@ -74,23 +76,6 @@ public class AccessDictionary
             stmnt.setInt(idx, (int) val);
         else
             stmnt.setDouble(idx, val);
-    }
-
-    public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
-        FilterValue end) {
-        buf.append("MID(");
-        str.appendTo(buf);
-        buf.append(", (");
-        start.appendTo(buf);
-        buf.append(" + 1)");
-        if (end != null) {
-            buf.append(", (");
-            end.appendTo(buf);
-            buf.append(" - ");
-            start.appendTo(buf);
-            buf.append(")");
-        }
-        buf.append(")");
     }
 }
 

@@ -334,7 +334,8 @@ public interface ExpressionFactory {
 
     /**
      * Return a value representing the {@link String#substring} function on
-     * the given target with the given args.
+     * the given target with the given args. As with {@link String#substring},
+     * the start index is zero-based, and the second argument is the end index.
      */
     public Value substring(Value str, Value args);
 

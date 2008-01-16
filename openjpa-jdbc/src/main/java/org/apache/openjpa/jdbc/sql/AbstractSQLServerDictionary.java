@@ -117,23 +117,23 @@ public abstract class AbstractSQLServerDictionary
 
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
         FilterValue end) {
-        buf.append("SUBSTRING(");
-        str.appendTo(buf);
-        buf.append(", ");
-        start.appendTo(buf);
-        buf.append(" + 1, ");
-        if (end != null) {
-            buf.append("(");
-            end.appendTo(buf);
-            buf.append(")");
-        } else {
+        if (end != null)
+            super.substring(buf, str, start, end);
+        else {
+            // ### it would be good to change this logic as in DBDictionary to
+            // ### simplify the generated SQL
+            buf.append("SUBSTRING(");
+            str.appendTo(buf);
+            buf.append(", ");
+            start.appendTo(buf);
+            buf.append(" + 1, ");
             buf.append("LEN(");
             str.appendTo(buf);
             buf.append(")");
+            buf.append(" - (");
+            start.appendTo(buf);
+            buf.append("))");
         }
-        buf.append(" - (");
-        start.appendTo(buf);
-        buf.append("))");
     }
 
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,

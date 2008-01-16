@@ -86,6 +86,7 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.exps.Path;
+import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.jdbc.ConnectionDecorator;
@@ -2494,19 +2495,36 @@ public class DBDictionary
      */
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
         FilterValue end) {
-        buf.append(substringFunctionName).append("((");
+        buf.append(substringFunctionName).append("(");
         str.appendTo(buf);
-        buf.append("), (");
-        start.appendTo(buf);
-        buf.append(" + 1)");
-        if (end != null) {
-            buf.append(", (");
-            end.appendTo(buf);
-            buf.append(" - (");
+        buf.append(", ");
+        if (start instanceof Number) {
+            long startLong = toLong(start);
+            buf.append(Long.toString(startLong + 1));
+        } else {
+            buf.append("(");
             start.appendTo(buf);
-            buf.append("))");
+            buf.append(" + 1)");
+        }
+        if (end != null) {
+            buf.append(", ");
+            if (start.getValue() instanceof Number
+                && end.getValue() instanceof Number) {
+                long startLong = toLong(start);
+                long endLong = toLong(end);
+                buf.append(Long.toString(endLong - startLong));
+            } else {
+                end.appendTo(buf);
+                buf.append(" - (");
+                start.appendTo(buf);
+                buf.append(")");
+            }
         }
         buf.append(")");
+    }
+
+    long toLong(FilterValue litValue) {
+        return ((Number) litValue.getValue()).longValue();
     }
 
     /**

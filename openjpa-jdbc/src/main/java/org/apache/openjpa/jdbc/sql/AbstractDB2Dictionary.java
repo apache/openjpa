@@ -26,6 +26,8 @@ import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 public abstract class AbstractDB2Dictionary
     extends DBDictionary {
 
+    public int varcharCastLength = 1000;
+
     public AbstractDB2Dictionary() {
         numericTypeName = "DOUBLE";
         bitTypeName = "SMALLINT";
@@ -36,11 +38,13 @@ public abstract class AbstractDB2Dictionary
 
         // DB2-based databases have restrictions on having uncast parameters
         // in string functions
-        toUpperCaseFunction = "UPPER(CAST({0} AS VARCHAR(1000)))";
-        toLowerCaseFunction = "LOWER(CAST({0} AS VARCHAR(1000)))";
+        toUpperCaseFunction = "UPPER(CAST({0} AS VARCHAR(" + varcharCastLength
+            + ")))";
+        toLowerCaseFunction = "LOWER(CAST({0} AS VARCHAR(" + varcharCastLength
+            + ")))";
         stringLengthFunction = "LENGTH({0})";
-        concatenateFunction = "(CAST({0} AS VARCHAR(1000)))||"
-            + "(CAST({1} AS VARCHAR(1000)))";
+        concatenateFunction = "(CAST({0} AS VARCHAR(" + varcharCastLength
+            + ")))||(CAST({1} AS VARCHAR(1000)))";
 
         trimLeadingFunction = "LTRIM({0})";
         trimTrailingFunction = "RTRIM({0})";
@@ -74,9 +78,11 @@ public abstract class AbstractDB2Dictionary
         FilterValue start) {
         buf.append("(LOCATE(CAST((");
         find.appendTo(buf);
-        buf.append(") AS VARCHAR(1000)), CAST((");
+        buf.append(") AS VARCHAR(").append(Integer.toString(varcharCastLength))
+            .append(")), CAST((");
         str.appendTo(buf);
-        buf.append(") AS VARCHAR(1000))");
+        buf.append(") AS VARCHAR(").append(Integer.toString(varcharCastLength))
+            .append("))");
         if (start != null) {
             buf.append(", CAST((");
             start.appendTo(buf);
@@ -89,15 +95,30 @@ public abstract class AbstractDB2Dictionary
         FilterValue end) {
         buf.append("SUBSTR(CAST((");
         str.appendTo(buf);
-        buf.append(") AS VARCHAR(1000)), CAST((");
-        start.appendTo(buf);
-        buf.append(") AS INTEGER) + 1");
-        if (end != null) {
-            buf.append(", CAST((");
-            end.appendTo(buf);
-            buf.append(") AS INTEGER) - CAST((");
+        buf.append(") AS VARCHAR(").append(Integer.toString(varcharCastLength))
+            .append(")), ");
+        if (start.getValue() instanceof Number) {
+            long startLong = toLong(start);
+            buf.append(Long.toString(startLong + 1));
+        } else {
+            buf.append("CAST((");
             start.appendTo(buf);
-            buf.append(") AS INTEGER)");
+            buf.append(") AS INTEGER) + 1");
+        }
+        if (end != null) {
+            buf.append(", ");
+            if (start.getValue() instanceof Number
+                && end.getValue() instanceof Number) {
+                long startLong = toLong(start);
+                long endLong = toLong(end);
+                buf.append(Long.toString(endLong - startLong));
+            } else {
+                buf.append("CAST((");
+                end.appendTo(buf);
+                buf.append(") AS INTEGER) - CAST((");
+                start.appendTo(buf);
+                buf.append(") AS INTEGER)");
+            }
         }
         buf.append(")");
     }

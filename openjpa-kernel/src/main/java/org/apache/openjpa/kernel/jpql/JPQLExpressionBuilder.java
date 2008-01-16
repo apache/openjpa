@@ -977,21 +977,28 @@ public class JPQLExpressionBuilder
                 // arg2 is the end index): we perform the translation by
                 // adding one to the first argument, and then adding the
                 // first argument to the second argument to get the endIndex
-                //
-                // ### we could get rid of some messy expressions by checking for
-                // the common case where the arguments are specified as
-                // a literal, in which case we could just do the calculations
-                // in memory; otherwise we wind up with ugly looking SQL like:
-                // SELECT ... FROM ... t1
-                // (SUBSTRING(t1.ASTR, (? - ?) + 1, (? + (? - ?)) - ((? - ?))) = ?)
-                // [params=(long) 2, (int) 1, (long) 2, (long) 2, (int) 1,
-                // (long) 2, (int) 1, (String) oo
-                return factory.substring(val1, factory.newArgumentList
-                    (factory.subtract(val2, factory.newLiteral
-                        (Numbers.valueOf(1), Literal.TYPE_NUMBER)),
-                        (factory.add(val3,
-                            (factory.subtract(val2, factory.newLiteral
-                                (Numbers.valueOf(1), Literal.TYPE_NUMBER)))))));
+                Value start;
+                Value end;
+                if (val2 instanceof Literal && val3 instanceof Literal) {
+                    // optimize SQL for the common case of two literals
+                    long jpqlStart = ((Number) ((Literal) val2).getValue())
+                        .longValue();
+                    long length = ((Number) ((Literal) val3).getValue())
+                        .longValue();
+                    start = factory.newLiteral(new Long(jpqlStart - 1),
+                        Literal.TYPE_NUMBER);
+                    long endIndex = length + (jpqlStart - 1);
+                    end = factory.newLiteral(new Long(endIndex),
+                        Literal.TYPE_NUMBER);
+                } else {
+                    start = factory.subtract(val2, factory.newLiteral
+                        (Numbers.valueOf(1), Literal.TYPE_NUMBER));
+                    end = factory.add(val3,
+                        (factory.subtract(val2, factory.newLiteral
+                            (Numbers.valueOf(1), Literal.TYPE_NUMBER))));
+                }
+                return factory.substring(val1, factory.newArgumentList(
+                    start, end));
 
             case JJTLOCATE:
                 // as with SUBSTRING (above), the semantics for LOCATE differ
@@ -1066,6 +1073,15 @@ public class JPQLExpressionBuilder
 
             case JJTCURRENTTIMESTAMP:
                 return factory.getCurrentTimestamp();
+
+            case JJTSELECTEXTENSION:
+                return eval(node.children[0]);
+
+            case JJTGROUPBYEXTENSION:
+                return eval(node.children[0]);
+
+            case JJTORDERBYEXTENSION:
+                return eval(node.children[0]);
 
             default:
                 throw parseException(EX_FATAL, "bad-tree",
@@ -1669,9 +1685,6 @@ public class JPQLExpressionBuilder
                 // parser may sometimes (unfortunately) throw
                 throw new UserException(_loc.get("parse-error",
                     new Object[]{ e.toString(), jpql }));
-            } catch (ParseException e) {
-                throw new UserException(_loc.get("parse-error",
-                    new Object[]{ e.toString(), jpql }), e);
             }
         }
 

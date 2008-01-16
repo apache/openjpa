@@ -34,7 +34,7 @@ public class TestQueryPagination
     extends SQLListenerTestCase {
 
     public void setUp() {
-        setUp(SimpleEntity.class, CLEAR_TABLES, "openjpa.Log", "SQL=TRACE");
+        setUp(SimpleEntity.class, CLEAR_TABLES);
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
