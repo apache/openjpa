@@ -133,6 +133,7 @@ public abstract class AbstractBrokerFactory
      */
     protected AbstractBrokerFactory(OpenJPAConfiguration config) {
         _conf = config;
+        _pcClassLoaders = new ReferenceHashSet(ReferenceHashSet.WEAK);
     }
 
     /**
@@ -231,8 +232,13 @@ public abstract class AbstractBrokerFactory
     /**
      * Load the configured persistent classes list. Performed automatically
      * whenever a broker is created.
+     * 
+     * This method is synchronized due to the possible creation of new brokers
+     * (entity managers) by multiple threads (clients).  The two data structures
+     * used by this method (_pcClassNames and _pcClassLoaders) are not thread
+     * safe and this was an easy, efficient solution (OPENJPA-437).
      */
-    private void loadPersistentTypes(ClassLoader envLoader) {
+    private synchronized void loadPersistentTypes(ClassLoader envLoader) {
         // no listed persistent types?
         if (_pcClassNames != null && _pcClassNames.isEmpty())
             return;
@@ -245,7 +251,7 @@ public abstract class AbstractBrokerFactory
             Collection clss = _conf.getMetaDataRepositoryInstance().
                 loadPersistentTypes(false, loader);
             if (clss.isEmpty())
-                _pcClassNames = Collections.EMPTY_SET;
+                _pcClassNames = Collections.EMPTY_LIST;
             else {
                 _pcClassNames = new ArrayList(clss.size());
                 for (Iterator itr = clss.iterator(); itr.hasNext();) {
@@ -254,7 +260,6 @@ public abstract class AbstractBrokerFactory
                     if (needsSub(cls))
                         toRedefine.add(cls);
                 }
-                _pcClassLoaders = new ReferenceHashSet(ReferenceHashSet.WEAK);
                 _pcClassLoaders.add(loader);
             }
         } else {
