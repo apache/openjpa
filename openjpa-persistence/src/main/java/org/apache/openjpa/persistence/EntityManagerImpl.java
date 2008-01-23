@@ -136,6 +136,10 @@ public class EntityManagerImpl
             _broker.getConnectionRetainMode());
     }
 
+    public boolean isTransactionManaged() {
+        return _broker.isManaged();
+    }
+
     public boolean isManaged() {
         return _broker.isManaged();
     }

@@ -63,6 +63,15 @@ public interface OpenJPAEntityManager
 
     /**
      * Whether this entity manager is using managed transactions.
+     *
+     * @since 1.1.0
+     */
+    public boolean isTransactionManaged();
+
+    /**
+     * @deprecated use {@link #isTransactionManaged} instead to interrogate
+     * whether or not this EntityManager's transaction is managed. To determine
+     * if a given entity instance is managed, use {@link #contains}.
      */
     public boolean isManaged();
 
