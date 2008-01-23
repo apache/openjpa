@@ -961,7 +961,7 @@ database's tools to bring the schema up-to-date.
                 MappingDefaults
             </primary>
         </indexterm>
-        <indexterm>
+        <indexterm zone="ref_guide_mapping_defaults">
             <primary>
                 mapping metadata
             </primary>
@@ -1037,6 +1037,18 @@ properties:
 table names rather than throw an exception. If set to false, full explicit
 mappings are required at runtime and when using mapping tool actions like
 <literal>buildSchema</literal> and <literal>validate</literal>.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<indexterm><primary>Hungarian notation</primary></indexterm>
+<literal>RemoveHungarianNotation</literal>: Switches on/off removal of
+Hungarian notation when generating column names.
+Fields such as <literal>mFoobar</literal> and <literal>strBarFoo</literal>
+would become columns named <literal>foobar</literal> and
+<literal>barfoo</literal> respectively. OpenJPA will search for the first
+instance of a uppercase character in the field name and then truncate the
+column name to remove anything before it.
                         </para>
                     </listitem>
                     <listitem>
