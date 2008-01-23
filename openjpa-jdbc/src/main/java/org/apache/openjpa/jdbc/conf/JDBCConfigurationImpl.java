@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
+import org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCBrokerFactory;
 import org.apache.openjpa.jdbc.kernel.LRSSizes;
@@ -214,11 +215,13 @@ public class JDBCConfigurationImpl
         updateManagerPlugin = addPlugin("jdbc.UpdateManager", true);
         aliases = new String[]{
             "default",
-            "org.apache.openjpa.jdbc.kernel.ConstraintUpdateManager",
+            BatchingConstraintUpdateManager.class.getName(),
             "operation-order",
             "org.apache.openjpa.jdbc.kernel.OperationOrderUpdateManager",
             "constraint",
             "org.apache.openjpa.jdbc.kernel.ConstraintUpdateManager",
+            "batching-constraint",
+            BatchingConstraintUpdateManager.class.getName(),
         };
         updateManagerPlugin.setAliases(aliases);
         updateManagerPlugin.setDefault(aliases[0]);

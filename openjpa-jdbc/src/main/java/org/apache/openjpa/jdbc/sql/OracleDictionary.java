@@ -108,6 +108,9 @@ public class OracleDictionary
     private Method _putBytes = null;
     private Method _putString = null;
     private Method _putChars = null;
+    
+    // batch limit
+    private int defaultBatchLimit = 100;
 
     public OracleDictionary() {
         platform = "Oracle";
@@ -159,6 +162,7 @@ public class OracleDictionary
         }));
 
         substringFunctionName = "SUBSTR";
+        super.setBatchLimit(defaultBatchLimit);
     }
 
     public void endConfiguration() {

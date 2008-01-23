@@ -85,6 +85,7 @@ import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.lib.conf.Configurable;
@@ -94,7 +95,9 @@ import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.InvalidStateException;
@@ -143,6 +146,9 @@ public class DBDictionary
     protected static final int NAME_ANY = 0;
     protected static final int NAME_TABLE = 1;
     protected static final int NAME_SEQUENCE = 2;
+    
+    protected static final int UNLIMITED = -1;
+    protected static final int NO_BATCH = 0;
 
     private static final String ZERO_DATE_STR =
         "'" + new java.sql.Date(0) + "'";
@@ -334,6 +340,12 @@ public class DBDictionary
     private Method _setString = null;
     private Method _setCharStream = null;
 
+    // batchLimit value:
+    // -1 = unlimited
+    // 0  = no batch
+    // any positive number = batch limit
+    public int batchLimit = NO_BATCH;
+    
     public DBDictionary() {
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "BIGINT", "BIT", "BLOB", "CLOB", "DATE", "DECIMAL", "DISTINCT",
@@ -4215,5 +4227,54 @@ public class DBDictionary
      */
     public void createIndexIfNecessary(Schema schema, String table,
             Column pkColumn) {
+    }
+    
+    /**
+     * Return the batchLimit
+     */
+    public int getBatchLimit(){
+        return batchLimit;
+    }
+    
+    /**
+     * Set the batchLimit value
+     */
+    public void setBatchLimit(int limit){
+        batchLimit = limit;
+    }
+    
+    /**
+     * Validate the batch process. In some cases, we can't batch the statements
+     * due to some restrictions. For example, if the GeneratedType=IDENTITY,
+     * we have to disable the batch process because we need to get the ID value
+     * right away for the in-memory entity to use.
+     */
+    public boolean validateBatchProcess(RowImpl row, Column[] autoAssign,
+            OpenJPAStateManager  sm, ClassMapping cmd ) {
+        boolean disableBatch = false;
+        if (getBatchLimit()== 0) return false;
+        if (autoAssign != null && sm != null) {
+            FieldMetaData[] fmd = cmd.getPrimaryKeyFields();
+            int i = 0;
+            while (!disableBatch && i < fmd.length) {
+                if (fmd[i].getValueStrategy() == ValueStrategies.AUTOASSIGN)
+                    disableBatch = true;
+                i++;
+            }
+        }
+        // go to each Dictionary to validate the batch capability
+        if (!disableBatch)
+            disableBatch = validateDBSpecificBatchProcess(disableBatch, row, 
+                autoAssign, sm, cmd);
+        return disableBatch;
+    }
+    
+    /**
+     * Allow each Dictionary to validate its own batch process. 
+     */
+    public boolean validateDBSpecificBatchProcess (boolean disableBatch, 
+            RowImpl row, Column[] autoAssign, 
+            OpenJPAStateManager  sm, ClassMapping cmd ) {
+        return disableBatch;
     }
 }

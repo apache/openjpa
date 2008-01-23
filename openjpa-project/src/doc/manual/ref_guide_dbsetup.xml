@@ -3060,6 +3060,112 @@ EntityManager em = emf.createEntityManager(props);
 </programlisting>
         </example>
     </section>
+    <section id="ref_guide_dbsetup_stmtbatch">
+        <title>
+            Statement Batching
+        </title>
+        <indexterm zone="ref_guide_dbsetup_stmtbatch">
+            <primary>
+                Statement Batching
+            </primary>
+        </indexterm>
+        <indexterm>
+            <primary>
+                JDBC
+            </primary>
+            <secondary>
+                statement batching
+            </secondary>
+            <see>
+                statement batching
+            </see>
+        </indexterm>
+        <para>
+In addition to connection pooling and prepared statement caching, OpenJPA 
+employs statement batching to speed up JDBC updates. Statement batching is 
+enabled by default for any JDBC driver that supports it. When batching is on, 
+OpenJPA automatically orders its SQL statements to maximize the size of each 
+batch. This can result in large performance gains for transactions that modify 
+a lot of data.
+		</para>
+		<para>
+You configure statement batching through the system DBDictionary, which is 
+controlled by the openjpa.jdbc.DBDictionary configuration property. You can 
+enable the statement batching by setting the batchLimit in the value. The batch
+limit is the maximum number of statements OpenJPA will ever batch 
+together. A value has the following meaning:
+			<itemizedlist>
+            	<listitem>
+               	 <para>
+<literal>-1</literal>: Unlimited number of statements for a batch. 
+                </para>
+               </listitem>
+               <listitem>
+                <para>
+<literal>0</literal>: Disable batch support. This is the default for most 
+dictionaries.
+                </para>
+               </listitem>
+               <listitem>
+                <para>
+<literal>any positive number</literal>: Maximum number of statements for a batch.
+                </para>
+               </listitem>
+			</itemizedlist> 
+			<note>
+		     <para>
+By default, the batch support is based on each Dictionary to define the default 
+batch limit. Currently only DB2 and Oracle dictionaries are set the default 
+batch limit to 100. The default batch limit for the rest of the dictionaries is set 
+to zero (disabled). 
+			</para>
+			</note>
+		</para>
+		<para>
+The example below shows how to enable and disable statement batching via 
+your configuration properties. 
+        </para>
+        <example id="ref_guide_dbsetup_stmtbatch_exmple1">
+            <title>
+                Enable SQL statement batching
+            </title>
+<programlisting>
+&lt;property name="openjpa.jdbc.DBDictionary" value="db2(batchLimit=25)"/&gt;
+&lt;property name="openjpa.jdbc.DBDictionary" value="oracle(batchLimit=-1)"/&gt;
+Or
+&lt;property name="openjpa.jdbc.DBDictionary" value="batchLimit=25"/&gt;
+&lt;property name="openjpa.jdbc.DBDictionary" value="batchLimit=-1"/&gt;
+</programlisting>
+        </example>
+        <example id="ref_guide_dbsetup_stmtbatch_exmple2">
+            <title>
+                Disable SQL statement batching
+            </title>            
+<programlisting>
+&lt;property name="openjpa.jdbc.DBDictionary" value="db2(batchLimit=0)"/&gt;
+Or
+&lt;property name="openjpa.jdbc.DBDictionary" value="batchLimit=0"/&gt;
+</programlisting>
+        </example>
+        <par>
+By default, org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager 
+is the default statement batching implementation. You can plug-in your own 
+statement batching implementation by providing the implementation that extends 
+from AbstractUpdateManager or ConstraitUpdateManager. Add this implementation
+class as a property in the persistence.xml file. For example, a custom
+statement batching implementation mycomp.MyUpdateManager extends 
+ConstraitUpdateManager. You specify this implementation in the persistence.xml
+file as the following example:
+        </par>
+         <example id="ref_guide_dbsetup_stmtbatch_exmple3">
+            <title>
+                Plug-in custom statement batching implementation
+            </title>            
+<programlisting>
+&lt;property name="openjpa.jdbc.UpdateManager" value="mycomp.MyUpdateManager"/&gt;
+</programlisting>
+        </example>        
+    </section>
     <section id="ref_guide_dbsetup_lrs">
         <title>
             Large Result Sets

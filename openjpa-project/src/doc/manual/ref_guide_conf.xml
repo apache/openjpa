@@ -3713,7 +3713,12 @@ openjpa.jdbc.UpdateManager</literal>
 UpdateManager</literal>
             </para>
             <para>
-<emphasis role="bold">Default: </emphasis><literal>default</literal>
+<emphasis role="bold">Default: </emphasis><literal>constraint-batching</literal>
+            </para>
+            <para>
+            <emphasis role="bold">Possible values: </emphasis><literal>default</literal>,
+<literal>operation-order</literal>, <literal>constraint</literal>, <literal>
+batching-constraint</literal>, <literal>batching-operation-order</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> The full class name of the
@@ -3721,9 +3726,10 @@ UpdateManager</literal>
 <classname>org.apache.openjpa.jdbc.kernel.UpdateManager</classname></ulink> to
 use to flush persistent object changes to the datastore. The provided default
 implementation is
-<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/OperationOrderUpdateManager">
-<classname>org.apache.openjpa.jdbc.kernel.OperationOrderUpdateManager</classname>
+<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/BatchingConstraintUpdateManager">
+<classname>org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager</classname>
 </ulink>.
+
             </para>
         </section>
     </section>
