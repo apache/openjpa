@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 import javax.persistence.Basic;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
@@ -257,22 +259,36 @@ public class PersistenceMetaDataDefaults
             return ClassMetaData.ACCESS_UNKNOWN;
 
         int access = 0;
-        if (usesAccess((Field[]) AccessController.doPrivileged(
-            J2DoPriv5Helper.getDeclaredFieldsAction(cls))))
+        if (annotated((Field[]) AccessController.doPrivileged(
+            J2DoPriv5Helper.getDeclaredFieldsAction(cls))).size() > 0)
             access |= ClassMetaData.ACCESS_FIELD;
-        if (usesAccess((Method[]) AccessController.doPrivileged(
-            J2DoPriv5Helper.getDeclaredMethodsAction(cls)))
+        if (annotated((Method[]) AccessController.doPrivileged(
+            J2DoPriv5Helper.getDeclaredMethodsAction(cls))).size() > 0
             || cls.isInterface()) // OpenJPA managed ifaces must use prop access
             access |= ClassMetaData.ACCESS_PROPERTY;
-        return (access == 0) ? getAccessType(cls.getSuperclass()) : access;
+        return getAccessType(cls.getSuperclass()) | access;
+    }
+
+    @Override
+    protected List getFieldAccessNames(ClassMetaData meta) {
+        return annotated((Field[]) AccessController.doPrivileged(
+            J2DoPriv5Helper.getDeclaredFieldsAction(meta.getDescribedType())));
+    }
+
+    @Override
+    protected List getPropertyAccessNames(ClassMetaData meta) {
+        return annotated((Method[]) AccessController.doPrivileged(
+            J2DoPriv5Helper.getDeclaredMethodsAction(meta.getDescribedType())));
     }
 
     /**
-     * Return whether the given members have persistence annotations.
+     * Return the members of <code>members</code> that have persistence
+     * annotations.
      */
-    private static boolean usesAccess(AnnotatedElement[] members) {
+    private static List annotated(AnnotatedElement[] members) {
         Annotation[] annos;
         String name;
+        List annotated = new ArrayList(members.length);
         for (int i = 0; i < members.length; i++) {
             annos = (Annotation[]) AccessController.doPrivileged(J2DoPriv5Helper
                 .getAnnotationsAction(members[i]));
@@ -281,10 +297,10 @@ public class PersistenceMetaDataDefaults
                 if ((name.startsWith("javax.persistence.")
                     || name.startsWith("org.apache.openjpa.persistence."))
                     && !_ignoredAnnos.contains(name))
-                    return true;
+                    annotated.add(members[i]);
             }
         }
-        return false;
+        return annotated;
     }
 
     protected boolean isDefaultPersistent(ClassMetaData meta, Member member,
