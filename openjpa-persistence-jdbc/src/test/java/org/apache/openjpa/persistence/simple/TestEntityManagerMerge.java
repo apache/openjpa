@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import javax.persistence.EntityManager;
+
 import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
@@ -30,7 +32,7 @@ public class TestEntityManagerMerge
     extends SingleEMTestCase {
 
     public void setUp() {
-        setUp(AllFieldTypes.class);
+        setUp(AllFieldTypes.class, Person.class);
     }
 
     public void testMerge() {
@@ -68,6 +70,42 @@ public class TestEntityManagerMerge
         // Rollback
         rollback();
   
+    }
+    
+    /**
+     * This test verifies that persisting a new entity which matches an existing 
+     * row in the database succeeds. 
+     */
+    public void testMergeExistingEntity() {
+        Person p = new Person();
+        p.setId(102);
+
+        EntityManager em = emf.createEntityManager();
+
+        em.getTransaction().begin();
+        em.persist(p);
+        em.getTransaction().commit();
+        em.close();
+
+        em = emf.createEntityManager();
+        p = new Person();
+        p.setId(102);
+        p.setForename("Jane");
+
+        em.getTransaction().begin();
+        em.merge(p);
+        em.getTransaction().commit();
+
+        em.close();
+
+        em = emf.createEntityManager();
+        p = (Person) em.createQuery("Select p from Person p where p.id = 102")
+                .getSingleResult();
+
+        assertNotNull(p);
+        assertEquals("Jane", p.getForename());
+        
+        em.close();
     }
     
     public static void main(String[] args) {

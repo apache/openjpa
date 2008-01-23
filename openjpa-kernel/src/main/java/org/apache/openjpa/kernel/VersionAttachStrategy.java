@@ -73,7 +73,7 @@ class VersionAttachStrategy
             meta.getRepository().getConfiguration());
 
         boolean embedded = ownerMeta != null && ownerMeta.isEmbeddedPC();
-        boolean isNew = !broker.isDetached(pc);
+        boolean isNew = !broker.isDetached(pc) && into == null;
         Object version = null;
         StateManagerImpl sm;
 
