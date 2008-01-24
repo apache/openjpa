@@ -23,6 +23,29 @@ package org.apache.openjpa.conf;
  */
 public class Compatibility {
 
+    /**
+     * If a JPQL statement is not compliant with the JPA specification,
+     * fail to parse it.
+     *
+     * @since 1.1.0
+     */
+    public static final int JPQL_STRICT = 0;
+
+    /**
+     * If a JPQL statement is not compliant with the JPA specification,
+     * warn the first time that statement is parsed.
+     *
+     * @since 1.1.0
+     */
+    public static final int JPQL_WARN = 1;
+
+    /**
+     * Allow non-compliant extensions of JPQL.
+     * 
+     * @since 1.1.0
+     */
+    public static final int JPQL_EXTENDED = 2;
+
     private boolean _strictIdValues = false;
     private boolean _hollowLookups = true;
     private boolean _checkStore = false;
@@ -30,6 +53,7 @@ public class Compatibility {
     private boolean _closeOnCommit = true;
     private boolean _quotedNumbers = false;
     private boolean _nonOptimisticVersionCheck = false;
+    private int _jpql = JPQL_STRICT;
 
     /**
      * Whether to require exact identity value types when creating object
@@ -146,8 +170,7 @@ public class Compatibility {
      * in a datastore transaction. Version of OpenJPA prior to 0.4.1 always
      * forced a version check.
      */
-    public void setNonOptimisticVersionCheck
-        (boolean nonOptimisticVersionCheck) {
+    public void setNonOptimisticVersionCheck(boolean nonOptimisticVersionCheck){
         _nonOptimisticVersionCheck = nonOptimisticVersionCheck;
     }
 
@@ -158,5 +181,38 @@ public class Compatibility {
      */
     public boolean getNonOptimisticVersionCheck() {
         return _nonOptimisticVersionCheck;
+    }
+
+    /**
+     * Whether or not JPQL extensions are allowed. Defaults to
+     * {@link #JPQL_STRICT}.
+     *
+     * @since 1.1.0
+     * @see #JPQL_WARN
+     * @see #JPQL_STRICT
+     * @see #JPQL_EXTENDED
+     */
+    public int getJPQL() {
+        return _jpql;
+    }
+
+    /**
+     * Whether or not JPQL extensions are allowed. Possible values: "warn",
+     * "strict", "extended".
+     *
+     * @since 1.1.0
+     * @see #JPQL_WARN
+     * @see #JPQL_STRICT
+     * @see #JPQL_EXTENDED
+     */
+    public void setJPQL(String jpql) {
+        if ("warn".equals(jpql))
+            _jpql = JPQL_WARN;
+        else if ("strict".equals(jpql))
+            _jpql = JPQL_STRICT;
+        else if ("extended".equals(jpql))
+            _jpql = JPQL_EXTENDED;
+        else
+            throw new IllegalArgumentException(jpql);
     }
 }

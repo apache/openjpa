@@ -38,7 +38,8 @@ public abstract class GroupingTestCase
     protected abstract void prepareQuery(Query q);
 
     public void setUp() {
-        super.setUp(AllFieldTypes.class, CLEAR_TABLES);
+        super.setUp(AllFieldTypes.class, CLEAR_TABLES,
+            "openjpa.Compatibility", "JPQL=warn");
 
         AllFieldTypes pc1 = new AllFieldTypes();
         AllFieldTypes pc2 = new AllFieldTypes();

@@ -19,6 +19,7 @@
 package org.apache.openjpa.kernel.exps;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.kernel.QueryContext;
 
 /**
  * A Resolver is used to resolve listeners and class or entity names
@@ -51,4 +52,11 @@ public interface Resolver {
      * Return the OpenJPA configuration.
      */
     public OpenJPAConfiguration getConfiguration ();
+
+    /**
+     * The {@link QueryContext} for which this resolver was created
+     *
+     * @since 1.1.0
+     */
+    public QueryContext getQueryContext();
 }

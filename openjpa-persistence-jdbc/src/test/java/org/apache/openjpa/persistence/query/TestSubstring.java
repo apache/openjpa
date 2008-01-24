@@ -25,7 +25,8 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 public class TestSubstring extends SingleEMTestCase {
 
     public void setUp() {
-        super.setUp(SimpleEntity.class, CLEAR_TABLES, "openjpa.Log", "SQL=TRACE");
+        super.setUp(SimpleEntity.class, CLEAR_TABLES,
+            "openjpa.Compatibility", "JPQL=extended");
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

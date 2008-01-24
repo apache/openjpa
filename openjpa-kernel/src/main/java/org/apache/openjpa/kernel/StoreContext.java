@@ -46,8 +46,7 @@ public interface StoreContext {
 
     /**
      * Return the broker for this context, if possible. Note that a broker
-     * will be unavailable in remote contexts, and this method may throw
-     * an exception to that effect.
+     * will be unavailable in remote contexts, and this method may return null.
      */
     public Broker getBroker();
 

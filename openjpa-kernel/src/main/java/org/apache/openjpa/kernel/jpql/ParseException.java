@@ -65,6 +65,18 @@ public class ParseException
     }
 
     /**
+     * String constructor. Constructing the exception in this
+     * manner makes the exception behave in the normal way - i.e., as
+     * documented in the class "Throwable". The fields "errorToken",
+     * "expectedTokenSequences", and "tokenImage" do not contain
+     * relevant information. The JavaCC generated code does not use
+     * these constructors.
+     */
+    public ParseException(String message) {
+        super(message);
+    }
+
+    /**
      * This method has the standard behavior when this object has been
      * created using the standard constructors. Otherwise, it uses
      * "currentToken" and "expectedTokenSequences" to generate a parse

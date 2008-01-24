@@ -64,7 +64,6 @@ import java.io.*;
 public class JPQL
 {
 	String jpql;
-	boolean extensionsEnabled = true;
 
 
 	public JPQL (String jpql)
@@ -503,7 +502,7 @@ void select_expression() #SELECTEXPRESSION : { }
 }
 
 
-void select_extension() #SELECTEXTENSION(extensionsEnabled) : { }
+void select_extension() #SELECTEXTENSION : { }
 {
     scalar_function()
 }
@@ -627,7 +626,7 @@ void groupby_item() : { }
 }
 
 
-void groupby_extension() #GROUPBYEXTENSION(extensionsEnabled) : { }
+void groupby_extension() #GROUPBYEXTENSION : { }
 {
     scalar_function()
 }
@@ -1098,7 +1097,7 @@ void orderby_item() #ORDERBYITEM : { }
 }
 
 
-void orderby_extension() #ORDERBYEXTENSION(extensionsEnabled) : { }
+void orderby_extension() #ORDERBYEXTENSION : { }
 {
     aggregate_select_expression()
 }

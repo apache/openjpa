@@ -34,6 +34,8 @@ import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.ExpressionStoreQuery;
 import org.apache.openjpa.kernel.QueryContext;
 import org.apache.openjpa.kernel.QueryOperations;
+import org.apache.openjpa.kernel.StoreContext;
+import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
 import org.apache.openjpa.kernel.exps.Expression;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
@@ -44,12 +46,15 @@ import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.conf.Compatibility;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import serp.util.Numbers;
 
 /**
@@ -1078,17 +1083,53 @@ public class JPQLExpressionBuilder
                 return factory.getCurrentTimestamp();
 
             case JJTSELECTEXTENSION:
+                assertQueryExtensions("SELECT");
                 return eval(onlyChild(node));
 
             case JJTGROUPBYEXTENSION:
+                assertQueryExtensions("GROUP BY");
                 return eval(onlyChild(node));
 
             case JJTORDERBYEXTENSION:
+                assertQueryExtensions("ORDER BY");
                 return eval(onlyChild(node));
 
             default:
                 throw parseException(EX_FATAL, "bad-tree",
                     new Object[]{ node }, null);
+        }
+    }
+
+    private void assertQueryExtensions(String clause) {
+        OpenJPAConfiguration conf = resolver.getConfiguration();
+        switch(conf.getCompatibilityInstance().getJPQL()) {
+            case Compatibility.JPQL_WARN:
+                // check if we've already warned for this query-factory combo
+                StoreContext ctx = resolver.getQueryContext().getStoreContext();
+                String query = currentQuery();
+                if (ctx.getBroker() != null && query != null) {
+                    String key = getClass().getName() + ":" + query;
+                    BrokerFactory factory = ctx.getBroker().getBrokerFactory();
+                    Object hasWarned = factory.getUserObject(key);
+                    if (hasWarned != null)
+                        break;
+                    else
+                        factory.putUserObject(key, Boolean.TRUE);
+                }
+                Log log = conf.getLog(OpenJPAConfiguration.LOG_QUERY);
+                if (log.isWarnEnabled())
+                    log.warn(_loc.get("query-extensions-warning", clause,
+                        currentQuery()));
+                break;
+            case Compatibility.JPQL_STRICT:
+                throw new ParseException(_loc.get("query-extensions-error",
+                    clause, currentQuery()).getMessage());
+            case Compatibility.JPQL_EXTENDED:
+                break;
+            default:
+                throw new IllegalStateException(
+                    "Compatibility.getJPQL() == "
+                        + conf.getCompatibilityInstance().getJPQL());
         }
     }
 

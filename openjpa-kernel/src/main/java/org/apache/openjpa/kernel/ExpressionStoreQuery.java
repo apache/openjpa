@@ -119,6 +119,10 @@ public class ExpressionStoreQuery
             public OpenJPAConfiguration getConfiguration() {
                 return ctx.getStoreContext().getConfiguration();
             }
+
+            public QueryContext getQueryContext() {
+                return ctx;
+            }
         };
     }
 
