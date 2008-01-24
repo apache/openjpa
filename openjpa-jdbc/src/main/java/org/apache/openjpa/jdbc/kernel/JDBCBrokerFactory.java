@@ -140,7 +140,7 @@ public class JDBCBrokerFactory
     /**
      * Synchronize the mappings of the classes listed in the configuration.
      */
-    private void synchronizeMappings(ClassLoader loader) {
+    protected void synchronizeMappings(ClassLoader loader) {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         String action = conf.getSynchronizeMappings();
         if (StringUtils.isEmpty(action))

@@ -132,18 +132,10 @@ public class PessimisticLockManager
         PreparedStatement stmnt = null;
         ResultSet rs = null;
         try {
-            stmnt = sql.prepareStatement(conn);
-            if (timeout >= 0 && dict.supportsQueryTimeout) {
-                if (timeout < 1000) {
-                    timeout = 1000;
-                    if (log.isWarnEnabled())
-                        log.warn(_loc.get("millis-query-timeout"));
-                }
-                stmnt.setQueryTimeout(timeout / 1000);
-            }
-            rs = stmnt.executeQuery();
-            if (!rs.next())
-                throw new LockException(sm.getManagedInstance());
+            stmnt = prepareStatement(conn, sql);
+            setTimeout(stmnt, timeout);
+            rs = executeQuery(conn, stmnt, sql);
+            checkLock(rs, sm);
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se, dict);
         } finally {
@@ -167,5 +159,55 @@ public class PessimisticLockManager
             if (log.isInfoEnabled())
                 log.info(_loc.get("start-trans-for-lock"));
         }
+    }
+    
+    public JDBCStore getStore() {
+        return _store;
+    }
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of preparing statement.
+     */
+    protected PreparedStatement prepareStatement(Connection conn, SQLBuffer sql)
+        throws SQLException {
+        return sql.prepareStatement(conn);
+    }
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of setting query timeout.
+     */
+    protected void setTimeout(PreparedStatement stmnt, int timeout)
+        throws SQLException {
+        DBDictionary dict = _store.getDBDictionary();
+        if (timeout >= 0 && dict.supportsQueryTimeout) {
+            if (timeout < 1000) {
+                timeout = 1000;
+                if (log.isWarnEnabled())
+                    log.warn(_loc.get("millis-query-timeout"));
+            }
+            stmnt.setQueryTimeout(timeout / 1000);
+        }
+    }
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of executing query.
+     */
+    protected ResultSet executeQuery(Connection conn, PreparedStatement stmnt, 
+        SQLBuffer sql) throws SQLException {
+        return stmnt.executeQuery();
+    }
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of checking lock from the result set.
+     */
+    protected void checkLock(ResultSet rs, OpenJPAStateManager sm)
+        throws SQLException { 
+        if (!rs.next())
+            throw new LockException(sm.getManagedInstance());
+        return;
     }
 }

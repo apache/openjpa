@@ -641,4 +641,12 @@ public final class SQLBuffer
             return sub;
         }
     }
+    
+    public void setParameters(List params) {
+        _params = params;
+    }
+    
+    public List getColumns() {
+        return _cols;
+    }
 }

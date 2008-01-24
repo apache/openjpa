@@ -22,8 +22,6 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceProvider;
@@ -73,7 +71,7 @@ public class PersistenceProviderImpl
      */
     public OpenJPAEntityManagerFactory createEntityManagerFactory(String name,
         String resource, Map m) {
-        PersistenceProductDerivation pd = new PersistenceProductDerivation();
+        PersistenceProductDerivation pd = newPersistenceProductDerivation();
         try {
             Object poolValue = Configurations.removeProperty(EMF_POOL, m);
             ConfigurationProvider cp = pd.load(resource, name, m);
@@ -101,7 +99,7 @@ public class PersistenceProviderImpl
         }
         
         if (poolValue == null || !((Boolean) poolValue).booleanValue())
-            return Bootstrap.newBrokerFactory(cp, loader);
+            return newBrokerFactory(cp, loader);
         else
             return Bootstrap.getBrokerFactory(cp, loader);
     }
@@ -201,4 +199,19 @@ public class PersistenceProviderImpl
             return _trans.transform(cl, name, previousVersion, pd, bytes);
         }
 	}
+
+    /**
+     * Return a persistence product deviration with default setting.
+     */
+    public PersistenceProductDerivation newPersistenceProductDerivation() {
+        return new PersistenceProductDerivation();
+    }
+
+    /**
+     * Return a broker factory for the given configuration and class loader.
+     */
+    public BrokerFactory newBrokerFactory(ConfigurationProvider cp,
+        ClassLoader loader) {
+        return Bootstrap.newBrokerFactory(cp, loader);
+    }
 }

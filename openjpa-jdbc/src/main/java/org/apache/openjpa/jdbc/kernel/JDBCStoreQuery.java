@@ -499,11 +499,11 @@ public class JDBCStoreQuery
             for (int i = 0; i < sql.length; i++) {
                 stmnt = null;
                 try {
-                    stmnt = sql[i].prepareStatement(conn);
-                    count += stmnt.executeUpdate();
+                    stmnt = prepareStatement(conn, sql[i]);
+                    count += executeUpdate(conn, stmnt, sql[i], isUpdate);                    
                 } catch (SQLException se) {
                     throw SQLExceptions.getStore(se, sql[i].getSQL(), 
-                    		_store.getDBDictionary());
+                        _store.getDBDictionary());
                 } finally {
                     if (stmnt != null)
                         try { stmnt.close(); } catch (SQLException se) {}
@@ -649,4 +649,22 @@ public class JDBCStoreQuery
             sql[i] = ((Select) sels.get(i)).toSelect(false, fetch).getSQL(true);
         return sql;
     }
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of executing update.
+     */
+    protected int executeUpdate(Connection conn, PreparedStatement stmnt, 
+        SQLBuffer sqlBuf, boolean isUpdate) throws SQLException {
+        return stmnt.executeUpdate();
+    }
+            
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of preparing statement.
+     */
+    protected PreparedStatement prepareStatement(Connection conn, SQLBuffer sql)
+        throws SQLException {
+        return sql.prepareStatement(conn);
+    }    
 }

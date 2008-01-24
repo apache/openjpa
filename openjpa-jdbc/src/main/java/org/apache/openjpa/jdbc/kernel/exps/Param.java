@@ -93,7 +93,7 @@ public class Param
     /**
      * Expression state.
      */
-    private static class ParamExpState
+    public static class ParamExpState
         extends ConstExpState {
 
         public Object sqlValue = null;

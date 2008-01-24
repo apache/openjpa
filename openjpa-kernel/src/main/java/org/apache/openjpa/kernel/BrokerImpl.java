@@ -2420,10 +2420,7 @@ public class BrokerImpl
             }
 
             // make sure we don't already have the instance cached
-            StateManagerImpl other = getStateManagerImplById(id, false);
-            if (other != null && !other.isDeleted() && !other.isNew())
-                throw new ObjectExistsException(_loc.get("cache-exists",
-                    obj.getClass().getName(), id)).setFailedObject(obj);
+            checkForDuplicateId(id, obj);
 
             // if had embedded sm, null it
             if (sm != null)
@@ -3817,7 +3814,7 @@ public class BrokerImpl
                     _cache.remove(id, sm);
                     break;
                 case STATUS_OID_ASSIGN:
-                    _cache.assignObjectId(id, sm);
+                    assignObjectId(_cache, id, sm);
                     break;
                 case STATUS_COMMIT_NEW:
                     _cache.commitNew(id, sm);
@@ -4699,5 +4696,24 @@ public class BrokerImpl
                 }
             };
         }
+    }
+
+    /**
+     * Assign the object id to the cache. Exception will be
+     * thrown if the id already exists in the cache. 
+     */
+    protected void assignObjectId(Object cache, Object id, 
+        StateManagerImpl sm) {
+        ((ManagedCache) cache).assignObjectId(id, sm); 
+    }
+
+    /** 
+     * This method makes sure we don't already have the instance cached
+     */
+    protected void checkForDuplicateId(Object id, Object obj) {
+        StateManagerImpl other = getStateManagerImplById(id, false);
+        if (other != null && !other.isDeleted() && !other.isNew())
+            throw new ObjectExistsException(_loc.get("cache-exists",
+                obj.getClass().getName(), id)).setFailedObject(obj);
     }
 }

@@ -297,10 +297,11 @@ public class SelectImpl
         try {
             SQLBuffer sql = toSelectCount();
             conn = store.getConnection();
-            stmnt = sql.prepareStatement(conn);
-            rs = stmnt.executeQuery();
-            rs.next();
-            return rs.getInt(1);
+            stmnt = prepareStatement(conn, sql, null, 
+                ResultSet.TYPE_FORWARD_ONLY, 
+                ResultSet.CONCUR_READ_ONLY, false);
+            rs = executeQuery(conn, stmnt, sql, false, store);
+            return getCount(rs);
         } finally {
             if (rs != null)
                 try { rs.close(); } catch (SQLException se) {}
@@ -342,31 +343,21 @@ public class SelectImpl
         }
 
         SQLBuffer sql = toSelect(forUpdate, fetch);
-        int rsType = (isLRS() && supportsRandomAccess(forUpdate))
+        boolean isLRS = isLRS();
+        int rsType = (isLRS && supportsRandomAccess(forUpdate))
             ? -1 : ResultSet.TYPE_FORWARD_ONLY;
         Connection conn = store.getConnection();
         PreparedStatement stmnt = null;
         ResultSet rs = null;
         try {
-            if (isLRS())
-                stmnt = sql.prepareStatement(conn, fetch, rsType, -1);
+            if (isLRS) 
+                stmnt = prepareStatement(conn, sql, fetch, rsType, -1, true); 
             else
-                stmnt = sql.prepareStatement(conn, rsType, -1);
-
-            // if this is a locking select and the lock timeout is greater than
-            // the configured query timeout, use the lock timeout
-            if (forUpdate && _dict.supportsQueryTimeout && fetch != null 
-                && fetch.getLockTimeout() > stmnt.getQueryTimeout() * 1000) {
-                int timeout = fetch.getLockTimeout();
-                if (timeout < 1000) {
-                    timeout = 1000; 
-                    Log log = _conf.getLog(JDBCConfiguration.LOG_JDBC);
-                    if (log.isWarnEnabled())
-                        log.warn(_loc.get("millis-query-timeout"));
-                }
-                stmnt.setQueryTimeout(timeout / 1000);
-            }
-            rs = stmnt.executeQuery();
+                stmnt = prepareStatement(conn, sql, null, rsType, -1, false);
+            
+            setTimeout(stmnt, forUpdate, fetch);
+            
+            rs = executeQuery(conn, stmnt, sql, isLRS, store);
         } catch (SQLException se) {
             // clean up statement
             if (stmnt != null)
@@ -375,17 +366,8 @@ public class SelectImpl
             throw se;
         }
 
-        SelectResult res = new SelectResult(conn, stmnt, rs, _dict);
-        res.setSelect(this);
-        res.setStore(store);
-        res.setLocking(forUpdate);
-        try {
-            addEagerResults(res, this, store, fetch);
-        } catch (SQLException se) {
-            res.close();
-            throw se;
-        }
-        return res;
+        return getEagerResult(conn, stmnt, rs, store, fetch, forUpdate, 
+            sql.getSQL());
     }
 
     /**
@@ -421,6 +403,80 @@ public class SelectImpl
             }
             eager.put(entry.getKey(), eres);
         }
+    }
+
+
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of preparing statement.
+     */
+    protected PreparedStatement prepareStatement(Connection conn, 
+        SQLBuffer sql, JDBCFetchConfiguration fetch, int rsType, 
+        int rsConcur, boolean isLRS) throws SQLException {
+        if (fetch == null)
+            return sql.prepareStatement(conn, rsType, rsConcur);
+        else
+            return sql.prepareStatement(conn, fetch, rsType, -1);
+    }
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of setting query timeout.
+     */
+    protected void setTimeout(PreparedStatement stmnt, boolean forUpdate,
+        JDBCFetchConfiguration fetch) throws SQLException {
+        // if this is a locking select and the lock timeout is greater than
+        // the configured query timeout, use the lock timeout
+        if (forUpdate && _dict.supportsQueryTimeout && fetch != null 
+            && fetch.getLockTimeout() > stmnt.getQueryTimeout() * 1000) {
+            int timeout = fetch.getLockTimeout();
+            if (timeout < 1000) {
+                timeout = 1000; 
+                Log log = _conf.getLog(JDBCConfiguration.LOG_JDBC);
+                if (log.isWarnEnabled())
+                    log.warn(_loc.get("millis-query-timeout"));
+            }
+            stmnt.setQueryTimeout(timeout / 1000);
+        }
+    }
+
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of executing query.
+     */
+    protected ResultSet executeQuery(Connection conn, PreparedStatement stmnt, 
+        SQLBuffer sql, boolean isLRS, JDBCStore store) throws SQLException {
+        return stmnt.executeQuery();
+    }
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of getting count from the result set.
+     */
+    protected int getCount(ResultSet rs) throws SQLException {
+        rs.next();
+        return rs.getInt(1);
+    }
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of executing eager selects.
+     */
+    protected Result getEagerResult(Connection conn, 
+        PreparedStatement stmnt, ResultSet rs, JDBCStore store, 
+        JDBCFetchConfiguration fetch, boolean forUpdate, String sqlStr) 
+        throws SQLException {
+        SelectResult res = new SelectResult(conn, stmnt, rs, _dict);
+        res.setSelect(this);
+        res.setStore(store);
+        res.setLocking(forUpdate);
+        try {
+            addEagerResults(res, this, store, fetch);
+        } catch (SQLException se) {
+            res.close();
+            throw se;
+        }
+        return res;
     }
 
     /////////////////////////

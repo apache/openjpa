@@ -87,7 +87,6 @@ import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.exps.Path;
-import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.jdbc.ConnectionDecorator;
@@ -1982,7 +1981,7 @@ public class DBDictionary
             ExpState state = val.initialize(sel, ctx, 0);
             // JDBC Paths are always PCPaths; PCPath implements Val
             ExpState pathState = ((Val) path).initialize(sel, ctx, 0);
-            val.calculateValue(sel, ctx, state, (Val) path, pathState);
+            calculateValue(val, sel, ctx, state, path, pathState);
 
             // append the value with a null for the Select; i
             // indicates that the
@@ -3476,7 +3475,7 @@ public class DBDictionary
         if (str == null)
             return new Sequence[0];
 
-        PreparedStatement stmnt = conn.prepareStatement(str);
+        PreparedStatement stmnt = prepareStatement(conn, str);        
         ResultSet rs = null;
         try {
             int idx = 1;
@@ -3485,21 +3484,19 @@ public class DBDictionary
             if (sequenceName != null)
                 stmnt.setString(idx++, sequenceName);
 
-            rs = stmnt.executeQuery();
-            List seqList = new ArrayList();
-            while (rs.next())
-                seqList.add(newSequence(rs));
-            return (Sequence[]) seqList.toArray(new Sequence[seqList.size()]);
-        } finally {
+            rs = executeQuery(conn, stmnt, str);
+            return getSequence(rs);            
+         } finally {
             if (rs != null)
                 try {
                     rs.close();
                 } catch (SQLException se) {
                 }
-            try {
-                stmnt.close();
-            } catch (SQLException se) {
-            }
+            if (stmnt != null)    
+                try {
+                    stmnt.close();
+                } catch (SQLException se) {
+                }
         }
     }
 
@@ -3880,20 +3877,16 @@ public class DBDictionary
             });
         }
 
-        PreparedStatement stmnt = conn.prepareStatement(query);
+        PreparedStatement stmnt = prepareStatement(conn, query);
         ResultSet rs = null;
         try {
-            rs = stmnt.executeQuery();
-            if (!rs.next())
-                throw new StoreException(_loc.get("no-genkey"));
-            Object key = rs.getObject(1);
-            if (key == null)
-                log.warn(_loc.get("invalid-genkey", col));
-            return key;
+            rs = executeQuery(conn, stmnt, query);
+            return getKey(rs, col);
         } finally {
             if (rs != null)
                 try { rs.close(); } catch (SQLException se) {}
-            try { stmnt.close(); } catch (SQLException se) {} 
+            if (stmnt != null)    
+                try { stmnt.close(); } catch (SQLException se) {} 
         }
     }
 
@@ -4277,4 +4270,55 @@ public class DBDictionary
             OpenJPAStateManager  sm, ClassMapping cmd ) {
         return disableBatch;
     }
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of executing query.
+     */
+    protected ResultSet executeQuery(Connection conn, PreparedStatement stmnt, String sql 
+        ) throws SQLException {
+        return stmnt.executeQuery();
+    }
+            
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of preparing statement.
+     */
+    protected PreparedStatement prepareStatement(Connection conn, String sql)
+        throws SQLException {
+        return conn.prepareStatement(sql);
+    }    
+ 
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of getting sequence from the result set.
+     */
+    protected Sequence[] getSequence(ResultSet rs) throws SQLException {
+        List seqList = new ArrayList();
+        while (rs != null && rs.next())
+            seqList.add(newSequence(rs));
+        return (Sequence[]) seqList.toArray(new Sequence[seqList.size()]);
+    }
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of getting key from the result set.
+     */
+    protected Object getKey (ResultSet rs, Column col) throws SQLException {
+        if (!rs.next())
+            throw new StoreException(_loc.get("no-genkey"));
+        Object key = rs.getObject(1);
+        if (key == null)
+            log.warn(_loc.get("invalid-genkey", col));
+        return key;        
+    }
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of calculating value.
+     */
+    protected void calculateValue(Val val, Select sel, ExpContext ctx, 
+        ExpState state, Path path, ExpState pathState) {
+        val.calculateValue(sel, ctx, state, (Val) path, pathState);
+    }    
 }

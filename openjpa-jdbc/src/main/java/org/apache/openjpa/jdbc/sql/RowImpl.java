@@ -20,7 +20,6 @@ package org.apache.openjpa.jdbc.sql;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Array;
@@ -57,10 +56,10 @@ import serp.util.Numbers;
 public class RowImpl
     implements Row, Cloneable {
 
-    protected static final Object NULL = new Object();
+    public static final Object NULL = new Object();
     protected static final int VALID = 2 << 0;
 
-    private static final int RAW = Integer.MIN_VALUE;
+    public static final int RAW = Integer.MIN_VALUE;
 
     protected byte flags = 0;
     private final Column[] _cols;
@@ -949,5 +948,13 @@ public class RowImpl
         System.arraycopy(_types, start, row._types, start, len);
         if (isValid())
             row.setValid(true);
+    }
+    
+    public Object[] getVals() {
+        return _vals;
+    }
+    
+    public int[] getTypes() {
+        return _types;
     }
 }

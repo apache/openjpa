@@ -92,6 +92,17 @@ public class ResultSetResult
     }
 
     /**
+     * Constructor.
+     */
+    public ResultSetResult(Connection conn,
+        ResultSet rs, DBDictionary dict) {
+        _conn = conn;
+        _stmnt = null;
+        _rs = rs;
+        _dict = dict;
+    }
+
+    /**
      * JDBC 2 constructor. Relies on being able to retrieve the statement
      * from the result set, and the connection from the statement.
      */

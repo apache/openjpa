@@ -49,7 +49,7 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  */
-class PCPath
+public class PCPath
     extends AbstractVal
     implements JDBCPath {
 
@@ -549,7 +549,7 @@ class PCPath
     /**
      * Expression state.
      */
-    private static class PathExpState
+    public static class PathExpState
         extends ExpState {
 
         public FieldMapping field = null;

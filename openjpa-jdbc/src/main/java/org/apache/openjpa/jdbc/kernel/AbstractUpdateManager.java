@@ -181,7 +181,7 @@ public abstract class AbstractUpdateManager
     /**
      * Recursive method to insert the given instance, base class first.
      */
-    private void insert(OpenJPAStateManager sm, ClassMapping mapping,
+    protected void insert(OpenJPAStateManager sm, ClassMapping mapping,
         RowManager rowMgr, JDBCStore store, Collection customs)
         throws SQLException {
         Boolean custom = mapping.isCustomInsert(sm, store);
@@ -228,7 +228,7 @@ public abstract class AbstractUpdateManager
     /**
      * Recursive method to delete the given instance, base class last.
      */
-    private void delete(OpenJPAStateManager sm, ClassMapping mapping,
+    protected void delete(OpenJPAStateManager sm, ClassMapping mapping,
         RowManager rowMgr, JDBCStore store, Collection customs)
         throws SQLException {
         Boolean custom = mapping.isCustomDelete(sm, store);
@@ -271,7 +271,7 @@ public abstract class AbstractUpdateManager
     /**
      * Recursive method to update the given instance.
      */
-    private void update(OpenJPAStateManager sm, BitSet dirty,
+    protected void update(OpenJPAStateManager sm, BitSet dirty,
         ClassMapping mapping, RowManager rowMgr, JDBCStore store,
         Collection customs) throws SQLException {
         Boolean custom = mapping.isCustomUpdate(sm, store);
@@ -300,7 +300,7 @@ public abstract class AbstractUpdateManager
     /**
      * Update version and discriminator indicators.
      */
-    private void updateIndicators(OpenJPAStateManager sm, ClassMapping mapping,
+    protected void updateIndicators(OpenJPAStateManager sm, ClassMapping mapping,
         RowManager rowMgr, JDBCStore store, Collection customs,
         boolean versionUpdateOnly) throws SQLException {
         while (mapping.getJoinablePCSuperclassMapping() != null)

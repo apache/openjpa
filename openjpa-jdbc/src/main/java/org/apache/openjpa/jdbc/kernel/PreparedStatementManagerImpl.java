@@ -35,7 +35,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.OptimisticException;
-import org.apache.openjpa.meta.ClassMetaData;
 
 /**
  * Basic prepared statement manager implementation.
@@ -89,12 +88,13 @@ public class PreparedStatementManagerImpl
 
         // prepare statement
         String sql = row.getSQL(_dict);
-        PreparedStatement stmnt = _conn.prepareStatement(sql);
-
+        PreparedStatement stmnt = prepareStatement(sql);
+        
         // setup parameters and execute statement
-        row.flush(stmnt, _dict, _store);
+        if (stmnt != null)
+            row.flush(stmnt, _dict, _store);
         try {
-            int count = stmnt.executeUpdate();
+            int count = executeUpdate(stmnt, sql, row);
             if (count != 1) {
                 Object failed = row.getFailedObject();
                 if (failed != null)
@@ -107,7 +107,8 @@ public class PreparedStatementManagerImpl
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se, row.getFailedObject(), _dict);
         } finally {
-            try { stmnt.close(); } catch (SQLException se) {}
+            if (stmnt != null)
+               try { stmnt.close(); } catch (SQLException se) {}
         }
 
         // set auto assign values
@@ -128,4 +129,22 @@ public class PreparedStatementManagerImpl
 
     public void flush() {
     }
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of executing update.
+     */
+    protected int executeUpdate(PreparedStatement stmnt, String sql, 
+        RowImpl row) throws SQLException {
+        return stmnt.executeUpdate();
+    }
+        
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of preparing statement.
+     */
+    protected PreparedStatement prepareStatement(String sql)
+        throws SQLException {
+        return _conn.prepareStatement(sql);
+    }    
 }

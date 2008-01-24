@@ -30,7 +30,6 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.Column;
-import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
@@ -38,6 +37,7 @@ import org.apache.openjpa.jdbc.schema.SchemaTool;
 import org.apache.openjpa.jdbc.schema.Schemas;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.RowImpl;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.lib.conf.Configurable;
@@ -431,8 +431,8 @@ public class TableJDBCSeq
 
         PreparedStatement stmnt = null;
         try {
-            stmnt = insert.prepareStatement(conn);
-            stmnt.executeUpdate();
+            stmnt = prepareStatement(conn, insert);
+            executeUpdate(_conf, conn, stmnt, insert, RowImpl.ACTION_INSERT);
         } finally {
             if (stmnt != null)
                 try { stmnt.close(); } catch (SQLException se) {}
@@ -464,17 +464,16 @@ public class TableJDBCSeq
                 null, false, dict.supportsSelectForUpdate, 0, Long.MAX_VALUE,
                 false, true);
 
-        PreparedStatement stmnt = select.prepareStatement(conn);
+        PreparedStatement stmnt = prepareStatement(conn, select);
         ResultSet rs = null;
         try {
-            rs = stmnt.executeQuery();
-            if (!rs.next())
-                return -1;
-            return dict.getLong(rs, 1);
+            rs = executeQuery(_conf, conn, stmnt, select);
+            return getSequence(rs, dict);
         } finally {
             if (rs != null)
                 try { rs.close(); } catch (SQLException se) {}
-            try { stmnt.close(); } catch (SQLException se) {}
+            if (stmnt != null)    
+                try { stmnt.close(); } catch (SQLException se) {}
         }
     }
 
@@ -522,8 +521,8 @@ public class TableJDBCSeq
                     append(_seqColumn).append(" = ").
                     appendValue(Numbers.valueOf(cur), _seqColumn);
 
-                stmnt = upd.prepareStatement(conn);
-                updates = stmnt.executeUpdate();
+                stmnt = prepareStatement(conn, upd);
+                updates = executeUpdate(_conf, conn, stmnt, upd, RowImpl.ACTION_UPDATE);
             } finally {
                 if (rs != null) 
                     try { rs.close(); } catch (SQLException se) {}
@@ -703,5 +702,42 @@ public class TableJDBCSeq
 
         public long seq = 1L;
         public long max = 0L;
+    }
+
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of preparing statement.
+     */
+    protected PreparedStatement prepareStatement(Connection conn, SQLBuffer buf)
+        throws SQLException {
+        return buf.prepareStatement(conn);
+    }
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of executing update.
+     */
+    protected int executeUpdate(JDBCConfiguration conf, Connection conn,  
+        PreparedStatement stmnt, SQLBuffer buf, int opcode) throws SQLException {
+        return stmnt.executeUpdate();
+    }
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of executing query.
+     */
+    protected ResultSet executeQuery(JDBCConfiguration conf, Connection conn,
+        PreparedStatement stmnt, SQLBuffer buf) throws SQLException {
+        return stmnt.executeQuery();
+    }
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of getting sequence from the result set.
+     */
+    protected long getSequence(ResultSet rs, DBDictionary dict) throws SQLException {
+        if (rs == null || !rs.next())
+            return -1;
+        return dict.getLong(rs, 1);
     }
 }

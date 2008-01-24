@@ -23,6 +23,7 @@ import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -157,7 +158,7 @@ public class SQLStoreQuery
     /**
      * Executes the filter as a SQL query.
      */
-    private static class SQLExecutor
+    protected static class SQLExecutor
         extends AbstractExecutor {
 
         private final ClassMetaData _meta;
@@ -224,20 +225,14 @@ public class SQLStoreQuery
 
             PreparedStatement stmnt = null;
             try {
-                stmnt = buf.prepareCall(conn);
+                stmnt = prepareCall(conn, buf);
 
                 int index = 0;
-                for (Iterator i = paramList.iterator(); i.hasNext();)
+                for (Iterator i = paramList.iterator(); i.hasNext() && 
+                    stmnt != null;)
                     dict.setUnknown(stmnt, ++index, i.next(), null);
                 
-                int count = 0;
-                if (_call && stmnt.execute() == false) {
-                    count = stmnt.getUpdateCount();
-                }
-                else {
-                    // native insert, update, delete
-                    count = stmnt.executeUpdate();
-                }
+                int count = executeUpdate(store, conn, stmnt, buf);                
                 return Numbers.valueOf(count);
             } catch (SQLException se) {
                 if (stmnt != null)
@@ -276,20 +271,23 @@ public class SQLStoreQuery
             try {
                 // use the right method depending on sel vs. proc, lrs setting
                 if (_select && !range.lrs)
-                    stmnt = buf.prepareStatement(conn);
+                    stmnt = prepareStatement(conn, buf);
                 else if (_select)
-                    stmnt = buf.prepareStatement(conn, fetch, -1, -1);
+                    stmnt = prepareStatement(conn, buf, fetch, -1, -1);
                 else if (!range.lrs)
-                    stmnt = buf.prepareCall(conn);
+                    stmnt = prepareCall(conn, buf);
                 else
-                    stmnt = buf.prepareCall(conn, fetch, -1, -1);
+                    stmnt = prepareCall(conn, buf, fetch, -1, -1);
 
                 int index = 0;
-                for (Iterator i = paramList.iterator(); i.hasNext();)
+                for (Iterator i = paramList.iterator(); i.hasNext() && 
+                    stmnt != null;)
                     dict.setUnknown(stmnt, ++index, i.next(), null);
 
-                ResultSetResult res = new ResultSetResult(conn, stmnt,
-                    stmnt.executeQuery(), store);
+                ResultSet rs = executeQuery(store, conn, stmnt, buf, paramList);
+                ResultSetResult res = stmnt != null ? 
+                    new ResultSetResult(conn, stmnt, rs, store) :
+                    new ResultSetResult(conn, rs, dict);
                 if (_resultMapping != null)
                     rop = new MappedQueryResultObjectProvider(_resultMapping,
                         store, fetch, res);
@@ -318,6 +316,72 @@ public class SQLStoreQuery
 
         public boolean isPacking(StoreQuery q) {
             return q.getContext().getCandidateType() == null;
+        }
+        
+        /**
+         * This method is to provide override for non-JDBC or JDBC-like 
+         * implementation of preparing call statement.
+         */
+        protected PreparedStatement prepareCall(Connection conn, SQLBuffer buf)
+            throws SQLException {
+            return buf.prepareCall(conn);            
+        }
+        
+        /**
+         * This method is to provide override for non-JDBC or JDBC-like 
+         * implementation of executing update.
+         */
+        protected int executeUpdate(JDBCStore store, Connection conn, 
+            PreparedStatement stmnt, SQLBuffer buf) 
+            throws SQLException {
+            int count = 0;
+            if (_call && stmnt.execute() == false) {
+                count = stmnt.getUpdateCount();
+            }
+            else {
+                // native insert, update, delete
+                count = stmnt.executeUpdate();
+            }
+            return count;
+        }
+        
+        /**
+         * This method is to provide override for non-JDBC or JDBC-like 
+         * implementation of preparing call statement.
+         */
+        protected PreparedStatement prepareCall(Connection conn, SQLBuffer buf,
+            JDBCFetchConfiguration fetch, int rsType, int rsConcur)
+            throws SQLException {
+            return buf.prepareCall(conn, fetch, rsType, rsConcur);  
+        }
+
+        /**
+         * This method is to provide override for non-JDBC or JDBC-like 
+         * implementation of preparing statement.
+         */
+        protected PreparedStatement prepareStatement(Connection conn, 
+            SQLBuffer buf) throws SQLException {
+            return buf.prepareStatement(conn);
+        }
+        
+        /**
+         * This method is to provide override for non-JDBC or JDBC-like 
+         * implementation of preparing statement.
+         */
+        protected PreparedStatement prepareStatement(Connection conn, 
+            SQLBuffer buf, JDBCFetchConfiguration fetch, int rsType,
+            int rsConcur) throws SQLException {
+            return buf.prepareStatement(conn, fetch, rsType, rsConcur);
+        }
+        
+        /**
+         * This method is to provide override for non-JDBC or JDBC-like 
+         * implementation of executing query.
+         */
+        protected ResultSet executeQuery(JDBCStore store, Connection conn,
+            PreparedStatement stmnt, SQLBuffer buf, List paramList)
+            throws SQLException {
+            return stmnt.executeQuery();
         }
     }
 }
