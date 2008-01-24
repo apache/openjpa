@@ -1,0 +1,9 @@
+<persistence>
+    <persistence-unit name="incorrect-ordering-and-no-xsd">
+        <properties>
+            <property name="openjpa.Id" value="incorrect-ordering-pu"/>
+        </properties>
+        <class>org.apache.openjpa.persistence.xml.SimpleXmlEntity</class>
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+    </persistence-unit>
+</persistence>
