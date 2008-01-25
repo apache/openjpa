@@ -49,7 +49,6 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.ReferenceHashSet;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 import org.apache.openjpa.lib.util.concurrent.ReentrantLock;
@@ -148,7 +147,8 @@ public abstract class AbstractBrokerFactory
      */
     protected AbstractBrokerFactory(OpenJPAConfiguration config) {
         _conf = config;
-        _pcClassLoaders = new ConcurrentReferenceHashSet(ReferenceHashSet.WEAK);
+        _pcClassLoaders = new ConcurrentReferenceHashSet(
+            ConcurrentReferenceHashSet.WEAK);
     }
 
     /**
