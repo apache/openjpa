@@ -95,6 +95,7 @@ public abstract class AbstractBrokerFactory
     // that we can re-load them for each new broker
     private transient Collection _pcClassNames = null;
     private transient Collection _pcClassLoaders = null;
+    private transient boolean _persistentTypesLoaded = false;
 
     // lifecycle listeners to pass to each broker
     private transient Map _lifecycleListeners = null;
@@ -232,28 +233,31 @@ public abstract class AbstractBrokerFactory
     /**
      * Load the configured persistent classes list. Performed automatically
      * whenever a broker is created.
-     * 
-     * This method is synchronized due to the possible creation of new brokers
-     * (entity managers) by multiple threads (clients).  The two data structures
-     * used by this method (_pcClassNames and _pcClassLoaders) are not thread
-     * safe and this was an easy, efficient solution (OPENJPA-437).
      */
-    private synchronized void loadPersistentTypes(ClassLoader envLoader) {
-        // no listed persistent types?
-        if (_pcClassNames != null && _pcClassNames.isEmpty())
+    private void loadPersistentTypes(ClassLoader envLoader) {
+        // if we've loaded the persistent types and the class name list
+        // is empty, then we can simply return. Note that there is a
+        // potential threading scenario in which _persistentTypesLoaded is
+        // false when read, but the work to populate _pcClassNames has
+        // already been done. This is ok; _pcClassNames can tolerate
+        // concurrent access, so the worst case is that the list is
+        // persistent type data is processed multiple times, which this
+        // algorithm takes into account.
+        if (_persistentTypesLoaded && _pcClassNames.isEmpty())
             return;
 
         // cache persistent type names if not already
         ClassLoader loader = _conf.getClassResolverInstance().
             getClassLoader(getClass(), envLoader);
         Collection toRedefine = new ArrayList();
-        if (_pcClassNames == null) {
+        if (!_persistentTypesLoaded) {
             Collection clss = _conf.getMetaDataRepositoryInstance().
                 loadPersistentTypes(false, loader);
             if (clss.isEmpty())
-                _pcClassNames = Collections.EMPTY_LIST;
+                _pcClassNames = Collections.EMPTY_SET;
             else {
-                _pcClassNames = new ArrayList(clss.size());
+                _pcClassNames = new ConcurrentReferenceHashSet(
+                    ConcurrentReferenceHashSet.HARD);
                 for (Iterator itr = clss.iterator(); itr.hasNext();) {
                     Class cls = (Class) itr.next();
                     _pcClassNames.add(cls.getName());
@@ -262,6 +266,7 @@ public abstract class AbstractBrokerFactory
                 }
                 _pcClassLoaders.add(loader);
             }
+            _persistentTypesLoaded = true;
         } else {
             // reload with this loader
             if (_pcClassLoaders.add(loader)) {
