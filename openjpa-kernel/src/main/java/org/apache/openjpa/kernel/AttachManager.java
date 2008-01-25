@@ -98,11 +98,7 @@ class AttachManager {
 
         CallbackException excep = null;
         try {
-            PersistenceCapable into = findFromDatabase(pc);
-            OpenJPAStateManager owner = (into == null) ? null
-                    : (OpenJPAStateManager) into.pcGetStateManager();
-            return attach(pc, into, owner, null, true);
-
+            return attach(pc, null, null, null, true);
         } catch (CallbackException ce) {
             excep = ce;
             return null; // won't be reached as the exceps will be rethrown
@@ -339,30 +335,4 @@ class AttachManager {
                 Exceptions.toString(obj))).setFailedObject (obj);
 		return sm;
 	}
-
-    /**
-     * Find a PersistenceCapable instance of an Object if it exists in the 
-     * database. If the object is null or can't be found in the database.  
-     *  
-     * @param pc An object which will be attached into the current context. The 
-     * object may or may not correspond to a row in the database. 
-     * 
-     * @return If the object is null or can't be found in the database this 
-     * method returns null. Otherwise a PersistenceCapable representation of the
-     * object is returned.
-     */
-    protected PersistenceCapable findFromDatabase(Object pc) {
-        PersistenceCapable rval = null;
-
-        if (pc != null) {
-            Object oid = _broker.newObjectId(pc.getClass(),
-                    getDetachedObjectId(pc));
-
-            if (oid != null) {
-                rval = ImplHelper.toPersistenceCapable(_broker.find(oid, true,
-                        null), getBroker().getConfiguration());
-            }
-        }
-        return rval;
-    }
 }
