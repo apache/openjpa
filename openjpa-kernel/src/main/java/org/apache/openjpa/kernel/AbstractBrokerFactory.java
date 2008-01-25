@@ -148,7 +148,7 @@ public abstract class AbstractBrokerFactory
      */
     protected AbstractBrokerFactory(OpenJPAConfiguration config) {
         _conf = config;
-        _pcClassLoaders = new ReferenceHashSet(ReferenceHashSet.WEAK);
+        _pcClassLoaders = new ConcurrentReferenceHashSet(ReferenceHashSet.WEAK);
     }
 
     /**
@@ -280,15 +280,16 @@ public abstract class AbstractBrokerFactory
             if (clss.isEmpty())
                 _pcClassNames = Collections.EMPTY_SET;
             else {
-                _pcClassNames = new ConcurrentReferenceHashSet(
+                Collection c = new ConcurrentReferenceHashSet(
                     ConcurrentReferenceHashSet.HARD);
                 for (Iterator itr = clss.iterator(); itr.hasNext();) {
                     Class cls = (Class) itr.next();
-                    _pcClassNames.add(cls.getName());
+                    c.add(cls.getName());
                     if (needsSub(cls))
                         toRedefine.add(cls);
                 }
                 _pcClassLoaders.add(loader);
+                _pcClassNames = c;
             }
             _persistentTypesLoaded = true;
         } else {
