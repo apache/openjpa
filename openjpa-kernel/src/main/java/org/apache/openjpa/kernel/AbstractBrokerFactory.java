@@ -260,7 +260,7 @@ public abstract class AbstractBrokerFactory
                     ConcurrentReferenceHashSet.HARD);
                 for (Iterator itr = clss.iterator(); itr.hasNext();) {
                     Class cls = (Class) itr.next();
-                    _pcClassNames.add(cls.getName());
+                    c.add(cls.getName());
                     if (needsSub(cls))
                         toRedefine.add(cls);
                 }
