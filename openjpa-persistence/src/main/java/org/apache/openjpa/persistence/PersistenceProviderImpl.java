@@ -71,7 +71,7 @@ public class PersistenceProviderImpl
      */
     public OpenJPAEntityManagerFactory createEntityManagerFactory(String name,
         String resource, Map m) {
-        PersistenceProductDerivation pd = newPersistenceProductDerivation();
+        PersistenceProductDerivation pd = new PersistenceProductDerivation();
         try {
             Object poolValue = Configurations.removeProperty(EMF_POOL, m);
             ConfigurationProvider cp = pd.load(resource, name, m);
@@ -99,7 +99,7 @@ public class PersistenceProviderImpl
         }
         
         if (poolValue == null || !((Boolean) poolValue).booleanValue())
-            return newBrokerFactory(cp, loader);
+            return Bootstrap.newBrokerFactory(cp, loader);
         else
             return Bootstrap.getBrokerFactory(cp, loader);
     }
@@ -199,19 +199,4 @@ public class PersistenceProviderImpl
             return _trans.transform(cl, name, previousVersion, pd, bytes);
         }
 	}
-
-    /**
-     * Return a persistence product deviration with default setting.
-     */
-    public PersistenceProductDerivation newPersistenceProductDerivation() {
-        return new PersistenceProductDerivation();
-    }
-
-    /**
-     * Return a broker factory for the given configuration and class loader.
-     */
-    public BrokerFactory newBrokerFactory(ConfigurationProvider cp,
-        ClassLoader loader) {
-        return Bootstrap.newBrokerFactory(cp, loader);
-    }
 }

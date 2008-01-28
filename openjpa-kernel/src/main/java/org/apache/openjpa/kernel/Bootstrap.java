@@ -39,7 +39,7 @@ import org.apache.openjpa.util.UserException;
  */
 public class Bootstrap {
 
-    protected static final Class[] FACTORY_ARGS =
+    private static final Class[] FACTORY_ARGS =
         new Class[]{ ConfigurationProvider.class };
 
     private static Localizer s_loc = Localizer.forPackage(Bootstrap.class);
@@ -124,7 +124,7 @@ public class Bootstrap {
         return (BrokerFactory) meth.invoke(null, new Object[]{ conf });
     }
 
-    protected static String getFactoryClassName(ConfigurationProvider conf,
+    private static String getFactoryClassName(ConfigurationProvider conf,
         ClassLoader loader) {
         try {
             return getFactoryClass(conf, loader).getName();

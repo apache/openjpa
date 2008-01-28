@@ -3001,7 +3001,7 @@ public class StateManagerImpl
     /**
      * Mark the field as loaded or unloaded.
      */
-    public void setLoaded(int field, boolean isLoaded) {
+    private void setLoaded(int field, boolean isLoaded) {
         // don't continue if loaded state is already correct; otherwise we
         // can end up clearing _fieldImpl when we shouldn't
         if (_loaded.get(field) == isLoaded)
