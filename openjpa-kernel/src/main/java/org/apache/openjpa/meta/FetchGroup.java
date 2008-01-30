@@ -190,7 +190,7 @@ public class FetchGroup
      * @see #addDeclaredInclude(String) 
      * 
      * @return true if given parent is a new addition. false othrwise.
-     * @since 1.1.1   
+     * @since 1.1.0
      */
     public boolean addContainedBy(FetchGroup parent) {
     	parent.addDeclaredInclude(this.getName());
@@ -204,7 +204,7 @@ public class FetchGroup
      * included.
      * 
      * @see #addContainedBy(FetchGroup)
-     * @since 1.1.1   
+     * @since 1.1.0
      */
     public Set getContainedBy() {
     	return (_containedBy == null) ? Collections.EMPTY_SET :
