@@ -1660,8 +1660,13 @@ public class DBDictionary
      */
     protected String insertSize(String typeName, String size) {
     	if(StringUtils.isEmpty(size)) { 
-	    	return typeName;
-    	}
+
+          int idx = typeName.indexOf("{0}");
+          if (idx != -1) {
+            return typeName.substring(0,idx);
+	  }
+	  return typeName;
+      	}
     	
         int idx = typeName.indexOf("{0}");
         if (idx != -1) {
