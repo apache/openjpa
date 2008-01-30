@@ -1659,14 +1659,13 @@ public class DBDictionary
      *                  size clause will be inserted appropriately.   
      */
     protected String insertSize(String typeName, String size) {
-    	if(StringUtils.isEmpty(size)) { 
-
-          int idx = typeName.indexOf("{0}");
-          if (idx != -1) {
-            return typeName.substring(0,idx);
-	  }
-	  return typeName;
-      	}
+    	if (StringUtils.isEmpty(size)) {
+            int idx = typeName.indexOf("{0}");
+            if (idx != -1) {
+                return typeName.substring(0, idx);
+            }
+            return typeName;
+        }
     	
         int idx = typeName.indexOf("{0}");
         if (idx != -1) {
