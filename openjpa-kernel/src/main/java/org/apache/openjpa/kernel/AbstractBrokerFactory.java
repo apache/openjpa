@@ -256,8 +256,7 @@ public abstract class AbstractBrokerFactory
             if (clss.isEmpty())
                 _pcClassNames = Collections.EMPTY_SET;
             else {
-                Collection c = new ConcurrentReferenceHashSet(
-                    ConcurrentReferenceHashSet.HARD);
+                Collection c = new ArrayList(clss.size());
                 for (Iterator itr = clss.iterator(); itr.hasNext();) {
                     Class cls = (Class) itr.next();
                     c.add(cls.getName());
