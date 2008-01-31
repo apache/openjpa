@@ -47,7 +47,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
-import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.ClassArgParser;
@@ -65,6 +64,8 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.util.BigDecimalId;
+import org.apache.openjpa.util.BigIntegerId;
 import org.apache.openjpa.util.ByteId;
 import org.apache.openjpa.util.CharId;
 import org.apache.openjpa.util.DateId;
@@ -2070,6 +2071,18 @@ public class PCEnhancer {
                     code.checkcast().setType(StringId.class);
                     code.invokevirtual().setMethod(StringId.class, "getId",
                         String.class, null);
+                    break;
+                case JavaTypes.BIGDECIMAL:
+                    code.aload().setLocal(oid);
+                    code.checkcast().setType(BigDecimalId.class);
+                    code.invokevirtual().setMethod(BigDecimalId.class, "getId",
+                        BigDecimalId.class, null);
+                    break;
+                case JavaTypes.BIGINTEGER:
+                    code.aload().setLocal(oid);
+                    code.checkcast().setType(BigIntegerId.class);
+                    code.invokevirtual().setMethod(BigIntegerId.class, "getId",
+                        BigIntegerId.class, null);
                     break;
                 default:
                     code.aload().setLocal(oid);
