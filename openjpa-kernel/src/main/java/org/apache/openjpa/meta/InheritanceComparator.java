@@ -75,7 +75,13 @@ public class InheritanceComparator
                 return 1;
             return c1.getName().compareTo(c2.getName());
         }
-        return i1 - i2;
+        int diff = i1 - i2;
+        if (diff < 0)
+            return -1;
+        else if (diff > 0)
+            return 1;
+        else
+            return 0;
     }
 
     /**
