@@ -383,6 +383,13 @@ public class JPQLExpressionBuilder
 
         JPQLNode selectNode = root();
 
+        JPQLNode selectClause = selectNode.
+            findChildByID(JJTSELECTCLAUSE, false);
+        if (selectClause != null && selectClause.hasChildID(JJTDISTINCT))
+            exps.distinct = exps.DISTINCT_TRUE | exps.DISTINCT_AUTO;
+        else
+            exps.distinct = exps.DISTINCT_FALSE;
+
         JPQLNode constructor = selectNode.findChildByID(JJTCONSTRUCTOR, true);
         if (constructor != null) {
             // build up the fully-qualified result class name by
@@ -391,16 +398,8 @@ public class JPQLExpressionBuilder
             exps.resultClass = resolver.classForName(resultClassName, null);
 
             // now assign the arguments to the select clause as the projections
-            exps.distinct = exps.DISTINCT_FALSE;
             return assignProjections(right(constructor), exps);
         } else {
-            JPQLNode selectClause = selectNode.
-                findChildByID(JJTSELECTCLAUSE, false);
-            if (selectClause != null && selectClause.hasChildID(JJTDISTINCT))
-                exps.distinct = exps.DISTINCT_TRUE | exps.DISTINCT_AUTO;
-            else
-                exps.distinct = exps.DISTINCT_FALSE;
-
             // handle SELECT clauses
             JPQLNode expNode = selectNode.
                 findChildByID(JJTSELECTEXPRESSIONS, true);
