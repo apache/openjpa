@@ -21,10 +21,12 @@ package org.apache.openjpa.meta;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.apache.openjpa.meta.C;
 
 @Entity
+@Table(name="meta_B")
 public class B extends AbstractThing {
     private Set<C> cs;
     private Set<A> as;

@@ -30,11 +30,10 @@ import java.util.Comparator;
 public class InheritanceComparator
     implements Comparator, Serializable {
 
-    private Class _base = Object.class;
+    private Class _base = null;
 
     /**
-     * Set the least-derived type possible; defaults to
-     * <code>Object.class</code>.
+     * Set the least-derived type possible; defaults to <code>null</code>.
      */
     public void setBase(Class base) {
         _base = base;
@@ -75,10 +74,9 @@ public class InheritanceComparator
                 return 1;
             return c1.getName().compareTo(c2.getName());
         }
-        int diff = i1 - i2;
-        if (diff < 0)
+        if (i1 < i2)
             return -1;
-        else if (diff > 0)
+        else if (i1 > i2)
             return 1;
         else
             return 0;
@@ -90,6 +88,8 @@ public class InheritanceComparator
     private int levels(Class to) {
         if (to.isInterface())
             return to.getInterfaces().length;
+        if (_base == null)
+            return 0;
         for (int i = 0; to != null; i++, to = to.getSuperclass())
             if (to == _base)
                 return i;

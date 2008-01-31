@@ -23,11 +23,13 @@ import javax.persistence.IdClass;
 import javax.persistence.ManyToOne;
 import javax.persistence.Column;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.apache.openjpa.meta.C.Identity;
 
 @Entity
 @IdClass(Identity.class)
+@Table(name="meta_C")
 public class C {
     private A a;
     private B b;

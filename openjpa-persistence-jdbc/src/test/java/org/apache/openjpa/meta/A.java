@@ -19,8 +19,10 @@
 package org.apache.openjpa.meta;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="meta_A")
 public class A extends AbstractThing {
 
 }
