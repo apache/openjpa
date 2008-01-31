@@ -112,27 +112,62 @@ public class Reflection {
      * Invokes <code>cls.getDeclaredMethods()</code>, and returns the method
      * that matches the <code>name</code> and <code>param</code> arguments.
      * Avoids the exception thrown by <code>Class.getDeclaredMethod()</code>
-     * for performance reasons. <code>param</code> may be null.
+     * for performance reasons. <code>param</code> may be null. Additionally,
+     * if there are multiple methods with different return types, this will
+     * return the method defined in the least-derived class.
      *
      * @since 0.9.8
      */
-    private static Method getDeclaredMethod(Class cls, String name,
+    static Method getDeclaredMethod(Class cls, String name,
         Class param) {
         Method[] methods = (Method[]) AccessController.doPrivileged(
             J2DoPrivHelper.getDeclaredMethodsAction(cls));
+        Method candidate = null;
         for (int i = 0 ; i < methods.length; i++) {
     	    if (name.equals(methods[i].getName())) {
                 Class[] methodParams = methods[i].getParameterTypes();
                 if (param == null && methodParams.length == 0)
-                    return methods[i];
-                if (param != null && methodParams.length == 1
+                    candidate = mostDerived(methods[i], candidate);
+                else if (param != null && methodParams.length == 1
                     && param.equals(methodParams[0]))
-                    return methods[i];
+                    candidate = mostDerived(methods[i], candidate);
             }
         }
-        return null;
+        return candidate;
     }
-    
+
+    static Method mostDerived(Method meth1, Method meth2) {
+        if (meth1 == null)
+            return meth2;
+        if (meth2 == null)
+            return meth1;
+        
+        Class cls2 = meth2.getDeclaringClass();
+        Class cls1 = meth1.getDeclaringClass();
+
+        if (cls1.equals(cls2)) {
+            Class ret1 = meth1.getReturnType();
+            Class ret2 = meth2.getReturnType();
+            if (ret1.isAssignableFrom(ret2))
+                return meth2;
+            else if (ret2.isAssignableFrom(ret1))
+                return meth1;
+            else
+                throw new IllegalArgumentException(
+                    _loc.get("most-derived-unrelated-same-type", meth1, meth2)
+                        .getMessage());
+        } else {
+            if (cls1.isAssignableFrom(cls2))
+                return meth2;
+            else if (cls2.isAssignableFrom(cls1))
+                return meth1;
+            else
+                throw new IllegalArgumentException(
+                    _loc.get("most-derived-unrelated", meth1, meth2)
+                        .getMessage());
+        }
+    }
+
     /**
      * Return the field with the given name, optionally throwing an exception
      * if none.
