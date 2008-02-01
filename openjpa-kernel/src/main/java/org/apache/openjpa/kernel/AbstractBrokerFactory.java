@@ -147,7 +147,8 @@ public abstract class AbstractBrokerFactory
      */
     protected AbstractBrokerFactory(OpenJPAConfiguration config) {
         _conf = config;
-        getPcClassLoaders();
+        _pcClassLoaders = new ConcurrentReferenceHashSet(
+            ConcurrentReferenceHashSet.WEAK);
     }
 
     /**
@@ -286,13 +287,13 @@ public abstract class AbstractBrokerFactory
                     if (needsSub(cls))
                         toRedefine.add(cls);
                 }
-                getPcClassLoaders().add(loader);
+                _pcClassLoaders.add(loader);
                 _pcClassNames = c;
             }
             _persistentTypesLoaded = true;
         } else {
             // reload with this loader
-            if (getPcClassLoaders().add(loader)) {
+            if (_pcClassLoaders.add(loader)) {
                 for (Iterator itr = _pcClassNames.iterator(); itr.hasNext();) {
                     try {
                         Class cls =
@@ -817,15 +818,4 @@ public abstract class AbstractBrokerFactory
             _transactional.remove (_trans);
 		}
 	}
-   
-   /**
-    * Method insures that deserialized EMF has this reference re-instantiated
-    */
-   private Collection getPcClassLoaders() {
-      if (_pcClassLoaders == null)
-        _pcClassLoaders = new ConcurrentReferenceHashSet(
-            ConcurrentReferenceHashSet.WEAK);
-         
-      return _pcClassLoaders;
-   }
 }
