@@ -58,6 +58,11 @@ public abstract class SingleEMFTestCase
 
         try {
             clear(emf);
+        } catch (Exception e) {
+            // if a test failed, swallow any exceptions that happen
+            // during tear-down, as these just mask the original problem.
+            if (testResult.wasSuccessful())
+                throw e;
         } finally {
             closeEMF(emf);
         }

@@ -24,27 +24,52 @@ import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Version;
-
+import javax.persistence.PreRemove;
+import javax.persistence.PostRemove;
+import javax.persistence.PostUpdate;
+import javax.persistence.PostPersist;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Transient;
 
 @Entity
 public class ExceptionsFromCallbacksEntity {
-    @Id private long id;
+    @Id @GeneratedValue private long id;
     @Version private int version;
-    private boolean throwOnPrePersist;
-    private boolean throwOnPreUpdate;
+    @Transient private boolean throwOnPrePersist;
+    @Transient private boolean throwOnPostPersist;
+    @Transient private boolean throwOnPreUpdate;
+    @Transient private boolean throwOnPostUpdate;
     private boolean throwOnPostLoad;
+    @Transient private boolean throwOnPreRemove;
+    @Transient private boolean throwOnPostRemove;
     private String stringField;
-    
+
     public void setThrowOnPrePersist(boolean b) {
         throwOnPrePersist = b;
+    }
+
+    public void setThrowOnPostPersist(boolean b) {
+        throwOnPostPersist = b;
+    }
+
+    public void setThrowOnPreUpdate(boolean b) {
+        throwOnPreUpdate = b;
+    }
+
+    public void setThrowOnPostUpdate(boolean b) {
+        throwOnPostUpdate = b;
     }
 
     public void setThrowOnPostLoad(boolean b) {
         throwOnPostLoad = b;
     }
 
-    public void setThrowOnPreUpdate(boolean b) {
-        throwOnPreUpdate = b;
+    public void setThrowOnPreRemove(boolean b) {
+        throwOnPreRemove = b;
+    }
+
+    public void setThrowOnPostRemove(boolean b) {
+        throwOnPostRemove = b;
     }
 
     public void setStringField(String s) {
@@ -57,18 +82,50 @@ public class ExceptionsFromCallbacksEntity {
             throw new CallbackTestException();
     }
 
+    @PostPersist
+    public void postPersist() {
+        if (throwOnPostPersist)
+            throw new CallbackTestException();
+    }
+
+    @PostLoad
+    public void postLoad() {
+        if (throwOnPostLoad && isInvokedFromTestMethod())
+            throw new CallbackTestException();
+    }
+
+    private boolean isInvokedFromTestMethod() {
+        return TestExceptionsFromCallbacks.testRunning;
+    }
+
     @PreUpdate
     public void preUpdate() {
         if (throwOnPreUpdate)
             throw new CallbackTestException();
     }
 
-    @PostLoad
-    public void postLoad() {
-        if (throwOnPostLoad)
+    @PostUpdate
+    public void postUpdate() {
+        if (throwOnPostUpdate)
             throw new CallbackTestException();
     }
-    
+
+    @PreRemove
+    public void preRemove() {
+        if (throwOnPreRemove && isInvokedFromTestMethod())
+            throw new CallbackTestException();
+    }
+
+    @PostRemove
+    public void postRemove() {
+        if (throwOnPostRemove && isInvokedFromTestMethod())
+            throw new CallbackTestException();
+    }
+
+    public Object getId() {
+        return id;
+    }
+
     public class CallbackTestException
         extends RuntimeException {
     }

@@ -29,6 +29,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import junit.framework.TestCase;
+import junit.framework.TestResult;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -46,6 +47,11 @@ public abstract class PersistenceTestCase
      * database tables should be cleared.
      */
     protected static final Object CLEAR_TABLES = new Object();
+
+    /**
+     * The {@link TestResult} instance for the current test run.
+     */
+    protected TestResult testResult;
 
     /**
      * Create an entity manager factory. Put {@link #CLEAR_TABLES} in
@@ -88,8 +94,22 @@ public abstract class PersistenceTestCase
             createEntityManagerFactory("test", map);
     }
 
+    @Override
+    public void run(TestResult testResult) {
+        this.testResult = testResult;
+        super.run(testResult);
+    }
+
+    @Override
     public void tearDown() throws Exception {
-        super.tearDown();
+        try {
+            super.tearDown();
+        } catch (Exception e) {
+            // if a test failed, swallow any exceptions that happen
+            // during tear-down, as these just mask the original problem.
+            if (testResult.wasSuccessful())
+                throw e;
+        }
     }
 
     /**

@@ -33,6 +33,7 @@ import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.OptimisticException;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.event.LifecycleEvent;
 
 /**
  * Handles attaching instances using version and primary key fields.
@@ -133,8 +134,13 @@ class VersionAttachStrategy
             return into;
         }
 
-        // invoke any preAttach on the detached instance
-        manager.fireBeforeAttach(toAttach, meta);
+        if (isNew) {
+            broker.fireLifecycleEvent(toAttach, null, meta,
+                LifecycleEvent.BEFORE_PERSIST);
+        } else {
+            // invoke any preAttach on the detached instance
+            manager.fireBeforeAttach(toAttach, meta);
+        }
 
         // assign the detached pc the same state manager as the object we're
         // copying into during the attach process

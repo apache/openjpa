@@ -264,7 +264,8 @@ public class BrokerImpl
         else
             _runtime = new LocalManagedRuntime(this);
 
-        _lifeEventManager = new LifecycleEventManager();
+        _lifeEventManager = new LifecycleEventManager(
+            _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME));
         _transEventManager = new TransactionEventManager();
         int cmode = _conf.getMetaDataRepositoryInstance().
             getMetaDataFactory().getDefaults().getCallbackMode();
