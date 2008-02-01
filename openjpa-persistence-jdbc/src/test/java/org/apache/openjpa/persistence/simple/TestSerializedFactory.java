@@ -67,9 +67,10 @@ public class TestSerializedFactory
         try {
             // use the deserialized entity manager factory
             assertTrue("The deserialized entity manager factory is not open",
-                emf2.isOpen());
+                    emf2.isOpen());
             EntityManager em = emf2.createEntityManager();
-            assertTrue("The newly created entity manager is not open", em.isOpen());
+            assertTrue("The newly created entity manager is not open", 
+                    em.isOpen());
     
             // exercise the entity manager produced from the deserialized EMF
             em.getTransaction().begin();
@@ -80,10 +81,12 @@ public class TestSerializedFactory
             em.close();
             assertFalse("The entity manager is not closed", em.isOpen());
             emf2.close();
-            assertFalse("The entity manager factory is not closed", emf2.isOpen());
+            assertFalse("The entity manager factory is not closed", 
+                    emf2.isOpen());
             
             // Correct the logic when EMF's are supposed to serialize
-            fail("This test is expected to fail until the issue of serializing an EMF is settled");
+            fail("This test is expected to fail until the issue of " +
+                    "serializing an EMF is settled");
          }
          catch (Exception e) {
             // failure is currently expected
