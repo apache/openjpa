@@ -29,6 +29,9 @@ import java.util.Map;
 
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataDefaults;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.InvalidStateException;
 
 /**
  * Manager that can be used to track and notify listeners on lifecycle events.
@@ -48,6 +51,9 @@ public class LifecycleEventManager
     implements CallbackModes, Serializable {
 
     private static final Exception[] EMPTY_EXCEPTIONS = new Exception[0];
+
+    private static final Localizer _loc = Localizer.forPackage(
+        LifecycleEventManager.class);
 
     private Map _classListeners = null; // class -> listener list
     private ListenerList _listeners = null;
@@ -133,7 +139,9 @@ public class LifecycleEventManager
      */
     public boolean hasPersistListeners(Object source, ClassMetaData meta) {
         return hasHandlers(source, meta, LifecycleEvent.BEFORE_PERSIST)
-            || hasHandlers(source, meta, LifecycleEvent.AFTER_PERSIST);
+            || hasHandlers(source, meta, LifecycleEvent.AFTER_PERSIST)
+            || hasHandlers(source, meta,
+                LifecycleEvent.AFTER_PERSIST_PERFORMED);
     }
 
     /**
@@ -141,7 +149,8 @@ public class LifecycleEventManager
      */
     public boolean hasDeleteListeners(Object source, ClassMetaData meta) {
         return hasHandlers(source, meta, LifecycleEvent.BEFORE_DELETE)
-            || hasHandlers(source, meta, LifecycleEvent.AFTER_DELETE);
+            || hasHandlers(source, meta, LifecycleEvent.AFTER_DELETE)
+            || hasHandlers(source, meta, LifecycleEvent.AFTER_DELETE_PERFORMED);
     }
 
     /**
@@ -165,6 +174,14 @@ public class LifecycleEventManager
     public boolean hasStoreListeners(Object source, ClassMetaData meta) {
         return hasHandlers(source, meta, LifecycleEvent.BEFORE_STORE)
             || hasHandlers(source, meta, LifecycleEvent.AFTER_STORE);
+    }
+
+    /**
+     * Return whether there are listeners or callbacks for the given source.
+     */
+    public boolean hasUpdateListeners(Object source, ClassMetaData meta) {
+        return hasHandlers(source, meta, LifecycleEvent.BEFORE_UPDATE)
+            || hasHandlers(source, meta, LifecycleEvent.AFTER_UPDATE_PERFORMED);
     }
 
     /**
@@ -471,6 +488,10 @@ public class LifecycleEventManager
                                 ((AttachListener) listener).afterAttach(ev);
                         }
                         break;
+                    default:
+                        throw new InvalidStateException(
+                            _loc.get("unknown-lifecycle-event",
+                                Integer.toString(type)));
                 }
             }
             catch (Exception e) {

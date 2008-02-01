@@ -42,6 +42,12 @@ public class LifecycleEvent
     public static final int AFTER_PERSIST = 1;
 
     /**
+     * Event type when an instance is made persistent, after the record has
+     * been written to the store
+     */
+    public static final int AFTER_PERSIST_PERFORMED = 18;
+
+    /**
      * Event type when an instance is loaded.
      */
     public static final int AFTER_LOAD = 2;
@@ -75,6 +81,12 @@ public class LifecycleEvent
      * Event type when an instance is deleted.
      */
     public static final int AFTER_DELETE = 8;
+
+    /**
+     * Event type when an instance is deleted, after the record has been
+     * deleted from the store.
+     */
+    public static final int AFTER_DELETE_PERFORMED = 19;
 
     /**
      * Event type when an instance is dirtied for the first time.
@@ -122,11 +134,25 @@ public class LifecycleEvent
     public static final int AFTER_REFRESH = 17;
 
     /**
+     * Event type when an instance is modified. This is not invoked for
+     * PNEW records, but is invoked for PNEWFLUSHED.
+     */
+    public static final int BEFORE_UPDATE = 20;
+
+    /**
+     * Event type when an instance is modified, after the change has been
+     * sent to the store. This is not invoked for PNEW records, but is
+     * invoked for PNEWFLUSHED records.
+     */
+    public static final int AFTER_UPDATE_PERFORMED = 21;
+
+    /**
      * Convenience array of all event types.
      */
     public static final int[] ALL_EVENTS = new int[]{
         BEFORE_PERSIST,
         AFTER_PERSIST,
+        AFTER_PERSIST_PERFORMED,
         AFTER_LOAD,
         BEFORE_STORE,
         AFTER_STORE,
@@ -134,6 +160,7 @@ public class LifecycleEvent
         AFTER_CLEAR,
         BEFORE_DELETE,
         AFTER_DELETE,
+        AFTER_DELETE_PERFORMED,
         BEFORE_DIRTY,
         AFTER_DIRTY,
         BEFORE_DIRTY_FLUSHED,
@@ -143,6 +170,8 @@ public class LifecycleEvent
         BEFORE_ATTACH,
         AFTER_ATTACH,
         AFTER_REFRESH,
+        BEFORE_UPDATE,
+        AFTER_UPDATE_PERFORMED,
     };
 
     private final int _type;

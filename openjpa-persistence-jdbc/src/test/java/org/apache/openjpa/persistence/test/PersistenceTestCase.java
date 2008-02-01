@@ -51,7 +51,7 @@ public abstract class PersistenceTestCase
     /**
      * The {@link TestResult} instance for the current test run.
      */
-    private TestResult testResult;
+    protected TestResult testResult;
 
     /**
      * Create an entity manager factory. Put {@link #CLEAR_TABLES} in

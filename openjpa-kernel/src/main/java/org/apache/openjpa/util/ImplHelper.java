@@ -168,9 +168,9 @@ public class ImplHelper {
         }
     }
 
-    /** 
-     * Returns the fields of the state that require an update. 
-     *  
+    /**
+     * Returns the fields of the state that require an update.
+     *
      * @param  sm  the state to check
      * @return the BitSet of fields that need update, or null if none
      */

@@ -47,15 +47,15 @@ class MetaDataParsers {
             case PRE_PERSIST:
                 return new int[]{ LifecycleEvent.BEFORE_PERSIST };
             case POST_PERSIST:
-                return new int[]{ LifecycleEvent.AFTER_PERSIST };
+                return new int[]{ LifecycleEvent.AFTER_PERSIST_PERFORMED };
             case PRE_REMOVE:
                 return new int[]{ LifecycleEvent.BEFORE_DELETE };
             case POST_REMOVE:
-                return new int[]{ LifecycleEvent.AFTER_DELETE };
+                return new int[]{ LifecycleEvent.AFTER_DELETE_PERFORMED };
             case PRE_UPDATE:
-                return new int[]{ LifecycleEvent.BEFORE_STORE };
+                return new int[]{ LifecycleEvent.BEFORE_UPDATE };
             case POST_UPDATE:
-                return new int[]{ LifecycleEvent.AFTER_STORE };
+                return new int[]{ LifecycleEvent.AFTER_UPDATE_PERFORMED };
             case POST_LOAD:
                 return new int[]{ LifecycleEvent.AFTER_LOAD,
                     LifecycleEvent.AFTER_REFRESH };
