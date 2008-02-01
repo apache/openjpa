@@ -268,7 +268,10 @@ abstract class AttachStrategy
         OpenJPAStateManager sm, ValueMetaData vmd) {
         if (toAttach == null)
             return null;
-        if (manager.getBroker().isDetached(toAttach)) {
+
+        if (manager.getBroker().isPersistent(toAttach)) {
+            return toAttach;
+        } else if (manager.getBroker().isDetached(toAttach)) {
             Object oid = manager.getDetachedObjectId(toAttach);
             if (oid != null)
                 return manager.getBroker().find(oid, false, null);
