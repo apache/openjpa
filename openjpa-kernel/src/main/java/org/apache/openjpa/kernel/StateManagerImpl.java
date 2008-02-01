@@ -2778,7 +2778,7 @@ public class StateManagerImpl
             // BEFORE_PERSIST is handled during Broker.persist and Broker.attach
             if (isDeleted())
                 fireLifecycleEvent(LifecycleEvent.BEFORE_DELETE);
-            else 
+            else if (!(isNew() && !isFlushed()))
                 fireLifecycleEvent(LifecycleEvent.BEFORE_UPDATE);
             _flags |= FLAG_PRE_FLUSHED;
         }
