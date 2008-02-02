@@ -300,8 +300,8 @@ public class SelectConstructor {
         }
 
         // add conditions limiting the projections to the proper classes; if
-        // this isn't a projection then they will already be added
-        if (exps.projections.length > 0) {
+        // this isn't a projection or a subq then they will already be added
+        if (exps.projections.length > 0 || sel.getParent() != null) {
             ctx.store.loadSubclasses(mapping);
             mapping.getDiscriminator().addClassConditions((inner != null) 
                 ? inner : sel, subclasses, joins);
