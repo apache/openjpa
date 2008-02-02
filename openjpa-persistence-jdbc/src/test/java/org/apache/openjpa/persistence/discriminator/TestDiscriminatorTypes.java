@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.persistence.discriminator;
 
+import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
@@ -32,7 +34,7 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
                 CharRootEntity.class, IntegerAbstractEntity.class,
                 IntegerLeafEntity.class, IntegerRootEntity.class,
                 StringAbstractEntity.class, StringLeafEntity.class,
-                StringRootEntity.class);
+                StringRootEntity.class, CLEAR_TABLES, "openjpa.Log", "SQL=TRACE");
     }
 
     public void testCharDiscriminators() {
@@ -142,6 +144,35 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
         
         assertNotNull(leaf2);
         assertNotNull(root2);
+        em.close();
+    }
+
+    public void testExistsQuery() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        StringRootEntity e = new StringRootEntity();
+        e.setName("foo");
+        em.persist(e);
+
+        e = new StringRootEntity();
+        e.setName("foo");
+        em.persist(e);
+
+        e = new StringRootEntity();
+        e.setName("bar");
+        em.persist(e);
+
+        em.getTransaction().commit();
+        em.close();
+
+        em = emf.createEntityManager();
+        Query q = em.createQuery("select o from StringAbstractEntity o " +
+            "where exists (select o2 from StringLeafEntity o2)");
+        List<StringAbstractEntity> list = q.getResultList();
+        assertEquals(0, list.size());
+        for (StringAbstractEntity entity : list)
+            assertTrue(entity instanceof StringLeafEntity);
         em.close();
     }
 }
