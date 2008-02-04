@@ -22,7 +22,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -34,7 +33,7 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
                 CharRootEntity.class, IntegerAbstractEntity.class,
                 IntegerLeafEntity.class, IntegerRootEntity.class,
                 StringAbstractEntity.class, StringLeafEntity.class,
-                StringRootEntity.class, CLEAR_TABLES, "openjpa.Log", "SQL=TRACE");
+                StringRootEntity.class, CLEAR_TABLES);
     }
 
     public void testCharDiscriminators() {
