@@ -488,6 +488,42 @@ public class LifecycleEventManager
                                 ((AttachListener) listener).afterAttach(ev);
                         }
                         break;
+
+                    case LifecycleEvent.AFTER_PERSIST_PERFORMED:
+                        if (responds || listener instanceof PostPersistListener)
+                        {
+                            if (mock)
+                                return Boolean.TRUE;
+                            if (ev == null)
+                                ev = new LifecycleEvent(source, rel, type);
+                            ((PostPersistListener) listener)
+                                .afterPersistPerformed(ev);
+                        }
+                        break;
+                    case LifecycleEvent.BEFORE_UPDATE:
+                    case LifecycleEvent.AFTER_UPDATE_PERFORMED:
+                        if (responds || listener instanceof UpdateListener) {
+                            if (mock)
+                                return Boolean.TRUE;
+                            if (ev == null)
+                                ev = new LifecycleEvent(source, rel, type);
+                            if (type == LifecycleEvent.BEFORE_UPDATE)
+                                ((UpdateListener) listener).beforeUpdate(ev);
+                            else
+                                ((UpdateListener) listener)
+                                    .afterUpdatePerformed(ev);
+                        }
+                        break;
+                    case LifecycleEvent.AFTER_DELETE_PERFORMED:
+                        if (responds || listener instanceof PostDeleteListener){
+                            if (mock)
+                                return Boolean.TRUE;
+                            if (ev == null)
+                                ev = new LifecycleEvent(source, rel, type);
+                            ((PostDeleteListener) listener)
+                                .afterDeletePerformed(ev);
+                        }
+                        break;
                     default:
                         throw new InvalidStateException(
                             _loc.get("unknown-lifecycle-event",
