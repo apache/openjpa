@@ -114,10 +114,8 @@ public abstract class AbstractBrokerFactory
      * @since 1.1.0
      */
     protected static Object toPoolKey(Map map) {
-        if (Configurations.getProperty("Id", map) != null)
-            return Configurations.getProperty("Id", map);
-        else
-            return map;
+        Object key = Configurations.getProperty("Id", map);
+        return ( key != null) ? key : map;
     }
 
     /**
