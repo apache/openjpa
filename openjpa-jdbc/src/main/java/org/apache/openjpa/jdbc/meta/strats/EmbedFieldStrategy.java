@@ -165,7 +165,8 @@ public class EmbedFieldStrategy
         FieldMapping[] fields = field.getEmbeddedMapping().getFieldMappings();
         for (int i = 0; i < fields.length; i++)
             if (!Boolean.TRUE.equals(fields[i].isCustomInsert(em, store)))
-                fields[i].insert(em, store, rm);
+                if (!fields[i].isPrimaryKey())
+                    fields[i].insert(em, store, rm);
 
         if (field.getColumnIO().isInsertable(0, true))
             setNullIndicatorColumn(sm, row);
