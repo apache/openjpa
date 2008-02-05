@@ -49,6 +49,7 @@ import org.apache.openjpa.util.MultiLoaderClassResolver;
  * <li><code>file</code></li>
  * <li><code>schemaFile</code></li>
  * <li><code>sqlFile</code></li>
+ * <li><code>tmpClassLoader</code></li>
  * </ul> Of these arguments, only <code>action</code> is required.
  */
 public class MappingToolTask
@@ -61,6 +62,7 @@ public class MappingToolTask
     protected String file = null;
     protected String schemaFile = null;
     protected String sqlFile = null;
+    protected boolean tmpClassLoader = true;
 
     /**
      * Set the enumerated MappingTool action type.
@@ -176,21 +178,27 @@ public class MappingToolTask
         if (MappingTool.ACTION_IMPORT.equals(flags.action))
             assertFiles(files);
 
-        ClassLoader loader =
-            (ClassLoader) AccessController.doPrivileged(J2DoPrivHelper
+        ClassLoader toolLoader = (ClassLoader) AccessController
+                .doPrivileged(J2DoPrivHelper
+                        .getClassLoaderAction(MappingTool.class));
+        ClassLoader loader = toolLoader;
+        MultiLoaderClassResolver resolver = new MultiLoaderClassResolver();
+
+        if (tmpClassLoader) {
+            loader = (ClassLoader) AccessController.doPrivileged(J2DoPrivHelper
                     .newTemporaryClassLoaderAction(getClassLoader()));
-        
+            resolver.addClassLoader(loader);
+        }
+        resolver.addClassLoader(toolLoader);
+            
         if (flags.meta && MappingTool.ACTION_ADD.equals(flags.action))
             flags.metaDataFile = Files.getFile(file, loader);
         else
             flags.mappingWriter = Files.getWriter(file, loader);
+
         flags.schemaWriter = Files.getWriter(schemaFile, loader);
         flags.sqlWriter = Files.getWriter(sqlFile, loader);
 
-        MultiLoaderClassResolver resolver = new MultiLoaderClassResolver();
-        resolver.addClassLoader(loader);
-        resolver.addClassLoader((ClassLoader) AccessController.doPrivileged(
-            J2DoPrivHelper.getClassLoaderAction(MappingTool.class)));
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         conf.setClassResolver(resolver);
         
@@ -217,6 +225,19 @@ public class MappingToolTask
             actions[actions.length - 1] = "none";
             return actions;
         }
+    }
+
+    /**
+     * <P>
+     * Set whether a temporary ClassLoader should be used by the MappingTool.
+     * The default value is true
+     * </P>
+     * 
+     * @param tmpClassLoader
+     *            Whether the temporary ClassLoader should be used.
+     */
+    public void setTmpClassLoader(boolean tmpClassLoader) {
+        this.tmpClassLoader = tmpClassLoader;
     }
 }
 
