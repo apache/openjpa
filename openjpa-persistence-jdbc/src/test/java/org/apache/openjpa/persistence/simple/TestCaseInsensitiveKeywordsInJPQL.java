@@ -27,7 +27,8 @@ public class TestCaseInsensitiveKeywordsInJPQL
     extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(AllFieldTypes.class);
+        // expecting only data that is inserted in this test case
+        setUp(AllFieldTypes.class, CLEAR_TABLES);
     }
 
     public void testCaseInsensitiveBooleans() {

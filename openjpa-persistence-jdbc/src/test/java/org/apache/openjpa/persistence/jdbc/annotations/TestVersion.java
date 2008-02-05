@@ -88,6 +88,15 @@ public class TestVersion extends SingleEMFTestCase {
     }
 
     public void testVersionTimestamp() {
+        // ensure that some time has passed
+        // since the records were created
+        try {
+            Thread.sleep(50);
+        }
+        catch (InterruptedException e) {
+            // do nothing
+        }
+        
         EntityManager em1 = emf.createEntityManager();
         em1.getTransaction().begin();
         EntityManager em2 = emf.createEntityManager();
@@ -107,7 +116,9 @@ public class TestVersion extends SingleEMFTestCase {
         em1 = emf.createEntityManager();
         pc1 = em1.find(AnnoTest2.class,
             new AnnoTest2.Oid(5, "bar"));
-        assertTrue(pc1.getVersion().compareTo(pc2.getVersion()) > 0);
+        java.util.Date pc1Version = pc1.getVersion();
+        java.util.Date pc2Version = pc2.getVersion();
+        assertTrue(pc1Version.compareTo(pc2Version) > 0);
         em1.close();
         try {
             em2.getTransaction().commit();
