@@ -138,10 +138,20 @@ public abstract class PersistenceTestCase
      * Safely close the given factory.
      */
     protected boolean closeEMF(EntityManagerFactory emf) {
-        if (emf == null)
+        if (emf == null || !emf.isOpen())
             return false;
-        if (!emf.isOpen())
-            return false;
+        
+        closeAllOpenEMs(emf);
+        emf.close();
+        return !emf.isOpen();
+    }
+
+    /**
+     * Closes all open entity managers after first rolling back any open transactions
+     */
+    protected void closeAllOpenEMs(EntityManagerFactory emf) {
+        if (emf == null || !emf.isOpen())
+            return;
 
         for (Iterator iter = ((AbstractBrokerFactory) JPAFacadeHelper
             .toBrokerFactory(emf)).getOpenBrokers().iterator();
@@ -154,13 +164,11 @@ public abstract class PersistenceTestCase
                 em.close();
             }
         }
-
-        emf.close();
-        return !emf.isOpen();
     }
 
     /**
-     * Delete all instances of the given types using bulk delete queries.
+     * Delete all instances of the given types using bulk delete queries,
+     * but do not close any open entity managers.
      */
     protected void clear(EntityManagerFactory emf, Class... types) {
         if (emf == null || types.length == 0)
@@ -172,26 +180,34 @@ public abstract class PersistenceTestCase
             if (meta != null)
                 metas.add(meta);
         }
-        clear(emf, metas.toArray(new ClassMetaData[metas.size()]));
+        clear(emf, false, metas.toArray(new ClassMetaData[metas.size()]));
     }
 
     /**
      * Delete all instances of the persistent types registered with the given
-     * factory using bulk delete queries.
+     * factory using bulk delete queries, after first closing all open entity
+     * managers (and rolling back any open transactions).
      */
     protected void clear(EntityManagerFactory emf) {
         if (emf == null)
             return;
-        clear(emf, ((OpenJPAEntityManagerFactorySPI) emf).getConfiguration().
+        clear(emf, true, ((OpenJPAEntityManagerFactorySPI) emf).getConfiguration().
             getMetaDataRepositoryInstance().getMetaDatas());
     }
 
     /**
      * Delete all instances of the given types using bulk delete queries.
+     * @param closeEMs TODO
      */
-    private void clear(EntityManagerFactory emf, ClassMetaData... types) {
+    private void clear(EntityManagerFactory emf, boolean closeEMs, ClassMetaData... types) {
         if (emf == null || types.length == 0)
             return;
+        
+        // prevent deadlock by closing the open entity managers 
+        // and rolling back any open transactions 
+        // before issuing delete statements on a new entity manager.
+        if (closeEMs)
+            closeAllOpenEMs(emf);
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
