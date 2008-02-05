@@ -34,6 +34,10 @@
     </parent>
     <properties>
         <openjpa.loglevel>INFO</openjpa.loglevel>
+        <!-- to set debug arguments, you might set the following at the command line:
+            -Dtest.jvm.arguments="-Xmx500m -agentlib:jdwp=transport=dt_socket,server=y,address=8000"
+        -->
+        <test.jvm.arguments>-Xmx500m</test.jvm.arguments>
     </properties>
     <profiles>
 
@@ -321,7 +325,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>-Xmx500m</argLine>
+                    <argLine>${test.jvm.arguments}</argLine>
                     <systemProperties>
                         <property>
                             <name>openjpa.Log</name>
