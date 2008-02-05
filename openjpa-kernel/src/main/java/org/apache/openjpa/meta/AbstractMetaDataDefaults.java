@@ -269,7 +269,7 @@ public abstract class AbstractMetaDataDefaults
      * Returns ACCESS_FIELD by default.
      */
     protected int getAccessType(ClassMetaData meta) {
-        return ClassMetaData.ACCESS_FIELD;
+            return ClassMetaData.ACCESS_FIELD;
     }
 
     /**

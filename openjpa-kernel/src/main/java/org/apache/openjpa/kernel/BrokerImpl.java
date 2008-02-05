@@ -4160,6 +4160,12 @@ public class BrokerImpl
             } catch (Throwable t) {
             }
         }
+
+        if (_conf.getMetaDataRepositoryInstance().getMetaData(cls,
+            getClassLoader(), false) == null)
+            throw new IllegalArgumentException(
+                _loc.get("no-interface-metadata", cls.getName()).getMessage());
+
         try {
             return PCRegistry.newInstance(cls, null, false);
         } catch (IllegalStateException ise) {

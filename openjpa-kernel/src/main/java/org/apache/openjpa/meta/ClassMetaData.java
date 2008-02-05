@@ -737,6 +737,9 @@ public class ClassMetaData
         // the implementations.
         if (isManagedInterface())
             setIntercepting(true);
+
+        // managed interfaces always use property access.
+        setAccessType(ACCESS_PROPERTY);
     }
 
     /**
