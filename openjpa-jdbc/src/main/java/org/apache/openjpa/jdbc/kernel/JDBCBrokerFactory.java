@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -66,28 +67,15 @@ public class JDBCBrokerFactory
      * Invoked from {@link Bootstrap#getBrokerFactory}.
      */
     public static JDBCBrokerFactory getInstance(ConfigurationProvider cp) {
-        JDBCBrokerFactory factory = (JDBCBrokerFactory) getPooledFactory
-            (cp.getProperties());
+        Map props = cp.getProperties();
+        Object key = toPoolKey(props);
+        JDBCBrokerFactory factory = (JDBCBrokerFactory)
+            getPooledFactoryForKey(key);
         if (factory != null)
             return factory;
 
         factory = newInstance(cp);
-        factory.pool();
-        return factory;
-    }
-
-    /**
-     * Factory method for constructing a factory from a configuration.
-     */
-    public static synchronized JDBCBrokerFactory getInstance
-        (JDBCConfiguration conf) {
-        JDBCBrokerFactory factory = (JDBCBrokerFactory) getPooledFactory
-            (conf.toProperties(false));
-        if (factory != null)
-            return factory;
-
-        factory = new JDBCBrokerFactory(conf);
-        factory.pool();
+        pool(key, factory);
         return factory;
     }
 

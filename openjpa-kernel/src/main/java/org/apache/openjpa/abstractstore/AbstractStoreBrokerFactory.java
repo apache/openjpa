@@ -71,15 +71,16 @@ public class AbstractStoreBrokerFactory
      * Factory method for obtaining a possibly-pooled {@link BrokerFactory}
      * from properties. Invoked from {@link Bootstrap#getBrokerFactory()}.
      */
-    public static AbstractStoreBrokerFactory getInstance
-        (ConfigurationProvider cp) {
+    public static AbstractStoreBrokerFactory getInstance(
+        ConfigurationProvider cp) {
+        Object key = toPoolKey(cp.getProperties());
         AbstractStoreBrokerFactory factory = (AbstractStoreBrokerFactory)
-            getPooledFactory(cp.getProperties());
+            getPooledFactoryForKey(key);
         if (factory != null)
             return factory;
 
         factory = newInstance(cp);
-        factory.pool();
+        factory.pool(key, factory);
         return factory;
     }
 

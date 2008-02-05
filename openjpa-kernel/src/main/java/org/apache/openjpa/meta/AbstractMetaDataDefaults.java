@@ -269,6 +269,9 @@ public abstract class AbstractMetaDataDefaults
      * Returns ACCESS_FIELD by default.
      */
     protected int getAccessType(ClassMetaData meta) {
+        if (meta.getDescribedType().isInterface())
+            return ClassMetaData.ACCESS_PROPERTY;
+        else
             return ClassMetaData.ACCESS_FIELD;
     }
 

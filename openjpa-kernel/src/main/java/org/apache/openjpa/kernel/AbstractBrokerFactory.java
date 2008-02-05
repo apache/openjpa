@@ -104,34 +104,33 @@ public abstract class AbstractBrokerFactory
     // transaction listeners to pass to each broker
     private transient List _transactionListeners = null;
 
-    /**
-     * Return the pooled factory matching the given configuration, or null
-     * if none.
-     */
-    public static AbstractBrokerFactory getPooledFactory(
-        OpenJPAConfiguration conf) {
-        return (AbstractBrokerFactory) _pool.get(toPoolKey(conf));
-    }
+    // key under which this instance can be stored in the broker pool
+    // and later identified
+    private Object _poolKey;
 
     /**
      * Return an internal factory pool key for the given configuration.
+     *
+     * @since 1.1.0
      */
-    private static Object toPoolKey(OpenJPAConfiguration conf) {
-        if (conf.getId() != null)
-            return conf.getId();
+    protected static Object toPoolKey(Map map) {
+        if (Configurations.getProperty("Id", map) != null)
+            return Configurations.getProperty("Id", map);
         else
-            return conf.toProperties(false);
+            return map;
     }
 
     /**
-     * Return the pooled factory matching the given configuration data, or null
-     * if none.
+     * Register <code>factory</code> in the pool under <code>key</code>.
+     *
+     * @since 1.1.0
      */
-    protected static AbstractBrokerFactory getPooledFactory(Map map) {
-        Object key = Configurations.getProperty("Id", map);
-        if (key == null)
-            key = map;
-        return getPooledFactoryForKey(key);
+    protected static void pool(Object key, AbstractBrokerFactory factory) {
+        synchronized(_pool) {
+            _pool.put(key, factory);
+            factory.setPoolKey(key);
+            factory.makeReadOnly();
+        }
     }
 
     /**
@@ -407,10 +406,9 @@ public abstract class AbstractBrokerFactory
             assertNoActiveTransaction();
 
             // remove from factory pool
-            Object key = toPoolKey(_conf);
             synchronized (_pool) {
-                if (_pool.get(key) == this)
-                    _pool.remove(key);
+                if (_pool.get(_poolKey) == this)
+                    _pool.remove(_poolKey);
             }
 
             // close all brokers
@@ -491,7 +489,7 @@ public abstract class AbstractBrokerFactory
      */
     protected Object readResolve()
         throws ObjectStreamException {
-        AbstractBrokerFactory factory = getPooledFactory(_conf);
+        AbstractBrokerFactory factory = getPooledFactoryForKey(_poolKey);
         if (factory != null)
             return factory;
 
@@ -611,16 +609,6 @@ public abstract class AbstractBrokerFactory
         broker.setAutoDetach(_conf.getAutoDetachConstant());
         broker.setDetachState(_conf.getDetachStateInstance().
             getDetachState());
-    }
-
-    /**
-     * Add the factory to the pool.
-     */
-    protected void pool() {
-        synchronized (_pool) {
-            _pool.put(toPoolKey(_conf), this);
-            makeReadOnly();
-        }
     }
 
     /**
@@ -792,10 +780,21 @@ public abstract class AbstractBrokerFactory
     /**
      * @return a key that can be used to obtain this broker factory from the
      * pool at a later time.
+     *
      * @since 1.1.0
      */
     public Object getPoolKey() {
-        return toPoolKey(getConfiguration());
+        return _poolKey;
+    }
+
+    /**
+     * Set a key that can be used to obtain this broker factory from the
+     * pool at a later time.
+     *
+     * @since 1.1.0
+     */
+    void setPoolKey(Object key) {
+        _poolKey = key;
     }
 
     /**
