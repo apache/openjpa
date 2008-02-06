@@ -191,6 +191,7 @@
                                         <!-- copy to parent module for 
                                              expanded access in upload -->
                                         <mkdir dir="${parent.site.docs}"/>
+                                        <delete file="${docbook.target}/manual.fo"/>
                                         <copy todir="${parent.site.docs}">
                                             <fileset
                                                 dir="${docbook.target}">
