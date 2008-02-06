@@ -1,0 +1,10 @@
+<HTML>
+<BODY>
+Implements TransactionManager to manage transactions across the database
+slices. This package provides two flavors of TransactionManager: one provides
+two-phase commit protocol when all underlying database slices is XA-complaint;
+while the other runs commit/rollback simply looping across all database slices
+when one or more underlying database slices is not XA-complaint and hence does 
+not guarantee atomic nature of transaction.  
+</BODY>
+</HTML> 

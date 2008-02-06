@@ -85,6 +85,7 @@
         <module>openjpa-kernel</module>
         <module>openjpa-jdbc</module>
         <module>openjpa-xmlstore</module>
+        <module>openjpa-slice</module>
         <module>openjpa-all</module>
         <module>openjpa-project</module>
         <module>openjpa-integration</module>
@@ -101,6 +102,7 @@
                 <module>openjpa-persistence-jdbc</module>
                 <module>openjpa-kernel-5</module>
                 <module>openjpa-jdbc-5</module>
+                <module>openjpa-slice</module>
                 <module>openjpa-examples</module>
             </modules>
         </profile>

@@ -47,6 +47,7 @@
     <!ENTITY ref_guide_runtime.xml SYSTEM "ref_guide_runtime.xml">
     <!ENTITY ref_guide_caching.xml SYSTEM "ref_guide_caching.xml">
     <!ENTITY ref_guide_remote.xml SYSTEM "ref_guide_remote.xml">
+    <!ENTITY ref_guide_slice.xml SYSTEM "ref_guide_slice.xml">
     <!ENTITY ref_guide_integration.xml SYSTEM "ref_guide_integration.xml">
     <!ENTITY ref_guide_optimization.xml SYSTEM "ref_guide_optimization.xml">
     <!ENTITY samples_guide.xml SYSTEM "samples_guide.xml">
@@ -101,6 +102,7 @@
         &ref_guide_runtime.xml;
         &ref_guide_caching.xml;
         &ref_guide_remote.xml;
+        &ref_guide_slice.xml;
         &ref_guide_integration.xml;
         &ref_guide_optimization.xml;
     </part>
