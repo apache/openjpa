@@ -18,19 +18,23 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /**
  * Test that query pagination works properly.
  */
 public class TestQueryPagination
-    extends SingleEMFTestCase {
+    extends SQLListenerTestCase {
 
     public void setUp() {
-        setUp(SimpleEntity.class, CLEAR_TABLES);
+        setUp(SimpleEntity.class, CLEAR_TABLES, "openjpa.Log", "SQL=TRACE");
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -70,12 +74,31 @@ public class TestQueryPagination
 
     private void helper(boolean firstFirst, int first, int max, int expected) {
         EntityManager em = emf.createEntityManager();
-        Query q = em.createQuery("select e from simple e");
+        Query q = em.createQuery("select e from simple e order by e.value");
+        sql.clear();
+        List<SimpleEntity> fullList = q.getResultList();
         if (firstFirst)
             q.setFirstResult(first).setMaxResults(max);
         else
             q.setMaxResults(max).setFirstResult(first);
-        assertEquals(expected, q.getResultList().size());
+        List<SimpleEntity> list = q.getResultList();
+        checkSQL();
+        assertEquals(expected, list.size());
+        for (int i = 0; i < list.size(); i++) {
+            assertEquals("bar" + (first + i), list.get(i).getValue());
+        }
         em.close();
+    }
+
+    private void checkSQL() {
+        assertEquals(2, sql.size());
+        String noRange = this.sql.get(0);
+        String withRange = this.sql.get(1);
+        DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration())
+            .getDBDictionaryInstance();
+        if (dict.supportsSelectStartIndex || dict.supportsSelectEndIndex)
+            assertNotEquals(noRange, withRange);
+        else
+            assertEquals(noRange, withRange);
     }
 }
