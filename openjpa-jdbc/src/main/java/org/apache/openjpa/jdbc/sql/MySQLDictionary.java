@@ -162,7 +162,8 @@ public class MySQLDictionary
         }
     }
 
-    protected void appendSelectRange(SQLBuffer buf, long start, long end) {
+    protected void appendSelectRange(SQLBuffer buf, long start, long end,
+        boolean subselect) {
         buf.append(" LIMIT ").appendValue(start).append(", ");
         if (end == Long.MAX_VALUE)
             buf.appendValue(Long.MAX_VALUE);

@@ -97,7 +97,7 @@ public class TestQueryPagination
         DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration())
             .getDBDictionaryInstance();
         if (dict.supportsSelectStartIndex || dict.supportsSelectEndIndex)
-            assertNotEquals(noRange, withRange);
+            assertFalse(noRange.equals(withRange));
         else
             assertEquals(noRange, withRange);
     }
