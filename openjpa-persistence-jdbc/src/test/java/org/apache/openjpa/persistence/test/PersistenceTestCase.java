@@ -91,7 +91,11 @@ public abstract class PersistenceTestCase
         }
 
         return (OpenJPAEntityManagerFactorySPI) Persistence.
-            createEntityManagerFactory("test", map);
+            createEntityManagerFactory(getPersistenceUnitName(), map);
+    }
+
+    protected String getPersistenceUnitName() {
+        return "test";
     }
 
     @Override

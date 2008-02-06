@@ -63,4 +63,14 @@
                 value="DriverClassName=not.a.real.Driver,Url=jdbc:notreal://"/>
         </properties>
     </persistence-unit>
+
+    <persistence-unit name="listener-pu">
+        <mapping-file>META-INF/listener-orm.xml</mapping-file>
+        <class>org.apache.openjpa.persistence.callbacks.EntityListenerEntity</class>
+        <class>org.apache.openjpa.persistence.callbacks.GlobalListenerEntity</class>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema(ForeignKeys=true)"/>
+        </properties>
+    </persistence-unit>
 </persistence>
