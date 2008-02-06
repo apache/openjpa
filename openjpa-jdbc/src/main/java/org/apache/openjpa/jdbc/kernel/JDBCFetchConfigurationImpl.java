@@ -78,7 +78,7 @@ public class JDBCFetchConfigurationImpl
         this(null, null);
     }
 
-    private JDBCFetchConfigurationImpl(ConfigurationState state, 
+    protected JDBCFetchConfigurationImpl(ConfigurationState state, 
         JDBCConfigurationState jstate) {
         super(state);
         _state = (jstate == null) ? new JDBCConfigurationState() : jstate;
