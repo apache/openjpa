@@ -37,6 +37,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.DataSourceFactory;
 import org.apache.openjpa.lib.conf.BooleanValue;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
+import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.conf.StringListValue;
 import org.apache.openjpa.lib.conf.StringValue;
@@ -50,7 +51,6 @@ import org.apache.openjpa.slice.DistributedBrokerImpl;
 import org.apache.openjpa.slice.DistributionPolicy;
 import org.apache.openjpa.slice.ExecutorServiceValue;
 import org.apache.openjpa.slice.Slice;
-import org.apache.openjpa.slice.SliceVersion;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -74,10 +74,12 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     protected ExecutorServiceValue executorServicePlugin;
     protected PluginValue distributionPolicyPlugin;
 
+    public static final String PREFIX_SLICE = "openjpa.slice.";
+    public static final String PREFIX_OPENJPA = "openjpa.";
+    public static final String REGEX_DOT = "\\.";
+    public static final String DOT = ".";
     private static Localizer _loc =
             Localizer.forPackage(DistributedJDBCConfigurationImpl.class);
-    public static final String PREFIX_SLICE = "slice.";
-    public static final String PREFIX_OPENJPA = "openjpa.";
 
     /**
      * Configure itself as well as underlying slices.
@@ -89,7 +91,6 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         String pUnit = getPersistenceUnitName(p);
         setDiagnosticContext(pUnit);
         Log log = getConfigurationLog();
-        log.info(_loc.get("config-init", SliceVersion.VERSION));
         
         brokerPlugin.setString(DistributedBrokerImpl.class.getName());
         
@@ -188,6 +189,8 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
 
     public DistributionPolicy getDistributionPolicyInstance() {
         if (distributionPolicyPlugin.get() == null) {
+//            Configurations.getProperty(distributionPolicyPlugin.getProperty(), m)
+//            distributionPolicyPlugin.setString(toProperties(false).get(key))
             distributionPolicyPlugin.instantiate(DistributionPolicy.class,
                     this, true);
         }
@@ -366,9 +369,9 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         List<String> sliceNames = new ArrayList<String>();
         for (Object o : p.keySet()) {
             String key = o.toString();
-            if (key.startsWith(PREFIX_SLICE) && key.split("\\.").length > 2) {
+            if (key.startsWith(PREFIX_SLICE) && getPartCount(key) > 3) {
                 String sliceName =
-                    chopTail(chopHead(o.toString(), PREFIX_SLICE), ".");
+                    chopTail(chopHead(o.toString(), PREFIX_SLICE), DOT);
                 if (!sliceNames.contains(sliceName))
                     sliceNames.add(sliceName);
             }
@@ -376,6 +379,10 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         return sliceNames;
     }
 
+    static int getPartCount(String s) {
+        return (s == null) ? 0 : s.split(REGEX_DOT).length;
+    }
+    
     static String chopHead(String s, String head) {
         if (s.startsWith(head))
             return s.substring(head.length());
@@ -407,7 +414,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
      */
     Map createSliceProperties(Map original, String slice) {
         Map result = new Properties();
-        String prefix = PREFIX_SLICE + slice + ".";
+        String prefix = PREFIX_SLICE + slice + DOT;
         for (Object o : original.keySet()) {
             String key = o.toString();
             if (key.startsWith(prefix)) {
@@ -476,5 +483,4 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         }
         return (ExecutorService) executorServicePlugin.get();
     }
-    
 }

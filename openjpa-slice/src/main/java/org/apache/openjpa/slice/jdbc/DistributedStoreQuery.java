@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -137,8 +136,8 @@ class DistributedStoreQuery extends JDBCStoreQuery {
         	boolean isAscending = ascending.length > 0;
         	boolean isUnique    = q.getContext().isUnique();
         	if (isUnique) {
-        	    
-        	    return new UniqueResultObjectProvider(tmp, q, getQueryExpressions());
+        	    return new UniqueResultObjectProvider(tmp, q, 
+        	            getQueryExpressions());
         	}
         	if (isAscending) {
         	    return new OrderingMergedResultObjectProvider(tmp, ascending, 

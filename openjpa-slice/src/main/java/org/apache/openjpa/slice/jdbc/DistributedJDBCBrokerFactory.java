@@ -27,7 +27,6 @@ import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.slice.SliceVersion;
 
 /**
  * A factory for distributed JDBC datastores.
@@ -102,6 +101,6 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory {
 	
     @Override
     protected Object getFactoryInitializationBanner() {
-        return _loc.get("factory-init", new SliceVersion());
+        return _loc.get("factory-init", OpenJPAVersion.VERSION_NUMBER);
     }
 }

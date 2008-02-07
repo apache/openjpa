@@ -41,7 +41,7 @@ public class ProductDerivation extends AbstractProductDerivation implements
 	}
 
 	public String getConfigurationPrefix() {
-		return "slice";
+		return "openjpa.slice";
 	}
 
 	public int getType() {
