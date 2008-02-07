@@ -2683,7 +2683,7 @@ prevented; phantom reads can occur.
 <literal>serializable</literal>: Dirty reads, non-repeatable reads, and phantom
 reads are prevented.
                 </para>
-            </listitem>
+            </listitem>openjpa-project/src/doc/manual/ref_guide_dbsetup.xml
         </itemizedlist>
         <example id="ref_guide_dbsetup_isoex">
             <title>
@@ -3149,9 +3149,14 @@ Or
         </example>
         <par>
 By default, org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager 
-is the default statement batching implementation. You can plug-in your own 
+is the default statement batching implementation. OPENJPA also 
+provides another update manager 
+org.apache.openjpa.jdbc.kernel.BatchingOperationOrderUpdateManager for the
+statements that required ordering.  You can plug-in this update manager through
+the "openjpa.jdbc.UpdateManager" property. Or you can plug-in your own
 statement batching implementation by providing the implementation that extends 
-from AbstractUpdateManager or ConstraitUpdateManager. Add this implementation
+from AbstractUpdateManager, ConstraitUpdateManager or OperationOrderUpdateManager. 
+Add this implementation
 class as a property in the persistence.xml file. For example, a custom
 statement batching implementation mycomp.MyUpdateManager extends 
 ConstraitUpdateManager. You specify this implementation in the persistence.xml
