@@ -73,6 +73,7 @@
              of the data itself. For example, all Customer whose first name begins with
              character 'A' to 'M' will be stored in one slice while names
              beginning with 'N' to 'Z' will be stored in another slice. 
+             </para>
              <para>
              This custom data distribution policy is specified by implementing  
              <classname>org.apache.openjpa.slice.DistributionPolicy</classname>
@@ -194,31 +195,35 @@
       <title>How to configure each database slice?</title>
       <para>
       Each database slice is identified by a logical name unique within a
-      persistent unit. The list of the slices is specified by <code>slice.Names</code> property.
+      persistent unit. The list of the slices is specified by 
+      <code>openjpa.slice.Names</code> property.
       For example, specify three slices named <code>"One"</code>, 
       <code>"Two"</code> and <code>"Three"</code> as follows:
       <programlisting>
-      <![CDATA[ <property name="slice.Names" value="One, Two, Three"/>]]>
+      <![CDATA[ <property name="openjpa.slice.Names" value="One, Two, Three"/>]]>
       </programlisting>
       </para>
       <para>
       This property is not mandatory. If this property is not specified then
       the configuration is scanned for logical slice names. Any property
-      of the form <code>slice.XYZ.abc</code> will register a slice with logical
+      <code>"abc"</code> of the form <code>openjpa.slice.XYZ.abc</code> will 
+      register a slice with logical
       name <code>"XYZ"</code>.
       </para>
       <para>
-      The order of the names can be significant if no <code>slice.Master</code>
-      property is specified. 
+      The order of the names is significant when no <code>openjpa.slice.Master</code> 
+      property is not specified. Then the persistence unit is scanned to find
+      all configured slice names and they are ordered alphabetically.  
       </para>
       
       <para>
-       Each database slice can be configured independently. For example, the
+       Each database slice properties can be configured independently. 
+       For example, the
        following configuration will register two slices with logical name 
        <code>One</code> and <code>Two</code>.
        <programlisting> 
-        <![CDATA[<property name="slice.One.ConnectionURL" value="jdbc:mysql:localhost//slice1"/>
-        <property name="slice.Two.ConnectionURL" value="jdbc:mysql:localhost//slice2"/>]]>
+        <![CDATA[<property name="openjpa.slice.One.ConnectionURL" value="jdbc:mysql:localhost//slice1"/>
+        <property name="openjpa.slice.Two.ConnectionURL" value="jdbc:mysql:localhost//slice2"/>]]>
        </programlisting> 
       </para>
       
@@ -227,8 +232,8 @@
        For example, the following configuration will use two different JDBC 
        drivers for slice <code>One</code> and <code>Two</code>.
        <programlisting> 
-        <![CDATA[<property name="slice.One.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
-        <property name="slice.Two.ConnectionDriverName" value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"/>]]>
+        <![CDATA[<property name="openjpa.slice.One.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
+        <property name="openjpa.slice.Two.ConnectionDriverName" value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"/>]]>
        </programlisting> 
       </para>
       
@@ -236,12 +241,12 @@
         Any property if unspecified for a particular slice will be defaulted by
         corresponding OpenJPA property. For example, consider following three slices
         <programlisting> 
-         <![CDATA[<property name="slice.One.ConnectionURL"          value="jdbc:mysql:localhost//slice1"/>
-         <property name="slice.Two.ConnectionURL"          value="jdbc:mysql:localhost//slice2"/>
-         <property name="slice.Three.ConnectionURL"        value="jdbc:oracle:localhost//slice3"/>
+         <![CDATA[<property name="openjpa.slice.One.ConnectionURL"          value="jdbc:mysql:localhost//slice1"/>
+         <property name="openjpa.slice.Two.ConnectionURL"          value="jdbc:mysql:localhost//slice2"/>
+         <property name="openjpa.slice.Three.ConnectionURL"        value="jdbc:oracle:localhost//slice3"/>
 
          <property name="openjpa.ConnectionDriverName"     value="com.mysql.jdbc.Driver"/>
-         <property name="slice.Three.ConnectionDriverName" value="oracle.jdbc.Driver"/>]]>
+         <property name="openjpa.slice.Three.ConnectionDriverName" value="oracle.jdbc.Driver"/>]]>
         </programlisting> 
         In this example, <code>Three</code> will use slice-specific
         <code>oracle.jdbc.Driver</code> driver while slice
@@ -263,7 +268,7 @@
         <code>org.apache.openjpa.slice.DistributionPolicy</code> and
         specify the implementation class in configuration
         <programlisting> 
-         <![CDATA[ <property name="slice.DistributionPolicy" value="com.acme.foo.MyOptimialDistributionPolicy"/>]]>
+         <![CDATA[ <property name="openjpa.slice.DistributionPolicy" value="com.acme.foo.MyOptimialDistributionPolicy"/>]]>
         </programlisting>
        </para>
        
@@ -300,7 +305,7 @@ public interface DistributionPolicy {
         Slice can determine the closure of a root object by traversal of 
         cascaded relationships. Hence user-defined policy has to only decide the
         database for the root instance that is the explicit argument to 
-        <code>EntityManager.persist()</code> call.
+        <methodname>EntityManager.persist()</methodname> call.
         Slice will ensure that all other related instances that gets persisted by cascade
         is assigned to the same database slice as that of the root instance.
         However, the user-defined distribution policy must return the
@@ -327,7 +332,7 @@ the JDBC connection URL of a slice.
      <title>Global Properties</title>
      
      <section>
-        <title>slice.DistributionPolicy</title>
+        <title>openjpa.slice.DistributionPolicy</title>
         <para>
          This <emphasis>mandatory</emphasis> plug-in property determines how newly
          persistent instances are distributed across individual slices. 
@@ -338,7 +343,7 @@ the JDBC connection URL of a slice.
         </para>
      </section>
      
-     <section><title>slice.Lenient</title>
+     <section><title>openjpa.slice.Lenient</title>
       <para>
         This boolean plug-in property controls the behavior when one or more slice 
         can not be connected or unavailable for some other reasons.
@@ -353,7 +358,7 @@ the JDBC connection URL of a slice.
      </section>
 
      <section>
-      <title>slice.Master</title>
+      <title>openjpa.slice.Master</title>
       <para>
        This plug-in property can be used to identify the name of the master slice. 
        Master slice is used when a primary key is to be generated from a database sequence. 
@@ -370,7 +375,7 @@ the JDBC connection URL of a slice.
      </section>
     
      <section>
-        <title>slice.Names</title>
+        <title>openjpa.slice.Names</title>
         <para>
          This plug-in property can be used to register the logical slice names.
          The value of this property is comma-separated list of slice names. 
@@ -392,7 +397,7 @@ the JDBC connection URL of a slice.
      </section>
     
      <section>
-        <title>slice.ThreadingPolicy</title>
+        <title>openjpa.slice.ThreadingPolicy</title>
         <para>
         This plug-in property determines the nature of thread pool being used 
         for database operations such as query or flush on individual slices. 
@@ -439,7 +444,7 @@ the JDBC connection URL of a slice.
      </section>
       
      <section>
-      <title>slice.TransactionPolicy</title>
+      <title>openjpa.slice.TransactionPolicy</title>
       <para>
       This plug-in property determines the policy for transaction commit 
       across multiple slices. The value of this property is a fully-qualified 
@@ -483,8 +488,8 @@ the JDBC connection URL of a slice.
      <title>Per-Slice Properties</title>
      <para>
      Any OpenJPA property can be configured for each individual slice. The property name
-     is of the form <code>slice.[Logical slice name].[OpenJPA Property Name]</code>.
-     For example, <code>slice.One.ConnectionURL</code> where <code>One</code>
+     is of the form <code>openjpa.slice.[Logical slice name].[OpenJPA Property Name]</code>.
+     For example, <code>openjpa.slice.One.ConnectionURL</code> where <code>One</code>
      is the logical slice name and <code>ConnectionURL</code> is a OpenJPA property
      name. 
      </para>
