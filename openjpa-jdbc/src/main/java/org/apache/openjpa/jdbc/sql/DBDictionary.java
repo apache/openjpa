@@ -307,6 +307,12 @@ public class DBDictionary
     protected final Set systemTableSet = new HashSet();
     protected final Set fixedSizeTypeNameSet = new HashSet();
 
+    /**
+     * If a native query begins with any of the values found here then it will
+     * be treated as a select statement.  
+     */
+    protected final Set selectWordSet = new HashSet();
+
     // when we store values that lose precion, track the types so that the
     // first time it happens we can warn the user
     private Set _precisionWarnedTypes = null;
@@ -323,6 +329,8 @@ public class DBDictionary
             "OTHER", "REAL", "REF", "SMALLINT", "STRUCT", "TIME", "TIMESTAMP",
             "TINYINT",
         }));
+        
+        selectWordSet.add("SELECT");
     }
 
     /**
@@ -3988,5 +3996,26 @@ public class DBDictionary
      */
     public void createIndexIfNecessary(Schema schema, String table,
             Column pkColumn) {
+    }
+
+    /**
+     * Determine whether the provided <code>sql</code> may be treated as a 
+     * select statement on this database.
+     *  
+     * @param sql   A sql statement. 
+     * 
+     * @return true if <code>sql</code> represents a select statement.
+     */
+    public boolean isSelect(String sql) {
+        Iterator i = selectWordSet.iterator();
+        String cur;
+        while (i.hasNext()) {
+            cur = (String) i.next();
+            if (sql.length() >= cur.length()
+                    && sql.substring(0, cur.length()).equalsIgnoreCase(cur)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

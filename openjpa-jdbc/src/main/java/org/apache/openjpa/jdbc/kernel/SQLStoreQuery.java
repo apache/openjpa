@@ -183,8 +183,7 @@ public class SQLStoreQuery
             String sql = StringUtils.trimToNull(ctx.getQueryString());
             if (sql == null)
                 throw new UserException(_loc.get("no-sql"));
-            _select = sql.length() > 6
-                && sql.substring(0, 6).equalsIgnoreCase("select");
+            _select = q.getStore().getDBDictionary().isSelect(sql);
             _call = sql.length() > 4
                 && sql.substring(0, 4).equalsIgnoreCase("call");
         }

@@ -144,6 +144,8 @@ public class DB2Dictionary
             "TYPE", "UNDO", "UNTIL", "VALIDPROC", "VARIABLE", "VARIANT", "VCAT",
             "VOLUMES", "WHILE", "WLM", "YEARS",
         }));
+        
+        selectWordSet.add("WITH");
     }
 
     public boolean supportsRandomAccessResultSet(Select sel,
