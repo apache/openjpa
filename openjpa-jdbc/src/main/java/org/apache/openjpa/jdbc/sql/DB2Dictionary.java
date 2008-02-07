@@ -148,6 +148,8 @@ public class DB2Dictionary
         }));
         
         super.setBatchLimit(defaultBatchLimit);
+        
+        selectWordSet.add("WITH");
     }
 
     public boolean supportsRandomAccessResultSet(Select sel,
