@@ -279,14 +279,16 @@
                         <configuration>
                             <tasks>
                                 <ant antfile="src/main/ant/enhancer.xml"
-                                    target="enhance.all.entities"
+                                    target="enhance"
                                     inheritRefs="true">
                                     <!--
-                                      InheritAll doesn't seem to work. Pass in
-                                      properties manually.
-                                     -->
-                                    <property name="maven.test.skip" 
-                                        value="${maven.test.skip}"/>
+                                        InheritAll doesn't seem to work. Pass in
+                                        properties manually.
+                                    -->
+                                    <property name="maven.test.skip"
+                                        value="${maven.test.skip}" />
+                                    <property name="test"
+                                        value="${test}" />
                                     <property name="outdir"
                                         value="${project.build.outputDirectory}" />
                                     <property

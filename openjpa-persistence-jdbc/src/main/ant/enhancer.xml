@@ -31,18 +31,32 @@
         <istrue value="${maven.test.skip}" />
     </condition>
 
+    <condition property="test.isfalse">
+        <equals arg1="${test}" arg2="false" />
+    </condition>
+
+    <!-- ================================= 
+          target: enhance              
+         ================================= -->
+    <target name="enhance"
+            description="--> run the enhancer unless test=false"
+            unless="test.isfalse">
+        <antcall target="enhance.all.entities"
+                 inheritall="true"
+                 inheritrefs="true" />
+    </target>
+
     <!-- ================================= 
           target: enhance.all.entities              
          ================================= -->
     <target name="enhance.all.entities"
-            depends=""
             description="--> enhance the test entities"
             unless="maven.test.skip.istrue">
-        
+        <echo> running enhancer</echo>
         <!-- 
             Inherited references won't be present until the task is called. 
             Therefore the path definition needs to stay inside the task.
-          --> 
+          -->
         <path id="cp">
             <path refid="maven.test.classpath" />
             <path refid="maven.compile.classpath" />
