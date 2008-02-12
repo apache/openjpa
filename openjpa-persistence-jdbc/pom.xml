@@ -30,7 +30,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.2</version>
     </parent>
     <properties>
         <openjpa.loglevel>INFO</openjpa.loglevel>

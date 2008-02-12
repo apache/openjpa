@@ -32,7 +32,7 @@
     <description>OpenJPA</description>
 
     <properties>
-        <scm.dir>svn.apache.org/repos/asf/openjpa/branches/1.0.x</scm.dir>
+        <scm.dir>svn.apache.org/repos/asf/openjpa/branches/1.0.2</scm.dir>
         <openjpa.version>${pom.version}</openjpa.version>
     </properties>
 
@@ -40,7 +40,7 @@
         Changing this version needs to also be done in all children poms
         See: http://jira.codehaus.org/browse/MNG-624
     -->
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
     <url>http://openjpa.apache.org</url>
     <issueManagement>
         <system>jira</system>

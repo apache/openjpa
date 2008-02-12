@@ -13,10 +13,10 @@
 
 Overview
 
-   These notes describe the difference between OpenJPA release 1.0.0 and the
-   preceding releases, 0.9.6 and 0.9.7. 1.0.0 is the first major release
-   since OpenJPA graduated to an Apache top level project (TLP), and contains
-   many new features and bugfixes.
+   These notes describe the difference between OpenJPA release 1.0.2 and the
+   preceding releases. 1.0 is the first major release since OpenJPA graduated 
+   to an Apache top level project (TLP), and contains many new features and 
+   bugfixes.
 
    OpenJPA is a feature-rich implementation of the persistence part of Java
    Community Process JSR-220 (Enterprise JavaBeans 3.0), which is known as
@@ -82,6 +82,178 @@ Getting Involved
      * Informal discussion also occurs on the #openjpa IRC channel on
        freenode.net.
      * Bugs and other issues can be posted on the project JIRA.
+
+                          OpenJPA 1.0.2 Release Notes
+
+Bugs
+
+       * [OPENJPA-135] - join fetch not returning duplicate references which not conforming to ejb3.0 spec
+       * [OPENJPA-211] - CLONE -java.lang.VerifyError on websphere 6.1 with Spring 2.0.3 and OpenJpa 0.96/0.97
+       * [OPENJPA-251] - org.apache.openjpa.enhance.Reflection.getDeclaredMethod() has undefined behavior, leading to VM-dependent crashes
+       * [OPENJPA-258] - MetaDataInheritanceComparator is not transitive; C > B > A > C leads to out-of-memory crash in PCEnhancer
+       * [OPENJPA-322] - Timezone on the Calendar object lost in proxying
+       * [OPENJPA-329] - Generic interface may cause the openjpa Reflection code to pickup the wrong getter method
+       * [OPENJPA-331] - Allow BigInteger and other Basic types as Primary Keys
+       * [OPENJPA-366] - InternalException thrown in BrokerImpl.endOperation
+       * [OPENJPA-367] - PCEnhancer does not find meta data for entities using pure XML annotation
+       * [OPENJPA-370] - LoadFetchGroup annotation was not recognized during the fetch1
+       * [OPENJPA-401] - UnsatisfiedLinkError in MappingToolTask when using DB2 JDBC driver
+       * [OPENJPA-419] - Merging graphs that include managed instances fails
+       * [OPENJPA-420] - JPQL constructor query close the <SELECT DISTINCT> feature?
+       * [OPENJPA-437] - EntityManagerFactory is not thread-safe
+       * [OPENJPA-446] - Problem when setting String fields of detached objects
+       * [OPENJPA-447] - Query pagination broken for non-DB2 databases
+       * [OPENJPA-452] - Error in the XML equivalent in the "secondary table field mapping" example
+       * [OPENJPA-471] - iSeries DB2 problem with using @GeneratedValue(strategy=GenerationType.IDENTITY)
+       * [OPENJPA-472] - iSeries DB2 problem with using @GeneratedValue(strategy=GenerationType.SEQUENCE ...)
+       * [OPENJPA-476] - Query.setFirstResult and Query.setMaxResults don't take effect
+       * [OPENJPA-506] - PreRemove method callback is never called; PreUpdate is always called
+       * [OPENJPA-508] - JPQL EXISTS clauses do not handle subclasses properly
+       * [OPENJPA-511] - Unable to execute native queries which start with the WITH keyword.
+
+                          OpenJPA 1.0.1 Release Notes
+
+Bugs Fixed
+
+       * [OPENJPA-113] - when you specify columm table="empbean" in the xml file entity id or basic type when empbean is the default table name, the mapping tool generates extra foreign key field (eg.EmpBean_empid) in the table produced.
+       * [OPENJPA-282] - Postgresql does not support deferred unique constraints.
+       * [OPENJPA-295] - ArrayIndexOutofBoundsException when under load and within a managed Transaction
+       * [OPENJPA-326] - NPE if a discriminator column is specified without discriminator type in orm.xml
+       * [OPENJPA-335] - Logic in getters for entities with property access causes the PCEnhancer to hang
+       * [OPENJPA-339] - Java 2 security Access denied in File.toURL() call
+       * [OPENJPA-343] - Do not call setRollbackOnly on inactive Transactions
+       * [OPENJPA-346] - PCEnhancerAgent backwards-compatibility setting overly-enables enhancement
+       * [OPENJPA-347] - Performance Issue with Lazy Loaded Foreign Keys
+       * [OPENJPA-353] - Character discriminators are not converted correctly if storeCharsAsNumbers = true
+       * [OPENJPA-355] - OpenJPA Log4J factory incorrectly handles logging level
+       * [OPENJPA-356] - DB2 requires CASTs when parameters appear in SELECT clause
+       * [OPENJPA-357] - Use case where FetchGroup A includes FecthGroup B is not honoured by fetch operations
+       * [OPENJPA-358] - Recursion Depth for Field f should be calculated w.r.t active fetch groups and not all fetch groups
+       * [OPENJPA-360] - SQL FOR UPDATE OF incorrectly generated for DB2/NT SQL0816
+       * [OPENJPA-361] - Incorrect GREG_OFFSET offset or inconsistent usage in UUIDGenerator
+       * [OPENJPA-367] - PCEnhancer does not find meta data for entities using pure XML annotation
+       * [OPENJPA-368] - Multithreaded client fails randomly on EntityManager.persist() with out transaction context.
+       * [OPENJPA-369] - AccessDeclaredMembers RuntimePermission requires by Solaris JDK with security enabled
+       * [OPENJPA-372] - PCEnhancer throws away its classloader
+       * [OPENJPA-375] - DB2 autoCommit(true) causes Result Set prematurely closed in WebContainer JEE environment.
+       * [OPENJPA-378] - DB2 SQL incorrectly generating "FETCH FIRST n ROWS ONLY" in subselects
+       * [OPENJPA-380] - Connecting to database when an unused emf is closed
+       * [OPENJPA-382] - Overriding column names for Byte[] attributes causes exception.
+       * [OPENJPA-385] - IndexOutOfBounds exception when parsing ".class" files
+       * [OPENJPA-387] - Getting "java.lang.ClassNotFoundException" when loading datacache plug-in which is a class outside of OpenJPA package.
+       * [OPENJPA-388] - MappingToolTask can't find persistence meta data.
+       * [OPENJPA-389] - em.getTransaction().commit() is not issuing database commit for NativeQuery requesting updates
+       * [OPENJPA-394] - DB2 CAST VARCHAR type missing LENGTH
+       * [OPENJPA-395] - Accessing short Foreign Key metadata fields as ints causes problems on iSeries
+       * [OPENJPA-396] - Cloning Calendar proxies doesn't detach from StateManager
+       * [OPENJPA-397] - schematool ant task always requires files
+       * [OPENJPA-399] - openjpa did not handle multiple schema names with same table name
+       * [OPENJPA-401] - UnsatisfiedLinkError in MappingToolTask when using DB2 JDBC driver
+       * [OPENJPA-402] - Unable to detect an valid Entity's meta data when the entity's .class file size is large.
+       * [OPENJPA-403] - LoadFetchGroup patch (OPENJPA-370) introduces NPE
+       * [OPENJPA-405] - need extract space in the message text
+       * [OPENJPA-409] - Quick message updates
+       * [OPENJPA-410] - Change "connecting to dictionary" message from Info to Trace
+       * [OPENJPA-413] - Fix some message text in the localizer.properties files
+       * [OPENJPA-415] - Garbage collection of AbstractResultList instance closes active connection
+       * [OPENJPA-416] - Unclear exception if an unknown external value is used
+       * [OPENJPA-421] - OpenJPA generates bad SQL before configuration fully populated
+       * [OPENJPA-422] - Calendar objects contained in a detached Entity still have a "live" StateManagerImpl
+       * [OPENJPA-423] - Deadlock victim exception getting sequence value with SQLServer
+
+Improvements
+
+       * [OPENJPA-338] - Remove unnecessary CAST in SQL statement for DB2
+
+Sub-tasks
+
+       * [OPENJPA-408] - Improve error processing for openjpa.RuntimeUnenhancedClasses property settings
+
+
+                          OpenJPA 1.0.0 Release Notes
+
+Bugs fixed
+
+       * [OPENJPA-61] - Missing usage of TransactionSynchronizationRegistry
+       * [OPENJPA-86] - "uuid-hex" generator does not make affect in orm.xml
+       * [OPENJPA-143] - Problems with Single Table Inheritance Strategy (and
+         Discriminator Type of Integer)
+       * [OPENJPA-165] - QueryImpl.setFirstResult does not take already set
+         maxResults into account
+       * [OPENJPA-177] - When using NOT NULL constraint on foreign key it is
+         not possible to use CascadeType.ALL and GeneratedId
+       * [OPENJPA-199] - bulk update gets parsing exception trying to update
+         an attribute of an embedded class
+       * [OPENJPA-244] - Java 2 Security enablement
+       * [OPENJPA-248] - ForeignKey cascade delete action not working
+       * [OPENJPA-257] - Getter/Setter type inconsistency in Entity IdClass
+       * [OPENJPA-269] - Informix doesn't support subselects or using table
+         aliases in a delete statement.
+       * [OPENJPA-271] - DB2 missing JDBC driver 2 support
+       * [OPENJPA-272] - @GenerateValue (AUTO) doesn't work with Property
+         level access
+       * [OPENJPA-274] - JPQL queries cannot access version fields, including
+         bulk updates
+       * [OPENJPA-278] - OpenJPAQuery.getDataStoreActions() returns an empty
+         String array
+       * [OPENJPA-280] - Enhancement failure for inherited fields introduced
+         with change 532137
+       * [OPENJPA-281] - EAGER not the default fetch type without the @Basic
+         annotation
+       * [OPENJPA-284] - TableJDBCSeq for GeneratedValue.TABLE did not handle
+         initialValue correctly
+       * [OPENJPA-285] - Multiple deploy/undeploy leaks memory in PCRegistry
+       * [OPENJPA-287] - Generated methods on superclasses are not visible to
+         subclasses
+       * [OPENJPA-294] - Exception while enchnancing the java classes using
+         OpenJPA PCEnhancerTask with build.xml
+       * [OPENJPA-296] - UUID algorithm generating non-unique values
+         sometimes
+       * [OPENJPA-304] - Problems with DepthFirstAnalysis and the IBM JDK
+       * [OPENJPA-308] - Postgres: bytea vs. oid handling in
+         PreparedStatement.setNull() calls
+       * [OPENJPA-311] - Problem loading classes with OSGi classloaders
+       * [OPENJPA-312] - derby fails with duplicate primary key(s) in group
+         by list
+       * [OPENJPA-313] - list of objects returned by query partially correct
+       * [OPENJPA-314] - Unenhanced complex id in MappedSuperclass causes NPE
+       * [OPENJPA-315] - Unenhanced generated id field of a primitive wrapper
+         type causes NPE
+       * [OPENJPA-320] - Do not use System Tables (SYS*) with DB2
+       * [OPENJPA-321] - DB2 ABS Casting problem
+       * [OPENJPA-322] - Timezone on the Calendar object lost in proxying
+       * [OPENJPA-323] - Cleanup some message text
+       * [OPENJPA-256] - java.lang.ClassNotFoundException:
+         org.apache.openjpa.util.CacheMap in a jetty spring environment
+
+Sub-task
+
+       * [OPENJPA-279] - Fixed missing lookup for non-jta-data-source in
+         JDBCConfigurationImpl.
+       * [OPENJPA-297] - Lazy loading must be ignored in certain unenhanced
+         cases
+       * [OPENJPA-298] - Miscellaneous documentation improvements
+       * [OPENJPA-299] - Provide a means to enable the old enhancing agent
+
+Improvements
+
+       * [OPENJPA-259] - Ability to parse EJB QL multiline queries in orm.xml
+       * [OPENJPA-266] - Add Extensibility: Change "private" field/method to
+         "protected" or "public" in OpenJPA classes to be extendable
+       * [OPENJPA-275] - Bulk updates: version information should be
+         automatically maintained when the query does not
+
+New Feature
+
+       * [OPENJPA-168] - sql optimize n rows query hint
+       * [OPENJPA-239] - Option for the reverse mapping tool to generate
+         mapping annotations
+       * [OPENJPA-262] - Event notification of BrokerFactory creation
+       * [OPENJPA-263] - Introducing getAll(List) method for data cache to be
+         called by loadAll() will allow data cache plug-ins to leverage the
+         advantage of any third-party cache that provides a way to get
+         multiple object in one call by providing a list of keys (oids).
+       * [OPENJPA-317] - API formalization pre-1.0
 
                           OpenJPA 0.9.7 Release Notes
 
@@ -229,87 +401,3 @@ Test
      Additional testing done for release 0.9.7
        * [OPENJPA-40] - Testing OpenJPA and Spring integration fails
 
-                          OpenJPA 1.0.0 Release Notes
-
-Bugs fixed
-
-       * [OPENJPA-61] - Missing usage of TransactionSynchronizationRegistry
-       * [OPENJPA-86] - "uuid-hex" generator does not make affect in orm.xml
-       * [OPENJPA-143] - Problems with Single Table Inheritance Strategy (and
-         Discriminator Type of Integer)
-       * [OPENJPA-165] - QueryImpl.setFirstResult does not take already set
-         maxResults into account
-       * [OPENJPA-177] - When using NOT NULL constraint on foreign key it is
-         not possible to use CascadeType.ALL and GeneratedId
-       * [OPENJPA-199] - bulk update gets parsing exception trying to update
-         an attribute of an embedded class
-       * [OPENJPA-244] - Java 2 Security enablement
-       * [OPENJPA-248] - ForeignKey cascade delete action not working
-       * [OPENJPA-257] - Getter/Setter type inconsistency in Entity IdClass
-       * [OPENJPA-269] - Informix doesn't support subselects or using table
-         aliases in a delete statement.
-       * [OPENJPA-271] - DB2 missing JDBC driver 2 support
-       * [OPENJPA-272] - @GenerateValue (AUTO) doesn't work with Property
-         level access
-       * [OPENJPA-274] - JPQL queries cannot access version fields, including
-         bulk updates
-       * [OPENJPA-278] - OpenJPAQuery.getDataStoreActions() returns an empty
-         String array
-       * [OPENJPA-280] - Enhancement failure for inherited fields introduced
-         with change 532137
-       * [OPENJPA-281] - EAGER not the default fetch type without the @Basic
-         annotation
-       * [OPENJPA-284] - TableJDBCSeq for GeneratedValue.TABLE did not handle
-         initialValue correctly
-       * [OPENJPA-285] - Multiple deploy/undeploy leaks memory in PCRegistry
-       * [OPENJPA-287] - Generated methods on superclasses are not visible to
-         subclasses
-       * [OPENJPA-294] - Exception while enchnancing the java classes using
-         OpenJPA PCEnhancerTask with build.xml
-       * [OPENJPA-296] - UUID algorithm generating non-unique values
-         sometimes
-       * [OPENJPA-304] - Problems with DepthFirstAnalysis and the IBM JDK
-       * [OPENJPA-308] - Postgres: bytea vs. oid handling in
-         PreparedStatement.setNull() calls
-       * [OPENJPA-311] - Problem loading classes with OSGi classloaders
-       * [OPENJPA-312] - derby fails with duplicate primary key(s) in group
-         by list
-       * [OPENJPA-313] - list of objects returned by query partially correct
-       * [OPENJPA-314] - Unenhanced complex id in MappedSuperclass causes NPE
-       * [OPENJPA-315] - Unenhanced generated id field of a primitive wrapper
-         type causes NPE
-       * [OPENJPA-320] - Do not use System Tables (SYS*) with DB2
-       * [OPENJPA-321] - DB2 ABS Casting problem
-       * [OPENJPA-322] - Timezone on the Calendar object lost in proxying
-       * [OPENJPA-323] - Cleanup some message text
-       * [OPENJPA-256] - java.lang.ClassNotFoundException:
-         org.apache.openjpa.util.CacheMap in a jetty spring environment
-
-Sub-task
-
-       * [OPENJPA-279] - Fixed missing lookup for non-jta-data-source in
-         JDBCConfigurationImpl.
-       * [OPENJPA-297] - Lazy loading must be ignored in certain unenhanced
-         cases
-       * [OPENJPA-298] - Miscellaneous documentation improvements
-       * [OPENJPA-299] - Provide a means to enable the old enhancing agent
-
-Improvements
-
-       * [OPENJPA-259] - Ability to parse EJB QL multiline queries in orm.xml
-       * [OPENJPA-266] - Add Extensibility: Change "private" field/method to
-         "protected" or "public" in OpenJPA classes to be extendable
-       * [OPENJPA-275] - Bulk updates: version information should be
-         automatically maintained when the query does not
-
-New Feature
-
-       * [OPENJPA-168] - sql optimize n rows query hint
-       * [OPENJPA-239] - Option for the reverse mapping tool to generate
-         mapping annotations
-       * [OPENJPA-262] - Event notification of BrokerFactory creation
-       * [OPENJPA-263] - Introducing getAll(List) method for data cache to be
-         called by loadAll() will allow data cache plug-ins to leverage the
-         advantage of any third-party cache that provides a way to get
-         multiple object in one call by providing a list of keys (oids).
-       * [OPENJPA-317] - API formalization pre-1.0
