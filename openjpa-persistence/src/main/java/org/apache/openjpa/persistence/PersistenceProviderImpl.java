@@ -136,7 +136,7 @@ public class PersistenceProviderImpl
             if (!Configurations.containsProperty(BrokerValue.KEY,
                 cp.getProperties())) {
                 cp.addProperty("openjpa." + BrokerValue.KEY, 
-                    BrokerValue.NON_FINALIZING_ALIAS);
+                    getDefaultBrokerAlias());
             }
 
             BrokerFactory factory = getBrokerFactory(cp, poolValue,
@@ -157,6 +157,15 @@ public class PersistenceProviderImpl
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
+    }
+
+    /*
+     * Returns a default Broker alias to be used when no openjpa.BrokerImpl
+     *  is specified. This method allows PersistenceProvider subclass to
+     *  override the default broker alias.
+     */
+    protected String getDefaultBrokerAlias() {
+        return BrokerValue.NON_FINALIZING_ALIAS;
     }
     
     /**
