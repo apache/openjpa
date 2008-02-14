@@ -460,7 +460,6 @@ public class OracleDictionary
                                     ("oracle.jdbc.OraclePreparedStatement").
                                     getField("FORM_NCHAR").get(null)
                             });
-                    return;
                 } catch (Exception e) {
                     log.warn(e);
                 }
