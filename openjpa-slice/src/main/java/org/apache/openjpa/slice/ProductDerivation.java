@@ -27,21 +27,34 @@ import org.apache.openjpa.slice.jdbc.DistributedJDBCBrokerFactory;
 /**
  * Derives configuration for Slice.
  * Introduces a specialized BrokerFactory aliased as <code>slice</code>.
- * All Slice specific configuration is prefixed as <code>slice.XXX</code>
+ * All Slice specific configuration is prefixed as 
+ * <code>openjpa.slice.*.*</code>
  * 
  * @author Pinaki Poddar 
  *
  */
 public class ProductDerivation extends AbstractProductDerivation implements
 		OpenJPAProductDerivation {
-
+    /**
+     * Prefix for all Slice-specific configuration properties. 
+     */
+    public static final String PREFIX_SLICE = "openjpa.slice";
+    
+    /**
+     * Hint key <code>openjpa.hint.slice.Target </code> to specify a subset of 
+     * slices for query. The value corresponding to the key is comma-separated
+     * list of slice identifiers.
+     *  
+     */
+    public static final String HINT_TARGET  = "openjpa.hint.slice.Target";
+    
 	@SuppressWarnings("unchecked")
 	public void putBrokerFactoryAliases(Map m) {
 		m.put("slice", DistributedJDBCBrokerFactory.class.getName());
 	}
 
 	public String getConfigurationPrefix() {
-		return "openjpa.slice";
+		return PREFIX_SLICE;
 	}
 
 	public int getType() {

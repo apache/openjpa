@@ -50,6 +50,7 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl {
 	 * operating set. The slice is assigned only if a StateManager has never
 	 * been assigned before.
 	 */
+	@Override
 	public OpenJPAStateManager persist(Object pc, Object id, boolean explicit,
 			OpCallbacks call) {
 		OpenJPAStateManager sm = getStateManager(pc);

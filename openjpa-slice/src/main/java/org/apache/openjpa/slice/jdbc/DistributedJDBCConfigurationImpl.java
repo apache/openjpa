@@ -49,6 +49,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.slice.DistributedBrokerImpl;
 import org.apache.openjpa.slice.DistributionPolicy;
 import org.apache.openjpa.slice.ExecutorServiceValue;
+import org.apache.openjpa.slice.ProductDerivation;
 import org.apache.openjpa.slice.Slice;
 import org.apache.openjpa.util.UserException;
 
@@ -76,10 +77,10 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     protected ExecutorServiceValue executorServicePlugin;
     protected PluginValue distributionPolicyPlugin;
 
-    public static final String PREFIX_SLICE = "openjpa.slice.";
-    public static final String PREFIX_OPENJPA = "openjpa.";
-    public static final String REGEX_DOT = "\\.";
     public static final String DOT = ".";
+    public static final String REGEX_DOT = "\\.";
+    public static final String PREFIX_SLICE = ProductDerivation.PREFIX_SLICE + DOT;
+    public static final String PREFIX_OPENJPA = "openjpa.";
     private static Localizer _loc =
             Localizer.forPackage(DistributedJDBCConfigurationImpl.class);
 
@@ -322,10 +323,11 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         if (sliceNames.isEmpty()) {
             throw new UserException(_loc.get("slice-none-configured"));
         } 
+        String unit = getPersistenceUnitName(original);
         for (String key : sliceNames) {
             JDBCConfiguration child = new JDBCConfigurationImpl();
             child.fromProperties(createSliceProperties(original, key));
-            child.setId(key);
+            child.setId(unit+DOT+key);
             Slice slice = new Slice(key, child);
             _slices.add(slice);
             if (log.isTraceEnabled())

@@ -21,7 +21,8 @@ package org.apache.openjpa.slice;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 
 /**
- * Represents a database slice of immutable logical name.
+ * Represents a database slice of immutable logical name, a configuration and
+ * status.
  * 
  * @author Pinaki Poddar 
  *

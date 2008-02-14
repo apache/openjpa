@@ -215,10 +215,8 @@ public abstract class PersistenceTestCase
             if (!meta.isMapped() || meta.isEmbeddedOnly() 
                 || Modifier.isAbstract(meta.getDescribedType().getModifiers()))
                 continue;
-            List all = em.createQuery("SELECT o FROM " + meta.getTypeAlias() + " o").
-                getResultList();
-            for (Object pc:all)
-                em.remove(pc);
+            em.createQuery("DELETE FROM " + meta.getTypeAlias() + " o").
+                executeUpdate();
         }
         em.getTransaction().commit();
         em.close();

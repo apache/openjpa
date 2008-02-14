@@ -33,13 +33,14 @@ public interface DistributionPolicy {
 	 * Gets the name of the slice where a given instance will be stored.
 	 *  
 	 * @param pc The newly persistent or to-be-merged object. 
-	 * @param slices list of names of the configured slices. The ordering of 
-	 * the list is either explicit (by the <code>slice.Names</code> property)
-	 * or implicit i.e. alphabetic if <code>slice.Names</code> is unspecified.  
+	 * @param slices list of names of the active slices. The ordering of 
+	 * the list is either explicit <code>openjpa.slice.Names</code> property
+	 * or implicit i.e. alphabetic order of available identifiers if 
+	 * <code>openjpa.slice.Names</code> is unspecified.  
 	 * @param context generic persistence context managing the given instance.
 	 * 
 	 * @return identifier of the slice. This name must match one of the
-	 * configured slice names. 
+	 * given slice names. 
 	 * @see DistributedConfiguration#getActiveSliceNames()
 	 */
 	String distribute(Object pc, List<String> slices, Object context);

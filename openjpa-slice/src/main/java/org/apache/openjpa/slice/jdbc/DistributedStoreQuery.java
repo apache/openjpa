@@ -29,6 +29,7 @@ import java.util.concurrent.Future;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreQuery;
 import org.apache.openjpa.kernel.ExpressionStoreQuery;
+import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.OrderingMergedResultObjectProvider;
 import org.apache.openjpa.kernel.QueryContext;
 import org.apache.openjpa.kernel.StoreQuery;
@@ -37,6 +38,7 @@ import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.slice.ProductDerivation;
 import org.apache.openjpa.util.StoreException;
 
 /**
@@ -63,8 +65,14 @@ class DistributedStoreQuery extends JDBCStoreQuery {
     public Executor newDataStoreExecutor(ClassMetaData meta, boolean subs) {
     	ParallelExecutor ex = new ParallelExecutor(this, meta, subs, _parser, 
     			ctx.getCompilation());
+    	
+    	FetchConfiguration fetch = getContext().getFetchConfiguration();
+    	DistributedStoreManager store = (DistributedStoreManager)getContext()
+    	    .getStoreContext().getStoreManager().getInnermostDelegate();
+        List<SliceStoreManager> targets = store.getTargets(fetch);
         for (StoreQuery q:_queries) {
-        	ex.addExecutor(q.newDataStoreExecutor(meta, subs));
+            if (targets.contains(((JDBCStoreQuery)q).getStore()))
+                ex.addExecutor(q.newDataStoreExecutor(meta, subs));
         }
         return ex;
     }

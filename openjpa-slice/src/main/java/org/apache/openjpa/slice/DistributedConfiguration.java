@@ -38,11 +38,11 @@ public interface DistributedConfiguration extends OpenJPAConfiguration {
 	/**
 	 * Gets the active slice identifiers. This list is determined by the
 	 * configuration properties either by explicit listing in 
-	 * <code>slice.Names</code> property or by scanning <code>slice.*.*</code>
-	 * properties.
+	 * <code>openjpa.slice.Names</code> property or by scanning 
+	 * <code>openjpa.slice.*.*</code> properties.
 	 * <br> 
 	 * The ordering of the slice identifiers is determined when they are
-	 * specified explicitly in <code>slice.Names</code> property or 
+	 * specified explicitly in <code>openjpa.slice.Names</code> property or 
 	 * ordered alphabetically when found by scanning the properties.
 	 * <br>
 	 * This list always returns the identifiers that are <em>active</em>, slices
@@ -60,7 +60,7 @@ public interface DistributedConfiguration extends OpenJPAConfiguration {
 	/**
 	 * Gets the slices of given status.
 	 * @param statuses list of status flags. If null, returns all slices 
-	 * irrespective of status;
+	 * irrespective of status.
 	 */
 	List<Slice> getSlices(Slice.Status...statuses);
 	

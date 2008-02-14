@@ -21,6 +21,7 @@ package org.apache.openjpa.slice.jdbc;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
@@ -61,6 +62,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.slice.DistributionPolicy;
+import org.apache.openjpa.slice.ProductDerivation;
 import org.apache.openjpa.slice.transaction.DistributedNaiveTransaction;
 import org.apache.openjpa.slice.transaction.DistributedTransactionManager;
 import org.apache.openjpa.slice.transaction.NaiveTransactionManager;
@@ -275,7 +277,8 @@ class DistributedStoreManager extends JDBCStoreManager {
             boolean subclasses, FetchConfiguration fetch) {
         ResultObjectProvider[] tmp = new ResultObjectProvider[_slices.size()];
         int i = 0;
-        for (SliceStoreManager slice : _slices) {
+        List<SliceStoreManager> targets = getTargets(fetch);
+        for (SliceStoreManager slice : targets) {
             tmp[i++] = slice.executeExtent(meta, subclasses, fetch);
         }
         return new MergedResultObjectProvider(tmp);
@@ -371,7 +374,8 @@ class DistributedStoreManager extends JDBCStoreManager {
                 return lookup(slice).initialize(sm, state, fetch, edata);
         }
         // not a part of Query result load. Look into the slices till found
-        for (SliceStoreManager slice : _slices) {
+        List<SliceStoreManager> targets = getTargets(fetch);
+        for (SliceStoreManager slice : targets) {
             if (slice.initialize(sm, state, fetch, edata)) {
                 sm.setImplData(slice.getName(), true);
                 return true;
@@ -500,6 +504,31 @@ class DistributedStoreManager extends JDBCStoreManager {
             list.add(slice.getConnection());
         DistributedConnection con = new DistributedConnection(list);
         return new RefCountConnection(con);
+    }
+    
+    /**
+     * Gets the list of slices mentioned as  
+     * {@link ProductDerivation#HINT_TARGET hint} of the given
+     * {@link FetchConfiguration#getHint(String) fetch configuration}. 
+     * 
+     * @return all active slices if a) the hint is not specified or b) a null 
+     * value or c) a non-String or d) matches no active slice.
+     */
+    List<SliceStoreManager> getTargets(FetchConfiguration fetch) {
+        if (fetch == null)
+            return _slices;
+        Object hint = fetch.getHint(ProductDerivation.HINT_TARGET);
+        if (hint == null || !(hint instanceof String)) 
+            return _slices;
+        List<String> targetNames = Arrays.asList(hint.toString().split("\\,"));
+        List<SliceStoreManager> targets = new ArrayList<SliceStoreManager>();
+        for (SliceStoreManager slice : _slices) {
+           if (targetNames.contains(slice.getName()))
+              targets.add(slice);
+           }
+          if (targets.isEmpty())
+            return _slices;
+        return targets;
     }
 
     private static class Flusher implements Callable<Collection> {

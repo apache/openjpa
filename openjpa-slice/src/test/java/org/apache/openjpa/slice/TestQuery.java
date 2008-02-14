@@ -18,11 +18,14 @@
  */
 package org.apache.openjpa.slice;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.slice.SlicePersistence;
 
 public class TestQuery extends SliceTestCase {
@@ -81,6 +84,21 @@ public class TestQuery extends SliceTestCase {
         }
         em.getTransaction().rollback();
         assertEquals(limit, result.size());
+    }
+    
+    public void testHint() {
+        List<String> targets = new ArrayList<String>();
+        targets.add("Even");
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Query query = em.createQuery("SELECT p FROM PObject p");
+        query.setHint(ProductDerivation.HINT_TARGET, "Even");
+        List result = query.getResultList();
+        for (Object pc : result) {
+            String slice = SlicePersistence.getSlice(pc);
+            assertTrue(targets.contains(slice));
+        }
+        em.getTransaction().rollback();
     }
     
     protected String getPersistenceUnitName() {
