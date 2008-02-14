@@ -31,7 +31,7 @@ public class TestQuery extends SliceTestCase {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         long id = System.currentTimeMillis();
-        for (int i=0;i<0;i++) {
+        for (int i=0;i<10;i++) {
             PObject pc = new PObject(id++);
             pc.setValue(i);
             em.persist(pc);
@@ -65,6 +65,24 @@ public class TestQuery extends SliceTestCase {
         for (Object r:result)
             System.err.println(r);
     }
+    
+    public void testSetMaxResult() {
+        EntityManager em = emf.createEntityManager();
+        int limit = 3;
+        em.getTransaction().begin();
+        List result = em.createQuery("SELECT p.value,p FROM PObject p ORDER BY p.value ASC")
+            .setMaxResults(limit).getResultList();
+        int i = 0;
+        for (Object row:result) {
+            Object[] line = (Object[])row;
+            int value = ((Integer)line[0]).intValue();
+            PObject pc = (PObject)line[1];
+            System.err.println(++i + "." + SlicePersistence.getSlice(pc) + ":" + pc.getId() + "," + pc.getValue());
+        }
+        em.getTransaction().rollback();
+        assertEquals(limit, result.size());
+    }
+    
     protected String getPersistenceUnitName() {
         return "ordering";
     }

@@ -34,6 +34,7 @@ import org.apache.openjpa.kernel.QueryContext;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
+import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.StoreException;
@@ -135,16 +136,23 @@ class DistributedStoreQuery extends JDBCStoreQuery {
         	boolean[] ascending = getAscending(q);
         	boolean isAscending = ascending.length > 0;
         	boolean isUnique    = q.getContext().isUnique();
+        	boolean hasRange    = q.getContext().getEndRange() != Long.MAX_VALUE;
+        	ResultObjectProvider result = null;
         	if (isUnique) {
-        	    return new UniqueResultObjectProvider(tmp, q, 
+        	    result = new UniqueResultObjectProvider(tmp, q, 
         	            getQueryExpressions());
-        	}
-        	if (isAscending) {
-        	    return new OrderingMergedResultObjectProvider(tmp, ascending, 
+        	} else if (isAscending) {
+        	    result = new OrderingMergedResultObjectProvider(tmp, ascending, 
                   (Executor[])executors.toArray(new Executor[executors.size()]),
                   q, params);
+        	} else {
+        	    result = new MergedResultObjectProvider(tmp);
         	}
-        	return new MergedResultObjectProvider(tmp);
+        	if (hasRange)
+        	    result = new RangeResultObjectProvider(result, 
+        	            q.getContext().getStartRange(), 
+        	            q.getContext().getEndRange());
+        	return result;
         }
         
         public Number executeDelete(StoreQuery q, Object[] params) {
