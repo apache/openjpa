@@ -37,7 +37,6 @@ import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.DataSourceFactory;
 import org.apache.openjpa.lib.conf.BooleanValue;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
-import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.conf.StringListValue;
 import org.apache.openjpa.lib.conf.StringValue;
@@ -55,6 +54,8 @@ import org.apache.openjpa.util.UserException;
 
 /**
  * Implements a distributed configuration of JDBCStoreManagers.
+ * The original configuration properties are analyzed to create a set of
+ * Slice specific properties with defaulting rules. 
  * 
  * @author Pinaki Poddar
  * 
@@ -67,6 +68,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     private Slice _master;
     
     private DecoratingDataSource virtualDataSource;
+    
     protected BooleanValue lenientPlugin;
     protected StringValue masterPlugin;
     protected StringListValue namesPlugin;
@@ -90,7 +92,6 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         Map p = cp.getProperties();
         String pUnit = getPersistenceUnitName(p);
         setDiagnosticContext(pUnit);
-        Log log = getConfigurationLog();
         
         brokerPlugin.setString(DistributedBrokerImpl.class.getName());
         
@@ -189,8 +190,6 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
 
     public DistributionPolicy getDistributionPolicyInstance() {
         if (distributionPolicyPlugin.get() == null) {
-//            Configurations.getProperty(distributionPolicyPlugin.getProperty(), m)
-//            distributionPolicyPlugin.setString(toProperties(false).get(key))
             distributionPolicyPlugin.instantiate(DistributionPolicy.class,
                     this, true);
         }
@@ -239,6 +238,8 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
                 handleBadConnection(isLenient, slice, ex);
             }
         }
+        if (dataSources.isEmpty())
+            throw new UserException(_loc.get("no-slice"));
         DistributedDataSource result = new DistributedDataSource(dataSources);
         return result;
     }
@@ -324,29 +325,29 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         for (String key : sliceNames) {
             JDBCConfiguration child = new JDBCConfigurationImpl();
             child.fromProperties(createSliceProperties(original, key));
-            child.setId(PREFIX_SLICE + key);
+            child.setId(key);
             Slice slice = new Slice(key, child);
             _slices.add(slice);
             if (log.isTraceEnabled())
                 log.trace(_loc.get("slice-configuration", key, child
                         .toProperties(false)));
         }
-        setMaster();
+        setMaster(original);
     }
 
     /**
-     * Finds the slices. If <code>slice.Names</code> property is available
-     * then the slices are ordered in the way they are listed. Otherwise scans
-     * all available slices by looking for property of the form
-     * <code>slice.XYZ.abc</code> where <code>XYZ</code> is the slice
-     * identifier and <code>abc</code> is openjpa property name. The slices
-     * are then ordered alphabetically.
+     * Finds the slices. If <code>openjpa.slice.Names</code> property is 
+     * specified then the slices are ordered in the way they are listed. 
+     * Otherwise scans all available slices by looking for property of the form
+     * <code>openjpa.slice.XYZ.abc</code> where <code>XYZ</code> is the slice
+     * identifier and <code>abc</code> is any openjpa property name. The slices
+     * are then ordered alphabetically by their identifier.
      */
     private List<String> findSlices(Map p) {
         List<String> sliceNames = new ArrayList<String>();
         
         Log log = getConfigurationLog();
-        String key = PREFIX_SLICE+namesPlugin.getProperty();
+        String key = PREFIX_SLICE + namesPlugin.getProperty();
         boolean explicit = p.containsKey(key);
         if (explicit) {
             String[] values = p.get(key).toString().split("\\,");
@@ -355,7 +356,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
                     sliceNames.add(name.trim());
         } else {
             if (log.isWarnEnabled())
-                log.warn(_loc.get("no-slice-names"));
+                log.warn(_loc.get("no-slice-names", key));
             sliceNames = scanForSliceNames(p);
             Collections.sort(sliceNames);
         }
@@ -365,6 +366,12 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         return sliceNames;
     }
     
+    /**
+     * Scan the given map for slice-specific property of the form 
+     * <code>openjpa.slice.XYZ.abc</code> (while ignoring 
+     * <code>openjpa.slice.XYZ</code> as they refer to slice-wide property)
+     * to determine the names of all available slices.
+     */
     private List<String> scanForSliceNames(Map p) {
         List<String> sliceNames = new ArrayList<String>();
         for (Object o : p.keySet()) {
@@ -379,17 +386,17 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         return sliceNames;
     }
 
-    static int getPartCount(String s) {
+    private static int getPartCount(String s) {
         return (s == null) ? 0 : s.split(REGEX_DOT).length;
     }
     
-    static String chopHead(String s, String head) {
+    private static String chopHead(String s, String head) {
         if (s.startsWith(head))
             return s.substring(head.length());
         return s;
     }
 
-    static String chopTail(String s, String tail) {
+    private static String chopTail(String s, String tail) {
         int i = s.lastIndexOf(tail);
         if (i == -1)
             return s;
@@ -436,14 +443,15 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     /**
      * Determine the master slice.
      */
-    private void setMaster() {
-        String masterSlice = masterPlugin.get();
+    private void setMaster(Map original) {
+        String key = PREFIX_SLICE + masterPlugin.getProperty();
+        Object masterSlice = original.get(key);
         Log log = getConfigurationLog();
         List<Slice> activeSlices = getSlices(null);
-        if (masterSlice == null || masterSlice.length() == 0) {
+        if (masterSlice == null) {
             _master = activeSlices.get(0);
             if (log.isWarnEnabled())
-                log.warn(_loc.get("no-master-slice", _master));
+                log.warn(_loc.get("no-master-slice", key, _master));
             return;
         }
         for (Slice slice:activeSlices)
@@ -482,5 +490,5 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
             executorServicePlugin.instantiate(ExecutorService.class, this);
         }
         return (ExecutorService) executorServicePlugin.get();
-    }
+    }    
 }

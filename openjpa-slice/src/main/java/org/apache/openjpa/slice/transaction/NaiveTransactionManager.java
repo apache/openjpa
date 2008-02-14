@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.slice.transaction;
 
+import java.sql.SQLException;
 import java.util.Set;
 
 import javax.transaction.HeuristicMixedException;
@@ -60,7 +61,12 @@ public class NaiveTransactionManager implements TransactionManager {
         DistributedNaiveTransaction txn = getTransaction(false);
         Set<SliceStoreManager> slices = txn.getEnlistedResources();
         for (SliceStoreManager slice : slices) {
-                slice.commit();
+            try {
+                if (!slice.getConnection().getAutoCommit())
+                    slice.commit();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -82,7 +88,12 @@ public class NaiveTransactionManager implements TransactionManager {
         DistributedNaiveTransaction txn = getTransaction(false);
         Set<SliceStoreManager> slices = txn.getEnlistedResources();
         for (SliceStoreManager slice : slices) {
-            slice.commit();
+            try {
+                if (!slice.getConnection().getAutoCommit())
+                    slice.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

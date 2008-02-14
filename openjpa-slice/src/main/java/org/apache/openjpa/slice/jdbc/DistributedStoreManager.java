@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.slice.jdbc;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -82,6 +84,7 @@ class DistributedStoreManager extends JDBCStoreManager {
     private boolean isXA;
     private TransactionManager _tm;
     private final DistributedJDBCConfiguration _conf;
+    private boolean _active = false;
     private Log _log;
     private static final Localizer _loc =
             Localizer.forPackage(DistributedStoreManager.class);
@@ -199,6 +202,9 @@ class DistributedStoreManager extends JDBCStoreManager {
     }
 
     public void begin() {
+        if (_active)
+            return;
+        _active = true;
         TransactionManager tm = getTransactionManager();
         for (SliceStoreManager slice : _slices) {
             try {
@@ -239,16 +245,21 @@ class DistributedStoreManager extends JDBCStoreManager {
     }
 
     public void close() {
+        _active = false;
         for (SliceStoreManager slice : _slices)
             slice.close();
     }
 
     public void commit() {
+        if (!_active) 
+            return;
         TransactionManager tm = getTransactionManager();
         try {
             tm.commit();
         } catch (Exception e) {
             throw new StoreException(e);
+        } finally {
+            _active = false;
         }
     }
 
@@ -280,6 +291,7 @@ class DistributedStoreManager extends JDBCStoreManager {
         return false;
     }
 
+    
     /**
      * Flush the given StateManagers after binning them to respective physical
      * slices.
@@ -309,7 +321,7 @@ class DistributedStoreManager extends JDBCStoreManager {
         }
         return exceptions;
     }
-
+    
     /**
      * Separate the given list of StateManagers in separate lists for each slice 
      * by the associated slice identifier of each StateManager.
@@ -421,11 +433,15 @@ class DistributedStoreManager extends JDBCStoreManager {
     }
 
     public void rollback() {
+        if (!_active)
+            return;
         TransactionManager tm = getTransactionManager();
         try {
             tm.rollback();
         } catch (Exception e) {
             throw new StoreException(e);
+        } finally {
+            _active = false;
         }
     }
 
@@ -475,6 +491,15 @@ class DistributedStoreManager extends JDBCStoreManager {
             } 
         }
         return _tm;
+    }
+    
+    @Override
+    protected RefCountConnection connectInternal() throws SQLException {
+        List<Connection> list = new ArrayList<Connection>();
+        for (SliceStoreManager slice : _slices)
+            list.add(slice.getConnection());
+        DistributedConnection con = new DistributedConnection(list);
+        return new RefCountConnection(con);
     }
 
     private static class Flusher implements Callable<Collection> {

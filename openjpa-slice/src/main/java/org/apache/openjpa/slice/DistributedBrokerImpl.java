@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.slice;
 
-import org.apache.openjpa.kernel.BrokerImpl;
+import org.apache.openjpa.kernel.FinalizingBrokerImpl;
 import org.apache.openjpa.kernel.OpCallbacks;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
@@ -35,7 +35,7 @@ import org.apache.openjpa.util.UserException;
  * 
  */
 @SuppressWarnings("serial")
-public class DistributedBrokerImpl extends BrokerImpl {
+public class DistributedBrokerImpl extends FinalizingBrokerImpl {
 	private transient String slice;
 
 	private static final Localizer _loc =
@@ -78,5 +78,15 @@ public class DistributedBrokerImpl extends BrokerImpl {
 					conf.getDistributionPolicyInstance().getClass().getName(),
 					slice, pc, conf.getActiveSliceNames() }));
 		return slice;
+	}
+	
+	@Override
+	public boolean endOperation() {
+	    try {
+	        return super.endOperation();
+	    } catch (Exception ex) {
+	        
+	    }
+	    return true;
 	}
 }

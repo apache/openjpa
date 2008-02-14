@@ -52,7 +52,7 @@ public class DistributedTransactionManager implements TransactionManager {
             Localizer.forPackage(DistributedTransactionManager.class);
 
     public void begin() throws NotSupportedException, SystemException {
-        DistributedXATransaction txn = getTransaction(false);
+        DistributedXATransaction txn = (DistributedXATransaction)getTransaction();
         int i = 1;
         Set<XAResource> resources = txn.getEnlistedResources();
         for (XAResource resource : resources) {
@@ -70,22 +70,24 @@ public class DistributedTransactionManager implements TransactionManager {
     public void commit() throws HeuristicMixedException,
             HeuristicRollbackException, IllegalStateException,
             RollbackException, SecurityException, SystemException {
-        DistributedXATransaction txn = getTransaction(true);
+        DistributedXATransaction txn = getTransactionOfCurrentThread(true);
         Set<XAResource> resources = txn.getEnlistedResources();
         int branchId = 1;
-        boolean nextPhase = true;
+        Exception failedFirstPhase = null;
+        Exception failedSecondPhase = null;
+        
         for (XAResource resource : resources) {
             XID branch = txn.getXID().branch(branchId++);
             try {
                 resource.end(branch, TMSUCCESS);
                 resource.prepare(branch);
             } catch (XAException e) {
-                nextPhase = false;
+                failedFirstPhase = e;
             }
         }
 
         branchId = 1; // reset
-        if (!nextPhase) {
+        if (failedFirstPhase != null) {
             for (XAResource resource : resources) {
                 try {
                     XID branch = txn.getXID().branch(branchId++);
@@ -93,20 +95,24 @@ public class DistributedTransactionManager implements TransactionManager {
                 } catch (XAException e) {
                     // ignore
                 }
-                throw new SystemException(_loc.get("prepare-failed")
-                        .getMessage());
+            }
+        } else {
+            branchId = 1; // reset
+            for (XAResource resource : resources) {
+                XID branch = txn.getXID().branch(branchId++);
+                try {
+                    resource.commit(branch, false);
+                } catch (XAException e) {
+                    failedSecondPhase = e;
+                }
             }
         }
-
-        branchId = 1; // reset
-        for (XAResource resource : resources) {
-            XID branch = txn.getXID().branch(branchId++);
-            try {
-                resource.commit(branch, false);
-            } catch (XAException e) {
-                throw new SystemException(e.getMessage());
-            }
-        }
+        txn.commit();
+        txns.set(null);
+        if (failedFirstPhase != null) {
+            throw new SystemException(failedFirstPhase.getMessage());
+        } else if (failedSecondPhase != null)
+            throw new SystemException(failedSecondPhase.getMessage());
     }
 
     public int getStatus() throws SystemException {
@@ -114,7 +120,10 @@ public class DistributedTransactionManager implements TransactionManager {
     }
 
     public Transaction getTransaction() throws SystemException {
-        return getTransaction(false);
+        DistributedXATransaction txn =  getTransactionOfCurrentThread(false);
+        if (txn == null)
+            txn = newTransaction();
+        return txn;
     }
 
     public void resume(Transaction arg0) throws IllegalStateException,
@@ -124,7 +133,9 @@ public class DistributedTransactionManager implements TransactionManager {
 
     public void rollback() throws IllegalStateException, SecurityException,
             SystemException {
-        DistributedXATransaction txn = getTransaction(true);
+        DistributedXATransaction txn = getTransactionOfCurrentThread(true);
+        if (txn == null)
+            return;
         Set<XAResource> slices = txn.getEnlistedResources();
         int branchId = 1;
         for (XAResource slice : slices) {
@@ -135,6 +146,8 @@ public class DistributedTransactionManager implements TransactionManager {
             } catch (XAException e) {
             }
         }
+        txn.rollback();
+        txns.set(null);
     }
 
     public void setRollbackOnly() throws IllegalStateException, SystemException {
@@ -173,19 +186,49 @@ public class DistributedTransactionManager implements TransactionManager {
      * transaction, a new transaction is created with a global identifier 
      * and associated with the current thread.
      */
-    DistributedXATransaction getTransaction(boolean mustExist) {
-        DistributedXATransaction txn = txns.get();
-        if (txn == null) {
-            if (mustExist)
-                throw new IllegalStateException(_loc.get("no-txn-on-thread",
-                        Thread.currentThread().getName()).getMessage());
-            byte[] global =
-                    Long.toHexString(System.currentTimeMillis()).getBytes();
-            XID xid = new XID(0, global, new byte[] { 0x1 });
-            txn = new DistributedXATransaction(xid, this);
-            txns.set(txn);
-        }
+//    DistributedXATransaction getTransaction(boolean create, boolean mustExist) {
+//        DistributedXATransaction txn = txns.get();
+//        if (txn == null && mustExist) {
+//            throw new IllegalStateException(_loc.get("no-txn-on-thread",
+//                Thread.currentThread().getName()).getMessage());
+//        }
+////        if (txn != null && !mustExist) {
+////            throw new IllegalStateException(_loc.get("txn-exists--on-thread",
+////                 txn.getXID(), Thread.currentThread().getName()).getMessage());
+////        }
+//        if (create && txn == null) {
+//        }
+//        
+//        
+//        return txn;
+//    }
+    
+//    DistributedXATransaction getTransactionOfCurrentThread() {
+//        return txns.get();
+//    }
+    
+    DistributedXATransaction getTransactionOfCurrentThread(boolean mustExist) {
+        DistributedXATransaction txn =  txns.get();
+        if (txn == null && mustExist)
+            throw new IllegalStateException(_loc.get("no-txn-on-thread",
+            Thread.currentThread().getName()).getMessage());
         return txn;
     }
+    
+    DistributedXATransaction newTransaction() {
+        DistributedXATransaction txn = getTransactionOfCurrentThread(false);
+        if (txn != null)
+            throw new IllegalStateException(_loc.get("txn-exists-on-thread",
+            txn.getXID(), Thread.currentThread().getName()).getMessage());
+        
+        byte[] global =
+            Long.toHexString(System.currentTimeMillis()).getBytes();
+        XID xid = new XID(0, global, new byte[] { 0x1 });
+        txn = new DistributedXATransaction(xid, this);
+        txns.set(txn);
+        
+        return txn;
+    }
+    
 
 }

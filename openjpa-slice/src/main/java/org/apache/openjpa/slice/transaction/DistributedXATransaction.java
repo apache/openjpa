@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.RollbackException;
+import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -39,13 +40,11 @@ import javax.transaction.xa.XAResource;
  *
  */
 class DistributedXATransaction implements Transaction {
-    private static ThreadLocal<Transaction> _trans = new ThreadLocal<Transaction>();
     private Set<XAResource> _slices = new HashSet<XAResource>();
     private Set<Synchronization> _syncs = new HashSet<Synchronization>();
-    private final TransactionManager _tm;
+//    private final TransactionManager _tm;
     private final XID xid;
     private int _status;
-    private boolean _rollbackOnly;
     
     /**
      * Construct with 
@@ -54,7 +53,7 @@ class DistributedXATransaction implements Transaction {
      */
     DistributedXATransaction(XID xid, TransactionManager tm) {
         this.xid = xid;
-        this._tm = tm;
+        _status = Status.STATUS_ACTIVE;
     }
     
     public XID getXID() {
@@ -64,7 +63,8 @@ class DistributedXATransaction implements Transaction {
     public void commit() throws HeuristicMixedException,
             HeuristicRollbackException, RollbackException, SecurityException,
             SystemException {
-        _tm.commit();
+        _status = Status.STATUS_COMMITTED;
+        _slices.clear();
     }
 
     public boolean delistResource(XAResource arg0, int arg1)
@@ -87,11 +87,12 @@ class DistributedXATransaction implements Transaction {
     }
 
     public void rollback() throws IllegalStateException, SystemException {
-        _tm.rollback();
+        _status = Status.STATUS_ROLLEDBACK;
+        _slices.clear();
     }
 
     public void setRollbackOnly() throws IllegalStateException, SystemException {
-        _rollbackOnly = true;
+        _status = Status.STATUS_MARKED_ROLLBACK;
     }
     
     Set<XAResource> getEnlistedResources() {

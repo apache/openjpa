@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -97,7 +98,7 @@ public class ExecutorServiceValue extends PluginValue {
             }
             obj = new ThreadPoolExecutor(defaultSize, defaultSize,
                             keepAliveTime, TimeUnit.SECONDS,
-                            new PriorityBlockingQueue<Runnable>(), factory);
+                            new SynchronousQueue<Runnable>(), factory);
 
             Configurations.configureInstance(obj, conf, opts, getProperty());
         }
