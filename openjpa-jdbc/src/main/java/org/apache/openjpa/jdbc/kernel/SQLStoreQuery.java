@@ -226,11 +226,10 @@ public class SQLStoreQuery
             try {
                 stmnt = prepareCall(conn, buf);
 
-                int index = 0;
-                for (Iterator i = paramList.iterator(); i.hasNext() && 
-                    stmnt != null;)
-                    dict.setUnknown(stmnt, ++index, i.next(), null);
-                
+                buf.setParameters(paramList);
+                if (stmnt != null)
+                    buf.setParameters(stmnt);
+
                 int count = executeUpdate(store, conn, stmnt, buf);                
                 return Numbers.valueOf(count);
             } catch (SQLException se) {
