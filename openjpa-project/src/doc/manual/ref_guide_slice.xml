@@ -87,6 +87,19 @@
              update to any of these instances is committed to the appropriate 
              original database slice. 
             </para>
+            
+            <note>
+            <para>
+            You can find the original slice of an instance <code>pc</code> by 
+            the static utility method  
+            <methodname>SlicePersistence.getSlice(pc)</methodname>.
+            This method returns the slice identifier string associated with the
+            given <emphasis>managed</emphasis> instance. If the instance is not
+            being managed then the method return null because any unmanaged or
+            detached instance is not associated with any slice. 
+            </para>
+            </note>
+            
             <para>
             <warning>Currently, there is no provision for migrating an 
             existing instance from one slice to another.
@@ -129,7 +142,34 @@
             The aggregate operation <code>AVG()</code> is not supported.
             </warning>
             </para>
+            
          </section>
+         
+         <section><title>Targeted Query</title>
+            <para>
+            You can target the query only to a subset of slices rather than
+            all slices by setting a <emphasis>hint</emphasis>. The hint key
+            <code>openjpa.hint.slice.Target</code> is set on any query and 
+            hint value is
+            comma-separated list of slice identifiers. The following 
+            example shows how to target a query only to slice <code>"One"</code>
+                          
+            <programlisting>
+              <![CDATA[EntityManager em = ...;
+              em.getTransaction().begin();
+              String hint = "openjpa.hint.slice.Target";
+              Query query = em.createQuery("SELECT p FROM PObject").setHint(hint, "One");
+              List result = query.getResultList();
+              // verify that each instance is originaing from the given slice
+              for (Object pc : result) {
+                 String sliceOrigin = SlicePersistence.getSlice(pc);
+                 assertTrue ("One", sliceOrigin);
+              }
+              ]]>
+            </programlisting> 
+            </para>
+         </section>
+         
          
          <section><title>Distributed Transaction</title>
             <para> 
