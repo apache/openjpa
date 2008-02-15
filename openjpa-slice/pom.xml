@@ -63,12 +63,6 @@
             <version>${pom.version}</version>
             <scope>test</scope>
         </dependency>
-                <dependency>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
-                    <version>5.1.5</version>
-            <scope>test</scope>
-                </dependency>
     </dependencies>
         <profiles>
         <!-- Profile for testing with Apache Derby -->
