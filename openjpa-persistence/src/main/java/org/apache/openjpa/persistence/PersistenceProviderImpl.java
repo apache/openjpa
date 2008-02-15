@@ -124,7 +124,7 @@ public class PersistenceProviderImpl
                 (CLASS_TRANSFORMER_OPTIONS, pui.getProperties());
             try {
                 pui.addTransformer(new ClassTransformerImpl(cp, ctOpts,
-                    pui.getNewTempClassLoader()));
+                    pui.getNewTempClassLoader(), newConfigurationImpl()));
             } catch (Exception e) {
                 // fail gracefully
                 transformerException = e;
@@ -168,6 +168,16 @@ public class PersistenceProviderImpl
         return BrokerValue.NON_FINALIZING_ALIAS;
     }
     
+    /*
+     * Return a new instance of Configuration subclass used by entity
+     * enhancement in ClassTransformerImpl. If OpenJPAConfigurationImpl
+     * instance is used, configuration options declared in configuration
+     * sub-class will not be recognized and a warning is posted in the log.
+     */
+    protected OpenJPAConfiguration newConfigurationImpl() {
+        return new OpenJPAConfigurationImpl();
+    }
+    
     /**
      * Java EE 5 class transformer.
      */
@@ -177,9 +187,7 @@ public class PersistenceProviderImpl
         private final ClassFileTransformer _trans;
 
         private ClassTransformerImpl(ConfigurationProvider cp, String props, 
-            final ClassLoader tmpLoader) {
-            // create an independent conf for enhancement
-            OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
+            final ClassLoader tmpLoader, OpenJPAConfiguration conf) {
             cp.setInto(conf);
             // don't allow connections
             conf.setConnectionUserName(null);
