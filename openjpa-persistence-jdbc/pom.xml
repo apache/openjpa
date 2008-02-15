@@ -322,11 +322,8 @@
 
                         <!-- exclude classes that include a $; inner classes
                              are not test cases per OpenJPA standards -->
-                        <exclude>org/apache/openjpa/**/*$*</exclude>
-                        <exclude>org/apache/openjpa/**/*.*</exclude>
-
-                        <!-- exclude failing Slice tests -->
-                        <exclude>**/slice/**/*.java</exclude>
+                        <exclude>org/apache/openjpa/**/*$*.class</exclude>
+                        <exclude>org/apache/openjpa/**/*.*.class</exclude>
 
                         <!-- exclude new tests that aren't passing yet -->
                         <exclude>org/apache/openjpa/persistence/annotations/TestAdvAnnot.java</exclude>
