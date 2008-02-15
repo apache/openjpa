@@ -155,14 +155,14 @@
                 <!-- ======================================================= -->
                 <!-- All tests are excluded currently                        -->
                 <!-- ======================================================= -->
-                <!--  configuration>
+                <configuration>
                      <includes>
                         <include>**/DummyTest.java</include>
                      </includes>
                      <excludes>
                         <exclude>**/Test*.java</exclude>
                      </excludes>
-                </configuration -->
+                </configuration>
            </plugin>
             
         </plugins>
