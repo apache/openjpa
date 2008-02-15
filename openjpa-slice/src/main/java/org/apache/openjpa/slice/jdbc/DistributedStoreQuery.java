@@ -38,7 +38,6 @@ import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.slice.ProductDerivation;
 import org.apache.openjpa.util.StoreException;
 
 /**
@@ -88,7 +87,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
             ((DistributedJDBCConfiguration)getStore().getConfiguration());
         return conf.getExecutorServiceInstance();
     }
-
+    
 	/**
 	 * Executes queries on multiple databases.
 	 * 
@@ -165,6 +164,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
         
         public Number executeDelete(StoreQuery q, Object[] params) {
         	Iterator<StoreQuery> qs = owner._queries.iterator();
+            owner.getStore().getContext().beginStore();
         	final List<Future<Number>> futures = new ArrayList<Future<Number>>();
         	for (Executor ex:executors) {
         		DeleteExecutor call = new DeleteExecutor();
@@ -190,6 +190,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
         
         public Number executeUpdate(StoreQuery q, Object[] params) {
         	Iterator<StoreQuery> qs = owner._queries.iterator();
+            owner.getStore().getContext().beginStore();
         	final List<Future<Number>> futures = new ArrayList<Future<Number>>();
         	for (Executor ex:executors) {
         		UpdateExecutor call = new UpdateExecutor();
