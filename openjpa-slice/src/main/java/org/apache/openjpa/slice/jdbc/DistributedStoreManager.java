@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -34,7 +33,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import javax.naming.ConfigurationException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
@@ -64,7 +62,6 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.slice.DistributionPolicy;
 import org.apache.openjpa.slice.ProductDerivation;
 import org.apache.openjpa.slice.transaction.DistributedNaiveTransaction;
-import org.apache.openjpa.slice.transaction.DistributedTransactionManager;
 import org.apache.openjpa.slice.transaction.NaiveTransactionManager;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.StoreException;
@@ -105,11 +102,12 @@ class DistributedStoreManager extends JDBCStoreManager {
         _conf = conf;
         _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
         _slices = new ArrayList<SliceStoreManager>();
-        for (String name : conf.getActiveSliceNames()) {
+        List<String> sliceNames = conf.getActiveSliceNames();
+        for (String name : sliceNames) {
             SliceStoreManager slice = new SliceStoreManager
                 (conf.getSlice(name));
             _slices.add(slice);
-            if (slice.getName().equals(conf.getMaster().getName()))
+            if (name.equals(conf.getMaster().getName()))
                 _master = slice;
         }
     }
@@ -140,15 +138,13 @@ class DistributedStoreManager extends JDBCStoreManager {
     }
 
     private String assignSlice(OpenJPAStateManager sm) {
-        PersistenceCapable pc = sm.getPersistenceCapable();
-        String slice =
-                _conf.getDistributionPolicyInstance().distribute(pc,
-                        _conf.getActiveSliceNames(), getContext());
-        if (!_conf.getActiveSliceNames().contains(slice)) {
+        Object pc = sm.getPersistenceCapable();
+        DistributionPolicy policy = _conf.getDistributionPolicyInstance();
+        List<String> sliceNames = _conf.getActiveSliceNames();
+        String slice =policy.distribute(pc, sliceNames, getContext());
+        if (!sliceNames.contains(slice)) {
             throw new UserException(_loc.get("bad-policy-slice", new Object[] {
-                    _conf.getDistributionPolicyInstance().getClass().getName(),
-                    slice, sm.getPersistenceCapable(), 
-                    _conf.getActiveSliceNames() }));
+                    policy.getClass().getName(), slice, pc, sliceNames }));
         }
         sm.setImplData(slice, true);
         return slice;
@@ -275,9 +271,9 @@ class DistributedStoreManager extends JDBCStoreManager {
 
     public ResultObjectProvider executeExtent(ClassMetaData meta,
             boolean subclasses, FetchConfiguration fetch) {
-        ResultObjectProvider[] tmp = new ResultObjectProvider[_slices.size()];
         int i = 0;
         List<SliceStoreManager> targets = getTargets(fetch);
+        ResultObjectProvider[] tmp = new ResultObjectProvider[targets.size()];
         for (SliceStoreManager slice : targets) {
             tmp[i++] = slice.executeExtent(meta, subclasses, fetch);
         }
