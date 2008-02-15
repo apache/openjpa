@@ -27,23 +27,15 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import com.sun.org.apache.regexp.internal.REUtil;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.util.*;
+
+import org.apache.regexp.REUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.MappingTool;
 
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
-import java.lang.annotation.Annotation;
-import junit.framework.*;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
 public class TestBuildSchema extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
