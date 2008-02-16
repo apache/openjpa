@@ -29,7 +29,6 @@ import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import javax.transaction.TransactionManager;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -73,7 +72,6 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     protected BooleanValue lenientPlugin;
     protected StringValue masterPlugin;
     protected StringListValue namesPlugin;
-    protected PluginValue txnMgrPlugin;
     protected ExecutorServiceValue executorServicePlugin;
     protected PluginValue distributionPolicyPlugin;
 
@@ -104,17 +102,6 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         masterPlugin = addString("Master");
         
         namesPlugin = addStringList("Names");
-        
-        txnMgrPlugin = addPlugin("TransactionPolicy", true);
-        txnMgrPlugin.setAlias("default", 
-                "org.apache.openjpa.slice.transaction.NaiveTransactionManager");
-        txnMgrPlugin.setAlias("xa", 
-                "org.apache.openjpa.slice.transaction.DistributedTransactionManager");
-        txnMgrPlugin.setAlias("jndi", 
-                "org.apache.openjpa.slice.transaction.LookUpTransactionManager");
-        txnMgrPlugin.setDefault("default");
-        txnMgrPlugin.setString("default");
-        
         
         executorServicePlugin = new ExecutorServiceValue();
         addValue(executorServicePlugin);
@@ -464,21 +451,6 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         }
     }
     
-    public String getTransactionManager() {
-        return txnMgrPlugin.getString();
-    }
-
-    public void setTransactionManager(TransactionManager txnManager) {
-        txnMgrPlugin.set(txnManager);
-    }
-
-    public TransactionManager getTransactionManagerInstance() {
-        if (txnMgrPlugin.get() == null) {
-            txnMgrPlugin.instantiate(TransactionManager.class, this);
-        }
-        return (TransactionManager) txnMgrPlugin.get();
-    }
-
     public String getExecutorService() {
         return executorServicePlugin.getString();
     }

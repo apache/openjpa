@@ -215,8 +215,8 @@ public abstract class PersistenceTestCase
             if (!meta.isMapped() || meta.isEmbeddedOnly() 
                 || Modifier.isAbstract(meta.getDescribedType().getModifiers()))
                 continue;
-            em.createQuery("DELETE FROM " + meta.getTypeAlias() + " o").
-                executeUpdate();
+//            em.createQuery("DELETE FROM " + meta.getTypeAlias() + " o").
+//                executeUpdate();
         }
         em.getTransaction().commit();
         em.close();

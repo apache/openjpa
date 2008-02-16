@@ -28,12 +28,10 @@ public class PObject {
 	
 	private int value;
 	
-	public PObject() {
-		this(System.currentTimeMillis());
-	}
+	private static long idCounter = System.currentTimeMillis();
 	
-	public PObject(long id) {
-		this.id = id;
+	public PObject() {
+		id = ++idCounter;
 	}
 	
 	public long getId() {

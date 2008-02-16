@@ -119,7 +119,7 @@ class DistributedConnection implements Connection {
 	}
 
 	public boolean isClosed() throws SQLException {
-		boolean ret = false;
+		boolean ret = true;
 		for (Connection c : real) {
 			ret &= c.isClosed();
 		}
@@ -127,7 +127,7 @@ class DistributedConnection implements Connection {
 	}
 
 	public boolean isReadOnly() throws SQLException {
-		boolean ret = false;
+		boolean ret = true;
 		for (Connection c : real) {
 			ret &= c.isReadOnly();
 		}

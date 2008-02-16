@@ -22,7 +22,12 @@
         <class>org.apache.openjpa.slice.PObject</class>
         <class>org.apache.openjpa.slice.Person</class>
         <class>org.apache.openjpa.slice.Address</class>
+        <properties>
+         <property name="openjpa.Log" value="DefaultLevel=WARN, Enhance=TRACE"/>
+        </properties>
     </persistence-unit>
+    
+    
    <!-- ==================================================================== -->
    <!-- Configuration for testing basic per-slice configuration              -->
    <!-- ==================================================================== -->
@@ -36,12 +41,13 @@
          <property name="openjpa.slice.DistributionPolicy"  value="org.apache.openjpa.slice.policy.UserDistributionPolicy"/>
          <property name="openjpa.slice.ThreadingPolicy"     value="fixed"/>
 
-         <property name="openjpa.Log"                       value="DefaultLevel=WARN, Enhance=TRACE, SQL=TRACE"/>
-         <property name="openjpa.ConnectionDriverName"      value="com.mysql.jdbc.Driver"/>
-         
-         <property name="openjpa.slice.One.ConnectionURL"   value="jdbc:mysql://localhost/slice1"/>
-         <property name="openjpa.slice.Two.ConnectionURL"   value="jdbc:mysql://localhost/slice2"/>
-         <property name="openjpa.slice.Three.ConnectionURL" value="jdbc:mysql://localhost/slice3"/>
+         <property name="openjpa.Log"                       value="DefaultLevel=INFO, Enhance=TRACE, SQL=TRACE"/>
+         <property name="openjpa.ConnectionDriverName"      value="org.apache.derby.jdbc.EmbeddedDriver"/>
+         <property name="openjpa.ConnectionUserName"        value=""/>
+         <property name="openjpa.ConnectionPassword"        value=""/>
+         <property name="openjpa.slice.One.ConnectionURL"   value="jdbc:derby:target/database/openjpa-slice1;create=true"/>
+         <property name="openjpa.slice.Two.ConnectionURL"   value="jdbc:derby:target/database/openjpa-slice2;create=true"/>
+         <property name="openjpa.slice.Three.ConnectionURL" value="jdbc:some-bad-url"/>
          
       </properties>
    </persistence-unit>
@@ -50,19 +56,20 @@
       <class>org.apache.openjpa.slice.PObject</class>
       <properties>
          <property name="openjpa.BrokerFactory" value="slice"/>
-         <property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
+         <property name="openjpa.ConnectionDriverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
 
          <property name="openjpa.slice.Names" value="One,Two"/>
          <property name="openjpa.slice.DistributionPolicy" value="org.apache.openjpa.slice.policy.UserDistributionPolicy"/>
-         <property name="openjpa.slice.TransactionPolicy" value="xa"/>
          
-         <property name="openjpa.slice.One.ConnectionDriverName" value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"/>
-         <property name="openjpa.slice.One.ConnectionProperties" value="url=jdbc:mysql://localhost/slice1"/>
-         <property name="openjpa.slice.Two.ConnectionDriverName" value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"/>
-         <property name="openjpa.slice.Two.ConnectionProperties" value="url=jdbc:mysql://localhost/slice2"/>
+         <property name="openjpa.ConnectionUserName"        value=""/>
+         <property name="openjpa.ConnectionPassword"        value=""/>
+         <property name="openjpa.slice.One.ConnectionDriverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+         <property name="openjpa.slice.One.ConnectionURL" value="jdbc:derby:target/database/openjpa-slice1;create=true"/>
+         <property name="openjpa.slice.Two.ConnectionDriverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+         <property name="openjpa.slice.Two.ConnectionURL" value="jdbc:derby:target/database/openjpa-slice2;create=true"/>
          
          <property name="openjpa.Multithreaded" value="false"/>
-         <property name="openjpa.Log" value="DefaultLevel=WARN, Enhance=TRACE, SQL=TRACE"/>
+         <property name="openjpa.Log" value="DefaultLevel=INFO, Enhance=TRACE, SQL=TRACE"/>
          <property name="openjpa.jdbc.SynchronizeMappings" value="refresh"/>
          <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
          <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
@@ -78,17 +85,17 @@
         <class>org.apache.openjpa.slice.Address</class>
 		<properties>
             <property name="openjpa.BrokerFactory" value="slice"/>
-            <property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
+            <property name="openjpa.ConnectionDriverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
             <property name="openjpa.slice.Names" value="One,Two"/>
             <property name="openjpa.slice.Master" value="Two"/>
-            <property name="openjpa.slice.One.ConnectionURL" value="jdbc:mysql://localhost/slice1"/>
-            <property name="openjpa.slice.Two.ConnectionURL" value="jdbc:mysql://localhost/slice2"/>
-            <property name="openjpa.ConnectionUserName" value="root"/>
-            <property name="openjpa.ConnectionPassword" value="hello"/>
+            <property name="openjpa.slice.One.ConnectionURL" value="jdbc:derby:target/database/openjpa-slice1;create=true"/>
+            <property name="openjpa.slice.Two.ConnectionURL" value="jdbc:derby:target/database/openjpa-slice2;create=true"/>
+            <property name="openjpa.ConnectionUserName" value=""/>
+            <property name="openjpa.ConnectionPassword" value=""/>
             <property name="openjpa.slice.DistributionPolicy" value="org.apache.openjpa.slice.policy.UserDistributionPolicy"/>
             <property name="openjpa.slice.Lenient" value="false"/>
             
-            <property name="openjpa.Connection2URL" value="jdbc:mysql://localhost/slice1"/>
+            <property name="openjpa.Connection2URL" value="jdbc:derby:target/database/openjpa-slice1;create=true"/>
 	        <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
             <property name="openjpa.QueryCompilationCache" value="false"/>
    	        <property name="openjpa.Log" value="DefaultLevel=WARN, Enhance=TRACE, SQL=TRACE"/>
@@ -101,15 +108,15 @@
         <class>org.apache.openjpa.slice.PObject</class>
         <properties>
             <property name="openjpa.BrokerFactory" value="slice"/>
-            <property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
-            <property name="openjpa.slice.Even.ConnectionURL" value="jdbc:mysql://localhost/slice1"/>
-            <property name="openjpa.slice.Odd.ConnectionURL" value="jdbc:mysql://localhost/slice2"/>
-            <property name="openjpa.ConnectionUserName" value="root"/>
-            <property name="openjpa.ConnectionPassword" value="hello"/>
+            <property name="openjpa.ConnectionDriverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+            <property name="openjpa.slice.Even.ConnectionURL" value="jdbc:derby:target/database/openjpa-slice1;create=true"/>
+            <property name="openjpa.slice.Odd.ConnectionURL" value="jdbc:derby:target/database/openjpa-slice2;create=true"/>
+            <property name="openjpa.ConnectionUserName" value=""/>
+            <property name="openjpa.ConnectionPassword" value=""/>
             <property name="openjpa.slice.DistributionPolicy" value="org.apache.openjpa.slice.policy.EvenOddDistributionPolicy"/>
             <property name="openjpa.slice.Lenient" value="false"/>
             
-            <property name="openjpa.Connection2URL" value="jdbc:mysql://localhost/slice1"/>
+            <property name="openjpa.Connection2URL" value="jdbc:derby:target/database/openjpa-slice1;create=true"/>
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
             <property name="openjpa.Log" value="DefaultLevel=WARN, Enhance=TRACE, SQL=TRACE"/>
             <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>

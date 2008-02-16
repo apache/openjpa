@@ -108,8 +108,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
         		boolean subclasses, ExpressionParser parser, Object parsed) {
         	super(dsq, meta, subclasses, parser, parsed);
         	owner = dsq;
-        	threadPool = ((DistributedJDBCConfiguration)dsq.getStore()
-        	        .getConfiguration()).getExecutorServiceInstance();
+        	threadPool = dsq.getExecutorServiceInstance();
         }
         
         /**
@@ -164,7 +163,6 @@ class DistributedStoreQuery extends JDBCStoreQuery {
         
         public Number executeDelete(StoreQuery q, Object[] params) {
         	Iterator<StoreQuery> qs = owner._queries.iterator();
-            owner.getStore().getContext().beginStore();
         	final List<Future<Number>> futures = new ArrayList<Future<Number>>();
         	for (Executor ex:executors) {
         		DeleteExecutor call = new DeleteExecutor();
@@ -190,7 +188,6 @@ class DistributedStoreQuery extends JDBCStoreQuery {
         
         public Number executeUpdate(StoreQuery q, Object[] params) {
         	Iterator<StoreQuery> qs = owner._queries.iterator();
-            owner.getStore().getContext().beginStore();
         	final List<Future<Number>> futures = new ArrayList<Future<Number>>();
         	for (Executor ex:executors) {
         		UpdateExecutor call = new UpdateExecutor();

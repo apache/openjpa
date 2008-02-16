@@ -24,7 +24,6 @@ import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InternalException;
-import org.apache.openjpa.util.UserException;
 
 /**
  * Aggregates individual single query results from different databases.

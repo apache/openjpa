@@ -33,11 +33,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
-
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.ConnectionInfo;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -53,7 +48,6 @@ import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
-import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.Localizer;
@@ -61,8 +55,6 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.slice.DistributionPolicy;
 import org.apache.openjpa.slice.ProductDerivation;
-import org.apache.openjpa.slice.transaction.DistributedNaiveTransaction;
-import org.apache.openjpa.slice.transaction.NaiveTransactionManager;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UserException;
@@ -80,11 +72,7 @@ import org.apache.openjpa.util.UserException;
 class DistributedStoreManager extends JDBCStoreManager {
     private final List<SliceStoreManager> _slices;
     private JDBCStoreManager _master;
-    private boolean isXA;
-    private TransactionManager _tm;
     private final DistributedJDBCConfiguration _conf;
-    private boolean _active = false;
-    private Log _log;
     private static final Localizer _loc =
             Localizer.forPackage(DistributedStoreManager.class);
     private static ExecutorService threadPool = Executors.newCachedThreadPool();
@@ -100,7 +88,6 @@ class DistributedStoreManager extends JDBCStoreManager {
     public DistributedStoreManager(DistributedJDBCConfiguration conf) {
         super();
         _conf = conf;
-        _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
         _slices = new ArrayList<SliceStoreManager>();
         List<String> sliceNames = conf.getActiveSliceNames();
         for (String name : sliceNames) {
@@ -199,37 +186,6 @@ class DistributedStoreManager extends JDBCStoreManager {
         _master.beforeStateChange(sm, fromState, toState);
     }
 
-    public void begin() {
-        if (_active)
-            return;
-        _active = true;
-        TransactionManager tm = getTransactionManager();
-        for (SliceStoreManager slice : _slices) {
-            try {
-                Transaction txn = tm.getTransaction();
-                if (isXA) {
-                    txn.enlistResource(slice.getXAConnection().getXAResource());
-                } else { // This is the only place where casting to our
-                         // internal implementation classes become necessary
-                    ((DistributedNaiveTransaction) txn).enlistResource(slice);
-                }
-            } catch (Exception e) {
-                throw new InternalException(e);
-            }
-        }
-
-        try {
-            tm.begin();
-        } catch (Exception e) {
-            throw new StoreException(e);
-        }
-    }
-
-    Log getLog(SliceStoreManager slice) {
-        return slice.getConfiguration()
-                .getLog(OpenJPAConfiguration.LOG_RUNTIME);
-    }
-
     public void beginOptimistic() {
         for (SliceStoreManager slice : _slices)
             slice.beginOptimistic();
@@ -240,25 +196,6 @@ class DistributedStoreManager extends JDBCStoreManager {
         for (SliceStoreManager slice : _slices)
             ret = slice.cancelAll() & ret;
         return ret;
-    }
-
-    public void close() {
-        _active = false;
-        for (SliceStoreManager slice : _slices)
-            slice.close();
-    }
-
-    public void commit() {
-        if (!_active) 
-            return;
-        TransactionManager tm = getTransactionManager();
-        try {
-            tm.commit();
-        } catch (Exception e) {
-            throw new StoreException(e);
-        } finally {
-            _active = false;
-        }
     }
 
     public int compareVersion(OpenJPAStateManager sm, Object v1, Object v2) {
@@ -421,47 +358,15 @@ class DistributedStoreManager extends JDBCStoreManager {
         return ret;
     }
 
-    public void releaseConnection() {
-        for (SliceStoreManager slice : _slices)
-            slice.releaseConnection();
-
-    }
-
-    public void retainConnection() {
-        for (SliceStoreManager slice : _slices)
-            slice.retainConnection();
-    }
-
-    public void rollback() {
-        if (!_active)
-            return;
-        TransactionManager tm = getTransactionManager();
-        try {
-            tm.rollback();
-        } catch (Exception e) {
-            throw new StoreException(e);
-        } finally {
-            _active = false;
-        }
-    }
-
-    public void rollbackOptimistic() {
-        for (SliceStoreManager slice : _slices)
-            slice.rollbackOptimistic();
-    }
-
     /**
      * Sets the context for this receiver and all its underlying slices.
      */
     public void setContext(StoreContext ctx) {
         super.setContext(ctx);
-        isXA = true;
         for (SliceStoreManager store : _slices) {
             store.setContext(ctx, 
                     (JDBCConfiguration)store.getSlice().getConfiguration());
-            isXA &= store.isXAEnabled();
         }
-        _tm = getTransactionManager();
     }
 
     private SliceStoreManager lookup(String name) {
@@ -475,24 +380,6 @@ class DistributedStoreManager extends JDBCStoreManager {
         return selectStore(sm, edata).syncVersion(sm, edata);
     }
 
-    protected TransactionManager getTransactionManager() {
-        if (_tm == null) {
-            _tm = getConfiguration().getTransactionManagerInstance();
-            String alias = getConfiguration().getTransactionManager();
-            boolean is2pc = !(_tm instanceof NaiveTransactionManager);
-            if (isXA) { 
-                if (!is2pc) { 
-                    _log.warn(_loc.get("resource-xa-tm-not-2pc", alias));
-                    isXA = false;
-                }
-            } else if (is2pc) {
-                throw new UserException(_loc.get("resource-not-xa-tm-2pc", 
-                        alias));
-            } 
-        }
-        return _tm;
-    }
-    
     @Override
     protected RefCountConnection connectInternal() throws SQLException {
         List<Connection> list = new ArrayList<Connection>();
@@ -525,6 +412,10 @@ class DistributedStoreManager extends JDBCStoreManager {
           if (targets.isEmpty())
             return _slices;
         return targets;
+    }
+    
+    void log(String s) {
+        System.out.println("["+Thread.currentThread().getName()+"] " + this + s);
     }
 
     private static class Flusher implements Callable<Collection> {

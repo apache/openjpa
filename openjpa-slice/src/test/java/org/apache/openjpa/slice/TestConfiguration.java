@@ -25,51 +25,39 @@ import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.persistence.EntityManagerFactoryImpl;
 import org.apache.openjpa.slice.jdbc.DistributedJDBCBrokerFactory;
 import org.apache.openjpa.slice.jdbc.DistributedJDBCConfiguration;
-import org.apache.openjpa.slice.transaction.NaiveTransactionManager;
 
 /**
+ * Tests user-level configuration is set on per-slice basis.
  * 
- * @author Pinaki Poddar 
- *
+ * @author Pinaki Poddar
+ * 
  */
 public class TestConfiguration extends SliceTestCase {
-	/**
-	 * Tests that user-level configurations are set.
-	 * 
-	 */
-	public void testConfig() {
-		assertTrue(emf.getConfiguration() instanceof DistributedConfiguration);
-		DistributedJDBCConfiguration conf = (DistributedJDBCConfiguration)
-		    emf.getConfiguration();
-		List<String> slices = conf.getAvailableSliceNames();
-		assertTrue(slices.size()>1);
-		assertTrue(slices.contains("One"));
-        assertTrue(slices.contains("Two"));
-        assertTrue(slices.contains("Three"));
-		assertEquals("jdbc:mysql://localhost/slice1", conf.getSlice("One").getConfiguration().getConnectionURL());
-        assertEquals("jdbc:mysql://localhost/slice2", conf.getSlice("Two").getConfiguration().getConnectionURL());
-        assertEquals("jdbc:mysql://localhost/slice3", conf.getSlice("Three").getConfiguration().getConnectionURL());
-        assertTrue(conf.getTransactionManagerInstance() instanceof NaiveTransactionManager);
-		BrokerFactory bf = ((EntityManagerFactoryImpl)emf).getBrokerFactory();
-		Broker broker = bf.newBroker();
-		assertEquals(DistributedJDBCBrokerFactory.class, bf.getClass());
-		assertEquals(DistributedBrokerImpl.class, broker.getClass());
-		assertNotNull(conf.getDistributionPolicyInstance());
-		
-		
-		emf.createEntityManager();
-		
-        slices = conf.getActiveSliceNames();
-        assertTrue(slices.size()>1);
-        assertTrue(slices.contains("One"));
-        assertTrue(slices.contains("Two"));
-        assertFalse(slices.contains("Three"));
-        
-        conf.getExecutorServiceInstance();
-	}
-	
     protected String getPersistenceUnitName() {
         return "per-slice";
     }
 
+    public void testConfig() {
+        assertTrue(emf.getConfiguration() instanceof DistributedConfiguration);
+        DistributedJDBCConfiguration conf =
+                (DistributedJDBCConfiguration) emf.getConfiguration();
+        List<String> slices = conf.getAvailableSliceNames();
+        assertTrue(slices.size() > 1);
+        assertTrue(slices.contains("One"));
+        assertTrue(slices.contains("Two"));
+        assertTrue(slices.contains("Three"));
+        BrokerFactory bf = ((EntityManagerFactoryImpl) emf).getBrokerFactory();
+        Broker broker = bf.newBroker();
+        assertEquals(DistributedJDBCBrokerFactory.class, bf.getClass());
+        assertEquals(DistributedBrokerImpl.class, broker.getClass());
+        assertNotNull(conf.getDistributionPolicyInstance());
+
+        emf.createEntityManager();
+
+        slices = conf.getActiveSliceNames();
+        assertTrue(slices.size() > 1);
+        assertTrue(slices.contains("One"));
+        assertTrue(slices.contains("Two"));
+        assertFalse(slices.contains("Three"));
+    }
 }

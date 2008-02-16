@@ -20,8 +20,6 @@ package org.apache.openjpa.slice.jdbc;
 
 import java.util.concurrent.ExecutorService;
 
-import javax.transaction.TransactionManager;
-
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.slice.DistributedConfiguration;
 import org.apache.openjpa.slice.Slice;
@@ -39,16 +37,6 @@ public interface DistributedJDBCConfiguration extends JDBCConfiguration,
      * Gets the master slice.
      */
     Slice getMaster();
-    
-    /**
-     * Gets the TransactionManager instance being used.
-     */
-    TransactionManager getTransactionManagerInstance();
-    
-    /**
-     * Gets the alias for TransactionManager being used.
-     */
-    String getTransactionManager();
     
     /**
      * Gets the alias for ExecutorService being used.

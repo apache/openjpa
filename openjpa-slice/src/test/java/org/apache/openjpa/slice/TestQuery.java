@@ -19,27 +19,43 @@
 package org.apache.openjpa.slice;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.slice.SlicePersistence;
-
+/**
+ * Tests query ordering.
+ * 
+ * @author Pinaki Poddar 
+ *
+ */
 public class TestQuery extends SliceTestCase {
+    private int POBJECT_COUNT = 25;
+    private int VALUE_MIN = 100;
+    private int VALUE_MAX = VALUE_MIN + POBJECT_COUNT - 1;
+    
+    protected String getPersistenceUnitName() {
+        return "ordering";
+    }
+
     public void setUp() throws Exception {
-        super.setUp(PObject.class, Person.class, Address.class);
+        super.setUp(PObject.class, Person.class, Address.class, CLEAR_TABLES);
+        int count = count(PObject.class);
+        if (count == 0) {
+            create(POBJECT_COUNT);
+        }
+    }
+    
+    void create(int N) {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        long id = System.currentTimeMillis();
-        for (int i=0;i<10;i++) {
-            PObject pc = new PObject(id++);
-            pc.setValue(i);
+        for (int i=0;i<POBJECT_COUNT;i++) {
+            PObject pc = new PObject();
+            pc.setValue(VALUE_MIN + i);
             em.persist(pc);
             String slice = SlicePersistence.getSlice(pc);
-            String expected = (i%2 == 0) ? "Even" : "Odd";
+            String expected = (pc.getValue()%2 == 0) ? "Even" : "Odd";
             assertEquals(expected, slice);
         }
         em.getTransaction().commit();
@@ -51,7 +67,7 @@ public class TestQuery extends SliceTestCase {
         Query query = em.createQuery("SELECT p.value,p FROM PObject p ORDER BY p.value ASC");
         List result = query.getResultList();
         Integer old = Integer.MIN_VALUE;
-        for (Object row:result) {
+        for (Object row : result) {
             Object[] line = (Object[])row;
             int value = ((Integer)line[0]).intValue();
             PObject pc = (PObject)line[1];
@@ -59,14 +75,22 @@ public class TestQuery extends SliceTestCase {
             old = value;
             assertEquals(value, pc.getValue());
         }
-        em.getTransaction().commit();
+        em.getTransaction().rollback();
     }
     
     public void testAggregateQuery() {
         EntityManager em = emf.createEntityManager();
-        List result = em.createQuery("SELECT COUNT(p) FROM PObject p").getResultList();
-        for (Object r:result)
-            System.err.println(r);
+        em.getTransaction().begin();
+        Object count = em.createQuery("SELECT COUNT(p) FROM PObject p").getSingleResult();
+        Object max   = em.createQuery("SELECT MAX(p.value) FROM PObject p").getSingleResult();
+        Object min   = em.createQuery("SELECT MIN(p.value) FROM PObject p").getSingleResult();
+        Object sum   = em.createQuery("SELECT SUM(p.value) FROM PObject p").getSingleResult();
+        em.getTransaction().rollback();
+        
+        assertEquals(POBJECT_COUNT, ((Number)count).intValue());
+        assertEquals(VALUE_MAX, ((Number)max).intValue());
+        assertEquals(VALUE_MIN, ((Number)min).intValue());
+        assertEquals((VALUE_MIN+VALUE_MAX)*POBJECT_COUNT, 2*((Number)sum).intValue());
     }
     
     public void testSetMaxResult() {
@@ -76,14 +100,15 @@ public class TestQuery extends SliceTestCase {
         List result = em.createQuery("SELECT p.value,p FROM PObject p ORDER BY p.value ASC")
             .setMaxResults(limit).getResultList();
         int i = 0;
-        for (Object row:result) {
+        for (Object row : result) {
             Object[] line = (Object[])row;
             int value = ((Integer)line[0]).intValue();
             PObject pc = (PObject)line[1];
-            System.err.println(++i + "." + SlicePersistence.getSlice(pc) + ":" + pc.getId() + "," + pc.getValue());
+            System.err.println(++i + "." + SlicePersistence.getSlice(pc) + ":" 
+                    + pc.getId() + "," + pc.getValue());
         }
-        em.getTransaction().rollback();
         assertEquals(limit, result.size());
+        em.getTransaction().rollback();
     }
     
     public void testHint() {
@@ -99,9 +124,5 @@ public class TestQuery extends SliceTestCase {
             assertTrue(targets.contains(slice));
         }
         em.getTransaction().rollback();
-    }
-    
-    protected String getPersistenceUnitName() {
-        return "ordering";
     }
 }

@@ -22,7 +22,7 @@ import javax.persistence.*;
 
 public class TestXA extends SliceTestCase {
     public void setUp() throws Exception {
-        super.setUp(PObject.class, Person.class, Address.class);
+        super.setUp(PObject.class, Person.class, Address.class, CLEAR_TABLES);
     }
     public void testEmptyCommit() {
         EntityManager em = emf.createEntityManager();
@@ -39,10 +39,9 @@ public class TestXA extends SliceTestCase {
 		EntityManager em = emf.createEntityManager();
         int before = count(PObject.class);
 		int N = 2;
-		long start = System.currentTimeMillis();
 		em.getTransaction().begin();
 		for (int i=0; i<N; i++)
-			em.persist(new PObject(start++));
+			em.persist(new PObject());
 		em.getTransaction().commit();
 		em.clear();
 		int after = count(PObject.class);
