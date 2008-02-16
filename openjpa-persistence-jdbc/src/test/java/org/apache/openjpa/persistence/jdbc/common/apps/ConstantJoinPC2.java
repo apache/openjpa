@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
+import javax.persistence.Entity;
+
+@Entity
 public class ConstantJoinPC2
     extends ConstantJoinPC {
 

@@ -18,11 +18,14 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
+import javax.persistence.Entity;
+
 /**
  * Interface for intermediate horizontal mappings with flat mappings.
  *
  * @author <a href="mailto:marc@solarmetric.com">Marc Prud'hommeaux</a>
  */
+@Entity
 public class HorizInterVerticalC
     extends HorizInterVerticalB
     implements HorizInterC {

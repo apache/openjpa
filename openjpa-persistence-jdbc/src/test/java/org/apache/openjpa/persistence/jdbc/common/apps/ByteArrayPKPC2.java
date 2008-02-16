@@ -18,12 +18,15 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
+import javax.persistence.Entity;
+
 /**
  * <p>Persistent type using a byte[] for a primary key field.  Used in
  * {@link TestByteArrayAppId}.</p>
  *
  * @author Abe White
  */
+@Entity
 public class ByteArrayPKPC2
     extends ByteArrayPKPC {
 

@@ -38,7 +38,7 @@ import junit.framework.*;
  *
  * @author Abe White
  */
-public class TestEmbeddableSuperclass extends AbstractTestCase
+public class TestEmbeddableSuperclass extends AnnotationTestCase
 {
 
 	public TestEmbeddableSuperclass(String name)

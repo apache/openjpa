@@ -68,6 +68,12 @@ public class BaseJDBCTest extends org.apache.openjpa.persistence.common.utils.Ab
     {
         super(name, "jdbccactusapp");
     }
+
+    @Override
+    protected String defaultPersistenceXmlResource() {
+        return "org/apache/openjpa/persistence/jdbc/common" +
+            "/apps/META-INF/persistence.xml";
+    }
     
     protected OpenJPAEntityManager getPM() {
         return (OpenJPAEntityManager)currentEntityManager();
@@ -134,10 +140,6 @@ public class BaseJDBCTest extends org.apache.openjpa.persistence.common.utils.Ab
         broker.commit();
         broker.close();
         return id;
-    }
-    
-    protected OpenJPAStateManager getStateManager(Object obj,OpenJPAEntityManager pm) {
-        return getStateManager(obj,pm);
     }
     
     protected Properties getProperties() {

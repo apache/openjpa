@@ -35,7 +35,7 @@ public class TestJPAQuerySubclassFunc extends BaseQueryTest {
     public void setUp() {
         deleteAll(RuntimeTest1.class);
 
-        OpenJPAEntityManager pm = getPM();
+        OpenJPAEntityManager pm = getEM();
         startTx(pm);
 
         pm.persist(new RuntimeTest1("TestQueryResults1", 10));
@@ -51,7 +51,7 @@ public class TestJPAQuerySubclassFunc extends BaseQueryTest {
     }
 
     public void testSubClassIsTrueFunction() {
-        OpenJPAEntityManager pm = getPM();
+        OpenJPAEntityManager pm = getEM();
         startTx(pm);
 
         OpenJPAQuery query =
@@ -70,7 +70,7 @@ public class TestJPAQuerySubclassFunc extends BaseQueryTest {
     }
 
     public void testSubClassIsFalseFunction() {
-        OpenJPAEntityManager pm = getPM();
+        OpenJPAEntityManager pm = getEM();
         startTx(pm);
 
         OpenJPAQuery query =

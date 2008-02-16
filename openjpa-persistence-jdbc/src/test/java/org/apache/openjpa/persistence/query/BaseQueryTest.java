@@ -55,11 +55,11 @@ public abstract class BaseQueryTest extends org.apache.openjpa.persistence.commo
         super(name, "querycactusapp");
     }
 
-    protected OpenJPAEntityManager getPM() {
+    protected OpenJPAEntityManager getEM() {
         return (OpenJPAEntityManager) currentEntityManager();
     }
 
-    protected OpenJPAEntityManager getPM(boolean optimistic,
+    protected OpenJPAEntityManager getEM(boolean optimistic,
         boolean retainValues) {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();

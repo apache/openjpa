@@ -34,7 +34,7 @@ public class HelperPC2
 	@Column(name="strngfld", length=50)
 	private String 		stringField;
 
-	@Id
+	@Id @GeneratedValue
 	private int id;
 
 	@OneToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE})

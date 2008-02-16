@@ -20,22 +20,22 @@
     http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
 	<persistence-unit name="TestConv" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<class>persistence.common.apps.Entity1</class>
-		<class>persistence.common.apps.Entity2</class>
-		<class>persistence.common.apps.RuntimeTest1</class>
-		<class>persistence.common.apps.RuntimeTest2</class>
-		<class>persistence.common.apps.Course</class>
-		<class>persistence.common.apps.Department</class>
-		<class>persistence.common.apps.Student</class>
-		<class>persistence.common.apps.ArtCourse</class>
-		<class>persistence.common.apps.ScienceCourse</class>
-		<class>persistence.common.apps.EmbeddedOwnerPC</class>
-		<class>persistence.common.apps.EmbeddedPC</class>
-		<class>persistence.common.apps.ComplexEmbeddedPC</class>
-		<class>persistence.common.apps.CompUser</class>
-		<class>persistence.common.apps.MaleUser</class>
-		<class>persistence.common.apps.Address</class>
-		<class>persistence.common.apps.FemaleUser</class>
+		<class>org.apache.openjpa.persistence.common.apps.Entity1</class>
+		<class>org.apache.openjpa.persistence.common.apps.Entity2</class>
+		<class>org.apache.openjpa.persistence.common.apps.RuntimeTest1</class>
+		<class>org.apache.openjpa.persistence.common.apps.RuntimeTest2</class>
+		<class>org.apache.openjpa.persistence.common.apps.Course</class>
+		<class>org.apache.openjpa.persistence.common.apps.Department</class>
+		<class>org.apache.openjpa.persistence.common.apps.Student</class>
+		<class>org.apache.openjpa.persistence.common.apps.ArtCourse</class>
+		<class>org.apache.openjpa.persistence.common.apps.ScienceCourse</class>
+		<class>org.apache.openjpa.persistence.common.apps.EmbeddedOwnerPC</class>
+		<class>org.apache.openjpa.persistence.common.apps.EmbeddedPC</class>
+		<class>org.apache.openjpa.persistence.common.apps.ComplexEmbeddedPC</class>
+		<class>org.apache.openjpa.persistence.common.apps.CompUser</class>
+		<class>org.apache.openjpa.persistence.common.apps.MaleUser</class>
+		<class>org.apache.openjpa.persistence.common.apps.Address</class>
+		<class>org.apache.openjpa.persistence.common.apps.FemaleUser</class>
 		<properties>
 			<property name="openjpa.ConnectionFactoryProperties" value="MaxActive=110, MaxIdle=10, ValidationTimeout=50000, 
                                                                      MaxCachedStatements=10, ValidationSQL='', MaxWait=10000, TestOnBorrow=true" />

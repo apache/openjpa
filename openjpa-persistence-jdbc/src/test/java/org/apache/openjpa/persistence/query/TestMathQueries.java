@@ -46,7 +46,7 @@ public class TestMathQueries extends BaseQueryTest {
 
     public void setUp() {
         deleteAll(QueryTest1.class);
-        OpenJPAEntityManager pm = getPM();
+        OpenJPAEntityManager pm = getEM();
         startTx(pm);
 
         for (int i = 0; i <= 100; i++) {
@@ -69,9 +69,9 @@ public class TestMathQueries extends BaseQueryTest {
         try {
 
             OpenJPAQuery q1, q2;
-            q1 = getPM().createQuery(
+            q1 = getEM().createQuery(
                 "SELECT q FROM QueryTest1 q WHERE q.numb * q.numb = 25");
-            q2 = getPM().createQuery(
+            q2 = getEM().createQuery(
                 "SELECT q FROM QueryTest1 q WHERE q.numb * q.numb > 25");
 
             assertSize(95, q2.getResultList());

@@ -44,7 +44,7 @@ public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
 
     public void setUp() {
         deleteAll(RuntimeTest1.class);
-        OpenJPAEntityManager pm = getPM();
+        OpenJPAEntityManager pm = getEM();
         startTx(pm);
         pm.persist(new RuntimeTest1("foo", 3));
         pm.persist(new RuntimeTest1("bar", 15));
@@ -140,7 +140,7 @@ public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
      * queries.
      */
     private long helper(String filter, boolean shouldFail) {
-        OpenJPAEntityManager pm = getPM();
+        OpenJPAEntityManager pm = getEM();
 
         OpenJPAQuery q =
             pm.createQuery("SELECT r FROM RuntimeTest1 r WHERE r." + filter);

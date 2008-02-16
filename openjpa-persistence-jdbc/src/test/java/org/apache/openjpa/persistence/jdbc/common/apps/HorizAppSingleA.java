@@ -21,9 +21,11 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 import java.io.*;
 import java.util.*;
 
+import javax.persistence.Entity;
 
 import serp.util.*;
 
+@Entity
 public class HorizAppSingleA
     implements HorizAppA {
 

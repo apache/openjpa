@@ -19,12 +19,14 @@
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
 import java.util.*;
+import javax.persistence.Entity;
 
 /**
  * <p>Helper class in eager to-many join testing.</p>
  *
  * @author Abe White
  */
+@Entity
 public class EagerOuterJoinPC2 {
 
     private String name = null;

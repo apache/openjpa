@@ -19,12 +19,14 @@
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
 import java.util.*;
+import javax.persistence.Entity;
 
 /**
  * <p>Persistent type with a compound primary key and LRS fields.</p>
  *
  * @author Abe White
  */
+@Entity
 public class LRSCompoundPC
     implements LRSPCIntf {
 

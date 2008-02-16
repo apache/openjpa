@@ -34,7 +34,7 @@ import junit.framework.*;
  *
  * @author Abe White
  */
-public class TestEntityOrderBy extends AbstractTestCase
+public class TestEntityOrderBy extends AnnotationTestCase
 {
 
 	public TestEntityOrderBy(String name)

@@ -37,7 +37,7 @@ import org.apache.openjpa.persistence.common.utils.*;
  *
  * @author Abe White
  */
-public class TestTablePerClassInheritance extends AbstractTestCase
+public class TestTablePerClassInheritance extends AnnotationTestCase
 {
 
 	public TestTablePerClassInheritance(String name)

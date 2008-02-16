@@ -66,8 +66,10 @@ import java.io.ObjectInputStream;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 import java.io.PrintStream;
+import java.net.URL;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.EntityManagerFactory;
 import javax.management.IntrospectionException;
 
 import org.apache.regexp.RESyntaxException;
@@ -81,11 +83,15 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.BrokerFactory;
-import org.apache.openjpa.kernel.Broker;
-import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.meta.ClassMetaData;
 
 public abstract class AbstractTestCase extends PersistenceTestCase {
+
+    private String persistenceXmlResource;
+    private Map<Map,OpenJPAEntityManagerFactory> emfs =
+        new HashMap<Map,OpenJPAEntityManagerFactory>();
+    private OpenJPAEntityManager currentEntityManager;
 
     protected enum Platform {
         EMPRESS,
@@ -107,6 +113,21 @@ public abstract class AbstractTestCase extends PersistenceTestCase {
 
     public AbstractTestCase(String name, String s) {
         setName(name);
+        persistenceXmlResource = computePersistenceXmlResource(s);
+    }
+
+    public void tearDown() throws Exception {
+        try {
+            super.tearDown();
+        } finally {
+            for (EntityManagerFactory emf : emfs.values()) {
+                try {
+                    closeEMF(emf);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public AbstractTestCase() {
@@ -116,28 +137,33 @@ public abstract class AbstractTestCase extends PersistenceTestCase {
         setName(name);
     }
 
+    protected String computePersistenceXmlResource(String s) {
+        String resourceName = getClass().getPackage().getName()
+            .replaceAll("\\.", "/");
+        resourceName += "/common/apps/META-INF/persistence.xml";
+        URL resource = getClass().getClassLoader().getResource(resourceName);
+        if (resource != null)
+            return resourceName;
+        return defaultPersistenceXmlResource();
+    }
+
+    protected String defaultPersistenceXmlResource() {
+        return "org/apache/openjpa/persistence/" +
+            "common/apps/META-INF/persistence.xml";
+    }
+
     protected OpenJPAStateManager getStateManager(Object obj,
-        EntityManager pm) {
-        throw new UnsupportedOperationException();
+        EntityManager em) {
+        return JPAFacadeHelper.toBroker(em).getStateManager(obj);
     }
 
     protected int deleteAll(Class type, EntityManager em) {
-        final boolean useDeleteByQuery = true;
-
-        if (useDeleteByQuery) {
-            Broker broker = JPAFacadeHelper.toBroker(em);
-            org.apache.openjpa.kernel.Query query = broker.newQuery(
-                JPQLParser.LANG_JPQL, type, "");
-            query.setCandidateType(type, true);
-            return (int) query.deleteAll();
-        } else {
-            List list = OpenJPAPersistence.cast(em).createExtent(type, true)
-                .list();
-            int size = list.size();
-            for (Object o : list)
-                em.remove(o);
-            return size;
-        }
+        ClassMetaData meta = JPAFacadeHelper.getMetaData(em, type);
+        if (meta != null)
+            return em.createQuery("delete from " + meta.getTypeAlias())
+                .executeUpdate();
+        else
+            return -1;
     }
 
     protected int deleteAll(Class... types) {
@@ -152,6 +178,8 @@ public abstract class AbstractTestCase extends PersistenceTestCase {
     }
 
     protected OpenJPAEntityManagerFactory getEmf(Map map) {
+        if (map == null)
+            map = new HashMap();
         Collection keys = new ArrayList();
         for (Object key : map.keySet())
             if (key.toString().startsWith("kodo"))
@@ -159,12 +187,28 @@ public abstract class AbstractTestCase extends PersistenceTestCase {
         if (keys.size() > 0)
             throw new IllegalArgumentException(
                 "kodo-prefixed properties must be converted to openjpa. " +
-                "Properties: " + keys);
-        throw new UnsupportedOperationException();
+                    "Properties: " + keys);
+
+        addProperties(map);
+
+        OpenJPAEntityManagerFactory emf = emfs.get(map);
+        if (emf == null) {
+            emf = OpenJPAPersistence.createEntityManagerFactory(
+                "TestConv", persistenceXmlResource, map);
+            emfs.put(map, emf);
+        }
+        return emf;
+    }
+
+    protected void addProperties(Map map) {
+        if (!map.containsKey("openjpa.jdbc.SynchronizeMappings"))
+            map.put("openjpa.jdbc.SynchronizeMappings",
+                "buildSchema(ForeignKeys=true)");
     }
 
     protected OpenJPAEntityManagerFactory getEmf() {
-        throw new UnsupportedOperationException();
+        Map m = new HashMap();
+        return getEmf(m);
     }
 
     protected BrokerFactory getBrokerFactory() {
@@ -182,7 +226,9 @@ public abstract class AbstractTestCase extends PersistenceTestCase {
     }
 
     protected OpenJPAEntityManager currentEntityManager() {
-        throw new UnsupportedOperationException();
+        if (currentEntityManager == null || !currentEntityManager.isOpen())
+            currentEntityManager = getEmf().createEntityManager();
+        return currentEntityManager;
     }
 
     protected void startTx(EntityManager em) {
@@ -209,6 +255,8 @@ public abstract class AbstractTestCase extends PersistenceTestCase {
     protected void endEm(EntityManager em) {
         if (em.isOpen())
             em.close();
+        if (em == currentEntityManager)
+        currentEntityManager = null;
     }
 
     protected Object getStackTrace(Throwable t) {
@@ -216,7 +264,7 @@ public abstract class AbstractTestCase extends PersistenceTestCase {
     }
 
     protected OpenJPAConfiguration getConfiguration() {
-        throw new UnsupportedOperationException();
+        return getEmf().getConfiguration();
     }
 
     protected Platform getCurrentPlatform() {

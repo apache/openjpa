@@ -33,7 +33,7 @@ import org.apache.openjpa.persistence.common.utils.*;
  *
  * @author Abe White
  */
-public class TestEmbeddedId extends AbstractTestCase
+public class TestEmbeddedId extends AnnotationTestCase
 {
 
 	public TestEmbeddedId(String name)

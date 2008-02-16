@@ -37,7 +37,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 
    @author Steve Kim
   */
-public class TestVersion extends AbstractTestCase
+public class TestVersion extends AnnotationTestCase
 {
 	private Object oid;
 

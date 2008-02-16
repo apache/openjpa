@@ -20,13 +20,14 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 
 
 import java.util.*;
-
+import javax.persistence.Entity;
 
 /**
  *	<p>Persistent type used for testing.</p>
  *
  *	@author		Abe White
  */
+@Entity
 public class MappingTest1
 {
 	private int				value					= 0;

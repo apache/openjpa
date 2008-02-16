@@ -48,7 +48,7 @@ public class TestQueryExpressionSplit extends BaseQueryTest {
         assertEquals(new String[]{ "foo() bar(boo)" },
             Filters.splitExpressions("foo() bar(boo)", ',', 3));
         assertEquals(new String[]{ "foo() bar(boo)", "biz()", "baz(boo)" },
-            Filters.splitExpressions("foo() bar(boo), bizbaz(boo)",
+            Filters.splitExpressions("foo() bar(boo), biz(), baz(boo)",
                 ',', 3));
     }
 

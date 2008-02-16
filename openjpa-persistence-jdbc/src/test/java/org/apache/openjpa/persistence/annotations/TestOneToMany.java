@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.common.utils.*;
  *
  * @author Steve Kim
  */
-public class TestOneToMany extends AbstractTestCase
+public class TestOneToMany extends AnnotationTestCase
 {
 	public TestOneToMany(String name)
 	{

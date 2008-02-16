@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
  *
  * @author Steve Kim
  */
-public class TestGenerators extends AbstractTestCase
+public class TestGenerators extends AnnotationTestCase
 {
 
 	public TestGenerators(String name)

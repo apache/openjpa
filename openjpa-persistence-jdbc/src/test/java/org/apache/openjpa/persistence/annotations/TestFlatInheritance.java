@@ -32,7 +32,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
  *
  * @author Steve Kim
  */
-public class TestFlatInheritance extends AbstractTestCase
+public class TestFlatInheritance extends AnnotationTestCase
 {
 
 	public TestFlatInheritance(String name)

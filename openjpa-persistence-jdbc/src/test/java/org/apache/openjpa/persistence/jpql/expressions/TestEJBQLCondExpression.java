@@ -23,6 +23,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.apps.*;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.InvalidStateException;
 
 public class TestEJBQLCondExpression extends AbstractTestCase {
 
@@ -281,7 +282,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
         EntityManager em = currentEntityManager();
 
         String query =
-            "SELECT NEW persistence.common.apps.MaleUser(c.name, c.computerName, c.address, c.age, c.userid)" +
+            "SELECT NEW org.apache.openjpa.persistence.common.apps.MaleUser(c.name, c.computerName, c.address, c.age, c.userid)" +
                 " FROM CompUser c WHERE c.name = 'Seetha'";
 
         MaleUser male = (MaleUser) em.createQuery(query).getSingleResult();

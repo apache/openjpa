@@ -30,6 +30,7 @@
 		<class>org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC4</class>
 		<class>org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC5</class>
 		<class>org.apache.openjpa.persistence.jdbc.common.apps.CustomMappingPC</class>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.DFGTest</class>
 		<class>org.apache.openjpa.persistence.jdbc.common.apps.EagerPC</class>
 		<class>org.apache.openjpa.persistence.jdbc.common.apps.EagerPCSub</class>
 		<class>org.apache.openjpa.persistence.jdbc.common.apps.HelperPC</class>
@@ -37,6 +38,6 @@
 		<class>org.apache.openjpa.persistence.jdbc.common.apps.HelperPC3</class>
 		<class>org.apache.openjpa.persistence.jdbc.common.apps.HelperPC4</class>
 		<class>org.apache.openjpa.persistence.jdbc.common.apps.InvertA</class>
-		<class>org.apache.openjpa.persistence.jdbc.common.apps.InvertB</class>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.InvertB</class>
 	</persistence-unit>
 </persistence>

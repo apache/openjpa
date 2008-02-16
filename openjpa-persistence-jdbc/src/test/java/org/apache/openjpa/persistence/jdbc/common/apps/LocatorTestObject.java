@@ -18,9 +18,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
+import javax.persistence.Entity;
+
 /**
  * Used in testing; should be enhanced.
  */
+@Entity
 public class LocatorTestObject {
 
     private byte[] bytes;

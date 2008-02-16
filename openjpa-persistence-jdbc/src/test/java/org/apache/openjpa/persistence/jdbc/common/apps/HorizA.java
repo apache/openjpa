@@ -20,8 +20,9 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 
 import java.util.*;
 import java.io.*;
+import javax.persistence.Entity;
 
-
+@Entity
 public abstract class HorizA
     implements Serializable {
 

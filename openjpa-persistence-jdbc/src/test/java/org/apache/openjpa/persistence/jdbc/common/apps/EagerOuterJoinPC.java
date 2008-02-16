@@ -19,12 +19,14 @@
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
 import java.util.*;
+import javax.persistence.Entity;
 
 /**
  * <p>Class that uses eager outer joins for its collection fields.</p>
  *
  * @author Abe White
  */
+@Entity
 public class EagerOuterJoinPC {
 
     private String name = null;

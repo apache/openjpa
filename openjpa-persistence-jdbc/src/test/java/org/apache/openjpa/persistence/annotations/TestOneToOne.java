@@ -32,7 +32,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
  *
  * @author Steve Kim
  */
-public class TestOneToOne extends AbstractTestCase
+public class TestOneToOne extends AnnotationTestCase
 {
 
 	public TestOneToOne(String name)

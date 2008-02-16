@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
  *
  * @author Abe White
  */
-public class TestEnumerated extends AbstractTestCase
+public class TestEnumerated extends AnnotationTestCase
 {
 
 	public TestEnumerated(String name)

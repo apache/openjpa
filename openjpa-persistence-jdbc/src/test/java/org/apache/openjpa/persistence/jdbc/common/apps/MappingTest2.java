@@ -28,6 +28,7 @@ import javax.persistence.*;
  *	@author		Abe White
  */
 
+@Entity
 public class MappingTest2
 {
 	private int				pk1				= 0;

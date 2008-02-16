@@ -39,7 +39,7 @@ import org.apache.openjpa.persistence.common.utils.*;
  *
  * @author Steve Kim
  */
-public class TestSerializedLobs extends AbstractTestCase
+public class TestSerializedLobs extends AnnotationTestCase
 {
 
 	public TestSerializedLobs(String name)

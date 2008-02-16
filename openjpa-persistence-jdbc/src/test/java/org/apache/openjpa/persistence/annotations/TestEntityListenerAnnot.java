@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.common.utils.*;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
-public class TestEntityListenerAnnot extends AbstractTestCase
+public class TestEntityListenerAnnot extends AnnotationTestCase
 {
 
 	public TestEntityListenerAnnot(String name)

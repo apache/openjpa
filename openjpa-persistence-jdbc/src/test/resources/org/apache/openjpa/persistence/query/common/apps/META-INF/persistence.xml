@@ -20,7 +20,8 @@
     http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
 	<persistence-unit name="TestConv" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<class>org.apache.openjpa.persistence.query.common.apps.Entity2</class>
+        <class>org.apache.openjpa.persistence.query.common.apps.Entity1</class>
+        <class>org.apache.openjpa.persistence.query.common.apps.Entity2</class>
 		<class>org.apache.openjpa.persistence.query.common.apps.RuntimeTest1</class>
 		<class>org.apache.openjpa.persistence.query.common.apps.RuntimeTest2</class>
 		<class>org.apache.openjpa.persistence.query.common.apps.RuntimeTest3</class>

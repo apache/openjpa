@@ -18,11 +18,14 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
+import javax.persistence.Entity;
+
 /**
  * <p>Persistent type used in testing.</p>
  *
  * @author Abe White
  */
+@Entity
 public class MappingTest5
     extends MappingTest2 {
 

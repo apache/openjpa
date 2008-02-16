@@ -40,7 +40,7 @@ import junit.framework.*;
  *
  * @author Steve Kim
  */
-public class TestEJBEmbedded extends AbstractTestCase
+public class TestEJBEmbedded extends AnnotationTestCase
 {
 
 	public TestEJBEmbedded(String name)

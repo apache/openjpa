@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 import java.io.*;
 import java.util.*;
 
+import javax.persistence.Entity;
 
 import org.apache.commons.collections.*;
 
@@ -30,6 +31,7 @@ import org.apache.commons.collections.*;
  *
  * @author <a href="mailto:marc@solarmetric.com">Marc Prud'hommeaux</a>
  */
+@Entity
 public class HorizRelation
     implements Serializable {
     ///////////////////////

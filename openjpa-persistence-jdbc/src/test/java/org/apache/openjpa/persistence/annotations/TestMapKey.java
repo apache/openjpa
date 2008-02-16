@@ -39,7 +39,7 @@ import org.apache.openjpa.persistence.common.utils.*;
  *
  * @author Abe White
  */
-public class TestMapKey extends AbstractTestCase
+public class TestMapKey extends AnnotationTestCase
 {
 
 	public TestMapKey(String name)

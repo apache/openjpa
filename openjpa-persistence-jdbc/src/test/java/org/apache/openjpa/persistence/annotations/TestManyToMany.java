@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
  *
  * @author Steve Kim
  */
-public class TestManyToMany extends AbstractTestCase
+public class TestManyToMany extends AnnotationTestCase
 {
 	public TestManyToMany(String name)
 	{

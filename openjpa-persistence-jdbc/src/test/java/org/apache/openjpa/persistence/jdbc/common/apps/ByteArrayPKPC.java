@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
 import java.util.*;
+import javax.persistence.Entity;
 
 /**
  * <p>Persistent type using a byte[] for a primary key field.  Used in
@@ -26,6 +27,7 @@ import java.util.*;
  *
  * @author Abe White
  */
+@Entity
 public class ByteArrayPKPC {
 
     private byte[] pk = null;

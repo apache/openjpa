@@ -50,7 +50,7 @@ public class TestNamedQueries extends BaseQueryTest {
     public void setUp() {
         deleteAll(QueryTest1.class);
 
-        OpenJPAEntityManager pm = getPM();
+        OpenJPAEntityManager pm = getEM();
         startTx(pm);
         QueryTest1 pc = null;
         for (int i = 0; i < 10; i++) {
@@ -66,7 +66,7 @@ public class TestNamedQueries extends BaseQueryTest {
     }
 
     public void testNamedClassQuery() {
-        OpenJPAEntityManager pm = getPM();
+        OpenJPAEntityManager pm = getEM();
 
         OpenJPAQuery query = pm.createQuery("SELECT o FROM QueryTest1 o");
         query.setResultClass(QueryTest1.class);
@@ -93,7 +93,7 @@ public class TestNamedQueries extends BaseQueryTest {
     }
 
     public void testNamespace() {
-        OpenJPAEntityManager pm = getPM();
+        OpenJPAEntityManager pm = getEM();
         OpenJPAQuery query = (OpenJPAQuery) pm.createNamedQuery("named");
         assertEquals("SELECT o FROM QueryTest1 o", query.getQueryString());
         query.closeAll();
@@ -102,7 +102,7 @@ public class TestNamedQueries extends BaseQueryTest {
 
     public void testSystemJDOQL() {
         // make sure local query metadata is parsed
-        OpenJPAEntityManager pm = getPM();
+        OpenJPAEntityManager pm = getEM();
 
         OpenJPAQuery query = (OpenJPAQuery) pm.createNamedQuery("named");
         assertEquals("SELECT o FROM QueryTest1 o", query.getQueryString());

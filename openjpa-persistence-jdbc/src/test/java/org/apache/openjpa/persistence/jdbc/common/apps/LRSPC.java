@@ -19,12 +19,14 @@
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
 import java.util.*;
+import javax.persistence.Entity;
 
 /**
  * <p>Persistent type with LRS fields.</p>
  *
  * @author Abe White
  */
+@Entity
 public class LRSPC
     implements LRSPCIntf {
 

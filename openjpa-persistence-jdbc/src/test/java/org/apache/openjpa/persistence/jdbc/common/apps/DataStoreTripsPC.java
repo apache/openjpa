@@ -29,6 +29,7 @@ import java.lang.annotation.Annotation;
  *
  * @author Abe White
  */
+@Entity
 public class DataStoreTripsPC {
 
     private int intField;

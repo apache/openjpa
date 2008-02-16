@@ -1278,13 +1278,14 @@ public class MetaDataRepository
         Class cls;
         for (Iterator itr = names.iterator(); itr.hasNext();) {
             cls = classForName((String) itr.next(), clsLoader);
-            if (cls != null)
+            if (cls != null) {
                 classes.add(cls);
 
-            // if the class is an interface, load its metadata to kick
-            // off the impl generator
-            if (cls.isInterface())
-                getMetaData(cls, clsLoader, false);
+                // if the class is an interface, load its metadata to kick
+                // off the impl generator
+                if (cls.isInterface())
+                    getMetaData(cls, clsLoader, false);
+            }
         }
         return classes;
     }

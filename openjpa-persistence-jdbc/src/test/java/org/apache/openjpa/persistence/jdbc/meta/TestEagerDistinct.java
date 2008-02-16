@@ -76,10 +76,10 @@ public class TestEagerDistinct extends org.apache.openjpa.persistence.jdbc.kerne
         pc2.getHelperCollection().add(new HelperPC());
         
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
-        startTx(pm);;
+        startTx(pm);
         pm.persist(pc1);
         pm.persist(pc2);
-        endTx(pm);;
+        endTx(pm);
         
         // to make sure subclasses are selected, etc
         //FIXME jthomas

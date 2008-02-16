@@ -326,26 +326,14 @@
                         <exclude>org/apache/openjpa/**/*.*.class</exclude>
 
                         <!-- exclude new tests that aren't passing yet -->
+                        <exclude>org/apache/openjpa/persistence/jpql/clauses/TestEJBQueryInterface.java</exclude>
+                        <exclude>org/apache/openjpa/persistence/kernel/TestEJBEmbedded.java</exclude>
                         <exclude>org/apache/openjpa/persistence/annotations/TestAdvAnnot.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/annotations/TestAdvAnnot.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/annotations/TestAnnotationBasics.java</exclude>
                         <exclude>org/apache/openjpa/persistence/annotations/TestDDCallbackMethods.java</exclude>
                         <exclude>org/apache/openjpa/persistence/annotations/TestEJBEmbedded.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/annotations/TestEmbeddableSuperclass.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/annotations/TestEmbeddedId.java</exclude>
                         <exclude>org/apache/openjpa/persistence/annotations/TestEntityListenerAnnot.java</exclude>
                         <exclude>org/apache/openjpa/persistence/annotations/TestEntityOrderBy.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/annotations/TestEnumerated.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/annotations/TestFlatInheritance.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/annotations/TestGenerators.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/annotations/TestJoinedInheritance.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/annotations/TestManyToMany.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/annotations/TestMapKey.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/annotations/TestOneToMany.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/annotations/TestOneToOne.java</exclude>
                         <exclude>org/apache/openjpa/persistence/annotations/TestPropertyAccess.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/annotations/TestSerializedLobs.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/annotations/TestTablePerClassInheritance.java</exclude>
                         <exclude>org/apache/openjpa/persistence/annotations/TestVersion.java</exclude>
                         <exclude>org/apache/openjpa/persistence/cache/TestQueryCache.java</exclude>
                         <exclude>org/apache/openjpa/persistence/conf/TestKodoConfiguration.java</exclude>
@@ -401,10 +389,8 @@
                         <exclude>org/apache/openjpa/persistence/jdbc/meta/TestEJBByteArray.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/meta/TestEJBColumnIOMappings.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/meta/TestEJBConstantJoinOnSameRefTable.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/jdbc/meta/TestEJBCustomMapping.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/meta/TestEJBDateVersion.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/meta/TestEJBEager.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/jdbc/meta/TestEJBInverseOneToOne.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/meta/TestEJBOuterJoinValues.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/meta/TestIntermediate.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/meta/TestIrregularJoins.java</exclude>
@@ -432,7 +418,6 @@
                         <exclude>org/apache/openjpa/persistence/jdbc/query/TestSQLQueries.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/query/TestStringFunctions.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/schema/TestClassDBSequenceFactory.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/jdbc/schema/TestClassSequenceFactory.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/schema/TestDBSequenceFactory.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/schema/TestDynamicSchemaFactory.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/schema/TestJDBCListener.java</exclude>
@@ -445,13 +430,7 @@
                         <exclude>org/apache/openjpa/persistence/jdbc/schema/TestXMLSchemaParser.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/schema/TestXMLSchemaSerializer.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jpql/clauses/TestBulkUpdate.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/jpql/clauses/TestEJBClauses.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/jpql/clauses/TestEJBDeleteUpdateImpl.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/jpql/clauses/TestEJBPolymorphicQuery.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/jpql/clauses/TestEJBQueryInterface.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jpql/expressions/TestEJBQLCondExpression.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/jpql/functions/TestEJBQLFunction.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/jpql/joins/TestEJBJoins.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/Test2EJBConcurrency.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/TestAbstractMappedAppIdSuper.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/TestArrayValues2.java</exclude>
@@ -464,11 +443,9 @@
                         <exclude>org/apache/openjpa/persistence/kernel/TestDateQueries.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/TestDependentFields2.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/TestDetachedStateManager.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/kernel/TestEJBEmbedded.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/TestEJBEntityManager.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/TestEJBGetObjectByIdValue.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/TestEJBIncrementalFlushes.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/kernel/TestEJBInterfaces.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/TestEJBLobs.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/TestEJBLocales.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/TestEJBManagedInverses.java</exclude>
@@ -525,7 +502,6 @@
                         <exclude>org/apache/openjpa/persistence/kernel/TestStateManagerImplData.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/TestStaticInnerClasses.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/TestStoreBlob.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/kernel/TestTransition2.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestClassMetaData.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestExternalValues.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestFieldDeclarationOrder.java</exclude>
@@ -535,18 +511,9 @@
                         <exclude>org/apache/openjpa/persistence/meta/TestSequenceAssigned.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestValueStrategies.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestXMLPersistenceMetaDataSerializer.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/query/TestAccessPathsOfSubqueries.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/query/TestComplexQueries.java</exclude>
                         <exclude>org/apache/openjpa/persistence/query/TestEJBDeleteUpdateImpl.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/query/TestEJBPolymorphicQuery.java</exclude>
                         <exclude>org/apache/openjpa/persistence/query/TestEJBQueryInterface.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/query/TestJPAQuerySubclassFunc.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/query/TestMathQueries.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/query/TestNamedQueries.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/query/TestQueryExpressionSplit.java</exclude>
                         <exclude>org/apache/openjpa/persistence/query/TestQueryResults.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/query/TestQuotedNumbersInFilters2.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/query/TestSimple.java</exclude>
                     </excludes>
                     <systemProperties>
                         <property>

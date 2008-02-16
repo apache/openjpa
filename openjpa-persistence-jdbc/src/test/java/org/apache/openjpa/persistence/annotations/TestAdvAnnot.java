@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
 import org.apache.openjpa.persistence.common.utils.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
-public class TestAdvAnnot extends AbstractTestCase
+public class TestAdvAnnot extends AnnotationTestCase
 {
 	public TestAdvAnnot(String name)
 	{

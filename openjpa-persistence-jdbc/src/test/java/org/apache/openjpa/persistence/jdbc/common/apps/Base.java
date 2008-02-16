@@ -19,7 +19,9 @@
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
 import java.util.*;
+import javax.persistence.Entity;
 
+@Entity
 public class Base
     implements Comparable {
 

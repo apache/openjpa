@@ -14,36 +14,27 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
-package org.apache.openjpa.persistence.jdbc.common.apps;
+package org.apache.openjpa.persistence.annotations;
 
-import javax.persistence.Entity;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
-/**
- * <p>Persistent type used in testing the mappingtool's buildSchema action.</p>
- *
- * @author Abe White
- */
-@Entity
-public class BuildSchemaPC {
+public abstract class AnnotationTestCase extends AbstractTestCase {
 
-    private String stringField = null;
-    private int intField = 0;
-
-    public String getStringField() {
-        return this.stringField;
+    public AnnotationTestCase(String name, String s) {
+        super(name, s);
     }
 
-    public void setStringField(String stringField) {
-        this.stringField = stringField;
-    }
-
-    public int getIntField() {
-        return this.intField;
-    }
-
-    public void setIntField(int intField) {
-        this.intField = intField;
+    @Override
+    protected String computePersistenceXmlResource(String s) {
+        if (s.startsWith("annotation"))
+            return "org/apache/openjpa/persistence/annotations/common/apps/" +
+                "annotApp/annotype/META-INF/persistence.xml";
+        else if (s.startsWith("dd"))
+            return "org/apache/openjpa/persistence/annotations/common/apps/" +
+                "annotApp/ddtype/META-INF/persistence.xml";
+        else
+            return super.computePersistenceXmlResource(s);
     }
 }

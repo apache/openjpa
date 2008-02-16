@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.common.utils.*;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
-public class TestDDCallbackMethods extends AbstractTestCase
+public class TestDDCallbackMethods extends AnnotationTestCase
 {
 
 	public TestDDCallbackMethods(String name)

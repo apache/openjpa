@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.common.utils.*;
 
 
 
-public class TestPropertyAccess extends AbstractTestCase
+public class TestPropertyAccess extends AnnotationTestCase
 {
 	public TestPropertyAccess(String name)
 	{
