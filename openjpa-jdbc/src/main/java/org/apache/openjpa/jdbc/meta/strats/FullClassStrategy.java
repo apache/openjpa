@@ -76,6 +76,7 @@ public class FullClassStrategy
             Column id = new Column();
             id.setName("id");
             id.setJavaType(JavaTypes.LONG);
+            id.setComment("datastore id");
             if (cls.getIdentityStrategy() == ValueStrategies.AUTOASSIGN)
                 id.setAutoAssigned(true);
             id.setNotNull(true);

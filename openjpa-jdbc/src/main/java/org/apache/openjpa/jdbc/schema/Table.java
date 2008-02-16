@@ -60,6 +60,7 @@ public class Table
     private ForeignKey[] _fks = null;
     private Index[] _idxs = null;
     private Unique[] _unqs = null;
+    private String _comment = null;
 
     /**
      * Default constructor.
@@ -688,5 +689,17 @@ public class Table
 
     public String toString() {
         return getFullName();
+    }
+
+    public boolean hasComment() {
+        return _comment != null && !_comment.equalsIgnoreCase(_name);
+    }
+
+    public String getComment() {
+        return _comment;
+    }
+
+    public void setComment(String comment) {
+        _comment = comment;
     }
 }

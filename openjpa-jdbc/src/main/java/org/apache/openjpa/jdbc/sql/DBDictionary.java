@@ -193,6 +193,7 @@ public class DBDictionary
     public boolean supportsDefaultUpdateAction = true;
     public boolean supportsAlterTableWithAddColumn = true;
     public boolean supportsAlterTableWithDropColumn = true;
+    public boolean supportsComments = false;
     public String reservedWords = null;
     public String systemSchemas = null;
     public String systemTables = null;
@@ -2972,34 +2973,55 @@ public class DBDictionary
      */
     public String[] getCreateTableSQL(Table table) {
         StringBuffer buf = new StringBuffer();
-        buf.append("CREATE TABLE ").append(getFullName(table, false)).
-            append(" (");
-
-        Column[] cols = table.getColumns();
-        for (int i = 0; i < cols.length; i++) {
-            if (i > 0)
-                buf.append(", ");
-            buf.append(getDeclareColumnSQL(cols[i], false));
+        buf.append("CREATE TABLE ").append(getFullName(table, false));
+        if (supportsComments && table.hasComment()) {
+            buf.append(" ");
+            comment(buf, table.getComment());
+            buf.append("\n    (");
+        } else {
+            buf.append(" (");
         }
 
+        // do this before getting the columns so we know how to handle
+        // the last comma
+        StringBuffer endBuf = new StringBuffer();
         PrimaryKey pk = table.getPrimaryKey();
         String pkStr;
         if (pk != null) {
             pkStr = getPrimaryKeyConstraintSQL(pk);
             if (pkStr != null)
-                buf.append(", ").append(pkStr);
+                endBuf.append(pkStr);
         }
 
         Unique[] unqs = table.getUniques();
         String unqStr;
         for (int i = 0; i < unqs.length; i++) {
             unqStr = getUniqueConstraintSQL(unqs[i]);
-            if (unqStr != null)
-                buf.append(", ").append(unqStr);
+            if (unqStr != null) {
+                if (endBuf.length() > 0)
+                    endBuf.append(", ");
+                endBuf.append(unqStr);
+            }
         }
 
+        Column[] cols = table.getColumns();
+        for (int i = 0; i < cols.length; i++) {
+            buf.append(getDeclareColumnSQL(cols[i], false));
+            if (i < cols.length - 1 || endBuf.length() > 0)
+                buf.append(", ");
+            if (supportsComments && cols[i].hasComment()) {
+                comment(buf, cols[i].getComment());
+                buf.append("\n    ");
+            }
+        }
+
+        buf.append(endBuf.toString());
         buf.append(")");
         return new String[]{ buf.toString() };
+    }
+
+    protected StringBuffer comment(StringBuffer buf, String comment) {
+        return buf.append("-- ").append(comment);
     }
 
     /**

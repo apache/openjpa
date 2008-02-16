@@ -67,6 +67,12 @@ public class TestRetainValuesInOptimistic extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Override
+    protected void addProperties(Map map) {
+        super.addProperties(map);
+        map.put("openjpa.Log", "SQL=TRACE, Runtime=TRACE");
+    }
+
     public void testRetain() {
         clearTest(true);
         optLockTest(true);

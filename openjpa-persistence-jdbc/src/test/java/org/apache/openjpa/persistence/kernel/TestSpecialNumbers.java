@@ -62,14 +62,14 @@ public class TestSpecialNumbers extends BaseKernelTest {
     public void testShortMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestshort(Short.MAX_VALUE);
-        saveAndQuery(aftt, "testshort == param", new Short(Short.MAX_VALUE));
+        saveAndQuery(aftt, "testshort = :param", new Short(Short.MAX_VALUE));
     }
 
     public void testShortMin() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestshort(Short.MIN_VALUE);
         try {
-            saveAndQuery(aftt, "testshort == param",
+            saveAndQuery(aftt, "testshort = :param",
                 new Short(Short.MIN_VALUE));
         } catch (Throwable t) {
             bug(AbstractTestCase.Platform.EMPRESS, 889, t,
@@ -80,14 +80,14 @@ public class TestSpecialNumbers extends BaseKernelTest {
     public void testLongMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestlong(Long.MAX_VALUE);
-        saveAndQuery(aftt, "testlong == param", new Long(Long.MAX_VALUE));
+        saveAndQuery(aftt, "testlong = :param", new Long(Long.MAX_VALUE));
     }
 
     public void testLongMin() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestlong(Long.MIN_VALUE);
-            saveAndQuery(aftt, "testlong == param", new Long(Long.MIN_VALUE));
+            saveAndQuery(aftt, "testlong = :param", new Long(Long.MIN_VALUE));
         } catch (Throwable t) {
             bug(AbstractTestCase.Platform.HYPERSONIC, 474, t,
                 "Some databases cannot store Long.MIN_VALUE");
@@ -97,7 +97,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
     public void testIntegerMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestint(Integer.MAX_VALUE);
-        saveAndQuery(aftt, "testint == param",
+        saveAndQuery(aftt, "testint = :param",
             new Integer(Integer.MAX_VALUE));
     }
 
@@ -105,7 +105,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestint(Integer.MIN_VALUE);
         try {
-            saveAndQuery(aftt, "testint == param",
+            saveAndQuery(aftt, "testint = :param",
                 new Integer(Integer.MIN_VALUE));
         } catch (Throwable t) {
             bug(AbstractTestCase.Platform.EMPRESS, 889, t,
@@ -117,7 +117,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.MAX_VALUE);
-            saveAndQuery(aftt, "testfloat == param",
+            saveAndQuery(aftt, "testfloat = :param",
                 new Float(Float.MAX_VALUE));
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POSTGRESQL,
@@ -132,7 +132,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.MIN_VALUE);
-            saveAndQuery(aftt, "testfloat == param",
+            saveAndQuery(aftt, "testfloat = :param",
                 new Float(Float.MIN_VALUE));
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POSTGRESQL,
@@ -152,7 +152,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.NaN);
-            saveAndQuery(aftt, "testfloat == param", new Float(Float.NaN));
+            saveAndQuery(aftt, "testfloat = :param", new Float(Float.NaN));
         } catch (Throwable t) {
             bug(461, t, "NaN problems");
         }
@@ -162,7 +162,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.NEGATIVE_INFINITY);
-            saveAndQuery(aftt, "testfloat == param",
+            saveAndQuery(aftt, "testfloat = :param",
                 new Float(Float.NEGATIVE_INFINITY));
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POINTBASE,
@@ -181,7 +181,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.POSITIVE_INFINITY);
-            saveAndQuery(aftt, "testfloat == param",
+            saveAndQuery(aftt, "testfloat = :param",
                 new Float(Float.POSITIVE_INFINITY));
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POINTBASE,
@@ -200,7 +200,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.MAX_VALUE);
-            saveAndQuery(aftt, "testdouble == param",
+            saveAndQuery(aftt, "testdouble = :param",
                 new Double(Double.MAX_VALUE));
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POINTBASE,
@@ -219,7 +219,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.MIN_VALUE);
-            saveAndQuery(aftt, "testdouble == param",
+            saveAndQuery(aftt, "testdouble = :param",
                 new Double(Double.MIN_VALUE));
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POSTGRESQL,
@@ -240,7 +240,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.NaN);
-            saveAndQuery(aftt, "testdouble == param", new Double(Double.NaN));
+            saveAndQuery(aftt, "testdouble = :param", new Double(Double.NaN));
         } catch (Throwable t) {
             bug(461, t, "NaN problems");
         }
@@ -250,7 +250,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.NEGATIVE_INFINITY);
-            saveAndQuery(aftt, "testdouble == param",
+            saveAndQuery(aftt, "testdouble = :param",
                 new Double(Double.NEGATIVE_INFINITY));
         } catch (Throwable t) {
             bug(461, t, "infinity problems");
@@ -261,7 +261,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.POSITIVE_INFINITY);
-            saveAndQuery(aftt, "testdouble == param",
+            saveAndQuery(aftt, "testdouble = :param",
                 new Double(Double.POSITIVE_INFINITY));
         } catch (Throwable t) {
             bug(461, t, "infinity problems");
@@ -272,7 +272,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestbyte(Byte.MIN_VALUE);
         try {
-            saveAndQuery(aftt, "testbyte == param", new Byte(Byte.MIN_VALUE));
+            saveAndQuery(aftt, "testbyte = :param", new Byte(Byte.MIN_VALUE));
         } catch (Throwable t) {
             bug(AbstractTestCase.Platform.EMPRESS, 889, t,
                 "Empress cannot store min values");
@@ -282,19 +282,19 @@ public class TestSpecialNumbers extends BaseKernelTest {
     public void testByteMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestbyte(Byte.MAX_VALUE);
-        saveAndQuery(aftt, "testbyte == param", new Byte(Byte.MAX_VALUE));
+        saveAndQuery(aftt, "testbyte = :param", new Byte(Byte.MAX_VALUE));
     }
 
     public void testZeroBigInteger() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestBigInteger(BigInteger.ZERO);
-        saveAndQuery(aftt, "testBigInteger == param", BigInteger.ZERO);
+        saveAndQuery(aftt, "testBigInteger = :param", BigInteger.ZERO);
     }
 
     public void testOneBigInteger() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestBigInteger(BigInteger.ONE);
-        saveAndQuery(aftt, "testBigInteger == param", BigInteger.ONE);
+        saveAndQuery(aftt, "testBigInteger = :param", BigInteger.ONE);
     }
 
     private void saveAndQuery(Object obj, String query, Object param) {
@@ -305,9 +305,9 @@ public class TestSpecialNumbers extends BaseKernelTest {
         endEm(pm);
 
         pm = getPM();
-        OpenJPAQuery q = pm.createNativeQuery(query, obj.getClass());
-        //FIXME jthomas
-        //q.declareParameters("Object param");
+        OpenJPAQuery q = pm.createQuery("select o from "
+            + obj.getClass().getName() + " o where " + query);
+        q.setParameter("param", param);
         Collection c = (Collection) q.getResultList();
         assertSize(1, c);
         endEm(pm);

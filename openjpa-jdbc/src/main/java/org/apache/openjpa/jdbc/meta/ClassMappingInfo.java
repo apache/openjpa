@@ -226,7 +226,7 @@ public class ClassMappingInfo
      * Return the table for the given class.
      */
     public Table getTable(final ClassMapping cls, boolean adapt) {
-        return createTable(cls, new TableDefaults() {
+        Table t = createTable(cls, new TableDefaults() {
             public String get(Schema schema) {
                 // delay this so that we don't do schema reflection for unique
                 // table name unless necessary
@@ -234,6 +234,10 @@ public class ClassMappingInfo
                     getTableName(cls, schema);
             }
         }, _schemaName, _tableName, adapt);
+        t.setComment(cls.getTypeAlias() == null
+            ? cls.getDescribedType().getName()
+            : cls.getTypeAlias());
+        return t;
     }
 
     /**

@@ -159,6 +159,7 @@ public class TestEJBLobs extends AbstractTestCase {
 
     @SuppressWarnings("serial")
     @Entity
+    @Table(name="Inner2")
     public static class Inner2 implements Serializable {
 
         @Id

@@ -699,6 +699,9 @@ public abstract class MappingInfo
             if (decimals != 0)
                 col.setDecimalDigits(decimals);
         }
+
+        if (tmplate.hasComment())
+            col.setComment(tmplate.getComment());
         return col;
     }
 

@@ -30,7 +30,7 @@ package org.apache.openjpa.persistence.kernel;
 import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.Entity;
-
+import javax.persistence.Table;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
@@ -116,6 +116,7 @@ public class TestStaticInnerClasses extends BaseKernelTest {
     }
 
     @Entity
+    @Table(name="StaticInner")
     public static class Inner {
 
         private int num = 0;

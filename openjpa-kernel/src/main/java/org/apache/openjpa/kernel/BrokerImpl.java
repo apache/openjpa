@@ -4339,9 +4339,12 @@ public class BrokerImpl
             if (_closedException == null)  // TRACE not enabled
                 throw new InvalidStateException(_loc.get("closed-notrace"))
                         .setFatal(true);
-            else
-                throw new InvalidStateException(_loc.get("closed"),
-                        _closedException).setFatal(true);
+            else {
+                OpenJPAException e = new InvalidStateException(
+                    _loc.get("closed"), _closedException).setFatal(true);
+                e.setCause(_closedException);
+                throw e;
+            }
         }
     }
 

@@ -72,7 +72,8 @@ public class Column
     private int _index = 0;
     private boolean _pk = false;
     private VersionStrategy _versionStrategy = null;
-    
+    private String _comment = null;
+
     /**
      * Default constructor.
      */
@@ -732,5 +733,17 @@ public class Column
 
     public void setVersionStrategy(VersionStrategy strategy) {
         this._versionStrategy = strategy;
+    }
+
+    public boolean hasComment() {
+        return _comment != null && !_comment.equalsIgnoreCase(_name);
+    }
+
+    public String getComment() {
+        return _comment;
+    }
+
+    public void setComment(String comment) {
+        _comment = comment;
     }
 }

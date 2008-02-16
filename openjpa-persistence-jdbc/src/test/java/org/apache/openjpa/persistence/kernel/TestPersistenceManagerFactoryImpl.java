@@ -192,7 +192,7 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
 
     protected OpenJPAEntityManagerFactory getEmf(Map props) {
         props.put("openjpa.BrokerFactory", BrokerFactoryTest.class.getName());
-        return (OpenJPAEntityManagerFactory) getEmf(props);
+        return (OpenJPAEntityManagerFactory) super.getEmf(props);
     }
 
     public static class BrokerFactoryTest extends AbstractBrokerFactory {

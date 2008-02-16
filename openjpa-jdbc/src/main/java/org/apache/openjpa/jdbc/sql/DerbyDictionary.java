@@ -61,6 +61,8 @@ public class DerbyDictionary
         requiresCastForMathFunctions = true;
         requiresCastForComparisons = true;
 
+        supportsComments = true;
+
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "BIGINT", "INTEGER",
         }));

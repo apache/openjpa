@@ -24,6 +24,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Column;
 
 @Entity
 @Table(name = "nullvalue")
@@ -31,8 +32,11 @@ public class Inner {
 
     @Basic
     private Integer none = null;
+
     @Basic(optional = false)
+    @Column(name="exception_col")
     private Integer exception = null;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int Id;

@@ -81,10 +81,6 @@ public abstract class BaseKernelTest extends org.apache.openjpa.persistence.comm
         return em;
     }
     
-    protected  OpenJPAStateManager getStateManager(Object obj,EntityManager pm) {
-        return getStateManager(obj,pm);
-    }
-    
     protected Object persist(Object ob) {
         //FIXME  - this is just a workaround 
         //  Broker broker = .getBrokerFactory().newBroker();

@@ -480,11 +480,11 @@ public class TestDependentFields2 extends BaseKernelTest {
                 action = COMMIT;
             } else {
                 try {
-                    endTx(pm);
+                    pm.getTransaction().commit();
                     fail("Committed with ref to deleted dependent object");
                 } catch (Exception je) {
-                } finally {
                     rollbackTx(pm);
+                } finally {
                 }
                 break;
             }

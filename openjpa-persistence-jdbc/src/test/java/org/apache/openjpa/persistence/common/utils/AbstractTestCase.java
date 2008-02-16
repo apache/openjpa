@@ -203,7 +203,8 @@ public abstract class AbstractTestCase extends PersistenceTestCase {
     protected void addProperties(Map map) {
         if (!map.containsKey("openjpa.jdbc.SynchronizeMappings"))
             map.put("openjpa.jdbc.SynchronizeMappings",
-                "buildSchema(ForeignKeys=true)");
+                "buildSchema(ForeignKeys=true," +
+                    "SchemaAction='add,deleteTableContents')");
     }
 
     protected OpenJPAEntityManagerFactory getEmf() {
