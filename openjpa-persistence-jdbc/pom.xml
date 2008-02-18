@@ -470,7 +470,6 @@
                         <exclude>org/apache/openjpa/persistence/kernel/TestSpecialNumbers.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/TestSpecialNumbers2.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestClassMetaData.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/meta/TestExternalValues.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestFieldDeclarationOrder.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestNonPersistentFields.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestOrderBy.java</exclude>
@@ -478,9 +477,6 @@
                         <exclude>org/apache/openjpa/persistence/meta/TestSequenceAssigned.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestValueStrategies.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestXMLPersistenceMetaDataSerializer.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/query/TestEJBDeleteUpdateImpl.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/query/TestEJBQueryInterface.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/query/TestQueryResults.java</exclude>
                     </excludes>
                     <systemProperties>
                         <property>

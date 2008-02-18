@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.meta.common.apps;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import org.apache.openjpa.persistence.PersistentCollection;
 
@@ -51,6 +52,7 @@ public class MetaTest1 {
     private int[] intArrayField;
 
     @Entity
+    @Table(name="MetaTest1_Inner")
     public static class Inner {
 
         private long longField;

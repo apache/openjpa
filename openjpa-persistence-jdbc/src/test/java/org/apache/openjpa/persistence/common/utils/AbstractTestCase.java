@@ -205,6 +205,7 @@ public abstract class AbstractTestCase extends PersistenceTestCase {
             map.put("openjpa.jdbc.SynchronizeMappings",
                 "buildSchema(ForeignKeys=true," +
                     "SchemaAction='add,deleteTableContents')");
+        map.put("openjpa.Log", "SQL=TRACE");
     }
 
     protected OpenJPAEntityManagerFactory getEmf() {
