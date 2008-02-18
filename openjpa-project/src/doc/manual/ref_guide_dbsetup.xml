@@ -1009,6 +1009,22 @@ true</literal>.
 this database, beyond the standard SQL92 keywords.
                     </para>
                 </listitem>
+                <listitem id="DBDictionary.SelectWords">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            SelectWords
+                        </secondary>
+                    </indexterm>
+<literal>SelectWords</literal>: A comma-separated list of keywords which may be
+used to start a SELECT statement for this database. If an application executes 
+a native SQL statement which begins with SelectWords OpenJPA will treat the 
+statement as a SELECT statement rather than an UPDATE statement. 
+                    </para>
+                </listitem>
                 <listitem id="DBDictionary.SystemTables">
                     <para>
                     <indexterm>

@@ -163,6 +163,7 @@ public class OracleDictionary
 
         substringFunctionName = "SUBSTR";
         super.setBatchLimit(defaultBatchLimit);
+        selectWordSet.add("WITH");
     }
 
     public void endConfiguration() {
