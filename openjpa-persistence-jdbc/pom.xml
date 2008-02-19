@@ -387,36 +387,23 @@
                         <phase>test-compile</phase>
                         <configuration>
                             <tasks>
-                                <path id="cp">
-                                    <path refid="maven.test.classpath"/>
-                                    <path refid="maven.compile.classpath"/>
-                                    <path refid="maven.dependency.classpath"/>
-                                </path>
-                                <taskdef name="openjpac" classname=
-                                    "org.apache.openjpa.ant.PCEnhancerTask">
-                                    <classpath refid="cp"/>
-                                </taskdef>
-                                <fileset id="enhance.path.ref"
-                                    dir="${project.build.testOutputDirectory}">
-                                    <include name="**/*.class"/>
-                                    <exclude name="**/inheritance/serializable/*.class"/>
-                                    <exclude name="**/xml/*.class"/>
-                                    <exclude name="**/Unenhanced*.class"/>
-                                </fileset>
-                                <openjpac>
-                                    <classpath refid="cp"/>
-                                    <fileset refid="enhance.path.ref"/>
-                                </openjpac>
-                                <!--  Set detach state for serialization tests -->
-                                <openjpac>
-                                    <config detachState="fgs(DetachedStateField=true)"/>
-                                    <classpath refid="cp"/>
-                                    <fileset dir="${project.build.testOutputDirectory}"> 
-                                        <include name="**/inheritance/serializable/*.class"/>
-                                        <!--  include files from orm.xml -->
-                                        <include name="**/xml/*.class"/>
-                                    </fileset>
-                                </openjpac>
+                                <ant antfile="src/main/ant/enhancer.xml"
+                                    target="enhance.all.entities"
+                                    inheritRefs="true">
+                                    <!--
+                                      InheritAll doesn't seem to work. Pass in
+                                      properties manually.
+                                     -->
+                                    <property name="maven.test.skip" 
+                                        value="${maven.test.skip}"/>
+                                    <property name="outdir"
+                                        value="${project.build.outputDirectory}" />
+                                    <property
+                                        name="project.build.testOutputDirectory"
+                                        value="${project.build.testOutputDirectory}" />
+                                    <property name="openjpa.loglevel"
+                                        value="${openjpa.loglevel}" />
+                                </ant>  
                             </tasks>
                         </configuration>
                         <goals>
