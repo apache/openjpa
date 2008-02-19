@@ -174,6 +174,7 @@ public class DBDictionary
     public String reservedWords = null;
     public String systemSchemas = null;
     public String systemTables = null;
+    public String selectWords = null;
     public String fixedSizeTypeNames = null;
     public String schemaCase = SCHEMA_CASE_UPPER;
 
@@ -3876,10 +3877,14 @@ public class DBDictionary
         if (fixedSizeTypeNames != null)
             fixedSizeTypeNameSet.addAll(Arrays.asList(Strings.split
                 (fixedSizeTypeNames.toUpperCase(), ",", 0)));
-
+        
         // if user has unset sequence sql, null it out so we know sequences
         // aren't supported
         nextSequenceQuery = StringUtils.trimToNull(nextSequenceQuery);
+        
+        if (selectWords != null)
+            selectWordSet.addAll(Arrays.asList(Strings.split(selectWords
+                    .toUpperCase(), ",", 0)));
     }
 
     //////////////////////////////////////

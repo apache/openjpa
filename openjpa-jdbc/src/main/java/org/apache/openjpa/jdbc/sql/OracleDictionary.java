@@ -155,6 +155,9 @@ public class OracleDictionary
             "LONG", "MAXEXTENTS", "MINUS", "MODE", "NOAUDIT", "NOCOMPRESS",
             "NOWAIT", "OFFLINE", "ONLINE", "PCTFREE", "ROW",
         }));
+        
+        selectWordSet.add("WITH");
+        selectWordSet.add("WITH");
     }
 
     public void endConfiguration() {
