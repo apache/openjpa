@@ -157,7 +157,6 @@ public class OracleDictionary
         }));
         
         selectWordSet.add("WITH");
-        selectWordSet.add("WITH");
     }
 
     public void endConfiguration() {
