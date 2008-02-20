@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,11 +112,16 @@ public class Services {
      * ignored.
      */
     private static void addResources(URL url, Set set) throws IOException {
-        InputStream in = url.openConnection().getInputStream();
+        InputStream in = null;
+        BufferedReader reader = null;
+        URLConnection urlCon = null;
 
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(
-                in));
+            urlCon = url.openConnection();
+            urlCon.setUseCaches(false);
+            in = urlCon.getInputStream();
+            reader = new BufferedReader(new InputStreamReader(in)); 
+            
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.trim().startsWith("#")
@@ -133,6 +139,11 @@ public class Services {
                 }
             }
         } finally {
+            try { 
+                reader.close();
+            } catch (IOException ioe) { 
+                // silently consume exception
+            }
             try {
                 in.close();
             } catch (IOException ioe) {
