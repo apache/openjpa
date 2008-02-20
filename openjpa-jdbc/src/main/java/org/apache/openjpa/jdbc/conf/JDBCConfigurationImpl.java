@@ -200,6 +200,7 @@ public class JDBCConfigurationImpl
             "derby", "org.apache.openjpa.jdbc.sql.DerbyDictionary",
             "empress", "org.apache.openjpa.jdbc.sql.EmpressDictionary",
             "foxpro", "org.apache.openjpa.jdbc.sql.FoxProDictionary",
+            "h2", "org.apache.openjpa.jdbc.sql.H2Dictionary",
             "hsql", "org.apache.openjpa.jdbc.sql.HSQLDictionary",
             "informix", "org.apache.openjpa.jdbc.sql.InformixDictionary",
             "jdatastore", "org.apache.openjpa.jdbc.sql.JDataStoreDictionary",
