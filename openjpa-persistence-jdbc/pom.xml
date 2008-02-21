@@ -324,6 +324,9 @@
                              are not test cases per OpenJPA standards -->
                         <exclude>org/apache/openjpa/**/*$*.class</exclude>
                         <exclude>org/apache/openjpa/**/*.*.class</exclude>
+                        
+                        <!-- exclude "no xsd" test until a workaround is figured out (OPENJPA-513)  -->
+                        <exclude>org/apache/openjpa/persistence/xml/TestPersistenceUnitWithoutXSD.java</exclude>
 
                         <!-- exclude new tests that aren't passing yet -->
                         <exclude>org/apache/openjpa/persistence/jpql/clauses/TestEJBQueryInterface.java</exclude>
