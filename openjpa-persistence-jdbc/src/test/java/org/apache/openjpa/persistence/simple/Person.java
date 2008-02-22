@@ -20,8 +20,6 @@ package org.apache.openjpa.persistence.simple;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Version;
 
 @Entity
 public class Person {
