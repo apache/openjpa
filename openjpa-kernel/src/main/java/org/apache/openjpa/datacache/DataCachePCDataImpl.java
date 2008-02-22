@@ -20,10 +20,11 @@ package org.apache.openjpa.datacache;
 
 import java.util.BitSet;
 
-import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.AbstractPCData;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCData;
 import org.apache.openjpa.kernel.PCDataImpl;
+import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -117,6 +118,65 @@ public class DataCachePCDataImpl
 
     public synchronized void store(OpenJPAStateManager sm, BitSet fields) {
         super.store(sm, fields);
+    }
+
+    /**
+     * Store field-level information from the given state manager.
+     * Special process of checking if the cached collection data is out of order.
+     */
+    protected void storeField(OpenJPAStateManager sm, FieldMetaData fmd) {
+        if (fmd.getManagement() != fmd.MANAGE_PERSISTENT)
+            return;
+        int index = fmd.getIndex();
+
+        // if the field is a collection and has "order by" set, don't cache
+        // it if this store is coming from a create or update (i.e., only
+        // enlist in cache if this is coming from a database read).
+        if (fmd.getOrders().length > 0) {
+            if (sm.getPCState() == PCState.PNEW)
+                return;
+            if (sm.getPCState() == PCState.PDIRTY) {
+                clearData(index);
+                return;
+            }
+        }
+
+        super.storeField(sm, fmd);
+
+        // If this field is used in "order by", we need to invalidate cache
+        // for the collection that refer to this field.
+        if (sm.getPCState() == PCState.PDIRTY) {
+            clearInverseRelationCache(sm, fmd);
+        }
+    }
+
+    /**
+     * Check if this field is in use of "order by" by other field collections
+     * in inverse relation. If it is, clear the other field cache because it
+     * could be out of order.
+     */
+    protected void clearInverseRelationCache(OpenJPAStateManager sm,
+        FieldMetaData fmd) {
+        ClassMetaData cmd = sm.getMetaData();
+        FieldMetaData[] fields = cmd.getFields();
+        for (int i = 0; i < fields.length; i++) {
+            FieldMetaData[] inverses = fields[i].getInverseMetaDatas();
+            if (inverses.length == 0)
+                continue;
+            for (int j = 0; j < inverses.length; j++) {
+                if (inverses[j].getOrderDeclaration()
+                    .indexOf(fmd.getName()) != -1) {
+                    DataCache cache = sm.getMetaData().getDataCache();
+                    Object oid = sm.getContext().getObjectId(sm.fetch(i));
+                    DataCachePCData data = cache.get(oid);
+                    if ((data != null) &&
+                        (data instanceof DataCachePCDataImpl)) {
+                        ((DataCachePCDataImpl) data)
+                            .clearData(inverses[j].getIndex());
+                    }
+                }
+            }
+        }
     }
 
     protected Object toData(FieldMetaData fmd, Object val, StoreContext ctx) {
