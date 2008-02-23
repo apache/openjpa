@@ -25,9 +25,7 @@ import org.apache.openjpa.jdbc.meta.* ;
 import org.apache.openjpa.jdbc.meta.strats.* ;
 
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.* ;
-import junit.framework.* ;
 
-import org.apache.openjpa.persistence.common.utils.* ;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
@@ -49,8 +47,6 @@ public class TestVersion extends AnnotationTestCase
 	{
 		super(name, "annotationcactusapp");
 	}
-
-
 
 	public void setUp()
 	{
@@ -94,8 +90,7 @@ public class TestVersion extends AnnotationTestCase
 	{
 		OpenJPAEntityManager em1 = currentEntityManager();
 		startTx(em1);
-		EntityManager em2 = currentEntityManager();
-
+		EntityManager em2 = getEmf().createEntityManager();
 
 		AnnoTest1 pc1 = em1.find(AnnoTest1.class, oid);
 		AnnoTest1 pc2 = em2.find(AnnoTest1.class, oid);
@@ -107,7 +102,7 @@ public class TestVersion extends AnnotationTestCase
 		endTx(em1);
 		endEm(em1);
 
-		startTx(em2);
+		em2.getTransaction().begin();
 		pc2.setBasic(75);
 		em1 = (OpenJPAEntityManager) currentEntityManager();
 		pc1 = em1.find(AnnoTest1.class, oid);
@@ -115,7 +110,7 @@ public class TestVersion extends AnnotationTestCase
 		endEm(em1);
 		try
 		{
-			endTx(em2);
+			em2.getTransaction().commit();
 			fail("Optimistic fail");
 		}
 		catch (RuntimeException re)
@@ -124,7 +119,7 @@ public class TestVersion extends AnnotationTestCase
 		{}
 		finally
 		{
-			endEm(em2);
+			em2.close();
 		}
 	}
 
@@ -132,7 +127,7 @@ public class TestVersion extends AnnotationTestCase
 	{
 		OpenJPAEntityManager em1 = currentEntityManager();
 		startTx(em1);
-		OpenJPAEntityManager em2 = currentEntityManager();
+		OpenJPAEntityManager em2 = getEmf().createEntityManager();
 
 		AnnoTest2 pc1 = em1.find(AnnoTest2.class, oid1);
 		AnnoTest2 pc2 = em2.find(AnnoTest2.class, oid1);
@@ -143,8 +138,7 @@ public class TestVersion extends AnnotationTestCase
 		endTx(em1);
 		endEm(em1);
 
-
-		startTx(em2);
+		em2.getTransaction().begin();
 		pc2.setBasic("75");
 
 		em1 = (OpenJPAEntityManager) currentEntityManager();
@@ -153,7 +147,7 @@ public class TestVersion extends AnnotationTestCase
 		endEm(em1);
 		try
 		{
-			endTx(em2);
+			em2.getTransaction().commit();
 			fail("Optimistic fail");
 		}
 		catch (RuntimeException re)
@@ -162,7 +156,7 @@ public class TestVersion extends AnnotationTestCase
 		{}
 		finally
 		{
-			endEm(em2);
+			em2.close();
 		}
 	}
 
@@ -170,7 +164,7 @@ public class TestVersion extends AnnotationTestCase
 	{
 		OpenJPAEntityManager em1 = currentEntityManager();
 		startTx(em1);
-		OpenJPAEntityManager em2 = currentEntityManager();
+		OpenJPAEntityManager em2 = getEmf().createEntityManager();
 
 		AnnoTest3 pc1 = em1.find(AnnoTest3.class, oid2);
 		AnnoTest3 pc2 = em2.find(AnnoTest3.class, oid2);
@@ -182,7 +176,7 @@ public class TestVersion extends AnnotationTestCase
 		endEm(em1);
 
 
-		startTx(em2);
+		em2.getTransaction().begin();
 		pc2.setBasic2(75);
 
 
@@ -192,7 +186,7 @@ public class TestVersion extends AnnotationTestCase
 		endEm(em1);
 		try
 		{
-			endTx(em2);
+			em2.getTransaction().commit();
 			fail("Optimistic fail");
 		}
 		catch (RuntimeException re)
@@ -201,7 +195,7 @@ public class TestVersion extends AnnotationTestCase
 		{}
 		finally
 		{
-			endEm(em2);
+			em2.close();
 		}
 	}
 
@@ -224,7 +218,6 @@ public class TestVersion extends AnnotationTestCase
 		endEm(em);
 	}
 
-
 	   public void testNoDefaultVersionWithoutFieldOrColumn()
 	   {
 			OpenJPAEntityManager pm = (OpenJPAEntityManager) currentEntityManager();
@@ -244,5 +237,4 @@ public class TestVersion extends AnnotationTestCase
 					   cls.getVersion().getColumns().length);
 			endEm(pm);
 	   }
-
 }
