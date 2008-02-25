@@ -49,6 +49,7 @@ import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedBlobFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedByteArrayFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedCharArrayFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedClobFieldStrategy;
+import org.apache.openjpa.jdbc.meta.strats.NanoPrecisionTimestampVersionStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneFieldStrategy;
@@ -80,6 +81,7 @@ import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
+import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -618,6 +620,8 @@ public class MappingRepository
             strat = NumberVersionStrategy.class;
         else if (TimestampVersionStrategy.ALIAS.equals(name))
             strat = TimestampVersionStrategy.class;
+        else if (NanoPrecisionTimestampVersionStrategy.ALIAS.equals(name))
+            strat = NanoPrecisionTimestampVersionStrategy.class;
         else if (StateComparisonVersionStrategy.ALIAS.equals(name))
             strat = StateComparisonVersionStrategy.class;
 
@@ -1221,7 +1225,9 @@ public class MappingRepository
         switch (vfield.getTypeCode()) {
             case JavaTypes.DATE:
             case JavaTypes.CALENDAR:
-                return new TimestampVersionStrategy();
+                return (JavaVersions.VERSION >= 5) 
+                    ? new NanoPrecisionTimestampVersionStrategy()
+                    : new TimestampVersionStrategy();
             case JavaTypes.BYTE:
             case JavaTypes.INT:
             case JavaTypes.LONG:
