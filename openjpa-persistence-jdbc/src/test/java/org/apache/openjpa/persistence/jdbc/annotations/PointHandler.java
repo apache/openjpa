@@ -34,7 +34,7 @@ import serp.util.Numbers;
  */
 public class PointHandler extends AbstractValueHandler {
 
-        /**
+    /**
      * Create columns with default names and java type values.  Kodo will
      * fill in the rest of the information and merge in any information given
      * in the user's mapping data.  If the user does not give column names,
