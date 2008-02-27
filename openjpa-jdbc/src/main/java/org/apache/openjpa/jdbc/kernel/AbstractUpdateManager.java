@@ -187,7 +187,7 @@ public abstract class AbstractUpdateManager
         Boolean custom = mapping.isCustomInsert(sm, store);
         if (!Boolean.FALSE.equals(custom))
             mapping.customInsert(sm, store);
-        if (custom.equals(Boolean.TRUE))
+        if (Boolean.TRUE.equals(custom))
             return;
 
         ClassMapping sup = mapping.getJoinablePCSuperclassMapping();
