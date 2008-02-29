@@ -192,9 +192,9 @@ public class PersistenceMappingDefaults
             if (isRemoveHungarianNotation())
                 name = removeHungarianNotation(name);
 
+            name = name + "_" + ((Column) target).getName();
             name = dict.getValidColumnName(name, local);
-
-            col.setName(name + "_" + ((Column) target).getName());
+            col.setName(name);
         }
     }
 
