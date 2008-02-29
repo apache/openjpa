@@ -30,6 +30,7 @@ public class TestEnumsInJPQL
 
         EnumFieldType o = new EnumFieldType();
         o.setEnumField(SampleEnum.BAR);
+        o.getEnumList().add(SampleEnum.FOO);
 
         em.getTransaction().begin();
         em.persist(o);
@@ -114,5 +115,14 @@ public class TestEnumsInJPQL
         assertEquals(1, ((Number) q.executeUpdate()).intValue());
         em.getTransaction().commit();
         postUpdateCheck(false);
+    }
+
+    public void testMemberOf() {
+        assertEquals(Long.valueOf(1),
+            em.createQuery("select count(o) from EnumFieldType o where " +
+                "(:param member of o.enumList or :param2 member of o.enumList)")
+                .setParameter("param", SampleEnum.FOO)
+                .setParameter("param2", SampleEnum.BAR)
+                .getSingleResult());
     }
 }

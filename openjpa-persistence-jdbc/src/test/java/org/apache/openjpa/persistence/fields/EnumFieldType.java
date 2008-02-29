@@ -18,11 +18,15 @@
  */
 package org.apache.openjpa.persistence.fields;
 
+import java.util.List;
+import java.util.ArrayList;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Entity;
 
 import org.apache.openjpa.persistence.DetachedState;
+import org.apache.openjpa.persistence.PersistentCollection;
+import org.apache.openjpa.persistence.kernel.common.apps.PCDirectory;
 
 @Entity
 //@DetachedState(enabled = false) // ##### shouldn't need this
@@ -32,6 +36,9 @@ public class EnumFieldType {
     private int intField;
 
     private SampleEnum enumField;
+
+    @PersistentCollection
+    private List<SampleEnum> enumList = new ArrayList<SampleEnum>();
 
     // for OpenJPA
     protected EnumFieldType() {
@@ -48,5 +55,9 @@ public class EnumFieldType {
 
     public SampleEnum getEnumField() {
         return enumField;
+    }
+
+    public List<SampleEnum> getEnumList() {
+        return enumList;
     }
 }
