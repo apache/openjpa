@@ -1355,8 +1355,8 @@ public class JPQLExpressionBuilder
         else if (val.getMetaData() != null)
             path = newPath(val, val.getMetaData());
         else
-            throw parseException(EX_USER, "path-no-meta",
-                new Object[]{ assemble(node), null }, null);
+            throw parseException(EX_USER, "path-invalid",
+                new Object[]{ assemble(node), name }, null);
 
         // walk through the children and assemble the path
         boolean allowNull = !inner;
