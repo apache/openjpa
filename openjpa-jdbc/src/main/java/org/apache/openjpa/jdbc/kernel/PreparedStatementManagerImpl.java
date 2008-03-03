@@ -86,10 +86,33 @@ public class PreparedStatementManagerImpl
         if (row.getAction() == Row.ACTION_INSERT)
             autoAssign = row.getTable().getAutoAssignedColumns();
 
+        flushAndUpdate(row);
+
+        // set auto assign values
+        if (autoAssign != null && autoAssign.length > 0
+            && row.getPrimaryKey() != null) {
+            OpenJPAStateManager sm = row.getPrimaryKey();
+            ClassMapping mapping = (ClassMapping) sm.getMetaData();
+            Object val;
+            for (int i = 0; i < autoAssign.length; i++) {
+                val = _dict.getGeneratedKey(autoAssign[i], _conn);
+                mapping.assertJoinable(autoAssign[i]).setAutoAssignedValue(sm,
+                    _store, autoAssign[i], val);
+            }
+            sm.setObjectId(
+                ApplicationIds.create(sm.getPersistenceCapable(), mapping));
+        }
+    }
+
+    /**
+     * Flush the given row immediately. 
+     */
+    protected void flushAndUpdate(RowImpl row)
+        throws SQLException {
         // prepare statement
         String sql = row.getSQL(_dict);
         PreparedStatement stmnt = prepareStatement(sql);
-        
+
         // setup parameters and execute statement
         if (stmnt != null)
             row.flush(stmnt, _dict, _store);
@@ -107,23 +130,12 @@ public class PreparedStatementManagerImpl
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se, row.getFailedObject(), _dict);
         } finally {
-            if (stmnt != null)
-               try { stmnt.close(); } catch (SQLException se) {}
-        }
-
-        // set auto assign values
-        if (autoAssign != null && autoAssign.length > 0
-            && row.getPrimaryKey() != null) {
-            OpenJPAStateManager sm = row.getPrimaryKey();
-            ClassMapping mapping = (ClassMapping) sm.getMetaData();
-            Object val;
-            for (int i = 0; i < autoAssign.length; i++) {
-                val = _dict.getGeneratedKey(autoAssign[i], _conn);
-                mapping.assertJoinable(autoAssign[i]).setAutoAssignedValue(sm,
-                    _store, autoAssign[i], val);
+            if (stmnt != null) {
+                try {
+                    stmnt.close();
+                } catch (SQLException se) {
+                }
             }
-            sm.setObjectId(
-                ApplicationIds.create(sm.getPersistenceCapable(), mapping));
         }
     }
 
@@ -146,5 +158,5 @@ public class PreparedStatementManagerImpl
     protected PreparedStatement prepareStatement(String sql)
         throws SQLException {
         return _conn.prepareStatement(sql);
-    }    
+    }
 }

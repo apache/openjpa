@@ -19,19 +19,9 @@
 package org.apache.openjpa.jdbc.kernel;
 
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
-import org.apache.openjpa.jdbc.schema.ForeignKey;
-import org.apache.openjpa.jdbc.sql.PrimaryRow;
-import org.apache.openjpa.jdbc.sql.Row;
-import org.apache.openjpa.jdbc.sql.RowImpl;
 import org.apache.openjpa.jdbc.sql.RowManager;
-import org.apache.openjpa.jdbc.sql.RowManagerImpl;
-import org.apache.openjpa.jdbc.sql.SQLExceptions;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
 
 /**
  * <P>Batch update manager that writes the SQL in object-level operation order. 
@@ -51,8 +41,22 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 public class BatchingConstraintUpdateManager extends ConstraintUpdateManager {
 
     protected PreparedStatementManager newPreparedStatementManager(
-            JDBCStore store, Connection conn) {
+        JDBCStore store, Connection conn) {
         int batchLimit = dict.getBatchLimit();
-        return new BatchingPreparedStatementManagerImpl(store, conn, batchLimit);
+        return new BatchingPreparedStatementManagerImpl(store, conn,
+            batchLimit);
+    }
+
+    /*
+     * Override this method to flush any remaining batched row in the
+     * PreparedStatementManager.
+     */
+    protected Collection flush(RowManager rowMgr,
+        PreparedStatementManager psMgr, Collection exceps) {
+        Collection rtnCol = super.flush(rowMgr, psMgr, exceps);
+        BatchingPreparedStatementManagerImpl bPsMgr =
+            (BatchingPreparedStatementManagerImpl) psMgr;
+        bPsMgr.flushBatch();
+        return rtnCol;
     }
 }
