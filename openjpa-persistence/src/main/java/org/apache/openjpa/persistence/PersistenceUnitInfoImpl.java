@@ -479,7 +479,7 @@ public class PersistenceUnitInfoImpl
     /**
      * Simple class resolver built around the persistence unit loader.
      */
-    private static class ClassResolverImpl
+    public static class ClassResolverImpl
         implements ClassResolver {
 
         private final ClassLoader _loader;
