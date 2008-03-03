@@ -61,7 +61,7 @@ public class JDBCFetchConfigurationImpl
     /**
      * Configurable JDBC state shared throughout a traversal chain.
      */
-    private static class JDBCConfigurationState implements Serializable {
+    protected static class JDBCConfigurationState implements Serializable {
         public int eagerMode = 0;
         public int subclassMode = 0;
         public int type = 0;
@@ -72,7 +72,7 @@ public class JDBCFetchConfigurationImpl
         public int isolationLevel = -1;
     }
 
-    private final JDBCConfigurationState _state;
+    protected final JDBCConfigurationState _state;
 
     public JDBCFetchConfigurationImpl() {
         this(null, null);
