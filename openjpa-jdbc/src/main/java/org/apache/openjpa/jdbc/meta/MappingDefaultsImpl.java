@@ -549,9 +549,7 @@ public class MappingDefaultsImpl
             String name = col.getName();
             if (_removeHungarianNotation)
                 name = removeHungarianNotation(name);
-            if (_defMissing) // this is not an 'else if' intentionally
-                name = dict.getValidColumnName(name, table);
-            col.setName(name);
+            col.setName(dict.getValidColumnName(name, table));
         }
     }
 
