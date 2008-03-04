@@ -224,7 +224,7 @@ public class JDBCConfigurationImpl
             "org.apache.openjpa.jdbc.kernel.ConstraintUpdateManager",
             "batching-constraint",
             BatchingConstraintUpdateManager.class.getName(),
-            "batching-order",
+            "batching-operation-order",
             BatchingOperationOrderUpdateManager.class.getName(),
         };
         updateManagerPlugin.setAliases(aliases);

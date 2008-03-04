@@ -3713,7 +3713,7 @@ openjpa.jdbc.UpdateManager</literal>
 UpdateManager</literal>
             </para>
             <para>
-<emphasis role="bold">Default: </emphasis><literal>constraint-batching</literal>
+<emphasis role="bold">Default: </emphasis><literal>batching-constraint</literal>
             </para>
             <para>
             <emphasis role="bold">Possible values: </emphasis><literal>default</literal>,
