@@ -1315,7 +1315,7 @@ public class JPQLExpressionBuilder
                 return factory.newLiteral(value, Literal.TYPE_UNKNOWN);
             } catch (NoSuchFieldException nsfe) {
                 throw parseException(EX_USER, "no-field",
-                    new Object[]{ className, fieldName }, nsfe);
+                    new Object[]{ c.getName(), fieldName }, nsfe);
             } catch (Exception e) {
                 throw parseException(EX_USER, "unaccessible-field",
                     new Object[]{ className, fieldName }, e);
