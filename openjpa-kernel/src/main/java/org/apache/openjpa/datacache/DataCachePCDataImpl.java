@@ -168,7 +168,8 @@ public class DataCachePCDataImpl
                     .indexOf(fmd.getName()) != -1) {
                     DataCache cache = sm.getMetaData().getDataCache();
                     Object oid = sm.getContext().getObjectId(sm.fetch(i));
-                    DataCachePCData data = cache.get(oid);
+                    DataCachePCData data = cache == null ? null
+                        : cache.get(oid);
                     if ((data != null) &&
                         (data instanceof DataCachePCDataImpl)) {
                         ((DataCachePCDataImpl) data)
