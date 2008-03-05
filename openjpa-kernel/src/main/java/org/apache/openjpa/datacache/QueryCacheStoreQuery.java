@@ -128,6 +128,9 @@ public class QueryCacheStoreQuery
             // using it because of the individual by-oid lookups
             ClassMetaData meta = _repos.getMetaData(getContext().
                 getCandidateType(), _sctx.getClassLoader(), true);
+            if (meta.getDataCache() == null)
+                return null;
+
             BitSet idxs = meta.getDataCache().containsAll(res);
 
             // eventually we should optimize this to figure out how many objects
@@ -333,9 +336,11 @@ public class QueryCacheStoreQuery
                 (q.getContext(), classes));
 
             // evict from the data cache
-            for (int i = 0; i < cmd.length; i++)
-                cmd[i].getDataCache().removeAll(
-                    cmd[i].getDescribedType(), true);
+            for (int i = 0; i < cmd.length; i++) {
+                if (cmd[i].getDataCache() != null)
+                    cmd[i].getDataCache().removeAll(
+                        cmd[i].getDescribedType(), true);
+            }
         }
 
         public Number executeDelete(StoreQuery q, Object[] params) {
