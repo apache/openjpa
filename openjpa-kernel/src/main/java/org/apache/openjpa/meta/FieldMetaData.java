@@ -207,6 +207,8 @@ public class FieldMetaData
     // ordering on load
     private Order[] _orders = null;
     private String _orderDec = null;
+    // indicate if this field is used by other field as "order by" value 
+    private boolean _usedInOrderBy = false;
 
     /**
      * Constructor.
@@ -1119,6 +1121,12 @@ public class FieldMetaData
                         decs[i] = decs[i].substring(0, spc);
                     }
                     orders[i] = getRepository().newOrder(this, decs[i], asc);
+                    //set "isUsedInOrderBy" to the field
+                    ClassMetaData elemCls = getElement()
+                        .getDeclaredTypeMetaData();
+                    FieldMetaData fmd = elemCls.getDeclaredField(decs[i]);
+                    if (fmd != null)
+                    	fmd.setUsedInOrderBy(true);                    
                 }
                 _orders = orders;
             }
@@ -2020,6 +2028,24 @@ public class FieldMetaData
 		_val.copy (vmd);
 	}
 
+    /**
+     * Check if this field is used by other field as "order by" value.
+     *
+     * @since 1.1.0
+     */
+    public boolean isUsedInOrderBy() {
+    	return _usedInOrderBy;
+    }
+    
+    /**
+     * Whether this field is used by other field as "order by" value .
+     *
+     * @since 1.1.0
+     */
+    public void setUsedInOrderBy(boolean isUsed) {
+    	_usedInOrderBy = isUsed;
+    }
+    
     /**
      * Serializable wrapper around a {@link Method} or {@link Field}. For 
      * space considerations, this does not support {@link Constructor}s.

@@ -145,7 +145,7 @@ public class DataCachePCDataImpl
 
         // If this field is used in "order by", we need to invalidate cache
         // for the collection that refer to this field.
-        if (sm.getPCState() == PCState.PDIRTY) {
+        if ((sm.getPCState() == PCState.PDIRTY) && fmd.isUsedInOrderBy()) {
             clearInverseRelationCache(sm, fmd);
         }
     }
