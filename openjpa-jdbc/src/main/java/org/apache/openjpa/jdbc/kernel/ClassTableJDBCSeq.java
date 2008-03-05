@@ -189,9 +189,6 @@ public class ClassTableJDBCSeq
      */
     public static boolean run(JDBCConfiguration conf, String[] args,
         Options opts) throws Exception {
-        if (opts.containsKey("help") || opts.containsKey("-help"))
-            return false;
-
         String action = opts.removeProperty("action", "a", null);
         Configurations.populateConfiguration(conf, opts);
         return run(conf, args, action, null, null);

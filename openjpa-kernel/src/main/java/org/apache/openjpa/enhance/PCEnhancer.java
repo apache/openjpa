@@ -4365,9 +4365,6 @@ public class PCEnhancer {
     public static boolean run(OpenJPAConfiguration conf, String[] args,
         Options opts)
         throws IOException {
-        if (opts.containsKey("help") || opts.containsKey("-help"))
-            return false;
-
         Flags flags = new Flags();
         flags.directory = Files.getFile(opts.removeProperty("directory", "d",
             null), null);

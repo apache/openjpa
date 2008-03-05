@@ -1306,9 +1306,6 @@ public class ApplicationIdTool {
     public static boolean run(OpenJPAConfiguration conf, String[] args,
         Options opts)
         throws IOException, ClassNotFoundException {
-        if (opts.containsKey("help") || opts.containsKey("-help"))
-            return false;
-
         Flags flags = new Flags();
         flags.ignoreErrors = opts.removeBooleanProperty
             ("ignoreErrors", "i", flags.ignoreErrors);

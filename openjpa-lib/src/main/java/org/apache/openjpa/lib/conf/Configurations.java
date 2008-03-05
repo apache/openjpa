@@ -673,6 +673,9 @@ public class Configurations {
      */
     public static boolean runAgainstAllAnchors(Options opts,
         Configurations.Runnable runnable) {
+        if (opts.containsKey("help") || opts.containsKey("-help")) {
+            return false;
+        }
         List anchors =
             Configurations.getFullyQualifiedAnchorsInPropertiesLocation(opts);
 

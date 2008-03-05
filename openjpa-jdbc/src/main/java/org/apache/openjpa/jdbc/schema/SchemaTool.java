@@ -1357,9 +1357,6 @@ public class SchemaTool {
     public static boolean run(JDBCConfiguration conf, String[] args,
         Options opts)
         throws IOException, SQLException {
-        if (opts.containsKey("help") || opts.containsKey("-help"))
-            return false;
-
         Flags flags = new Flags();
         flags.dropTables = opts.removeBooleanProperty
             ("dropTables", "dt", flags.dropTables);

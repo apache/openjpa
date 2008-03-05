@@ -251,7 +251,8 @@ public class MetaDataTool
         throws IOException {
         Options opts = new Options();
         final String[] arguments = opts.setFromCmdLine(args);
-        boolean ret = Configurations.runAgainstAllAnchors(opts,
+        boolean ret = (args.length > 0) &&
+            Configurations.runAgainstAllAnchors(opts,
             new Configurations.Runnable() {
             public boolean run(Options opts) throws Exception {
                 OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
@@ -272,10 +273,6 @@ public class MetaDataTool
     public static boolean run(OpenJPAConfiguration conf, String[] args,
         Options opts)
         throws IOException {
-        if (args.length == 0 || opts.containsKey("help")
-            || opts.containsKey("-help"))
-            return false;
-
         Flags flags = new Flags();
         flags.action = opts.removeProperty("action", "a", flags.action);
         String fileName = opts.removeProperty("file", "f", null);

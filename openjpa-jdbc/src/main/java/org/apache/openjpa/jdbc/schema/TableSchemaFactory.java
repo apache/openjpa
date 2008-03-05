@@ -473,9 +473,6 @@ public class TableSchemaFactory
     public static boolean run(JDBCConfiguration conf, String[] args,
         Options opts)
         throws IOException, SQLException {
-        if (opts.containsKey("help") || opts.containsKey("-help"))
-            return false;
-
         String action = opts.removeProperty("action", "a", null);
         Configurations.populateConfiguration(conf, opts);
         return run(conf, action);
