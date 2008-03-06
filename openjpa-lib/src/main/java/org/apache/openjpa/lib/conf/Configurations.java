@@ -686,17 +686,28 @@ public class Configurations {
             opts.remove("p");
 
         boolean ret = true;
-        for (Iterator iter = anchors.iterator(); iter.hasNext(); ) {
-            Options clonedOptions = (Options) opts.clone();
-            clonedOptions.setProperty("properties", iter.next().toString());
-            try {
-                ret &= runnable.run(clonedOptions);
-            } catch (Exception e) {
-                if (!(e instanceof RuntimeException))
-                    throw new RuntimeException(e);
-                else
-                    throw (RuntimeException) e;
+        if (anchors.size() == 0) {
+            ret = launchRunnable(opts, runnable);
+        } else {
+            for (Iterator iter = anchors.iterator(); iter.hasNext(); ) { 
+                Options clonedOptions = (Options) opts.clone();
+                clonedOptions.setProperty("properties", iter.next().toString());
+                ret &= launchRunnable(clonedOptions, runnable);
             }
+        }
+        return ret;
+    }
+
+    private static boolean launchRunnable(Options opts,
+        Configurations.Runnable runnable) {
+        boolean ret = true;
+        try {
+            ret = runnable.run(opts);
+        } catch (Exception e) {
+            if (!(e instanceof RuntimeException))
+                throw new RuntimeException(e);
+            else
+                throw (RuntimeException) e;
         }
         return ret;
     }
