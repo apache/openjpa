@@ -19,6 +19,12 @@
 package org.apache.openjpa.lib.conf;
 
 import java.util.List;
+import java.util.MissingResourceException;
+import java.io.File;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 import junit.framework.TestCase;
 import org.apache.openjpa.lib.util.Options;
@@ -59,5 +65,91 @@ public class TestAnchorParsing extends TestCase {
         assertTrue(locs.contains(
             "META-INF/persistence.xml#third-persistence-unit"));
         assertTrue(locs.contains("META-INF/persistence.xml#invalid"));
+    }
+
+    public void testProductDerivationsLoadResource() {
+        ProductDerivations.load(
+            "org/apache/openjpa/lib/conf/product-derivations-load.xml",
+            "foo", null);
+
+        ProductDerivations.load(
+            "org/apache/openjpa/lib/conf/product-derivations-load.xml",
+            null, null);
+
+        try {
+            ProductDerivations.load(
+                "org/apache/openjpa/lib/conf/product-derivations-load.xml",
+                "nonexistant", null);
+            fail("pu 'nonexistant' does not exist");
+        } catch (MissingResourceException mre) {
+            // expected
+        }
+
+        try {
+            ProductDerivations.load(
+                "org/apache/openjpa/lib/conf/product-derivations-load.xml",
+                "", null);
+            fail("pu '' does not exist");
+        } catch (MissingResourceException mre) {
+            // expected
+        }
+    }
+
+    public void testNonexistantResourceLoad() {
+        try {
+            ProductDerivations.load("nonexistant-resource", null, null);
+            fail("resource 'nonexistant-resource' should not exist");
+        } catch (MissingResourceException e) {
+            // expected
+        }
+    }
+
+    public void testProductDerivationsLoadFile() throws IOException {
+        File validFile = resourceToTemporaryFile(
+            "org/apache/openjpa/lib/conf/product-derivations-load.xml");
+
+        ProductDerivations.load(validFile, "foo", null);
+
+        ProductDerivations.load(validFile, null, null);
+
+        try {
+            ProductDerivations.load(validFile, "nonexistant", null);
+            fail("pu 'nonexistant' does not exist");
+        } catch (MissingResourceException mre) {
+            // expected
+        }
+
+        try {
+            ProductDerivations.load(validFile, "", null);
+            fail("pu '' does not exist");
+        } catch (MissingResourceException mre) {
+            // expected
+        }
+    }
+
+    public void testNonexistantFileLoad() {
+        File f = new File("this-should-not-exist");
+        assertFalse(f.exists());
+        try {
+            ProductDerivations.load(f, null, null);
+            fail(f.getName() + " does not exist");
+        } catch (MissingResourceException e) {
+            // expected
+        }
+    }
+
+    private File resourceToTemporaryFile(String s) throws IOException {
+        InputStream in = getClass().getClassLoader().getResourceAsStream(s);
+        File f = File.createTempFile("TestAnchorParsing", ".xml");
+        OutputStream out = new FileOutputStream(f);
+        byte[] bytes = new byte[1024];
+        while (true) {
+            int count = in.read(bytes);
+            if (count < 0)
+                break;
+            out.write(bytes, 0, count);
+        }
+        f.deleteOnExit();
+        return f;
     }
 }
