@@ -34,13 +34,13 @@ import org.apache.openjpa.lib.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * The Localizer provides convenient access to localized
- * strings. It inlcudes built-in support for parameter substitution through
+ * strings. It includes built-in support for parameter substitution through
  * the use of the {@link MessageFormat} utility.
  * Strings are stored in per-package {@link Properties} files.
  * The property file for the default locale must be named
  * <code>localizer.properties</code>. Additional locales can be supported
  * through additional property files using the naming conventions specified
- * in the {@link ResourceBundle} class. For example, the german locale
+ * in the {@link ResourceBundle} class. For example, the German locale
  * could be supported through a <code>localizer_de_DE.properties</code> file.
  *
  * @author Abe White

@@ -20,9 +20,9 @@ package org.apache.openjpa.jdbc.schema;
 
 /**
  * Factory for {@link SchemaGroup}s. Users can plug in their own factory
- * implementation, or rely on the ones provided. Most schema factoryies
+ * implementation, or rely on the ones provided. Most schema factories
  * will probably implement {@link org.apache.openjpa.lib.conf.Configurable} to
- * receive the system congiguration on construction.
+ * receive the system configuration on construction.
  *
  * @author Abe White
  */
