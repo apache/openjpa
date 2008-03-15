@@ -40,9 +40,9 @@ import org.apache.openjpa.util.UserException;
  * {@link Bootstrap#getBrokerFactory()} bootstrapping mechanism, to facilitate
  * the process of creating a subclass of {@link AbstractStoreManager}. New
  * store manager implementations need not extend this class. Instead, set the
- * <code>org.apache.openjpa.BrokerFactory</code> configuration property to
+ * <code>openjpa.BrokerFactory</code> configuration property to
  * <code>abstractstore</code>,
- * and set the <code>org.apache.openjpa.abstractstore.AbstractStoreManager</code>
+ * and set the <code>openjpa.abstractstore.AbstractStoreManager</code>
  * configuration property to the full class name of your implementation.
  *  Additionally, you can optionally create your own
  * <code>BrokerFactory</code> implementation. However, we recommend that you
