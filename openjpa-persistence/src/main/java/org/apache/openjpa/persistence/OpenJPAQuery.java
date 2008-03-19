@@ -140,7 +140,7 @@ public interface OpenJPAQuery
 
     /**
      * The named parameters for the query; empty map if none or
-     * if query uses named parameters.
+     * if query uses positional parameters.
      */
     public Map getNamedParameters();
 
