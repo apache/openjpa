@@ -2812,12 +2812,24 @@ public class DBDictionary
 
     /**
      * Make any necessary changes to the given column name to make it valid
-     * for the current DB.
+     * for the current DB.  The column name will be made unique for the
+     * specified table.
      */
     public String getValidColumnName(String name, Table table) {
+        return getValidColumnName(name, table, true);
+    }
+
+    /**
+     * Make any necessary changes to the given column name to make it valid
+     * for the current DB.  If checkForUniqueness is true, the column name will 
+     * be made unique for the specified table.
+     */
+    public String getValidColumnName(String name, Table table,
+        boolean checkForUniqueness) {
         while (name.startsWith("_"))
             name = name.substring(1);
-        return makeNameValid(name, table, maxColumnNameLength, NAME_ANY);
+        return makeNameValid(name, table, maxColumnNameLength, NAME_ANY,
+            checkForUniqueness);
     }
 
     /**
@@ -2924,6 +2936,20 @@ public class DBDictionary
      */
     protected String makeNameValid(String name, NameSet set, int maxLen,
         int nameType) {
+        return makeNameValid(name, set, maxLen, nameType, true);
+    }
+
+    /**
+     * Shortens the given name to the given maximum length, then checks that
+     * it is not a reserved word. If it is reserved, appends a "0". If
+     * the name conflicts with an existing schema component and uniqueness
+     * checking is enabled, the last character is replace with '0', then 
+     * '1', etc. 
+     * Note that the given max len may be 0 if the database metadata is 
+     * incomplete.
+     */
+    protected String makeNameValid(String name, NameSet set, int maxLen,
+        int nameType, boolean checkForUniqueness) {
         if (maxLen < 1)
             maxLen = 255;
         if (name.length() > maxLen)
@@ -2935,7 +2961,7 @@ public class DBDictionary
         }
 
         // now make sure the name is unique
-        if (set != null) {
+        if (set != null && checkForUniqueness) {
             outer:
             for (int version = 1, chars = 1; true; version++) {
                 // for table names, we check for the table itself in case the

@@ -481,8 +481,6 @@
                         <exclude>org/apache/openjpa/persistence/meta/TestValueStrategies.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestXMLPersistenceMetaDataSerializer.java</exclude>
                   
-                        <!--  Exclude until root cause of TCK problem is found. -->
-                        <exclude>org/apache/openjpa/persistence/jdbc/TestFKColumnNames.java</exclude>
                     </excludes>
                     <systemProperties>
                         <property>

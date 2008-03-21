@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -192,8 +191,10 @@ public class PersistenceMappingDefaults
             if (isRemoveHungarianNotation())
                 name = removeHungarianNotation(name);
 
-            name = dict.getValidColumnName(name, local);
-            col.setName(name + "_" + ((Column) target).getName());
+            name = name + "_" + ((Column) target).getName();
+            // No need to check for uniqueness.
+            name = dict.getValidColumnName(name, local, false);
+            col.setName(name);
         }
     }
 
