@@ -25,7 +25,6 @@ import javax.persistence.Id;
 
 import org.apache.openjpa.persistence.PersistentMap;
 import org.apache.openjpa.persistence.jdbc.ContainerTable;
-import org.apache.openjpa.persistence.jdbc.KeyColumn;
 
 @Entity
 public class HandlerToHandlerMapInstance {
@@ -34,8 +33,6 @@ public class HandlerToHandlerMapInstance {
 
     @PersistentMap
     @ContainerTable(name="NONSTD_MAPPING_MAP")
-    // needed because we hard-code 'key' in the handler FieldStrategies
-    @KeyColumn(name="key_col") 
     private Map<String,String> map = new HashMap<String,String>();
 
     public Map<String,String> getMap() {

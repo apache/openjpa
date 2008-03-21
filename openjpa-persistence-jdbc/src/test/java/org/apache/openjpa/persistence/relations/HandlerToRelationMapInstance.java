@@ -25,7 +25,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import org.apache.openjpa.persistence.PersistentMap;
-import org.apache.openjpa.persistence.jdbc.KeyColumn;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 
 @Entity
@@ -34,8 +33,6 @@ public class HandlerToRelationMapInstance {
     private int id;
 
     @PersistentMap(elementCascade = CascadeType.PERSIST)
-    // needed because we hard-code 'key' in the handler FieldStrategies
-    @KeyColumn(name="key_col")
     private Map<String,AllFieldTypes> map = new HashMap<String,AllFieldTypes>();
 
     public Map<String,AllFieldTypes> getMap() {

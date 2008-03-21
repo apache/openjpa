@@ -133,7 +133,9 @@ public class HandlerRelationMapTableFieldStrategy
 
         field.mapJoin(adapt, true);
         _kio = new ColumnIO();
-        _kcols = HandlerStrategies.map(key, "key", _kio, adapt);
+        DBDictionary dict = field.getMappingRepository().getDBDictionary();
+        _kcols = HandlerStrategies.map(key, 
+            dict.getValidColumnName("key", field.getTable()), _kio, adapt);
 
         if (val.getTypeMapping().isMapped()) {
             ValueMappingInfo vinfo = val.getValueInfo();
