@@ -191,7 +191,7 @@ public class OracleDictionary
                 int release = Integer.parseInt(productVersion);
                 
                 // warn sql92
-                if (release == 8) {
+                if (release <= 8) {
                     if (joinSyntax == SYNTAX_SQL92 && log.isWarnEnabled())
                         log.warn(_loc.get("oracle-syntax"));
                     joinSyntax = SYNTAX_DATABASE;
@@ -199,10 +199,12 @@ public class OracleDictionary
                     timestampTypeName = "DATE"; // added oracle 9
                     supportsXMLColumn = false;
                 }
-                else 
+                else {
                     // select of an xml column requires ".getStringVal()"
                     // suffix. eg. t0.xmlcol.getStringVal()
                     getStringVal = ".getStringVal()";
+                    joinSyntax = SYNTAX_SQL92;
+                }
             } else if (metadataClassName.startsWith("com.ddtek.")
                 || url.indexOf("jdbc:datadirect:oracle:") != -1
                 || "Oracle".equals(driverName)) {
