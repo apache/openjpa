@@ -230,15 +230,25 @@ public class SQLStoreQuery
                 if (stmnt != null)
                     buf.setParameters(stmnt);
 
-                int count = executeUpdate(store, conn, stmnt, buf);                
+                int count = executeUpdate(store, conn, stmnt, buf);  
+              
                 return Numbers.valueOf(count);
             } catch (SQLException se) {
-                if (stmnt != null)
-                    try { stmnt.close(); } catch (SQLException se2) {}
-                try { conn.close(); } catch (SQLException se2) {}
                 throw SQLExceptions.getStore(se, dict);
             } finally {
-                try { conn.close(); } catch (SQLException se) {}
+                if (stmnt != null) {
+                    try {
+                        stmnt.close();
+                    } catch (SQLException se) {
+                        // safe to ignore
+                    } finally {
+                        stmnt = null;
+                    }
+                }
+                try {
+                    conn.close();
+                } catch (SQLException se) {
+                }
             }
         }
 
