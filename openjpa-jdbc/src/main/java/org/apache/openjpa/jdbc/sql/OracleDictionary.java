@@ -999,12 +999,13 @@ public class OracleDictionary
         }
     }
 
-    private static Clob getEmptyClob()
+    private Clob getEmptyClob()
         throws SQLException {
         if (EMPTY_CLOB != null)
             return EMPTY_CLOB;
         try {
-            return EMPTY_CLOB = (Clob) Class.forName("oracle.sql.CLOB").
+            return EMPTY_CLOB = (Clob) Class.forName("oracle.sql.CLOB",true, 
+                    Thread.currentThread().getContextClassLoader()).
                 getMethod("empty_lob", new Class[0]).
                 invoke(null, new Object[0]);
         } catch (Exception e) {
@@ -1012,12 +1013,13 @@ public class OracleDictionary
         }
     }
 
-    private static Blob getEmptyBlob()
+    private Blob getEmptyBlob()
         throws SQLException {
         if (EMPTY_BLOB != null)
             return EMPTY_BLOB;
         try {
-            return EMPTY_BLOB = (Blob) Class.forName("oracle.sql.BLOB").
+            return EMPTY_BLOB = (Blob) Class.forName("oracle.sql.BLOB",true, 
+                    Thread.currentThread().getContextClassLoader()).
                 getMethod("empty_lob", new Class[0]).
                 invoke(null, new Object[0]);
         } catch (Exception e) {
