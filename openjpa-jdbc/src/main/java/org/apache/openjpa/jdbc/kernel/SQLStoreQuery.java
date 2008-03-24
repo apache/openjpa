@@ -239,11 +239,18 @@ public class SQLStoreQuery
                 }
                 return Numbers.valueOf(count);
             } catch (SQLException se) {
-                if (stmnt != null)
-                    try { stmnt.close(); } catch (SQLException se2) {}
-                try { conn.close(); } catch (SQLException se2) {}
                 throw SQLExceptions.getStore(se, dict);
             } finally {
+                if(stmnt != null) {
+                    try {
+                        stmnt.close(); 
+                    } catch (SQLException se) {
+                        // safe to ignore, we're just cleaning up.
+                    }
+                    finally {
+                        stmnt = null;
+                    }
+                }
                 try { conn.close(); } catch (SQLException se) {}
             }
         }
