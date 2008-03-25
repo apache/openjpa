@@ -84,28 +84,16 @@
         <module>openjpa-lib</module>
         <module>openjpa-kernel</module>
         <module>openjpa-jdbc</module>
+        <module>openjpa-persistence</module>
+        <module>openjpa-persistence-jdbc</module>
         <module>openjpa-xmlstore</module>
         <module>openjpa-slice</module>
         <module>openjpa-all</module>
         <module>openjpa-project</module>
+        <module>openjpa-examples</module>
         <module>openjpa-integration</module>
     </modules>
     <profiles>
-        <profile>
-            <id>jdk1.5</id>
-            <activation>
-                <jdk>1.5</jdk>
-            </activation>
-            <modules>
-                <module>openjpa-lib-5</module>
-                <module>openjpa-persistence</module>
-                <module>openjpa-persistence-jdbc</module>
-                <module>openjpa-kernel-5</module>
-                <module>openjpa-jdbc-5</module>
-                <module>openjpa-slice</module>
-                <module>openjpa-examples</module>
-            </modules>
-        </profile>
         <profile>
             <id>release</id>
             <activation>
@@ -360,7 +348,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.4</version>
                     <configuration>
                         <argLine>${surefire.jvm.args}</argLine>
                         <useFile>false</useFile>

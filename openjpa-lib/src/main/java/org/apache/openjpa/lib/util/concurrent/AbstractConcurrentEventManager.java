@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.openjpa.lib.util.EventManager;
 
@@ -39,7 +40,7 @@ import org.apache.openjpa.lib.util.EventManager;
 public abstract class AbstractConcurrentEventManager
     implements EventManager, Serializable {
 
-    private static Exception[] EMPTY_EXCEPTIONS = new Exception[0];
+    private static final Exception[] EMPTY_EXCEPTIONS = new Exception[0];
 
     protected final Collection _listeners;
     private boolean _failFast = false;

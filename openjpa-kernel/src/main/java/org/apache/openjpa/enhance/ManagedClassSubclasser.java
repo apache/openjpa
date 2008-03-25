@@ -118,7 +118,8 @@ public class ManagedClassSubclasser {
         Set<Class> unspecified = null;
         for (Iterator iter = classes.iterator(); iter.hasNext(); ) {
             final Class cls = (Class) iter.next();
-            final PCEnhancer enhancer = new PCEnhancer(conf, cls);
+            final PCEnhancer enhancer =
+                    new PCEnhancer((OpenJPAConfiguration) conf.clone(), cls);
 
             enhancer.setBytecodeWriter(new BytecodeWriter() {
                 public void write(BCClass bc) throws IOException {

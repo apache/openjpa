@@ -22,11 +22,15 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.collections.set.MapBackedSet;
 
 /**
- * A concurrent set whose values may be stored as weak or soft references.
+ * A concurrent set whose values may be stored as weak or soft references. If
+ * the constructor is invoked with <code>refType</code> set to {@link #HARD},
+ * this uses a JDK1.5 {@link ConcurrentHashMap} under the covers. Otherwise,
+ * it uses a {@link ConcurrentReferenceHashMap}.
  *
  * @author Abe White
  * @nojavadoc

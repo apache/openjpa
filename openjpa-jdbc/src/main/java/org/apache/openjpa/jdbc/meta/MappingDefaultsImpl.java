@@ -25,6 +25,7 @@ import java.util.Properties;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.strats.UntypedPCValueHandler;
+import org.apache.openjpa.jdbc.meta.strats.EnumValueHandler;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
@@ -457,10 +458,11 @@ public class MappingDefaultsImpl
         if (_stringifyUnmapped && vm.getTypeMapping() != null
             && !vm.getTypeMapping().isMapped())
             return UntypedPCValueHandler.getInstance();
-        if (_ordinalEnum && !vm.isSerialized()
-            && JavaVersions.isEnumeration(type))
-            return "org.apache.openjpa.jdbc.meta.strats.EnumValueHandler"
-                + "(StoreOrdinal=true)";
+        if (type.isEnum() && !vm.isSerialized()) {
+            EnumValueHandler enumHandler = new EnumValueHandler();
+            enumHandler.setStoreOrdinal(_ordinalEnum);
+            return enumHandler;
+        }
         return null;
     }
 

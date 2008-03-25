@@ -84,7 +84,6 @@
 
             <!--
                 create enhancer pre-main attribute
-                copied from openjpa-kernel-5/pom.xml
             -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -120,19 +119,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-kernel-5</artifactId>
-            <version>${pom.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-jdbc</artifactId>
-            <version>${pom.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-jdbc-5</artifactId>
             <version>${pom.version}</version>
             <scope>provided</scope>
         </dependency>

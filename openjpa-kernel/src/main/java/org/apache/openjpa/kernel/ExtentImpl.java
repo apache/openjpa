@@ -30,7 +30,7 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProviderIterator;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
-import org.apache.openjpa.lib.util.concurrent.ReentrantLock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;

@@ -29,7 +29,7 @@ public class TestHandlerToRelationMaps
 
     public void setUp() {
         setUp(HandlerToRelationMapInstance.class, AllFieldTypes.class,
-            CLEAR_TABLES, "openjpa.Log", "SQL=TRACE");
+            CLEAR_TABLES);
     }
 
     public void testHandlerToRelationMaps() {

@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.openjpa.lib.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A LogFactory implementation to pass events through multiple

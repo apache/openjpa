@@ -55,7 +55,7 @@ public class TestExceptionsFromCallbacks
             // actually, we really only need redef
             fail("this test method does not work without enhancement");
 
-        setUp(ExceptionsFromCallbacksEntity.class, CLEAR_TABLES, "openjpa.Log", "SQL=TRACE");
+        setUp(ExceptionsFromCallbacksEntity.class, CLEAR_TABLES);
         testRunning = true;
     }
 

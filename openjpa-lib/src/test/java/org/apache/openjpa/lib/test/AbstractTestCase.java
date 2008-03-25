@@ -855,8 +855,8 @@ public abstract class AbstractTestCase extends TestCase {
         Object result = in.readObject();
 
         if (validateEquality) {
-            assertEquals(orig.hashCode(), result.hashCode());
             assertEquals(orig, result);
+            assertEquals(orig.hashCode(), result.hashCode());
         }
 
         return result;

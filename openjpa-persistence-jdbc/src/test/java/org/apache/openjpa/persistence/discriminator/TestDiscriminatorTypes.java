@@ -34,7 +34,7 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
                 CharRootEntity.class, IntegerAbstractEntity.class,
                 IntegerLeafEntity.class, IntegerRootEntity.class,
                 StringAbstractEntity.class, StringLeafEntity.class,
-                StringRootEntity.class, CLEAR_TABLES, "openjpa.Log", "SQL=TRACE");
+                StringRootEntity.class, CLEAR_TABLES);
     }
 
     public void testCharDiscriminators() {

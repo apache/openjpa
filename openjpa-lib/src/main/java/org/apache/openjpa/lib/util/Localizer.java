@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.lib.util;
 
@@ -29,18 +29,18 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
-import org.apache.openjpa.lib.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * The Localizer provides convenient access to localized
- * strings. It includes built-in support for parameter substitution through
+ * strings. It inlcudes built-in support for parameter substitution through
  * the use of the {@link MessageFormat} utility.
  * Strings are stored in per-package {@link Properties} files.
  * The property file for the default locale must be named
  * <code>localizer.properties</code>. Additional locales can be supported
  * through additional property files using the naming conventions specified
- * in the {@link ResourceBundle} class. For example, the German locale
+ * in the {@link ResourceBundle} class. For example, the german locale
  * could be supported through a <code>localizer_de_DE.properties</code> file.
  *
  * @author Abe White
@@ -99,9 +99,9 @@ public class Localizer {
         if (loc != null)
             return loc;
         else {
-            loc = new Localizer(pkg, file, locale, 
+            loc = new Localizer(pkg, file, locale,
                 cls == null ? null:(ClassLoader) AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(cls))); 
+                    J2DoPrivHelper.getClassLoaderAction(cls)));
             _localizers.put(key, loc);
             return loc;
         }
@@ -133,7 +133,7 @@ public class Localizer {
         _locale = locale;
         _loader = loader;
     }
-    
+
     private ResourceBundle getBundle() {
         // no locking; it's ok to create multiple bundles
         if (_bundle == null) {
@@ -237,7 +237,7 @@ public class Localizer {
     }
 
     /**
-     * A <code>Message</code> can provide a localized message via the 
+     * A <code>Message</code> can provide a localized message via the
      * {@link #getMessage} method call, and can also provide the original key,
      * package, and substitution array that were used to assemble the message.
      */
@@ -248,7 +248,7 @@ public class Localizer {
         private final Object[] _subs;
         private final String _localizedMessage;
 
-        private Message(String packageName, ResourceBundle bundle, String key, 
+        private Message(String packageName, ResourceBundle bundle, String key,
             Object[] subs, boolean fatal) {
             if (bundle == null && fatal)
                 throw new MissingResourceException(key, key, key);

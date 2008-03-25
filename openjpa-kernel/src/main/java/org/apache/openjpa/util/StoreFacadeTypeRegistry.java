@@ -21,7 +21,7 @@ package org.apache.openjpa.util;
 import java.util.Map;
 
 import org.apache.openjpa.kernel.StoreManager;
-import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Repository of store-specific facade classes. This is used by facade 

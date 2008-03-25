@@ -36,7 +36,7 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.lib.util.concurrent.ReentrantLock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.jdbc.FetchMode;

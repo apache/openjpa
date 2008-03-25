@@ -34,9 +34,11 @@ import org.apache.openjpa.lib.util.LRUMap;
 import org.apache.openjpa.lib.util.ReferenceHashMap;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.SizedMap;
-import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
-import org.apache.openjpa.lib.util.concurrent.ReentrantLock;
+import org.apache.openjpa.lib.util.concurrent.SizedConcurrentHashMap;
+
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Fixed-size map that has ability to pin/unpin entries and move overflow to
@@ -85,28 +87,41 @@ public class CacheMap
     }
 
     /**
-     * Create a cache map with the given properties.
+     * @deprecated use {@link CacheMap#CacheMap(boolean, int, int, float, int)}
+     * instead.
      */
     public CacheMap(boolean lru, int max, int size, float load) {
+        this(lru, max, size, load, 16);
+    }
+
+    /**
+     * Create a cache map with the given properties.
+     *
+     * @since 1.1.0
+     */
+    public CacheMap(boolean lru, int max, int size, float load,
+        int concurrencyLevel) {
         if (size < 0)
             size = 500;
+
+        softMap = new ConcurrentReferenceHashMap(ReferenceMap.HARD,
+            ReferenceMap.SOFT, size, load) {
+            public void overflowRemoved(Object key, Object value) {
+                softMapOverflowRemoved(key, value);
+            }
+
+            public void valueExpired(Object key) {
+                softMapValueExpired(key);
+            }
+        };
+        pinnedMap = new ConcurrentHashMap();
+
         if (!lru) {
-            cacheMap = new ConcurrentHashMap(size, load) {
+            cacheMap = new SizedConcurrentHashMap(size, load, concurrencyLevel){
                 public void overflowRemoved(Object key, Object value) {
                     cacheMapOverflowRemoved(key, value);
                 }
             };
-            softMap = new ConcurrentReferenceHashMap(ReferenceMap.HARD,
-                ReferenceMap.SOFT, size, load) {
-                public void overflowRemoved(Object key, Object value) {
-                    softMapOverflowRemoved(key, value);
-                }
-
-                public void valueExpired(Object key) {
-                    softMapValueExpired(key);
-                }
-            };
-            pinnedMap = new ConcurrentHashMap();
             _readLock = null;
         } else {
             cacheMap = new LRUMap(size, load) {
@@ -114,20 +129,11 @@ public class CacheMap
                     cacheMapOverflowRemoved(key, value);
                 }
             };
-            softMap = new ReferenceHashMap(ReferenceMap.HARD,
-                ReferenceMap.SOFT, size, load) {
-                public void overflowRemoved(Object key, Object value) {
-                    softMapOverflowRemoved(key, value);
-                }
-
-                public void valueExpired(Object key) {
-                    softMapValueExpired(key);
-                }
-            };
-            pinnedMap = new HashMap();
             _readLock = _writeLock;
         }
-        cacheMap.setMaxSize((max < 0) ? Integer.MAX_VALUE : max);
+        if (max < 0)
+            max = Integer.MAX_VALUE;
+        cacheMap.setMaxSize(max);
     }
 
     /**

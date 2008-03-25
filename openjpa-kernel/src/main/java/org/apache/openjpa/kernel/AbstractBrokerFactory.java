@@ -41,6 +41,7 @@ import org.apache.openjpa.datacache.DataCacheStoreManager;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.ManagedClassSubclasser;
 import org.apache.openjpa.event.BrokerFactoryEvent;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -49,9 +50,9 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
-import org.apache.openjpa.lib.util.concurrent.ReentrantLock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
@@ -304,38 +305,9 @@ public abstract class AbstractBrokerFactory
             }
         }
 
-        if (JavaVersions.VERSION >= 5) {
-            try {
-                // This is Java 5 / 6 code. There might be a more elegant
-                // way to bootstrap this into the system, but reflection
-                // will get things working for now. We could potentially
-                // do this by creating a new BrokerFactoryEvent type for
-                // Broker creation, at which point we have an appropriate
-                // classloader to use.
-                Class cls = Class.forName(
-                    "org.apache.openjpa.enhance.ManagedClassSubclasser");
-                cls.getMethod("prepareUnenhancedClasses", new Class[] {
-                        OpenJPAConfiguration.class, Collection.class,
-                        ClassLoader.class
-                    })
-                    .invoke(null, new Object[]{ _conf, toRedefine, envLoader });
-            } catch (NoSuchMethodException e) {
-                // should never happen in a properly-built installation
-                throw new InternalException(e);
-            } catch (IllegalAccessException e) {
-                // should never happen in a properly-built installation
-                throw new InternalException(e);
-            } catch (InvocationTargetException e) {
-                Throwable cause = e.getCause();
-                if (cause instanceof OpenJPAException)
-                    throw (OpenJPAException) cause;
-                else
-                    throw new InternalException(cause);
-            } catch (ClassNotFoundException e) {
-                // should never happen in a properly-built installation
-                throw new InternalException(e);
-            }
-        }
+        // get the ManagedClassSubclasser into the loop
+        ManagedClassSubclasser.prepareUnenhancedClasses(
+            _conf, toRedefine, envLoader);
     }
 
     private boolean needsSub(Class cls) {

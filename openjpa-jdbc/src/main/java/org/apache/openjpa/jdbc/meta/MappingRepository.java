@@ -102,13 +102,6 @@ public class MappingRepository
 
     private static final Localizer _loc = Localizer.forPackage
         (MappingRepository.class);
-    private static final Map _handlers = new HashMap();
-
-    static {
-        // register default value handlers
-        _handlers.put("java.lang.Enum",
-            "org.apache.openjpa.jdbc.meta.strats.EnumValueHandler");
-    }
 
     private transient DBDictionary _dict = null;
     private transient MappingDefaults _defaults = null;
@@ -949,8 +942,6 @@ public class MappingRepository
             return null;
 
         Object strat = _defaults.getStrategy(val, type, adapting);
-        if (strat == null)
-            strat = _handlers.get(type.getName());
 
         // recurse on superclass so that, for example, a registered handler
         // for java.lang.Enum will work on all enums

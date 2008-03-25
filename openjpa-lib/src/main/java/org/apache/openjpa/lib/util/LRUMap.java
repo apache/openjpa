@@ -38,12 +38,12 @@ public class LRUMap extends org.apache.commons.collections.map.LRUMap
     public LRUMap() {
     }
 
-    public LRUMap(int maxSize) {
-        super(maxSize);
+    public LRUMap(int initCapacity) {
+        super(initCapacity);
     }
 
-    public LRUMap(int maxSize, float loadFactor) {
-        super(maxSize, loadFactor);
+    public LRUMap(int initCapacity, float loadFactor) {
+        super(initCapacity, loadFactor);
     }
 
     public LRUMap(Map map) {

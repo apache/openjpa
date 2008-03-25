@@ -239,7 +239,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-jdbc-5</artifactId>
+            <artifactId>openjpa-jdbc</artifactId>
             <version>${pom.version}</version>
             <scope>compile</scope>
         </dependency>

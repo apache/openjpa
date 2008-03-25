@@ -21,7 +21,7 @@ package org.apache.openjpa.event;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.openjpa.lib.util.concurrent.ConcurrentHashSet;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 
 /**
  * Single-JVM-only implementation of {@link RemoteCommitProvider}
@@ -37,7 +37,8 @@ import org.apache.openjpa.lib.util.concurrent.ConcurrentHashSet;
 public class SingleJVMRemoteCommitProvider
     extends AbstractRemoteCommitProvider {
 
-    private static Set s_providers = new ConcurrentHashSet();
+    private static Set s_providers = new ConcurrentReferenceHashSet(
+        ConcurrentReferenceHashSet.HARD);
 
     public SingleJVMRemoteCommitProvider() {
         s_providers.add(this);

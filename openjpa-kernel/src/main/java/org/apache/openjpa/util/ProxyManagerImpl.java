@@ -47,6 +47,7 @@ import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Queue;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -55,7 +56,9 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
-import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
+import org.apache.openjpa.lib.util.concurrent.NullSafeConcurrentHashMap;
+
+import java.util.concurrent.ConcurrentHashMap;
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
@@ -85,26 +88,13 @@ public class ProxyManagerImpl
         _stdCollections.put(Set.class, HashSet.class);
         _stdCollections.put(SortedSet.class, TreeSet.class);
         _stdCollections.put(List.class, ArrayList.class);
-        if (JavaVersions.VERSION >= 5) {
-            try {
-                Class queue = (Class) AccessController
-                    .doPrivileged(J2DoPrivHelper.getForNameAction(
-                        "java.util.Queue", false,
-                        (ClassLoader) AccessController
-                            .doPrivileged(J2DoPrivHelper
-                                .getClassLoaderAction(Collection.class))));
-                _stdCollections.put(queue, LinkedList.class);
-            } catch (Throwable t) {
-                // not really java 5 after all?
-            }
-        }
-
+        _stdCollections.put(Queue.class, LinkedList.class);
         _stdMaps.put(Map.class, HashMap.class);
         _stdMaps.put(SortedMap.class, TreeMap.class);
     }
 
     private final Set _unproxyable = new HashSet();
-    private final Map _proxies = new ConcurrentHashMap();
+    private final Map _proxies = new NullSafeConcurrentHashMap();
     private boolean _trackChanges = true;
     private boolean _assertType = false;
 

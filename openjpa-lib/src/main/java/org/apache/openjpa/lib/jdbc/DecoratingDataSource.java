@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.sql.DataSource;
 
-import org.apache.openjpa.lib.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Delegating data source that maintains a list of {@link ConnectionDecorator}s.

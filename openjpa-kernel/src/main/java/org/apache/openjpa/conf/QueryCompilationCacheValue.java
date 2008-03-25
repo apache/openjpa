@@ -25,7 +25,7 @@ import java.util.Map;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentMap;
-import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.util.CacheMap;
 

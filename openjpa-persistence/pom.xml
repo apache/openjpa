@@ -35,7 +35,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-kernel-5</artifactId>
+            <artifactId>openjpa-kernel</artifactId>
             <version>${pom.version}</version>
             <scope>compile</scope>
         </dependency>

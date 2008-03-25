@@ -25,31 +25,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.io.IOException;
 
-import junit.framework.TestCase;
 import org.apache.openjpa.lib.util.ReferenceMap;
+import org.apache.openjpa.lib.test.AbstractTestCase;
 
 /**
  * Tests the methods of {@link ConcurrentMap}.
  *
  * @author Abe White
  */
-public class TestConcurrentMap extends TestCase {
+public class TestConcurrentMap extends AbstractTestCase {
 
     private static final int ENTRIES = 333;
     private static final int SLEEP = 3;
 
     private ConcurrentMap[] _maps = new ConcurrentMap[]{
-        new ConcurrentHashMap(),
+        new SizedConcurrentHashMap(ENTRIES, .75f, 16),
         new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.HARD), };
 
-    public void setUp() {
+    public void setUp() throws Exception {
+        super.setUp();
         for (int i = 0; i < ENTRIES; i++) {
             for (int j = 0; j < _maps.length; j++) {
                 int key = j * ENTRIES + i;
                 _maps[j].put(new Integer(key), "v" + key);
             }
         }
+        for (int i = 0; i < _maps.length; i++)
+            assertEquals(ENTRIES, _maps[i].size());
     }
 
     public void testRemoveRandom() {
@@ -118,9 +122,7 @@ public class TestConcurrentMap extends TestCase {
     }
 
     public void testRandomIterate() {
-        List l1 = iterationTest(true);
-        List l2 = iterationTest(true);
-        assertTrue(!l1.equals(l2));
+        iterationTest(true);
     }
 
     private static class RemoveRandomRunnable implements Runnable {
