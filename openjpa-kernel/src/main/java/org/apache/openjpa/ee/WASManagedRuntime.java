@@ -328,18 +328,14 @@ public class WASManagedRuntime extends AbstractManagedRuntime
                 ctx.close();
             }
 
-            ClassLoader loader = _conf.getClassResolverInstance()
-                .getClassLoader(getClass(), null);
-
             Class extendedJTATransaction = Class.forName(
-                "com.ibm.websphere.jtaextensions.ExtendedJTATransaction", true,
-                loader);
+                    "com.ibm.websphere.jtaextensions.ExtendedJTATransaction");
+            Class synchronizationCallback = Class.forName(
+                    "com.ibm.websphere.jtaextensions.SynchronizationCallback");
 
             _registerSync = extendedJTATransaction.getMethod(
-                "registerSynchronizationCallbackForCurrentTran",
-                new Class[] { Class.forName(
-                    "com.ibm.websphere.jtaextensions.SynchronizationCallback",
-                    true, loader) });
+                    "registerSynchronizationCallbackForCurrentTran",
+                    new Class[] { synchronizationCallback });
             _getGlobalId = extendedJTATransaction.
                 getMethod("getGlobalId", null);
         } catch (Exception e) {
