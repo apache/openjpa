@@ -206,12 +206,9 @@ public class OracleDictionary
                     timestampTypeName = "DATE"; // added oracle 9
                     supportsXMLColumn = false;
                 }
-                else {
                     // select of an xml column requires ".getStringVal()"
                     // suffix. eg. t0.xmlcol.getStringVal()
                     getStringVal = ".getStringVal()";
-                    joinSyntax = SYNTAX_SQL92;
-                }
             } else if (metadataClassName.startsWith("com.ddtek.")
                 || url.indexOf("jdbc:datadirect:oracle:") != -1
                 || "Oracle".equals(driverName)) {
