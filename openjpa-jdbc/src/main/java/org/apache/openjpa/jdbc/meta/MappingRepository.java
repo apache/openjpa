@@ -883,6 +883,9 @@ public class MappingRepository
      */
     protected FieldStrategy handlerCollectionStrategy(FieldMapping field, 
         ValueHandler ehandler, boolean installHandlers) {
+        if (getConfiguration().getCompatibilityInstance()
+            .isStoreMapCollectionInEntityAsBlob())
+            return null;
         if (installHandlers)
             field.getElementMapping().setHandler(ehandler);
         return new HandlerCollectionTableFieldStrategy();
@@ -895,6 +898,9 @@ public class MappingRepository
     protected FieldStrategy handlerMapStrategy(FieldMapping field, 
         ValueHandler khandler, ValueHandler vhandler, boolean krel, 
         boolean vrel,  boolean installHandlers) {
+        if (getConfiguration().getCompatibilityInstance()
+            .isStoreMapCollectionInEntityAsBlob())
+            return null;
         if (installHandlers) {
             field.getKeyMapping().setHandler(khandler);
             field.getElementMapping().setHandler(vhandler);
@@ -1077,7 +1083,9 @@ public class MappingRepository
             case JavaTypes.OID:
                 return new ObjectIdValueHandler();
         }
-        if (val.isEmbeddedPC())
+        if (!getConfiguration().getCompatibilityInstance()
+            .isStoreMapCollectionInEntityAsBlob()
+            && val.isEmbeddedPC())
             return new ElementEmbedValueHandler();
         return null;
     }

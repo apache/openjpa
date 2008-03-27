@@ -54,6 +54,7 @@ public class Compatibility {
     private boolean _quotedNumbers = false;
     private boolean _nonOptimisticVersionCheck = false;
     private int _jpql = JPQL_STRICT;
+    private boolean _storeMapCollectionInEntityAsBlob = false;
 
     /**
      * Whether to require exact identity value types when creating object
@@ -214,5 +215,26 @@ public class Compatibility {
             _jpql = JPQL_EXTENDED;
         else
             throw new IllegalArgumentException(jpql);
+    }
+
+    /**
+     * Whether if map and collection in entity are stored as blob.
+     * Defaults to <code>false</code>.
+     *
+     * @since 1.1.0 
+     */
+
+    public boolean isStoreMapCollectionInEntityAsBlob() {
+        return _storeMapCollectionInEntityAsBlob;
+    }
+
+    /**
+     * Whether if map and collection in entity are stored as blob.
+     * Defaults to <code>false</code>.
+     *
+     * @since 1.1.0 
+     */
+    public void setStoreMapCollectionInEntityAsBlob(boolean storeAsBlob) {
+        _storeMapCollectionInEntityAsBlob = storeAsBlob;
     }
 }
