@@ -224,7 +224,7 @@ public class Compatibility {
      * @since 1.1.0 
      */
 
-    public boolean isStoreMapCollectionInEntityAsBlob() {
+    public boolean getStoreMapCollectionInEntityAsBlob() {
         return _storeMapCollectionInEntityAsBlob;
     }
 

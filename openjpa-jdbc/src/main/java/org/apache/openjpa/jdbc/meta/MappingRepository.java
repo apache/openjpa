@@ -884,7 +884,7 @@ public class MappingRepository
     protected FieldStrategy handlerCollectionStrategy(FieldMapping field, 
         ValueHandler ehandler, boolean installHandlers) {
         if (getConfiguration().getCompatibilityInstance()
-            .isStoreMapCollectionInEntityAsBlob())
+            .getStoreMapCollectionInEntityAsBlob())
             return null;
         if (installHandlers)
             field.getElementMapping().setHandler(ehandler);
@@ -899,7 +899,7 @@ public class MappingRepository
         ValueHandler khandler, ValueHandler vhandler, boolean krel, 
         boolean vrel,  boolean installHandlers) {
         if (getConfiguration().getCompatibilityInstance()
-            .isStoreMapCollectionInEntityAsBlob())
+            .getStoreMapCollectionInEntityAsBlob())
             return null;
         if (installHandlers) {
             field.getKeyMapping().setHandler(khandler);
@@ -1084,7 +1084,7 @@ public class MappingRepository
                 return new ObjectIdValueHandler();
         }
         if (!getConfiguration().getCompatibilityInstance()
-            .isStoreMapCollectionInEntityAsBlob()
+            .getStoreMapCollectionInEntityAsBlob()
             && val.isEmbeddedPC())
             return new ElementEmbedValueHandler();
         return null;
