@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.PluginValue;
-import org.apache.openjpa.lib.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.util.CacheMap;
@@ -87,8 +86,9 @@ public class QueryCompilationCacheValue
 
         if (map != null && !(map instanceof Hashtable)
             && !(map instanceof CacheMap)
-            && !(map instanceof ConcurrentMap)
-            && !(map.getClass().getName().startsWith("java.util.concurrent")))
+            && !(map instanceof
+                    org.apache.openjpa.lib.util.concurrent.ConcurrentMap)
+            && !(map instanceof java.util.concurrent.ConcurrentMap))
             map = Collections.synchronizedMap(map);
         return map;
 	}
