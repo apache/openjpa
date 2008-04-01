@@ -1719,6 +1719,8 @@ public class QueryImpl
             rs = 37 * rs + ((query == null) ? 0 : query.hashCode());
             rs = 37 * rs + ((language == null) ? 0 : language.hashCode());
             rs = 37 * rs + ((storeKey == null) ? 0 : storeKey.hashCode());
+            if (subclasses)
+              rs++;
             return rs;
         }
 
@@ -1733,18 +1735,16 @@ public class QueryImpl
                 || !StringUtils.equals(key.query, query)
                 || !StringUtils.equals(key.language, language))
                 return false;
-
+            if (key.subclasses != subclasses)
+                return false;
             if (!ObjectUtils.equals(key.storeKey, storeKey))
                 return false;
 
             // allow either candidate type to be null because it might be
             // encoded in the query string, but if both are set then they
             // must be equal
-            if (candidateType != null && key.candidateType != null)
-                return candidateType == key.candidateType
-                    && subclasses == key.subclasses;
-
-            return true;
+            return key.candidateType == null || candidateType == null
+                || key.candidateType == candidateType;
         }
     }
 
