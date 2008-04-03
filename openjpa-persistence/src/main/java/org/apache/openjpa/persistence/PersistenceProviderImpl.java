@@ -149,12 +149,6 @@ public class PersistenceProviderImpl
             // create an independent conf for enhancement
             OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
             cp.setInto(conf);
-            // don't allow connections
-            conf.setConnectionUserName(null);
-            conf.setConnectionPassword(null);
-            conf.setConnectionURL(null);
-            conf.setConnectionDriverName(null);
-            conf.setConnectionFactoryName(null);
             // use the tmp loader for everything
             conf.setClassResolver(new ClassResolver() {
                 public ClassLoader getClassLoader(Class context, 
