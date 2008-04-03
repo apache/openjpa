@@ -189,12 +189,6 @@ public class PersistenceProviderImpl
         private ClassTransformerImpl(ConfigurationProvider cp, String props, 
             final ClassLoader tmpLoader, OpenJPAConfiguration conf) {
             cp.setInto(conf);
-            // don't allow connections
-            conf.setConnectionUserName(null);
-            conf.setConnectionPassword(null);
-            conf.setConnectionURL(null);
-            conf.setConnectionDriverName(null);
-            conf.setConnectionFactoryName(null);
             // use the tmp loader for everything
             conf.setClassResolver(new ClassResolver() {
                 public ClassLoader getClassLoader(Class context, 
