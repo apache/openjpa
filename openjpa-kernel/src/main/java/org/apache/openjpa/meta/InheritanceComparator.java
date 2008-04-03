@@ -39,6 +39,10 @@ public class InheritanceComparator
         _base = base;
     }
 
+    public Class getBase() {
+        return _base;
+    }
+
     /**
      * Subclasses can override this method to extract the class to compare
      * on from the elements of the collection.

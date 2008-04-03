@@ -574,6 +574,7 @@ public class MetaDataRepository
      * if we're still in the process of resolving other metadatas.
      */
     private List resolveMeta(ClassMetaData meta) {
+    	setBaseIfNecessary(meta);
         if (meta.getPCSuperclass() == null) {
             // set superclass
             Class sup = meta.getDescribedType().getSuperclass();
@@ -615,6 +616,27 @@ public class MetaDataRepository
         // others, this will return the set of interrelated metas that
         // resolved
         return processBuffer(meta, _resolving, MODE_META);
+    }
+    
+    private void setBaseIfNecessary(ClassMetaData meta) {
+        if (_resolving == null)
+            return;
+
+        InheritanceComparator comp =
+            (InheritanceComparator) _resolving.comparator();
+        if (meta.getPCSuperclass() == null) {
+            Class sup = meta.getDescribedType().getSuperclass();
+            Class pBase = null;
+            while (sup != null && sup != Object.class) {
+                pBase = sup;
+                sup = sup.getSuperclass();
+            }
+            if (pBase != null && !pBase.equals(comp.getBase())) {
+                // setBase() can be called because getMetaData() is
+                // syncronized
+                comp.setBase(pBase);
+            }
+        }
     }
 
     /**
