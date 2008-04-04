@@ -125,7 +125,7 @@ public class EntityManagerFactoryImpl
 
     public StoreCache getStoreCache(String cacheName) {
         return new StoreCacheImpl(this, _factory.getConfiguration().
-            getDataCacheManagerInstance().getDataCache(cacheName));
+            getDataCacheManagerInstance().getDataCache(cacheName, true));
     }
 
     public QueryResultCache getQueryResultCache() {
