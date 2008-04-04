@@ -26,8 +26,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.openjpa.enhance.PCDataGenerator;
 import org.apache.openjpa.kernel.DelegatingStoreManager;
@@ -260,16 +260,26 @@ public class DataCacheStoreManager
      */
     private void transformToVersionSafePCDatas(DataCache cache,
         List holders) {
-        PCDataHolder holder;
-        DataCachePCData oldpc;
-        for (ListIterator iter = holders.listIterator(); iter.hasNext();) {
-            holder = (PCDataHolder) iter.next();
-            oldpc = cache.get(holder.sm.getObjectId());
+
+        Map<Object,Integer> ids = new HashMap<Object,Integer>(holders.size());
+        // this list could be removed if DataCache.getAll() took a Collection
+        List idList = new ArrayList(holders.size());
+        int i = 0;
+        for (PCDataHolder holder : (List<PCDataHolder>) holders) {
+            ids.put(holder.sm.getObjectId(), i++);
+            idList.add(holder.sm.getObjectId());
+        }
+
+        Map<Object,DataCachePCData> pcdatas = cache.getAll(idList);
+        for (Entry<Object,DataCachePCData> entry : pcdatas.entrySet()) {
+            Integer index = ids.get(entry.getKey());
+            DataCachePCData oldpc = entry.getValue();
+            PCDataHolder holder = (PCDataHolder) holders.get(index);
             if (oldpc != null && compareVersion(holder.sm,
                 holder.sm.getVersion(), oldpc.getVersion()) == VERSION_EARLIER)
-                iter.remove();
+                holders.remove(index);
             else
-                iter.set(holder.pcdata);
+                holders.set(index, holder.pcdata);
         }
     }
 
