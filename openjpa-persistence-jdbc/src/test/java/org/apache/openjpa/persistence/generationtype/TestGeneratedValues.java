@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.generationtype;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityExistsException;
 
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -59,7 +60,10 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         } catch (InvalidStateException ise) {
             // expected result
             return;
-        } 
+        }  catch (EntityExistsException eee) {
+            // also ok
+            return;
+        }
         
         // should not get here...
         fail();
@@ -78,7 +82,10 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         } catch (InvalidStateException ise) {
             // expected result
             return;
-        } 
+        }  catch (EntityExistsException eee) {
+            // also ok
+            return;
+        }
         
         // should not get here...
         fail();
