@@ -45,15 +45,17 @@ class GetMapValue
 
     private final Val _map;
     private final Val _key;
+    private final String _alias;
     private ClassMetaData _meta = null;
     private Class _cast = null;
 
     /**
      * Constructor. Provide the map and key to operate on.
      */
-    public GetMapValue(Val map, Val key) {
+    public GetMapValue(Val map, Val key, String alias) {
         _map = map;
         _key = key;
+        _alias = alias;
     }
 
     public ClassMetaData getMetaData() {
@@ -111,7 +113,8 @@ class GetMapValue
 
     public void select(Select sel, ExpContext ctx, ExpState state, 
         boolean pks) {
-        sel.select(newSQLBuffer(sel, ctx, state), this);
+        sel.select(newSQLBuffer(sel, ctx, state).append(" AS ").append(_alias),
+            this);
     }
 
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
@@ -127,7 +130,7 @@ class GetMapValue
 
     public void orderBy(Select sel, ExpContext ctx, ExpState state, 
         boolean asc) {
-        sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false);
+        sel.orderBy(_alias, asc, false);
     }
 
     private SQLBuffer newSQLBuffer(Select sel, ExpContext ctx, ExpState state) {

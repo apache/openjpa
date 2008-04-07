@@ -58,6 +58,7 @@ public class JDBCExpressionFactory
 
     private final ClassMapping _type;
     private final SelectConstructor _cons = new SelectConstructor();
+    private int _getMapValueAlias = 0;
 
     /**
      * Constructor. Supply the type we're querying against.
@@ -396,6 +397,7 @@ public class JDBCExpressionFactory
     }
 
     public Value getMapValue(Value map, Value arg) {
-        return new GetMapValue((Val) map, (Val) arg);
+        return new GetMapValue((Val) map, (Val) arg, 
+            "gmv" + _getMapValueAlias++);
     }
 }
