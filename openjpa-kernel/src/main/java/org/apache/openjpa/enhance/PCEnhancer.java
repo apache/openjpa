@@ -118,7 +118,10 @@ public class PCEnhancer {
     public static final int ENHANCE_INTERFACE = 2 << 1;
     public static final int ENHANCE_PC = 2 << 2;
 
-    private static final String PRE = "pc";
+    public static final String PRE = "pc";
+    public static final String ISDETACHEDSTATEDEFINITIVE = PRE 
+        + "isDetachedStateDefinitive";
+
     private static final Class PCTYPE = PersistenceCapable.class;
     private static final String SM = PRE + "StateManager";
     private static final Class SMTYPE = StateManager.class;
@@ -2999,12 +3002,27 @@ public class PCEnhancer {
      */
     private void addIsDetachedMethod()
         throws NoSuchMethodException {
-        // public boolean pcIsDetached ()
+        // public boolean pcIsDetached()
         BCMethod method = _pc.declareMethod(PRE + "IsDetached",
             Boolean.class, null);
         method.makePublic();
         Code code = method.getCode(true);
-        writeIsDetachedMethod(code);
+        boolean needsDefinitiveMethod = writeIsDetachedMethod(code);
+        code.calculateMaxStack();
+        code.calculateMaxLocals();
+        if (!needsDefinitiveMethod) 
+            return;
+
+        // private boolean pcIsDetachedStateDefinitive()
+        //   return false;
+        // auxilliary enhancers may change the return value of this method
+        // if their specs consider detached state definitive
+        method = _pc.declareMethod(ISDETACHEDSTATEDEFINITIVE, boolean.class,
+            null);
+        method.makePrivate();
+        code = method.getCode(true);
+        code.constant().setValue(false);
+        code.ireturn();
         code.calculateMaxStack();
         code.calculateMaxLocals();
     }
@@ -3012,14 +3030,17 @@ public class PCEnhancer {
     /**
      * Creates the body of the pcIsDetached() method to determine if an
      * instance is detached.
+     *
+     * @return true if we need a pcIsDetachedStateDefinitive method, false
+     * otherwise
      */
-    private void writeIsDetachedMethod(Code code)
+    private boolean writeIsDetachedMethod(Code code)
         throws NoSuchMethodException {
         // not detachable: return Boolean.FALSE
         if (!_meta.isDetachable()) {
             code.getstatic().setField(Boolean.class, "FALSE", Boolean.class);
             code.areturn();
-            return;
+            return false;
         }
 
         // if (sm != null)
@@ -3067,7 +3088,7 @@ public class PCEnhancer {
                 ifins.setTarget(target);
                 notdeser.setTarget(target);
                 code.areturn();
-                return;
+                return false;
             }
         }
 
@@ -3077,9 +3098,9 @@ public class PCEnhancer {
         if (notdeser != null)
             notdeser.setTarget(target);
 
-        // allow users with version fields to manually construct a "detached"
-        // instance, so check version before taking into account non-existent
-        // detached state
+        // allow users with version or auto-assigned pk fields to manually 
+        // construct a "detached" instance, so check these before taking into 
+        // account non-existent detached state
 
         // consider detached if version is non-default
         FieldMetaData version = _meta.getVersionField();
@@ -3094,41 +3115,13 @@ public class PCEnhancer {
             ifins.setTarget(code.getstatic().setField(Boolean.class, "FALSE",
                 Boolean.class));
             code.areturn();
-            return;
-        }
-
-        // no detached state: if instance uses detached state and it's not
-        // synthetic or the instance is not serializable or the state isn't
-        // transient, must not be detached
-        if (state == null
-            && (!ClassMetaData.SYNTHETIC.equals(_meta.getDetachedState())
-            || !Serializable.class.isAssignableFrom(_meta.getDescribedType())
-            || !_repos.getConfiguration().getDetachStateInstance().
-            isDetachedStateTransient())) {
-            // return Boolean.FALSE
-            code.getstatic().setField(Boolean.class, "FALSE", Boolean.class);
-            code.areturn();
-            return;
-        }
-
-        // no detached state: if instance uses detached state (and must be
-        // synthetic and transient in serializable instance at this point),
-        // not detached if state not set to DESERIALIZED
-        if (state == null) {
-            // if (pcGetDetachedState () == null) // instead of DESERIALIZED
-            //     return Boolean.FALSE;
-            loadManagedInstance(code, false);
-            code.invokevirtual().setMethod(PRE + "GetDetachedState",
-                Object.class, null);
-            ifins = code.ifnonnull();
-            code.getstatic().setField(Boolean.class, "FALSE", Boolean.class);
-            code.areturn();
-            ifins.setTarget(code.nop());
+            return false;
         }
 
         // consider detached if auto-genned primary keys are non-default
         ifins = null;
         JumpInstruction ifins2 = null;
+        boolean hasAutoAssignedPK = false;
         if (state != Boolean.TRUE
             && _meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
             // for each pk field:
@@ -3162,13 +3155,65 @@ public class PCEnhancer {
             }
         }
 
-        // give up; we just don't know
-        target = code.constant().setNull();
+        // create artificial target to simplify
+        target = code.nop();
         if (ifins != null)
             ifins.setTarget(target);
         if (ifins2 != null)
             ifins2.setTarget(target);
+
+        // if has auto-assigned pk and we get to this point, must have default
+        // value, so must be new instance
+        if (hasAutoAssignedPK) {
+            code.getstatic().setField(Boolean.class, "FALSE", Boolean.class);
+            code.areturn();
+            return false;
+        }
+
+        // if detached state is not definitive, just give up now and return
+        // null so that the runtime will perform a DB lookup to determine
+        // whether we're detached or new
+        code.aload().setThis();
+        code.invokespecial().setMethod(ISDETACHEDSTATEDEFINITIVE, boolean.class,
+            null);
+        ifins = code.ifne();
+        code.constant().setNull();
         code.areturn();
+        ifins.setTarget(code.nop());
+
+        // no detached state: if instance uses detached state and it's not
+        // synthetic or the instance is not serializable or the state isn't
+        // transient, must not be detached
+        if (state == null
+            && (!ClassMetaData.SYNTHETIC.equals(_meta.getDetachedState())
+            || !Serializable.class.isAssignableFrom(_meta.getDescribedType())
+            || !_repos.getConfiguration().getDetachStateInstance().
+            isDetachedStateTransient())) {
+            // return Boolean.FALSE
+            code.getstatic().setField(Boolean.class, "FALSE", Boolean.class);
+            code.areturn();
+            return true;
+        }
+
+        // no detached state: if instance uses detached state (and must be
+        // synthetic and transient in serializable instance at this point),
+        // not detached if state not set to DESERIALIZED
+        if (state == null) {
+            // if (pcGetDetachedState () == null) // instead of DESERIALIZED
+            //     return Boolean.FALSE;
+            loadManagedInstance(code, false);
+            code.invokevirtual().setMethod(PRE + "GetDetachedState",
+                Object.class, null);
+            ifins = code.ifnonnull();
+            code.getstatic().setField(Boolean.class, "FALSE", Boolean.class);
+            code.areturn();
+            ifins.setTarget(code.nop());
+        }
+
+        // give up; we just don't know
+        code.constant().setNull();
+        code.areturn();
+        return true;
     }
 
     /**
