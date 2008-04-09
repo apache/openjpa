@@ -207,4 +207,38 @@ public interface JDBCFetchConfiguration
      * Convenience method to cast traversal to store-specific type.
      */
     public JDBCFetchConfiguration traverseJDBC(FieldMetaData fm);
+
+    /**
+     * Returns the names of the inner fetch joins that this component will use
+     * when loading objects. Defaults to the empty set.  This set is not
+     * thread safe.
+     *
+     * @since 1.0.3
+     */
+    public Set getFetchInnerJoins();
+
+    /**
+     * Return true if the given fully-qualified inner fetch join has been added.
+     *
+     * @since 1.0.3
+     */
+    public boolean hasFetchInnerJoin(String field);
+
+    /**
+     * Adds <code>field</code> to the set of fully-qualified field names to
+     * eagerly join when loading objects. Each class can have at most
+     * one to-many eagerly joined fields.
+     *
+     * @since 1.0.3
+     */
+    public JDBCFetchConfiguration addFetchInnerJoin(String field);
+
+    /**
+     * Adds <code>fields</code> to the set of fully-qualified field names to
+     * eagerly join when loading objects. Each class can have at most
+     * one to-many eagerly joined fields.
+     *
+     * @since 1.0.3
+     */
+    public JDBCFetchConfiguration addFetchInnerJoins(Collection fields);
 }
