@@ -63,6 +63,7 @@ public class QueryExpressions {
     public int operation = QueryOperations.OP_SELECT;
     public ClassMetaData[] accessPath = StoreQuery.EMPTY_METAS;
     public String[] fetchPaths = StoreQuery.EMPTY_STRINGS;
+    public String[] fetchInnerPaths = StoreQuery.EMPTY_STRINGS;
     public Value[] range = EMPTY_VALUES;
     private Boolean _aggregate = null;
 

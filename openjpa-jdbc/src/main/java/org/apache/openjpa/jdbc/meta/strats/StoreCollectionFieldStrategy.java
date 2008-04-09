@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -168,10 +167,13 @@ public abstract class StoreCollectionFieldStrategy
         // we limit further eager fetches to joins, because after this point
         // the select has been modified such that parallel clones may produce
         // invalid sql
+        boolean outer = field.getNullValue() != FieldMapping.NULL_EXCEPTION;
+        // force inner join for inner join fetch 
+        if (fetch.hasFetchInnerJoin(field.getFullName(false)))
+            outer = false;
         selectEager(sel, getDefaultElementMapping(true), sm, store, fetch, 
             JDBCFetchConfiguration.EAGER_JOIN, false,
-            field.getNullValue()
-                != FieldMapping.NULL_EXCEPTION);
+            outer);
     }
 
     public boolean isEagerSelectToMany() {

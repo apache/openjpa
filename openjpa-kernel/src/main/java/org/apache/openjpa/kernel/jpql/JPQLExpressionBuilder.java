@@ -440,6 +440,7 @@ public class JPQLExpressionBuilder
 
         // handle JOIN FETCH
         Set joins = null;
+        Set innerJoins = null;
 
         JPQLNode[] outers = root().findChildrenByID(JJTOUTERFETCHJOIN);
         for (int i = 0; outers != null && i < outers.length; i++)
@@ -447,13 +448,20 @@ public class JPQLExpressionBuilder
                 add(getPath(onlyChild(outers[i])).last().getFullName(false));
 
         JPQLNode[] inners = root().findChildrenByID(JJTINNERFETCHJOIN);
-        for (int i = 0; inners != null && i < inners.length; i++)
-            (joins == null ? joins = new TreeSet() : joins).
-                add(getPath(onlyChild(inners[i])).last().getFullName(false));
+        for (int i = 0; inners != null && i < inners.length; i++) {
+            String path = getPath(onlyChild(inners[i])).last()
+                .getFullName(false);
+            (joins == null ? joins = new TreeSet() : joins).add(path);
+            (innerJoins == null ? innerJoins = new TreeSet() : innerJoins).
+                add(path);
+        }
 
         if (joins != null)
             exps.fetchPaths = (String[]) joins.
                 toArray(new String[joins.size()]);
+        if (innerJoins != null)
+            exps.fetchInnerPaths = (String[]) innerJoins.
+                toArray(new String[innerJoins.size()]);
 
         return filter;
     }
@@ -494,7 +502,7 @@ public class JPQLExpressionBuilder
             else if (node.id == JJTINNERJOIN)
                 exp = addJoin(node, true, exp);
             else if (node.id == JJTINNERFETCHJOIN)
-                exp = addJoin(node, true, exp);
+                ; // we handle inner fetch joins in the evalFetchJoins() method
             else if (node.id == JJTOUTERFETCHJOIN)
                 ; // we handle outer fetch joins in the evalFetchJoins() method
             else

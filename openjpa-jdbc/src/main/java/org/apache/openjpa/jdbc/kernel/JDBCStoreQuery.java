@@ -150,6 +150,8 @@ public class JDBCStoreQuery
             fetch.addFields(Arrays.asList(exps[0].fetchPaths));
             fetch.addJoins(Arrays.asList(exps[0].fetchPaths));
         }
+        if (exps[0].fetchInnerPaths != null)
+            fetch.addFetchInnerJoins(Arrays.asList(exps[0].fetchInnerPaths));
 
         int eager = calculateEagerMode(exps[0], range.start, range.end);
         int subclassMode = fetch.getSubclassFetchMode((ClassMapping) base);
@@ -600,6 +602,8 @@ public class JDBCStoreQuery
             fetch.addFields(Arrays.asList(exps[0].fetchPaths));
             fetch.addJoins(Arrays.asList(exps[0].fetchPaths));
         }
+        if (exps[0].fetchInnerPaths != null)
+            fetch.addFetchInnerJoins(Arrays.asList(exps[0].fetchInnerPaths));
 
         int eager = calculateEagerMode(exps[0], range.start, range.end);
         eager = Math.min(eager, JDBCFetchConfiguration.EAGER_JOIN);
