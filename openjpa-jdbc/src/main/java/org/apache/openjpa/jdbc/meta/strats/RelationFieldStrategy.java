@@ -409,9 +409,11 @@ public class RelationFieldStrategy
         // clone it for a to-many eager select can result in a clone that
         // produces invalid SQL
         ClassMapping cls = field.getIndependentTypeMappings()[0];
+        boolean forceInner = fetch.hasFetchInnerJoin(field.getFullName(false)) ?
+                true : false;
         sel.select(cls, field.getSelectSubclasses(), store, fetch,
             JDBCFetchConfiguration.EAGER_JOIN,
-            eagerJoin(sel.newJoins(), cls, false));
+            eagerJoin(sel.newJoins(), cls, forceInner));
     }
 
     /**

@@ -260,4 +260,38 @@ public class DelegatingJDBCFetchConfiguration
             throw translate(re);
         }
     }
+
+    public Set getFetchInnerJoins() {
+        try {
+            return getJDBCDelegate().getFetchInnerJoins();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public boolean hasFetchInnerJoin(String field) {
+        try {
+            return getJDBCDelegate().hasFetchInnerJoin(field);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public JDBCFetchConfiguration addFetchInnerJoin(String field) {
+        try {
+            getJDBCDelegate().addFetchInnerJoin(field);
+            return this;
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public JDBCFetchConfiguration addFetchInnerJoins(Collection fields) {
+        try {
+            getJDBCDelegate().addFetchInnerJoins(fields);
+            return this;
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 }
