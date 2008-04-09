@@ -19,42 +19,27 @@
 package org.apache.openjpa.persistence.query;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityResult;
-import javax.persistence.FieldResult;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
-@NamedQuery(name="FindXTwo", query="select s from simple s where s.name = :fname")
+@NamedQuery(name="FindXTwo", query="select s from simple2 s where s.name = :fname")
 
 @NamedQueries( {
-    @NamedQuery(name="FindOne", query="select s from simple s where s.name = :fname"),
-    @NamedQuery(name="FindOne", query="select s from simple s where s.name = :fname"),
-    @NamedQuery(name="FindAll", query="select s from simple s")
+    @NamedQuery(name="FindOne", query="select s from simple2 s where s.name = :fname"),
+    @NamedQuery(name="Find2One", query="select s from simple2 s where s.name = :fname"),
+    @NamedQuery(name="Find2All", query="select s from simple2 s")
 })
 
-@NamedNativeQueries( { 
-    @NamedNativeQuery(name = "findSimpleEntitites",
-        query = "SELECT ID, NAME, VALUE FROM SIMPLE_ENTITY", 
-        resultSetMapping = "simpleEntitiesResult") })
-
-@SqlResultSetMapping(name = "simpleEntitiesResult",
-    entities = @EntityResult(
-    entityClass = org.apache.openjpa.persistence.query.SimpleEntity.class, 
-    fields = {@FieldResult(name = "id", column = "ID"),
-        @FieldResult(name = "name", column = "NAME"),
-        @FieldResult(name = "value", column = "VALUE") }))
-@Entity(name = "simple")
-@Table(name = "SIMPLE_ENTITY")
-public class SimpleEntity implements Serializable {
+@Entity(name = "simple2")
+@Table(name = "SIMPLE_ENTITY2")
+public class SimpleEntity2 implements Serializable {
 
     @Id
     @GeneratedValue
@@ -69,10 +54,10 @@ public class SimpleEntity implements Serializable {
     @Column(name = "VALUE")
     private String value;
 
-    public SimpleEntity() {
+    public SimpleEntity2() {
     }
 
-    public SimpleEntity(String name, String value) {
+    public SimpleEntity2(String name, String value) {
         this();
         this.name = name;
         this.value = value;
