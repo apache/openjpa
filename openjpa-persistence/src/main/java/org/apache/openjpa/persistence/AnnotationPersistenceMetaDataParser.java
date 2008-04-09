@@ -1582,7 +1582,7 @@ public class AnnotationPersistenceMetaDataParser
             if (meta != null) {
                 if (_log.isWarnEnabled())
                     _log.warn(_loc.get("dup-query", query.name(), el));
-                return;
+                continue;
             }
 
             meta = getRepository().addQueryMetaData(null, query.name());
@@ -1623,7 +1623,7 @@ public class AnnotationPersistenceMetaDataParser
             if (meta != null) {
                 if (_log.isWarnEnabled())
                     _log.warn(_loc.get("dup-query", query.name(), el));
-                return;
+                continue;
             }
 
             meta = getRepository().addQueryMetaData(null, query.name());
