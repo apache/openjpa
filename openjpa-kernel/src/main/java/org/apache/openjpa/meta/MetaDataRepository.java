@@ -574,7 +574,12 @@ public class MetaDataRepository
      * if we're still in the process of resolving other metadatas.
      */
     private List resolveMeta(ClassMetaData meta) {
-    	setBaseIfNecessary(meta);
+
+        // pcl: 10 April 2008: disabling temporarily as this is causing
+        // integration problems. A more complete fix will be forthcoming.
+        // See OPENJPA-536. Also disabled code in TestGetMetaData.
+        // setBaseIfNecessary(meta);
+
         if (meta.getPCSuperclass() == null) {
             // set superclass
             Class sup = meta.getDescribedType().getSuperclass();
