@@ -147,4 +147,34 @@ public class TestEJBJoins extends AbstractTestCase {
 
         endEm(em);
     }
+
+    public void testInnerJoinFetch() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT s FROM Student " +
+            "s JOIN FETCH s.department";
+
+        List ls = (List) em.createQuery(query)
+            .getResultList();
+
+        assertNotNull(ls);
+        assertEquals(2, ls.size());
+
+        em.close();
+    }
+
+    public void testLeftJoinFetch() {
+        EntityManager em = currentEntityManager();
+
+        String query = "SELECT s FROM Student " +
+            "s LEFT JOIN FETCH s.department";
+
+        List ls = (List) em.createQuery(query)
+            .getResultList();
+
+        assertNotNull(ls);
+        assertEquals(4, ls.size());
+
+        em.close();
+    }
 }
