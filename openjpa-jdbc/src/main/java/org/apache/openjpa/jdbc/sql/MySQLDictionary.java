@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -51,7 +53,7 @@ public class MySQLDictionary
     /**
      * Whether the driver automatically deserializes blobs.
      */
-    public boolean driverDeserializesBlobs = true;
+    public boolean driverDeserializesBlobs = false;
 
     /**
      * Whether to inline multi-table bulk-delete operations into MySQL's 
@@ -70,11 +72,9 @@ public class MySQLDictionary
         supportsDeferredConstraints = false;
         constraintNameMode = CONS_NAME_MID;
         supportsMultipleNontransactionalResultSets = false;
-        supportsSubselect = false; // old versions
         requiresAliasForSubselect = true; // new versions
         supportsSelectStartIndex = true;
         supportsSelectEndIndex = true;
-        allowsAliasInBulkClause = false;
 
         concatenateFunction = "CONCAT({0},{1})";
 
@@ -110,6 +110,68 @@ public class MySQLDictionary
 
         typeModifierSet.addAll(Arrays.asList(new String[] { "UNSIGNED",
             "ZEROFILL" }));
+    }
+
+    public void connectedConfiguration(Connection conn) throws SQLException {
+        super.connectedConfiguration(conn);
+
+        DatabaseMetaData metaData = conn.getMetaData();
+        // The product version looks like 4.1.3-nt
+        String productVersion = metaData.getDatabaseProductVersion();
+        // The driver version looks like mysql-connector-java-3.1.11 (...)
+        String driverVersion = metaData.getDriverVersion();
+
+        try {
+            int[] versions = getMajorMinorVersions(productVersion);
+            int maj = versions[0];
+            int min = versions[1];
+            if (maj < 4 || (maj == 4 && min < 1)) {
+                supportsSubselect = false;
+                allowsAliasInBulkClause = false;
+            }
+
+            versions = getMajorMinorVersions(driverVersion);
+            maj = versions[0];
+            if (maj < 5) {
+                driverDeserializesBlobs = true;
+            }
+        } catch (IllegalArgumentException e) {
+            // we don't understand the version format.
+            // That is ok. We just take the default values.
+        }
+    }
+
+    private static int[] getMajorMinorVersions(String versionStr)
+        throws IllegalArgumentException {
+        int beginIndex = 0;
+        int endIndex = 0;
+
+        versionStr = versionStr.trim();
+        char[] charArr = versionStr.toCharArray();
+        for (int i = 0; i < charArr.length; i++) {
+            if (Character.isDigit(charArr[i])) {
+                beginIndex = i;
+                break;
+            }
+        }
+
+        for (int i = beginIndex+1; i < charArr.length; i++) {
+            if (charArr[i] != '.' && !Character.isDigit(charArr[i])) {
+                endIndex = i;
+                break;
+            }
+        }
+
+        if (endIndex < beginIndex)
+            throw new IllegalArgumentException();
+
+        String[] arr = versionStr.substring(beginIndex, endIndex).split("\\.");
+        if (arr.length < 2)
+            throw new IllegalArgumentException();
+
+        int maj = Integer.parseInt(arr[0]);
+        int min = Integer.parseInt(arr[1]);
+        return new int[]{maj, min};
     }
 
     public String[] getCreateTableSQL(Table table) {
