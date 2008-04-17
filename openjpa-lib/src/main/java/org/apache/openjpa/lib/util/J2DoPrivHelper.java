@@ -781,9 +781,9 @@ public abstract class J2DoPrivHelper {
      *   
      * @return ClassLoader
      */
-    public static final PrivilegedAction getContextClassLoaderAction() {
-        return new PrivilegedAction() {
-            public Object run() {
+    public static final PrivilegedAction<ClassLoader> getContextClassLoaderAction() {
+        return new PrivilegedAction<ClassLoader>() {
+            public ClassLoader run() {
                 return Thread.currentThread().getContextClassLoader();
             }
         };
