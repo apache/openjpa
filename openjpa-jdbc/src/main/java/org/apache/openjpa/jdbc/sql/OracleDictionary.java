@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.sql;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.AccessController;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
@@ -47,8 +48,10 @@ import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.jdbc.DelegatingDatabaseMetaData;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.StoreException;
+
 import serp.util.Numbers;
 
 /**
@@ -1011,11 +1014,11 @@ public class OracleDictionary
         if (EMPTY_CLOB != null)
             return EMPTY_CLOB;
         try {
-            return EMPTY_CLOB =
-                    (Clob) Class.forName("oracle.sql.CLOB", true,
-                            Thread.currentThread().getContextClassLoader())
-                            .getMethod("empty_lob", new Class[0]).invoke(null,
-                                    new Object[0]);
+            return EMPTY_CLOB = (Clob) Class.forName("oracle.sql.CLOB", true,
+                    (ClassLoader) AccessController.doPrivileged(J2DoPrivHelper
+                            .getContextClassLoaderAction()))
+                .getMethod("empty_lob", new Class[0]).
+                invoke(null, new Object[0]);
         } catch (Exception e) {
             throw new SQLException(e.getMessage());
         }
@@ -1027,7 +1030,8 @@ public class OracleDictionary
             return EMPTY_BLOB;
         try {
             return EMPTY_BLOB = (Blob) Class.forName("oracle.sql.BLOB", true,
-                    Thread.currentThread().getContextClassLoader()).
+                    (ClassLoader) AccessController.doPrivileged(J2DoPrivHelper
+                            .getContextClassLoaderAction())).
                 getMethod("empty_lob", new Class[0]).
                 invoke(null, new Object[0]);
         } catch (Exception e) {
