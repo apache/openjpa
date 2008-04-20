@@ -70,7 +70,14 @@ public class QueryImpl
     private List _positional;
 
     /**
-     * Constructor; supply factory and delegate.
+     * Constructor; supply factory exception translator and delegate.
+     * 
+     * @param em
+     *            The EntityManager which created this query
+     * @param ret
+     *            Exception translater for this query
+     * @param query
+     *            The underlying "kernel" query.
      */
     public QueryImpl(EntityManagerImpl em, RuntimeExceptionTranslator ret,
         org.apache.openjpa.kernel.Query query) {
@@ -80,6 +87,7 @@ public class QueryImpl
     
     /**
      * Constructor; supply factory and delegate.
+     * @deprecated
      */
     public QueryImpl(EntityManagerImpl em, org.apache.openjpa.kernel.Query query) {
         this(em, null, query);
