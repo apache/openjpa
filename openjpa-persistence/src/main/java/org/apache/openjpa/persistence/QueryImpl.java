@@ -77,10 +77,17 @@ public class QueryImpl
         _em = em;
         _query = new DelegatingQuery(query, ret);
     }
+    
+    /**
+     * Constructor; supply factory and delegate.
+     */
+    public QueryImpl(EntityManagerImpl em, org.apache.openjpa.kernel.Query query) {
+        this(em, null, query);
+    }
 
     /**
-     * Delegate.
-     */
+	 * Delegate.
+	 */
     public org.apache.openjpa.kernel.Query getDelegate() {
         return _query.getDelegate();
     }
