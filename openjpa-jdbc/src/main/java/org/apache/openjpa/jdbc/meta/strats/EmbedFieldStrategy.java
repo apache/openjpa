@@ -405,13 +405,6 @@ public class EmbedFieldStrategy
             return;
         }
 
-        if (fetch.requiresFetch(field.getFieldMetaData()) 
-            != JDBCFetchConfiguration.FETCH_LOAD) {
-          return;
-        } else {
-          fetch = fetch.traverseJDBC(field.getFieldMetaData());
-        }
-        
         //### note: without a null indicator column, the above indicatesNull()
         //### call will always return false, meaning we always have to assume
         //### we selected the embedded object fields and load the object
@@ -424,7 +417,7 @@ public class EmbedFieldStrategy
 
         FieldMapping[] fields = field.getEmbeddedMapping().getFieldMappings();
         Object eres, processed;
-        boolean loaded = true;
+        boolean loaded = false;
         for (int i = 0; i < fields.length; i++) {
             eres = res.getEager(fields[i]);
             res.startDataRequest(fields[i]);
@@ -436,24 +429,18 @@ public class EmbedFieldStrategy
                         fields[i].loadEagerParallel(em, store, fetch, eres);
                     if (processed != eres)
                         res.putEager(fields[i], processed);
-                } else {
+                } else
                     fields[i].load(em, store, fetch, res);
-                }
-                FieldMetaData fm = fields[i].getFieldMetaData();
-                loaded &= em.getLoaded().get(i) || 
-                    (fm != null && fetch.requiresFetch(fm)
-                        != FetchConfiguration.FETCH_LOAD);
+                loaded |= em.getLoaded().get(i);
             } finally {
                 res.endDataRequest();
             }
         }
 
-        // After loading everything from result, load the rest of the
-        // configured fields if anything is missing.
-        if (!loaded) {
-          em.load(fetch);
-        }
-        
+        // after loading everything from result, load the rest of the
+        // configured fields
+        if (loaded)
+            em.load(fetch);
     }
 
     /**
