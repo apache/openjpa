@@ -60,14 +60,18 @@ public class DB2Dictionary
     public static final int db2ZOSV8xOrLater = 3;
     public static final int db2UDBV82OrLater = 4;
     public static final int db2ISeriesV5R4OrLater = 5;
-	private static final String forUpdate = "FOR UPDATE";
-    private static final String withRSClause = "WITH RS";
-    private static final String withRRClause = "WITH RR";
-    private static final String useKeepUpdateLockClause
+	protected static final String forUpdate = "FOR UPDATE";
+    protected static final String withURClause = "WITH UR";
+    protected static final String withCSClause = "WITH CS";
+    protected static final String withRSClause = "WITH RS";
+    protected static final String withRRClause = "WITH RR";
+    protected static final String useKeepShareLockClause
+        = "USE AND KEEP SHARE LOCKS";
+    protected static final String useKeepUpdateLockClause
         = "USE AND KEEP UPDATE LOCKS";
-    private static final String useKeepExclusiveLockClause
+    protected static final String useKeepExclusiveLockClause
         = "USE AND KEEP EXCLUSIVE LOCKS";
-    private static final String forReadOnlyClause = "FOR READ ONLY";
+    protected static final String forReadOnlyClause = "FOR READ ONLY";
     protected String databaseProductName = null;
     protected String databaseProductVersion = null;
     protected int maj = 0;
