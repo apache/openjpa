@@ -31,6 +31,8 @@ public class InheritanceOrderedMetaDataList
     private LinkedList<ClassMetaData> buffer = new LinkedList<ClassMetaData>();
 
     public boolean add(ClassMetaData meta) {
+        if (meta == null || buffer.contains(meta))
+            return false;
         for (ListIterator<ClassMetaData> itr = buffer.listIterator();
             itr.hasNext();) {
             int ord = _comp.compare(meta, itr.next());
