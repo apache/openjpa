@@ -34,8 +34,8 @@ import org.apache.openjpa.lib.util.LRUMap;
 import org.apache.openjpa.lib.util.ReferenceHashMap;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.SizedMap;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
+import org.apache.openjpa.lib.util.concurrent.NullSafeConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.SizedConcurrentHashMap;
 
 import java.util.concurrent.locks.ReentrantLock;
@@ -114,7 +114,7 @@ public class CacheMap
                 softMapValueExpired(key);
             }
         };
-        pinnedMap = new ConcurrentHashMap();
+        pinnedMap = new NullSafeConcurrentHashMap();
 
         if (!lru) {
             cacheMap = new SizedConcurrentHashMap(size, load, concurrencyLevel){
