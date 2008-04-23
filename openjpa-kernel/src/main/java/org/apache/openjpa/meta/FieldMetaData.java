@@ -1124,9 +1124,11 @@ public class FieldMetaData
                     //set "isUsedInOrderBy" to the field
                     ClassMetaData elemCls = getElement()
                         .getDeclaredTypeMetaData();
-                    FieldMetaData fmd = elemCls.getDeclaredField(decs[i]);
-                    if (fmd != null)
-                    	fmd.setUsedInOrderBy(true);                    
+                    if (elemCls != null) {
+                      FieldMetaData fmd = elemCls.getDeclaredField(decs[i]);
+                      if (fmd != null)
+                        fmd.setUsedInOrderBy(true);                      
+                    }
                 }
                 _orders = orders;
             }

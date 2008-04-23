@@ -30,7 +30,7 @@ import java.util.Comparator;
 public class InheritanceComparator
     implements Comparator, Serializable {
 
-    private Class _base = null;
+    private Class _base = Object.class;
 
     /**
      * Set the least-derived type possible; defaults to <code>null</code>.
@@ -92,8 +92,6 @@ public class InheritanceComparator
     private int levels(Class to) {
         if (to.isInterface())
             return to.getInterfaces().length;
-        if (_base == null)
-            return 0;
         for (int i = 0; to != null; i++, to = to.getSuperclass())
             if (to == _base)
                 return i;

@@ -410,14 +410,13 @@ public class EmbedFieldStrategy
         //### we selected the embedded object fields and load the object
         //### immediately; this will be inefficient when the embedded object
         //### was not selected after all
-
         StoreContext ctx = store.getContext();
         OpenJPAStateManager em = ctx.embed(null, null, sm, field);
         sm.storeObject(field.getIndex(), em.getManagedInstance());
 
         FieldMapping[] fields = field.getEmbeddedMapping().getFieldMappings();
         Object eres, processed;
-        boolean loaded = false;
+        boolean needsLoad = false;
         for (int i = 0; i < fields.length; i++) {
             eres = res.getEager(fields[i]);
             res.startDataRequest(fields[i]);
@@ -429,18 +428,24 @@ public class EmbedFieldStrategy
                         fields[i].loadEagerParallel(em, store, fetch, eres);
                     if (processed != eres)
                         res.putEager(fields[i], processed);
-                } else
+                } else {
                     fields[i].load(em, store, fetch, res);
-                loaded |= em.getLoaded().get(i);
+                }
+                needsLoad = needsLoad || (!em.getLoaded().get(i) && 
+                    fetch.requiresFetch(fields[i])
+                        == FetchConfiguration.FETCH_LOAD);
             } finally {
                 res.endDataRequest();
             }
         }
 
-        // after loading everything from result, load the rest of the
-        // configured fields
-        if (loaded)
-            em.load(fetch);
+        // After loading everything from result, load the rest of the
+        // configured fields if anything is missing.
+        if (needsLoad && 
+            fetch.requiresFetch(field.getFieldMetaData()) == 
+                JDBCFetchConfiguration.FETCH_LOAD) {
+          em.load(fetch);
+        }
     }
 
     /**

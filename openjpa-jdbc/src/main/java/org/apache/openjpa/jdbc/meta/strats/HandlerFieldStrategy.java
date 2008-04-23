@@ -157,7 +157,8 @@ public class HandlerFieldStrategy
 
         if (sm != null && sm.getIntermediate(field.getIndex()) != null)
             return -1;
-        if (sel.isDistinct() && _lob && !field.isPrimaryKey())
+        if (_lob && !field.isPrimaryKey() && (sel.isDistinct() ||
+                eagerMode == JDBCFetchConfiguration.EAGER_NONE))
             return -1;
         sel.select(_cols, field.join(sel));
         return 1;

@@ -162,15 +162,13 @@ public class DataSourceFactory {
                     decorators.addAll(decs);
             }
 
-            if (jdbcLog.isTraceEnabled() || sqlLog.isTraceEnabled()) {
-                // logging decorator
-                LoggingConnectionDecorator lcd =
-                    new LoggingConnectionDecorator();
-                Configurations.configureInstance(lcd, conf, opts);
-                lcd.getLogs().setJDBCLog(jdbcLog);
-                lcd.getLogs().setSQLLog(sqlLog);
-                decorators.add(lcd);
-            }
+            // logging decorator
+            LoggingConnectionDecorator lcd =
+                new LoggingConnectionDecorator();
+            Configurations.configureInstance(lcd, conf, opts);
+            lcd.getLogs().setJDBCLog(jdbcLog);
+            lcd.getLogs().setSQLLog(sqlLog);
+            decorators.add(lcd);
 
             dds.addDecorators(decorators);
             return dds;
