@@ -58,7 +58,7 @@ public class WASRegistryManagedRuntime extends RegistryManagedRuntime {
     
     /**
      * Delegate for the WebSphere proprietary UOWAction interface. Enables a 
-     * {$link Runnable} to be passed in to the WebSphere UOWManager.  
+     * {@link Runnable} to be passed in to the WebSphere UOWManager.  
      */
     class DelegatingUOWAction implements UOWAction {
         Runnable _del;
