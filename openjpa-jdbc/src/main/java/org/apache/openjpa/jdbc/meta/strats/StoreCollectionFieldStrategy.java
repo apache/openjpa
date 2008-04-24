@@ -472,7 +472,7 @@ public abstract class StoreCollectionFieldStrategy
         // load values
         Result res = union.execute(store, fetch);
         try {
-            int seq = 0;
+            int seq = -1;
             while (res.next()) {
                 if (ct != null && field.getOrderColumn() != null)
                     seq = res.getInt(field.getOrderColumn());
