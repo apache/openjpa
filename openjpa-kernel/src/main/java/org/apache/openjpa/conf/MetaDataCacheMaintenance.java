@@ -28,6 +28,8 @@ import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.conf.MapConfigurationProvider;
+import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.QueryMetaData;
@@ -52,13 +54,16 @@ public class MetaDataCacheMaintenance {
         boolean devpath = opts.getBooleanProperty("scanDevPath", "ScanDevPath",
             true);
 
-        BrokerFactory factory = Bootstrap.newBrokerFactory();
+        ConfigurationProvider cp = new MapConfigurationProvider(opts);
+        BrokerFactory factory = Bootstrap.newBrokerFactory(cp, null);
         try {
             MetaDataCacheMaintenance maint = new MetaDataCacheMaintenance(
                 factory, devpath);
 
-            if (args.length != 1)
+            if (args.length != 1) {
                 usage();
+                return;
+            }
 
             if ("store".equals(args[0]))
                 maint.store();
@@ -97,8 +102,8 @@ public class MetaDataCacheMaintenance {
     }
 
     private static int usage() {
-        System.err.println("Usage: java MetaDataCacheMaintenance "
-            + "[-scanDevPath t|f] store | dump");
+        System.err.println("Usage: java MetaDataCacheMaintenance " +
+            "[-scanDevPath t|f] [-<openjpa.PropertyName> value] store | dump");
         return -1;
     }
 
