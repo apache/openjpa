@@ -45,7 +45,6 @@ public abstract class AbstractJDBCSeq
 
     protected int type = TYPE_DEFAULT;
     protected Object current = null;
-    private static ThreadLocal _outerTransaction = new ThreadLocal();
 
     /**
      * Records the sequence type.
@@ -144,24 +143,22 @@ public abstract class AbstractJDBCSeq
     }
 
     /**
-     * Return the connection to use based on the type of sequence. This
-     * connection will automatically be closed; do not close it.
+     * <P>Return the connection to use based on the type of sequence. This
+     * connection will automatically be closed; do not close it.</P>
+     * 
+     * @return If the sequence type is <code>TYPE_TRANSACTIONAL</code> or 
+     * <code>TYPE_CONTIGUOUS</code> the connection from the {@link StoreManager}
+     * will be returned. 
+     * 
+     * <P>Otherwise a new connection will be obtained using DataSource2 from the 
+     * current configuration. In this case autocommit is set to false prior to 
+     * returning the connection.</P>
      */
     protected Connection getConnection(JDBCStore store)
         throws SQLException {
         if (type == TYPE_TRANSACTIONAL || type == TYPE_CONTIGUOUS)
             return store.getConnection();
-        else if (suspendInJTA()) {
-            try {
-                TransactionManager tm = getConfiguration()
-                    .getManagedRuntimeInstance().getTransactionManager();
-                _outerTransaction.set(tm.suspend());
-                tm.begin();
-                return store.getConnection();
-            } catch (Exception e) {
-                throw new StoreException(e);
-            }
-        } else {
+        else {
             JDBCConfiguration conf = store.getConfiguration();
             DataSource ds = conf.getDataSource2(store.getContext());
             Connection conn = ds.getConnection();
@@ -172,32 +169,18 @@ public abstract class AbstractJDBCSeq
     }
 
     /**
-     * Close the current connection.
+     * Close the current connection. If the sequence is
+     * <code>TYPE_TRANSACTIONAL</code> or <code>TYPE_CONTIGUOUS</code>
+     * nothing will be done. Otherwise the connection will be closed.
      */
     protected void closeConnection(Connection conn) {
         if (conn == null)
             return;
-
         if (type == TYPE_TRANSACTIONAL || type == TYPE_CONTIGUOUS) {
             // do nothing; this seq is part of the business transaction
             return;
-        } else if (suspendInJTA()) {
-            try {
-                TransactionManager tm = getConfiguration()
-                    .getManagedRuntimeInstance().getTransactionManager();
-                tm.commit();
-                try { conn.close(); } catch (SQLException se) {}
-
-                Transaction outerTxn = (Transaction)_outerTransaction.get();
-                if (outerTxn != null)
-                    tm.resume(outerTxn);
-
-            } catch (Exception e) {
-                throw new StoreException(e);
-            } finally {
-                _outerTransaction.set(null);
-            }
-        } else {
+        }
+        else {
             try {
                 conn.commit();
             } catch (SQLException se) {

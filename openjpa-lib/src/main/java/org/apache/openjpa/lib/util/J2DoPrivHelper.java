@@ -201,13 +201,13 @@ public abstract class J2DoPrivHelper {
      * Requires security policy: 'permission java.lang.RuntimePermission
      * "getClassLoader";'
      * 
-     * @return Classloader
+     * @return Class
      */
-    public static final PrivilegedExceptionAction getForNameAction(
+    public static final PrivilegedExceptionAction<Class<?>> getForNameAction(
         final String className, final boolean initializeBoolean,
         final ClassLoader classLoader) {
-        return new PrivilegedExceptionAction() {
-            public Object run() throws ClassNotFoundException {
+        return new PrivilegedExceptionAction<Class<?>>() {
+            public Class<?> run() throws ClassNotFoundException {
                 return Class.forName(className, initializeBoolean, classLoader);
             }
         };
@@ -228,10 +228,10 @@ public abstract class J2DoPrivHelper {
      *   
      * @return Classloader
      */
-    public static final PrivilegedAction getClassLoaderAction(
+    public static final PrivilegedAction<ClassLoader> getClassLoaderAction(
         final Class clazz) {
-        return new PrivilegedAction() {
-            public Object run() {
+        return new PrivilegedAction<ClassLoader>() {
+            public ClassLoader run() {
                 return clazz.getClassLoader();
             }
         };
@@ -330,21 +330,21 @@ public abstract class J2DoPrivHelper {
      * Requires security policy:
      *   'permission java.lang.RuntimePermission "getClassLoader";'
      *   
-     * @return Object
-     * @exception IllegalAccessException
+     * @return A new instance of the provided class.
+     * @exception IllegalAccessException 
      * @exception InstantiationException
      */
-    public static final PrivilegedExceptionAction newInstanceAction(
-        final Class clazz) throws IllegalAccessException,
+    public static final <T> PrivilegedExceptionAction<T> newInstanceAction(
+        final Class<T> clazz) throws IllegalAccessException,
         InstantiationException {
-        return new PrivilegedExceptionAction() {
-            public Object run() throws IllegalAccessException,
+        return new PrivilegedExceptionAction<T>() {
+            public T run() throws IllegalAccessException,
                     InstantiationException {
                 return clazz.newInstance();
             }
         };
     }
-
+    
     /**
      * Return a PrivilegeAction object for loader.getParent().
      * 

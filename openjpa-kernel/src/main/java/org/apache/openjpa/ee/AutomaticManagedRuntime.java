@@ -21,11 +21,13 @@ package org.apache.openjpa.ee;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InvalidStateException;
 
@@ -73,6 +75,7 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
     private static final WLSManagedRuntime WLS;
     private static final SunOneManagedRuntime SUNONE;
     private static final WASManagedRuntime WAS;
+    private static final WASRegistryManagedRuntime WAS_REG;
 
     private static Localizer _loc = Localizer.forPackage
         (AutomaticManagedRuntime.class);
@@ -108,24 +111,57 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
         mr = null;
         try {
             mr = new WASManagedRuntime();
+        } catch (Throwable t) {
         }
-        catch (Throwable t) {
+        WAS = (WASManagedRuntime) mr;
+
+        mr = null;
+        try {
+            // In a WebSphere environment the thread's current classloader might
+            // not have access to the WebSphere APIs. However the "runtime"
+            // classloader will have access to them.
+            
+            // Should not need a doPriv getting this class' classloader
+            ClassLoader cl = AutomaticManagedRuntime.class.getClassLoader();
+
+            Class<WASRegistryManagedRuntime> mrClass =
+                (Class<WASRegistryManagedRuntime>) J2DoPrivHelper
+                        .getForNameAction(
+                                WASRegistryManagedRuntime.class.getName(),
+                                true, cl).run();
+            mr = J2DoPrivHelper.newInstanceAction(mrClass).run();
+        } catch (Throwable t) {
+            // safe to ignore
         }
-        WAS= (WASManagedRuntime) mr;
+        WAS_REG = (WASRegistryManagedRuntime) mr;
     }
 
     private Configuration _conf = null;
     private ManagedRuntime _runtime = null;
-
+    
     public TransactionManager getTransactionManager()
         throws Exception {
         if (_runtime != null)
             return _runtime.getTransactionManager();
 
-        List errors = new LinkedList();
+        List<Throwable> errors = new LinkedList<Throwable>();
         TransactionManager tm = null;
 
-        // first try the registry, which is the official way to obtain
+        // Try the registry extensions first so that any applicable vendor
+        // specific extensions are used.
+        if (WAS_REG != null) {
+            try {
+                tm = WAS_REG.getTransactionManager();
+            } catch (Throwable t) {
+                errors.add(t);
+            }
+            if (tm != null) {
+                _runtime = WAS_REG;
+                return tm;
+            }
+        }
+
+        // Then try the registry, which is the official way to obtain
         // transaction synchronication in JTA 1.1
         if (REGISTRY != null) {
             try {
@@ -255,5 +291,24 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
             return _runtime.getTransactionKey();
         
         return null;
+    }
+
+    /**
+     * Delegate nonTransactional work to the appropriate managed runtime. If no
+     * managed runtime is found then delegate {@link AbstractManagedRuntime}.
+     */
+    public void doNonTransactionalWork(Runnable runnable)
+            throws NotSupportedException {
+        // Obtain a transaction manager to initialize the runtime.
+        try {
+            getTransactionManager();
+        } catch (Exception e) {
+            NotSupportedException nse =
+                new NotSupportedException(_loc
+                        .get("tm-unavailable", _runtime).getMessage());
+            nse.initCause(e);
+            throw nse;
+        }
+        _runtime.doNonTransactionalWork(runnable);
     }
 }

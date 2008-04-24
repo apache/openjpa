@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.ee;
 
+import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
@@ -65,5 +66,26 @@ public interface ManagedRuntime {
      */
     public Object getTransactionKey()
         throws Exception, SystemException;
-    
+
+    /**
+     * <P>
+     * Do a unit of work which will execute outside of the current managed
+     * transaction.
+     * </P>
+     * <P>
+     * If the runnable object encounters an exception it should be wrapped in a
+     * RuntimeException and thrown back to the caller
+     * </P>
+     * 
+     * @param runnable
+     *            The runnable wrapper for the work that will be done. The
+     *            runnable object should be fully initialized with any state
+     *            needed to execute.
+     * 
+     * @throws NotSupportedException
+     *             if the transaction can not be suspended.
+     */
+    public void doNonTransactionalWork(Runnable runnable)
+            throws NotSupportedException;
+  
 }

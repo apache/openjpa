@@ -36,7 +36,6 @@ public class TestWASManagedRuntime extends TestCase {
      * been modified via the maven build.
      *
      * @throws ClassNotFoundException
-     * @author Michael Dick
      */
     public void testInterfaceAdded() throws ClassNotFoundException {
 

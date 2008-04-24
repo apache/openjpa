@@ -26,6 +26,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashMap;
 
+import javax.transaction.NotSupportedException;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -39,7 +41,6 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.RowImpl;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
-import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -79,7 +80,8 @@ public class TableJDBCSeq
     private transient Log _log = null;
     private int _alloc = 50;
     private int _intValue = 1;
-    private final HashMap _stat = new HashMap();
+    private final HashMap<ClassMapping, Status> _stat =
+        new HashMap<ClassMapping, Status>();
 
     private String _table = "OPENJPA_SEQUENCE_TABLE";
     private String _seqColumnName = "SEQUENCE_VALUE";
@@ -87,8 +89,7 @@ public class TableJDBCSeq
 
     private Column _seqColumn = null;
     private Column _pkColumn = null;
-    private int _schemasIdx = 0;    
-
+    
     /**
      * The sequence table name. Defaults to <code>OPENJPA_SEQUENCE_TABLE</code>.
      * By default, the table will be placed in the first schema listed in your
@@ -270,13 +271,19 @@ public class TableJDBCSeq
     protected Object currentInternal(JDBCStore store, ClassMapping mapping)
         throws Exception {
         if (current == null) {
-            Connection conn = getConnection(store);
+            CurrentSequenceRunnable runnable =
+                new CurrentSequenceRunnable(store, mapping);
             try {
-                long cur = getSequence(mapping, conn);
-                if (cur != -1)
-                    current = Numbers.valueOf(cur);
-            } finally {
-                closeConnection(conn);
+                if (suspendInJTA()) {
+                    // NotSupportedException is wrapped in a StoreException by
+                    // the caller.
+                    _conf.getManagedRuntimeInstance().doNonTransactionalWork(
+                            runnable);
+                } else {
+                    runnable.run();
+                }
+            } catch (RuntimeException re) {
+                throw (Exception) (re.getCause() == null ? re : re.getCause());
             }
         }
         return super.currentInternal(store, mapping);
@@ -311,7 +318,6 @@ public class TableJDBCSeq
             _stat.put(mapping, status);
         }
         return status;
-            
     }
 
     /**
@@ -361,50 +367,43 @@ public class TableJDBCSeq
      * Updates the max available sequence value.
      */
     private void allocateSequence(JDBCStore store, ClassMapping mapping,
-        Status stat, int alloc, boolean updateStatSeq) 
-        throws SQLException {
-        Connection conn = getConnection(store);
-        try { 
-            if (setSequence(mapping, stat, alloc, updateStatSeq, conn))
-                return;
-        } catch (SQLException se) {
-            throw SQLExceptions.getStore(_loc.get("bad-seq-up", _table),
-                se, _conf.getDBDictionaryInstance());
-        } finally {
-            closeConnection(conn);
-        }
-        
+            Status stat, int alloc, boolean updateStatSeq) throws SQLException {
+        Runnable runnable =
+            new AllocateSequenceRunnable(
+                    store, mapping, stat, alloc, updateStatSeq);
         try {
-            // possible that we might get errors when inserting if
-            // another thread/process is inserting same pk at same time
-            SQLException err = null; 
-            // ### why does this not call getConnection() / closeConnection()?
-            conn = _conf.getDataSource2(store.getContext()).getConnection();
-            try {
-                insertSequence(mapping, conn);
-            } catch (SQLException se) {
-                err = se;
-            } finally {
-                try { conn.close(); } catch (SQLException se) {}
+            if (suspendInJTA()) {
+                // NotSupportedException is wrapped in a StoreException by
+                // the caller.
+                try {
+                _conf.getManagedRuntimeInstance().doNonTransactionalWork(
+                        runnable);
+                }
+                catch(NotSupportedException nse) { 
+                    SQLException sqlEx = new SQLException(nse.getLocalizedMessage());
+                    sqlEx.initCause(nse);
+                    throw sqlEx;
+                }
+            } else {
+                runnable.run();
             }
-
-            // now we should be able to update...
-            conn = getConnection(store);
-            try {
-                if (!setSequence(mapping, stat, alloc, updateStatSeq, conn))
-                    throw (err != null) ? err : new SQLException(_loc.get
-                        ("no-seq-row", mapping, _table).getMessage());
-            } finally {
-                closeConnection(conn);
-            }
-        } catch (SQLException se2) {
-            throw SQLExceptions.getStore(_loc.get("bad-seq-up", _table),
-                se2, _conf.getDBDictionaryInstance());
-        } 
+        } catch (RuntimeException re) {
+            Throwable e = re.getCause();
+            if(e instanceof SQLException ) 
+                throw (SQLException) e;
+            else 
+                throw re;
+        }
     }
 
     /**
-     * Inserts the initial sequence information into the database, if any.
+     * Inserts the initial sequence column into the database.
+     * 
+     * @param mapping
+     *            ClassMapping for the class whose sequence column will be
+     *            updated
+     * @param conn
+     *            Connection used issue SQL statements.
      */
     private void insertSequence(ClassMapping mapping, Connection conn)
         throws SQLException {
@@ -442,7 +441,16 @@ public class TableJDBCSeq
     }
 
     /**
-     * Return the current sequence value, or -1 if unattainable.
+     * Get the current sequence value.
+     * 
+     * @param mapping
+     *            ClassMapping of the entity whose sequence value will be
+     *            obtained.
+     * @param conn
+     *            Connection used issue SQL statements.
+     * 
+     * @return The current sequence value, or <code>SEQUENCE_NOT_FOUND</code>
+     *         if the sequence could not be found.
      */
     protected long getSequence(ClassMapping mapping, Connection conn)
         throws SQLException {
@@ -736,5 +744,117 @@ public class TableJDBCSeq
         if (rs == null || !rs.next())
             return -1;
         return dict.getLong(rs, 1);
+    }
+
+    /**
+     * AllocateSequenceRunnable is a runnable wrapper that will inserts the
+     * initial sequence value into the database.
+     */
+    protected class AllocateSequenceRunnable implements Runnable {
+
+        JDBCStore store = null;
+        ClassMapping mapping = null;
+        Status stat = null;
+        int alloc;
+        boolean updateStatSeq;
+
+        AllocateSequenceRunnable(JDBCStore store, ClassMapping mapping,
+                Status stat, int alloc, boolean updateStatSeq) {
+            this.store = store;
+            this.mapping = mapping;
+            this.stat = stat;
+            this.alloc = alloc;
+            this.updateStatSeq = updateStatSeq;
+        }
+
+        /**
+         * This method actually obtains the current sequence value.
+         * 
+         * @throws RuntimeException
+         *             any SQLExceptions that occur when obtaining the sequence
+         *             value are wrapped in a runtime exception to avoid
+         *             breaking the Runnable method signature. The caller can
+         *             obtain the "real" exception by calling getCause().
+         */
+        public void run() throws RuntimeException {
+            Connection conn = null;
+            SQLException err = null;
+            try {
+                // Try to use the store's connection.
+                
+                conn = getConnection(store);  
+                boolean sequenceSet =
+                    setSequence(mapping, stat, alloc, updateStatSeq, conn);
+                closeConnection(conn);
+
+                if (!sequenceSet) {
+                    // insert a new sequence column. 
+                    // Prefer connection2 / non-jta-data-source when inserting 
+                    // a sequence column regardless of Seq.type.
+                    conn = _conf.getDataSource2(store.getContext())
+                                .getConnection();
+                    insertSequence(mapping, conn);
+                    conn.close();
+
+                    // now we should be able to update using the connection per
+                    // on the seq type.
+                    conn = getConnection(store);
+                    if (!setSequence(mapping, stat, alloc, updateStatSeq, conn))
+                    {
+                        throw (err != null) ? err : new SQLException(_loc.get(
+                                "no-seq-row", mapping, _table).getMessage());
+                    }
+                    closeConnection(conn);
+                }
+            } catch (SQLException e) {
+                if (conn != null) {
+                    closeConnection(conn);
+                }
+                RuntimeException re = new RuntimeException(e.getMessage());
+                re.initCause(e);
+                throw re;
+            }
+        }
+    }
+
+    /**
+     * CurentSequenceRunnable is a runnable wrapper which obtains the current
+     * sequence value from the database.
+     */
+    protected class CurrentSequenceRunnable implements Runnable {
+        private JDBCStore _store;
+        private ClassMapping _mapping;
+
+        CurrentSequenceRunnable(JDBCStore store, ClassMapping mapping) {
+            _store = store;
+            _mapping = mapping;
+        }
+
+        /**
+         * This method actually obtains the current sequence value.
+         * 
+         * @throws RuntimeException
+         *             any SQLExceptions that occur when obtaining the sequence
+         *             value are wrapped in a runtime exception to avoid
+         *             breaking the Runnable method signature. The caller can
+         *             obtain the "real" exception by calling getCause().
+         */
+        public void run() throws RuntimeException {
+            Connection conn = null;
+            try {
+                conn = getConnection(_store);
+                long cur = getSequence(_mapping, conn);
+                if (cur != -1 ) // USE the constant
+                    current = Numbers.valueOf(cur);
+            } catch (SQLException sqle) {
+                RuntimeException re = new RuntimeException(sqle.getMessage());
+                re.initCause(sqle);
+                throw re;
+            } finally {
+                if (conn != null) {
+                    closeConnection(conn);
+                }
+            }
+        }
     }
 }

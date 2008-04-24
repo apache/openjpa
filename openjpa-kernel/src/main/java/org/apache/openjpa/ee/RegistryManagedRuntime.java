@@ -32,6 +32,8 @@ import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.xa.XAResource;
 
+import org.apache.openjpa.lib.util.Localizer;
+
 /**
  * Implementation of the {@link ManagedRuntime} interface that uses 
  * the {@link TransactionSynchronizationRegistry} interface (new in JTA 1.1)
@@ -42,10 +44,12 @@ import javax.transaction.xa.XAResource;
  */
 public class RegistryManagedRuntime
     implements ManagedRuntime {
-
     private String _registryName =
         "java:comp/TransactionSynchronizationRegistry";
     private TransactionManagerRegistryFacade _tm = null;
+    
+    private static Localizer _loc =
+        Localizer.forPackage(RegistryManagedRuntime.class);
 
     /**
      * Return the cached TransactionManager instance.
@@ -187,6 +191,16 @@ public class RegistryManagedRuntime
             throws RollbackException, IllegalStateException, SystemException {
             throw new SystemException();
         }
+    }
+    
+    /**
+     * <P>
+     * RegistryManagedRuntime cannot suspend transactions.
+     * </P>
+     */
+    public void doNonTransactionalWork(Runnable runnable) throws NotSupportedException {
+        throw new NotSupportedException(
+                _loc.get("tsr-cannot-suspend").getMessage());
     }
 }
 
