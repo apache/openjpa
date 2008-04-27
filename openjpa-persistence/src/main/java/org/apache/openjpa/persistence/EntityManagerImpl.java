@@ -31,6 +31,8 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Map;
+import java.util.HashMap;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
@@ -51,6 +53,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.Seq;
+import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
@@ -80,7 +83,8 @@ public class EntityManagerImpl
 
     private DelegatingBroker _broker;
     private EntityManagerFactoryImpl _emf;
-    private FetchPlan _fetch = null;
+    private Map<FetchConfiguration,FetchPlan> _plans =
+        new HashMap<FetchConfiguration,FetchPlan>(1);
 
     private RuntimeExceptionTranslator ret =
         PersistenceExceptions.getRollbackTranslator(this);
@@ -122,10 +126,34 @@ public class EntityManagerImpl
         assertNotCloseInvoked();
         _broker.lock();
         try {
-            if (_fetch == null)
-                _fetch = _emf.toFetchPlan(_broker,
-                    _broker.getFetchConfiguration());
-            return _fetch;
+            FetchConfiguration fc = _broker.getFetchConfiguration();
+            FetchPlan fp = _plans.get(fc);
+            if (fp == null) {
+                fp = _emf.toFetchPlan(_broker, fc);
+                _plans.put(fc, fp);
+            }
+            return fp;
+        } finally {
+            _broker.unlock();
+        }
+    }
+
+    public FetchPlan pushFetchPlan() {
+        assertNotCloseInvoked();
+        _broker.lock();
+        try {
+            _broker.pushFetchConfiguration();
+            return getFetchPlan();
+        } finally {
+            _broker.unlock();
+        }
+    }
+
+    public void popFetchPlan() {
+        assertNotCloseInvoked();
+        _broker.lock();
+        try {
+            _broker.popFetchConfiguration();
         } finally {
             _broker.unlock();
         }

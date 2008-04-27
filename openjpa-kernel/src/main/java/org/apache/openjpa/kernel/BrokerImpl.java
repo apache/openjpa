@@ -237,6 +237,7 @@ public class BrokerImpl
     private int _lifeCallbackMode = 0;
 
     private transient boolean _initializeWasInvoked = false;
+    private LinkedList _fcs;
 
     /**
      * Set the persistence manager's authentication. This is the first
@@ -383,6 +384,20 @@ public class BrokerImpl
 
     public FetchConfiguration getFetchConfiguration() {
         return _fc;
+    }
+
+    public FetchConfiguration pushFetchConfiguration() {
+        if (_fcs == null)
+            _fcs = new LinkedList();
+        _fcs.add(_fc);
+        _fc = (FetchConfiguration) _fc.clone();
+        return _fc;
+    }
+
+    public void popFetchConfiguration() {
+        if (_fcs == null || _fcs.isEmpty())
+            throw new UserException(_loc.get("fetch-configuration-stack-empty"));
+        _fc = (FetchConfiguration) _fcs.removeLast();
     }
 
     public int getConnectionRetainMode() {

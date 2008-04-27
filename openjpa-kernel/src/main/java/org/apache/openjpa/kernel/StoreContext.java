@@ -62,6 +62,27 @@ public interface StoreContext {
     public FetchConfiguration getFetchConfiguration();
 
     /**
+     * Pushes a new fetch configuration that inherits from the current
+     * fetch configuration onto a stack, and makes the new configuration
+     * the active one.
+     *
+     * @since 1.1.0
+     * @return the new fetch configuration
+     */
+    public FetchConfiguration pushFetchConfiguration();
+
+    /**
+     * Pops the fetch configuration from the top of the stack, making the
+     * next one down the active one. This returns void to avoid confusion,
+     * since fetch configurations tend to be used in method-chaining
+     * patterns often.
+     *
+     * @since 1.1.0
+     * @throws UserException if the fetch configuration stack is empty
+     */
+    public void popFetchConfiguration();
+
+    /**
      * Return the current thread's class loader at the time this context
      * was obtained.
      */

@@ -57,6 +57,24 @@ public interface OpenJPAEntityManager
     public FetchPlan getFetchPlan();
 
     /**
+     * Pushes a new fetch plan that inherits from the current fetch plan onto
+     * a stack, and makes the new plan the active one.
+     *
+     * @since 1.1.0
+     * @return the new fetch plan
+     */
+    public FetchPlan pushFetchPlan();
+
+    /**
+     * Pops the fetch plan from the top of the stack, making the next one down
+     * the active one. This returns void to avoid confusion, since fetch plans
+     * tend to be used in method-chaining patterns often.
+     *
+     * @since 1.1.0
+     */
+    public void popFetchPlan();
+
+    /**
      * Return the connection retain mode for this entity manager.
      */
     public ConnectionRetainMode getConnectionRetainMode();
