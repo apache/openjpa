@@ -54,6 +54,12 @@
             <artifactId>commons-pool</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.ibm.websphere</groupId>
+            <artifactId>websphere_uow_api</artifactId>
+            <version>0.0.1</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -154,4 +160,15 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <!-- 
+            Internal (in SVN) repository which contains jar files that are not
+            publicly available and cannot be re-distributed.
+         -->
+        <repository>
+            <id>openjpa-internal</id>
+            <name>Internal repository</name>
+            <url>file://${basedir}/internal-repository</url>
+        </repository>
+    </repositories>
 </project>
