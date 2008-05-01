@@ -19,33 +19,79 @@
 package org.apache.openjpa.lib.util.concurrent;
 
 import java.io.IOException;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Enumeration;
 import java.util.Map.Entry;
 
 import org.apache.openjpa.lib.test.AbstractTestCase;
 
 public class TestNullSafeConcurrentHashMap extends AbstractTestCase {
 
-    private Map newMap() {
+    private NullSafeConcurrentHashMap newMap() {
         return new NullSafeConcurrentHashMap();
-//        return new HashMap();
+    }
+
+    public void testRemoveRandomIsNotTotallyDeterministic() {
+        removeHelper(false);
+    }
+
+    public void testRandomIteratorIsNotTotallyDeterministic() {
+        removeHelper(true);
+    }
+
+    private void removeHelper(boolean iter) {
+        Map<String,Integer> removedCounts = new HashMap();
+        for (int i = 0; i < 1000; i++) {
+            NullSafeConcurrentHashMap m = new NullSafeConcurrentHashMap();
+            m.put("a", "A");
+            m.put("b", "B");
+            m.put("c", "C");
+            m.put("d", "D");
+            m.put("e", "E");
+            m.put("f", "F");
+            m.put("g", "G");
+
+            String removed;
+            if (iter) {
+                removed = (String) m.removeRandom().getKey();
+            } else {
+                removed = (String) ((Entry) m.randomEntryIterator().next())
+                    .getKey();
+                m.remove(removed);
+            }
+
+            Integer count = removedCounts.get(removed);
+            if (count == null)
+                removedCounts.put(removed, 1);
+            else
+                removedCounts.put(removed, count.intValue() + 1);
+        }
+
+        // assume that over 1000 runs, every element should be removed at
+        // least once, and no element should be removed more than 30% of
+        // the time
+        assertEquals(7, removedCounts.size());
+        for (Entry<String,Integer> entry : removedCounts.entrySet()) {
+            if (entry.getValue() == 0)
+                fail("element " + entry.getKey() + " was never removed");
+            if (entry.getValue() > 500)
+                fail("element " + entry.getKey() + " was removed "
+                    + entry.getValue() + " times; this is greater than the "
+                    + "threshold of 500.");
+        }
     }
 
     public void testNullKeys() throws ClassNotFoundException, IOException {
-        Map m = newMap();
-        helper(m, null, "value 0", "value 1", "value 2");
+        helper(null, "value 0", "value 1", "value 2");
     }
 
-    private void helper(Map m, Object key, Object value0,
+    private void helper(Object key, Object value0,
         Object value1, Object value2)
         throws IOException, ClassNotFoundException {
+
+        NullSafeConcurrentHashMap m = newMap();
 
         // initial put
         m.put(key, value0);
@@ -77,7 +123,6 @@ public class TestNullSafeConcurrentHashMap extends AbstractTestCase {
 
         // put
         assertEquals(value0, m.put(key, value1));
-//        m.putAll(); #####
 
         // remove
         assertEquals(value1, m.put(key, value1));
@@ -85,42 +130,50 @@ public class TestNullSafeConcurrentHashMap extends AbstractTestCase {
         m.put(key, value1);
 
         // ConcurrentMap stuff
-        ConcurrentMap cm = (ConcurrentMap) m;
-        assertFalse(cm.remove("invalid key", value0));
-        assertTrue(cm.remove(key, value1));
-        assertNull(cm.putIfAbsent(key, value0)); // null == prev unset
+        assertFalse(m.remove("invalid key", value0));
+        assertTrue(m.remove(key, value1));
+        assertNull(m.putIfAbsent(key, value0)); // null == prev unset
 
         // value0 might be null; can't disambiguate from above in OpenJPA
         // interpretation
-        assertEquals(value0, cm.putIfAbsent(key, "invalid value"));
+        assertEquals(value0, m.putIfAbsent(key, "invalid value"));
 
         // replace
-        assertEquals(value0, cm.replace(key, value1));
-        assertTrue(cm.replace(key, value1, value2));
+        assertEquals(value0, m.replace(key, value1));
+        assertTrue(m.replace(key, value1, value2));
+
+        // putAll. Note that ConcurrentHashMap happens to delegate to put()
+        // from within putAll() calls. This test should help ensure that we
+        // find out if that changes.
+        m = newMap();
+        Map putAllArg = new HashMap();
+        putAllArg.put(key, value0);
+        putAllArg.put("another key", value1);
+        m.putAll(putAllArg);
+        assertEquals(value0, m.get(key));
+        assertEquals(value1, m.get("another key"));
     }
 
     public void testNullValues() throws ClassNotFoundException, IOException {
-        Map m = newMap();
-        nullValsHelper(m, "foo");
+        nullValsHelper("foo");
     }
 
-    private void nullValsHelper(Map m, Object key)
+    private void nullValsHelper(Object key)
         throws IOException, ClassNotFoundException {
-        helper(m, key, null, null, null);
-        helper(m, key, "bar", "baz", "quux");
+        helper(key, null, null, null);
+        helper(key, "bar", "baz", "quux");
 
-        helper(m, key, "bar", "baz", null);
-        helper(m, key, null, "baz", "quux");
-        helper(m, key, "bar", null, "quux");
+        helper(key, "bar", "baz", null);
+        helper(key, null, "baz", "quux");
+        helper(key, "bar", null, "quux");
 
-        helper(m, key, "bar", null, null);
-        helper(m, key, null, "baz", null);
-        helper(m, key, null, null, "quux");
+        helper(key, "bar", null, null);
+        helper(key, null, "baz", null);
+        helper(key, null, null, "quux");
     }
 
     public void testNullKeysAndValues()
         throws ClassNotFoundException, IOException {
-        Map m = newMap();
-        nullValsHelper(m, null);
+        nullValsHelper(null);
     }
 }

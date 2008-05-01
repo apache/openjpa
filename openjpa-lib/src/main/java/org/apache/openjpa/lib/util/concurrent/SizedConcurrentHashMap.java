@@ -99,40 +99,6 @@ public class SizedConcurrentHashMap
         return size() >= maxSize;
     }
 
-    public Map.Entry removeRandom() {
-        // this isn't really random, but is concurrent.
-        while (true) {
-            if (size() == 0)
-                return null;
-            Set entries = entrySet();
-            Entry e = (Entry) entries.iterator().next();
-            final Object key = e.getKey();
-            final Object val = e.getValue();
-            if (remove(key) != null)
-                // create a new Entry instance because the ConcurrentHashMap
-                // implementation's one is "live" so does not behave as desired
-                // after removing the entry.
-                return new Entry() {
-                    public Object getKey() {
-                        return key;
-                    }
-
-                    public Object getValue() {
-                        return val;
-                    }
-
-                    public Object setValue(Object value) {
-                        throw new UnsupportedOperationException();
-                    }
-                };
-        }
-    }
-
-    public Iterator randomEntryIterator() {
-        // this isn't really random, but is concurrent.
-        return entrySet().iterator();
-    }
-
     /**
      * This implementation does nothing.
      */
