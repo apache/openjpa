@@ -860,7 +860,7 @@ public class AnnotationPersistenceMappingParser
         if (!StringUtils.isEmpty(join.name()))
             col.setName(join.name());
         if (!StringUtils.isEmpty(join.columnDefinition()))
-            col.setName(join.columnDefinition());
+            col.setTypeName(join.columnDefinition());
         if (!StringUtils.isEmpty(join.referencedColumnName()))
             col.setTarget(join.referencedColumnName());
         if (!StringUtils.isEmpty(join.referencedAttributeName()))
