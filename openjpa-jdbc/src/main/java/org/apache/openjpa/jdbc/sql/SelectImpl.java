@@ -118,6 +118,9 @@ public class SelectImpl
     // 'parent.address.street' for the purposes of comparisons
     private Map _aliases = null;
 
+    // to cache table alias using Table as the key
+    private Map _tableAliases = null;
+
     // map of indexes to table aliases like 'TABLENAME t0'
     private SortedMap _tables = null;
 
@@ -167,7 +170,10 @@ public class SelectImpl
     // if the bit is set, the corresponding alias has been removed from parent
     // and recorded under subselect.
     private BitSet _removedAliasFromParent = new BitSet(16);
-     
+
+    //contains final sql statement to be executed/cached
+    private SQLBuffer _sql = null;
+    
     /**
      * Helper method to return the proper table alias for the given alias index.
      */
@@ -300,7 +306,7 @@ public class SelectImpl
             stmnt = prepareStatement(conn, sql, null, 
                 ResultSet.TYPE_FORWARD_ONLY, 
                 ResultSet.CONCUR_READ_ONLY, false);
-            rs = executeQuery(conn, stmnt, sql, false, store);
+            rs = executeQuery(conn, stmnt, sql, false, store, null);
             return getCount(rs);
         } finally {
             if (rs != null)
@@ -312,20 +318,31 @@ public class SelectImpl
         }
     }
 
-    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch)
-        throws SQLException {
+    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch, 
+        List parms) throws SQLException {
         if (fetch == null)
             fetch = store.getFetchConfiguration();
         return execute(store.getContext(), store, fetch,
-            fetch.getReadLockLevel());
+            fetch.getReadLockLevel(), parms);
+    }
+
+    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch) 
+        throws SQLException {
+        return execute(store, fetch, null);
+     }
+
+    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
+        int lockLevel, List parms)
+        throws SQLException {
+            if (fetch == null)
+                fetch = store.getFetchConfiguration();
+            return execute(store.getContext(), store, fetch, lockLevel, parms);
     }
 
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
         int lockLevel)
         throws SQLException {
-        if (fetch == null)
-            fetch = store.getFetchConfiguration();
-        return execute(store.getContext(), store, fetch, lockLevel);
+        return execute(store, fetch, lockLevel, null);
     }
 
     /**
@@ -333,16 +350,21 @@ public class SelectImpl
      * context is passed in separately for profiling purposes.
      */
     protected Result execute(StoreContext ctx, JDBCStore store, 
-        JDBCFetchConfiguration fetch, int lockLevel)
+        JDBCFetchConfiguration fetch, int lockLevel, List params)
         throws SQLException {
-        boolean forUpdate = false;
-        if (!isAggregate() && _grouping == null) {
-            JDBCLockManager lm = store.getLockManager();
-            if (lm != null)
-                forUpdate = lm.selectForUpdate(this, lockLevel);
-        }
-
-        SQLBuffer sql = toSelect(forUpdate, fetch);
+        boolean forUpdate = isForUpdate(store, lockLevel);
+        
+        // A non-null _sql indicates that this SelectImpl object
+        // is obtained from cache. The _sql is constructed
+        // under the assumption that isAggregate() is false
+        // and _grouping is null. If neither of these holds,
+        // we need to re-construct the _sql
+        if (_sql != null && (isAggregate() || _grouping != null)) 
+            _sql = null;
+        
+        if (_sql == null) 
+        	_sql = toSelect(forUpdate, fetch);
+        
         boolean isLRS = isLRS();
         int rsType = (isLRS && supportsRandomAccess(forUpdate))
             ? -1 : ResultSet.TYPE_FORWARD_ONLY;
@@ -351,13 +373,15 @@ public class SelectImpl
         ResultSet rs = null;
         try {
             if (isLRS) 
-                stmnt = prepareStatement(conn, sql, fetch, rsType, -1, true); 
+                stmnt = prepareStatement(conn, _sql, fetch, rsType, -1, true, 
+                        params); 
             else
-                stmnt = prepareStatement(conn, sql, null, rsType, -1, false);
+                stmnt = prepareStatement(conn, _sql, null, rsType, -1, false, 
+                        params);
             
             setTimeout(stmnt, forUpdate, fetch);
             
-            rs = executeQuery(conn, stmnt, sql, isLRS, store);
+            rs = executeQuery(conn, stmnt, _sql, isLRS, store, params);
         } catch (SQLException se) {
             // clean up statement
             if (stmnt != null)
@@ -367,7 +391,17 @@ public class SelectImpl
         }
 
         return getEagerResult(conn, stmnt, rs, store, fetch, forUpdate, 
-            sql.getSQL());
+            _sql.getSQL());
+    }
+    
+    private boolean isForUpdate(JDBCStore store, int lockLevel) {
+    	boolean forUpdate = false;
+        if (!isAggregate() && _grouping == null) {
+            JDBCLockManager lm = store.getLockManager();
+            if (lm != null)
+                forUpdate = lm.selectForUpdate(this, lockLevel);
+        }
+        return forUpdate;
     }
 
     /**
@@ -413,10 +447,22 @@ public class SelectImpl
     protected PreparedStatement prepareStatement(Connection conn, 
         SQLBuffer sql, JDBCFetchConfiguration fetch, int rsType, 
         int rsConcur, boolean isLRS) throws SQLException {
+        // add comments why we pass in null as the last parameter
+        return prepareStatement(conn, sql, fetch, rsType, rsConcur, isLRS, 
+                null);
+    }
+
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of preparing statement.
+     */
+    protected PreparedStatement prepareStatement(Connection conn, 
+        SQLBuffer sql, JDBCFetchConfiguration fetch, int rsType, 
+        int rsConcur, boolean isLRS, List params) throws SQLException {
         if (fetch == null)
-            return sql.prepareStatement(conn, rsType, rsConcur);
+            return sql.prepareStatement(conn, rsType, rsConcur, params);
         else
-            return sql.prepareStatement(conn, fetch, rsType, -1);
+            return sql.prepareStatement(conn, fetch, rsType, -1, params);
     }
     
     /**
@@ -445,7 +491,8 @@ public class SelectImpl
      * implementation of executing query.
      */
     protected ResultSet executeQuery(Connection conn, PreparedStatement stmnt, 
-        SQLBuffer sql, boolean isLRS, JDBCStore store) throws SQLException {
+        SQLBuffer sql, boolean isLRS, JDBCStore store, List params) 
+        throws SQLException {
         return stmnt.executeQuery();
     }
     
@@ -589,6 +636,19 @@ public class SelectImpl
         return _having;
     }
 
+    public SQLBuffer getSQL() {
+        return _sql;
+    }
+
+    public void setSQL(SQLBuffer sql) {
+        _sql = sql;
+    }
+
+    public void setSQL(JDBCStore store, JDBCFetchConfiguration fetch) {
+        boolean forUpdate = isForUpdate(store, fetch.getReadLockLevel());
+        _sql = toSelect(forUpdate, fetch);
+    }
+    
     public void addJoinClassConditions() {
         if (_joins == null || _joins.joins() == null)
             return;
@@ -656,13 +716,30 @@ public class SelectImpl
      * Return the alias for the given column.
      */
     private String getColumnAlias(String col, Table table, PathJoins pj) {
+        String tableAlias = null;
+        if (pj == null || pj.path() == null) {
+            if (_tableAliases == null)
+                _tableAliases = new HashMap();
+            tableAlias = (String) _tableAliases.get(table);
+            if (tableAlias == null) {
+                tableAlias = getTableAlias(table, pj).toString();
+                _tableAliases.put(table, tableAlias);
+            }
+            return new StringBuilder(tableAlias).append(col).toString();
+        }
+        return getTableAlias(table, pj).append(col).toString();
+    }
+    
+    private StringBuilder getTableAlias(Table table, PathJoins pj) {
+        StringBuilder buf = new StringBuilder();
         if (_from != null) {
             String alias = toAlias(_from.getTableIndex(table, pj, true));
             if (_dict.requiresAliasForSubselect)
-                return FROM_SELECT_ALIAS + "." + alias + "_" + col;
-            return alias + "_" + col;
+                return buf.append(FROM_SELECT_ALIAS).append(".").append(alias).
+                    append("_");
+            return buf.append(alias).append("_");
         }
-        return toAlias(getTableIndex(table, pj, true)) + "." + col;
+        return buf.append(toAlias(getTableIndex(table, pj, true))).append(".");
     }
 
     public boolean isAggregate() {
@@ -1263,36 +1340,12 @@ public class SelectImpl
             return;
         }
 
-        // only bother to pack pk values into array if app id
-        Object[] pks = null;
-        if (mapping.getIdentityType() == ClassMapping.ID_APPLICATION)
-            pks = ApplicationIds.toPKValues(oid, mapping);
-
         SQLBuffer buf = new SQLBuffer(_dict);
-        Joinable join;
-        Object val;
-        int count = 0;
-        for (int i = 0; i < toCols.length; i++, count++) {
-            if (pks == null)
-                val = (oid == null) ? null : Numbers.valueOf(((Id) oid).getId());
-            else {
-                // must be app identity; use pk index to get correct pk value
-                join = mapping.assertJoinable(toCols[i]);
-                val = pks[mapping.getField(join.getFieldIndex()).
-                    getPrimaryKeyIndex()];
-                val = join.getJoinValue(val, toCols[i], store);
-            }
 
-            if (count > 0)
-                buf.append(" AND ");
-            buf.append(getColumnAlias(fromCols[i], pj));
-            if (val == null)
-                buf.append(" IS ");
-            else
-                buf.append(" = ");
-            buf.appendValue(val, fromCols[i]);
-        }
-
+        // only bother to pack pk values into array if app id        
+        int count = wherePrimaryKey(mapping, toCols, fromCols, oid, store, pj, 
+        	buf, null);
+            	
         if (constCols != null && constCols.length > 0) {
             for (int i = 0; i < constCols.length; i++, count++) {
                 if (count > 0)
@@ -1310,6 +1363,46 @@ public class SelectImpl
         where(buf, pj);
     }
 
+    public int wherePrimaryKey(ClassMapping mapping, Column[] toCols, 
+    	Column[] fromCols, Object oid, JDBCStore store, PathJoins pj,
+    	SQLBuffer buf, List parmList) {
+        // only bother to pack pk values into array if app id
+    	boolean collectParmValueOnly = (parmList != null ? true : false);
+        Object[] pks = null;
+        if (mapping.getIdentityType() == ClassMapping.ID_APPLICATION)
+            pks = ApplicationIds.toPKValues(oid, mapping);
+
+        Joinable join;
+        Object val;
+        int count = 0;
+        for (int i = 0; i < toCols.length; i++, count++) {
+            if (pks == null)
+                val = (oid == null) ? null : Numbers.valueOf(((Id) oid).getId());
+            else {
+                // must be app identity; use pk index to get correct pk value
+                join = mapping.assertJoinable(toCols[i]);
+                val = pks[mapping.getField(join.getFieldIndex()).
+                    getPrimaryKeyIndex()];
+                val = join.getJoinValue(val, toCols[i], store);
+                if (parmList != null)
+                	parmList.add(val);
+            }
+            
+            if (collectParmValueOnly) 
+            	continue;
+            
+            if (count > 0)
+                buf.append(" AND ");
+            buf.append(getColumnAlias(fromCols[i], pj));
+            if (val == null)
+                buf.append(" IS ");
+            else
+                buf.append(" = ");
+            buf.appendValue(val, fromCols[i]);
+        }
+        return count;
+    }
+    
     /**
      * Test to see if the given set of columns contains all the
      * columns in the given potential subset.

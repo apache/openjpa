@@ -202,20 +202,32 @@ public class LogicalUnion
     }
 
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch)
-        throws SQLException {
-        if (fetch == null)
-            fetch = store.getFetchConfiguration();
-        return execute(store, fetch, fetch.getReadLockLevel());
-    }
+            throws SQLException {
+        return execute(store, fetch, null);
+    }    
 
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
         int lockLevel)
+        throws SQLException {
+        return execute(store, fetch, lockLevel, null);
+    }
+    
+    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch, 
+        List params)
+        throws SQLException {
+        if (fetch == null)
+            fetch = store.getFetchConfiguration();
+        return execute(store, fetch, fetch.getReadLockLevel(), params);
+    }
+
+    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
+        int lockLevel, List params)
         throws SQLException {
         if (fetch == null)
             fetch = store.getFetchConfiguration();
 
         if (sels.length == 1) {
-            Result res = sels[0].execute(store, fetch, lockLevel);
+            Result res = sels[0].execute(store, fetch, lockLevel, params);
             ((AbstractResult) res).setBaseMapping(mappings[0]);
             return res;
         }
@@ -224,7 +236,7 @@ public class LogicalUnion
             AbstractResult res;
             for (int i = 0; i < sels.length; i++) {
                 res = (AbstractResult) sels[i].execute(store, fetch,
-                    lockLevel);
+                    lockLevel, params);
                 res.setBaseMapping(mappings[i]);
                 res.setIndexOf(i);
 
@@ -256,7 +268,7 @@ public class LogicalUnion
             List l;
             for (int i = 0; i < res.length; i++) {
                 res[i] = (AbstractResult) sels[i].execute(store, fetch,
-                    lockLevel);
+                    lockLevel, params);
                 res[i].setBaseMapping(mappings[i]);
                 res[i].setIndexOf(i);
 
@@ -303,7 +315,7 @@ public class LogicalUnion
     /**
      * A select that is part of a logical union.
      */
-    protected class UnionSelect
+    public class UnionSelect
         implements Select {
 
         protected final SelectImpl sel;
@@ -396,6 +408,18 @@ public class LogicalUnion
             return sel.getCount(store);
         }
 
+        public Result execute(JDBCStore store, JDBCFetchConfiguration fetch, 
+            List params)
+            throws SQLException {
+            return sel.execute(store, fetch, params);
+        }
+
+        public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
+            int lockLevel, List params)
+            throws SQLException {
+            return sel.execute(store, fetch, lockLevel, params);
+        }
+
         public Result execute(JDBCStore store, JDBCFetchConfiguration fetch)
             throws SQLException {
             return sel.execute(store, fetch);
@@ -406,7 +430,7 @@ public class LogicalUnion
             throws SQLException {
             return sel.execute(store, fetch, lockLevel);
         }
-
+        
         public List getSubselects() {
             return Collections.EMPTY_LIST;
         }
@@ -475,6 +499,14 @@ public class LogicalUnion
             return sel.getHaving();
         }
 
+        public SQLBuffer getSQL() {
+            return sel.getSQL();
+        }
+        
+        public void setSQL(JDBCStore store, JDBCFetchConfiguration fetch) {
+            sel.setSQL(store, fetch);
+        }
+        
         public void addJoinClassConditions() {
             sel.addJoinClassConditions();
         }
@@ -717,6 +749,15 @@ public class LogicalUnion
             JDBCStore store) {
             sel.wherePrimaryKey(oid, mapping, store);
         }
+        
+        public int wherePrimaryKey(ClassMapping mapping, Column[] toCols, 
+            Column[] fromCols, Object oid, JDBCStore store, PathJoins pj,
+            SQLBuffer buf, List parmList) {
+            return sel.wherePrimaryKey(mapping, toCols, fromCols, oid, store, pj, 
+                buf, parmList);
+        }
+        
+        
 
         public void whereForeignKey(ForeignKey fk, Object oid,
             ClassMapping mapping, JDBCStore store) {
