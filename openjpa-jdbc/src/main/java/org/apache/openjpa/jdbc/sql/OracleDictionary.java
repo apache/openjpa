@@ -1092,13 +1092,17 @@ public class OracleDictionary
         buf.append("')");
     }
     
-    public void insertBlobForStreamingLoad(Row row, Column col)
+    public void insertBlobForStreamingLoad(Row row, Column col, Object ob)
         throws SQLException {
+        if (ob == null)
+            col.setType(Types.OTHER);
         row.setNull(col);
     }
     
-    public void insertClobForStreamingLoad(Row row, Column col)
+    public void insertClobForStreamingLoad(Row row, Column col, Object ob)
         throws SQLException {
+        if (ob == null)
+            col.setType(Types.OTHER);
         row.setNull(col);
     }
 }

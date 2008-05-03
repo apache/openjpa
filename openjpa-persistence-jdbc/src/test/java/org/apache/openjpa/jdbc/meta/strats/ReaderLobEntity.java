@@ -35,10 +35,10 @@ import org.apache.openjpa.persistence.Persistent;
 public class ReaderLobEntity implements LobEntity {
 
     @Id
-    int id;
+    private int id;
 
     @Persistent
-    Reader stream;
+    private Reader stream;
 
     public int getId() {
         return id;

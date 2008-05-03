@@ -80,18 +80,12 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
             (field.getIndex()), store);
         Row row = field.getRow(sm, store, rm, Row.ACTION_INSERT);
         if (field.getColumnIO().isInsertable(0, ob == null)) {
-            if (ob != null) {
-                if (isBlob()) {
-                    store.getDBDictionary().insertBlobForStreamingLoad
-                        (row, field.getColumns()[0]);
-                } else {
-                    store.getDBDictionary().insertClobForStreamingLoad
-                        (row, field.getColumns()[0]);
-                }
+            if (isBlob()) {
+                store.getDBDictionary().insertBlobForStreamingLoad
+                    (row, field.getColumns()[0], ob);
             } else {
-                Column col = field.getColumns()[0];
-                col.setType(Types.OTHER);
-                row.setNull(col);
+                store.getDBDictionary().insertClobForStreamingLoad
+                    (row, field.getColumns()[0], ob);
             }
         }
     }
@@ -113,11 +107,31 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
             }
         }
     }
+    
+    public Boolean isCustomUpdate(OpenJPAStateManager sm, JDBCStore store) {
+        return null;
+    }
 
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Object ob = toDataStoreValue(sm.fetchObjectField
-            (field.getIndex()), store);
+                (field.getIndex()), store);
+        if (field.getColumnIO().isUpdatable(0, ob == null)) {
+            Row row = field.getRow(sm, store, rm, Row.ACTION_UPDATE);
+            if (isBlob()) {
+                store.getDBDictionary().insertBlobForStreamingLoad
+                    (row, field.getColumns()[0], ob);
+            } else {
+                store.getDBDictionary().insertClobForStreamingLoad
+                    (row, field.getColumns()[0], ob);
+            }
+        }
+    }
+
+    public void customUpdate(OpenJPAStateManager sm, JDBCStore store)
+        throws SQLException {
+        Object ob = toDataStoreValue(sm.fetchObjectField
+                (field.getIndex()), store);
         if (field.getColumnIO().isUpdatable(0, ob == null)) {
             if (ob != null) {
                 Select sel = createSelect(sm, store);
@@ -128,11 +142,6 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
                     store.getDBDictionary().updateClob
                         (sel, store, (Reader)ob);
                 }
-            } else {
-                Row row = field.getRow(sm, store, rm, Row.ACTION_UPDATE);
-                Column col = field.getColumns()[0];
-                col.setType(Types.OTHER);
-                row.setNull(col);
             }
         }
     }
@@ -191,4 +200,5 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
         sel.setLob(true);
         return sel;
     }
+    
 }
