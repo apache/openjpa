@@ -53,7 +53,7 @@ public class Compatibility {
     private boolean _closeOnCommit = true;
     private boolean _quotedNumbers = false;
     private boolean _nonOptimisticVersionCheck = false;
-    private int _jpql = JPQL_STRICT;
+    private int _jpql = JPQL_WARN;
     private boolean _storeMapCollectionInEntityAsBlob = false;
 
     /**
