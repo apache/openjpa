@@ -187,7 +187,8 @@ abstract class MaxEmbeddedLobFieldStrategy
 
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, int eagerMode) {
-        if (sel.isDistinct())
+        if (sel.isDistinct() || 
+            eagerMode == JDBCFetchConfiguration.EAGER_NONE)
             return -1;
         sel.select(field.getColumns()[0], field.join(sel));
         return 1;

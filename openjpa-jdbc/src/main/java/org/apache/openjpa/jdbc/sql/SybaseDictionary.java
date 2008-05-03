@@ -82,6 +82,7 @@ public class SybaseDictionary
 
         supportsLockingWithDistinctClause = false;
         supportsNullTableForGetColumns = false;
+        requiresAliasForSubselect = true;
         requiresAutoCommitForMetaData = true;
 
         maxTableNameLength = 30;
