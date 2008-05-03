@@ -76,7 +76,7 @@ public class OpenJPAConfigurationImpl
 
     // openjpa properties
     public ObjectValue classResolverPlugin;
-    public ObjectValue brokerPlugin;
+    public BrokerValue brokerPlugin;
     public ObjectValue dataCachePlugin;
     public ObjectValue dataCacheManagerPlugin;
     public IntValue dataCacheTimeout;

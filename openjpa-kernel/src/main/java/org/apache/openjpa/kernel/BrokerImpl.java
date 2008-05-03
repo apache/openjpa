@@ -4137,6 +4137,8 @@ public class BrokerImpl
         if (_log.isTraceEnabled())
             _closedException = new IllegalStateException();
 
+        _factory.releaseBroker(this);
+
         if (err != null)
             throw err;
     }

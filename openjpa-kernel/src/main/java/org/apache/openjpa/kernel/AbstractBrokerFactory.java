@@ -19,7 +19,6 @@
 package org.apache.openjpa.kernel;
 
 import java.io.ObjectStreamException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,14 +28,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.set.MapBackedSet;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAVersion;
+import org.apache.openjpa.conf.BrokerValue;
+import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.datacache.DataCacheStoreManager;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.PCRegistry;
@@ -48,14 +51,12 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
-import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 import java.util.concurrent.locks.ReentrantLock;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
-import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
@@ -90,8 +91,7 @@ public abstract class AbstractBrokerFactory
         = new ConcurrentHashMap();
 
     // weak-ref tracking of open brokers
-    private transient Collection _brokers = new ConcurrentReferenceHashSet
-        (ConcurrentReferenceHashSet.WEAK);
+    private transient Set _brokers;
 
     // cache the class names loaded from the persistent classes property so
     // that we can re-load them for each new broker
@@ -145,6 +145,7 @@ public abstract class AbstractBrokerFactory
      */
     protected AbstractBrokerFactory(OpenJPAConfiguration config) {
         _conf = config;
+        _brokers = newBrokerSet();
         getPcClassLoaders();
     }
 
@@ -384,7 +385,7 @@ public abstract class AbstractBrokerFactory
             Broker broker;
             for (Iterator itr = _brokers.iterator(); itr.hasNext();) {
                 broker = (Broker) itr.next();
-                // Check for null because _brokers contains weak references
+                // Check for null because _brokers may contain weak references
                 if ((broker != null) && (!broker.isClosed()))
                     broker.close();
             }
@@ -464,11 +465,27 @@ public abstract class AbstractBrokerFactory
 
         // reset these transient fields to empty values
         _transactional = new ConcurrentHashMap();
-        _brokers = new ConcurrentReferenceHashSet(
-                ConcurrentReferenceHashSet.WEAK);
+        _brokers = newBrokerSet();
 
         makeReadOnly();
         return this;
+    }
+
+    private Set newBrokerSet() {
+        BrokerValue bv;
+        if (_conf instanceof OpenJPAConfigurationImpl)
+            bv = ((OpenJPAConfigurationImpl) _conf).brokerPlugin;
+        else
+            bv = (BrokerValue) _conf.getValue(BrokerValue.KEY);
+
+        if (FinalizingBrokerImpl.class.isAssignableFrom(
+            bv.getTemplateBrokerType(_conf))) {
+            return MapBackedSet.decorate(new ConcurrentHashMap(),
+                new Object() { });
+        } else {
+            return new ConcurrentReferenceHashSet(
+                ConcurrentReferenceHashSet.WEAK);
+        }
     }
 
     ////////////////////////
@@ -744,6 +761,16 @@ public abstract class AbstractBrokerFactory
      */
     public Collection getOpenBrokers() {
         return Collections.unmodifiableCollection(_brokers);
+    }
+
+    /**
+     * Release <code>broker</code> from any internal data structures. This
+     * is invoked by <code>broker</code> after the broker is fully closed.
+     *
+     * @since 1.1.0
+     */
+    protected void releaseBroker(BrokerImpl broker) {
+        _brokers.remove(broker);
     }
 
     /**
