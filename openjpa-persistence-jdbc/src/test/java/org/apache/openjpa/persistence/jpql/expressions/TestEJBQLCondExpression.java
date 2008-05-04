@@ -23,7 +23,6 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.apps.*;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import org.apache.openjpa.persistence.InvalidStateException;
 
 public class TestEJBQLCondExpression extends AbstractTestCase {
 
@@ -163,6 +162,13 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
         assertNotNull(result);
         assertEquals(0, result.size());
 
+        query = "SELECT o.name FROM CompUser o WHERE o.name LIKE ?1 ESCAPE '|'";
+
+        result = em.createQuery(query).setParameter(1, "%|_%").getResultList();
+
+        assertNotNull(result);
+        assertEquals(0, result.size());
+
         endEm(em);
     }
 
@@ -268,7 +274,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
         String query =
             "SELECT o.name FROM CompUser o WHERE o.address.zipcode = ANY (" +
-                " SELECT s FROM CompUser s WHERE s.address.country IS NOT NULL )";
+                " SELECT s.computerName FROM CompUser s WHERE s.address.country IS NOT NULL )";
 
         List result = em.createQuery(query).getResultList();
 
