@@ -21,6 +21,7 @@ package org.apache.openjpa.kernel.exps;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.collections.map.LinkedMap;
@@ -47,7 +48,7 @@ public class QueryExpressions
     /**
      * Map of {@link FieldMetaData},{@link Value} for update statements.
      */
-    public Map updates = Collections.EMPTY_MAP;
+    public Map<Path, Value> updates = Collections.EMPTY_MAP;
     public int distinct = DISTINCT_AUTO;
     public String alias = null;
     public Value[] projections = EMPTY_VALUES;
@@ -86,7 +87,7 @@ public class QueryExpressions
      */
     public void putUpdate(Path path, Value val) {
         if (updates == Collections.EMPTY_MAP)
-            updates = new HashMap();
+            updates = new LinkedHashMap<Path, Value>();
         updates.put(path, val);
     }
 

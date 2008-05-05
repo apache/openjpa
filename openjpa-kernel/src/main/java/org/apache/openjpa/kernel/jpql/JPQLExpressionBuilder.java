@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -1569,12 +1570,12 @@ public class JPQLExpressionBuilder
         }
 
         JPQLNode[] findChildrenByID(int id) {
-            Collection set = new HashSet();
+            Collection<JPQLNode> set = new LinkedHashSet<JPQLNode>();
             findChildrenByID(id, set);
-            return (JPQLNode[]) set.toArray(new JPQLNode[set.size()]);
+            return set.toArray(new JPQLNode[set.size()]);
         }
 
-        private void findChildrenByID(int id, Collection set) {
+        private void findChildrenByID(int id, Collection<JPQLNode> set) {
             for (int i = 0; children != null && i < children.length; i++) {
                 if (children[i].id == id)
                     set.add(children[i]);
