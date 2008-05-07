@@ -67,6 +67,7 @@ public class DetachManager
     private final OpCallbacks _call;
     private final boolean _failFast;
     private boolean _flushed = false;
+    private boolean _flushBeforeDetach;
 
     // if we're not detaching full, we need to track all detached objects;
     // if we are, then we use a special field manager for more efficient
@@ -82,7 +83,10 @@ public class DetachManager
         if (!sm.isPersistent())
             return false;
 
-        flushDirty(sm);
+        if (sm.getBroker().getConfiguration().getCompatibilityInstance()
+                .getFlushBeforeDetach()) {
+            flushDirty(sm);
+        }
 
         ClassMetaData meta = sm.getMetaData();
         boolean setState = meta.getDetachedState() != null
@@ -270,6 +274,9 @@ public class DetachManager
             _detached = new IdentityMap();
             _fullFM = null;
         }
+        _flushBeforeDetach =
+                broker.getConfiguration().getCompatibilityInstance()
+                        .getFlushBeforeDetach();
     }
 
     /**
@@ -415,8 +422,14 @@ public class DetachManager
         _broker.fireLifecycleEvent(toDetach, null, sm.getMetaData(),
             LifecycleEvent.BEFORE_DETACH);
 
-        // any dirty instances cause a flush to occur
-        _flushed = _flushed || flushDirty(sm);
+        if(! _flushed)  {
+            if(_flushBeforeDetach) {
+                // any dirty instances cause a flush to occur
+                flushDirty(sm);
+            }
+            _flushed = true;
+        }
+        
         BitSet fields = new BitSet();
         preDetach(_broker, sm, fields);
 

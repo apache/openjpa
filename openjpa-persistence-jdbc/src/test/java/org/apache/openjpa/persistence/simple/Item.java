@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,8 +30,10 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "ITEM")
-public class Item {
+public class Item implements Serializable {
 
+    private static final long serialVersionUID = 489786296539819572L;
+    
     public int itemId;
     public String itemName;
     public java.math.BigDecimal itemPrice;
