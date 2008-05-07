@@ -162,10 +162,12 @@ public class Compatibility {
     }
     
     /**
-     * <P>Whether OpenJPA should flush changes before detaching or serializing an
+     * <P>
+     * Whether OpenJPA should flush changes before detaching or serializing an
      * entity. In JPA this is usually false, but other persistence frameworks
      * (ie JDO) may expect it to be true.
-     * <P>Prior to version 1.0.3 and 1.2.0 changes were always flushed.
+     * <P>
+     * Prior to version 1.0.3 and 1.2.0 changes were always flushed.
      * 
      * @since 1.0.3
      * @since 1.2.0
