@@ -19,18 +19,26 @@
 package org.apache.openjpa.persistence.meta;
 
 
+import java.util.List;
+import java.util.UUID;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import org.apache.openjpa.persistence.meta.common.apps.ExternalValues;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 /**
  * <p>Tests the {@link ExternalValuesFieldMapping}.</p>
  *
  * @author Abe White
+ * @author Pinaki Poddar (added binding query parameter tests) 
  */
 public class TestExternalValues
     extends AbstractTestCase {
-
+    
     public TestExternalValues(String test) {
         super(test, "metacactusapp");
     }
@@ -55,7 +63,6 @@ public class TestExternalValues
         pc.setDoubleToByte(4.5);
         pc.setCharToInt('f');
         pc.setStringToLong("foo");
-
         pm.persist(pc);
         Object oid = pm.getObjectId(pc);
         endTx(pm);
@@ -111,5 +118,78 @@ public class TestExternalValues
         pm = (OpenJPAEntityManager) currentEntityManager();
         pc = (ExternalValues) pm.find(ExternalValues.class, oid);
         endEm(pm);
+    }
+    
+    public void testPositionalBindingQueryParameterEqualsDeclaredType() {
+        UUID uuid = new UUID(1,4);
+        createInstance(uuid);
+        
+        EntityManager em = currentEntityManager();
+        String jpql = "SELECT p FROM ExternalValues p WHERE p.uuid=?1";
+        List<ExternalValues> result = em.createQuery(jpql)
+                                        .setParameter(1, uuid)
+                                        .getResultList();
+        assertFalse(result.isEmpty());
+        for (ExternalValues x:result) {
+            assertEquals(uuid, x.getUuid());
+        }
+    }
+    
+    public void testNamedBindingQueryParameterEqualsDeclaredType() {
+        UUID uuid = new UUID(2,4);
+        createInstance(uuid);
+        
+        EntityManager em = currentEntityManager();
+        String jpql = "SELECT p FROM ExternalValues p WHERE p.uuid=:uuid";
+        List<ExternalValues> result = em.createQuery(jpql)
+                                        .setParameter("uuid", uuid)
+                                        .getResultList();
+        assertFalse(result.isEmpty());
+        for (ExternalValues pc:result) {
+            assertEquals(uuid, pc.getUuid());
+        }
+    }
+    
+    public void testPositionalBindingQueryParameterNotEqualsExternalizedType() {
+        UUID uuid = new UUID(1,4);
+        createInstance(uuid);
+        
+        EntityManager em = currentEntityManager();
+        String jpql = "SELECT p FROM ExternalValues p WHERE p.uuid=?1";
+        Query query = em.createQuery(jpql)
+                        .setParameter(1, uuid.toString());
+                                        
+        try {
+            query.getResultList();
+            fail("Expected ArgumentException");
+       } catch (ArgumentException ex) {
+           // expected
+       }
+    }
+
+    public void testNamedBindingQueryParameterNotEqualsExternalizedType() {
+        UUID uuid = new UUID(2,4);
+        createInstance(uuid);
+        
+        EntityManager em = currentEntityManager();
+        String jpql = "SELECT p FROM ExternalValues p WHERE p.uuid=:uuid";
+        Query query = em.createQuery(jpql)
+                        .setParameter("uuid", uuid.toString());
+        try {
+             query.getResultList();
+             fail("Expected ArgumentException");
+        } catch (ArgumentException ex) {
+            // expected
+        }
+    }
+    
+    private void createInstance(UUID uuid) {
+        EntityManager em = currentEntityManager();
+        em.getTransaction().begin();
+        ExternalValues pc = new ExternalValues();
+        pc.setUuid(uuid);
+        em.persist(pc);
+        em.getTransaction().commit();
+        em.clear();
     }
 }

@@ -19,7 +19,13 @@
 package org.apache.openjpa.persistence.meta.common.apps;
 
 
+import java.util.UUID;
+
 import javax.persistence.Entity;
+
+import org.apache.openjpa.persistence.Externalizer;
+import org.apache.openjpa.persistence.Factory;
+import org.apache.openjpa.persistence.Persistent;
 
 @Entity
 public class ExternalValues {
@@ -33,6 +39,10 @@ public class ExternalValues {
     private double doubleToByte;
     private char charToInt;
     private String stringToLong;
+    @Persistent
+    @Externalizer("toString")        
+    @Factory("UUID.fromString")
+    private UUID    uuid;
 
     public boolean getBooleanToShort() {
         return booleanToShort;
@@ -104,5 +114,13 @@ public class ExternalValues {
 
     public void setStringToLong(String s) {
         stringToLong = s;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 }
