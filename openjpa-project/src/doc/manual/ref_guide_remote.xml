@@ -124,21 +124,43 @@ been rolled back, then the re-attachment process will throw an optimistic
 concurrency exception.
             </para>
             <para>
-You can stop OpenJPA from assuming the transaction will commit by invoking
-<methodname>OpenJPAEntityManager.setRollbackOnly</methodname> prior to detaching
-your objects. Setting the <literal>RollbackOnly</literal> flag prevents OpenJPA
-from flushing when detaching dirty objects; instead OpenJPA just runs its
-pre-flush actions (see the <methodname>OpenJPAEntityManager.preFlush
-</methodname>
+You can stop OpenJPA from assuming the transaction will commit in the following
+ways :
+    <itemizedlist>
+        <listitem>
+            <para>
+                Invoke <methodname>EntityTransaction.setRollbackOnly
+                </methodname> prior to detachingyour objects. Setting the 
+                <literal>RollbackOnly</literal> flag prevents OpenJPA from 
+                flushing when detaching dirty objects; instead OpenJPA just 
+                runs its pre-flush actions (see the 
+                <methodname>OpenJPAEntityManager.preFlush</methodname>
 <ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 Javadoc</ulink> for details).
             </para>
             <para>
 This allows you to use the same instances in multiple
-attach/modify/detach/rollback cycles. Alternatively, you might also prevent a
-flush by making your modifications outside of a transaction (with <literal>
+attach/modify/detach/rollback cycles. 
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                Make your modifications outside of a transaction (with <literal>
 NontransactionalWrite</literal> enabled) before detaching.
             </para>
+        </listitem>
+        <listitem>
+            <para>
+            Set <literal>flushBeforeDetach</literal> 
+            to false (see <methodname>Compatibility.setFlushBeforeDetach
+            </methodname>
+            <ulink url="../javadoc/org/apache/openjpa/conf/Compatibility.html">
+Javadoc</ulink> ). This option is similar to the first option, but does not
+            affect the current transaction.
+            </para>
+        </listitem>
+    </itemizedlist>
+    </para>
         </section>
         <section id="ref_guide_attach_behavior">
             <title>

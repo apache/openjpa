@@ -229,6 +229,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>rat-maven-plugin</artifactId>
+                        <version>1.0-alpha-1</version>
                         <executions>
                             <execution>
                                 <phase>verify</phase>
