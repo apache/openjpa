@@ -64,6 +64,7 @@ import java.io.*;
 public class JPQL
 {
 	String jpql;
+	boolean inEnumPath;
 
 
 	public JPQL (String jpql)
@@ -968,7 +969,9 @@ void enum_primary() : { }
 
 void enum_literal() : { }
 {
+	{ inEnumPath = true; }
 	path()
+	{ inEnumPath = false; }
 }
 
 
