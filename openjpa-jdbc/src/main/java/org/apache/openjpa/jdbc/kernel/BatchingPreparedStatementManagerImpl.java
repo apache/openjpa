@@ -241,9 +241,9 @@ public class BatchingPreparedStatementManagerImpl extends
                 break;
             case 0: // no row is inserted, treats it as failed
                 // case
-                if (failed != null || row.getAction() == Row.ACTION_UPDATE)
+                if (failed != null)
                     _exceptions.add(new OptimisticException(failed));
-                else
+                else if (row.getAction() == Row.ACTION_INSERT)
                     throw new SQLException(_loc.get(
                         "update-failed-no-failed-obj",
                         String.valueOf(count[i]), _batchedSql).getMessage());
