@@ -222,9 +222,9 @@ public class BatchingPreparedStatementManagerImpl extends
         for (int i = 0; i < count.length; i++) {
             cnt = count[i];
             RowImpl row = (RowImpl) _batchedRows.get(batchedRowsBaseIndex + i);
+            failed = row.getFailedObject();
             switch (cnt) {
             case Statement.EXECUTE_FAILED: // -3
-                failed = row.getFailedObject();
                 if (failed != null || row.getAction() == Row.ACTION_UPDATE)
                     _exceptions.add(new OptimisticException(failed));
                 else if (row.getAction() == Row.ACTION_INSERT)
@@ -233,14 +233,17 @@ public class BatchingPreparedStatementManagerImpl extends
                         String.valueOf(count[i]), _batchedSql).getMessage());
                 break;
             case Statement.SUCCESS_NO_INFO: // -2
-                if (_log.isTraceEnabled())
+                if (failed != null || row.getAction() == Row.ACTION_UPDATE)
+                    _exceptions.add(new OptimisticException(failed));
+                else if (_log.isTraceEnabled())
                     _log.trace(_loc.get("batch_update_info",
                         String.valueOf(cnt), _batchedSql).getMessage());
                 break;
             case 0: // no row is inserted, treats it as failed
                 // case
-                failed = row.getFailedObject();
-                if ((failed != null || row.getAction() == Row.ACTION_INSERT))
+                if (failed != null || row.getAction() == Row.ACTION_UPDATE)
+                    _exceptions.add(new OptimisticException(failed));
+                else
                     throw new SQLException(_loc.get(
                         "update-failed-no-failed-obj",
                         String.valueOf(count[i]), _batchedSql).getMessage());
