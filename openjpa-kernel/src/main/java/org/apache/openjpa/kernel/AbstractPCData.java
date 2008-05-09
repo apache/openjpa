@@ -87,16 +87,20 @@ public abstract class AbstractPCData
                 Map m = (Map) data;
                 Map m2 = (Map) sm.newFieldProxy(fmd.getIndex());
                 Collection keys = new ArrayList (m.size());
+                Collection values = new ArrayList(m.size());          
 
-                for (Iterator mi = m.entrySet().iterator(); mi.hasNext();)
-                    keys.add(mi.next());
+                for (Iterator<Map.Entry> mi = m.entrySet().iterator();
+                    mi.hasNext();) {
+                    Map.Entry e = mi.next();
+                    keys.add(e.getKey());
+                    values.add(e.getValue());
+                }
 
                 Object[] keyArray = keys.toArray();
-                Object[] values = toNestedFields(sm, fmd.getElement(),
-                    keys, fetch, context).toArray();
-                int idx = 0;
-                for (Iterator mi = m.entrySet().iterator(); mi.hasNext(); idx++)
-                    m2.put(keyArray[idx], values[idx]);
+                Object[] valueArray = toNestedFields(sm, fmd.getElement(),
+                    values, fetch, context).toArray();
+                for (int idx = 0; idx < keyArray.length; idx++)
+                    m2.put(keyArray[idx], valueArray[idx]);
 
                 return m2;
             case JavaTypes.ARRAY:
