@@ -1322,7 +1322,7 @@ public class JPQLExpressionBuilder
                 Object value = field.get(null);
                 return factory.newLiteral(value, Literal.TYPE_UNKNOWN);
             } catch (NoSuchFieldException nsfe) {
-                if (node.parser.inEnumPath)
+                if (node.inEnumPath)
                     throw parseException(EX_USER, "no-field",
                         new Object[]{ c.getName(), fieldName }, nsfe);
                 else
@@ -1559,10 +1559,12 @@ public class JPQLExpressionBuilder
         JPQLNode[] children;
         String text;
         boolean not = false;
+        boolean inEnumPath = false;
 
         public JPQLNode(JPQL parser, int id) {
             this.id = id;
             this.parser = parser;
+            this.inEnumPath = parser.inEnumPath;
         }
 
         public void jjtOpen() {
