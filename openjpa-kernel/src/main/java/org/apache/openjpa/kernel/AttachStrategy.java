@@ -270,7 +270,8 @@ abstract class AttachStrategy
         if (toAttach == null)
             return null;
 
-        if (manager.getBroker().isPersistent(toAttach)) {
+        if (manager.getBroker().isNew(toAttach)
+            || manager.getBroker().isPersistent(toAttach)) {
             return toAttach;
         } else if (manager.getBroker().isDetached(toAttach)) {
             Object oid = manager.getDetachedObjectId(toAttach);
