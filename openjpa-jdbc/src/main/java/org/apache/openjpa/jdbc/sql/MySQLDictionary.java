@@ -242,8 +242,6 @@ public class MySQLDictionary
         if (col.isNotNull() && "0".equals(col.getDefaultString()))
             col.setDefaultString(null);
 
-        col.setSchemaName(colMeta.getString("TABLE_CAT"));
-        
         return col;
     }
 
