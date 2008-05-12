@@ -232,6 +232,7 @@ public class DBDictionary
     public boolean supportsSelectEndIndex = false;
     public int rangePosition = RANGE_POST_SELECT;
     public boolean requiresAliasForSubselect = false;
+    public boolean requiresTargetForDelete = false;
     public boolean allowsAliasInBulkClause = true;
     public boolean supportsMultipleNontransactionalResultSets = true;
     public String searchStringEscape = "\\";
@@ -1873,8 +1874,16 @@ public class DBDictionary
     protected SQLBuffer toBulkOperation(ClassMapping mapping, Select sel,
         JDBCStore store, Object[] params, Map updateParams) {
         SQLBuffer sql = new SQLBuffer(this);
-        if (updateParams == null)
+        if (updateParams == null) {
+          if (requiresTargetForDelete) {
+            sql.append("DELETE ");
+            SQLBuffer deleteTargets = getDeleteTargets(sel);
+            sql.append(deleteTargets);
+            sql.append(" FROM ");
+          } else {
             sql.append("DELETE FROM ");
+          }
+        }
         else
             sql.append("UPDATE ");
         sel.addJoinClassConditions();
@@ -1970,6 +1979,28 @@ public class DBDictionary
         return sql;
     }
 
+    protected SQLBuffer getDeleteTargets(Select sel) {
+      SQLBuffer deleteTargets = new SQLBuffer(this);
+      Collection aliases = sel.getTableAliases();
+      // Assumes aliases are of the form "TABLENAME t0"
+      for (Iterator itr = aliases.iterator(); itr.hasNext();) {
+        String tableAlias = itr.next().toString();
+        int spaceIndex = tableAlias.indexOf(' ');
+        if (spaceIndex > 0 && spaceIndex < tableAlias.length() - 1) {
+          if (allowsAliasInBulkClause) {
+            deleteTargets.append(tableAlias.substring(spaceIndex + 1));
+          } else {
+            deleteTargets.append(tableAlias.substring(0, spaceIndex));
+          }
+        } else {
+          deleteTargets.append(tableAlias);
+        }
+        if (itr.hasNext())
+          deleteTargets.append(", ");
+      }      
+      return deleteTargets;      
+    }
+
     protected void appendUpdates(Select sel, JDBCStore store, SQLBuffer sql,
         Object[] params, Map updateParams, boolean allowAlias) {
         if (updateParams == null || updateParams.size() == 0)
@@ -1997,7 +2028,11 @@ public class DBDictionary
             Val val = (Val) next.getValue();
 
             Column col = fmd.getColumns()[0];
-            sql.append(col.getName());
+            if (allowAlias) {
+              sql.append(sel.getColumnAlias(col));
+            } else {
+              sql.append(col.getName());  
+            }            
             sql.append(" = ");
 
             ExpState state = val.initialize(sel, ctx, 0);
