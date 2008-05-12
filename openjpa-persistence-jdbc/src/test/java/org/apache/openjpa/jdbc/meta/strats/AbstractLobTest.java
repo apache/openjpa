@@ -30,6 +30,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
@@ -56,7 +57,8 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
             .getDBDictionaryInstance();
         if (dict instanceof MySQLDictionary ||
             dict instanceof SQLServerDictionary ||
-            dict instanceof OracleDictionary) {
+            dict instanceof OracleDictionary ||
+            dict instanceof PostgresDictionary) {
             return true;
         }
         return false;
@@ -81,6 +83,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         insert(newLobEntity(s, 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
+
         Query query = em.createQuery(getSelectQuery());
         LobEntity entity = (LobEntity) query.getSingleResult();
         assertNotNull(entity.getStream());
@@ -169,7 +172,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
     }
-
+    
     public void testLifeCycleInsertFlushModify() {
         if (!isDatabaseSupported()) return;
         EntityManager em = emf.createEntityManager();

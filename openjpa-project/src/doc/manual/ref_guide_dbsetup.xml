@@ -2400,6 +2400,38 @@ sequence value. May use a placeholder of <literal>{0}</literal> for the variable
 sequence name. Defaults to a database-appropriate value.
                     </para>
                 </listitem>
+                <listitem id="DBDictionary.BlobBufferSize">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            BLOB
+                        </primary>
+                        <secondary>
+                            BlobBufferSize
+                        </secondary>
+                    </indexterm>
+<literal>BlobBufferSize</literal>: This property establishes the buffer size in
+the <literal>INSERT/UPDATE</literal> operations with an 
+<literal>java.io.InputStream</literal>This is only used with OpenJPA's
+<xref linkend="ref_guide_streamsupport"/>. Defaults to 50000.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.ClobBufferSize">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            CLOB
+                        </primary>
+                        <secondary>
+                            ClobBufferSize
+                        </secondary>
+                    </indexterm>
+<literal>ClobBufferSize</literal>: This property establish the buffer size in 
+the <literal>INSERT/UPDATE</literal> operations with a 
+<literal>java.io.Reader</literal>This is only used with OpenJPA's
+<xref linkend="ref_guide_streamsupport"/>. Defaults to 50000.
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
         <section id="ref_guide_dbsetup_dbsupport_mysql">

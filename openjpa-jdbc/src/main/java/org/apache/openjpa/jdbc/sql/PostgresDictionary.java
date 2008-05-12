@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
+import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Sequence;
@@ -36,6 +40,11 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.util.StoreException;
+import org.postgresql.PGConnection;
+import org.postgresql.largeobject.LargeObject;
+import org.postgresql.largeobject.LargeObjectManager;
 
 /**
  * Dictionary for Postgres.
@@ -319,6 +328,151 @@ public class PostgresDictionary
         return new PostgresConnection(super.decorate(conn), this);
     }
 
+    public InputStream getLOBStream(JDBCStore store, ResultSet rs,
+        int column) throws SQLException {
+        DelegatingConnection conn = (DelegatingConnection)store
+            .getConnection();
+        conn.setAutoCommit(false);
+        LargeObjectManager lom = ((PGConnection)conn.getInnermostDelegate())
+        .getLargeObjectAPI();
+        if (rs.getInt(column) != -1) {
+            LargeObject lo = lom.open(rs.getInt(column));
+            return lo.getInputStream();
+        } else {
+            return null;
+        }
+    }
+
+    public void insertBlobForStreamingLoad(Row row, Column col, 
+        JDBCStore store, Object ob, Select sel) throws SQLException {
+        if (row.getAction() == Row.ACTION_INSERT) {
+            insertPostgresBlob(row, col, store, ob);
+        } else if (row.getAction() == Row.ACTION_UPDATE) {
+            updatePostgresBlob(row, col, store, ob, sel);
+        }
+    }
+
+    private void insertPostgresBlob(Row row, Column col, JDBCStore store,
+        Object ob) throws SQLException {
+        if (ob != null) {
+            col.setType(Types.INTEGER);
+            DelegatingConnection conn = (DelegatingConnection)store
+            .getConnection();
+            try {
+                conn.setAutoCommit(false);
+                PGConnection pgconn = (PGConnection) conn.getInnermostDelegate();
+                LargeObjectManager lom = pgconn.getLargeObjectAPI();
+                // The create method is valid in versions previous 8.3
+                // in 8.3 this methos is deprecated, use createLO
+                int oid = lom.create();
+                LargeObject lo = lom.open(oid, LargeObjectManager.WRITE);
+                OutputStream os = lo.getOutputStream();
+                copy((InputStream)ob, os);
+                lo.close();
+                row.setInt(col, oid);
+            } catch (IOException ioe) {
+                throw new StoreException(ioe);
+            } finally {
+                conn.close();
+            }
+        } else {
+            row.setInt(col, -1);
+        }
+    }
+    
+    private void updatePostgresBlob(Row row, Column col, JDBCStore store,
+        Object ob, Select sel) throws SQLException {
+        SQLBuffer sql = sel.toSelect(true, store.getFetchConfiguration());
+        ResultSet res = null;
+        DelegatingConnection conn = 
+            (DelegatingConnection) store.getConnection();
+        PreparedStatement stmnt = null;
+        try {
+            stmnt = sql.prepareStatement(conn, store.getFetchConfiguration(),
+                ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            res = stmnt.executeQuery();
+            if (!res.next()) {
+                throw new InternalException(_loc.get("stream-exception"));
+            }
+            int oid = res.getInt(1);
+            if (oid != -1) {
+                conn.setAutoCommit(false);
+                PGConnection pgconn = (PGConnection)conn
+                    .getInnermostDelegate();
+                LargeObjectManager lom = pgconn.getLargeObjectAPI();
+                if (ob != null) {
+                    LargeObject lo = lom.open(oid, LargeObjectManager.WRITE);
+                    OutputStream os = lo.getOutputStream();
+                    copy((InputStream)ob, os);
+                    lo.close();
+                } else {
+                    lom.delete(oid);
+                    row.setInt(col, -1);
+                }
+            } else {
+                if (ob != null) {
+                    conn.setAutoCommit(false);
+                    PGConnection pgconn = (PGConnection)conn
+                        .getInnermostDelegate();
+                    LargeObjectManager lom = pgconn.getLargeObjectAPI();
+                    oid = lom.create();
+                    LargeObject lo = lom.open(oid, LargeObjectManager.WRITE);
+                    OutputStream os = lo.getOutputStream();
+                    copy((InputStream)ob, os);
+                    lo.close();
+                    row.setInt(col, oid);
+                }
+            }
+
+        } catch (IOException ioe) {
+            throw new StoreException(ioe);
+        } finally {
+            if (res != null)
+                try { res.close (); } catch (SQLException e) {}
+            if (stmnt != null)
+                try { stmnt.close (); } catch (SQLException e) {}
+            if (conn != null)
+                try { conn.close (); } catch (SQLException e) {}
+        }
+
+    }
+    
+    public void updateBlob(Select sel, JDBCStore store, InputStream is)
+        throws SQLException {
+        //Do nothing
+    }
+
+    public void deleteStream(JDBCStore store, Select sel) throws SQLException {
+        SQLBuffer sql = sel.toSelect(true, store.getFetchConfiguration());
+        ResultSet res = null;
+        DelegatingConnection conn = 
+            (DelegatingConnection) store.getConnection();
+        PreparedStatement stmnt = null;
+        try {
+            stmnt = sql.prepareStatement(conn, store.getFetchConfiguration(),
+                ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            res = stmnt.executeQuery();
+            if (!res.next()) {
+                throw new InternalException(_loc.get("stream-exception"));
+            }
+            int oid = res.getInt(1);
+            if (oid != -1) {
+                conn.setAutoCommit(false);
+                PGConnection pgconn = (PGConnection)conn
+                    .getInnermostDelegate();
+                LargeObjectManager lom = pgconn.getLargeObjectAPI();
+                lom.delete(oid);
+            }
+        } finally {
+            if (res != null)
+                try { res.close (); } catch (SQLException e) {}
+            if (stmnt != null)
+                try { stmnt.close (); } catch (SQLException e) {}
+            if (conn != null)
+                try { conn.close (); } catch (SQLException e) {}
+        }
+    }
+    
     /**
      * Connection wrapper to work around the postgres empty result set bug.
      */
