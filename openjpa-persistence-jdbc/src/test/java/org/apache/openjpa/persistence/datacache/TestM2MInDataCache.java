@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import java.util.Map;
+
 import javax.persistence.EntityManager;
 import org.apache.openjpa.persistence.datacache.common.apps.M2MEntityE;
 import org.apache.openjpa.persistence.datacache.common.apps.M2MEntityF;
@@ -64,17 +66,21 @@ public class TestM2MInDataCache extends SingleEMFTestCase {
         f1.getEntityE().put(e2.getName(), e2);
         f2.getEntityE().put(e1.getName(), e1);
         f2.getEntityE().put(e2.getName(), e2);
-        e1.print();
-        e2.print();
-        f1.print();
-        f2.print();
         em.getTransaction().commit();
         em.close();
 
         em = emf.createEntityManager();
-        M2MEntityE e1a = em.find(M2MEntityE.class, 1);
-        M2MEntityE e2a = em.find(M2MEntityE.class, 2);
-        M2MEntityF f1a = em.find(M2MEntityF.class, 10);
-        M2MEntityF f2a = em.find(M2MEntityF.class, 20);
+        try {
+            M2MEntityE e1a = em.find(M2MEntityE.class, 1);
+            Map entityf1 = e1a.getEntityF();
+            M2MEntityE e2a = em.find(M2MEntityE.class, 2);
+            Map entityf2 = e2a.getEntityF();
+            M2MEntityF f1a = em.find(M2MEntityF.class, 10);
+            Map entitye1 = f1a.getEntityE();
+            M2MEntityF f2a = em.find(M2MEntityF.class, 20);
+            Map entitye2 = f2a.getEntityE();
+        } catch (Exception e) {
+            fail("Fail to get a Map field when DataCache is on");
+        }
     }
 }
