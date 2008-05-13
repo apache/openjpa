@@ -28,13 +28,13 @@ website at http://openjpa.apache.org/building-openjpa.html
       java -version
       OpenJPA requires Java 1.5 but will not compile with Java 6. For more
       detail please see http://issues.apache.org/jira/browse/OPENJPA-5.
-   2. Install the build tool Apache Maven 2.0.4, from http://maven.apache.org/.
+   2. Install the build tool Apache Maven 2.0.6, from http://maven.apache.org/.
       If it is installed correctly, typing mvn -v from the console will result
-      in the text "Maven version: 2.0.4"
+      in the text "Maven version: 2.0.6"
    3. Extract the source archive if you have not already done so. 
       The source will create a new directory named:
-      openjpa-project-${version}-source. Where ${version} is the openjpa 
-      version, for example openjpa-project-0.9.7-incubating-source.
+      openjpa-<version>-source. Where <version> is the openjpa 
+      version, for example apache-openjpa-1.1.0-source.
    4. Change to the openjpa source directory, which has already been created in
       the previous step.
    5. Build OpenJPA by running: mvn package or better mvn install. 
@@ -56,7 +56,7 @@ website at http://openjpa.apache.org/building-openjpa.html
         </settings>
 
         If any tests fail, and you want to ignore the failures, instead run:
-        mvn package -Dtest=false
+        mvn package -DskipTests
 
 An example session as as follows:
 
