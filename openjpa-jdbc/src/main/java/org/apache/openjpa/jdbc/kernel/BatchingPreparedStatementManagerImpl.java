@@ -247,7 +247,8 @@ public class BatchingPreparedStatementManagerImpl extends
                         row.getSQL(_dict)).getMessage());
                 break;
             case Statement.SUCCESS_NO_INFO: // -2
-                if (failed != null || row.getAction() == Row.ACTION_UPDATE)
+                if (row.getAction() == Row.ACTION_UPDATE ||
+                    row.getAction() == Row.ACTION_DELETE)
                     _exceptions.add(new OptimisticException(failed));
                 else if (_log.isTraceEnabled())
                     _log.trace(_loc.get("batch_update_info",
