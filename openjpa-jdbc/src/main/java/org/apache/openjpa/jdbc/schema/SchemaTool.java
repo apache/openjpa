@@ -124,7 +124,7 @@ public class SchemaTool {
 
         _conf = conf;
         _action = action;
-        _ds = conf.getDataSource2(null);
+        _ds = ACTION_BUILD.equals(action) ? null : conf.getDataSource2(null);
         _log = conf.getLog(JDBCConfiguration.LOG_SCHEMA);
 
         // initialize this up-front; otherwise the dbdictionaryfactory might
