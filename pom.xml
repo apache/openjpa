@@ -95,15 +95,29 @@
     </modules>
     <profiles>
         <profile>
-            <id>release</id>
-            <activation>
-                <property>
-                    <name>release</name>
-                </property>
-            </activation>
+            <id>sign-release</id>
             <modules>
                 <module>openjpa-project</module>
             </modules>
+            <build>
+                <plugins>
+                    <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-gpg-plugin</artifactId>
+                      <version>1.0-alpha-4</version>
+                      <configuration>
+                        <outputDirectory>${project.build.directory}</outputDirectory>
+                      </configuration>
+                      <executions>
+                        <execution>
+                          <goals>
+                            <goal>sign</goal>
+                          </goals>
+                        </execution>
+                      </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
         <!--
