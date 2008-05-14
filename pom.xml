@@ -107,6 +107,7 @@
                       <version>1.0-alpha-4</version>
                       <configuration>
                         <outputDirectory>${project.build.directory}</outputDirectory>
+                        <passphrase>${gpg.passphrase}</passphrase>
                       </configuration>
                       <executions>
                         <execution>
