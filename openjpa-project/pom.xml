@@ -330,6 +330,8 @@
                                         <exec executable="gpg"
                                             failonerror="true">
                                             <arg value="--batch"/>
+                                            <arg value="--passphrase"/>
+                                            <arg value="${gpg.passphrase}"/>
                                             <arg value="--verbose"/>
                                             <arg value="--default-key"/>
                                             <arg value="${openjpa.release.keyAlias}"/>
