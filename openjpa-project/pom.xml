@@ -315,6 +315,40 @@
             <id>sign-release</id>
             <build>
                 <plugins>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <configuration>
+                                    <tasks>
+                                    <echo>Signing release files...</echo>
+                                    <macrodef name="sign-file">
+                                        <attribute name="file" />
+                                        <sequential>
+                                        <delete failonerror="false"
+                                            file="@{file}.asc"/>
+                                        <exec executable="gpg"
+                                            failonerror="true">
+                                            <arg value="--batch"/>
+                                            <arg value="--verbose"/>
+                                            <arg value="--default-key"/>
+                                            <arg value="${openjpa.release.keyAlias}"/>
+                                            <arg value="--armor"/>
+                                            <arg value="--detach-sig"/>
+                                            <arg value="@{file}"/>
+                                        </exec>
+                                        </sequential>
+                                    </macrodef>
+                                    <sign-file file="${openjpa.assembly.binaryFile}"/>
+                                    <sign-file file="${openjpa.assembly.sourceFile}"/>
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>build-helper-maven-plugin</artifactId>
