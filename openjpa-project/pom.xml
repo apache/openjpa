@@ -315,6 +315,7 @@
             <id>sign-release</id>
             <build>
                 <plugins>
+                    <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
