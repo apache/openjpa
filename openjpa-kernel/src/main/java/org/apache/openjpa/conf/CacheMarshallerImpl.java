@@ -28,6 +28,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -218,15 +220,28 @@ public class CacheMarshallerImpl
         try {
             ClassLoader cl = _conf.getClassResolverInstance()
                 .getClassLoader(getClass(), null);
+            List list = new ArrayList();
             for (Enumeration e = cl.getResources(_inputResourceLocation);
-                e.hasMoreElements(); ) {
-                if (_inputURL == null)
-                    _inputURL = (URL) e.nextElement();
-                else
+                e.hasMoreElements(); )
+                list.add(e);
+
+            if (list.size() > 1) {
+                if (_consumeErrors) {
+                    if (_log.isWarnEnabled())
+                        _log.warn(_loc.get(
+                            "cache-marshaller-multiple-resources-warn",
+                            getId(), _inputResourceLocation, list)
+                            .getMessage());
+                } else {
                     throw new IllegalStateException(
                         _loc.get("cache-marshaller-multiple-resources",
-                            getId(), _inputResourceLocation).getMessage());
+                            getId(), _inputResourceLocation, list)
+                            .getMessage());
+                }
             }
+
+            if (!list.isEmpty())
+                _inputURL = (URL) list.get(0);
         } catch (IOException ioe) {
             IllegalStateException ise = new IllegalStateException(
                 _loc.get("cache-marshaller-bad-url", getId(),
