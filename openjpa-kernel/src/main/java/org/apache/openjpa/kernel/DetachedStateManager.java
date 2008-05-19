@@ -49,7 +49,7 @@ public class DetachedStateManager
     extends AttachStrategy
     implements OpenJPAStateManager, Serializable {
 
-    private static final long serialVersionUID = 6092198373388527556L;
+    private static final long serialVersionUID = 4112223665584731100L;
 
     private static final Localizer _loc = Localizer.forPackage
         (DetachedStateManager.class);
