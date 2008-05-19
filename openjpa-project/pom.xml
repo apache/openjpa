@@ -230,6 +230,7 @@
                                             <fileset
                                                 dir="${docbook.source}/img">
                                                 <include name="*.*"/>
+                                                <exclude name="*.graffle"/>
                                             </fileset>
                                         </copy>
 
@@ -330,6 +331,8 @@
                                         <exec executable="gpg"
                                             failonerror="true">
                                             <arg value="--batch"/>
+                                            <arg value="--passphrase"/>
+                                            <arg value="${gpg.passphrase}"/>
                                             <arg value="--verbose"/>
                                             <arg value="--default-key"/>
                                             <arg value="${openjpa.release.keyAlias}"/>
@@ -349,7 +352,6 @@
                             </execution>
                         </executions>
                     </plugin>
-
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>build-helper-maven-plugin</artifactId>
