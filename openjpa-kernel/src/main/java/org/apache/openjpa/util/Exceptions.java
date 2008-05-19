@@ -171,7 +171,9 @@ public class Exceptions {
         if (i < nested.length) {
             out.println("NestedThrowables:");
             for (; i < nested.length; i++)
-                nested[i].printStackTrace(out);
+                // guard against a nasty null in the array
+                if (nested[i] != null)
+                    nested[i].printStackTrace(out);
         }
     }
 
@@ -188,7 +190,9 @@ public class Exceptions {
         if (i < nested.length) {
             out.println("NestedThrowables:");
             for (; i < nested.length; i++)
-                nested[i].printStackTrace(out);
+                // guard against a nasty null in the array
+                if (nested[i] != null)
+                    nested[i].printStackTrace(out);
         }
     }
 
@@ -239,7 +243,10 @@ public class Exceptions {
             if (isSerializable(nested[i]))
                 newNested[i] = nested[i];
             else
-                newNested[i] = new Exception(nested[i].toString());
+                // guard against a nasty null in the array by using valueOf
+                // instead of toString to prevent throwing yet another 
+                // exception
+                newNested[i] = new Exception(String.valueOf(nested[i]));
         }
         return newNested;
     }
