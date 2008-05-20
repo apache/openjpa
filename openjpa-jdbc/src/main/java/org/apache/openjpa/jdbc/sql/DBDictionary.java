@@ -1499,7 +1499,7 @@ public class DBDictionary
             case JavaTypes.BIGDECIMAL:
                 if (storeLargeNumbersAsStrings)
                     return getPreferredType(Types.VARCHAR);
-                return getPreferredType(Types.DOUBLE);
+                return getPreferredType(Types.NUMERIC);
             case JavaTypes.NUMBER:
                 if (storeLargeNumbersAsStrings)
                     return getPreferredType(Types.VARCHAR);
