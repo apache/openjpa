@@ -28,6 +28,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.openjpa.lib.conf.Configurable;
@@ -50,12 +51,14 @@ public class LogFactoryImpl
     implements LogFactory, GenericConfigurable, Configurable {
 
     private static Localizer _loc = Localizer.forPackage(LogFactoryImpl.class);
+    private static Localizer _locEn = Localizer.forPackage(
+        LogFactoryImpl.class, Locale.ENGLISH);
 
-    public static final String TRACE_STR = _loc.get("log-trace").getMessage();
-    public static final String INFO_STR = _loc.get("log-info").getMessage();
-    public static final String WARN_STR = _loc.get("log-warn").getMessage();
-    public static final String ERROR_STR = _loc.get("log-error").getMessage();
-    public static final String FATAL_STR = _loc.get("log-fatal").getMessage();
+    public static final String TRACE_STR = _locEn.get("log-trace").getMessage();
+    public static final String INFO_STR = _locEn.get("log-info").getMessage();
+    public static final String WARN_STR = _locEn.get("log-warn").getMessage();
+    public static final String ERROR_STR = _locEn.get("log-error").getMessage();
+    public static final String FATAL_STR = _locEn.get("log-fatal").getMessage();
 
     public static final String STDOUT = "stdout";
     public static final String STDERR = "stderr";
@@ -230,7 +233,7 @@ public class LogFactoryImpl
             case Log.FATAL:
                 return FATAL_STR;
             default:
-                return _loc.get("log-unknown").getMessage();
+                return _locEn.get("log-unknown").getMessage();
         }
     }
 
