@@ -39,6 +39,7 @@ import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.Literal;
+import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.Val;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.rop.EagerResultList;
@@ -1066,7 +1067,8 @@ public class QueryImpl
         for (Iterator it = getUpdates().entrySet().iterator();
             it.hasNext();) {
             Map.Entry e = (Map.Entry) it.next();
-            FieldMetaData fmd = (FieldMetaData) e.getKey();
+            Path path = (Path) e.getKey();
+            FieldMetaData fmd = (FieldMetaData) path.last();
 
             Object val;
             Object value = e.getValue();
