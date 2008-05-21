@@ -4407,4 +4407,8 @@ public class DBDictionary
         }
         return false;
     }
+
+    public boolean needsToCreateIndex(Index idx, Table table) {
+        return true;
+    }
 }

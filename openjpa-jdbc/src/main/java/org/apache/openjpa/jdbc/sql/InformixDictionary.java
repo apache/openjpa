@@ -268,4 +268,13 @@ public class InformixDictionary
             FilterValue start) {
         throw new UnsupportedException();
     }
+
+    public boolean needsToCreateIndex(Index idx, Table table) {
+       // Informix will automatically create a unique index for the 
+       // primary key, so don't create another index again
+       PrimaryKey pk = table.getPrimaryKey();
+       if (pk != null && idx.columnsMatch(pk.getColumns()))
+           return false;
+       return true;
+    }
 }

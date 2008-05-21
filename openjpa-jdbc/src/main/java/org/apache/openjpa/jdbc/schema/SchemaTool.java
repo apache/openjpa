@@ -988,20 +988,9 @@ public class SchemaTool {
         throws SQLException {
         // Informix will automatically create a unique index for the 
         // primary key, so don't create another index again
-        if (_dict.platform.indexOf("Informix") > -1) {
-            Column[] cols = idx.getColumns();
-            Column[] pkCols = table.getPrimaryKey().getColumns();
-            if (cols.length == pkCols.length) {
-                String[] colNames = new String[cols.length];
-                String[] pkColNames = new String[cols.length];
-                for (int i = 0; i < cols.length; i++) 
-                    colNames[i] = cols[i].getName();
-                for (int i = 0; i < pkCols.length; i++) 
-                    pkColNames[i] = pkCols[i].getName();
-                if (java.util.Arrays.equals(colNames, pkColNames))
-                    return true;
-            }
-        }
+
+        if (!_dict.needsToCreateIndex(idx,table))
+            return false;
 
         int max = _dict.maxIndexesPerTable;
 
