@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 
 /**
@@ -39,5 +40,19 @@ class Distinct
 
     protected String getOperator() {
         return "DISTINCT";
+    }
+    
+
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
+        if (sel.getConfiguration().getDBDictionaryInstance().platform.indexOf(
+            "Informix") > -1) {
+            sql.append(getOperator());
+            sql.append(" ");
+            getValue().appendTo(sel, ctx, state, sql, 0);
+            sql.addCastForParam(getOperator(), getValue());
+        }
+        else
+            super.appendTo(sel, ctx, state, sql, index);
     }
 }

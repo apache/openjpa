@@ -28,12 +28,14 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
+import org.apache.openjpa.util.UnsupportedException;
 
 /**
  * Dictionary for Informix database. Notable features:
@@ -91,11 +93,6 @@ public class InformixDictionary
         supportsDeferredConstraints = false;
         constraintNameMode = CONS_NAME_AFTER;
 
-        maxTableNameLength = 18;
-        maxColumnNameLength = 18;
-        maxIndexNameLength = 18;
-        maxConstraintNameLength = 18;
-
         // informix supports "CLOB" type, but any attempt to insert
         // into them raises: "java.sql.SQLException: Can't convert fromnull"
         useGetStringForClobs = true;
@@ -109,7 +106,7 @@ public class InformixDictionary
         doubleTypeName = "NUMERIC(32,20)";
         dateTypeName = "DATE";
         timeTypeName = "DATETIME HOUR TO SECOND";
-        timestampTypeName = "DATETIME YEAR TO SECOND";
+        timestampTypeName = "DATETIME YEAR TO FRACTION(3)";
         doubleTypeName = "NUMERIC(32,20)";
         floatTypeName = "REAL";
         bigintTypeName = "NUMERIC(32,0)";
@@ -133,7 +130,17 @@ public class InformixDictionary
         // Informix doesn't support aliases in deletes if the table has an index
         allowsAliasInBulkClause = false;
         
-        supportsSubselect = false;
+        supportsTimestampNanos = false;
+
+        // Informix doesn't understand "X CROSS JOIN Y", but it does understand
+        // the equivalent "X JOIN Y ON 1 = 1"
+        crossJoinClause = "JOIN";
+        requiresConditionForCrossJoin = true;
+
+        concatenateFunction = "CONCAT({0},{1})";
+        nextSequenceQuery = "SELECT {0}.NEXTVAL FROM SYSTABLES WHERE TABID=1";
+        supportsCorrelatedSubselect = false;
+        swapSchemaAndCatalog = false;
     }
 
     public void connectedConfiguration(Connection conn)
@@ -190,7 +197,7 @@ public class InformixDictionary
         throws SQLException {
         // informix actually requires that a boolean be set: it cannot
         // handle a numeric argument
-        stmnt.setBoolean(idx, val);
+        stmnt.setString(idx, val ? "t" : "f");
     }
 
     public String[] getCreateTableSQL(Table table) {
@@ -255,5 +262,10 @@ public class InformixDictionary
             } catch (SQLException se) {
             }
         return conn;
+    }
+
+    public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
+            FilterValue start) {
+        throw new UnsupportedException();
     }
 }
