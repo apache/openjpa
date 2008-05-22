@@ -34,6 +34,7 @@ import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
 import org.apache.openjpa.util.UnsupportedException;
 
@@ -75,6 +76,9 @@ public class InformixDictionary
     // weak set of connections we've already executed lock mode sql on
     private final Collection _seenConnections = new ReferenceHashSet
         (ReferenceHashSet.WEAK);
+
+    private static final Localizer _loc = Localizer.forPackage
+        (InformixDictionary.class);
 
     public InformixDictionary() {
         platform = "Informix";
@@ -265,8 +269,9 @@ public class InformixDictionary
     }
 
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
-            FilterValue start) {
-        throw new UnsupportedException();
+        FilterValue start) {
+        throw new UnsupportedException(_loc.get("function-not-supported",
+                getClass(), "LOCATE"));
     }
 
     public boolean needsToCreateIndex(Index idx, Table table) {
