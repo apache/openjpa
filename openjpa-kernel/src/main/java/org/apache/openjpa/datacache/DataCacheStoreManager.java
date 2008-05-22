@@ -270,6 +270,7 @@ public class DataCacheStoreManager
             idList.add(holder.sm.getObjectId());
         }
 
+        List<PCDataHolder> removes = new ArrayList<PCDataHolder>();
         Map<Object,DataCachePCData> pcdatas = cache.getAll(idList);
         for (Entry<Object,DataCachePCData> entry : pcdatas.entrySet()) {
             Integer index = ids.get(entry.getKey());
@@ -277,10 +278,13 @@ public class DataCacheStoreManager
             PCDataHolder holder = (PCDataHolder) holders.get(index);
             if (oldpc != null && compareVersion(holder.sm,
                 holder.sm.getVersion(), oldpc.getVersion()) == VERSION_EARLIER)
-                holders.remove(index);
+                removes.add(holder);
             else
                 holders.set(index, holder.pcdata);
         }
+
+        for (PCDataHolder holder : removes)
+            holders.remove(holder);
     }
 
     /**
