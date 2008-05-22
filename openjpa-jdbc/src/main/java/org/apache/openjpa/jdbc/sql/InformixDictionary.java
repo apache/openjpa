@@ -145,6 +145,10 @@ public class InformixDictionary
         nextSequenceQuery = "SELECT {0}.NEXTVAL FROM SYSTABLES WHERE TABID=1";
         supportsCorrelatedSubselect = false;
         swapSchemaAndCatalog = false;
+        
+        // Informix does not support foreign key delete action NULL or DEFAULT
+        supportsNullDeleteAction = false;
+        supportsDefaultDeleteAction = false;
     }
 
     public void connectedConfiguration(Connection conn)
