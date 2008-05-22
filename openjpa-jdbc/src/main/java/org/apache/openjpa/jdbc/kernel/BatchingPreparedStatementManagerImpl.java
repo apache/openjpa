@@ -171,7 +171,7 @@ public class BatchingPreparedStatementManagerImpl extends
                             } else {
                                 // reach the batchLimit, execute the batch
                                 int[] rtn = executeBatch(ps);
-                                checkUpdateCount(rtn, batchedRowsBaseIndex);
+                                checkUpdateCount(rtn, batchedRowsBaseIndex, ps);
 
                                 batchedRowsBaseIndex += _batchLimit;
 
@@ -185,7 +185,7 @@ public class BatchingPreparedStatementManagerImpl extends
                     }
                     // end of the loop, execute the batch
                     int[] rtn = executeBatch(ps);
-                    checkUpdateCount(rtn, batchedRowsBaseIndex);
+                    checkUpdateCount(rtn, batchedRowsBaseIndex, ps);
                 }
             } catch (SQLException se) {
                 SQLException sqex = se.getNextException();
@@ -227,9 +227,22 @@ public class BatchingPreparedStatementManagerImpl extends
     /*
      * Process executeBatch function array of return counts.
      */
-    private void checkUpdateCount(int[] count, int batchedRowsBaseIndex)
+    private void checkUpdateCount(int[] count, int batchedRowsBaseIndex,
+        PreparedStatement ps)
         throws SQLException {
+        // value in int[] count  returned from executeBatch: 
+        //               Update          Delete        Insert
+        // ===============================================================
+        //               OK / Error      OK / Error    OK / Error
+        // DB2LUW         1 / 0           1 / 0         1 / SQLException
+        // DB2/ZOS        1 / 0           1 / 0        -2 / SQLException
+        // Oracle        -2 / -2         -2 / -2       -2 / SQLException
         int cnt = 0;
+        int updateSuccessCnt = ps.getUpdateCount();
+        if (_log.isTraceEnabled() &&
+            _dict.platform.indexOf("Oracle") > -1)
+            _log.trace(_loc.get("batch_update_success_count",
+                    updateSuccessCnt));
         Object failed = null;
         List batchedRows = getBatchedRows();
         for (int i = 0; i < count.length; i++) {
@@ -247,10 +260,23 @@ public class BatchingPreparedStatementManagerImpl extends
                         row.getSQL(_dict)).getMessage());
                 break;
             case Statement.SUCCESS_NO_INFO: // -2
-                if (row.getAction() == Row.ACTION_UPDATE ||
-                    row.getAction() == Row.ACTION_DELETE)
-                    _exceptions.add(new OptimisticException(failed));
-                else if (_log.isTraceEnabled())
+                if (_dict.platform.indexOf("Oracle") > -1 &&
+                    updateSuccessCnt != count.length) {
+                    // Oracle batching specifics:
+                    // treat update/delete of SUCCESS_NO_INFO as failed case
+                    // because:
+                    // 1. transaction should be rolled back.
+                    // 2. if DataCache is enabled, objects in
+                    //    cache should be removed.
+                    if (failed != null)
+                        _exceptions.add(new OptimisticException(failed));
+                    else if (row.getAction() == Row.ACTION_INSERT)
+                        throw new SQLException(_loc.get(
+                            "update-failed-no-failed-obj",
+                            String.valueOf(count[i]), 
+                            row.getSQL(_dict)).getMessage());
+                }
+                if (_log.isTraceEnabled())
                     _log.trace(_loc.get("batch_update_info",
                         String.valueOf(cnt), 
                         row.getSQL(_dict)).getMessage());
