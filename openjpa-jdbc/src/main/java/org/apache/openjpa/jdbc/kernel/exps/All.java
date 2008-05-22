@@ -27,7 +27,7 @@ class All
     extends UnaryOp {
 
     public All(Val val) {
-        super(val);
+        super(val, true);
     }
 
     protected String getOperator() {

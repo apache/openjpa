@@ -39,12 +39,18 @@ abstract class UnaryOp
     private final Val _val;
     private ClassMetaData _meta = null;
     private Class _cast = null;
+    private boolean _noParen = false;
 
     /**
      * Constructor. Provide the value to operate on.
      */
     public UnaryOp(Val val) {
         _val = val;
+    }
+    
+    public UnaryOp(Val val, boolean noParen) {
+        _val = val;
+        _noParen = noParen;
     }
 
     protected Val getValue() {
@@ -123,10 +129,11 @@ abstract class UnaryOp
     public void appendTo(Select sel, ExpContext ctx, ExpState state, 
         SQLBuffer sql, int index) {
         sql.append(getOperator());
-        sql.append("(");
+        sql.append(_noParen ? " " : "(");
         _val.appendTo(sel, ctx, state, sql, 0);
         sql.addCastForParam(getOperator(), _val);
-        sql.append(")");
+        if (!_noParen)
+            sql.append(")");
     }
 
     /**

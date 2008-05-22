@@ -27,7 +27,7 @@ class Any
     extends UnaryOp {
 
     public Any(Val val) {
-        super(val);
+        super(val, true);
     }
 
     protected String getOperator() {
