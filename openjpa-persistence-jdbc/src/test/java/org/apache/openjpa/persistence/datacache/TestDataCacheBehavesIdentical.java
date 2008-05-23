@@ -263,8 +263,11 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
 	 * @param datacache the marker for the copy of the data cached instance
 	 * @param database the marker for the database record
 	 * @param lock lock to be used
+	 * @param makeDirtyBeforeRefresh flags if the instance be dirtied before
+	 * refresh()
 	 */
-	public void verifyRefresh(boolean useDataCache, LockModeType lock, boolean makeDirtyBeforeRefresh) {
+	public void verifyRefresh(boolean useDataCache, LockModeType lock, 
+			boolean makeDirtyBeforeRefresh) {
 		OpenJPAEntityManagerFactorySPI emf = (useDataCache)
 			? emfWithDataCache : emfWithoutDataCache;
 			
@@ -331,7 +334,8 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
 	 * @param makeDirtyBeforeRefresh
 	 * @return
 	 */
-	String getExpectedMarker(boolean useDataCache, LockModeType lock, boolean makeDirtyBeforeRefresh) {
+	String getExpectedMarker(boolean useDataCache, LockModeType lock, 
+			boolean makeDirtyBeforeRefresh) {
 		if (useDataCache) {
 			return (lock != null && makeDirtyBeforeRefresh)
 				? MARKER_DATABASE : MARKER_DATACACHE; 
@@ -376,8 +380,17 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
 		verifyRefresh(!WITH_DATACACHE, LockModeType.WRITE, !DIRTY);
 	}
 	
-	
-	public void verifyDeleteDetectionOnRefresh(boolean useDataCache, LockModeType lock) {
+	/**
+	 * Verify behavior of refreshing an instance which has been deleted by
+	 * out-of-band process (e.g. a native SQL in a separate transaction).
+	 * The behavior differs when refresh() without a lock fetches the data from
+	 * DataCache even when the original database record is deleted.
+	 * 
+	 * @param useDataCache
+	 * @param lock
+	 */
+	public void verifyDeleteDetectionOnRefresh(boolean useDataCache, 
+			LockModeType lock) {
 		OpenJPAEntityManagerFactorySPI emf = (useDataCache)
 			? emfWithDataCache : emfWithoutDataCache;
 			
@@ -405,8 +418,12 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
 		// nor does the data cache
 		assertEquals(useDataCache, dataCache.contains(PObject.class, oid));
 		
-		assertEquals(useDataCache ? MARKER_DATACACHE : MARKER_CACHE, pc.getName());
-		
+		/**
+		 * refresh behavior depends on current lock. Having no lock will refresh
+		 * the instance (wrongly) while any other lock will attempt to fetch the 
+		 * instance from database (correctly) raising EntityNotFoundException.
+		 *   
+		 */
 		em.getTransaction().begin();
 		if (lock != null)
 			em.getFetchPlan().setReadLockMode(lock);
