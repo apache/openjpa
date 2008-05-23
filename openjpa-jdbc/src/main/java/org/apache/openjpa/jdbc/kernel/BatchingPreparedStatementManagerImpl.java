@@ -238,7 +238,9 @@ public class BatchingPreparedStatementManagerImpl extends
         // DB2/ZOS        1 / 0           1 / 0        -2 / SQLException
         // Oracle        -2 / -2         -2 / -2       -2 / SQLException
         int cnt = 0;
-        int updateSuccessCnt = ps.getUpdateCount();
+        int updateSuccessCnt = 0;
+        if (ps != null && _dict.platform.indexOf("Oracle") > -1)
+            updateSuccessCnt = ps.getUpdateCount();
         if (_log.isTraceEnabled() &&
             _dict.platform.indexOf("Oracle") > -1)
             _log.trace(_loc.get("batch_update_success_count",
