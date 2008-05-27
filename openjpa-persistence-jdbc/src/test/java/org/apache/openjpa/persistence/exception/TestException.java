@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestException extends SingleEMFTestCase {
     public void setUp() {
-        super.setUp(PObject.class);
+        super.setUp(PObject.class, CLEAR_TABLES);
     }
     
 	/**
