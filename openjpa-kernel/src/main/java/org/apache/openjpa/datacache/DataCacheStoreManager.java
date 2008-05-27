@@ -423,7 +423,7 @@ public class DataCacheStoreManager
 
     public Collection loadAll(Collection sms, PCState state, int load,
     		FetchConfiguration fetch, Object edata) {
-        if (isLocking(fetch))
+        if (load == StoreManager.FORCE_LOAD_REFRESH || isLocking(fetch))
             return super.loadAll(sms, state, load, fetch, edata);
 
         Map unloaded = null;

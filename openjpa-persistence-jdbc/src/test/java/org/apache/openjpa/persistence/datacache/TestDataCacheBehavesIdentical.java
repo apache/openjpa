@@ -265,9 +265,28 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
 	 * @param lock lock to be used
 	 * @param makeDirtyBeforeRefresh flags if the instance be dirtied before
 	 * refresh()
+	 * @param expected The expected marker i.e. where the state is refreshed 
+	 * from. This should be always <code>MARKER_DATABASE</code>.
+	 * a) whether DataCache is active
+	 * b) whether current Lock is stronger than NOLOCK
+	 * c) whether the object to be refreshed is dirty
+	 * 
+	 * The following truth table enumerates the possibilities
+	 * 
+	 * Use Cache?   Lock?   Dirty?     Target
+	 *    Y          Y       Y         Database
+	 *    Y          N       Y         Data Cache
+	 *    Y          Y       N         Data Cache
+	 *    Y          N       N         Data Cache
+	 *    
+	 *    N          Y       Y         Database
+	 *    N          N       Y         Database
+	 *    N          Y       N         Object Cache
+	 *    N          N       N         Object Cache
+
 	 */
 	public void verifyRefresh(boolean useDataCache, LockModeType lock, 
-			boolean makeDirtyBeforeRefresh) {
+			boolean makeDirtyBeforeRefresh, String expected) {
 		OpenJPAEntityManagerFactorySPI emf = (useDataCache)
 			? emfWithDataCache : emfWithoutDataCache;
 			
@@ -303,7 +322,6 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
 		}
 		em.refresh(pc);
 		
-		String expected = getExpectedMarker(useDataCache, lock, makeDirtyBeforeRefresh);
 		assertEquals(expected, pc.getName());
 		em.getTransaction().commit();
 	}
@@ -337,47 +355,48 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
 	String getExpectedMarker(boolean useDataCache, LockModeType lock, 
 			boolean makeDirtyBeforeRefresh) {
 		if (useDataCache) {
-			return (lock != null && makeDirtyBeforeRefresh)
-				? MARKER_DATABASE : MARKER_DATACACHE; 
+//			return (lock != null && makeDirtyBeforeRefresh)
+			return (lock != null) ? MARKER_DATABASE : MARKER_DATACACHE; 
 		} else {
-			return (makeDirtyBeforeRefresh) ? MARKER_DATABASE : MARKER_CACHE;
+//			return (makeDirtyBeforeRefresh) ? MARKER_DATABASE : MARKER_CACHE;
+			return MARKER_DATABASE;
 		}
 	}
 	
-	public void testDirtyRefreshWithNoLockHitsDataCache() {
-		verifyRefresh(WITH_DATACACHE, NOLOCK, DIRTY);
+	public void testDirtyRefreshWithNoLockHitsDatabase() {
+		verifyRefresh(WITH_DATACACHE, NOLOCK, DIRTY, MARKER_DATABASE);
 	}
 	
-	public void testCleanRefreshWithNoLockHitsDataCache() {
-		verifyRefresh(WITH_DATACACHE, NOLOCK, !DIRTY);
+	public void testCleanRefreshWithNoLockHitsDatabase() {
+		verifyRefresh(WITH_DATACACHE, NOLOCK, !DIRTY, MARKER_DATABASE);
 	}
 	
 	public void testDirtyRefreshWithReadLockHitsDatabase() {
-		verifyRefresh(WITH_DATACACHE, LockModeType.READ, DIRTY);
+		verifyRefresh(WITH_DATACACHE, LockModeType.READ, DIRTY, MARKER_DATABASE);
 	}
 	
-	public void testCleanRefreshWithReadLockHitsDataCache() {
-		verifyRefresh(WITH_DATACACHE, LockModeType.READ, !DIRTY);
+	public void testCleanRefreshWithReadLockHitsDatabase() {
+		verifyRefresh(WITH_DATACACHE, LockModeType.READ, !DIRTY, MARKER_DATABASE);
 	}
 	
 	public void testDirtyRefreshWithWriteLockHitsDatabase() {
-		verifyRefresh(WITH_DATACACHE, LockModeType.WRITE, DIRTY);
+		verifyRefresh(WITH_DATACACHE, LockModeType.WRITE, DIRTY, MARKER_DATABASE);
 	}
 	
 	public void testCleanRefreshWithWriteLockHitsDatabase() {
-		verifyRefresh(WITH_DATACACHE, LockModeType.WRITE, !DIRTY);
+		verifyRefresh(WITH_DATACACHE, LockModeType.WRITE, !DIRTY, MARKER_DATABASE);
 	}
 	
 	public void testDirtyRefreshWithoutDataCacheAlwaysHitsDatabase() {
-		verifyRefresh(!WITH_DATACACHE, NOLOCK, DIRTY);
-		verifyRefresh(!WITH_DATACACHE, LockModeType.READ, DIRTY);
-		verifyRefresh(!WITH_DATACACHE, LockModeType.WRITE, DIRTY);
+		verifyRefresh(!WITH_DATACACHE, NOLOCK, DIRTY, MARKER_DATABASE);
+		verifyRefresh(!WITH_DATACACHE, LockModeType.READ, DIRTY, MARKER_DATABASE);
+		verifyRefresh(!WITH_DATACACHE, LockModeType.WRITE, DIRTY, MARKER_DATABASE);
 	}
 	
-	public void testCleanRefreshWithoutDataCacheNeverHitsDatabase() {
-		verifyRefresh(!WITH_DATACACHE, NOLOCK, !DIRTY);
-		verifyRefresh(!WITH_DATACACHE, LockModeType.READ, !DIRTY);
-		verifyRefresh(!WITH_DATACACHE, LockModeType.WRITE, !DIRTY);
+	public void testCleanRefreshWithoutDataCacheAlwaysHitsDatabase() {
+		verifyRefresh(!WITH_DATACACHE, NOLOCK, !DIRTY, MARKER_DATABASE);
+		verifyRefresh(!WITH_DATACACHE, LockModeType.READ, !DIRTY, MARKER_DATABASE);
+		verifyRefresh(!WITH_DATACACHE, LockModeType.WRITE, !DIRTY, MARKER_DATABASE);
 	}
 	
 	/**
@@ -434,9 +453,12 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
 			} else {
 				fail("expected EntityNotFoundException for PObject:" + oid);
 			}
-		} catch (EntityNotFoundException ex) {
-			if (lock != null) {
-				// we are good
+		} catch (Exception ex) {
+			if (ex instanceof EntityNotFoundException || 
+				ex instanceof org.apache.openjpa.persistence.EntityNotFoundException) {
+				if (lock != null) {
+					// we are good
+				}
 			}
 		} finally {
 			em.getTransaction().rollback();

@@ -2720,21 +2720,17 @@ public class BrokerImpl
     }
 
     public void refreshAll(Collection objs, OpCallbacks call) {
-        if (objs.isEmpty())
+        if (objs == null || objs.isEmpty())
             return;
 
         beginOperation(true);
         try {
             assertNontransactionalRead();
 
-            for (Iterator itr = objs.iterator(); itr.hasNext();)
+            for (Iterator itr = objs.iterator(); itr.hasNext();) {
                 gatherCascadeRefresh(itr.next(), call);
-            if (_operating.isEmpty())
-                return;
-            if (_operating.size() == 1)
-                refreshInternal(_operating.iterator().next(), call);
-            else
-                refreshInternal(_operating, call);
+            }
+            refreshInternal(_operating, call);
         } finally {
             endOperation();
         }
@@ -2749,12 +2745,7 @@ public class BrokerImpl
             assertNontransactionalRead();
 
             gatherCascadeRefresh(obj, call);
-            if (_operating.isEmpty())
-                return;
-            if (_operating.size() == 1)
-                refreshInternal(_operating.iterator().next(), call);
-            else
-                refreshInternal(_operating, call);
+            refreshInternal(_operating, call);
         } finally {
             endOperation();
         }
@@ -2786,10 +2777,12 @@ public class BrokerImpl
      * cascade-refresh relations from the user-given instances.
      */
     protected void refreshInternal(Collection objs, OpCallbacks call) {
+    	if (objs == null || objs.isEmpty())
+    		return;
         List exceps = null;
         try {
             // collect instances that need a refresh
-            Collection load = null;
+            Collection load = new ArrayList(objs.size());
             StateManagerImpl sm;
             Object obj;
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
@@ -2804,11 +2797,9 @@ public class BrokerImpl
                         continue;
 
                     if (sm != null) {
-                        if (sm.isDetached())
+                        if (sm.isDetached()) {
                             throw newDetachedException(obj, "refresh");
-                        else if (sm.beforeRefresh(true)) {
-                            if (load == null)
-                                load = new ArrayList(objs.size());
+                        } else if (sm.beforeRefresh(true)) {
                             load.add(sm);
                         }
                     } else if (assertPersistenceCapable(obj).pcIsDetached()
@@ -2820,7 +2811,7 @@ public class BrokerImpl
             }
 
             // refresh all
-            if (load != null) {
+            if (!load.isEmpty()) {
                 Collection failed = _store.loadAll(load, null,
                     StoreManager.FORCE_LOAD_REFRESH, _fc, null);
                 if (failed != null && !failed.isEmpty())
@@ -2862,38 +2853,9 @@ public class BrokerImpl
         throwNestedExceptions(exceps, false);
     }
 
-    /**
-     * Optimization for single-object refresh.
-     */
-    protected void refreshInternal(Object obj, OpCallbacks call) {
-        try {
-            StateManagerImpl sm = getStateManagerImpl(obj, true);
-            if ((processArgument(OpCallbacks.OP_REFRESH, obj, sm, call)
-                & OpCallbacks.ACT_RUN) == 0)
-                return;
-
-            if (sm != null) {
-                if (sm.isDetached())
-                    throw newDetachedException(obj, "refresh");
-                else if (sm.beforeRefresh(false)) {
-                    sm.load(_fc, StateManagerImpl.LOAD_FGS, null, null, false);
-                    sm.afterRefresh();
-                }
-                fireLifecycleEvent(sm.getManagedInstance(), null,
-                    sm.getMetaData(), LifecycleEvent.AFTER_REFRESH);
-            } else if (assertPersistenceCapable(obj).pcIsDetached()
-                == Boolean.TRUE)
-                throw newDetachedException(obj, "refresh");
-        } catch (OpenJPAException ke) {
-            throw ke;
-        } catch (RuntimeException re) {
-            throw new GeneralException(re);
-        }
-    }
-
     public void retrieveAll(Collection objs, boolean dfgOnly,
         OpCallbacks call) {
-        if (objs.isEmpty())
+        if (objs == null || objs.isEmpty())
             return;
         if (objs.size() == 1) {
             retrieve(objs.iterator().next(), dfgOnly, call);
