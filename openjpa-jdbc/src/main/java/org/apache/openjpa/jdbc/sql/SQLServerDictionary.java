@@ -59,6 +59,7 @@ public class SQLServerDictionary
         requiresAliasForSubselect = true;
 
         stringLengthFunction = "LEN({0})";
+        supportsTimestampNanos = false;
     }
 
     public void connectedConfiguration(Connection conn)
