@@ -161,6 +161,9 @@ public interface StoreQuery
      */
     public boolean supportsParameterDeclarations();
 
+    public Object evaluate(Object value, Object ob, Object[] params, 
+        OpenJPAStateManager sm);
+
     /**
      * A query result range.
      */

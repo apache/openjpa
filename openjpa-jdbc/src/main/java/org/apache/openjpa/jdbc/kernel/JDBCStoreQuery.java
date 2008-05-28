@@ -35,10 +35,12 @@ import org.apache.openjpa.jdbc.kernel.exps.GetColumn;
 import org.apache.openjpa.jdbc.kernel.exps.JDBCExpressionFactory;
 import org.apache.openjpa.jdbc.kernel.exps.JDBCStringContains;
 import org.apache.openjpa.jdbc.kernel.exps.JDBCWildcardMatch;
+import org.apache.openjpa.jdbc.kernel.exps.PCPath;
 import org.apache.openjpa.jdbc.kernel.exps.QueryExpressionsState;
 import org.apache.openjpa.jdbc.kernel.exps.SQLEmbed;
 import org.apache.openjpa.jdbc.kernel.exps.SQLExpression;
 import org.apache.openjpa.jdbc.kernel.exps.SQLValue;
+import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
@@ -50,18 +52,24 @@ import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.ExpressionStoreQuery;
+import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.OrderingMergedResultObjectProvider;
 import org.apache.openjpa.kernel.QueryHints;
+import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.kernel.exps.FilterListener;
+import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
+import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 import serp.util.Numbers;
 
@@ -671,4 +679,105 @@ public class JDBCStoreQuery
         throws SQLException {
         return sql.prepareStatement(conn);
     }    
+
+    public Object evaluate(Object value, Object ob, Object[] params,
+        OpenJPAStateManager sm) {
+        if (value instanceof org.apache.openjpa.jdbc.kernel.exps.Math) {
+            org.apache.openjpa.jdbc.kernel.exps.Math mathVal =
+                (org.apache.openjpa.jdbc.kernel.exps.Math) value;
+
+            Val value1 = mathVal.getVal1();
+            Object val1 = getValue(value1, ob, params, sm);
+            Class c1 = value1.getType();
+
+            Val value2 = mathVal.getVal2();
+            Object val2 = getValue(value2, ob, params, sm);
+            Class c2 = value2.getType();
+
+            String op = mathVal.getOperation();
+
+            if (op.equals(org.apache.openjpa.jdbc.kernel.exps.Math.ADD))
+                return Filters.add(val1, c1, val2, c2);
+            else if (op.equals(
+                    org.apache.openjpa.jdbc.kernel.exps.Math.SUBTRACT))
+                return Filters.subtract(val1, c1, val2, c2);
+            else if (op.equals(
+                    org.apache.openjpa.jdbc.kernel.exps.Math.MULTIPLY))
+                return Filters.multiply(val1, c1, val2, c2);
+            else if (op.equals(
+                    org.apache.openjpa.jdbc.kernel.exps.Math.DIVIDE))
+                return Filters.divide(val1, c1, val2, c2);
+            else if (op.equals(org.apache.openjpa.jdbc.kernel.exps.Math.MOD))
+                return Filters.mod(val1, c1, val2, c2);
+            throw new UnsupportedException();
+        }
+        throw new UnsupportedException();
+    }
+
+    private Object getValue(Object ob, FieldMapping fmd,
+        OpenJPAStateManager sm) {
+        int i = fmd.getIndex();
+        switch (fmd.getDeclaredTypeCode()) {
+            case JavaTypes.BOOLEAN:
+                return sm.fetchBooleanField(i);
+            case JavaTypes.BYTE:
+                return sm.fetchByteField(i);
+            case JavaTypes.CHAR:
+                return sm.fetchCharField(i);
+            case JavaTypes.DOUBLE:
+                return sm.fetchDoubleField(i);
+            case JavaTypes.FLOAT:
+                return sm.fetchFloatField(i);
+            case JavaTypes.INT:
+                return sm.fetchIntField(i);
+            case JavaTypes.LONG:
+                return sm.fetchLongField(i);
+            case JavaTypes.SHORT:
+                return sm.fetchShortField(i);
+            case JavaTypes.STRING:
+                return sm.fetchStringField(i);
+            case JavaTypes.DATE:
+            case JavaTypes.NUMBER:
+            case JavaTypes.BOOLEAN_OBJ:
+            case JavaTypes.BYTE_OBJ:
+            case JavaTypes.CHAR_OBJ:
+            case JavaTypes.DOUBLE_OBJ:
+            case JavaTypes.FLOAT_OBJ:
+            case JavaTypes.INT_OBJ:
+            case JavaTypes.LONG_OBJ:
+            case JavaTypes.SHORT_OBJ:
+            case JavaTypes.BIGDECIMAL:
+            case JavaTypes.BIGINTEGER:
+            case JavaTypes.LOCALE:
+            case JavaTypes.OBJECT:
+            case JavaTypes.OID:
+                return sm.fetchObjectField(i);
+            default:
+                throw new UnsupportedException();
+        }
+    }
+
+    private Object eval(Object ob, Object value, Object[] params,
+        OpenJPAStateManager sm) {
+        Object val = null;
+        if (value instanceof Literal)
+            val = ((Literal) value).getValue();
+        else if (value instanceof Constant)
+            val = ((Constant) value).getValue(params);
+        else
+            val = evaluate(value, ob, params, sm);
+
+        return val;
+    }
+
+    private Object getValue(Object value, Object ob, Object[] params,
+        OpenJPAStateManager sm) {
+        if (value instanceof org.apache.openjpa.jdbc.kernel.exps.Math)
+            return evaluate(value, ob, params, sm);
+        else if (value instanceof PCPath) {
+            FieldMapping fm = (FieldMapping)((PCPath)value).last();
+            return getValue(ob, fm, sm);
+        } else
+            return eval(ob, value, params, sm);
+    }
 }

@@ -25,6 +25,7 @@ import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.util.UnsupportedException;
 
 /**
  * Abstract {@link StoreQuery} that implements most methods as no-ops.
@@ -101,6 +102,11 @@ public abstract class AbstractStoreQuery
 
     public boolean supportsParameterDeclarations() {
         return true;
+    }
+
+    public Object evaluate(Object value, Object ob, Object[] params,
+        OpenJPAStateManager sm) {
+        throw new UnsupportedException();
     }
 
     /**

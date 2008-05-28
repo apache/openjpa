@@ -33,7 +33,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  *
  * @author Abe White
  */
-class Math
+public class Math
     extends AbstractVal {
 
     public static final String ADD = "+";
@@ -55,6 +55,18 @@ class Math
         _val1 = val1;
         _val2 = val2;
         _op = op;
+    }
+
+    public Val getVal1() {
+        return _val1;
+    }
+
+    public Val getVal2() {
+        return _val2;
+    }
+
+    public String getOperation() {
+        return _op;
     }
 
     public ClassMetaData getMetaData() {

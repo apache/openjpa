@@ -1048,7 +1048,7 @@ public class QueryImpl
 
             int size = 0;
             for (Iterator i = ((Collection) o).iterator(); i.hasNext(); size++)
-                updateInMemory(i.next(), params);
+                updateInMemory(i.next(), params, q);
             return Numbers.valueOf(size);
         } catch (OpenJPAException ke) {
             throw ke;
@@ -1063,12 +1063,13 @@ public class QueryImpl
      * @param ob the persistent instance to change
      * @param params the parameters passed to the query
      */
-    private void updateInMemory(Object ob, Object[] params) {
+    private void updateInMemory(Object ob, Object[] params, StoreQuery q) {
         for (Iterator it = getUpdates().entrySet().iterator();
             it.hasNext();) {
             Map.Entry e = (Map.Entry) it.next();
             Path path = (Path) e.getKey();
             FieldMetaData fmd = (FieldMetaData) path.last();
+            OpenJPAStateManager sm = _broker.getStateManager(ob);
 
             Object val;
             Object value = e.getValue();
@@ -1080,10 +1081,13 @@ public class QueryImpl
             } else if (value instanceof Constant) {
                 val = ((Constant) value).getValue(params);
             } else {
-                throw new UserException(_loc.get("only-update-primitives"));
+                try {
+                    val = q.evaluate(value, ob, params, sm);
+                } catch (UnsupportedException e1) {
+                    throw new UserException(_loc.get("fail-to-get-update-value"));
+                }
             }
 
-            OpenJPAStateManager sm = _broker.getStateManager(ob);
             int i = fmd.getIndex();
             PersistenceCapable into = ImplHelper.toPersistenceCapable(ob,
                 _broker.getConfiguration());

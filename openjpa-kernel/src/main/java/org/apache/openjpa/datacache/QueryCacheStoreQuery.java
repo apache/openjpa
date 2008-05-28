@@ -33,6 +33,7 @@ import java.util.TreeMap;
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.LockLevels;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.QueryContext;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.StoreQuery;
@@ -44,6 +45,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ObjectNotFoundException;
+
 import serp.util.Numbers;
 
 /**
@@ -278,6 +280,11 @@ public class QueryCacheStoreQuery
 
     public boolean supportsParameterDeclarations() {
         return _query.supportsParameterDeclarations();
+    }
+ 
+    public Object evaluate(Object value, Object ob, Object[] params,
+        OpenJPAStateManager sm) {
+        return _query.evaluate(value, ob, params, sm);         
     }
 
     /**
