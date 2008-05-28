@@ -207,11 +207,16 @@ public class DataSourceFactory {
             ConfiguringConnectionDecorator ccd =
                 new ConfiguringConnectionDecorator();
             ccd.setTransactionIsolation(conf.getTransactionIsolationConstant());
+            Log log = conf.getLog(JDBCConfiguration.LOG_JDBC);
             if (factory2 || !conf.isConnectionFactoryModeManaged()) {
                 if (!dict.supportsMultipleNontransactionalResultSets)
                     ccd.setAutoCommit(Boolean.FALSE);
                 else
                     ccd.setAutoCommit(Boolean.TRUE);
+                // add trace info for autoCommit setting
+                if (log.isTraceEnabled())
+                    log.trace(_loc.get("set-auto-commit", new Object[] {
+                    dict.supportsMultipleNontransactionalResultSets}));                
             }
             Options opts = Configurations.parseProperties((factory2)
                 ? conf.getConnectionFactory2Properties()
@@ -230,6 +235,10 @@ public class DataSourceFactory {
                 conn = ds.getConnection(conf.getConnection2UserName(), conf
                         .getConnection2Password());
 
+            if (log.isTraceEnabled())
+                log.trace(_loc.get("connection-defaults", new Object[]{
+                    conn.getAutoCommit(), conn.getHoldability(),
+                    conn.getTransactionIsolation()})); 
             return ds;
         } catch (Exception e) {
             throw new StoreException(e).setFatal(true);
