@@ -63,7 +63,7 @@ public abstract class AbstractVersionStrategy
     public boolean checkVersion(OpenJPAStateManager sm, JDBCStore store,
         boolean updateVersion)
         throws SQLException {
-        return false;
+        return !updateVersion;
     }
 
     public int compareVersion(Object v1, Object v2) {
