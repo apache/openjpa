@@ -680,104 +680,238 @@ public class JDBCStoreQuery
         return sql.prepareStatement(conn);
     }    
 
-    public Object evaluate(Object value, Object ob, Object[] params,
+    public Object evaluate(Object value, Object ob, Object[] params, 
         OpenJPAStateManager sm) {
-        if (value instanceof org.apache.openjpa.jdbc.kernel.exps.Math) {
-            org.apache.openjpa.jdbc.kernel.exps.Math mathVal =
-                (org.apache.openjpa.jdbc.kernel.exps.Math) value;
+        int id = 0;
+        if (value instanceof org.apache.openjpa.jdbc.kernel.exps.Val)
+            id = ((org.apache.openjpa.jdbc.kernel.exps.Val)value).getId();
+        else
+            throw new UnsupportedException(); 
 
-            Val value1 = mathVal.getVal1();
-            Object val1 = getValue(value1, ob, params, sm);
-            Class c1 = value1.getType();
-
-            Val value2 = mathVal.getVal2();
-            Object val2 = getValue(value2, ob, params, sm);
-            Class c2 = value2.getType();
-
-            String op = mathVal.getOperation();
-
-            if (op.equals(org.apache.openjpa.jdbc.kernel.exps.Math.ADD))
-                return Filters.add(val1, c1, val2, c2);
-            else if (op.equals(
-                    org.apache.openjpa.jdbc.kernel.exps.Math.SUBTRACT))
-                return Filters.subtract(val1, c1, val2, c2);
-            else if (op.equals(
-                    org.apache.openjpa.jdbc.kernel.exps.Math.MULTIPLY))
-                return Filters.multiply(val1, c1, val2, c2);
-            else if (op.equals(
-                    org.apache.openjpa.jdbc.kernel.exps.Math.DIVIDE))
-                return Filters.divide(val1, c1, val2, c2);
-            else if (op.equals(org.apache.openjpa.jdbc.kernel.exps.Math.MOD))
-                return Filters.mod(val1, c1, val2, c2);
+        switch(id) {
+        case Val.MATH_VAL:
+            return handleMathVal(value, ob, params, sm);
+        case Val.CONCAT_VAL:
+            return handleConcatVal(value, ob, params, sm);
+        case Val.SUBSTRING_VAL:
+            return handleSubstringVal(value, ob, params, sm);
+        case Val.ARGS_VAL:
+            return handleArgsVal(value, ob, params, sm);
+        case Val.LOWER_VAL:
+            return handleLowerVal(value, ob, params, sm);
+        case Val.UPPER_VAL:
+            return handleUpperVal(value, ob, params, sm);
+        case Val.LENGTH_VAL:
+            return handleLengthVal(value, ob, params, sm);
+        case Val.TRIM_VAL:
+            return handleTrimVal(value, ob, params, sm);
+        case Val.INDEXOF_VAL:
+            return handleIndexOfVal(value, ob, params, sm);
+        default:    
             throw new UnsupportedException();
         }
+    }
+
+    private Object handleMathVal(Object value, Object ob, Object[] params, 
+        OpenJPAStateManager sm) {
+        org.apache.openjpa.jdbc.kernel.exps.Math mathVal =
+            (org.apache.openjpa.jdbc.kernel.exps.Math) value;
+        Val value1 = mathVal.getVal1();
+        Object val1 = getValue(value1, ob, params, sm);
+        Class c1 = value1.getType();
+
+        Val value2 = mathVal.getVal2();
+        Object val2 = getValue(value2, ob, params, sm);
+        Class c2 = value2.getType();
+
+        String op = mathVal.getOperation();
+        if (op.equals(org.apache.openjpa.jdbc.kernel.exps.Math.ADD)) 
+            return Filters.add(val1, c1, val2, c2);
+        else if (op.equals(
+                org.apache.openjpa.jdbc.kernel.exps.Math.SUBTRACT))
+            return Filters.subtract(val1, c1, val2, c2);
+        else if (op.equals(
+                org.apache.openjpa.jdbc.kernel.exps.Math.MULTIPLY)) 
+            return Filters.multiply(val1, c1, val2, c2);
+        else if (op.equals(
+                org.apache.openjpa.jdbc.kernel.exps.Math.DIVIDE)) 
+            return Filters.divide(val1, c1, val2, c2);
+        else if (op.equals(org.apache.openjpa.jdbc.kernel.exps.Math.MOD)) 
+            return Filters.mod(val1, c1, val2, c2);
         throw new UnsupportedException();
+    }
+
+    private Object handleConcatVal(Object value, Object ob, Object[] params,
+        OpenJPAStateManager sm) {
+        org.apache.openjpa.jdbc.kernel.exps.Concat concatVal =
+            (org.apache.openjpa.jdbc.kernel.exps.Concat)value;
+        Val value1 = concatVal.getVal1();
+        Object val1 = getValue(value1, ob, params, sm);
+
+        Val value2 = concatVal.getVal2();
+        Object val2 = getValue(value2, ob, params, sm);
+        return new StringBuffer(100).append(val1).append(val2).toString();
+    }
+
+    private Object handleSubstringVal(Object value, Object ob, Object[] params,
+        OpenJPAStateManager sm) {
+        org.apache.openjpa.jdbc.kernel.exps.Substring substrVal =
+            (org.apache.openjpa.jdbc.kernel.exps.Substring) value;
+        Val value1 = substrVal.getVal1();
+        String val1 = (String) getValue(value1, ob, params, sm);
+
+        Val value2 = substrVal.getVal2();
+        Object val2 = getValue(value2, ob, params, sm);
+
+        org.apache.openjpa.kernel.exps.Value[] valAry2 = 
+            (org.apache.openjpa.kernel.exps.Value[]) val2;
+        Object arg1 = getValue(valAry2[0], ob, params, sm); //starting pos
+        Object arg2 = getValue(valAry2[1], ob, params, sm); // length
+        int startIdx = ((Long) arg1).intValue();
+        int length = ((Long) arg2).intValue();
+        int endIdx = startIdx + length;
+        return val1.substring(startIdx, endIdx);
+    }
+
+    private Object handleArgsVal(Object value, Object ob, Object[] params, 
+        OpenJPAStateManager sm) {
+        org.apache.openjpa.jdbc.kernel.exps.Args argsVal = 
+            (org.apache.openjpa.jdbc.kernel.exps.Args) value;
+        return argsVal.getValues();
+    }
+
+    private Object handleLowerVal(Object value, Object ob, Object[] params, 
+        OpenJPAStateManager sm) {
+        org.apache.openjpa.jdbc.kernel.exps.ToLowerCase lowerVal = 
+            (org.apache.openjpa.jdbc.kernel.exps.ToLowerCase) value;
+        Val val = lowerVal.getValue();
+        return ((String) getValue(val, ob, params, sm)).toLowerCase();
+    }
+
+    private Object handleUpperVal(Object value, Object ob, Object[] params, 
+        OpenJPAStateManager sm){
+        org.apache.openjpa.jdbc.kernel.exps.ToUpperCase upperVal = 
+            (org.apache.openjpa.jdbc.kernel.exps.ToUpperCase) value;
+        Val val = upperVal.getValue();
+        return ((String) getValue(val, ob, params, sm)).toUpperCase();
+    }
+
+    private Object handleLengthVal(Object value, Object ob, Object[] params, 
+        OpenJPAStateManager sm){
+        org.apache.openjpa.jdbc.kernel.exps.StringLength strLenVal = 
+            (org.apache.openjpa.jdbc.kernel.exps.StringLength) value;
+        Val val = strLenVal.getValue();
+        return ((String) getValue(val, ob, params, sm)).length();
+    }
+
+    private Object handleTrimVal(Object value, Object ob, Object[] params, 
+        OpenJPAStateManager sm) {
+        org.apache.openjpa.jdbc.kernel.exps.Trim trimVal = 
+            (org.apache.openjpa.jdbc.kernel.exps.Trim) value;
+        Val val = trimVal.getVal();
+        String valStr = (String) getValue(val, ob, params, sm);
+        Val trimChar = trimVal.getTrimChar();
+        char trimCharObj = ((String) getValue(trimChar, ob, params, sm)).
+            charAt(0);
+        Boolean where = trimVal.getWhere();
+        if (where == null) { //trim both
+            return trimLeading(trimTrailing(valStr, trimCharObj), trimCharObj);
+        } else if (where.booleanValue()) { // trim leading
+            return trimLeading(valStr, trimCharObj);
+        } else { // trim trailing
+            return trimTrailing(valStr, trimCharObj);
+        }
+    }
+
+    private String trimLeading(String value, char trimChar) {
+        int startIdx = 0;
+        int len = value.length();
+        for (int i = 0; i < len; i++) {
+            if (value.charAt(i) != trimChar) {
+                startIdx = i;
+                break;
+            }
+        }
+        return value.substring(startIdx);
+    }
+
+    private String trimTrailing(String value, char trimChar) {
+        int endIdx = 0;
+        int len = value.length();
+        for (int i = len-1; i >= 0; i--) {
+            if (value.charAt(i) != trimChar) {
+                endIdx = i;
+                break;
+            }
+        }
+        return value.substring(0, endIdx+1);
+    }
+
+    private Object handleIndexOfVal(Object value, Object ob, Object[] params,
+        OpenJPAStateManager sm) {
+        org.apache.openjpa.jdbc.kernel.exps.IndexOf locateVal = 
+            (org.apache.openjpa.jdbc.kernel.exps.IndexOf) value;
+        String val1 = (String) getValue(locateVal.getVal1(), ob, params, sm);
+        Val[] val2 = (Val[]) getValue(locateVal.getVal2(), ob, params, sm);
+        String strVal = (String)getValue(val2[0], ob, params, sm);
+        int idx = ((Long) getValue(val2[1], ob, params, sm)).intValue();
+        return strVal.indexOf(val1, idx);
+    }
+
+    private Object getValue(Object value, Object ob, Object[] params,
+        OpenJPAStateManager sm) {
+        if (value instanceof PCPath) {
+            FieldMapping fm = (FieldMapping)((PCPath) value).last();
+            return getValue(ob, fm, sm);
+        } else if (value instanceof Literal) {
+            return ((Literal) value).getValue();
+        } else if (value instanceof Constant) {
+            return ((Constant) value).getValue(params);
+        } else {
+            return evaluate(value, ob, params, sm);
+        }
     }
 
     private Object getValue(Object ob, FieldMapping fmd,
         OpenJPAStateManager sm) {
         int i = fmd.getIndex();
         switch (fmd.getDeclaredTypeCode()) {
-            case JavaTypes.BOOLEAN:
-                return sm.fetchBooleanField(i);
-            case JavaTypes.BYTE:
-                return sm.fetchByteField(i);
-            case JavaTypes.CHAR:
-                return sm.fetchCharField(i);
-            case JavaTypes.DOUBLE:
-                return sm.fetchDoubleField(i);
-            case JavaTypes.FLOAT:
-                return sm.fetchFloatField(i);
-            case JavaTypes.INT:
-                return sm.fetchIntField(i);
-            case JavaTypes.LONG:
-                return sm.fetchLongField(i);
-            case JavaTypes.SHORT:
-                return sm.fetchShortField(i);
-            case JavaTypes.STRING:
-                return sm.fetchStringField(i);
-            case JavaTypes.DATE:
-            case JavaTypes.NUMBER:
-            case JavaTypes.BOOLEAN_OBJ:
-            case JavaTypes.BYTE_OBJ:
-            case JavaTypes.CHAR_OBJ:
-            case JavaTypes.DOUBLE_OBJ:
-            case JavaTypes.FLOAT_OBJ:
-            case JavaTypes.INT_OBJ:
-            case JavaTypes.LONG_OBJ:
-            case JavaTypes.SHORT_OBJ:
-            case JavaTypes.BIGDECIMAL:
-            case JavaTypes.BIGINTEGER:
-            case JavaTypes.LOCALE:
-            case JavaTypes.OBJECT:
-            case JavaTypes.OID:
-                return sm.fetchObjectField(i);
-            default:
-                throw new UnsupportedException();
+        case JavaTypes.BOOLEAN:
+            return sm.fetchBooleanField(i);
+        case JavaTypes.BYTE:
+            return sm.fetchByteField(i);
+        case JavaTypes.CHAR:
+            return sm.fetchCharField(i);
+        case JavaTypes.DOUBLE:
+            return sm.fetchDoubleField(i);
+        case JavaTypes.FLOAT:
+            return sm.fetchFloatField(i);
+        case JavaTypes.INT:
+            return sm.fetchIntField(i);
+        case JavaTypes.LONG:
+            return sm.fetchLongField(i);
+        case JavaTypes.SHORT:
+            return sm.fetchShortField(i);
+        case JavaTypes.STRING:
+            return sm.fetchStringField(i);
+        case JavaTypes.DATE:
+        case JavaTypes.NUMBER:
+        case JavaTypes.BOOLEAN_OBJ:
+        case JavaTypes.BYTE_OBJ:
+        case JavaTypes.CHAR_OBJ:
+        case JavaTypes.DOUBLE_OBJ:
+        case JavaTypes.FLOAT_OBJ:
+        case JavaTypes.INT_OBJ:
+        case JavaTypes.LONG_OBJ:
+        case JavaTypes.SHORT_OBJ:
+        case JavaTypes.BIGDECIMAL:
+        case JavaTypes.BIGINTEGER:
+        case JavaTypes.LOCALE:
+        case JavaTypes.OBJECT:
+        case JavaTypes.OID:
+            return sm.fetchObjectField(i);
+        default:
+            throw new UnsupportedException();
         }
-    }
-
-    private Object eval(Object ob, Object value, Object[] params,
-        OpenJPAStateManager sm) {
-        Object val = null;
-        if (value instanceof Literal)
-            val = ((Literal) value).getValue();
-        else if (value instanceof Constant)
-            val = ((Constant) value).getValue(params);
-        else
-            val = evaluate(value, ob, params, sm);
-
-        return val;
-    }
-
-    private Object getValue(Object value, Object ob, Object[] params,
-        OpenJPAStateManager sm) {
-        if (value instanceof org.apache.openjpa.jdbc.kernel.exps.Math)
-            return evaluate(value, ob, params, sm);
-        else if (value instanceof PCPath) {
-            FieldMapping fm = (FieldMapping)((PCPath)value).last();
-            return getValue(ob, fm, sm);
-        } else
-            return eval(ob, value, params, sm);
     }
 }

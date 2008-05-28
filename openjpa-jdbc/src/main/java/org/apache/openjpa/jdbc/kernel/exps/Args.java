@@ -194,4 +194,8 @@ public class Args
             _args[i].acceptVisit(visitor);
         visitor.exit(this);
     }
+
+    public int getId() {
+        return Val.ARGS_VAL;
+    }
 }

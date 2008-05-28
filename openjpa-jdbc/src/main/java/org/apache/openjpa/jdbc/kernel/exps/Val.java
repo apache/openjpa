@@ -51,6 +51,18 @@ public interface Val
      */
     public final int FORCE_OUTER = 2 << 2; 
 
+    public final int VAL = 0;
+    public final int MATH_VAL = 1;
+    public final int CONCAT_VAL = 2;
+    public final int SUBSTRING_VAL = 3;
+    public final int UPPER_VAL = 4;
+    public final int LOWER_VAL = 5;
+    public final int TRIM_VAL = 6;
+    public final int LENGTH_VAL = 7;
+    public final int LOCATE_VAL = 8;
+    public final int ARGS_VAL = 9;
+    public final int INDEXOF_VAL = 10;
+
     /**
      * Initialize the value. This method should recursively initialize any
      * sub-values. 
@@ -144,4 +156,6 @@ public interface Val
      */
     public void appendIsNotNull(Select sel, ExpContext ctx, ExpState state, 
         SQLBuffer sql);
+
+    public int getId();
 }

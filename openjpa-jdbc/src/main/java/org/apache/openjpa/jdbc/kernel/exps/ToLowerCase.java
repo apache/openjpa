@@ -27,7 +27,7 @@ import org.apache.openjpa.jdbc.sql.Select;
  *
  * @author Abe White
  */
-class ToLowerCase
+public class ToLowerCase
     extends StringFunction {
 
     /**
@@ -49,5 +49,9 @@ class ToLowerCase
         buf.append(func.substring(0, idx));
         getValue().appendTo(sel, ctx, state, buf, index);
         buf.append(func.substring(idx + 3));
+    }
+
+    public int getId() {
+        return Val.LOWER_VAL;
     }
 }

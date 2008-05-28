@@ -33,7 +33,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  *
  * @author Abe White
  */
-class Substring
+public class Substring
     extends AbstractVal {
 
     private final Val _val1;
@@ -46,6 +46,14 @@ class Substring
     public Substring(Val val1, Val val2) {
         _val1 = val1;
         _val2 = val2;
+    }
+
+    public Val getVal1() {
+        return _val1;
+    }
+
+    public Val getVal2() {
+        return _val2;
     }
 
     public ClassMetaData getMetaData() {
@@ -136,6 +144,10 @@ class Substring
         _val1.acceptVisit(visitor);
         _val2.acceptVisit(visitor);
         visitor.exit(this);
+    }
+
+    public int getId() {
+        return Val.SUBSTRING_VAL;
     }
 }
 

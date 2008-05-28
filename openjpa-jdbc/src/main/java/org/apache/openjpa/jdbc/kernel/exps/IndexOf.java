@@ -33,7 +33,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  *
  * @author Abe White
  */
-class IndexOf
+public class IndexOf
     extends AbstractVal {
 
     private final Val _val1;
@@ -49,6 +49,13 @@ class IndexOf
         _val2 = val2;
     }
 
+    public Val getVal1() {
+        return _val1;
+    }
+
+    public Val getVal2() {
+        return _val2;
+    }
     public ClassMetaData getMetaData() {
         return _meta;
     }
@@ -140,6 +147,10 @@ class IndexOf
         _val1.acceptVisit(visitor);
         _val2.acceptVisit(visitor);
         visitor.exit(this);
+    }
+
+    public int getId() {
+        return Val.INDEXOF_VAL;
     }
 }
 

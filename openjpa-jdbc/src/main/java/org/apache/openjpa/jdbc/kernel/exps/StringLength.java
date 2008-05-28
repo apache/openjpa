@@ -27,7 +27,7 @@ import org.apache.openjpa.jdbc.sql.Select;
  *
  * @author Marc Prud'hommeaux
  */
-class StringLength
+public class StringLength
     extends StringFunction {
 
     private Class _cast = null;
@@ -60,6 +60,10 @@ class StringLength
         buf.append(func.substring(0, idx));
         getValue().appendTo(sel, ctx, state, buf, index);
         buf.append(func.substring(idx + 3));
+    }
+
+    public int getId() {
+        return Val.LENGTH_VAL;
     }
 }
 

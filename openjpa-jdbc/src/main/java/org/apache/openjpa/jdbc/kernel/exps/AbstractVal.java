@@ -81,5 +81,9 @@ abstract class AbstractVal
         visitor.enter(this);
         visitor.exit(this);
     }
+
+    public int getId() {
+        return Val.VAL;
+    }
 }
 

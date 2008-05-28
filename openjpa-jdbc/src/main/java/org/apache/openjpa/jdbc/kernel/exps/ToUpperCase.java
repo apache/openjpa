@@ -27,7 +27,7 @@ import org.apache.openjpa.jdbc.sql.Select;
  *
  * @author Abe White
  */
-class ToUpperCase
+public class ToUpperCase
     extends StringFunction {
 
     /**
@@ -49,6 +49,10 @@ class ToUpperCase
         buf.append(func.substring(0, idx));
         getValue().appendTo(sel, ctx, state, buf, index);
         buf.append(func.substring(idx + 3));
+    }
+
+    public int getId() {
+        return Val.UPPER_VAL;
     }
 }
 

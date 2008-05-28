@@ -36,7 +36,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  *
  * @author Marc Prud'hommeaux
  */
-class Trim
+public class Trim
     extends AbstractVal {
 
     private final Val _val;
@@ -51,6 +51,18 @@ class Trim
         _val = val;
         _trimChar = trimChar;
         _where = where;
+    }
+
+    public Val getVal() {
+        return _val;
+    }
+
+    public Val getTrimChar() {
+        return _trimChar;
+    }
+
+    public Boolean getWhere(){
+        return _where;
     }
 
     public ClassMetaData getMetaData() {
@@ -194,6 +206,10 @@ class Trim
         _val.acceptVisit(visitor);
         _trimChar.acceptVisit(visitor);
         visitor.exit(this);
+    }
+
+    public int getId() {
+        return Val.TRIM_VAL;
     }
 }
 

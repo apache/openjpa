@@ -35,7 +35,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  *
  * @author Marc Prud'hommeaux
  */
-class Concat
+public class Concat
     extends AbstractVal {
 
     private final Val _val1;
@@ -48,6 +48,14 @@ class Concat
     public Concat(Val val1, Val val2) {
         _val1 = val1;
         _val2 = val2;
+    }
+
+    public Val getVal1() {
+        return _val1;
+    }
+
+    public Val getVal2() {
+        return _val2;
     }
 
     public ClassMetaData getMetaData() {
@@ -144,6 +152,10 @@ class Concat
         _val1.acceptVisit(visitor);
         _val2.acceptVisit(visitor);
         visitor.exit(this);
+    }
+
+    public int getId() {
+        return Val.CONCAT_VAL;
     }
 }
 
