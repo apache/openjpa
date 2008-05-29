@@ -1111,7 +1111,7 @@ public class OracleDictionary
         if (batchLimit > 0 && ps != null) {
             updateSuccessCnt = ps.getUpdateCount();
             if (log.isTraceEnabled())
-                log.trace(_loc.get("batch_update_success_count",
+                log.trace(_loc.get("batch-update-success-count",
                     updateSuccessCnt));
         }
         return updateSuccessCnt;
