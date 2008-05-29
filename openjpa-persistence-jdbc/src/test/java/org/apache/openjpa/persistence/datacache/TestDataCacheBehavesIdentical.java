@@ -438,9 +438,9 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
 		assertEquals(useDataCache, dataCache.contains(PObject.class, oid));
 		
 		/**
-		 * refresh behavior depends on current lock. Having no lock will refresh
-		 * the instance (wrongly) while any other lock will attempt to fetch the 
-		 * instance from database (correctly) raising EntityNotFoundException.
+		 * refresh behavior no more depends on current lock. Refresh
+		 * will always attempt to fetch the instance from database 
+		 * raising EntityNotFoundException.
 		 *   
 		 */
 		em.getTransaction().begin();
@@ -448,18 +448,12 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
 			em.getFetchPlan().setReadLockMode(lock);
 		try {
 			em.refresh(pc);
-			if (lock == null) {
-				assertEquals(useDataCache ? MARKER_DATACACHE : MARKER_CACHE, pc.getName());
-			} else {
-				fail("expected EntityNotFoundException for PObject:" + oid);
-			}
+			fail("expected EntityNotFoundException for PObject:" + oid);
+		} catch (EntityNotFoundException ex) {
+			// we are good
 		} catch (Exception ex) {
-			if (ex instanceof EntityNotFoundException || 
-				ex instanceof org.apache.openjpa.persistence.EntityNotFoundException) {
-				if (lock != null) {
-					// we are good
-				}
-			}
+			ex.printStackTrace();
+			fail("expected EntityNotFoundException for PObject:" + oid);
 		} finally {
 			em.getTransaction().rollback();
 		}
