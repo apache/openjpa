@@ -23,7 +23,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
  *
  * @author Abe White
  */
-class Sqrt
+public class Sqrt
     extends UnaryOp {
 
     /**
@@ -39,6 +39,10 @@ class Sqrt
 
     protected String getOperator() {
         return "SQRT";
+    }
+
+    public int getId() {
+        return Val.SQRT_VAL;
     }
 }
 

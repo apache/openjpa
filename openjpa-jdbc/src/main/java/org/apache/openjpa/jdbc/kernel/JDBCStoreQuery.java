@@ -707,6 +707,10 @@ public class JDBCStoreQuery
             return handleTrimVal(value, ob, params, sm);
         case Val.INDEXOF_VAL:
             return handleIndexOfVal(value, ob, params, sm);
+        case Val.ABS_VAL:
+            return handleAbsVal(value, ob, params, sm);
+        case Val.SQRT_VAL:
+            return handleSqrtVal(value, ob, params, sm);
         default:    
             throw new UnsupportedException();
         }
@@ -853,10 +857,46 @@ public class JDBCStoreQuery
             (org.apache.openjpa.jdbc.kernel.exps.IndexOf) value;
         String val1 = (String) getValue(locateVal.getVal1(), ob, params, sm);
         Val[] val2 = (Val[]) getValue(locateVal.getVal2(), ob, params, sm);
-        String strVal = (String)getValue(val2[0], ob, params, sm);
+        String strVal = (String) getValue(val2[0], ob, params, sm);
         int idx = ((Long) getValue(val2[1], ob, params, sm)).intValue();
         return strVal.indexOf(val1, idx);
     }
+
+    private Object handleAbsVal(Object value, Object ob, Object[] params, 
+        OpenJPAStateManager sm) {
+        org.apache.openjpa.jdbc.kernel.exps.Abs absVal = 
+            (org.apache.openjpa.jdbc.kernel.exps.Abs) value;
+        Object val = getValue(absVal.getValue(), ob, params, sm);
+        Class c = val.getClass();
+        if (c == Integer.class)
+            return new Integer(java.lang.Math.abs(((Integer) val).intValue()));
+        else if (c == Float.class)
+            return new Float(java.lang.Math.abs(((Float) val).floatValue()));
+        else if (c == Double.class)
+            return new Double(java.lang.Math.abs(((Double) val).doubleValue()));
+        else if (c == Long.class)
+            return new Long(java.lang.Math.abs(((Long) val).longValue()));
+        throw new UnsupportedException();
+    }
+
+    private Object handleSqrtVal(Object value, Object ob, Object[] params, 
+        OpenJPAStateManager sm) {
+        org.apache.openjpa.jdbc.kernel.exps.Sqrt sqrtVal = 
+            (org.apache.openjpa.jdbc.kernel.exps.Sqrt) value;
+        Object val = getValue(sqrtVal.getValue(), ob, params, sm);
+        Class c = val.getClass();
+        if (c == Integer.class)
+            return new Double(java.lang.Math.sqrt(((Integer) val).
+                doubleValue()));
+        else if (c == Float.class)
+            return new Double(java.lang.Math.sqrt(((Float) val).floatValue()));
+        else if (c == Double.class)
+            return new Double(java.lang.Math.sqrt(((Double) val).
+                doubleValue()));
+        else if (c == Long.class)
+            return new Double(java.lang.Math.sqrt(((Long) val).doubleValue()));
+        throw new UnsupportedException();
+    }    
 
     private Object getValue(Object value, Object ob, Object[] params,
         OpenJPAStateManager sm) {

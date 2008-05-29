@@ -154,5 +154,9 @@ public class Math
         _val2.acceptVisit(visitor);
         visitor.exit(this);
     }
+
+    public int getId() {
+        return Val.MATH_VAL;
+    }
 }
 

@@ -26,7 +26,7 @@ import org.apache.openjpa.kernel.Filters;
 /**
  * Absolute value.
  */
-class Abs
+public class Abs
     extends UnaryOp {
 
     /**
@@ -50,6 +50,10 @@ class Abs
 
     protected String getOperator() {
         return "ABS";
+    }
+
+    public int getId() {
+        return Val.ABS_VAL;
     }
 }
 

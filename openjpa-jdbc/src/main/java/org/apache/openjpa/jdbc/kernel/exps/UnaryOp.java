@@ -53,7 +53,7 @@ abstract class UnaryOp
         _noParen = noParen;
     }
 
-    protected Val getValue() {
+    public Val getValue() {
         return _val;
     }
 

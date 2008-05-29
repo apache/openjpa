@@ -62,6 +62,8 @@ public interface Val
     public final int LOCATE_VAL = 8;
     public final int ARGS_VAL = 9;
     public final int INDEXOF_VAL = 10;
+    public final int ABS_VAL = 11;
+    public final int SQRT_VAL = 12;
 
     /**
      * Initialize the value. This method should recursively initialize any
