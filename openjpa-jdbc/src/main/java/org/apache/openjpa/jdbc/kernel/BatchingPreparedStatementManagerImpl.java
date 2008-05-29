@@ -238,13 +238,7 @@ public class BatchingPreparedStatementManagerImpl extends
         // DB2/ZOS        1 / 0           1 / 0        -2 / SQLException
         // Oracle        -2 / -2         -2 / -2       -2 / SQLException
         int cnt = 0;
-        int updateSuccessCnt = 0;
-        if (ps != null && _dict.platform.indexOf("Oracle") > -1)
-            updateSuccessCnt = ps.getUpdateCount();
-        if (_log.isTraceEnabled() &&
-            _dict.platform.indexOf("Oracle") > -1)
-            _log.trace(_loc.get("batch_update_success_count",
-                    updateSuccessCnt));
+        int updateSuccessCnt = _dict.getBatchUpdateCount(ps);
         Object failed = null;
         List batchedRows = getBatchedRows();
         for (int i = 0; i < count.length; i++) {
@@ -262,7 +256,7 @@ public class BatchingPreparedStatementManagerImpl extends
                         row.getSQL(_dict)).getMessage());
                 break;
             case Statement.SUCCESS_NO_INFO: // -2
-                if (_dict.platform.indexOf("Oracle") > -1 &&
+                if (_dict.reportsSuccessNoInfoOnBatchUpdates &&                    
                     updateSuccessCnt != count.length) {
                     // Oracle batching specifics:
                     // treat update/delete of SUCCESS_NO_INFO as failed case

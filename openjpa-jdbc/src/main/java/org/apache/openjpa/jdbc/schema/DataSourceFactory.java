@@ -235,10 +235,6 @@ public class DataSourceFactory {
                 conn = ds.getConnection(conf.getConnection2UserName(), conf
                         .getConnection2Password());
 
-            if (log.isTraceEnabled())
-                log.trace(_loc.get("connection-defaults", new Object[]{
-                    conn.getAutoCommit(), conn.getHoldability(),
-                    conn.getTransactionIsolation()})); 
             return ds;
         } catch (Exception e) {
             throw new StoreException(e).setFatal(true);

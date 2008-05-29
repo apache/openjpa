@@ -165,6 +165,7 @@ public class OracleDictionary
         substringFunctionName = "SUBSTR";
         super.setBatchLimit(defaultBatchLimit);
         selectWordSet.add("WITH");
+        reportsSuccessNoInfoOnBatchUpdates = true;
     }
 
     public void endConfiguration() {
@@ -1103,5 +1104,16 @@ public class OracleDictionary
     public void insertClobForStreamingLoad(Row row, Column col)
         throws SQLException {
         row.setNull(col);
+    }
+
+    public int getBatchUpdateCount(PreparedStatement ps) throws SQLException {
+        int updateSuccessCnt = 0;
+        if (batchLimit > 0 && ps != null) {
+            updateSuccessCnt = ps.getUpdateCount();
+            if (log.isTraceEnabled())
+                log.trace(_loc.get("batch_update_success_count",
+                    updateSuccessCnt));
+        }
+        return updateSuccessCnt;
     }
 }

@@ -236,6 +236,7 @@ public class DBDictionary
     public boolean requiresCastForComparisons = false;
     public boolean supportsModOperator = false;
     public boolean supportsXMLColumn = false;
+    public boolean reportsSuccessNoInfoOnBatchUpdates = false;
 
     // functions
     public String castFunction = "CAST({0} AS {1})";
@@ -373,10 +374,25 @@ public class DBDictionary
     public void connectedConfiguration(Connection conn)
         throws SQLException {
         if (!connected) {
+            DatabaseMetaData metaData = null;            
             try {
-                if (log.isTraceEnabled())
+                if (log.isTraceEnabled()) {
+                    metaData = conn.getMetaData();
+                    boolean isJDBC3 = false;
                     log.trace(DBDictionaryFactory.toString
-                        (conn.getMetaData()));
+                        (metaData));
+                    try {
+                        // JDBC3-only method, so it might throw a 
+                        // AbstractMethodError
+                        isJDBC3 = metaData.getJDBCMajorVersion() >= 3;
+                    } catch (Throwable t) {
+                        // ignore if not JDBC3
+                    }
+                    if (isJDBC3)
+                        log.trace(_loc.get("connection-defaults", new Object[]{
+                            conn.getAutoCommit(), conn.getHoldability(),
+                            conn.getTransactionIsolation()}));
+                }
             } catch (Exception e) {
                 log.trace(e.toString(), e);
             }
@@ -4410,5 +4426,14 @@ public class DBDictionary
 
     public boolean needsToCreateIndex(Index idx, Table table) {
         return true;
+    }
+
+    /**
+     * Return batched statements update succes count
+     * @param ps A PreparedStatement
+     * @return return update count
+     */
+    public int getBatchUpdateCount(PreparedStatement ps) throws SQLException {
+        return 0;
     }
 }
