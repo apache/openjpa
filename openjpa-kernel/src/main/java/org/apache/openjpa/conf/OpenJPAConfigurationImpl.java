@@ -122,6 +122,7 @@ public class OpenJPAConfigurationImpl
     public BooleanValue ignoreChanges;
     public BooleanValue nontransactionalRead;
     public BooleanValue nontransactionalWrite;
+    public BooleanValue refreshFromDataCache;
     public BooleanValue multithreaded;
     public StringValue mapping;
     public PluginValue metaFactoryPlugin;
@@ -222,7 +223,12 @@ public class OpenJPAConfigurationImpl
         queryCachePlugin.setAliases(aliases);
         queryCachePlugin.setDefault(aliases[0]);
         queryCachePlugin.setString(aliases[0]);
-
+        
+        refreshFromDataCache = addBoolean("RefreshFromDataCache");
+        refreshFromDataCache.setDefault("false");
+        refreshFromDataCache.set(false);
+        refreshFromDataCache.setDynamic(true);
+        
         dynamicDataStructs = addBoolean("DynamicDataStructs");
         dynamicDataStructs.setDefault("false");
         dynamicDataStructs.set(false);
@@ -643,6 +649,20 @@ public class OpenJPAConfigurationImpl
 
     public String getQueryCache() {
         return queryCachePlugin.getString();
+    }
+    
+    public boolean getRefreshFromDataCache() {
+    	return refreshFromDataCache.get();
+    }
+    
+    public void setRefreshFromDataCache(boolean flag) {
+    	refreshFromDataCache.set(flag);
+    }
+    
+    public void setRefreshFromDataCache(Boolean flag) {
+    	if (flag != null) {
+    		refreshFromDataCache.set(flag.booleanValue());
+    	}
     }
 
     public boolean getDynamicDataStructs() {

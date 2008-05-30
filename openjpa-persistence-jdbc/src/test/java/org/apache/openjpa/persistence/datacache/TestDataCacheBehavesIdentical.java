@@ -286,10 +286,11 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
 
 	 */
 	public void verifyRefresh(boolean useDataCache, LockModeType lock, 
-			boolean makeDirtyBeforeRefresh, String expected) {
+			boolean makeDirtyBeforeRefresh, boolean refreshFromDataCache, 
+			String expected) {
 		OpenJPAEntityManagerFactorySPI emf = (useDataCache)
 			? emfWithDataCache : emfWithoutDataCache;
-			
+		emf.getConfiguration().setRefreshFromDataCache(refreshFromDataCache);
 		OpenJPAEntityManagerSPI em = emf.createEntityManager();
         
 		em.getTransaction().begin();
@@ -364,39 +365,59 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
 	}
 	
 	public void testDirtyRefreshWithNoLockHitsDatabase() {
-		verifyRefresh(WITH_DATACACHE, NOLOCK, DIRTY, MARKER_DATABASE);
+		verifyRefresh(WITH_DATACACHE, NOLOCK, DIRTY, false, MARKER_DATABASE);
+	}
+	
+	public void testDirtyRefreshWithNoLockHitsDataCache() {
+		verifyRefresh(WITH_DATACACHE, NOLOCK, DIRTY, true, MARKER_DATACACHE);
 	}
 	
 	public void testCleanRefreshWithNoLockHitsDatabase() {
-		verifyRefresh(WITH_DATACACHE, NOLOCK, !DIRTY, MARKER_DATABASE);
+		verifyRefresh(WITH_DATACACHE, NOLOCK, !DIRTY, false, MARKER_DATABASE);
+	}
+	
+	public void testCleanRefreshWithNoLockHitsDataCache() {
+		verifyRefresh(WITH_DATACACHE, NOLOCK, !DIRTY, true, MARKER_DATACACHE);
 	}
 	
 	public void testDirtyRefreshWithReadLockHitsDatabase() {
-		verifyRefresh(WITH_DATACACHE, LockModeType.READ, DIRTY, MARKER_DATABASE);
+		verifyRefresh(WITH_DATACACHE, LockModeType.READ, DIRTY, true, MARKER_DATABASE);
+		verifyRefresh(WITH_DATACACHE, LockModeType.READ, DIRTY, false, MARKER_DATABASE);
 	}
 	
 	public void testCleanRefreshWithReadLockHitsDatabase() {
-		verifyRefresh(WITH_DATACACHE, LockModeType.READ, !DIRTY, MARKER_DATABASE);
+		verifyRefresh(WITH_DATACACHE, LockModeType.READ, !DIRTY, true, MARKER_DATABASE);
+		verifyRefresh(WITH_DATACACHE, LockModeType.READ, !DIRTY, false, MARKER_DATABASE);
 	}
 	
 	public void testDirtyRefreshWithWriteLockHitsDatabase() {
-		verifyRefresh(WITH_DATACACHE, LockModeType.WRITE, DIRTY, MARKER_DATABASE);
+		verifyRefresh(WITH_DATACACHE, LockModeType.WRITE, DIRTY, true, MARKER_DATABASE);
+		verifyRefresh(WITH_DATACACHE, LockModeType.WRITE, DIRTY, false, MARKER_DATABASE);
 	}
 	
 	public void testCleanRefreshWithWriteLockHitsDatabase() {
-		verifyRefresh(WITH_DATACACHE, LockModeType.WRITE, !DIRTY, MARKER_DATABASE);
+		verifyRefresh(WITH_DATACACHE, LockModeType.WRITE, !DIRTY, true, MARKER_DATABASE);
+		verifyRefresh(WITH_DATACACHE, LockModeType.WRITE, !DIRTY, false, MARKER_DATABASE);
 	}
 	
 	public void testDirtyRefreshWithoutDataCacheAlwaysHitsDatabase() {
-		verifyRefresh(!WITH_DATACACHE, NOLOCK, DIRTY, MARKER_DATABASE);
-		verifyRefresh(!WITH_DATACACHE, LockModeType.READ, DIRTY, MARKER_DATABASE);
-		verifyRefresh(!WITH_DATACACHE, LockModeType.WRITE, DIRTY, MARKER_DATABASE);
+		verifyRefresh(!WITH_DATACACHE, NOLOCK, DIRTY, true, MARKER_DATABASE);
+		verifyRefresh(!WITH_DATACACHE, LockModeType.READ, DIRTY, true, MARKER_DATABASE);
+		verifyRefresh(!WITH_DATACACHE, LockModeType.WRITE, DIRTY, true, MARKER_DATABASE);
+		
+		verifyRefresh(!WITH_DATACACHE, NOLOCK, DIRTY, false, MARKER_DATABASE);
+		verifyRefresh(!WITH_DATACACHE, LockModeType.READ, DIRTY, false, MARKER_DATABASE);
+		verifyRefresh(!WITH_DATACACHE, LockModeType.WRITE, DIRTY, false, MARKER_DATABASE);
 	}
 	
 	public void testCleanRefreshWithoutDataCacheAlwaysHitsDatabase() {
-		verifyRefresh(!WITH_DATACACHE, NOLOCK, !DIRTY, MARKER_DATABASE);
-		verifyRefresh(!WITH_DATACACHE, LockModeType.READ, !DIRTY, MARKER_DATABASE);
-		verifyRefresh(!WITH_DATACACHE, LockModeType.WRITE, !DIRTY, MARKER_DATABASE);
+		verifyRefresh(!WITH_DATACACHE, NOLOCK, !DIRTY, true, MARKER_DATABASE);
+		verifyRefresh(!WITH_DATACACHE, LockModeType.READ, !DIRTY, true, MARKER_DATABASE);
+		verifyRefresh(!WITH_DATACACHE, LockModeType.WRITE, !DIRTY, true, MARKER_DATABASE);
+		
+		verifyRefresh(!WITH_DATACACHE, NOLOCK, !DIRTY, false, MARKER_DATABASE);
+		verifyRefresh(!WITH_DATACACHE, LockModeType.READ, !DIRTY, false, MARKER_DATABASE);
+		verifyRefresh(!WITH_DATACACHE, LockModeType.WRITE, !DIRTY, false, MARKER_DATABASE);
 	}
 	
 	/**

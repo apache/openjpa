@@ -423,8 +423,12 @@ public class DataCacheStoreManager
 
     public Collection loadAll(Collection sms, PCState state, int load,
     		FetchConfiguration fetch, Object edata) {
-        if (load == StoreManager.FORCE_LOAD_REFRESH || isLocking(fetch))
-            return super.loadAll(sms, state, load, fetch, edata);
+    	if (isLocking(fetch) || 
+    	   (!isLocking(fetch) &&
+    		(load == StoreManager.FORCE_LOAD_REFRESH)
+    		&& !_ctx.getConfiguration().getRefreshFromDataCache())) {
+    	       return super.loadAll(sms, state, load, fetch, edata);
+    	}
 
         Map unloaded = null;
         List smList = null;

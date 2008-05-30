@@ -29,6 +29,7 @@ import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.RemoteCommitProvider;
 import org.apache.openjpa.kernel.AutoClear;
 import org.apache.openjpa.kernel.AutoDetach;
+import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.ConnectionRetainModes;
@@ -330,7 +331,37 @@ public interface OpenJPAConfiguration
      * @since 0.2.5
      */
     public void setDataCacheTimeout(Integer timeout);
-
+    
+    /**
+     * Gets whether entity state is to be refreshed from {@link DataCache}.
+     * The entities are never refreshed from DataCache if lock is being applied 
+     * (e.g. in a pessimistic transaction) and hence this setting only refers 
+     * to behavior when not locking.
+     * 
+     * @since 1.1.1
+     */
+    public boolean getRefreshFromDataCache();
+    
+    /**
+     * Sets whether entity state is to be refreshed from {@link DataCache}.
+     * The entities are never refreshed from DataCache if lock is being applied 
+     * (e.g. in a pessimistic transaction) and hence this setting only refers 
+     * to behavior when not locking.
+     * 
+     * @since 1.1.
+     */
+    public void setRefreshFromDataCache(boolean refreshFromDataCache);
+    
+    /**
+     * Sets whether entity state is to be refreshed from {@link DataCache}.
+     * The entities are never refreshed from DataCache if lock is being applied 
+     * (e.g. in a pessimistic transaction) and hence this setting only refers 
+     * to behavior when not locking.
+     * 
+     * @since 1.1.1
+     */
+    public void setRefreshFromDataCache(Boolean refreshFromDataCache);
+    
     /**
      * The plugin to use for level-2 data store query caching.
      *
