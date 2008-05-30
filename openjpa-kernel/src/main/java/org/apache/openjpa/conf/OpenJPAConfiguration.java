@@ -338,7 +338,7 @@ public interface OpenJPAConfiguration
      * (e.g. in a pessimistic transaction) and hence this setting only refers 
      * to behavior when not locking.
      * 
-     * @since 1.1.1
+     * @since 1.2.0
      */
     public boolean getRefreshFromDataCache();
     
@@ -348,7 +348,7 @@ public interface OpenJPAConfiguration
      * (e.g. in a pessimistic transaction) and hence this setting only refers 
      * to behavior when not locking.
      * 
-     * @since 1.1.
+     * @since 1.2.0
      */
     public void setRefreshFromDataCache(boolean refreshFromDataCache);
     
@@ -358,7 +358,7 @@ public interface OpenJPAConfiguration
      * (e.g. in a pessimistic transaction) and hence this setting only refers 
      * to behavior when not locking.
      * 
-     * @since 1.1.1
+     * @since 1.2.0
      */
     public void setRefreshFromDataCache(Boolean refreshFromDataCache);
     
