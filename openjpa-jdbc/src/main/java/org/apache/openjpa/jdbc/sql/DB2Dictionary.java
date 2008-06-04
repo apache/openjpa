@@ -238,15 +238,6 @@ public class DB2Dictionary
         return conn;
     }
 
-    private boolean isJDBC3(DatabaseMetaData meta) {
-        try {
-            // JDBC3-only method, so it might throw a AbstractMethodError
-            return meta.getJDBCMajorVersion() >= 3;
-        } catch (Throwable t) {
-            return false;
-        }
-    }
-
     public void connectedConfiguration(Connection conn) throws SQLException {
     	super.connectedConfiguration(conn);
 
@@ -266,7 +257,7 @@ public class DB2Dictionary
         }
         
     	if (db2ServerType == 0) {
-    	    if (isJDBC3(metaData)) {
+    	    if (isJDBC3) {
     	        maj = metaData.getDatabaseMajorVersion();
     	        min = metaData.getDatabaseMinorVersion();
     	    }

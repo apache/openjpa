@@ -327,6 +327,7 @@ public class DBDictionary
     protected JDBCConfiguration conf = null;
     protected Log log = null;
     protected boolean connected = false;
+    protected boolean isJDBC3 = false;
     protected final Set reservedWordSet = new HashSet();
     protected final Set systemSchemaSet = new HashSet();
     protected final Set systemTableSet = new HashSet();
@@ -374,27 +375,28 @@ public class DBDictionary
     public void connectedConfiguration(Connection conn)
         throws SQLException {
         if (!connected) {
-            DatabaseMetaData metaData = null;            
+            DatabaseMetaData metaData = null;
             try {
-                if (log.isTraceEnabled()) {
-                    metaData = conn.getMetaData();
-                    boolean isJDBC3 = false;
-                    log.trace(DBDictionaryFactory.toString
-                        (metaData));
-                    try {
-                        // JDBC3-only method, so it might throw a 
-                        // AbstractMethodError
-                        isJDBC3 = metaData.getJDBCMajorVersion() >= 3;
-                    } catch (Throwable t) {
-                        // ignore if not JDBC3
-                    }
-                    if (isJDBC3)
-                        log.trace(_loc.get("connection-defaults", new Object[]{
-                            conn.getAutoCommit(), conn.getHoldability(),
-                            conn.getTransactionIsolation()}));
+                metaData = conn.getMetaData();
+                try {
+                    // JDBC3-only method, so it might throw a 
+                    // AbstractMethodError
+                    isJDBC3 = metaData.getJDBCMajorVersion() >= 3;
+                } catch (Throwable t) {
+                    // ignore if not JDBC3
                 }
             } catch (Exception e) {
-                log.trace(e.toString(), e);
+                if (log.isTraceEnabled())
+                    log.trace(e.toString(), e);
+            }
+
+            if (log.isTraceEnabled()) {                    
+                log.trace(DBDictionaryFactory.toString(metaData));
+
+                if (isJDBC3)
+                    log.trace(_loc.get("connection-defaults", new Object[]{
+                        conn.getAutoCommit(), conn.getHoldability(),
+                        conn.getTransactionIsolation()}));
             }
         }
         connected = true;
