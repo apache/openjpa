@@ -148,6 +148,8 @@ public class InformixDictionary
         // Informix does not support foreign key delete action NULL or DEFAULT
         supportsNullDeleteAction = false;
         supportsDefaultDeleteAction = false;
+        
+        trimSchemaName = true;
     }
 
     public void connectedConfiguration(Connection conn)

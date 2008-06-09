@@ -237,6 +237,11 @@ public class DBDictionary
     public boolean supportsModOperator = false;
     public boolean supportsXMLColumn = false;
     public boolean reportsSuccessNoInfoOnBatchUpdates = false;
+    
+    /**
+     * Some Databases append whitespace after the schema name 
+     */
+    public boolean trimSchemaName = false;
 
     // functions
     public String castFunction = "CAST({0} AS {1})";
@@ -4437,5 +4442,13 @@ public class DBDictionary
      */
     public int getBatchUpdateCount(PreparedStatement ps) throws SQLException {
         return 0;
+    }
+    
+    public boolean getTrimSchemaName() { 
+        return trimSchemaName;
+    }
+    
+    public void setTrimSchemaName(boolean trimSchemaName) { 
+        this.trimSchemaName = trimSchemaName; 
     }
 }

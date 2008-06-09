@@ -756,8 +756,10 @@ public class SchemaGenerator {
                 seq++;
 
             // find pk table
-            pkSchemaName = 
-                StringUtils.trimToNull(fks[i].getPrimaryKeySchemaName());
+            pkSchemaName = fks[i].getPrimaryKeySchemaName();
+            if(_dict.getTrimSchemaName()) {
+                pkSchemaName= StringUtils.trimToNull(pkSchemaName);
+            }
             pkTableName = fks[i].getPrimaryKeyTableName();
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("gen-fk", new Object[]{ name, table,
