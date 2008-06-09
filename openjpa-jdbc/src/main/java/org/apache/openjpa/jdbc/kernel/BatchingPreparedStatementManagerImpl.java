@@ -117,7 +117,8 @@ public class BatchingPreparedStatementManagerImpl extends
      */
     private boolean isBatchDisabled(RowImpl row) {
         boolean rtnVal = true;
-        if (getBatchLimit() != 0 && !isBatchDisabled()) {
+        int limit = getBatchLimit();
+        if ((limit < 0 || limit > 1) && !isBatchDisabled()) {
             OpenJPAStateManager sm = row.getPrimaryKey();
             ClassMapping cmd = null;
             if (sm != null)
