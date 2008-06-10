@@ -531,11 +531,19 @@ public class DB2Dictionary
 
             String Warn = new String((char[]) getSqlWarnMethd.
                     invoke(sqlca, new Object[]{}));
-            if(Warn.trim().length() != 0)
+            if (Warn.trim().length() != 0)
                 exceptionMsg = exceptionMsg.concat(", Warn=" +Warn + "]" );
             else
                 exceptionMsg = exceptionMsg.concat( "]" );
             msg = msg.concat(exceptionMsg);
+            
+            // for batched execution failures, SQLExceptions are nested
+            SQLException sqle2 = sqle.getNextException();
+            while (sqle2 != null) {                
+                msg = msg.concat("\n" + sqle2.getMessage());
+                sqle2 = sqle2.getNextException();
+            }
+            
             return msg;
         } catch (Throwable t) {
             return sqle.getMessage();
