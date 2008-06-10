@@ -133,9 +133,16 @@ public abstract class RelationToManyInverseKeyFieldStrategy
             elem.setJoinDirection(ValueMapping.JOIN_EXPECTED_INVERSE);
             elem.setUseClassCriteria(criteria);
 
-            field.setOrderColumn(finfo.getOrderColumn(field,
-                mapped.getForeignKey().getTable(), adapt));
-            field.setOrderColumnIO(finfo.getColumnIO());
+            ForeignKey fk = mapped.getForeignKey();
+            /** Foreign key may be null if declared type of the mapped field is 
+             * abstract and under table-per-class inheritance strategy will have
+             * no mapped table.  
+             */
+            if (fk != null) {
+            	field.setOrderColumn(finfo.getOrderColumn(field,
+            			fk.getTable(), adapt));
+            	field.setOrderColumnIO(finfo.getColumnIO());
+            }
             return;
         }
 
