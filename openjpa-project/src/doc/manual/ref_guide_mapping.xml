@@ -2680,6 +2680,47 @@ em.persist(o1);
 </programlisting>
             </example>
         </section>
+        <section id="ref_guide_streamsupport">
+            <title>
+              Stream LOB Support
+            </title>
+              <indexterm zone="ref_guide_streamsupport">
+                  <primary>
+                      stream support
+                  </primary>
+              </indexterm>
+              <indexterm zone="ref_guide_streamsupport">
+                  <primary>
+                      stream lob support
+                  </primary>
+              </indexterm>
+              <para>
+Since the 1.1.0 release Apache OpenJPA added support for Streams. This feature
+makes it possible to stream large amounts of data into and out of fields in
+objects managed by OpenJPA without ever holding all the data in memory at the
+same time.
+              </para>
+              <para>
+To persist a stream, use the 
+<ulink url="../javadoc/org/apache/openjpa/persistence/Persistent.html">
+<classname>org.apache.openjpa.persistence.Persistent</classname></ulink> 
+annotation.
+              </para>
+            <example id="ref_guide_streamsupport_example">
+                <title>
+                    Showing annotated InputStream
+                </title>
+<programlisting>
+@Entity
+public class Employee {
+    ...
+    @Persistent
+    private InputStream photoStream;
+    ...
+} 
+</programlisting>
+            </example>
+        </section>
     </section>
     <section id="ref_guide_mapping_jpa_map_keycols">
         <title>Key Columns</title>

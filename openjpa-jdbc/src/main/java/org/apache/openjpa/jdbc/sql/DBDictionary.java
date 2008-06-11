@@ -60,6 +60,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
@@ -101,10 +102,12 @@ import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.OpenJPAException;
+import org.apache.openjpa.util.ReferentialIntegrityException;
 import org.apache.openjpa.util.Serialization;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
+
 import serp.util.Numbers;
 import serp.util.Strings;
 
@@ -506,6 +509,11 @@ public class DBDictionary
         return rs.getBinaryStream(column);
     }
 
+    public InputStream getLOBStream(JDBCStore store, ResultSet rs,
+        int column) throws SQLException {
+        return rs.getBinaryStream(column);
+    }
+    
     /**
      * Convert the specified column of the SQL ResultSet to the proper
      * java type.
@@ -4189,11 +4197,11 @@ public class DBDictionary
         return column.toString();
     }
     
-    public void insertBlobForStreamingLoad(Row row, Column col, Object ob)
-    throws SQLException {
+    public void insertBlobForStreamingLoad(Row row, Column col, 
+        JDBCStore store, Object ob, Select sel) throws SQLException {
         if (ob != null) {
             row.setBinaryStream(col, 
-                    new ByteArrayInputStream(new byte[0]), 0);
+                new ByteArrayInputStream(new byte[0]), 0);
         } else {
             row.setNull(col);
         }
@@ -4458,5 +4466,9 @@ public class DBDictionary
     
     public void setTrimSchemaName(boolean trimSchemaName) { 
         this.trimSchemaName = trimSchemaName; 
+    }
+    
+    public void deleteStream(JDBCStore store, Select sel) throws SQLException {
+        // Do nothing
     }
 }

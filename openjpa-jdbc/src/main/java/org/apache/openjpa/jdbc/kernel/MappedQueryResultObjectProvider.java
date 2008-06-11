@@ -419,6 +419,13 @@ class MappedQueryResultObjectProvider
             return _res.getSQLObject(obj, map);
         }
 
+        protected Object getStreamInternal(JDBCStore store, Object obj,
+            int metaTypeCode, Object arg, Joins joins) throws SQLException {
+            if (obj instanceof Column)
+                return _res.getObject((Column) obj, arg, joins);
+            return _res.getObject(obj, metaTypeCode, arg);
+        }
+        
         protected Ref getRefInternal(Object obj, Map map, Joins joins)
             throws SQLException {
             if (obj instanceof Column)

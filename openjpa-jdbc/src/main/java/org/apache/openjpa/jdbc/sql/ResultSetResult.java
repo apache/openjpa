@@ -42,6 +42,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.meta.JavaTypes;
+
 import serp.util.Numbers;
 
 /**
@@ -345,6 +346,11 @@ public class ResultSetResult
         return _dict.getLong(_rs, ((Number) obj).intValue());
     }
 
+    protected Object getStreamInternal(JDBCStore store, Object obj,
+        int metaTypeCode, Object arg, Joins joins) throws SQLException {
+        return getLOBStreamInternal(store, obj, joins);
+    }
+    
     protected Object getObjectInternal(Object obj, int metaTypeCode,
         Object arg, Joins joins)
         throws SQLException {
@@ -497,5 +503,10 @@ public class ResultSetResult
         } catch (SQLException se) {
             return 0;
         }
+    }
+  
+    protected InputStream getLOBStreamInternal(JDBCStore store, Object obj,
+        Joins joins) throws SQLException {
+        return _dict.getLOBStream(store, _rs, ((Number) obj).intValue());
     }
 }

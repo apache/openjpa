@@ -212,7 +212,9 @@ public interface Result
      */
     public InputStream getBinaryStream(Object obj)
         throws SQLException;
-
+    
+    public InputStream getLOBStream(JDBCStore store, Object obj)
+        throws SQLException;
     /**
      * Return the value stored in the given column or id; may not be supported
      * by results that are not backed by a SQL result set.

@@ -252,6 +252,11 @@ public class MergedResult
         return _res[_idx].getBinaryStream(obj);
     }
 
+    public InputStream getLOBStream(JDBCStore store, Object obj)
+        throws SQLException {
+        return _res[_idx].getLOBStream(store, obj);
+    }
+    
     public Blob getBlob(Object obj)
         throws SQLException {
         return _res[_idx].getBlob(obj);
