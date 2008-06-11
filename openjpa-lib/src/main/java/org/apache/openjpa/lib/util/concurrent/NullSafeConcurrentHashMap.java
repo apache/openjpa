@@ -83,20 +83,21 @@ public class NullSafeConcurrentHashMap extends ConcurrentHashMap {
         // as other threads remove the same entries, whereas the random
         // iterator may return values that have been removed.
 
-        while (!isEmpty()) {
-            while (!randomKeys.isEmpty()) {
-                // randomKeys contains null-masked data
-                Iterator iter = randomKeys.iterator();
-                Object key = iter.next();
-                if (key != null && randomKeys.remove(key)) {
-                    Object val = super.remove(key);
-                    if (val != null)
-                        return new EntryImpl(unmaskNull(key), unmaskNull(val));
-                }
+        for (Iterator iter = randomKeys.iterator(); iter.hasNext(); ) {
+            // randomKeys contains null-masked data
+            Object key = iter.next();
+            if (key != null && randomKeys.remove(key)) {
+                Object val = super.remove(key);
+                if (val != null)
+                    return new EntryImpl(unmaskNull(key), unmaskNull(val));
             }
+        }
 
-            // if randomKeys is empty, fall back to non-random behavior.
-            Object key = super.keySet().iterator().next();
+        // if randomKeys is empty, fall back to non-random behavior.
+        for (Iterator iter = super.keySet().iterator(); iter.hasNext(); ) {
+            Object key = iter.next();
+            if (key == null)
+                continue;
             Object val = super.remove(key);
             if (val != null)
                 return new EntryImpl(unmaskNull(key), unmaskNull(val));

@@ -56,18 +56,16 @@ public class SizedConcurrentHashMap
 
     @Override
     public Object putIfAbsent(Object key, Object value) {
-        Object o = super.putIfAbsent(key, value);
         if (maxSize != Integer.MAX_VALUE)
-            removeOverflow();
-        return o;
+            removeOverflow(true);
+        return super.putIfAbsent(key, value);
     }
 
     @Override
     public Object put(Object key, Object value) {
-        Object o = super.put(key, value);
         if (maxSize != Integer.MAX_VALUE)
-            removeOverflow();
-        return o;
+            removeOverflow(true);
+        return super.put(key, value);
     }
 
     public int getMaxSize() {
@@ -79,11 +77,23 @@ public class SizedConcurrentHashMap
             throw new IllegalArgumentException(String.valueOf(max));
         maxSize = max;
 
-        removeOverflow();
+        removeOverflow(false);
     }
 
+    /**
+     * Equivalent to <code>removeOverflow(false)</code>.
+     */
     protected void removeOverflow() {
-        while (size() > maxSize) {
+        removeOverflow(false);
+    }
+
+    /**
+     * Removes overflow. If <code>forPut</code> is <code>true</code>, then
+     * this uses <code>size() + 1</code> when computing size.
+     */
+    protected void removeOverflow(boolean forPut) {
+        int sizeToCompareTo = forPut ? maxSize - 1 : maxSize;
+        while (size() > sizeToCompareTo) {
             Entry entry = removeRandom();
             // if removeRandom() returns null, break out of the loop. Of course,
             // since we're not locking, the size might not actually be null
