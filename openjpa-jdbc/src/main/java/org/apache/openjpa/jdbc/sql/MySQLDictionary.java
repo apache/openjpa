@@ -73,6 +73,7 @@ public class MySQLDictionary
         constraintNameMode = CONS_NAME_MID;
         supportsMultipleNontransactionalResultSets = false;
         requiresAliasForSubselect = true; // new versions
+        requiresTargetForDelete = true;
         supportsSelectStartIndex = true;
         supportsSelectEndIndex = true;
 
