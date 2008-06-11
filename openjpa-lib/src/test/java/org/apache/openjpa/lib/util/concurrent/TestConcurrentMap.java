@@ -41,7 +41,7 @@ public class TestConcurrentMap extends AbstractTestCase {
     private static final int SLEEP = 3;
 
     private ConcurrentMap[] _maps = new ConcurrentMap[]{
-        new SizedConcurrentHashMap(ENTRIES, .75f, 16),
+        new SizedConcurrentHashMap(ENTRIES, .75f, 16), 
         new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.HARD), };
 
     public void setUp() throws Exception {
