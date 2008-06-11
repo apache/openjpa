@@ -127,8 +127,8 @@ public class DBDictionary
     public static final String CONS_NAME_MID = "mid";
     public static final String CONS_NAME_AFTER = "after";
     
-    public int blobBufferSize = 50;
-    public int clobBufferSize = 50;
+    public int blobBufferSize = 50000;
+    public int clobBufferSize = 50000;
 
     protected static final int RANGE_POST_SELECT = 0;
     protected static final int RANGE_PRE_DISTINCT = 1;
@@ -4189,16 +4189,24 @@ public class DBDictionary
         return column.toString();
     }
     
-    public void insertBlobForStreamingLoad(Row row, Column col)
+    public void insertBlobForStreamingLoad(Row row, Column col, Object ob)
     throws SQLException {
-        row.setBinaryStream(col, 
-                new ByteArrayInputStream(new byte[0]), 0);
+        if (ob != null) {
+            row.setBinaryStream(col, 
+                    new ByteArrayInputStream(new byte[0]), 0);
+        } else {
+            row.setNull(col);
+        }
     }
     
-    public void insertClobForStreamingLoad(Row row, Column col)
+    public void insertClobForStreamingLoad(Row row, Column col, Object ob)
     throws SQLException {
+        if (ob != null) {
         row.setCharacterStream(col,
                 new CharArrayReader(new char[0]), 0);
+        } else {
+            row.setNull(col);
+        }
     }
     
     public void updateBlob(Select sel, JDBCStore store, InputStream is)

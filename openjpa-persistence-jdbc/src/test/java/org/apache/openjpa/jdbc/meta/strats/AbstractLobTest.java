@@ -20,6 +20,7 @@
 package org.apache.openjpa.jdbc.meta.strats;
 
 import java.io.IOException;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -117,6 +118,41 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.close();
     }
 
+    public void testUpdateWithNull() {
+        if (!isDatabaseSupported()) return;
+        insert(newLobEntity("oOOOOOo", 1));
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        LobEntity entity = (LobEntity) em.find(getLobEntityClass(), 1);
+        entity.setStream(null);
+        em.getTransaction().commit();
+        em.close();
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+        entity = (LobEntity) em.find(getLobEntityClass(), 1);
+        assertNull(entity.getStream());
+        em.getTransaction().commit();
+        em.close();
+    }
+    
+    public void testUpdateANullObjectWithoutNull() throws IOException {
+        if (!isDatabaseSupported()) return;
+        insert(newLobEntity(null, 1));
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        LobEntity entity = (LobEntity) em.find(getLobEntityClass(), 1);
+        String string = "iIIIIIi";
+        changeStream(entity, string);
+        em.getTransaction().commit();
+        em.close();
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+        entity = (LobEntity) em.find(getLobEntityClass(), 1);
+        assertEquals(string, getStreamContentAsString(entity.getStream()));
+        em.getTransaction().commit();
+        em.close();
+    }
+    
     public void testDelete() {
         if (!isDatabaseSupported()) return;
         insert(newLobEntity("oOOOOOo", 1));
