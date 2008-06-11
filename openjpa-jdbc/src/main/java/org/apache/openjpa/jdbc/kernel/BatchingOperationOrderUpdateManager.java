@@ -19,9 +19,12 @@
 package org.apache.openjpa.jdbc.kernel;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 
 import org.apache.openjpa.jdbc.sql.RowManager;
+import org.apache.openjpa.jdbc.sql.SQLExceptions;
+import org.apache.openjpa.util.OpenJPAException;
 
 /**
  * <P>Batch update manager that writes the SQL in object-level operation order. 
@@ -55,10 +58,24 @@ public class BatchingOperationOrderUpdateManager extends
      */
     protected Collection flush(RowManager rowMgr,
         PreparedStatementManager psMgr, Collection exceps) {
-        Collection rtnCol = super.flush(rowMgr, psMgr, exceps);
+        super.flush(rowMgr, psMgr, exceps);
         BatchingPreparedStatementManagerImpl bPsMgr = 
             (BatchingPreparedStatementManagerImpl) psMgr;
-        bPsMgr.flushBatch();
-        return rtnCol;
+        try {
+            bPsMgr.flushBatch();
+        } catch (SQLException se) {
+            exceps = addException(exceps, SQLExceptions.getStore(se, dict));
+        } catch (OpenJPAException ke) {
+            exceps = addException(exceps, ke);
+        }
+
+        // return all exceptions
+        Collection psExceps = psMgr.getExceptions();
+        if (exceps == null)
+            return psExceps;
+        if (psExceps == null)
+            return exceps;
+        exceps.addAll(psExceps);
+        return exceps;
     }
 }

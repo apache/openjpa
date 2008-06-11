@@ -138,7 +138,7 @@ public class BatchingPreparedStatementManagerImpl extends
      * flush all cached up statements to be executed as a single or batched
      * prepared statements.
      */
-    protected void flushBatch() {
+    protected void flushBatch() throws SQLException {
         List batchedRows = getBatchedRows();
         String batchedSql = getBatchedSql();
         if (batchedRows == null)
