@@ -86,7 +86,8 @@ abstract class AttachStrategy
         PersistenceCapable newInstance;
         if (!manager.getCopyNew())
             newInstance = pc;
-        else if (appId == null) // datastore identity
+        else if (appId == null)
+            // datastore identity or application identity with generated keys
             newInstance = pc.pcNewInstance(null, false);
         else // application identity: use existing fields
             newInstance = pc.pcNewInstance(null, appId, false);

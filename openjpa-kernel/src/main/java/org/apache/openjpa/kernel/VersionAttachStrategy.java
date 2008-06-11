@@ -29,6 +29,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
+import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.OptimisticException;
@@ -92,8 +93,11 @@ class VersionAttachStrategy
             sm = (StateManagerImpl) broker.embed(into, null, owner, ownerMeta);
             into = sm.getPersistenceCapable();
         } else if (isNew) {
-            sm = persist(manager, pc, meta, ApplicationIds.create(pc, meta),
-                explicit);
+            Object oid = null;
+            if (!isPrimaryKeysGenerated(meta))
+                oid = ApplicationIds.create(pc, meta);
+
+            sm = persist(manager, pc, meta, oid, explicit);
             into = sm.getPersistenceCapable();
         } else if (!embedded && into == null) {
             Object id = getDetachedObjectId(manager, toAttach);
@@ -372,5 +376,14 @@ class VersionAttachStrategy
         } else {
             return null;
         }
+    }
+
+    private boolean isPrimaryKeysGenerated(ClassMetaData meta) {
+        FieldMetaData[] pks = meta.getPrimaryKeyFields();
+        for (int i = 0; i < pks.length; i++) {
+            if (pks[i].getValueStrategy() != ValueStrategies.NONE)
+                return true;
+        }
+        return false;
     }
 }

@@ -966,8 +966,7 @@ public class ClassMetaData
                 fmd = (FieldMetaData) itr.next();
                 if (fmd.getManagement() != FieldMetaData.MANAGE_NONE) {
                     fmd.setDeclaredIndex(fields.size());
-                    if (fmd.getIndex() == -1)
-                        fmd.setIndex(fmd.getDeclaredIndex());
+                    fmd.setIndex(fmd.getDeclaredIndex());
                     fields.add(fmd);
                 }
             }
