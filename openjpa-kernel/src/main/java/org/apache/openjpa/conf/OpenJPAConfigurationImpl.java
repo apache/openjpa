@@ -1409,6 +1409,10 @@ public class OpenJPAConfigurationImpl
         runtimeUnenhancedClasses.set(mode);
     }
 
+    public void setRuntimeUnenhancedClasses(String mode) {
+        runtimeUnenhancedClasses.setString(mode);
+    }
+
     public String getCacheMarshallers() {
         return cacheMarshallerPlugins.getString();
     }
@@ -1419,10 +1423,6 @@ public class OpenJPAConfigurationImpl
 
     public Map getCacheMarshallerInstances() {
         return cacheMarshallerPlugins.getInstancesAsMap();
-    }
-
-    public void setRuntimeUnenhancedClasses(String mode) {
-        runtimeUnenhancedClasses.setString(mode);
     }
 
     public void instantiateAll() {
