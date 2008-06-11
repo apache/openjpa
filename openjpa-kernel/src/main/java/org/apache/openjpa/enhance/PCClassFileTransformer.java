@@ -116,6 +116,18 @@ public class PCClassFileTransformer
             return null;
 
         _transforming = true;
+
+        return transform0(className, redef, bytes);
+    }
+
+    /**
+     * We have to split the transform method into two methods to avoid
+     * ClassCircularityError when executing method using pure-JIT JVMs
+     * such as JRockit.
+     */
+    private byte[] transform0(String className, Class redef, byte[] bytes)
+        throws IllegalClassFormatException {
+
         try {
             Boolean enhance = needsEnhance(className, redef, bytes);
             if (enhance != null && _log.isTraceEnabled())
