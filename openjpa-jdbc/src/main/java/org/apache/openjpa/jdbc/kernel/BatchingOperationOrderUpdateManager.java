@@ -58,7 +58,7 @@ public class BatchingOperationOrderUpdateManager extends
      */
     protected Collection flush(RowManager rowMgr,
         PreparedStatementManager psMgr, Collection exceps) {
-        super.flush(rowMgr, psMgr, exceps);
+        exceps = super.flush(rowMgr, psMgr, exceps);
         BatchingPreparedStatementManagerImpl bPsMgr = 
             (BatchingPreparedStatementManagerImpl) psMgr;
         try {
