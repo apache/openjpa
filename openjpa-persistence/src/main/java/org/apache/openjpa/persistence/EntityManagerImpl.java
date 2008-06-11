@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
@@ -84,7 +85,7 @@ public class EntityManagerImpl
     private DelegatingBroker _broker;
     private EntityManagerFactoryImpl _emf;
     private Map<FetchConfiguration,FetchPlan> _plans =
-        new HashMap<FetchConfiguration,FetchPlan>(1);
+        new IdentityHashMap<FetchConfiguration,FetchPlan>(1);
 
     private RuntimeExceptionTranslator ret =
         PersistenceExceptions.getRollbackTranslator(this);
