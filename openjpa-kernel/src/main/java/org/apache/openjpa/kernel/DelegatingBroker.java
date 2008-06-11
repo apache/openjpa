@@ -122,6 +122,22 @@ public class DelegatingBroker
         }
     }
 
+    public FetchConfiguration pushFetchConfiguration() {
+        try {
+            return _broker.pushFetchConfiguration();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public void popFetchConfiguration() {
+        try {
+            _broker.popFetchConfiguration();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
     public ClassLoader getClassLoader() {
         try {
             return _broker.getClassLoader();
