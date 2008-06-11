@@ -89,11 +89,11 @@ public class CacheMarshallerImpl
         } catch (Exception e) {
             if (_consumeErrors) {
                 if (_log.isWarnEnabled())
-                    _log.warn(_loc.get("cache-marshaller-load-exception",
+                    _log.warn(_loc.get("cache-marshaller-load-exception-ignore",
                         _inputURL), e);
             } else {
                 throw new InternalException(
-                    _loc.get("cache-marshaller-load-exception",
+                    _loc.get("cache-marshaller-load-exception-fatal",
                         _inputURL),
                     e);
             }
