@@ -17,9 +17,11 @@
  specific language governing permissions and limitations
  under the License.   
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<!-- 
+    Please keep the project tag on one line to avoid confusing 
+    the release plugin.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-examples</artifactId>
@@ -81,21 +83,19 @@
                         <configuration>
                             <tasks>
                                 <path id="cp">
-                                    <path refid="maven.test.classpath"/>
-                                    <path refid="maven.compile.classpath"/>
-                                    <path refid="maven.dependency.classpath"/>
+                                    <path refid="maven.test.classpath" />
+                                    <path refid="maven.compile.classpath" />
+                                    <path refid="maven.dependency.classpath" />
                                 </path>
-								<taskdef name="openjpac" classname=
-                                    "org.apache.openjpa.ant.PCEnhancerTask">
-									<classpath refid="cp"/>
+								<taskdef name="openjpac" classname= "org.apache.openjpa.ant.PCEnhancerTask">
+									<classpath refid="cp" />
 								</taskdef>
-                                <fileset id="enhance.path.ref"
-                                    dir="${project.build.testOutputDirectory}">
-                                    <include name="**/*.class"/>
+                                <fileset id="enhance.path.ref" dir="${project.build.testOutputDirectory}">
+                                    <include name="**/*.class" />
                                 </fileset>
 								<openjpac>
-									<classpath refid="cp"/>
-									<fileset refid="enhance.path.ref"/>
+									<classpath refid="cp" />
+									<fileset refid="enhance.path.ref" />
 								</openjpac>
                             </tasks>
                         </configuration>

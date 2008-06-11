@@ -17,9 +17,10 @@
  specific language governing permissions and limitations
  under the License.   
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<!-- 
+    Maven release plugin requires the project tag to be on a single line. 
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-kernel</artifactId>
@@ -124,8 +125,7 @@
 						<phase>process-classes</phase>
 						<configuration>
 							<tasks>
-								<java
-									classname="org.apache.openjpa.ee.WASManagedRuntime" classpathref="maven.runtime.classpath" />
+								<java classname="org.apache.openjpa.ee.WASManagedRuntime" classpathref="maven.runtime.classpath" />
 							</tasks>
 						</configuration>
 						<goals>
@@ -137,9 +137,8 @@
 						<phase>process-classes</phase>
 						<configuration>
 							<tasks>
-								<java
-									classname="org.apache.openjpa.util.ProxyManagerImpl" classpathref="maven.runtime.classpath">
-                                    <arg line="-utils 5"/>
+								<java classname="org.apache.openjpa.util.ProxyManagerImpl" classpathref="maven.runtime.classpath">
+                                    <arg line="-utils 5" />
                                 </java>
 							</tasks>
 						</configuration>

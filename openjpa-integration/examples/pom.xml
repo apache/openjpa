@@ -26,10 +26,11 @@
 
         mvn integration-test -Pexamples-profile
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-        http://maven.apache.org/maven-v4_0_0.xsd">
+<!-- 
+    Please keep the project tag on one line to avoid confusing 
+    the release plugin.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>examples</artifactId>
     <packaging>pom</packaging>
@@ -55,29 +56,23 @@
                         <tasks>
                         <echo>Running OpenJPA Examples</echo>
 
-                        <property name="examples.base"
-                            value="${basedir}/target/examples"/>
-                        <mkdir dir="${examples.base}"/>
+                        <property name="examples.base" value="${basedir}/target/examples" />
+                        <mkdir dir="${examples.base}" />
 
-                        <unzip overwrite="false" dest="${examples.base}"
-                            src="../../target/site/downloads/apache-openjpa-${pom.version}-binary.zip"/>
+                        <unzip overwrite="false" dest="${examples.base}" src="../../target/site/downloads/apache-openjpa-${pom.version}-binary.zip" />
 
                         <path id="assembly.classpath"> 
                             <fileset dir="${examples.base}">
-                                <include name="**/*.jar"/>
+                                <include name="**/*.jar" />
                             </fileset>
                         </path>
-                        <available
-                            classname="org.apache.openjpa.conf.OpenJPAVersion"
-                            classpathref="assembly.classpath"
-                            property="unzip.success"/>
+                        <available classname="org.apache.openjpa.conf.OpenJPAVersion" classpathref="assembly.classpath" property="unzip.success" />
                         <fail unless="unzip.success">
                             Could not extract assembly.
                         </fail>
 
                         <subant inheritAll="false" failonerror="true">
-                            <fileset dir="${examples.base}"
-                                includes="*/examples/*/build.xml"/>
+                            <fileset dir="${examples.base}" includes="*/examples/*/build.xml" />
                         </subant>
 
                         </tasks>
@@ -101,4 +96,3 @@
         </dependency>
     </dependencies>
 </project>
-
