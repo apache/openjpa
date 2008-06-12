@@ -530,16 +530,16 @@
     <distributionManagement>
       <repository>
         <id>local-repository</id>
-        <url>file://${basedir}/target/site/m2-repository/</url>
+        <url>scp://people.apache.org/home/${user.name}/public_html/openjpa/${pom.version}/staging-repo</url>
       </repository>
       <snapshotRepository>
         <id>local-repository</id>
-        <url>file://${basedir}/target/site/m2-repository/</url>
+        <url>scp://people.apache.org/home/${user.name}/public_html/openjpa/${pom.version}/staging-repo</url>
         <uniqueVersion>false</uniqueVersion>
       </snapshotRepository>
       <site>
         <id>people.apache.org</id>
-        <url>scpexe://${user.name}@people.apache.org/www/openjpa.apache.org/builds/${pom.version}</url>
+        <url>scp://people.apache.org/home/${user.name}/public_html/openjpa/${pom.version}/staging-site</url>
       </site>
     </distributionManagement>
     <scm>
