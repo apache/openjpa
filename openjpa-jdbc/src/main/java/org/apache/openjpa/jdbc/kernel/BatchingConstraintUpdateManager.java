@@ -67,13 +67,6 @@ public class BatchingConstraintUpdateManager extends ConstraintUpdateManager {
             exceps = addException(exceps, ke);
         }
 
-        // return all exceptions
-        Collection psExceps = psMgr.getExceptions();
-        if (exceps == null)
-            return psExceps;
-        if (psExceps == null)
-            return exceps;
-        exceps.addAll(psExceps);
         return exceps;
     }
 }
