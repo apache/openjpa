@@ -176,10 +176,13 @@ public abstract class AbstractPCData
                     ret.add((Locale) itr.next());
                 return ret;
             case JavaTypes.PC:
-                if (vmd.isEmbedded())
-                    for (Iterator itr=data.iterator(); itr.hasNext();)
+                if (vmd.isEmbedded()) {
+                    for (Iterator itr=data.iterator(); itr.hasNext();) {
                         ret.add(toEmbeddedField(sm, vmd, itr.next(), fetch
                             , context));
+                    }
+                    return ret;
+                }
                 // no break
             case JavaTypes.PC_UNTYPED:
                 Object[] r = toRelationFields(sm, data, fetch);
