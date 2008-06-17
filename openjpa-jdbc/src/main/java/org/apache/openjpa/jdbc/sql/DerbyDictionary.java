@@ -100,26 +100,4 @@ public class DerbyDictionary
             }
         }
     }
-    
-    /**
-     * Adds extra SQLState code that Derby JDBC Driver uses. In JDBC 4.0,
-     * SQLState will follow either XOPEN or SQL 2003 convention. A compliant
-     * driver can be queries via DatabaseMetaData.getSQLStateType() to detect
-     * the convention type.<br>
-     * This method is overwritten to highlight that a) the SQL State is ideally
-     * uniform across JDBC Drivers but not practically and b) the overwritten
-     * method must crate a new list to return as the super classes list is
-     * unmodifable.
-     */
-    public List getSQLStates(int exceptionType) {
-    	List original = super.getSQLStates(exceptionType);
-    	if (exceptionType == StoreException.LOCK) {
-    		// Can not add new codes to unmodifable list of the super class
-    		List newStates = new ArrayList(original);
-    		newStates.add("40XL1");
-    		return newStates;
-    	}
-    	return original;
-    }
-    
 }

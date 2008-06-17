@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.exception;
+package org.apache.openjpa.persistence.datacache.common.apps;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,6 +33,7 @@ import javax.persistence.Version;
 @Entity
 public class PObject {
 	@Id
+	@GeneratedValue
 	private long id;
 	private String name;
 	@Version
@@ -46,10 +47,6 @@ public class PObject {
 		this.name = name;
 	}
 	
-	public void setId(long id) {
-		this.id = id;
-	}
-
 	public long getId() {
 		return id;
 	}

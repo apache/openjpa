@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.StoreCacheImpl;
 import org.apache.openjpa.persistence.cache.common.apps.BidirectionalOne2OneOwned;
 import org.apache.openjpa.persistence.cache.common.apps.BidirectionalOne2OneOwner;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import org.apache.openjpa.persistence.exception.PObject;
+import org.apache.openjpa.persistence.datacache.common.apps.PObject;
 
 /**
  * Tests various application behavior with or without DataCache.
