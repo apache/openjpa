@@ -26,7 +26,7 @@ import org.apache.openjpa.jdbc.sql.Select;
  *
  * @author Abe White
  */
-class Null
+public class Null
     extends Const {
 
     public Class getType() {

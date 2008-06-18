@@ -71,6 +71,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.ExpContext;
 import org.apache.openjpa.jdbc.kernel.exps.ExpState;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
+import org.apache.openjpa.jdbc.kernel.exps.Null;
 import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -2047,7 +2048,8 @@ public class DBDictionary
                 augmentUpdates = false;
 
             Val val = (Val) next.getValue();
-
+            if (val == null)
+            	val = new Null();
             Column col = fmd.getColumns()[0];
             if (allowAlias) {
               sql.append(sel.getColumnAlias(col));

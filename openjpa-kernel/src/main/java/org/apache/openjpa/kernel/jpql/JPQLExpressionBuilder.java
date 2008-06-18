@@ -483,7 +483,9 @@ public class JPQLExpressionBuilder
         JPQLNode[] nodes = root().findChildrenByID(JJTUPDATEITEM);
         for (int i = 0; nodes != null && i < nodes.length; i++) {
             Path path = getPath(firstChild(nodes[i]));
-            Value val = getValue(onlyChild(lastChild(nodes[i])));
+            JPQLNode lastChild = lastChild(nodes[i]);
+            Value val = (lastChild.children == null) 
+                      ? null : getValue(onlyChild(lastChild));
             exps.putUpdate(path, val);
         }
     }
