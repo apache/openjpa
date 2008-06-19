@@ -39,6 +39,7 @@ import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.DelegatingQuery;
 import org.apache.openjpa.kernel.DelegatingResultList;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
@@ -445,6 +446,10 @@ public class QueryImpl
         _em.assertNotCloseInvoked();
         _query.lock();
         try {
+        	if (isNative() && position < 1) {
+        		throw new IllegalArgumentException(_loc.get("bad-pos-params", 
+        		      position, _query.getQueryString()).toString());
+        	}
             // not allowed to mix positional and named parameters (EDR2 3.6.4)
             if (_named != null)
                 throw new InvalidStateException(_loc.get
@@ -486,6 +491,10 @@ public class QueryImpl
         _em.assertNotCloseInvoked();
         _query.lock();
         try {
+        	if (isNative()) {
+        		throw new IllegalArgumentException(_loc.get("no-named-params", 
+        		    name, _query.getQueryString()).toString());
+        	}
             // not allowed to mix positional and named parameters (EDR2 3.6.4)
             if (_positional != null)
                 throw new InvalidStateException(_loc.get
@@ -499,6 +508,10 @@ public class QueryImpl
         } finally {
             _query.unlock();
         }
+    }
+    
+    public boolean isNative() {
+    	return QueryLanguages.LANG_SQL.equals(getLanguage());
     }
 
     public boolean hasPositionalParameters() {
