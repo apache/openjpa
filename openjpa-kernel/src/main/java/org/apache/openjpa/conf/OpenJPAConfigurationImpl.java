@@ -944,19 +944,21 @@ public class OpenJPAConfigurationImpl
     public Object getConnectionFactory() {
         if (connectionFactory.get() == null)
             connectionFactory.set(
-                lookupConnectionFactory(getConnectionFactoryName()), true);
+                lookupConnectionFactory(getConnectionFactoryName(),
+                		connectionFactory.getProperty()), true);
         return connectionFactory.get();
     }
 
     /**
      * Lookup the connection factory at the given name.
      */
-    private Object lookupConnectionFactory(String name) {
+    private Object lookupConnectionFactory(String name, String userKey) {
         name = StringUtils.trimToNull(name);
         if (name == null)
             return null;
         try {
-        	return Configurations.lookup(name);
+        	return Configurations.lookup(name, userKey,
+        			getLog(OpenJPAConfiguration.LOG_RUNTIME));
         } catch (Exception ex) {
         	return null;
         }
@@ -1027,7 +1029,8 @@ public class OpenJPAConfigurationImpl
     public Object getConnectionFactory2() {
         if (connectionFactory2.get() == null)
             connectionFactory2.set(
-                lookupConnectionFactory(getConnectionFactory2Name()), false);
+                lookupConnectionFactory(getConnectionFactory2Name(), 
+                		connectionFactory2.getProperty()), false);
         return connectionFactory2.get();
     }
 

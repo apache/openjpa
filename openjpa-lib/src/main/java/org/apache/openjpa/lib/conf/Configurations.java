@@ -609,14 +609,17 @@ public class Configurations {
     /**
      * Looks up the given name in JNDI. If the name is null, null is returned.
      */
-    public static Object lookup(String name) {
+    public static Object lookup(String name, String userKey, Log log) {
         if (StringUtils.isEmpty(name))
             return null;
 
         Context ctx = null;
         try {
             ctx = new InitialContext();
-            return ctx.lookup(name);
+            Object result = ctx.lookup(name);
+            if (result == null && log != null && log.isWarnEnabled())
+            	log.warn(_loc.get("jndi-lookup-failed", userKey, name));
+            return result;
         } catch (NamingException ne) {
             throw new NestableRuntimeException(
                 _loc.get("naming-err", name).getMessage(), ne);
