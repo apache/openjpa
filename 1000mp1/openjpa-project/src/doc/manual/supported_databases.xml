@@ -1,0 +1,989 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.   
+-->
+<appendix id="supported_databases">
+    <title>
+        Supported Databases
+    </title>
+    <para>
+Following is a table of the database and JDBC driver versions that are supported
+by OpenJPA.
+    </para>
+    <table tocentry="1">
+        <title>
+            Supported Databases and JDBC Drivers
+        </title>
+        <tgroup rowsep="1" colsep="1" align="left" cols="4">
+            <colspec colname="dbname"/>
+            <colspec colname="dbversion"/>
+            <colspec colname="drivname"/>
+            <colspec colname="drivversion"/>
+            <thead>
+                <row>
+                    <entry colname="dbname">
+                        Database Name
+                    </entry>
+                    <entry colname="dbversion">
+                        Database Version
+                    </entry>
+                    <entry colname="drivname">
+                        JDBC Driver Name
+                    </entry>
+                    <entry colname="drivversion">
+                        JDBC Driver Version
+                    </entry>
+                </row>
+            </thead>
+            <tbody>
+                <row>
+                    <entry colname="dbname">
+                        Apache Derby
+                    </entry>
+                    <entry colname="dbversion">
+                        10.1.2.1
+                    </entry>
+                    <entry colname="drivname">
+                        Apache Derby Embedded JDBC Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        10.1.2.1
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        Borland Interbase
+                    </entry>
+                    <entry colname="dbversion">
+                        7.1.0.202
+                    </entry>
+                    <entry colname="drivname">
+                        Interclient
+                    </entry>
+                    <entry colname="drivversion">
+                        4.5.1
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        Borland JDataStore
+                    </entry>
+                    <entry colname="dbversion">
+                        6.0
+                    </entry>
+                    <entry colname="drivname">
+                        Borland JDataStore
+                    </entry>
+                    <entry colname="drivversion">
+                        6.0
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        DB2
+                    </entry>
+                    <entry colname="dbversion">
+                        8.1
+                    </entry>
+                    <entry colname="drivname">
+                        IBM DB2 JDBC Universal Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        1.0.581
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        Empress
+                    </entry>
+                    <entry colname="dbversion">
+                        8.62
+                    </entry>
+                    <entry colname="drivname">
+                        Empress Category 2 JDBC Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        8.62
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        Firebird
+                    </entry>
+                    <entry colname="dbversion">
+                        1.5
+                    </entry>
+                    <entry colname="drivname">
+                        JayBird JCA/JDBC driver
+                    </entry>
+                    <entry colname="drivversion">
+                        1.0.1
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        H2 Database Engine
+                    </entry>
+                    <entry colname="dbversion">
+                        1.0
+                    </entry>
+                    <entry colname="drivname">
+                        H2
+                    </entry>
+                    <entry colname="drivversion">
+                        1.0
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        Hypersonic Database Engine
+                    </entry>
+                    <entry colname="dbversion">
+                        1.8.0
+                    </entry>
+                    <entry colname="drivname">
+                        Hypersonic
+                    </entry>
+                    <entry colname="drivversion">
+                        1.8.0
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        Informix Dynamic Server
+                    </entry>
+                    <entry colname="dbversion">
+                        9.30.UC10
+                    </entry>
+                    <entry colname="drivname">
+                        Informix JDBC driver
+                    </entry>
+                    <entry colname="drivversion">
+                        2.21.JC2
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        InterSystems Cache
+                    </entry>
+                    <entry colname="dbversion">
+                        5.0
+                    </entry>
+                    <entry colname="drivname">
+                        Cache JDBC Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        5.0
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        Microsoft Access
+                    </entry>
+                    <entry colname="dbversion">
+                        9.0 (a.k.a. "2000")
+                    </entry>
+                    <entry colname="drivname">
+                        DataDirect SequeLink
+                    </entry>
+                    <entry colname="drivversion">
+                        5.4.0038
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        Microsoft SQL Server
+                    </entry>
+                    <entry colname="dbversion">
+                        9.00.1399 (SQL Server 2005)
+                    </entry>
+                    <entry colname="drivname">
+                        SQLServer
+                    </entry>
+                    <entry colname="drivversion">
+                        1.0.809.102
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        Microsoft Visual FoxPro
+                    </entry>
+                    <entry colname="dbversion">
+                        7.0
+                    </entry>
+                    <entry colname="drivname">
+                        DataDirect SequeLink
+                    </entry>
+                    <entry colname="drivversion">
+                        5.4.0038
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        MySQL
+                    </entry>
+                    <entry colname="dbversion">
+                        3.23.43-log
+                    </entry>
+                    <entry colname="drivname">
+                        MySQL Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        3.0.14
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        MySQL
+                    </entry>
+                    <entry colname="dbversion">
+                        5.0.26
+                    </entry>
+                    <entry colname="drivname">
+                        MySQL Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        3.0.14
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        Oracle
+                    </entry>
+                    <entry colname="dbversion">
+                        8.1,9.2,10.1
+                    </entry>
+                    <entry colname="drivname">
+                        Oracle JDBC driver
+                    </entry>
+                    <entry colname="drivversion">
+                        10.2.0.1.0
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        Pointbase
+                    </entry>
+                    <entry colname="dbversion">
+                        4.4
+                    </entry>
+                    <entry colname="drivname">
+                        Pointbase JDBC driver
+                    </entry>
+                    <entry colname="drivversion">
+                        4.4 (4.4) 
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        PostgreSQL
+                    </entry>
+                    <entry colname="dbversion">
+                        7.2.1
+                    </entry>
+                    <entry colname="drivname">
+                        PostgreSQL Native Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        8.1
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        PostgreSQL
+                    </entry>
+                    <entry colname="dbversion">
+                        8.1.5
+                    </entry>
+                    <entry colname="drivname">
+                        PostgreSQL Native Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        8.1
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        Sybase Adaptive Server Enterprise
+                    </entry>
+                    <entry colname="dbversion">
+                        12.5
+                    </entry>
+                    <entry colname="drivname">
+                        jConnect
+                    </entry>
+                    <entry colname="drivversion">
+                        5.5 (5.5)
+                    </entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </table>
+    <section id="dbsupport_derby">
+        <title>
+            Apache Derby
+        </title>
+        <example id="example_props_derby">
+            <title>
+                Example properties for Derby
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: org.apache.derby.jdbc.EmbeddedDriver
+openjpa.ConnectionURL: jdbc:derby:DB_NAME;create=true
+</programlisting>
+        </example>
+    </section>
+    <section id="dbsupport_interbase">
+        <title>
+            Borland Interbase
+        </title>
+        <example id="example_props_interbase">
+            <title>
+                Example properties for Interbase
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: interbase.interclient.Driver
+openjpa.ConnectionURL: jdbc:interbase://SERVER_NAME:SERVER_PORT/DB_PATH
+</programlisting>
+        </example>
+        <section id="dbsupport_interbase_issues">
+            <title>
+                Known issues with Interbase
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+Interbase does not support record locking, so
+datastore transactions cannot use the pessimistic lock manager.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Interbase does not support the <literal>LOWER</literal>, <literal>SUBSTRING
+</literal>, or <literal>INSTR</literal> SQL functions>
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_jdatastore">
+        <title>
+            JDataStore
+        </title>
+        <example id="example_props_jdatastore">
+            <title>
+                Example properties for JDataStore
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: com.borland.datastore.jdbc.DataStoreDriver
+openjpa.ConnectionURL: jdbc:borland:dslocal:db-jdatastore.jds;create=true
+</programlisting>
+        </example>
+    </section>
+    <section id="dbsupport_db2">
+        <title>
+            IBM DB2
+        </title>
+        <example id="example_props_db2">
+            <title>
+                Example properties for IBM DB2
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: com.ibm.db2.jcc.DB2Driver
+openjpa.ConnectionURL: jdbc:db2://SERVER_NAME:SERVER_PORT/DB_NAME
+</programlisting>
+        </example>
+        <section id="dbsupport_db2_issues">
+            <title>
+                Known issues with DB2
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+Floats and doubles may lose precision when stored.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Empty char values are stored as NULL.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Fields of type BLOB and CLOB are limited to 1M. This number can be increased by
+extending <classname>DB2Dictionary</classname>.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_empress">
+        <title>
+            Empress
+        </title>
+        <example id="example_props_empress">
+            <title>
+                Example properties for Empress
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: empress.jdbc.empressDriver
+openjpa.ConnectionURL: jdbc:empress://SERVER=yourserver;PORT=6322;DATABASE=yourdb
+</programlisting>
+        </example>
+        <section id="dbsupport_empress_issues">
+            <title>
+                Known issues with Empress
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+Empress enforces pessimistic semantics (lock on
+read) when not using <literal>AllowConcurrentRead</literal> property (which
+bypasses row locking) for <classname>EmpressDictionary</classname>.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Only the category 2 non-local driver is supported.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_h2">
+        <title>
+            H2 Database Engine
+        </title>
+        <example id="example_props_h2">
+            <title>
+                Example properties for H2 Database Engine
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: org.h2.Driver
+openjpa.ConnectionURL: jdbc:h2:DB_NAME
+</programlisting>
+        </example>
+        <section id="dbsupport_h2_issues">
+            <title>
+                Known issues with H2 Database Engine
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+H2 does not support cross joins
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_hypersonic">
+        <title>
+            Hypersonic
+        </title>
+        <example id="example_props_hypersonic">
+            <title>
+                Example properties for Hypersonic
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: org.hsqldb.jdbcDriver
+openjpa.ConnectionURL: jdbc:hsqldb:DB_NAME
+</programlisting>
+        </example>
+        <section id="dbsupport_hypersonic_issues">
+            <title>
+                Known issues with Hypersonic
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+Hypersonic does not support pessimistic locking, so non-optimistic transactions
+will fail unless the <literal>SimulateLocking</literal> property is set for the
+<link linkend="openjpa.jdbc.DBDictionary"> openjpa.jdbc.DBDictionary</link>
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_firebird">
+        <title>
+            Firebird
+        </title>
+        <example id="example_props_firebird">
+            <title>
+                Example properties for Firebird
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: org.firebirdsql.jdbc.FBDriver
+openjpa.ConnectionURL: jdbc:firebirdsql://SERVER_NAME:SERVER_PORT/DB_PATH
+</programlisting>
+        </example>
+        <section id="dbsupport_firebird_issues">
+            <title>
+                Known issues with Firebird
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+Firebird does not support auto-increment columns.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Firebird does not support the <literal>LOWER</literal>, <literal>SUBSTRING
+</literal>, or <literal>INSTR</literal> SQL functions.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_informix">
+        <title>
+            Informix
+        </title>
+        <example id="example_props_informix">
+            <title>
+                Example properties for Informix Dynamic Server
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: com.informix.jdbc.IfxDriver
+openjpa.ConnectionURL: \
+  jdbc:informix-sqli://SERVER_NAME:SERVER_PORT/DB_NAME:INFORMIXSERVER=SERVER_ID
+</programlisting>
+        </example>
+        <section id="dbsupport_informix_issues">
+            <title>
+                Known issues with Informix
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+None
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_intersystems_cache">
+        <title>
+            InterSystems Cache
+        </title>
+        <example id="example_props_intersystems_cache">
+            <title>
+                Example properties for InterSystems Cache
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: com.intersys.jdbc.CacheDriver
+openjpa.ConnectionURL: jdbc:Cache://SERVER_NAME:SERVER_PORT/DB_NAME
+</programlisting>
+        </example>
+        <section id="dbsupport_intersystems_cache_issues">
+            <title>
+                Known issues with InterSystems Cache
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+Support for Cache is done via SQL access over JDBC, not through their object 
+database APIs.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_access">
+        <title>
+            Microsoft Access
+        </title>
+        <example id="example_props_access">
+            <title>
+                Example properties for Microsoft Access
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: com.ddtek.jdbc.sequelink.SequeLinkDriver
+openjpa.ConnectionURL: jdbc:sequelink://SERVER_NAME:SERVER_PORT
+</programlisting>
+        </example>
+        <section id="dbsupport_access_issues">
+            <title>
+                Known issues with Microsoft Access
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+Using the Sun JDBC-ODBC bridge to connect is not supported.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_sqlserver">
+        <title>
+            Microsoft SQL Server
+        </title>
+        <example id="example_props_sqlserver">
+            <title>
+                Example properties for Microsoft SQLServer
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+openjpa.ConnectionURL: \
+    jdbc:sqlserver://SERVER_NAME:1433;DatabaseName=DB_NAME;selectMethod=cursor;sendStringParametersAsUnicode=false
+</programlisting>
+        </example>
+        <section id="dbsupport_sqlserver_issues">
+            <title>
+                Known issues with SQL Server
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+SQL Server date fields are accurate only to the nearest 3 milliseconds, 
+possibly resulting in precision loss in stored dates.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+The ConnectionURL must always contain the " <literal>selectMethod=cursor
+</literal> " string.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Adding <literal>sendStringParametersAsUnicode=false</literal> to the
+ConnectionURL may significantly increase performance.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+The Microsoft SQL Server driver only emulates batch updates. The DataDirect JDBC
+driver has true support for batch updates, and may result in a significant
+performance gain.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Floats and doubles may lose precision when stored.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+<literal>TEXT</literal> columns cannot be used in queries.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+When using a SQL Server instance that has been configured to be case-sensitive
+in schema names, you need to set the "schemaCase=preserve" parameter in the 
+<link linkend="openjpa.jdbc.DBDictionary">openjpa.jdbc.DBDictionary</link>
+property.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_foxpro">
+        <title>
+            Microsoft FoxPro
+        </title>
+        <example id="example_props_foxpro">
+            <title>
+                Example properties for Microsoft FoxPro
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: com.ddtek.jdbc.sequelink.SequeLinkDriver
+openjpa.ConnectionURL: jdbc:sequelink://SERVER_NAME:SERVER_PORT
+</programlisting>
+        </example>
+        <section id="dbsupport_foxpro_issues">
+            <title>
+                Known issues with Microsoft FoxPro
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+Using the Sun JDBC-ODBC bridge to connect is not supported.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_mysql">
+        <title>
+            MySQL
+        </title>
+        <example id="example_props_mysql">
+            <title>
+                Example properties for MySQL
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: com.mysql.jdbc.Driver
+openjpa.ConnectionURL: jdbc:mysql://SERVER_NAME/DB_NAME
+</programlisting>
+        </example>
+        <section id="dbsupport_mysql_issues">
+            <title>
+                Known issues with MySQL
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para> 
+The default table types that MySQL uses do not support transactions, which will
+prevent OpenJPA from being able to roll back transactions. Use the 
+<literal>InnoDB</literal> table type for any tables that OpenJPA will access.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+MySQL does not support sub-selects in versions prior to 4.1, and are disabled by
+default. Some operations (such as the <function>isEmpty()</function> method in a
+query) will fail due to this. If you are using MySQL 4.1 or later, you can lift
+this restriction by setting the <literal>SupportsSubselect=true</literal>
+parameter of the <link linkend="openjpa.jdbc.DBDictionary">
+openjpa.jdbc.DBDictionary</link> property.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Rollback due to database error or optimistic lock violation is not supported
+unless the table type is one of the MySQL transactional types. Explicit calls to
+<function>rollback()</function> before a transaction has been committed,
+however, are always supported.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Floats and doubles may lose precision when stored in some datastores.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+When storing a field of type <classname>java.math.BigDecimal</classname>, some
+datastores will add extraneous trailing 0 characters, causing an equality
+mismatch between the field that is stored and the field that is retrieved.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Some version of the MySQL JDBC driver have a bug that prevents OpenJPA from
+being able to interrogate the database for foreign keys. Version 3.0.14 (or
+higher) of the MySQL driver is required in order to get around this bug.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_oracle">
+        <title>
+            Oracle
+        </title>
+        <example id="example_props_oracle">
+            <title>
+                Example properties for Oracle
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: oracle.jdbc.driver.OracleDriver
+openjpa.ConnectionURL: jdbc:oracle:thin:@SERVER_NAME:1521:DB_NAME
+</programlisting>
+        </example>
+        <section id="dbsupport_oracle_query_hints">
+            <title>
+                Using Query Hints with Oracle
+            </title>
+            <para>
+Oracle has support for "query hints", which are formatted comments embedded in
+SQL that provide some hint for how the query should be executed. These hints are
+usually designed to provide suggestions to the Oracle query optimizer for how to
+efficiently perform a certainly query, and aren't typically needed for any but
+the most intensive queries.
+            </para>
+            <example id="dbsupport_oracle_query_hints_ex">
+                <title>
+                    Using Oracle Hints
+                </title>
+<programlisting>
+Query query = em.createQuery(...);
+query.setHint("openjpa.hint.OracleSelectHint", "/*+ first_rows(100) */");
+List results = query.getResultList();
+</programlisting>
+            </example>
+        </section>
+        <section id="dbsupport_oracle_issues">
+            <title>
+                Known issues with Oracle
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para> 
+The Oracle JDBC driver has significant differences between different versions. 
+It is important to use the officially supported version of the driver 
+(10.2.0.1.0), which is backward compatible with previous versions of the Oracle
+server. It can be downloaded from 
+<ulink url="http://www.oracle.com/technology/software/tech/java/sqlj_jdbc/htdocs/jdbc101040.html">
+http://www.oracle.com/technology/software/tech/java/sqlj_jdbc/htdocs/jdbc101040.html</ulink>.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+For VARCHAR fields, <literal>null</literal> and a blank string are equivalent.
+This means that an object that stores a null string field will have it get read
+back as a blank string.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Oracle corp's JDBC driver for Oracle has only limited support for batch updates.
+The result for OpenJPA is that in some cases, the exact object that failed an
+optimistic lock check cannot be determined, and OpenJPA will throw an
+<classname>OptimisticVerificationException</classname> with more failed objects
+than actually failed.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Oracle cannot store numbers with more than 38 digits in numeric columns.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Floats and doubles may lose precision when stored.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+CLOB columns cannot be used in queries.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_pointbase">
+        <title>
+            Pointbase
+        </title>
+        <example id="example_props_pointbase">
+            <title>
+                Example properties for Pointbase
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: com.pointbase.jdbc.jdbcUniversalDriver
+openjpa.ConnectionURL: \
+    jdbc:pointbase:DB_NAME,database.home=pointbasedb,create=true,cache.size=10000,database.pagesize=30720
+</programlisting>
+        </example>
+        <section id="dbsupport_pointbase_issues">
+            <title>
+                Known issues with Pointbase
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para> 
+Fields of type BLOB and CLOB are limited to 1M.  Set the <literal>BlobTypeName
+</literal> and/or <literal>ClobTypeName</literal> properties of the 
+<literal>openjpa.jdbc.DBDictionary</literal> setting to override.  
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_postgresql">
+        <title>
+            PostgreSQL
+        </title>
+        <example id="example_props_postgresql">
+            <title>
+                Example properties for PostgreSQL
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: org.postgresql.Driver
+openjpa.ConnectionURL: jdbc:postgresql://SERVER_NAME:5432/DB_NAME
+</programlisting>
+        </example>
+        <section id="dbsupport_postgresql_issues">
+            <title>
+                Known issues with PostgreSQL
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+Floats and doubles may lose precision when stored.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+PostgreSQL cannot store very low and very high dates.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Empty string/char values are stored as NULL.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_sybase">
+        <title>
+            Sybase Adaptive Server
+        </title>
+        <example id="example_props_sybase">
+            <title>
+                Example properties for Sybase
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: com.sybase.jdbc2.jdbc.SybDriver
+openjpa.ConnectionURL: \
+    jdbc:sybase:Tds:SERVER_NAME:4100/DB_NAME?ServiceName=DB_NAME&amp;BE_AS_JDBC_COMPLIANT_AS_POSSIBLE=true
+</programlisting>
+        </example>
+        <section id="dbsupport_sybase_issues">
+            <title>
+                Known issues with Sybase
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para> 
+The "<literal>DYNAMIC_PREPARE</literal>" parameter of the Sybase JDBC driver 
+cannot be used with OpenJPA.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Datastore locking cannot be used when manipulating many-to-many relations using
+the default OpenJPA schema created by the schematool, unless an auto-increment
+primary key field is manually added to the table.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Persisting a zero-length string results in a string with a single space
+characted being returned from Sybase, Inc.'s JDBC driver.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+The <literal>BE_AS_JDBC_COMPLIANT_AS_POSSIBLE</literal> is required in order to
+use datastore (pessimistic) locking. Failure to set this property may lead to
+obscure errors like " <literal>FOR UPDATE can not be used in a SELECT which is
+not part of the declaration of a cursor or which is not inside a stored
+procedure.</literal> ".
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+</appendix>

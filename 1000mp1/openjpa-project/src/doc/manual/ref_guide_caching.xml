@@ -1,0 +1,888 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.   
+-->
+<chapter id="ref_guide_caching">
+    <title>
+        Caching
+    </title>
+    <para>
+OpenJPA utilizes several configurable caches to maximize performance. This
+chapter explores OpenJPA's data cache, query cache, and query compilation cache.
+    </para>
+    <section id="ref_guide_cache">
+        <title>
+            Data Cache
+        </title>
+        <indexterm zone="ref_guide_cache">
+            <primary>
+                caching
+            </primary>
+            <secondary>
+                data cache
+            </secondary>
+        </indexterm>
+        <para>
+The OpenJPA data cache is an optional cache of persistent object data that
+operates at the <classname>EntityManagerFactory</classname> level. This cache is
+designed to significantly increase performance while remaining in full
+compliance with the JPA standard. This means that turning on the caching option
+can transparently increase the performance of your application, with no changes
+to your code.
+        </para>
+        <para>
+OpenJPA's data cache is not related to the <classname>EntityManager</classname>
+cache dictated by the JPA specification. The JPA specification mandates behavior
+for the <classname>EntityManager</classname> cache aimed at guaranteeing
+transaction isolation when operating on persistent objects.
+        </para>
+        <para>
+OpenJPA's data cache is designed to provide significant performance increases
+over cacheless operation, while guaranteeing that behavior will be identical in
+both cache-enabled and cacheless operation.
+        </para>
+        <para>
+There are five ways to access data via the OpenJPA APIs: standard relation
+traversal, large result set relation traversal, queries, looking up an object by
+id, and iteration over an <classname>Extent</classname>. OpenJPA's cache plugin
+accelerates three of these mechanisms. It does not provide any caching of large
+result set relations or <classname>Extent</classname> iterators. If you find
+yourself in need of higher-performance <classname>Extent</classname> iteration,
+see <xref linkend="ref_guide_cache_limits_extent"/>. 
+        </para>
+        <table>
+            <title>
+                Data access methods
+            </title>
+            <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                <colspec colname="access-method"/><colspec colname="cacheable"/>
+                <thead>
+                    <row>
+                        <entry colname="access-method">Access method</entry>
+                        <entry colname="cacheable">Uses cache</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry colname="access-method">
+                            Standard relation traversal
+                        </entry>
+                        <entry colname="cacheable">
+                            Yes
+                        </entry>
+                    </row>
+                    <row>
+                        <entry colname="access-method">
+                            Large result set relation traversal
+                        </entry>
+                        <entry colname="cacheable">No</entry>
+                    </row>
+                    <row>
+                        <entry colname="access-method">Query</entry>
+                        <entry colname="cacheable">Yes</entry>
+                    </row>
+                    <row>
+                        <entry colname="access-method">
+                            Lookups by object id
+                        </entry>
+                        <entry colname="cacheable">Yes</entry>
+                    </row>
+                    <row>
+                        <entry colname="access-method"> 
+                            Iteration over an <classname>Extent</classname>
+                        </entry>
+                        <entry colname="cacheable">No</entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+        <para>
+When enabled, the cache is checked before making a trip to the datastore. Data
+is stored in the cache when objects are committed and when persistent objects
+are loaded from the datastore.
+        </para>
+        <para>
+OpenJPA's data cache can in both single-JVM and multi-JVM environments.
+Multi-JVM caching is achieved through the use of the distributed event
+notification framework described in <xref linkend="ref_guide_event"/>, or
+through custom integrations with a third-party distributed cache.
+        </para>
+        <para>
+The single JVM mode of operation maintains and shares a data cache across all
+<classname>EntityManager</classname> instances obtained from a particular
+<classname>EntityManagerFactory</classname>. This is not appropriate for use in
+a distributed environment, as caches in different JVMs or created from different
+<classname>EntityManagerFactory</classname> objects will not be synchronized.
+        </para>
+        <section id="ref_guide_cache_conf">
+            <title>
+                Data Cache Configuration
+            </title>
+            <para>
+To enable the basic single-factory cache set the
+<link linkend="openjpa.DataCache"><literal>openjpa.DataCache</literal></link>
+property to <literal>true</literal>, and set the
+<link linkend="openjpa.RemoteCommitProvider"><literal>
+openjpa.RemoteCommitProvider</literal></link> property to <literal>sjvm
+</literal>:
+            </para>
+            <example id="ref_guide_cache_conf_sjvm">
+                <title>
+                    Single-JVM Data Cache
+                </title>
+<programlisting>
+&lt;property name="openjpa.DataCache" value="true"/&gt;
+&lt;property name="openjpa.RemoteCommitProvider" value="sjvm"/&gt;
+</programlisting>
+            </example>
+            <para>
+To configure the data cache to remain up-to-date in a distributed environment,
+set the <link linkend="openjpa.RemoteCommitProvider"><literal>
+openjpa.RemoteCommitProvider</literal></link> property appropriately, or
+integrate OpenJPA with a third-party caching solution. Remote commit providers
+are described in <xref linkend="ref_guide_event"/>.
+            </para>
+            <para>
+            <indexterm>
+                <primary>
+                    caching
+                </primary>
+                <secondary>
+                    size
+                </secondary>
+            </indexterm>
+OpenJPA's default implementation maintains a map of object
+ids to cache data. By default, 1000 elements are kept in cache. When the cache
+overflows, random entries are evicted.  The maximum cache size can be
+adjusted by setting the <literal>CacheSize</literal> property in your plugin
+string - see below for an example. Objects that are pinned into the cache are
+not counted when determining if the cache size exceeds its maximum size.  
+            </para>
+            <para>
+Expired objects are moved to a soft reference map, so they may stick around for
+a little while longer. You can control the number of soft references OpenJPA
+keeps with the <literal>SoftReferenceSize</literal> property. Soft references
+are unlimited by default. Set to 0 to disable soft references completely.
+            </para>
+            <example id="ref_guide_cache_conf_size">
+                <title>
+                    Data Cache Size
+                </title>
+<programlisting>
+&lt;property name="openjpa.DataCache" value="true(CacheSize=5000, SoftReferenceSize=0)"/&gt;
+</programlisting>
+            </example>
+            <para>
+            <indexterm>
+                <primary>
+                    caching
+                </primary>
+                <secondary>
+                    timeout
+                </secondary>
+            </indexterm>
+You can specify a cache timeout value for a class by setting the timeout
+<link linkend="ref_guide_meta_ext">metadata extension</link> to the amount of
+time in milliseconds a class's data is valid. Use a value of -1 for no
+expiration. This is the default value.
+            </para>
+            <example id="ex_timeout_cache">
+                <title>
+                    Data Cache Timeout
+                </title>
+                <para>
+Timeout <classname>Employee</classname> objects after 10 seconds.
+                </para>
+<programlisting>
+@Entity
+@DataCache(timeout=10000)
+public class Employee {
+    ...
+}
+</programlisting>
+            </example>
+            <para>
+See the <ulink url="../javadoc/org/apache/openjpa/persistence/DataCache.html">
+<classname>org.apache.openjpa.persistence.DataCache</classname></ulink> Javadoc
+for more information on the <classname>DataCache</classname> annotation.
+            </para>
+            <para>
+            <indexterm>
+                <primary>
+                    caching
+                </primary>
+                <secondary>
+                    cron-style invalidation
+                </secondary>
+            </indexterm>
+A cache can specify that it should be cleared at certain times rather than using
+data timeouts. The <literal>EvictionSchedule</literal> property of OpenJPA's
+cache implementation accepts a <literal>cron</literal> style eviction schedule.
+The format of this property is a whitespace-separated list of five tokens, where
+the <literal>*</literal> symbol (asterisk), indicates match all. The tokens are,
+in order:
+            </para>
+            <itemizedlist>
+                <listitem>
+                    <para>
+Minute
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Hour of Day
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Day of Month
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Month
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Day of Week
+                    </para>
+                </listitem>
+            </itemizedlist>
+            <para>
+For example, the following <literal>openjpa.DataCache</literal> setting
+schedules the default cache to evict values from the cache at 15 and 45 minutes
+past 3 PM on Sunday.
+            </para>
+<programlisting>
+true(EvictionSchedule='15,45 15 * * 1')
+</programlisting>
+        </section>
+        <section id="ref_guide_cache_use">
+            <title>
+                Data Cache Usage
+            </title>
+            <para>
+The <literal>org.apache.openjpa.datacache</literal> package defines OpenJPA's
+data caching framework. While you may use this framework directly (see its
+<ulink url="../javadoc/org/apache/openjpa/datacache/package-summary.html">
+Javadoc</ulink> for details), its APIs are meant primarily for service
+providers. In fact, <xref linkend="ref_guide_cache_extension"/> below has
+tips on how to use this package to extend OpenJPA's caching service yourself.
+            </para>
+            <para>
+Rather than use the low-level <literal>org.apache.openjpa.datacache</literal>
+package APIs, JPA users should typically access the data cache through OpenJPA's
+high-level 
+<ulink url="../javadoc/org/apache/openjpa/persistence/StoreCache.html">
+<classname>org.apache.openjpa.persistence.StoreCache</classname></ulink> facade.
+This facade has methods to pin and unpin records, evict data from the cache, and
+more.
+            </para>
+<programlisting>
+public StoreCache getStoreCache();
+</programlisting>
+            <para>
+You obtain the <classname>StoreCache</classname> through the <methodname>
+OpenJPAEntityManagerFactory.getStoreCache</methodname> method.
+            </para>
+            <example id="ref_guide_cache_access_jpa">
+                <title>
+                    Accessing the StoreCache
+                </title>
+<programlisting>
+import org.apache.openjpa.persistence.*;
+
+...
+
+OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(emf);
+StoreCache cache = oemf.getStoreCache();
+...
+</programlisting>
+            </example>
+<programlisting>
+public void evict(Class cls, Object oid);
+public void evictAll();
+public void evictAll(Class cls, Object... oids);
+public void evictAll(Class cls, Collection oids);
+</programlisting>
+            <para>
+The <methodname>evict</methodname> methods tell the cache to release data. Each
+method takes an entity class and one or more identity values, and releases the
+cached data for the corresponding persistent instances. The <methodname>
+evictAll</methodname> method with no arguments clears the cache. Eviction is
+useful when the datastore is changed by a separate process outside OpenJPA's
+control. In this scenario, you typically have to manually evict the data from
+the datastore cache; otherwise the OpenJPA runtime, oblivious to the changes,
+will maintain its stale copy.
+            </para>
+<programlisting>
+public void pin(Class cls, Object oid);
+public void pinAll(Class cls, Object... oids);
+public void pinAll(Class cls, Collection oids);
+public void unpin(Class cls, Object oid);
+public void unpinAll(Class cls, Object... oids);
+public void unpinAll(Class cls, Collection oids);
+</programlisting>
+            <para>
+Most caches are of limited size. Pinning an identity to the cache ensures that
+the cache will mill not kick the data for the corresponding instance out of the
+cache, unless you manually evict it. Note that even after manual eviction, the
+data will get pinned again the next time it is fetched from the store. You can
+only remove a pin and make the data once again available for normal cache
+overflow eviction through the <methodname>unpin</methodname> methods. Use
+pinning when you want a guarantee that a certain object will always be available
+from cache, rather than requiring a datastore trip.
+            </para>
+            <example id="ref_guide_cache_use_jpa">
+                <title>
+                    StoreCache Usage
+                </title>
+<programlisting>
+import org.apache.openjpa.persistence.*;
+
+...
+
+OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(emf);
+StoreCache cache = oemf.getStoreCache();
+cache.pin(Magazine.class, popularMag.getId());
+cache.evict(Magazine.class, changedMag.getId());
+</programlisting>
+            </example>
+            <para>
+See the <classname>StoreCache</classname>
+<ulink url="../javadoc/org/apache/openjpa/persistence/StoreCache.html">
+Javadoc</ulink> for information on additional functionality it provides. Also,
+<xref linkend="ref_guide_runtime"/> discusses OpenJPA's other extensions
+to the standard set of JPA runtime interfaces.
+            </para>
+            <para>
+The examples above include calls to <methodname>evict</methodname> to manually
+remove data from the data cache. Rather than evicting objects from the data
+cache directly, you can also configure OpenJPA to automatically evict objects
+from the data cache when you use the <classname>
+OpenJPAEntityManager</classname>'s eviction APIs.
+            </para>
+            <example id="ref_guide_cache_pmevict">
+                <title>
+                    Automatic Data Cache Eviction
+                </title>
+<programlisting>
+&lt;property name="openjpa.BrokerImpl" value="EvictFromDataCache=true"/&gt;
+</programlisting>
+<programlisting>
+import org.apache.openjpa.persistence.*;
+
+...
+
+OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
+oem.evict(changedMag);  // will evict from data cache also
+</programlisting>
+            </example>
+        </section>
+        <section id="ref_guide_cache_query">
+            <title>
+                Query Cache
+            </title>
+            <indexterm zone="ref_guide_cache_query">
+                <primary>
+                    caching
+                </primary>
+                <secondary>
+                    query cache
+                </secondary>
+            </indexterm>
+            <indexterm zone="ref_guide_cache_query">
+                <primary>
+                    Query
+                </primary>
+                <secondary>
+                    result caching
+                </secondary>
+            </indexterm>
+            <para>
+In addition to the data cache, the <literal>org.apache.openjpa.datacache
+</literal> package defines service provider interfaces for a query cache. The
+query cache is enabled by default when the data cache is enabled. The query
+cache stores the object ids returned by query executions. When you run a query,
+OpenJPA assembles a key based on the query properties and the parameters used at
+execution time, and checks for a cached query result. If one is found, the
+object ids in the cached result are looked up, and the resultant
+persistence-capable objects are returned. Otherwise, the query is executed
+against the database, and the object ids loaded by the query are put into the
+cache. The object id list is not cached until the list returned at query
+execution time is fully traversed.
+            </para>
+            <para>
+OpenJPA exposes a high-level interface to the query cache through the
+<ulink url="../javadoc/org/apache/openjpa/persistence/QueryResultCache.html">
+<classname>org.apache.openjpa.persistence.QueryResultCache</classname></ulink> 
+class. You can access this class through the <classname>
+OpenJPAEntityManagerFactory</classname>.
+            </para>
+            <example id="ref_guide_cache_queryaccess">
+                <title>
+                    Accessing the QueryResultCache
+                </title>
+<programlisting>
+import org.apache.openjpa.persistence.*;
+
+...
+
+OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(emf);
+QueryResultCache qcache = oemf.getQueryResultCache();
+</programlisting>
+            </example>
+            <para>
+The default query cache implementation caches 100 query executions in a
+least-recently-used cache. This can be changed by setting the cache size in the
+<literal>CacheSize</literal> plugin property. Like the data cache, the query
+cache also has a backing soft reference map. The <literal>SoftReferenceSize
+</literal> property controls the size of this map. It is disabled by default.
+            </para>
+            <example id="ref_guide_cache_cachesize">
+                <title>
+                    Query Cache Size
+                </title>
+<programlisting>
+&lt;property name="openjpa.QueryCache" value="CacheSize=1000, SoftReferenceSize=100"/&gt;
+</programlisting>
+            </example>
+            <para>
+To disable the query cache completely, set the <literal>openjpa.QueryCache
+</literal> property to <literal>false</literal>:
+            </para>
+            <example id="ref_guide_cache_disablequery">
+                <title>
+                    Disabling the Query Cache
+                </title>
+<programlisting>
+&lt;property name="openjpa.QueryCache" value="false"/&gt;
+</programlisting>
+            </example>
+            <para>
+There are certain situations in which the query cache is bypassed:
+            </para>
+            <itemizedlist>
+                <listitem>
+                    <para>
+Caching is not used for in-memory queries (queries in which the candidates are a
+collection instead of a class or <classname>Extent</classname>).
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Caching is not used in transactions that have <literal>IgnoreChanges</literal>
+set to <literal>false</literal> and in which modifications to classes in the
+query's access path have occurred. If none of the classes in the access path
+have been touched, then cached results are still valid and are used.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Caching is not used in pessimistic transactions, since OpenJPA must go to the
+database to lock the appropriate rows.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Caching is not used when the the data cache does not have any cached data for an
+id in a query result.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Queries that use persistence-capable objects as parameters are only cached if
+the parameter is directly compared to field, as in:
+                    </para>
+<programlisting>
+select e from Employee e where e.company.address = :addr
+</programlisting>
+                    <para>
+If you extract field values from the parameter in your query string, or if the
+parameter is used in collection element comparisons, the query is not cached.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Queries that result in projections of custom field types or <classname>
+BigDecimal</classname> or <classname>BigInteger</classname> fields are not
+cached.
+                    </para>
+                </listitem>
+            </itemizedlist>
+            <para>
+Cache results are removed from the cache when instances of classes in a cached
+query's access path are touched. That is, if a query accesses data in class
+<classname>A</classname>, and instances of class <classname>A</classname> are
+modified, deleted, or inserted, then the cached query result is dropped from the
+cache.
+            </para>
+            <para>
+It is possible to tell the query cache that a class has been altered. This is
+only necessary when the changes occur via direct modification of the database
+outside of OpenJPA's control. You can also evict individual queries, or clear
+the entire cache.
+            </para>
+<programlisting>
+public void evict(Query q);
+public void evictAll(Class cls);
+public void evictAll();
+</programlisting>
+            <para>
+For JPA queries with parameters, set the desired parameter values into the
+<ulink url="http://java.sun.com/javaee/5/docs/api/javax/persistence/Query.html">
+<classname>Query</classname></ulink> instance before calling the above methods.
+            </para>
+            <example id="ref_guide_cache_query_classchange">
+                <title>
+                    Evicting Queries
+                </title>
+<programlisting>
+import org.apache.openjpa.persistence.*;
+
+...
+
+OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(emf);
+QueryResultCache qcache = oemf.getQueryResultCache();
+
+// evict all queries that can be affected by changes to Magazines
+qcache.evictAll(Magazine.class);
+
+// evict an individual query with parameters
+EntityManager em = emf.createEntityManager();
+Query q = em.createQuery(...).
+    setParameter(0, paramVal0).
+    setParameter(1, paramVal1);
+qcache.evict (q);
+</programlisting>
+            </example>
+            <para>
+When using one of OpenJPA's distributed cache implementations, it is necessary
+to perform this in every JVM - the change notification is not propagated
+automatically. When using a third-party coherent caching solution,
+it is not necessary to do this in every JVM (although it won't hurt to do so),
+as the cache results are stored directly in the coherent cache.
+            </para>
+            <para>
+Queries can also be pinned and unpinned through the <classname>
+QueryResultCache</classname>. The semantics of these operations are the same 
+as pinning and unpinning data from the data cache.
+            </para>
+<programlisting>
+public void pin(Query q);
+public void unpin(Query q);
+</programlisting>
+            <para>
+For JPA queries with parameters, set the desired parameter values into the
+<ulink url="http://java.sun.com/javaee/5/docs/api/javax/persistence/Query.html">
+<classname>Query</classname></ulink> instance before calling the above methods.
+            </para>
+            <para>
+The following example shows these APIs in action.
+            </para>
+            <example id="ref_guide_cache_query_pin">
+                <title>
+                    Pinning, and Unpinning Query Results
+                </title>
+<programlisting>
+import org.apache.openjpa.persistence.*;
+
+...
+
+OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(emf);
+QueryResultCache qcache = oemf.getQueryResultCache();
+EntityManager em = emf.createEntityManager();
+
+Query pinQuery = em.createQuery(...).
+    setParameter(0, paramVal0).
+    setParameter(1, paramVal1);
+qcache.pin(pinQuery);
+Query unpinQuery = em.createQuery(...).
+    setParameter(0, paramVal0).
+    setParameter(1, paramVal1);
+qcache.unpin(unpinQuery);
+</programlisting>
+            </example>
+            <para>
+Pinning data into the cache instructs the cache to not expire the pinned results
+when cache flushing occurs. However, pinned results will be removed from the
+cache if an event occurs that invalidates the results.
+            </para>
+            <para>
+You can disable caching on a per-<classname>EntityManager</classname> or 
+per-<classname>Query</classname> basis:
+            </para>
+            <example id="ref_guide_cache_query_disable">
+                <title>
+                    Disabling and Enabling Query Caching
+                </title>
+<programlisting>
+import org.apache.openjpa.persistence.*;
+
+...
+
+// temporarily disable query caching for all queries created from em
+OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
+oem.getFetchPlan ().setQueryResultCache(false);
+
+// re-enable caching for a particular query
+OpenJPAQuery oq = oem.createQuery(...);
+oq.getFetchPlan().setQueryResultCache(true);
+</programlisting>
+            </example>
+        </section>
+        <section id="ref_guide_cache_extension">
+            <title>
+                Cache Extension
+            </title>
+            <indexterm zone="ref_guide_cache_extension">
+                <primary>
+                    caching
+                </primary>
+                <secondary>
+                    data cache
+                </secondary>
+                <tertiary>
+                    extension
+                </tertiary>
+            </indexterm>
+            <indexterm zone="ref_guide_cache_extension">
+                <primary>
+                    caching
+                </primary>
+                <secondary>
+                    query cache
+                </secondary>
+                <tertiary>
+                    extension
+                </tertiary>
+            </indexterm>
+            <para>
+The provided data cache classes can be easily extended to add additional
+functionality. If you are adding new behavior, you should extend <classname>
+org.apache.openjpa.datacache.DataCacheImpl</classname>. To use your own storage
+mechanism, extend <classname>org.apache.openjpa.datacache.AbstractDataCache
+</classname>, or implement <classname>org.apache.openjpa.datacache.DataCache
+</classname> directly. If you want to implement a distributed cache that uses an
+unsupported method for communications, create an implementation of <classname>
+org.apache.openjpa.event.RemoteCommitProvider</classname>. This process is
+described in greater detail in 
+<xref linkend="ref_guide_event_customization"/>.
+            </para>
+            <para>
+The query cache is just as easy to extend. Add functionality by extending the
+default <classname>org.apache.openjpa.datacache.QueryCacheImpl</classname>.
+Implement your own storage mechanism for query results by extending <classname>
+org.apache.openjpa.datacache.AbstractQueryCache</classname> or implementing the
+<classname>org.apache.openjpa.datacache.QueryCache</classname> interface
+directly.
+            </para>
+        </section>
+        <section id="ref_guide_cache_notes">
+            <title>
+                Important Notes
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+The default cache implementations <emphasis>do not</emphasis> automatically
+refresh objects in other <classname>EntityManager</classname>s when the cache
+is updated or invalidated. This behavior would not be compliant with the JPA
+specification.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Invoking <methodname>OpenJPAEntityManager.evict</methodname><emphasis>does not
+</emphasis> result in the corresponding data being dropped from the data cache,
+unless you have set the proper configuration options as explained above (see
+<xref linkend="ref_guide_cache_pmevict"/>). Other methods related to the
+<classname>EntityManager</classname> cache also do not effect the data cache.
+                    </para>
+                    <para>
+The data cache assumes that it is up-to-date with respect to the datastore, so
+it is effectively an in-memory extension of the database. To manipulate the data
+cache, you should generally use the data cache facades presented in this
+chapter.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+You must specify a <classname>org.apache.openjpa.event.RemoteCommitProvider
+</classname> (via the <link linkend="openjpa.RemoteCommitProvider"><literal>
+openjpa.RemoteCommitProvider</literal></link> property) in order to use the data
+cache, even when using the cache in a single-JVM mode. When using it in a
+single-JVM context, set this property to <literal>sjvm</literal>.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+        <section id="datastore_cache_issues">
+            <title>
+                Known Issues and Limitations
+            </title>
+            <indexterm zone="datastore_cache_issues">
+                <primary>
+                    caching
+                </primary>
+                <secondary>
+                    issues and limitations
+                </secondary>
+            </indexterm>
+            <itemizedlist>
+                <listitem>
+                    <para>
+When using datastore (pessimistic) transactions in concert with the distributed
+caching implementations, it is possible to read stale data when reading data
+outside a transaction.
+                    </para>
+                    <para>
+For example, if you have two JVMs (JVM A and JVM B) both communicating with each
+other, and JVM A obtains a data store lock on a particular object's underlying
+data, it is possible for JVM B to load the data from the cache without going to
+the datastore, and therefore load data that should be locked. This will only
+happen if JVM B attempts to read data that is already in its cache during the
+period between when JVM A locked the data and JVM B received and processed the
+invalidation notification.
+                    </para>
+                    <para>
+This problem is impossible to solve without putting together a two-phase commit
+system for cache notifications, which would add significant overhead to the
+caching implementation. As a result, we recommend that people use optimistic
+locking when using data caching. If you do not, then understand that some of
+your non-transactional data may not be consistent with the datastore.
+                    </para>
+                    <para>
+Note that when loading objects in a transaction, the appropriate datastore
+transactions will be obtained. So, transactional code will maintain its
+integrity.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+<classname>Extent</classname>s are not cached. So, if you plan on iterating
+over a list of all the objects in an <classname>Extent</classname> on a regular
+basis, you will only benefit from caching if you do so with a <classname>Query
+</classname> instead:
+                    </para>
+                    <example id="ref_guide_cache_limits_extent">
+                        <title>
+                            Query Replaces Extent
+                        </title>
+<programlisting>
+import org.apache.openjpa.persistence.*;
+
+...
+
+OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
+Extent extent = oem.getExtent(Magazine.class, false);
+
+// This iterator does not benefit from caching...
+Iterator uncachedIterator = extent.iterator();
+
+// ... but this one does.
+OpenJPAQuery extentQuery = oem.createQuery(...);
+extentQuery.setSubclasses(false);
+Iterator cachedIterator = extentQuery.getResultList().iterator();
+</programlisting>
+                    </example>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+	<section id="ref_guide_cache_querycomp">
+		<title>
+            Query Compilation Cache
+        </title>
+		<indexterm zone="ref_guide_cache_querycomp">
+			<primary>
+                caching
+            </primary>
+			<secondary>
+                query compilation cache
+            </secondary>
+		</indexterm>
+		<para>
+The query compilation cache is a <classname>Map</classname> used to cache 
+parsed query strings.  As a result, most queries are only parsed once in 
+OpenJPA, and cached thereafter.  You can control the compilation cache through 
+the <link linkend="openjpa.QueryCompilationCache"><literal>
+openjpa.QueryCompilationCache</literal></link> configuration property.  This 
+property accepts a plugin string (see <xref linkend="ref_guide_conf_plugins"/>)
+describing the <classname>Map</classname> used to associate query strings and 
+their parsed form.  This property accepts the following aliases:
+		</para>
+		<table>
+			<title>
+                Pre-defined aliases
+            </title>
+			<tgroup cols="2" align="left" colsep="1" rowsep="1">
+				<colspec colname="alias"/>
+				<colspec colname="value"/>
+				<colspec colname="notes"/>
+				<thead>
+					<row>
+						<entry colname="alias">Alias</entry>
+						<entry colname="value">Value</entry>
+						<entry colname="notes">Notes</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry colname="alias">
+<literal>true</literal>
+						</entry>
+						<entry colname="value">
+<literal>org.apache.openjpa.util.CacheMap</literal>
+						</entry>
+						<entry colname="notes">
+The default option.  Uses a 
+<ulink url="../javadoc/org/apache/openjpa/util/CacheMap.html"> 
+<literal>CacheMap</literal></ulink> to store compilation data.  
+<literal>CacheMap</literal> maintains a fixed number of cache entries, and an 
+optional soft reference map for entries that are moved out of the LRU space. 
+So, for applications that have a monotonically increasing number of distinct 
+queries, this option can be used to ensure that a fixed amount of memory is 
+used by the cache.
+						</entry>
+					</row>
+					<row>
+						<entry colname="alias"><literal>all</literal></entry>
+						<entry colname="value">
+<literal>org.apache.openjpa.lib.util.ConcurrentHashMap</literal>
+						</entry>
+						<entry colname="notes">
+This is the fastest option, but compilation data is never dropped from the 
+cache, so if you use a large number of dynamic queries, this option may result 
+in ever-increasing memory usage. Note that if your queries only differ in the 
+values of the parameters, this should not be an issue.
+						</entry>
+					</row>
+					<row>
+						<entry colname="alias"><literal>false</literal></entry>
+						<entry colname="value"><emphasis>none</emphasis></entry>
+						<entry colname="notes">
+Disables the compilation cache.
+						</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
+	</section>
+</chapter>
