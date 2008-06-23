@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.   
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+        http://maven.apache.org/maven-v4_0_0.xsd">
+    <!--
+        To build the distribution files from project root:
+
+        mvn clean compile package -Dtest=false
+
+        To build and deploy a full digned release with docs, run:
+
+            mvn clean deploy -Pjavadoc-profile,docbook-profile,sign-release
+
+        Note that to sign the release, you need to have "gpg" installed and
+        create a key. See http://apache.org/dev/release-signing.html
+    -->
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>apache-openjpa</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenJPA Distribution</name>
+    <parent>
+        <groupId>org.apache.openjpa</groupId>
+        <artifactId>openjpa-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+        <scm.dir>svn.apache.org/repos/asf/openjpa/trunk/openjpa-project</scm.dir>
+        <openjpa.release.keyAlias>
+            ${user.name}@apache.org
+        </openjpa.release.keyAlias>
+        <openjpa.assembly.finalName>
+            ${artifactId}-${version}</openjpa.assembly.finalName>
+        <openjpa.assembly.outputDirectory>
+            ${project.basedir}/target/assembly
+        </openjpa.assembly.outputDirectory>
+
+        <openjpa.assembly.binarySuffix>binary</openjpa.assembly.binarySuffix>
+        <openjpa.assembly.binaryBase>
+            ${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.binarySuffix}
+        </openjpa.assembly.binaryBase>
+        <openjpa.assembly.binaryFile>
+            ${openjpa.assembly.binaryBase}.zip
+        </openjpa.assembly.binaryFile>
+
+        <openjpa.assembly.sourceSuffix>source</openjpa.assembly.sourceSuffix>
+        <openjpa.assembly.sourceBase>
+            ${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.sourceSuffix}
+        </openjpa.assembly.sourceBase>
+        <openjpa.assembly.sourceFile>
+            ${openjpa.assembly.sourceBase}.zip
+        </openjpa.assembly.sourceFile>
+
+        <docbook.source>${project.basedir}/src/doc/manual</docbook.source>
+        <docbook.target>${project.basedir}/target/manual</docbook.target>
+        <docbook.version>1.67.2</docbook.version>
+        <local.repository>${settings.localRepository}</local.repository>
+    </properties>
+
+    <scm>
+        <connection>scm:svn:http://${scm.dir}</connection>
+        <developerConnection>scm:svn:https://${scm.dir}</developerConnection>
+        <url>https://${scm.dir}</url>
+    </scm>
+
+    <build>
+        <!-- needed to let maven pass the "compile" phase -->
+        <testSourceDirectory>/none/</testSourceDirectory>
+
+        <!-- filter site resources -->
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/site</directory>
+                <!-- targetPath is relative to target/classes/ -->
+                <targetPath>../filtered-site</targetPath>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>bin</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                        <configuration>
+                            <descriptor>assembly.xml</descriptor>
+                            <outputDirectory>${openjpa.assembly.outputDirectory}</outputDirectory>
+                            <workDirectory>target/work</workDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                        <configuration>
+                            <descriptor>source-assembly.xml</descriptor>
+                            <outputDirectory>${project.basedir}/target/assembly</outputDirectory>
+                            <workDirectory>target/work</workDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--
+                Copy over site files from src/site to target/filtered-site
+                so we can filter resources and include other generated
+                content from the openjpa-project module.
+            -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>prefilter-site</id>
+                        <phase>site</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>2.0-beta-5</version>
+                <configuration>
+                    <siteDirectory>target/filtered-site</siteDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!--
+            Docbook profile. Docs can be built by running:
+            MAVEN_OPTS=-Xmx512m
+            mvn -f openjpa-project/pom.xml process-resources -Pdocbook-profile
+        -->
+        <profile>
+            <id>docbook-profile</id>
+            <build>
+                <plugins>
+                    <!-- build the docs when processing resources -->
+                    <plugin>
+                        <groupId>com.agilejava.docbkx</groupId>
+                        <artifactId>docbkx-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>build-pdf-doc</id>
+                                <phase>process-resources</phase>
+                                <goals><goal>generate-pdf</goal></goals>
+                                <configuration>
+                                    <sourceDirectory>
+                                        ${docbook.source}
+                                    </sourceDirectory>
+                                    <targetDirectory>
+                                        ${docbook.target}
+                                    </targetDirectory>
+                                    <includes>manual.xml</includes>
+                                    <foCustomization>
+                                        ${docbook.source}/manual-pdf.xsl
+                                    </foCustomization>
+                                    <imgSrcPath>
+                                        ${docbook.source}/
+                                    </imgSrcPath>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>build-chunked-doc</id>
+                                <phase>process-resources</phase>
+                                <goals><goal>generate-html</goal></goals>
+                                <configuration>
+                                    <sourceDirectory>
+                                        ${docbook.source}
+                                    </sourceDirectory>
+                                    <targetDirectory>
+                                        ${docbook.target}
+                                    </targetDirectory>
+                                    <includes>manual.xml</includes>
+                                    <chunkedOutput>true</chunkedOutput>
+                                    <chunkQuietly>false</chunkQuietly>
+                                    <htmlCustomization>
+                                        ${docbook.source}/manual-xhtml-chunk.xsl
+                                    </htmlCustomization>
+                                    <postProcess>
+                                        <!-- rename manual to index -->
+                                        <move
+                                        file="${docbook.target}/manual.html"
+                                        tofile="${docbook.target}/index.html"/>
+
+                                        <!-- copy over images and styles -->
+                                        <mkdir dir="${docbook.target}/img"/>
+                                        <copy todir="${docbook.target}/img">
+                                            <fileset
+                                                dir="${docbook.source}/img">
+                                                <include name="*.*"/>
+                                            </fileset>
+                                        </copy>
+
+                                        <mkdir dir="${docbook.target}/css"/>
+                                        <copy todir="${docbook.target}/css">
+                                            <fileset
+                                                dir="${docbook.source}/css">
+                                                <include name="*.*"/>
+                                            </fileset>
+                                        </copy>
+                                    </postProcess>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>build-single-doc</id>
+                                <phase>process-resources</phase>
+                                <goals><goal>generate-html</goal></goals>
+                                <configuration>
+                                    <sourceDirectory>
+                                        ${docbook.source}
+                                    </sourceDirectory>
+                                    <targetDirectory>
+                                        ${docbook.target}
+                                    </targetDirectory>
+                                    <includes>manual.xml</includes>
+                                    <chunkedOutput>false</chunkedOutput>
+                                    <htmlCustomization>
+                                        ${docbook.source}/manual-xhtml.xsl
+                                    </htmlCustomization>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                        <dependency>
+                            <groupId>org.docbook</groupId>
+                            <artifactId>docbook-xml</artifactId>
+                            <version>4.4</version>
+                            <scope>runtime</scope>
+                        </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+            <activation>
+                <property>
+                    <name>builddocs</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>agilejava</id>
+                    <name>Agilejava repository (Docbook plugin)</name>
+                    <url>http://agilejava.com/maven</url>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+
+        <!-- sign the release files -->
+        <profile>
+            <id>sign-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <configuration>
+                                    <tasks>
+                                    <echo>Signing release files...</echo>
+                                    <macrodef name="sign-file">
+                                        <attribute name="file" />
+                                        <sequential>
+                                        <delete failonerror="false"
+                                            file="@{file}.asc"/>
+                                        <exec executable="gpg"
+                                            failonerror="true">
+                                            <arg value="--batch"/>
+                                            <arg value="--verbose"/>
+                                            <arg value="--default-key"/>
+                                            <arg value="${openjpa.release.keyAlias}"/>
+                                            <arg value="--armor"/>
+                                            <arg value="--detach-sig"/>
+                                            <arg value="@{file}"/>
+                                        </exec>
+                                        </sequential>
+                                    </macrodef>
+                                    <sign-file file="${openjpa.assembly.binaryFile}"/>
+                                    <sign-file file="${openjpa.assembly.sourceFile}"/>
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-signature-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>attach-artifact</goal>
+                                </goals>
+                                <configuration>
+                                    <artifacts>
+                                        <artifact>
+                                            <file>${openjpa.assembly.binaryFile}.asc</file>
+                                            <classifier>${openjpa.assembly.binarySuffix}.zip</classifier>
+                                            <type>asc</type>
+                                        </artifact>
+                                        <artifact>
+                                            <file>${openjpa.assembly.sourceFile}.asc</file>
+                                            <classifier>${openjpa.assembly.sourceSuffix}.zip</classifier>
+                                            <type>asc</type>
+                                        </artifact>
+                                    </artifacts>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <activation>
+                <property>
+                    <name>sign</name>
+                    <value>true</value>
+                </property>
+            </activation>
+        </profile>
+    </profiles>
+
+    <!-- need to explicitly list dependencies for assembly to work -->
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
+
+        <!-- included so we can include it in the distribution -->
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.2.2.0</version>
+        </dependency>
+    </dependencies>
+</project>

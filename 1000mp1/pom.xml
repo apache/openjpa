@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.   
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+            http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <prerequisites>
+        <maven>2.0.4</maven>
+    </prerequisites>
+    <groupId>org.apache.openjpa</groupId>
+    <artifactId>openjpa-parent</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenJPA</name>
+    <description>OpenJPA</description>
+
+    <properties>
+        <scm.dir>svn.apache.org/repos/asf/openjpa/trunk</scm.dir>
+    </properties>
+
+    <!--
+        Changing this version needs to also be done in all children poms
+        See: http://jira.codehaus.org/browse/MNG-624
+    -->
+    <version>1.0.0-SNAPSHOT</version>
+    <url>http://incubator.apache.org/projects/openjpa</url>
+    <issueManagement>
+        <system>jira</system>
+        <url>http://issues.apache.org/jira/browse/OPENJPA</url>
+    </issueManagement>
+    <inceptionYear>2006</inceptionYear>
+    <mailingLists>
+        <mailingList>
+            <name>OpenJPA Developer List</name>
+            <subscribe>open-jpa-dev-subscribe@incubator.apache.org</subscribe>
+            <unsubscribe>open-jpa-dev-unsubscribe@incubator.apache.org</unsubscribe>
+            <post>open-jpa-dev@incubator.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/incubator-open-jpa-dev/</archive>
+        </mailingList>
+        <mailingList>
+            <name>OpenJPA Commits List</name>
+            <subscribe>open-jpa-commits-subscribe@incubator.apache.org</subscribe>
+            <unsubscribe>open-jpa-commits-unsubscribe@incubator.apache.org</unsubscribe>
+            <post>open-jpa-commits@incubator.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/incubator-open-jpa-commits/</archive>
+        </mailingList>
+    </mailingLists>
+    <developers>
+        <developer>
+            <name>Patrick Linskey</name>
+            <id>plinskey</id>
+            <organization>BEA Systems, Inc.</organization>
+            <email>plinskey@bea.com</email>
+        </developer>
+        <developer>
+            <name>Abe White</name>
+            <id>awhite</id>
+            <organization>BEA Systems, Inc.</organization>
+            <email>awhite@bea.com</email>
+        </developer>
+        <developer>
+            <name>Steve Kim</name>
+            <id>stkim</id>
+            <organization>BEA Systems, Inc.</organization>
+            <email>stkim@bea.com</email>
+        </developer>
+        <developer>
+            <name>Marc Prud'hommeaux</name>
+            <id>mprudhom</id>
+            <organization>BEA Systems, Inc.</organization>
+            <email>mprudhom@bea.com</email>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>Apache Software License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <organization>
+        <name>Apache Software Foundation</name>
+        <url>http://www.apache.org</url>
+    </organization>
+    <scm>
+        <connection>scm:svn:http://${scm.dir}</connection>
+        <developerConnection>scm:svn:https://${scm.dir}</developerConnection>
+        <url>https://${scm.dir}</url>
+    </scm>
+    <modules>
+        <module>openjpa-lib</module>
+        <module>openjpa-kernel</module>
+        <module>openjpa-jdbc</module>
+        <module>openjpa-xmlstore</module>
+        <module>openjpa-all</module>
+        <module>openjpa-project</module>
+        <module>openjpa-integration</module>
+    </modules>
+    <profiles>
+        <profile>
+            <id>jdk1.5</id>
+            <activation>
+                <jdk>1.5</jdk>
+            </activation>
+            <modules>
+                <module>openjpa-persistence</module>
+                <module>openjpa-persistence-jdbc</module>
+                <module>openjpa-kernel-5</module>
+                <module>openjpa-jdbc-5</module>
+                <module>openjpa-examples</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>release</name>
+                </property>
+            </activation>
+            <modules>
+                <module>openjpa-project</module>
+            </modules>
+        </profile>
+
+        <!--
+            Generate the documentation using the YDoc UML generation plugin.
+            Assumes you have the YDoc libraries locally, as well as a valid
+            YDoc license file. Example usage for building the docs:
+
+            mvn process-classes -Pydoc-profile,javadoc-profile -Dydoc.home=${HOME}/.m2/privaterepos/ydoc/ydoc-2.2_04-jdk1.5 -Dydoc.license=${HOME}/.m2/privaterepos/ydoc/ydoc.license
+        -->
+        <profile>
+            <id>ydoc-profile</id>
+            <properties>
+                <javadoc.additionalparam>
+                    -generic
+                    -umlautogen
+                    -tag param
+                    -tag return
+                    -tag see
+                    -ytag y.uml
+                    -license ${ydoc.license}
+                    -filter ydoc.filters.ExcludeFilter
+                    -filterpath ${ydoc.home}/lib/ydoc.jar
+                    -doclet ydoc.doclets.YStandard
+                    -docletpath ${ydoc.home}/lib/ydoc.jar${path.separator}${ydoc.home}/lib/class2svg.jar${path.separator}${ydoc.home}/resources
+                    ${ydoc.params}
+                </javadoc.additionalparam>
+            </properties>
+        </profile>
+
+        <profile>
+            <!--                        
+                Javadoc profile. Docs can be built by running:
+                    mvn process-resources -Dtest=false -Pjavadoc-profile
+            -->  
+            <id>javadoc-profile</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.2</version>
+                        <executions>
+                            <execution>
+                                <phase>process-classes</phase>
+                                <goals><goal>javadoc</goal></goals>
+                                <configuration>
+                                    <additionalparam>
+                                        ${javadoc.additionalparam}
+                                    </additionalparam>
+                                    <aggregate>true</aggregate>
+                                    <subpackages>org.apache.openjpa</subpackages>
+
+                                    <verbose>false</verbose>
+                                    <!-- <linksource>true</linksource> -->
+                                    <maxmemory>512m</maxmemory>
+                                    <links>
+                                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                                        <link>http://java.sun.com/javaee/5/docs/api</link>
+                                        <link>http://jakarta.apache.org/commons/collections/api-release</link>
+                                    </links>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <activation>
+                <property>
+                    <name>builddocs</name>
+                    <value>true</value>
+                </property>
+            </activation>
+        </profile>
+
+    </profiles>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Repository Switchboard</name>
+            <url>http://www.ibiblio.org/maven2</url>
+        </repository>
+    </repositories>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <!-- also include license and notice files in all the jars -->
+            <resource>
+                <directory>${basedir}/../openjpa-project/</directory>
+                <includes>
+                    <include>NOTICE.txt</include>
+                    <include>LICENSE.txt</include>
+                    <include>DISCLAIMER.txt</include>
+                </includes>
+                <targetPath>META-INF</targetPath>
+            </resource>
+        </resources>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.5</source>
+                        <target>1.5</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.1</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.2</version>
+                    <configuration>
+                        <useFile>false</useFile>
+                        <trimStackTrace>false</trimStackTrace>
+                        <useSystemClassLoader>true</useSystemClassLoader>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>jdepend-maven-plugin</report>
+                            <!-- <report>jxr-maven-plugin</report> -->
+                            <report>surefire-report-maven-plugin</report>
+                            <report>maven-javadoc-plugin</report>
+                            <report>project-team</report>
+                            <report>mailing-list</report>
+                            <report>issue-tracking</report>
+                            <report>license</report>
+                            <report>scm</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>taglist-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </reporting>
+
+
+    <distributionManagement>
+      <repository>
+        <id>people.apache.org</id>
+        <url>scp://people.apache.org/www/people.apache.org/repo/m2-incubating-repository/</url>
+      </repository>
+      <snapshotRepository>
+        <id>people.apache.org</id>
+        <url>scp://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository/</url>
+        <uniqueVersion>false</uniqueVersion>
+      </snapshotRepository>
+      <site>
+        <id>people.apache.org</id>
+        <url>scpexe://people.apache.org/home/mprudhom/public_html/openjpa/site/</url>
+      </site>
+    </distributionManagement>
+</project>
