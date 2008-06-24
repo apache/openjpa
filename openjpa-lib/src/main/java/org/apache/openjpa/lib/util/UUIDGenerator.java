@@ -22,16 +22,18 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.security.SecureRandom;
 import java.util.Random;
+import java.util.UUID;
 
 import org.apache.commons.lang.exception.NestableRuntimeException;
 
 /**
- * UUID value generator.  Based on the time-based generator in the Apache
- * Commons Id project:  http://jakarta.apache.org/commons/sandbox/id/uuid.html
+ * UUID value generator.  Type 1 generator is based on the time-based generator  
+ * in the Apache Commons Id project:  http://jakarta.apache.org/commons/sandbox
+ * /id/uuid.html  The type 4 generator uses the standard Java UUID generator.
  *
- * The code has been vastly simplified and modified to replace the ethernet
- * address of the host machine with the IP, since we do not want to require
- * native libs and Java cannot access the MAC address directly.
+ * The type 1 code has been vastly simplified and modified to replace the 
+ * ethernet address of the host machine with the IP, since we do not want to 
+ * require native libs and Java cannot access the MAC address directly.
  *
  * In spirit, implements the IETF UUID draft specification, found here:<br />
  * http://www1.ics.uci.edu/~ejw/authoring/uuid-guid/draft-leach-uuids-guids-01
@@ -42,6 +44,10 @@ import org.apache.commons.lang.exception.NestableRuntimeException;
  * @since 0.3.3
  */
 public class UUIDGenerator {
+
+    // supported UUID types
+    public static final int TYPE1 = 1;
+    public static final int TYPE4 = 4;
 
     // indexes within the uuid array for certain boundaries
     private static final byte IDX_TIME_HI = 6;
@@ -68,13 +74,12 @@ public class UUIDGenerator {
     private final static byte TYPE_TIME_BASED = 0x10;
 
     // random number generator used to reduce conflicts with other JVMs, and
-    // hasher for strings.  note that secure random is very slow the first time
-    // it is used; consider switching to a standard random
-    private static final Random RANDOM = new SecureRandom();
+    // hasher for strings.  
+    private static Random RANDOM;
 
     // 4-byte IP address + 2 random bytes to compensate for the fact that
     // the MAC address is usually 6 bytes
-    private static final byte[] IP;
+    private static byte[] IP;
 
     // counter is initialized to 0 and is incremented for each uuid request
     // within the same timestamp window.
@@ -88,12 +93,21 @@ public class UUIDGenerator {
     // when it overflows
     private static long _lastMillis = 0L;
     private static final int MAX_14BIT = 0x3FFF;
-    private static short _seq = (short) RANDOM.nextInt(MAX_14BIT);
-
+    private static short _seq = 0;
+        
     /*
-     * Static initializer to get the IP address of the host machine.
+     * Initializer for type 1 UUIDs.  Creates random generator and genenerates
+     * the node portion of the UUID using the IP address.
      */
-    static {
+    private static synchronized void initializeForType1()
+    {
+        if (RANDOM != null)
+            return;
+        // note that secure random is very slow the first time
+        // it is used; consider switching to a standard random
+        RANDOM = new SecureRandom();
+        _seq = (short) RANDOM.nextInt(MAX_14BIT);
+        
         byte[] ip = null;
         try {
             ip = InetAddress.getLocalHost().getAddress();
@@ -103,13 +117,25 @@ public class UUIDGenerator {
 
         IP = new byte[6];
         RANDOM.nextBytes(IP);
-        System.arraycopy(ip, 0, IP, 2, ip.length);
+        System.arraycopy(ip, 0, IP, 2, ip.length);        
     }
 
     /**
      * Return a unique UUID value.
      */
-    public static byte[] next() {
+    public static byte[] next(int type) {
+        if (type == TYPE4) {
+            return createType4();
+        }
+        return createType1();
+    }
+      
+    /*
+     * Creates a type 1 UUID 
+     */
+    public static byte[] createType1() {
+        if (RANDOM == null)
+            initializeForType1();
         // set ip addr
         byte[] uuid = new byte[16];
         System.arraycopy(IP, 0, uuid, 10, IP.length);
@@ -147,11 +173,32 @@ public class UUIDGenerator {
         return uuid;
     }
 
+    /*
+     * Creates a type 4 UUID
+     */
+    private static byte[] createType4() {
+        UUID type4 = UUID.randomUUID();
+        byte[] uuid = new byte[16];
+        longToBytes(type4.getMostSignificantBits(), uuid, 0);
+        longToBytes(type4.getLeastSignificantBits(), uuid, 8);
+        return uuid;
+    }
+    
+    /*
+     * Converts a long to byte values, setting them in a byte array
+     * at a given starting position.
+     */
+    private static void longToBytes(long longVal, byte[] buf, int sPos) {
+        sPos += 7;
+        for(int i = 0; i < 8; i++)         
+            buf[sPos-i] = (byte)(longVal >>> (i * 8));
+    }
+
     /**
      * Return the next unique uuid value as a 16-character string.
      */
-    public static String nextString() {
-        byte[] bytes = next();
+    public static String nextString(int type) {
+        byte[] bytes = next(type);
         try {
             return new String(bytes, "ISO-8859-1");
         } catch (Exception e) {
@@ -162,8 +209,8 @@ public class UUIDGenerator {
     /**
      * Return the next unique uuid value as a 32-character hex string.
      */
-    public static String nextHex() {
-        return Base16Encoder.encode(next());
+    public static String nextHex(int type) {
+        return Base16Encoder.encode(next(type));
     }
 
     /**
@@ -174,6 +221,8 @@ public class UUIDGenerator {
      */
     // package-visibility for testing
     static long getTime() {
+        if (RANDOM == null)
+            initializeForType1();
         long newTime = getUUIDTime();
         if (newTime <= _lastMillis) {
             incrementSequence();

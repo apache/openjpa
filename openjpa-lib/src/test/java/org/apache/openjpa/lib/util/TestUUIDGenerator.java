@@ -33,13 +33,39 @@ public class TestUUIDGenerator extends TestCase {
     public void testUniqueString() {
         Set seen = new HashSet();
         for (int i = 0; i < 10000; i++)
-            assertTrue(seen.add(UUIDGenerator.nextString()));
+            assertTrue(seen.add(
+                UUIDGenerator.nextString(UUIDGenerator.TYPE1)));
     }
 
     public void testUniqueHex() {
         Set seen = new HashSet();
         for (int i = 0; i < 10000; i++)
-            assertTrue(seen.add(UUIDGenerator.nextHex()));
+            assertTrue(seen.add(
+                UUIDGenerator.nextHex(UUIDGenerator.TYPE1)));
+    }
+
+    public void testUniqueType4String() {
+        Set seen = new HashSet();
+        for (int i = 0; i < 10000; i++)
+            assertTrue(seen.add(
+                UUIDGenerator.nextString(UUIDGenerator.TYPE4)));
+    }
+
+    public void testUniqueType4Hex() {
+        Set seen = new HashSet();
+        for (int i = 0; i < 10000; i++)
+            assertTrue(seen.add(
+                UUIDGenerator.nextHex(UUIDGenerator.TYPE4)));
+    }
+
+    public void testUniqueMixedTypesHex() {
+        Set seen = new HashSet();
+        for (int i = 0; i < 10000; i++) {
+            int type = (i % 2 == 0) ? 
+                UUIDGenerator.TYPE4 : UUIDGenerator.TYPE1;
+            assertTrue(seen.add(
+                UUIDGenerator.nextHex(type)));
+        }
     }
 
     public void testGetTime() {

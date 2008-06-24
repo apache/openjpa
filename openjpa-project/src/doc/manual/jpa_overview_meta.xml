@@ -830,7 +830,7 @@ on any field, not just identity fields. Before using the <literal>IDENTITY
 <xref linkend="ref_guide_pc_oid_pkgen_autoinc"/> in the Reference Guide.
                 </para>
                 <para>
-OpenJPA also offers two additional generator strategies for non-numeric fields,
+OpenJPA also offers additional generator strategies for non-numeric fields,
 which you can access by setting <literal>strategy</literal> to <literal>AUTO
 </literal> (the default), and setting the <literal>generator</literal> string
 to:
@@ -851,9 +851,9 @@ to:
                                 uuid-string
                             </primary>
                         </indexterm>
-<literal>uuid-string</literal>: OpenJPA will generate a 128-bit UUID unique
-within the network, represented as a 16-character string. For more information
-on UUIDs, see the IETF UUID draft specification at:
+<literal>uuid-string</literal>: OpenJPA will generate a 128-bit type 1 UUID
+unique within the network, represented as a 16-character string. For more
+information on UUIDs, see the IETF UUID draft specification at:
 <ulink url="http://www1.ics.uci.edu/~ejw/authoring/uuid-guid/">
 http://www1.ics.uci.edu/~ejw/authoring/uuid-guid/</ulink>
                         </para>
@@ -874,7 +874,48 @@ http://www1.ics.uci.edu/~ejw/authoring/uuid-guid/</ulink>
                             </primary>
                         </indexterm>
 <literal>uuid-hex</literal>: Same as <literal> uuid-string</literal>, but
-represents the UUID as a 32-character hexadecimal string.
+represents the type 1 UUID as a 32-character hexadecimal string.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                        <indexterm>
+                            <primary>
+                                mapping metadata
+                            </primary>
+                            <secondary>
+                                uuid-type4-string
+                            </secondary>
+                        </indexterm>
+                        <indexterm>
+                            <primary>
+                                uuid-type4-string
+                            </primary>
+                        </indexterm>
+<literal>uuid-type4-string</literal>: OpenJPA will generate a 128-bit type 4
+pseudo-random UUID, represented as a 16-character string. For more
+information on UUIDs, see the IETF UUID draft specification at:
+<ulink url="http://www1.ics.uci.edu/~ejw/authoring/uuid-guid/">
+http://www1.ics.uci.edu/~ejw/authoring/uuid-guid/</ulink>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                        <indexterm>
+                            <primary>
+                                mapping metadata
+                            </primary>
+                            <secondary>
+                                uuid-type4-hex
+                            </secondary>
+                        </indexterm>
+                        <indexterm>
+                            <primary>
+                                uuid-type4-hex
+                            </primary>
+                        </indexterm>
+<literal>uuid-type4-hex</literal>: Same as <literal> uuid-type4-string</literal>
+, but represents the type 4 UUID as a 32-character hexadecimal string.
                         </para>
                     </listitem>
                 </itemizedlist>

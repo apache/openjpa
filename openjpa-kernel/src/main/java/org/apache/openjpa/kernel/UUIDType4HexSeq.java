@@ -22,35 +22,35 @@ import org.apache.openjpa.lib.util.UUIDGenerator;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
- * Sequence for generating 32-character hex UUID strings.
+ * Sequence for generating 32-character hex Type 4 UUID strings.
  *
- * @author Abe White
+ * @author Jeremy Bauer
  */
-public class UUIDHexSeq
+public class UUIDType4HexSeq
     implements Seq {
 
-    private static final UUIDHexSeq _instance = new UUIDHexSeq();
+    private static final UUIDType4HexSeq _instance = new UUIDType4HexSeq();
 
     private String _last = null;
 
     /**
      * Return the singleton instance.
      */
-    public static UUIDHexSeq getInstance() {
+    public static UUIDType4HexSeq getInstance() {
         return _instance;
     }
 
     /**
      * Hide constructor.
      */
-    private UUIDHexSeq() {
+    private UUIDType4HexSeq() {
     }
 
     public void setType(int type) {
     }
 
     public synchronized Object next(StoreContext ctx, ClassMetaData meta) {
-        _last = UUIDGenerator.nextHex(UUIDGenerator.TYPE1);
+        _last = UUIDGenerator.nextHex(UUIDGenerator.TYPE4);
         return _last;
     }
 

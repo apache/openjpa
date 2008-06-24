@@ -68,6 +68,16 @@ public class ValueStrategies {
      */
     public static final int UUID_HEX = 6;
 
+    /**
+     * "uuid-type4-string" value strategy.
+     */
+    public static final int UUID_TYPE4_STRING = 7;
+
+    /**
+     * "uuid-type4-hex" value strategy.
+     */
+    public static final int UUID_TYPE4_HEX = 8;
+
     private static final Localizer _loc = Localizer.forPackage
         (ValueStrategies.class);
 
@@ -82,6 +92,8 @@ public class ValueStrategies {
         _map.put("increment", Numbers.valueOf(INCREMENT));
         _map.put("uuid-string", Numbers.valueOf(UUID_STRING));
         _map.put("uuid-hex", Numbers.valueOf(UUID_HEX));
+        _map.put("uuid-type4-string", Numbers.valueOf(UUID_TYPE4_STRING));
+        _map.put("uuid-type4-hex", Numbers.valueOf(UUID_TYPE4_HEX));
     }
 
     /**

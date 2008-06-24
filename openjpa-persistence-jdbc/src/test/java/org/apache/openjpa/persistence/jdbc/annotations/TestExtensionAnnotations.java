@@ -72,6 +72,12 @@ public class TestExtensionAnnotations
     public void testValueStrategy() {
         assertEquals(ValueStrategies.UUID_HEX,
             _mapping.getField("uuid").getValueStrategy());
+        assertEquals(ValueStrategies.UUID_STRING,
+            _mapping.getField("uuidString").getValueStrategy());
+        assertEquals(ValueStrategies.UUID_TYPE4_HEX,
+            _mapping.getField("uuidT4Hex").getValueStrategy());
+        assertEquals(ValueStrategies.UUID_TYPE4_STRING,
+            _mapping.getField("uuidT4String").getValueStrategy());
         FieldMapping seq = _mapping.getFieldMapping("seq");
         assertEquals(ValueStrategies.SEQUENCE, seq.getValueStrategy());
         assertEquals("system", seq.getValueSequenceName());

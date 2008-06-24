@@ -41,6 +41,18 @@ public class ExtensionsEntity {
     @GeneratedValue(generator = "uuid-hex")
     @Column(name = "UUID_HEX")
     private String uuid;
+    
+    @GeneratedValue(generator = "uuid-string")
+    @Column(name = "UUID_STRING")
+    private String uuidString;
+
+    @GeneratedValue(generator = "uuid-type4-hex")
+    @Column(name = "UUIDT4_HEX")
+    private String uuidT4Hex;
+
+    @GeneratedValue(generator = "uuid-type4-string")
+    @Column(name = "UUIDT4_STRING")
+    private String uuidT4String;
 
     @Basic(fetch = FetchType.LAZY)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "system")

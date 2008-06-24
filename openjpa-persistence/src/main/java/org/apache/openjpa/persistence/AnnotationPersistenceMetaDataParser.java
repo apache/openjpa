@@ -1220,6 +1220,10 @@ public class AnnotationPersistenceMetaDataParser
             return ValueStrategies.UUID_HEX;
         if (Generator.UUID_STRING.equals(generator))
             return ValueStrategies.UUID_STRING;
+        if (Generator.UUID_TYPE4_HEX.equals(generator))
+            return ValueStrategies.UUID_TYPE4_HEX;
+        if (Generator.UUID_TYPE4_STRING.equals(generator))
+            return ValueStrategies.UUID_TYPE4_STRING;
         throw new MetaDataException(_loc.get("generator-bad-strategy",
             context, generator));
     }

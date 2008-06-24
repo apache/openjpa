@@ -29,6 +29,8 @@ public interface Generator {
 
     public static final String UUID_HEX = "uuid-hex";
     public static final String UUID_STRING = "uuid-string";
+    public static final String UUID_TYPE4_STRING = "uuid-type4-string";
+    public static final String UUID_TYPE4_HEX = "uuid-type4-hex";
 
     /**
      * The sequence name.

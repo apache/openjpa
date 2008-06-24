@@ -3545,6 +3545,10 @@ public class BrokerImpl
                 return UUIDHexSeq.getInstance();
             case ValueStrategies.UUID_STRING:
                 return UUIDStringSeq.getInstance();
+            case ValueStrategies.UUID_TYPE4_HEX:
+                return UUIDType4HexSeq.getInstance();
+            case ValueStrategies.UUID_TYPE4_STRING:
+                return UUIDType4StringSeq.getInstance();
             case ValueStrategies.SEQUENCE:
                 SequenceMetaData smd = (fmd == null)
                     ? meta.getIdentitySequenceMetaData()

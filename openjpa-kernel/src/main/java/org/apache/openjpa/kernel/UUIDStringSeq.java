@@ -50,7 +50,7 @@ public class UUIDStringSeq
     }
 
     public synchronized Object next(StoreContext ctx, ClassMetaData meta) {
-        _last = UUIDGenerator.nextString();
+        _last = UUIDGenerator.nextString(UUIDGenerator.TYPE1);
         return _last;
     }
 

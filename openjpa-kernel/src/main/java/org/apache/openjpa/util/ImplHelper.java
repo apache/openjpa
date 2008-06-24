@@ -160,9 +160,13 @@ public class ImplHelper {
                 return JavaTypes.convert(smd.getInstance(ctx.getClassLoader()).
                     next(ctx, meta), typeCode);
             case ValueStrategies.UUID_STRING:
-                return UUIDGenerator.nextString();
+                return UUIDGenerator.nextString(UUIDGenerator.TYPE1);
             case ValueStrategies.UUID_HEX:
-                return UUIDGenerator.nextHex();
+                return UUIDGenerator.nextHex(UUIDGenerator.TYPE1);
+            case ValueStrategies.UUID_TYPE4_STRING:
+                return UUIDGenerator.nextString(UUIDGenerator.TYPE4);
+            case ValueStrategies.UUID_TYPE4_HEX:
+                return UUIDGenerator.nextHex(UUIDGenerator.TYPE4);
             default:
                 return null;
         }

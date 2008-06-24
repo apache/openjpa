@@ -43,14 +43,31 @@ public class GeneratedValues {
         sequenceName="org.apache.openjpa.persistence.generationtype.CustomSeq()")
     private int customSeqWithIndirectionField;
 
+    @GeneratedValue(generator="uuid-hex")
+    private String uuidhex;
+
+    @GeneratedValue(generator="uuid-string")
+    private String uuidstring;
+
+    @GeneratedValue(generator="uuid-type4-hex")
+    private String uuidT4hex;
+
+    @GeneratedValue(generator="uuid-type4-string")
+    private String uuidT4string;
+    
     public GeneratedValues() {
         super();
     }
     
-    public GeneratedValues(int id, long field) {
+    public GeneratedValues(int id, long field, String uh, String us,
+        String ut4h, String ut4s) {
         super();
         this.id = id;
         this.field = field;
+        this.uuidhex = uh;
+        this.uuidstring = us;
+        this.uuidT4hex = ut4h;
+        this.uuidT4string = ut4s;
     }
 
     public int getId() {
@@ -75,5 +92,37 @@ public class GeneratedValues {
 
     public int getCustomSeqWithIndirectionField() {
         return customSeqWithIndirectionField;
+    }
+    
+    public void setUuidhex(String uuidhex) {
+        this.uuidhex = uuidhex;
+    }
+
+    public String getUuidhex() {
+        return uuidhex;
+    }
+
+    public void setUuidstring(String uuidstring) {
+        this.uuidstring = uuidstring;
+    }
+
+    public String getUuidstring() {
+        return uuidstring;
+    }
+
+    public void setUuidT4hex(String uuidT4hex) {
+        this.uuidT4hex = uuidT4hex;
+    }
+
+    public String getUuidT4hex() {
+        return uuidT4hex;
+    }
+
+    public void setUuidT4string(String uuidT4string) {
+        this.uuidT4string = uuidT4string;
+    }
+
+    public String getUuidT4string() {
+        return uuidT4string;
     }
 }
