@@ -17,10 +17,10 @@
  specific language governing permissions and limitations
  under the License.   
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-            http://maven.apache.org/maven-v4_0_0.xsd">
+<!-- 
+    Maven release plugin requires the project tag to be on a single line. 
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <prerequisites>
         <maven>2.0.4</maven>
@@ -50,15 +50,15 @@
     <mailingLists>
         <mailingList>
             <name>OpenJPA Developer List</name>
-            <subscribe>dev-subscribe@apache.org</subscribe>
-            <unsubscribe>dev-unsubscribe@apache.org</unsubscribe>
+            <subscribe>dev-subscribe@openjpa.apache.org</subscribe>
+            <unsubscribe>dev-unsubscribe@openjpa.apache.org</unsubscribe>
             <post>dev@openjpa.apache.org</post>
             <archive>http://mail-archives.apache.org/mod_mbox/openjpa-dev/</archive>
         </mailingList>
         <mailingList>
             <name>OpenJPA Users List</name>
-            <subscribe>users-subscribe@apache.org</subscribe>
-            <unsubscribe>users-unsubscribe@apache.org</unsubscribe>
+            <subscribe>users-subscribe@openjpa.apache.org</subscribe>
+            <unsubscribe>users-unsubscribe@openjpa.apache.org</unsubscribe>
             <post>users@openjpa.apache.org</post>
             <archive>http://mail-archives.apache.org/mod_mbox/openjpa-users/</archive>
         </mailingList>
@@ -103,11 +103,7 @@
         <name>Apache Software Foundation</name>
         <url>http://www.apache.org</url>
     </organization>
-    <scm>
-        <connection>scm:svn:http://${scm.dir}</connection>
-        <developerConnection>scm:svn:https://${scm.dir}</developerConnection>
-        <url>https://${scm.dir}</url>
-    </scm>
+
     <modules>
         <module>openjpa-lib</module>
         <module>openjpa-kernel</module>
@@ -142,6 +138,115 @@
             <modules>
                 <module>openjpa-project</module>
             </modules>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>rat-maven-plugin</artifactId>
+                        <version>1.0-alpha-3</version>
+                        <executions>
+                            <execution>
+                                <phase>process-sources</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <excludes>
+                            <!--
+                                comments are usupported by
+                                javax.persistence.Persistence
+                            -->
+                            <exclude>**/javax.persistence.spi.PersistenceProvider</exclude>
+
+                            <!--
+                                comments are usupported by our rsrc parser
+                            -->
+                            <exclude>**/*.rsrc</exclude>
+
+                            <!-- General informational files -->
+                            <exclude>openjpa-project/*.txt</exclude>
+                            <exclude>README.txt</exclude>
+                            <exclude>BUILDRELEASE</exclude>
+
+                            <!-- generated content -->
+                            <exclude>**/*.log</exclude>
+                            <exclude>**/rat.txt</exclude>
+                            <exclude>**/*.txt</exclude>
+                            <exclude>**/org.apache.openjpa.revision.properties</exclude>
+                            <exclude>**/target/**/*</exclude>
+                            <exclude>release.properties</exclude>
+                        </excludes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.4</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadoc</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <phase>process-classes</phase>
+                                <goals><goal>javadoc</goal></goals>
+                                <configuration>
+                                    <additionalparam>
+                                        ${javadoc.additionalparam}
+                                    </additionalparam>
+                                    <aggregate>true</aggregate>
+                                    <subpackages>org.apache.openjpa</subpackages>
+                                    <verbose>false</verbose>
+                                    <maxmemory>512m</maxmemory>
+                                    <links>
+                                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                                        <link>http://java.sun.com/javaee/5/docs/api</link>
+                                        <link>http://jakarta.apache.org/commons/collections/api-release</link>
+                                    </links>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.0-alpha-3</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>2.0-beta-7</version>
+                        <configuration>
+                            <useReleaseProfile>false</useReleaseProfile>
+                            <goals>deploy</goals>
+                            <arguments>-Prelease</arguments>
+                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
         <!--
@@ -380,20 +485,24 @@
         </plugins>
     </reporting>
 
-
     <distributionManagement>
       <repository>
-        <id>local-repository</id>
-        <url>file://${basedir}/target/site/m2-repository/</url>
+        <id>apache.releases</id>
+        <url>scp://people.apache.org/home/${user.name}/public_html/openjpa/${pom.version}/staging-repo</url>
       </repository>
       <snapshotRepository>
-        <id>local-repository</id>
-        <url>file://${basedir}/target/site/m2-repository/</url>
+        <id>apache.releases</id>
+        <url>scp://people.apache.org/home/${user.name}/public_html/openjpa/${pom.version}/staging-repo</url>
         <uniqueVersion>false</uniqueVersion>
       </snapshotRepository>
       <site>
-        <id>people.apache.org</id>
-        <url>scpexe://${user.name}@people.apache.org/www/openjpa.apache.org/builds/${pom.version}</url>
+        <id>apache.releases</id>
+        <url>scp://people.apache.org/home/${user.name}/public_html/openjpa/${pom.version}/staging-site</url>
       </site>
     </distributionManagement>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/branches/1.0.x</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/branches/1.0.x</developerConnection>
+        <url>http://svn.apache.org/repos/asf/openjpa/branches/1.0.x</url>
+    </scm>
 </project>
