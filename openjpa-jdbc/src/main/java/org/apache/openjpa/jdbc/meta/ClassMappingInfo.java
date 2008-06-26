@@ -19,13 +19,13 @@
 package org.apache.openjpa.jdbc.meta;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Collection;
-import java.util.ArrayList;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
@@ -38,6 +38,7 @@ import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.xml.Commentable;
+import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -64,7 +65,8 @@ public class ClassMappingInfo
     private File _file = null;
     private int _srcType = SRC_OTHER;
     private String[] _comments = null;
-    private Collection _uniques = null;//Unique
+    // Unique constraints indexed by primary or secondary table name
+    private Map<String,List<Unique>> _uniques;
 
     /**
      * The described class name.
@@ -221,11 +223,12 @@ public class ClassMappingInfo
             _seconds = new HashMap();
         _seconds.put(tableName, cols);
     }
-
+    
     /**
-     * Return the table for the given class.
+     * Return the named table for the given class.
      */
-    public Table getTable(final ClassMapping cls, boolean adapt) {
+    public Table getTable(final ClassMapping cls, String tableName, 
+    		boolean adapt) {
         Table t = createTable(cls, new TableDefaults() {
             public String get(Schema schema) {
                 // delay this so that we don't do schema reflection for unique
@@ -233,13 +236,20 @@ public class ClassMappingInfo
                 return cls.getMappingRepository().getMappingDefaults().
                     getTableName(cls, schema);
             }
-        }, _schemaName, _tableName, adapt);
+        }, _schemaName, tableName, adapt);
         t.setComment(cls.getTypeAlias() == null
             ? cls.getDescribedType().getName()
             : cls.getTypeAlias());
         return t;
     }
-
+    
+    /**
+     * Return the primary table for the given class.
+     */
+    public Table getTable(final ClassMapping cls, boolean adapt) {
+    	return getTable(cls, _tableName, adapt);
+    }
+    
     /**
      * Return the datastore identity columns for the given class, based on the
      * given templates.
@@ -340,51 +350,87 @@ public class ClassMappingInfo
                     _seconds.put(key, cinfo._seconds.get(key));
             }
         }
-        if (cinfo._uniques != null) 
-           _uniques = new ArrayList(cinfo._uniques);
-    }
+        if (cinfo._uniques != null) {
+        	if (_uniques == null)
+        		_uniques = new HashMap<String, List<Unique>>();
+        	for (Entry<String, List<Unique>> entry : cinfo._uniques.entrySet())
+        		if (!_uniques.containsKey(entry.getKey()))
+        			_uniques.put(entry.getKey(), entry.getValue());
+        }
 
-    public void addUnique(Unique unique) {
-        if (unique == null)
-            return;
+    }
+    
+    /**
+     * Add a unique constraint for the given table.
+     * @param table must be primary table or secondary table name added a 
+     * priori to this receiver.
+     * @param unique the unique constraint. null means no-op.
+     */
+    public void addUnique(String table, Unique unique) {
+    	if (!StringUtils.equals(_tableName, table) &&
+    	   (_seconds == null || !_seconds.containsKey(table))) {
+    	   		throw new UserException(_loc.get("unique-no-table", 
+    	   			new Object[]{table, _className, _tableName, 
+    	   				((_seconds == null) ? "" : _seconds.keySet())}));
+    	}
+    	if (unique == null)
+    		return;
         if (_uniques == null)
-            _uniques = new ArrayList();
-        _uniques.add(unique);
+            _uniques = new HashMap<String,List<Unique>>();
+        unique.setTableName(table);
+        List<Unique> uniques = _uniques.get(table);
+        if (uniques == null) {
+        	uniques = new ArrayList<Unique>();
+        	uniques.add(unique);
+        	_uniques.put(table, uniques);
+        } else {
+        	uniques.add(unique);
+        }
     }
     
-    public Unique[] getUniques() {
-        return (_uniques == null) ? new Unique[0] :
-            (Unique[])_uniques.toArray(new Unique[_uniques.size()]);
+    /**
+     * Get the unique constraints of the given primary or secondary table.
+     */
+    public Unique[] getUniques(String table) {
+        if (_uniques == null || _uniques.isEmpty() 
+        || _uniques.containsKey(table))
+            return new Unique[0];
+        List<Unique> uniques = _uniques.get(table);
+        return uniques.toArray(new Unique[uniques.size()]);
     }
     
-    public Unique[] getUniques(ClassMapping cm, boolean adapt) {
+    /**
+     * Get all the unique constraints associated with both the primary and/or 
+     * secondary tables.
+     * 
+     */
+    public Unique[] getUniques(MetaDataContext cm, boolean adapt) {
         if (_uniques == null || _uniques.isEmpty())
             return new Unique[0];
-        
-        Iterator uniqueConstraints = _uniques.iterator();
-        Table table = cm.getTable();
-        Collection result = new ArrayList();
-        while (uniqueConstraints.hasNext()) {
-            Unique template = (Unique) uniqueConstraints.next();
-            Column[] templateColumns = template.getColumns();
-            Column[] uniqueColumns = new Column[templateColumns.length];
-            boolean missingColumn = true;
-            for (int i=0; i<uniqueColumns.length; i++) {
-                String columnName = templateColumns[i].getName();
-                Column uniqueColumn = table.getColumn(columnName);
-                missingColumn = (uniqueColumn == null);
-                if (missingColumn) {
-                    throw new UserException(_loc.get("missing-unique-column", 
-                        cm, table, columnName));
-                }
-                uniqueColumns[i] = uniqueColumn;
-            }
-            Unique unique = super.createUnique(cm, "unique", template, 
-                uniqueColumns, adapt);
-            if (unique != null)
-                result.add(unique);
+        List<Unique> result = new ArrayList<Unique>();
+        for (String tableName : _uniques.keySet()) {
+        	List<Unique> uniqueConstraints = _uniques.get(tableName);
+        	for (Unique template : uniqueConstraints) {
+        		Column[] templateColumns = template.getColumns();
+        		Column[] uniqueColumns = new Column[templateColumns.length];
+        		Table table = getTable((ClassMapping)cm, tableName, adapt);
+        		for (int i=0; i<uniqueColumns.length; i++) {
+        			String columnName = templateColumns[i].getName();
+        			if (!table.containsColumn(columnName)) {
+        				throw new UserException(_loc.get("unique-missing-column", 
+                           new Object[]{cm, columnName, tableName, 
+        						table.getColumnNames()}));
+        			}
+        			Column uniqueColumn = table.getColumn(columnName);
+        			uniqueColumns[i] = uniqueColumn;
+        		}
+        		Unique unique = createUnique(cm, "unique", template,  
+        				uniqueColumns, adapt);
+        		if (unique != null)
+        			result.add(unique);
+        	}
         }
-        return (Unique[]) result.toArray(new Unique[result.size()]);
+        return result.toArray(new Unique[result.size()]);
     }   
     
     public File getSourceFile() {

@@ -186,9 +186,9 @@ public class XMLPersistenceMappingSerializer
         ClassMappingInfo info = cls.getMappingInfo();
         serializeTable(info.getTableName(), "table", Strings
             .getClassName(mapping.getDescribedType()), null, 
-            info.getUniques());
+            info.getUniques(info.getTableName()));
         for (String second : info.getSecondaryTableNames())
-            serializeTable(second, "secondary-table", null, info, null);
+            serializeTable(second, "secondary-table", null, info, info.getUniques(second));
         serializeColumns(info, ColType.PK_JOIN, null);
     }
 

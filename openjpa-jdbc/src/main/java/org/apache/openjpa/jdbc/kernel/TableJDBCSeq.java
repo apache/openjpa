@@ -28,6 +28,7 @@ import java.util.HashMap;
 
 import javax.transaction.NotSupportedException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -38,6 +39,7 @@ import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.SchemaTool;
 import org.apache.openjpa.jdbc.schema.Schemas;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.RowImpl;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
@@ -49,6 +51,8 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InvalidStateException;
+import org.apache.openjpa.util.UserException;
+
 import serp.util.Numbers;
 import serp.util.Strings;
 
@@ -86,6 +90,7 @@ public class TableJDBCSeq
     private String _table = "OPENJPA_SEQUENCE_TABLE";
     private String _seqColumnName = "SEQUENCE_VALUE";
     private String _pkColumnName = "ID";
+    private String[] _uniqueColumnNames;
 
     private Column _seqColumn = null;
     private Column _pkColumn = null;
@@ -191,6 +196,20 @@ public class TableJDBCSeq
     public void setInitialValue(int intValue) {
         _intValue = intValue;
     }
+    
+    /**
+     * Sets the names of the columns on which a unique constraint is set.
+     * @param columnsNames are passed as a single String concatenated with
+     * a '|' character. This method parses it back to array of Strings. 
+     */
+    public void setUniqueColumns(String columnNames) {
+    	_uniqueColumnNames = (StringUtils.isEmpty(columnNames)) 
+    		? null : StringUtils.split(columnNames, '|');
+    }
+    
+    public String getUniqueColumns() {
+    	return StringUtils.join(_uniqueColumnNames, '|');
+    }
 
     /**
      * @deprecated Use {@link #setAllocate}. Retained for backwards
@@ -235,7 +254,12 @@ public class TableJDBCSeq
             if (schema == null)
                 schema = group.addSchema(schemaName);
             
-            schema.importTable(_pkColumn.getTable());
+            Table copy = schema.importTable(_pkColumn.getTable());
+            // importTable() does not import unique constraints
+            Unique[] uniques = _pkColumn.getTable().getUniques();
+            for (Unique u : uniques) {
+            	copy.importUnique(u);
+            }
             // we need to reset the table name in the column with the
             // fully qualified name for matching the table name from the
             // Column.
@@ -244,7 +268,6 @@ public class TableJDBCSeq
             // some databases require to create an index for the sequence table
             _conf.getDBDictionaryInstance().createIndexIfNecessary(schema,
                     _table, _pkColumn);
-         
         }
     }
 
@@ -361,6 +384,19 @@ public class TableJDBCSeq
             (_seqColumnName, table));
         _seqColumn.setType(dict.getPreferredType(Types.BIGINT));
         _seqColumn.setJavaType(JavaTypes.LONG);
+        
+        if (_uniqueColumnNames != null) {
+    		String uniqueName = dict.getValidUniqueName("UNQ", table);
+    		Unique u = table.addUnique(uniqueName);
+    		for (String columnName : _uniqueColumnNames) {
+    			if (!table.containsColumn(columnName))
+    				throw new UserException(_loc.get("unique-missing-column",
+    					columnName, table.getName(), table.getColumnNames()));
+    			Column col = table.getColumn(columnName);
+    			u.addColumn(col);
+    		}
+        }
+        
     }
 
     /**

@@ -39,6 +39,7 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.ClassMappingInfo;
 import org.apache.openjpa.jdbc.meta.DiscriminatorMappingInfo;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.meta.MappingInfo;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
 import org.apache.openjpa.jdbc.meta.SequenceMapping;
@@ -56,6 +57,8 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.XMLPersistenceMetaDataParser;
+import org.apache.openjpa.util.InternalException;
+
 import static org.apache.openjpa.persistence.jdbc.MappingTag.*;
 
 /**
@@ -293,6 +296,9 @@ public class XMLPersistenceMappingParser
             case COLUMN_NAME:
                 endColumnName();
                 break;
+            case TABLE_GEN:
+            	endTableGenerator();
+            	break;
         }
     }
 
@@ -405,7 +411,12 @@ public class XMLPersistenceMappingParser
         Object scope = (cur instanceof ClassMetaData)
             ? ((ClassMetaData) cur).getDescribedType() : null;
         seq.setSource(getSourceFile(), scope, seq.SRC_XML);
+        pushElement(seq);
         return true;
+    }
+    
+    private void endTableGenerator() {
+    	popElement();
     }
 
     /**
@@ -880,13 +891,9 @@ public class XMLPersistenceMappingParser
      */
     private boolean startUniqueConstraint(Attributes attrs) 
         throws SAXException {
-        Object current = currentElement();
-        if (current instanceof ClassMapping && _secondaryTable == null) {
-            Unique unique = new Unique();
-            pushElement(unique);
-            return true;
-        } 
-        return false;
+        Unique unique = new Unique();
+        pushElement(unique);
+        return true;
     }
     
     /**
@@ -897,9 +904,23 @@ public class XMLPersistenceMappingParser
      */
     private void endUniqueConstraint() {
         Unique unique = (Unique) popElement();
-        Object current = currentElement();
-        if (current instanceof ClassMapping && _secondaryTable == null)
-            ((ClassMapping) current).getMappingInfo().addUnique(unique);
+        Object ctx = currentElement();
+        String tableName = "?";
+        ClassMappingInfo info = null;
+        if (ctx instanceof ClassMapping) {
+        	info = ((ClassMapping) ctx).getMappingInfo();
+        	tableName = (_secondaryTable != null) ? info.getTableName() : _secondaryTable;
+        	info.addUnique(tableName, unique);
+        } else if (ctx instanceof FieldMapping) {// JoinTable
+        	info = ((FieldMapping)ctx).getDeclaringMapping().getMappingInfo();
+        	tableName = info.getTableName();
+        	info.addUnique(tableName, unique);
+        } else if (ctx instanceof SequenceMapping) {
+        	tableName = ((SequenceMapping)ctx).getTable();
+        	unique.setTableName(tableName);
+        } else {
+        	throw new InternalException();
+        }
     }
     
     /**

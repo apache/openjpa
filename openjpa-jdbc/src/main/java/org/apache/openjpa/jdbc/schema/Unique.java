@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Represents a unique constraint. It can also represent a partial constraint.
  *
@@ -25,11 +27,12 @@ package org.apache.openjpa.jdbc.schema;
  */
 public class Unique
     extends LocalConstraint {
-
+	private boolean _isAutoSetName = false;
     /**
      * Default constructor.
      */
     public Unique() {
+    	_isAutoSetName = true;
     }
 
     /**
@@ -45,6 +48,26 @@ public class Unique
     public boolean isLogical() {
         return false;
     }
+    
+    public void addColumn(Column col) {
+    	super.addColumn(col);
+    	col.setNotNull(true);
+    	if (_isAutoSetName && getTable() == null) {
+    		String pre = StringUtils.isEmpty(getName()) ? "UNQ" : getName();
+    		setName(pre + "_" + col.getName());
+    		_isAutoSetName = true;
+    	}
+    }
+    
+    /**
+     * Set the name of the constraint. This method cannot be called if the
+     * constraint already belongs to a table.
+     */
+    public void setName(String name) {
+        super.setName(name);
+        _isAutoSetName = false;
+    }
+
 
     /**
      * Return true if the structure of this primary key matches that of

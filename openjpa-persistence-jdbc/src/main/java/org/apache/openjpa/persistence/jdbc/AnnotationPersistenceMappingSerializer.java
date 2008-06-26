@@ -221,12 +221,12 @@ public class AnnotationPersistenceMappingSerializer
         AnnotationBuilder abTable = addAnnotation(Table.class, mapping);
         serializeTable(info.getTableName(), Strings
             .getClassName(mapping.getDescribedType()), null,
-            info.getUniques(), abTable);
+            info.getUniques(info.getTableName()), abTable);
         serializeColumns(info, ColType.PK_JOIN, null, abTable, cls);
         for (String second : info.getSecondaryTableNames()) {
             AnnotationBuilder abSecTable =
                 addAnnotation(SecondaryTable.class, mapping);
-            serializeTable(second, null, info, null, abSecTable);
+            serializeTable(second, null, info, info.getUniques(second), abSecTable);
         }
     }
 

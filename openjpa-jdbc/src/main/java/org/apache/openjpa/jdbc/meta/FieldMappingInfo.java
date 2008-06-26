@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.openjpa.jdbc.schema.Column;
@@ -31,7 +33,9 @@ import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.util.MetaDataException;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Information about the mapping from a field to the schema, in raw form.
@@ -40,6 +44,7 @@ import org.apache.openjpa.util.MetaDataException;
  * with the relevant pieces of information filled in.
  *
  * @author Abe White
+ * @author Pinaki Poddar
  */
 public class FieldMappingInfo
     extends MappingInfo
@@ -53,6 +58,7 @@ public class FieldMappingInfo
     private Column _orderCol = null;
     private boolean _canOrderCol = true;
     private String[] _comments = null;
+    private List<Unique> _joinTableUniques; // Unique constraints on the JoinTable
 
     /**
      * The user-supplied name of the table for this field.
@@ -185,8 +191,47 @@ public class FieldMappingInfo
                 getJoinUnique(field, fk.getTable(), fk.getColumns());
         return createUnique(field, "join", unq, fk.getColumns(), adapt);
     }
-
+    
     /**
+     * Add Unique Constraint to the Join Table.
+     */
+    public void addJoinTableUnique(Unique u) {
+    	if (_joinTableUniques == null)
+    		_joinTableUniques = new ArrayList<Unique>();
+    	_joinTableUniques.add(u);
+    }
+    
+    /**
+     * Get the unique constraints associated with the Sequence table.
+     */
+    public Unique[] getJoinTableUniques(FieldMapping field, boolean def, 
+    		boolean adapt) {
+        return getUniques(field, _joinTableUniques, def, adapt);
+    }   
+    
+    private Unique[] getUniques(FieldMapping field, List<Unique> uniques, 
+    		boolean def, boolean adapt) {
+        if (uniques == null || uniques.isEmpty())
+            return new Unique[0];
+        Collection<Unique> result = new ArrayList<Unique>();
+        for (Unique template : uniques) {
+            Column[] templateColumns = template.getColumns();
+            Column[] uniqueColumns = new Column[templateColumns.length];
+            Table table = getTable(field, true, adapt);
+            for (int i=0; i<uniqueColumns.length; i++) {
+                String columnName = templateColumns[i].getName();
+                Column uniqueColumn = table.getColumn(columnName);
+                uniqueColumns[i] = uniqueColumn;
+            }
+            Unique unique = createUnique(field, "unique", template,  
+                uniqueColumns, adapt);
+            if (unique != null)
+                result.add(unique);
+        }
+        return result.toArray(new Unique[result.size()]);
+    }   
+    
+   /**
      * Index on the field join.
      */
     public Index getJoinIndex(FieldMapping field, boolean adapt) {
@@ -261,6 +306,7 @@ public class FieldMappingInfo
 
         syncIndex(field, field.getJoinIndex());
         syncUnique(field, field.getJoinUnique());
+        syncJoinTableUniques(field, field.getJoinTableUniques());
         syncOrderColumn(field);
         syncStrategy(field);
     }
@@ -290,6 +336,24 @@ public class FieldMappingInfo
         else
             _orderCol = null;
     }
+    
+    /**
+     * Sets internal constraint information to match given mapped constraint.
+     */
+    protected void syncJoinTableUniques(MetaDataContext context, Unique[] unqs) {
+        if (unqs == null) {
+            _joinTableUniques = null;
+            return;
+        }
+        _joinTableUniques = new ArrayList<Unique>();
+        for (Unique unique:unqs) {
+        	Unique copy = new Unique();
+        	copy.setName(unique.getName());
+        	copy.setDeferred(unique.isDeferred());
+        	_joinTableUniques.add(unique);
+        }
+    }
+
 
     public boolean hasSchemaComponents() {
         return super.hasSchemaComponents() || _tableName != null

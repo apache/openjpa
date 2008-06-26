@@ -70,7 +70,8 @@ public class FieldMapping
     private Index _idx = null;
     private boolean _outer = false;
     private int _fetchMode = Integer.MAX_VALUE;
-
+    private Unique[] _joinTableUniques; // Unique constraints on JoinTable
+    
     /**
      * Constructor.
      */
@@ -183,6 +184,14 @@ public class FieldMapping
         _unq = unq;
     }
 
+    public Unique[] getJoinTableUniques() {
+    	return _joinTableUniques;
+    }
+    
+    public void setJoinTableUniques(Unique[] unqs) {
+    	_joinTableUniques = unqs;
+    }
+    
     /**
      * Index on join foreign key columns.
      */
@@ -252,6 +261,13 @@ public class FieldMapping
         _val.refSchemaComponents();
         _key.refSchemaComponents();
         _elem.refSchemaComponents();
+        if (_joinTableUniques != null) {
+        	for (Unique joinUnique : _joinTableUniques) {
+        		for (Column col : joinUnique.getColumns()) {
+        			col.ref();
+        		}
+        	}
+        }
     }
 
     /**
@@ -538,6 +554,7 @@ public class FieldMapping
             _io = _info.getColumnIO();
             _outer = _info.isJoinOuter();
             _unq = _info.getJoinUnique(this, false, adapt);
+            _joinTableUniques = _info.getJoinTableUniques(this, false, adapt);
             _idx = _info.getJoinIndex(this, adapt);
         }
     }

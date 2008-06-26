@@ -61,6 +61,7 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.ClassMappingInfo;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.meta.FieldMappingInfo;
 import org.apache.openjpa.jdbc.meta.MappingInfo;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
@@ -80,6 +81,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataParser;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.*;
 import org.apache.openjpa.util.InternalException;
@@ -244,10 +246,16 @@ public class AnnotationPersistenceMappingParser
         meta.setAllocate(gen.allocationSize());
         meta.setSource(getSourceFile(), (el instanceof Class) ? el : null,
             meta.SRC_ANNOTATIONS);
-
-        //### EJB3
-        if (gen.uniqueConstraints().length > 0 && log.isWarnEnabled())
-            log.warn(_loc.get("unique-constraints", name));
+        
+        switch (gen.uniqueConstraints().length) {
+        case 0: 
+        	break; // nothing to do
+        case 1: 
+        	meta.setUniqueColumns(gen.uniqueConstraints()[0].columnNames());
+        	break;
+        default:
+        	log.warn(_loc.get("unique-many-on-seq-unsupported", el, name));
+        }
     }
 
     @Override
@@ -464,8 +472,7 @@ public class AnnotationPersistenceMappingParser
         Log log = getLog();
 
         String name;
-        List<Column> joins;
-        boolean warnUnique = false;
+        List<Column> joins = null;
         for (SecondaryTable table : tables) {
             name = table.name();
             if (StringUtils.isEmpty(name))
@@ -476,14 +483,10 @@ public class AnnotationPersistenceMappingParser
                 joins = new ArrayList<Column>(table.pkJoinColumns().length);
                 for (PrimaryKeyJoinColumn join : table.pkJoinColumns())
                     joins.add(newColumn(join));
-                info.setSecondaryTableJoinColumns(name, joins);
-            }
-            warnUnique |= table.uniqueConstraints().length > 0;
+            } 
+            info.setSecondaryTableJoinColumns(name, joins);
+            addUniqueConstraints(name, cm, info, table.uniqueConstraints());
         }
-
-        //### EJB3
-        if (warnUnique && log.isWarnEnabled())
-            log.warn(_loc.get("unique-constraints", cm));
     }
 
     /**
@@ -494,10 +497,38 @@ public class AnnotationPersistenceMappingParser
         if (tableName != null)
             cm.getMappingInfo().setTableName(tableName);
 
-        for (UniqueConstraint uniqueConstraint:table.uniqueConstraints()) {
-            Unique unique = newUnique(cm, null, uniqueConstraint.columnNames());
-            cm.getMappingInfo().addUnique(unique);
-        }
+        addUniqueConstraints(tableName, cm, cm.getMappingInfo(), 
+        		table.uniqueConstraints());
+    }
+    
+    Unique createUniqueConstraint(MetaDataContext ctx, UniqueConstraint anno) {
+		String[] columnNames = anno.columnNames();
+		if (columnNames == null || columnNames.length == 0)
+			throw new UserException(_loc.get("unique-no-column", ctx));
+		Unique uniqueConstraint = new Unique();
+		for (int i=0; i<columnNames.length; i++) {
+			if (StringUtils.isEmpty(columnNames[i]))
+				throw new UserException(_loc.get("unique-empty-column", 
+						Arrays.toString(columnNames), ctx));
+			Column column = new Column();
+			column.setName(columnNames[i]);
+			uniqueConstraint.addColumn(column);
+		}
+		return uniqueConstraint;
+    }
+    
+    void addUniqueConstraints(String table, MetaDataContext ctx, 
+    		MappingInfo info, UniqueConstraint...uniqueConstraints) {
+    	for (UniqueConstraint anno : uniqueConstraints) {
+    		Unique unique = createUniqueConstraint(ctx, anno);
+    		unique.setTableName(table);
+    		if (info instanceof ClassMappingInfo)
+    			((ClassMappingInfo)info).addUnique(table, unique);
+    		else if (info instanceof FieldMappingInfo)
+    			((FieldMappingInfo)info).addJoinTableUnique(unique);
+    		else
+    			throw new InternalException();
+    	}
     }
 
     /**
@@ -1261,8 +1292,7 @@ public class AnnotationPersistenceMappingParser
             }
 
             unique |= (pcols[i].unique()) ? TRUE : FALSE;
-            secondary = trackSecondaryTable(fm, secondary,
-                pcols[i].table(), i);
+        	secondary = trackSecondaryTable(fm, secondary,	pcols[i].table(), i);
         }
 
         setColumns(fm, fm.getValueInfo(), cols, unique);
@@ -1337,11 +1367,13 @@ public class AnnotationPersistenceMappingParser
      * Parse @JoinTable.
      */
     private void parseJoinTable(FieldMapping fm, JoinTable join) {
-        fm.getMappingInfo().setTableName(toTableName(join.schema(),
-            join.name()));
-        parseJoinColumns(fm, fm.getMappingInfo(), false, join.joinColumns());
+    	FieldMappingInfo info = fm.getMappingInfo();
+        info.setTableName(toTableName(join.schema(), join.name()));
+        parseJoinColumns(fm, info, false, join.joinColumns());
         parseJoinColumns(fm, fm.getElementMapping().getValueInfo(), false,
             join.inverseJoinColumns());
+        addUniqueConstraints(info.getTableName(), fm, info,  
+        		join.uniqueConstraints());
     }
 
     /**
@@ -1617,21 +1649,4 @@ public class AnnotationPersistenceMappingParser
 		col.setFlag (Column.FLAG_UNUPDATABLE, !join.updatable ());
 		return col;
 	}
-    
-    private static Unique newUnique(ClassMapping cm, String name, 
-        String[] columnNames) {
-        if (columnNames == null || columnNames.length == 0)
-            return null;
-        Unique uniqueConstraint = new Unique();
-        uniqueConstraint.setName(name);
-        for (int i=0; i<columnNames.length; i++) {
-            if (StringUtils.isEmpty(columnNames[i]))
-                throw new UserException(_loc.get("empty-unique-column", 
-                    Arrays.toString(columnNames), cm));
-            Column column = new Column();
-            column.setName(columnNames[i]);
-            uniqueConstraint.addColumn(column);
-        }
-        return uniqueConstraint;
-    }
 }

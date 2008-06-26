@@ -252,6 +252,11 @@ public class Table
         return _rels;
     }
 
+    public String[] getColumnNames() {
+    	return _colMap == null ? new String[0] : 
+    		(String[])_colMap.keySet().toArray(new String[_colMap.size()]);
+    }
+    
     /**
      * Return the column with the given name, or null if none.
      */
@@ -259,6 +264,17 @@ public class Table
         if (name == null || _colMap == null)
             return null;
         return (Column) _colMap.get(name.toUpperCase());
+    }
+    
+    /**
+     * Affirms if this table contains the column of the given name without any 
+     * side-effect. 
+     * @see Table#getColumn(String) can have side-effect of creating a column
+     * for dynamic table implementation.
+     */
+    public boolean containsColumn(String name) {
+    	return name != null && _colMap != null 
+    		&& _colMap.containsKey(name.toUpperCase());
     }
 
     /**

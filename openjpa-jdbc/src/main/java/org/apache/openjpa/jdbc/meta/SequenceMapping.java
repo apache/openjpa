@@ -19,11 +19,16 @@
 package org.apache.openjpa.jdbc.meta;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCSeqValue;
 import org.apache.openjpa.jdbc.kernel.ClassTableJDBCSeq;
 import org.apache.openjpa.jdbc.kernel.TableJDBCSeq;
 import org.apache.openjpa.jdbc.kernel.ValueTableJDBCSeq;
+import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.meta.SequenceMetaData;
 
@@ -55,13 +60,15 @@ public class SequenceMapping
     private static final String PROP_SEQUENCE_COL = "SequenceColumn";
     private static final String PROP_PK_COL = "PrimaryKeyColumn";
     private static final String PROP_PK_VALUE = "PrimaryKeyValue";
+    private static final String PROP_UNIQUE = "UniqueColumns";
 
     private File _mapFile = null;
     private String _table = null;
     private String _sequenceColumn = null;
     private String _primaryKeyColumn = null;
     private String _primaryKeyValue = null;
-
+    private String[] _uniqueColumns   = null;
+    
     public SequenceMapping(String name, MappingRepository repos) {
         super(name, repos);
     }
@@ -138,6 +145,14 @@ public class SequenceMapping
         _primaryKeyValue = primaryKeyValue;
     }
 
+    public void setUniqueColumns(String[] cols) {
+    	_uniqueColumns = cols;
+    }
+    
+    public String[] getUniqueColumns() {
+    	return _uniqueColumns;
+    }
+    
     protected PluginValue newPluginValue(String property) {
         return new JDBCSeqValue(property);
     }
@@ -148,5 +163,11 @@ public class SequenceMapping
         appendProperty(props, PROP_SEQUENCE_COL, _sequenceColumn);
         appendProperty(props, PROP_PK_COL, _primaryKeyColumn);
         appendProperty(props, PROP_PK_VALUE, _primaryKeyValue);
+        // Array of unique column names are passed to configuration
+        // as a single string "x|y|z". The configurable (TableJDBCSeq) must
+        // parse it back.
+        if (_uniqueColumns != null && _uniqueColumns.length > 0)
+        	appendProperty(props, PROP_UNIQUE, 
+        			StringUtils.join(_uniqueColumns,'|'));
     }
 }

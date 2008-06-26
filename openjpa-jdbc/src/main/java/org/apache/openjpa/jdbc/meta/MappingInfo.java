@@ -927,7 +927,7 @@ public abstract class MappingInfo
                     context, dict.platform));
             deferred = false;
         }
-
+        
         Unique unq = table.addUnique(name);
         unq.setDeferred(deferred);
         unq.setColumns(cols);
@@ -1534,7 +1534,7 @@ public abstract class MappingInfo
         _unq.setName(unq.getName());
         _unq.setDeferred(unq.isDeferred());
     }
-
+    
     /**
      * Sets internal constraint and column information to match given mapped
      * constraint.
