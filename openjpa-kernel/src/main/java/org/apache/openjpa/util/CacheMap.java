@@ -22,7 +22,6 @@ import java.util.AbstractCollection;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -31,12 +30,10 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.iterators.FilterIterator;
 import org.apache.commons.collections.iterators.IteratorChain;
 import org.apache.openjpa.lib.util.LRUMap;
-import org.apache.openjpa.lib.util.ReferenceHashMap;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.SizedMap;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
-import org.apache.openjpa.lib.util.concurrent.NullSafeConcurrentHashMap;
-import org.apache.openjpa.lib.util.concurrent.SizedConcurrentHashMap;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -114,10 +111,10 @@ public class CacheMap
                 softMapValueExpired(key);
             }
         };
-        pinnedMap = new NullSafeConcurrentHashMap();
+        pinnedMap = new ConcurrentHashMap();
 
         if (!lru) {
-            cacheMap = new SizedConcurrentHashMap(size, load, concurrencyLevel){
+            cacheMap = new ConcurrentHashMap(size, load) {
                 public void overflowRemoved(Object key, Object value) {
                     cacheMapOverflowRemoved(key, value);
                 }
