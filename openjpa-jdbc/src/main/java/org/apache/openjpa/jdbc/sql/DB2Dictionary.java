@@ -438,18 +438,40 @@ public class DB2Dictionary
         //   (Toolbox)DBProdVersion              05.04.0000 V5R4m0
         // ISeries                               DB2 UDB for AS/400
         //   (Native)                            V5R4M0
+        // new jcc    DBProdVersion              QSQ05040 or QSQ06010
         if (databaseProductName.indexOf("AS") != -1) {
-            String s = databaseProductVersion.substring(databaseProductVersion
-                .indexOf('V'));
-            s = s.toUpperCase();
+            // default to V5R4
+            maj = 5;
+            min = 4;
+            int index = databaseProductVersion.indexOf('V');
+            if (index != -1) {
+                String s = databaseProductVersion.substring(index);
+                s = s.toUpperCase();
 
-            StringTokenizer stringtokenizer = new StringTokenizer(s, "VRM"
-                , false);
-            if (stringtokenizer.countTokens() == 3) {
-                String s1 = stringtokenizer.nextToken();
-                maj = Integer.parseInt(s1);
-                String s2 =  stringtokenizer.nextToken();
-                min = Integer.parseInt(s2);
+                StringTokenizer stringtokenizer = new StringTokenizer(s, "VRM"
+                    , false);
+                if (stringtokenizer.countTokens() == 3) {
+                    String s1 = stringtokenizer.nextToken();
+                    maj = Integer.parseInt(s1);
+                    String s2 =  stringtokenizer.nextToken();
+                    min = Integer.parseInt(s2);
+                }
+            }
+            else {
+                index = databaseProductVersion.indexOf('0');
+                if (index != -1) {
+                    String s = databaseProductVersion.substring(index);
+                    s = s.toUpperCase();
+
+                    StringTokenizer stringtokenizer = new StringTokenizer(s, "0"
+                        , false);                    
+                    if (stringtokenizer.countTokens() == 2) {
+                        String s1 = stringtokenizer.nextToken();
+                        maj = Integer.parseInt(s1);
+                        String s2 =  stringtokenizer.nextToken();
+                        min = Integer.parseInt(s2);
+                    }
+                }
             }
         }
     }
