@@ -32,9 +32,14 @@ import javax.persistence.UniqueConstraint;
 
 /**
  * Data structures for testing unique constraint settings
- * on ORM Annotatations.
+ * on ORM Annotations.
+ * @UniqueConstraint annotation is declared at class-level with @Table, 
+ * @SecondaryTable annotations and at field-level with @JoinTable annotation.
  * 
- * Unique columns must be non-nullable.
+ * The columns included in unique constraint must be non-nullable. This is 
+ * recommended that the non-nullability of the column is explictly set by the
+ * user, though the implementation forces a column to non-nullable as a column
+ * is included in a unique constraint.
  * 
  * @author Pinaki Poddar
  *
@@ -73,8 +78,10 @@ public class UniqueA {
 	
 	@ManyToMany
 	@JoinTable(name="UNIQUE_JOINTABLE",
-			joinColumns={@JoinColumn(name="FK_A", nullable=false, referencedColumnName="aid")},
-			inverseJoinColumns={@JoinColumn(name="FK_B", nullable=false, referencedColumnName="bid")},
+			joinColumns={@JoinColumn(name="FK_A", nullable=false, 
+					referencedColumnName="aid")},
+			inverseJoinColumns={@JoinColumn(name="FK_B", nullable=false, 
+					referencedColumnName="bid")},
 			uniqueConstraints=@UniqueConstraint(columnNames={"FK_A","FK_B"}))
 	private Collection<UniqueB> bs;
 }
