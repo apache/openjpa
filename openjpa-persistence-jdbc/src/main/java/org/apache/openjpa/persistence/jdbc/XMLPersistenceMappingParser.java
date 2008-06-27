@@ -39,6 +39,7 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.ClassMappingInfo;
 import org.apache.openjpa.jdbc.meta.DiscriminatorMappingInfo;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.meta.FieldMappingInfo;
 import org.apache.openjpa.jdbc.meta.MappingInfo;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
@@ -359,6 +360,8 @@ public class XMLPersistenceMappingParser
         throws SAXException {
         _secondaryTable = toTableName(attrs.getValue("schema"),
             attrs.getValue("name"));
+        ((ClassMapping)currentElement()).getMappingInfo()
+        	.addSecondaryTable(_secondaryTable);
         return true;
     }
 
@@ -906,18 +909,23 @@ public class XMLPersistenceMappingParser
         Unique unique = (Unique) popElement();
         Object ctx = currentElement();
         String tableName = "?";
-        ClassMappingInfo info = null;
         if (ctx instanceof ClassMapping) {
-        	info = ((ClassMapping) ctx).getMappingInfo();
-        	tableName = (_secondaryTable != null) ? info.getTableName() : _secondaryTable;
+        	ClassMappingInfo info = ((ClassMapping) ctx).getMappingInfo();
+        	tableName = (_secondaryTable == null) 
+        		? info.getTableName() : _secondaryTable;
         	info.addUnique(tableName, unique);
         } else if (ctx instanceof FieldMapping) {// JoinTable
-        	info = ((FieldMapping)ctx).getDeclaringMapping().getMappingInfo();
-        	tableName = info.getTableName();
-        	info.addUnique(tableName, unique);
+        	FieldMappingInfo info = ((FieldMapping)ctx).getMappingInfo();
+        	info.addJoinTableUnique(unique);
         } else if (ctx instanceof SequenceMapping) {
-        	tableName = ((SequenceMapping)ctx).getTable();
-        	unique.setTableName(tableName);
+        	SequenceMapping seq = (SequenceMapping)ctx;
+        	unique.setTableName(seq.getTable());
+        	Column[] uniqueColumns = unique.getColumns();
+        	String[] columnNames = new String[uniqueColumns.length];
+        	int i = 0;
+        	for (Column uniqueColumn : uniqueColumns)
+        		columnNames[i++] = uniqueColumn.getName();
+        	seq.setUniqueColumns(columnNames);
         } else {
         	throw new InternalException();
         }

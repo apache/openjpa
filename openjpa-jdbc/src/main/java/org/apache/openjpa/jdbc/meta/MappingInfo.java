@@ -928,6 +928,11 @@ public abstract class MappingInfo
             deferred = false;
         }
         
+        if (StringUtils.isEmpty(name)) {
+        	name = cols[0].getName();
+        	name = repos.getDBDictionary().getValidUniqueName(name, table);
+        }
+        
         Unique unq = table.addUnique(name);
         unq.setDeferred(deferred);
         unq.setColumns(cols);

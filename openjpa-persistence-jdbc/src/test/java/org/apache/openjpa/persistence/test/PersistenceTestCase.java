@@ -47,6 +47,7 @@ public abstract class PersistenceTestCase
      * database tables should be cleared.
      */
     protected static final Object CLEAR_TABLES = new Object();
+    protected static final Object DROP_TABLES = new Object();
 
     /**
      * The {@link TestResult} instance for the current test run.
@@ -95,6 +96,10 @@ public abstract class PersistenceTestCase
                 map.put("openjpa.jdbc.SynchronizeMappings",
                     "buildSchema(ForeignKeys=true," 
                     + "SchemaAction='add,deleteTableContents')");
+            } else if (props[i] == DROP_TABLES) {
+                map.put("openjpa.jdbc.SynchronizeMappings",
+                    "buildSchema(ForeignKeys=true," 
+                    + "SchemaAction='drop,add')");
             } else if (props[i] instanceof Class)
                 types.add((Class) props[i]);
             else if (props[i] != null)

@@ -23,12 +23,24 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.persistence.jdbc.SQLSniffer;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestUnique extends SQLListenerTestCase {
+/**
+ * Tests unique constraints specified via annotations for primary/secondary
+ * table, sequence generator, join tables have been defined on database by
+ * examining DDL statements.
+ * 
+ * @see resources/org/apache/openjpa/persistence/jdbc/unique/orm.xml defines
+ * the ORM mapping.
+ * 
+ * @author Pinaki Poddar
+ *
+ */
+public class TestUniqueConstraint extends SQLListenerTestCase {
     @Override
     public void setUp(Object... props) {
-    	super.setUp(UniqueA.class, UniqueB.class);    			    
+    	super.setUp(DROP_TABLES, UniqueA.class, UniqueB.class);    			    
     }
     
 	public void testMapping() {
@@ -40,39 +52,28 @@ public class TestUnique extends SQLListenerTestCase {
 		
 		List<String> sqls = super.sql;
 		
-		assertSQLFragnment(sqls, "CREATE TABLE UNIQUE_A", 
-				"UNIQUE (a1, a2)", 
-				"UNIQUE (a3, a4)");
-		assertSQLFragnment(sqls, "CREATE TABLE UNIQUE_B", 
-				"UNIQUE (b1, b2)");
-		assertSQLFragnment(sqls, "CREATE TABLE UNIQUE_SECONDARY", 
-				"UNIQUE (sa1)");
-		assertSQLFragnment(sqls, "CREATE TABLE UNIQUE_GENERATOR", 
-				"UNIQUE (GEN1, GEN2)");
-		assertSQLFragnment(sqls, "CREATE TABLE UNIQUE_JOINTABLE", 
-				"UNIQUE (UNIQUEA_AID, BS_BID)");
-		
+		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_A",
+				"UNIQUE \\w*\\(a1, a2\\)", 
+				"UNIQUE \\w*\\(a3, a4\\)");
+		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_B",
+				"UNIQUE \\w*\\(b1, b2\\)");
+		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_SECONDARY",
+				"UNIQUE \\w*\\(sa1\\)");
+		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_GENERATOR",
+				"UNIQUE \\w*\\(GEN1, GEN2\\)");
+		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_JOINTABLE",
+				"UNIQUE \\w*\\(FK_A, FK_B\\)");
 	}
 	
-	void assertSQLFragnment(List<String> list, String...keys) {
-		for (String sql : list) {
-			String SQL = sql.toUpperCase();
-			boolean matched = true;
-			for (String key : keys) {
-				String KEY = key.toUpperCase();
-				if (SQL.indexOf(KEY) == -1) {
-					matched = false;
-					break;
-				}
-			}
-			if (matched)
-				return;
-		}
+	void assertSQLFragnments(List<String> list, String... keys) {
+		if (SQLSniffer.matches(list, keys))
+			return;
 		int i = 0;
 		for (String sql : list) {
 			i++;
-			System.out.println(""+i+":"+sql);
+			System.out.println("" + i + ":" + sql);
 		}
-		fail("None of the above SQL contains all keys " + Arrays.toString(keys));
+		fail("None of the " + sql.size() + " SQL contains all keys "
+				+ Arrays.toString(keys));
 	}
 }

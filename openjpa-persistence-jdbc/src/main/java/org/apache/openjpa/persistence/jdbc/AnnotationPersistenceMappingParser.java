@@ -483,8 +483,10 @@ public class AnnotationPersistenceMappingParser
                 joins = new ArrayList<Column>(table.pkJoinColumns().length);
                 for (PrimaryKeyJoinColumn join : table.pkJoinColumns())
                     joins.add(newColumn(join));
-            } 
-            info.setSecondaryTableJoinColumns(name, joins);
+                info.setSecondaryTableJoinColumns(name, joins);
+            } else {
+            	info.addSecondaryTable(name);
+            }
             addUniqueConstraints(name, cm, info, table.uniqueConstraints());
         }
     }

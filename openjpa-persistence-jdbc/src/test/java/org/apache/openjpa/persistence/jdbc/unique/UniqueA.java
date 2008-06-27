@@ -23,6 +23,7 @@ import java.util.Collection;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.SecondaryTable;
@@ -72,6 +73,8 @@ public class UniqueA {
 	
 	@ManyToMany
 	@JoinTable(name="UNIQUE_JOINTABLE",
-			uniqueConstraints=@UniqueConstraint(columnNames={"UNIQUEA_AID","BS_BID"}))
+			joinColumns={@JoinColumn(name="FK_A", nullable=false, referencedColumnName="aid")},
+			inverseJoinColumns={@JoinColumn(name="FK_B", nullable=false, referencedColumnName="bid")},
+			uniqueConstraints=@UniqueConstraint(columnNames={"FK_A","FK_B"}))
 	private Collection<UniqueB> bs;
 }

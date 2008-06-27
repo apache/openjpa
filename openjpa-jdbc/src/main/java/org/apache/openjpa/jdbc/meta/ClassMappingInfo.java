@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.meta;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -212,9 +213,17 @@ public class ClassMappingInfo
         }
         return (cols == null) ? Collections.EMPTY_LIST : cols;
     }
+    
+    /**
+     * Adds a Secondary table of given name to this mapping. A secondary table 
+     * must be known before unique constraints are added to a Secondary table.
+     */
+    public void addSecondaryTable(String second) {
+    	setSecondaryTableJoinColumns(second, null);
+    }
 
     /**
-     * Declare the given class-level join.
+     * Declare the given class-level join to the named (secondary) table.
      */
     public void setSecondaryTableJoinColumns(String tableName, List cols) {
         if (cols == null)
@@ -419,7 +428,7 @@ public class ClassMappingInfo
         			if (!table.containsColumn(columnName)) {
         				throw new UserException(_loc.get("unique-missing-column", 
                            new Object[]{cm, columnName, tableName, 
-        						table.getColumnNames()}));
+        						Arrays.toString(table.getColumnNames())}));
         			}
         			Column uniqueColumn = table.getColumn(columnName);
         			uniqueColumns[i] = uniqueColumn;

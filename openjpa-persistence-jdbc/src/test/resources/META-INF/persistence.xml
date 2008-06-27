@@ -89,4 +89,11 @@
                   value="buildSchema(ForeignKeys=true)"/>
         </properties>
     </persistence-unit>
+    
+    <persistence-unit name="test-unique-constraint">
+        <mapping-file>org/apache/openjpa/persistence/jdbc/unique/orm.xml</mapping-file>
+        <class>org.apache.openjpa.persistence.jdbc.unique.UniqueA</class>
+        <class>org.apache.openjpa.persistence.jdbc.unique.UniqueB</class>
+    </persistence-unit>
+    
 </persistence>
