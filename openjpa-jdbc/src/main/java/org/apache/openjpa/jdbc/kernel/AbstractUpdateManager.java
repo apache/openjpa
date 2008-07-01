@@ -80,7 +80,7 @@ public abstract class AbstractUpdateManager
         // run through all the states and update them as necessary
         RowManager rowMgr = newRowManager();
         Collection customs = new LinkedList();
-        Collection exceps = null;
+        Collection exceps = psMgr.getExceptions();
         for (Iterator itr = states.iterator(); itr.hasNext();)
             exceps = populateRowManager((OpenJPAStateManager) itr.next(),
                 rowMgr, store, exceps, customs);
@@ -100,12 +100,6 @@ public abstract class AbstractUpdateManager
         }
 
         // return all exceptions
-        Collection psExceps = psMgr.getExceptions();
-        if (exceps == null)
-            return psExceps;
-        if (psExceps == null)
-            return exceps;
-        exceps.addAll(psExceps);
         return exceps;
     }
 
