@@ -32,8 +32,8 @@ public class Unique
     
 	/**
      * Default constructor without a name.
-     * Assumes that this constraint will set its own name automatically from
-     * the names of the columns added to it.
+     * Implies that this constraint will auto-generate its name from the names 
+     * of its columns, unless later the name is set explicitly.
      */
     public Unique() {
     	_autoNaming = true;
@@ -41,7 +41,7 @@ public class Unique
 
     /**
      * Construct with given name.
-     * Assumes that this constraint will not set its own name.
+     * Implies that this constraint will not auto-generate its name.
      * 
      * @param name the name of the constraint, if any
      * @param table the table of the constraint
@@ -60,36 +60,10 @@ public class Unique
      * The added column is set to non-nullable because a unique constraint
      * on the database requires that its constituent columns are NOT NULL. 
      * @see Column#setNotNull(boolean)
-     * If this instance is constructing its own name, then this method also
-     * has the side effect of changing its own name by appending the newly 
-     * added column name to its own name. 
      */
     public void addColumn(Column col) {
     	super.addColumn(col);
     	col.setNotNull(true);
-    	if (_autoNaming && getTable() == null) {
-    		String prefix = createPrefix();
-    		setName(prefix + "_" + chop(col.getName(), 4));
-    		_autoNaming = true;
-    	}
-    }
-    
-    private String createPrefix() {
-    	String currentName = getName();
-    	if (StringUtils.isEmpty(currentName)) {
-    		String tname = getTableName();
-    		if (StringUtils.isEmpty(tname))
-    			return "UNQ";
-    		else
-    			return "UNQ_" + chop(tname, 3);
-    	}
-    	return currentName;
-    }
-    
-    private String chop(String name, int head) {
-    	if (StringUtils.isEmpty(name))
-    		return name;
-    	return name.substring(0, Math.min(Math.max(1,head), name.length()));
     }
     
     /**
@@ -102,7 +76,19 @@ public class Unique
         super.setName(name);
         _autoNaming = false;
     }
-
+    
+    /**
+     * Gets the name of the constraint. If no name has been set by the user
+     * then this method has the side-effect of auto-generating a name from
+     * the name of its columns.
+     */
+    public String getName() {
+    	if (getTable() == null && _autoNaming) {
+    		setName(createAutoName());
+    		_autoNaming = true;
+    	}
+    	return super.getName();
+    }
 
     /**
      * Return true if the structure of this primary key matches that of
@@ -120,4 +106,19 @@ public class Unique
 	public boolean isAutoNaming() {
 		return _autoNaming;
 	}
+	
+	private String createAutoName() {
+		Column[] columns = getColumns();
+		int l = 32/Math.max(columns.length,1);
+		StringBuffer autoName = new StringBuffer("UNQ_");
+		for (Column column : columns)
+			autoName.append(chop(column.getName(),l));
+		return autoName.toString();
+	}
+	
+    private String chop(String name, int head) {
+    	if (StringUtils.isEmpty(name))
+    		return name;
+    	return name.substring(0, Math.min(Math.max(1,head), name.length()));
+    }
 }
