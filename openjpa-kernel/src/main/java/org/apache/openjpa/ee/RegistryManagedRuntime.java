@@ -198,9 +198,10 @@ public class RegistryManagedRuntime
      * RegistryManagedRuntime cannot suspend transactions.
      * </P>
      */
-    public void doNonTransactionalWork(Runnable runnable) throws NotSupportedException {
-        throw new NotSupportedException(
-                _loc.get("tsr-cannot-suspend").getMessage());
+    public void doNonTransactionalWork(Runnable runnable)
+        throws NotSupportedException {
+        throw new NotSupportedException(_loc.get("tsr-cannot-suspend")
+            .getMessage());
     }
 }
 
