@@ -113,6 +113,8 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 	
 	public void testClassMetaDataRecognizesDataCacheTimeoutValueChange() {
 		OpenJPAConfiguration conf = emf.getConfiguration();
+		
+		// ensure that PObject is in metadata repository
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		PObject pc = new PObject();
@@ -120,7 +122,8 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		
 		int oldValue = conf.getDataCacheTimeout();
 		
-		ClassMetaData meta = conf.getMetaDataRepositoryInstance().getCachedMetaData(PObject.class);
+		ClassMetaData meta = conf.getMetaDataRepositoryInstance()
+			.getCachedMetaData(PObject.class);
 		assertNotNull(meta);
 		assertEquals(oldValue, meta.getDataCacheTimeout());
 		
