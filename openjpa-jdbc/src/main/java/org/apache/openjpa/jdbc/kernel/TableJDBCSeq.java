@@ -552,8 +552,10 @@ public class TableJDBCSeq
         String tableName;
         if (sName == null)
             tableName = table.getFullName();
+        else if (table.getSchemaName() != null)
+            tableName = table.getFullName();
         else
-            tableName = sName + "." + table.getFullName();
+            tableName = sName + "." + table.getName();
         return tableName;
     }
 

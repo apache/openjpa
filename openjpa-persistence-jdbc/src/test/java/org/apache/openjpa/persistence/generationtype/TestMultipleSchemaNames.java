@@ -19,14 +19,19 @@
 package org.apache.openjpa.persistence.generationtype;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import org.apache.openjpa.persistence.*;
+
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestMultipleSchemaNames extends SingleEMFTestCase {
+    @Override
     public void setUp() {
-        setUp(Dog1.class, Dog2.class, DogTable.class, DogTable2.class);
+        setUp(Dog1.class, Dog2.class, DogTable.class, DogTable2.class,
+                DogTable3.class, DogTable4.class);
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -60,6 +65,22 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
             em.remove(Obj);
         }
 
+        Query qry5 = em.createQuery("select d from DogTable3 d");
+        List result5 = qry5.getResultList();
+
+        for (int index = 0; index < result5.size(); index++) {
+            DogTable3 Obj = (DogTable3) result5.get(index);
+            em.remove(Obj);
+        }
+
+        Query qry6 = em.createQuery("select d from DogTable4 d");
+        List result6 = qry6.getResultList();
+
+        for (int index = 0; index < result6.size(); index++) {
+            DogTable4 Obj = (DogTable4) result6.get(index);
+            em.remove(Obj);
+        }
+
         Query delschema1 = em
                 .createNativeQuery("delete from schema1.openjpa_sequence_table");
         delschema1.executeUpdate();
@@ -71,8 +92,14 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         Query delgentable2 = em
                 .createNativeQuery("delete from schema2.id_gen2");
         delgentable2.executeUpdate();
+        Query delgentable3 = em
+                .createNativeQuery("delete from schema3g.id_gen3");
+        Query delgentable4 = em
+                .createNativeQuery("delete from schema4g.id_gen4");
+        delgentable4.executeUpdate();
 
         em.getTransaction().commit();
+        em.close();
 
     }
 
@@ -177,8 +204,30 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         dog2a.setName("helloDog4");
         dog2a.setPrice(25000);
         em.persist(dog2a);
-        em.getTransaction().commit();
 
+        // add dog3
+        DogTable3 dog3 = new DogTable3();
+        dog3.setName("helloDog5");
+        dog3.setPrice(15001);
+        em.persist(dog3);
+
+        DogTable3 dog3a = new DogTable3();
+        dog3a.setName("helloDog6");
+        dog3a.setPrice(25001);
+        em.persist(dog3a);
+
+        // add dog4
+        DogTable4 dog4 = new DogTable4();
+        dog4.setName("helloDog7");
+        dog4.setPrice(15002);
+        em.persist(dog4);
+
+        DogTable4 dog4a = new DogTable4();
+        dog4a.setName("helloDog8");
+        dog4a.setPrice(25002);
+        em.persist(dog4a);
+        em.getTransaction().commit();        
+        
         DogTable dog1x = em.find(DogTable.class, kem.getObjectId(dog1));
         assertTrue(dog1x.getId2() == 20 || dog1x.getId2() == 21);
         assertEquals(dog1x.getName(), "helloDog1");
@@ -189,6 +238,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         assertEquals(dog11.getName(), "helloDog2");
         dog11.setName("Dog2");
         dog11.setDomestic(true);
+        
         // update dog2
         DogTable2 dog2x = em.find(DogTable2.class, kem.getObjectId(dog2));
         assertTrue(dog2x.getId2() == 100 || dog2x.getId2() == 101);
@@ -196,10 +246,34 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         dog2x.setName("Dog3");
         dog2x.setDomestic(true);
         DogTable2 dog21 = em.find(DogTable2.class, kem.getObjectId(dog2a));
-        assertTrue(dog2x.getId2() == 100 || dog2x.getId2() == 101);
+        assertTrue(dog21.getId2() == 100 || dog21.getId2() == 101);
         assertEquals(dog21.getName(), "helloDog4");
         dog21.setName("Dog4");
         dog21.setDomestic(true);
+
+        // update dog3
+        DogTable3 dog3x = em.find(DogTable3.class, kem.getObjectId(dog3));
+        assertTrue(dog3x.getId2() == 100 || dog3x.getId2() == 101);
+        assertEquals(dog3x.getName(), "helloDog5");
+        dog3x.setName("Dog5");
+        dog3x.setDomestic(true);
+        DogTable3 dog31 = em.find(DogTable3.class, kem.getObjectId(dog3a));
+        assertTrue(dog31.getId2() == 100 || dog31.getId2() == 101);
+        assertEquals(dog31.getName(), "helloDog6");
+        dog31.setName("Dog6");
+        dog31.setDomestic(true);
+
+        // update dog4
+        DogTable4 dog4x = em.find(DogTable4.class, kem.getObjectId(dog4));
+        assertTrue(dog4x.getId2() == 100 || dog4x.getId2() == 101);
+        assertEquals(dog4x.getName(), "helloDog7");
+        dog4x.setName("Dog7");
+        dog4x.setDomestic(true);
+        DogTable4 dog41 = em.find(DogTable4.class, kem.getObjectId(dog4a));
+        assertTrue(dog41.getId2() == 100 || dog41.getId2() == 101);
+        assertEquals(dog41.getName(), "helloDog8");
+        dog41.setName("Dog8");
+        dog41.setDomestic(true);
 
         // get the update dog name
 
@@ -207,10 +281,10 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         Query qry1 = em.createQuery("select d from DogTable d order by d.name");
         List result1 = qry1.getResultList();
         for (int index = 0; index < result1.size(); index++) {
-            DogTable dog4 = (DogTable) result1.get(index);
-            assertTrue(dog4.getId2() == 20 || dog4.getId2() == 21);
+            DogTable dog1xx = (DogTable) result1.get(index);
+            assertTrue(dog1xx.getId2() == 20 || dog1xx.getId2() == 21);
             int j = index + 1;
-            assertEquals(dog4.getName(), "Dog" + j);
+            assertEquals(dog1xx.getName(), "Dog" + j);
 
         }
 
@@ -219,10 +293,32 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         List result2 = qry2.getResultList();
 
         for (int index = 0; index < result2.size(); index++) {
-            DogTable2 dog5 = (DogTable2) result2.get(index);
-            assertTrue(dog5.getId2() == 100 || dog5.getId2() == 101);
+            DogTable2 dog2xx = (DogTable2) result2.get(index);
+            assertTrue(dog2xx.getId2() == 100 || dog2xx.getId2() == 101);
             int j = index + 3;
-            assertEquals(dog5.getName(), "Dog" + j);
+            assertEquals(dog2xx.getName(), "Dog" + j);
+        }
+
+        Query qry3 = em
+                .createQuery("select d from DogTable3 d order by d.name");
+        List result3 = qry3.getResultList();
+
+        for (int index = 0; index < result3.size(); index++) {
+            DogTable3 dog3xx = (DogTable3) result3.get(index);
+            assertTrue(dog3xx.getId2() == 100 || dog3xx.getId2() == 101);
+            int j = index + 5;
+            assertEquals(dog3xx.getName(), "Dog" + j);
+        }
+
+        Query qry4 = em
+                .createQuery("select d from DogTable4 d order by d.name");
+        List result4 = qry4.getResultList();
+
+        for (int index = 0; index < result4.size(); index++) {
+            DogTable4 dog4xx = (DogTable4) result4.get(index);
+            assertTrue(dog4xx.getId2() == 100 || dog4xx.getId2() == 101);
+            int j = index + 7;
+            assertEquals(dog4xx.getName(), "Dog" + j);
         }
 
         em.getTransaction().commit();
