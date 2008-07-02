@@ -2363,7 +2363,7 @@ public class ClassMetaData
     		Value value = getRepository().getConfiguration()
     			.getValue(key);
     		if (value != null)
-    			value.setListener(this);
+    			value.addListener(this);
     	}
     }
     
