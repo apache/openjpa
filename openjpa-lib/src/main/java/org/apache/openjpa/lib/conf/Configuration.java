@@ -228,28 +228,4 @@ public interface Configuration
      * Return a copy of this configuration.
      */
     public Object clone();
-    
-    /**
-     * Modifies a <em>dynamic</em> property of this receiver even when 
-     * {@link #setReadOnly(boolean) frozen}. 
-     *
-     * @since 1.0.0
-     */
-//    public void modifyDynamic(String property, Object newValue);
-//    
-//    /**
-//     * Affirms if the given property can be modified <em>dynamically</em> i.e.
-//     * even after the receiver is {@link #setReadOnly(boolean) frozen}. 
-//     *
-//     * @since 1.0.0
-//     */
-//    public boolean isDynamic(String property);
-//    
-//    /**
-//     * Gets the values that can be modified <em>dynamically</em> i.e.
-//     * even after the receiver is {@link #setReadOnly(boolean) frozen}. 
-//     *
-//     * @since 1.0.0
-//     */
-//    public Value[] getDynamicValues();
 }
