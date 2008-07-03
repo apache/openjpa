@@ -21,6 +21,17 @@ package org.apache.openjpa.persistence.test;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
+/**
+ * Base class for OpenJPA-specific Test Case.
+ * Provides utilities for configuration setup and persistent entity 
+ * registration during setUp() method.
+ * Derived classes can access protected EntityManagerFactory to create 
+ * EntityManager. The protected EntityManagerFactory is declared to be
+ * OpenJPA-extended SPI interface <code>OpenJPAEntityManagerFactorySPI</code>
+ * so that derived classes can access internal mapping/metadata/configuration
+ * and other structures.  
+ *   
+ */
 public abstract class SingleEMFTestCase
     extends PersistenceTestCase {
 
@@ -71,8 +82,7 @@ public abstract class SingleEMFTestCase
     /**
      * Get the class mapping for a given entity
      * 
-     * @param name
-     *            The Entity's name.
+     * @param name The Entity's name.
      * 
      * @return If the entity is a known type the ClassMapping for the Entity
      *         will be returned. Otherwise null

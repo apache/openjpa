@@ -43,10 +43,15 @@ public abstract class PersistenceTestCase
     extends TestCase {
 
     /**
-     * Marker object you an pass to {@link #setUp} to indicate that the
-     * database tables should be cleared.
+     * Marker object you pass to {@link #setUp} to indicate that the
+     * database table rows should be cleared.
      */
     protected static final Object CLEAR_TABLES = new Object();
+
+    /**
+     * Marker object you pass to {@link #setUp} to indicate that the
+     * database table should be dropped and then recreated.
+     */
     protected static final Object DROP_TABLES = new Object();
 
     /**
@@ -152,7 +157,8 @@ public abstract class PersistenceTestCase
     }
 
     /**
-     * Closes all open entity managers after first rolling back any open transactions
+     * Closes all open entity managers after first rolling back any open 
+     * transactions.
      */
     protected void closeAllOpenEMs(EntityManagerFactory emf) {
         if (emf == null || !emf.isOpen())
@@ -196,15 +202,17 @@ public abstract class PersistenceTestCase
     protected void clear(EntityManagerFactory emf) {
         if (emf == null)
             return;
-        clear(emf, true, ((OpenJPAEntityManagerFactorySPI) emf).getConfiguration().
-            getMetaDataRepositoryInstance().getMetaDatas());
+        clear(emf, true, ((OpenJPAEntityManagerFactorySPI) emf)
+        		.getConfiguration()
+        		.getMetaDataRepositoryInstance().getMetaDatas());
     }
 
     /**
      * Delete all instances of the given types using bulk delete queries.
      * @param closeEMs TODO
      */
-    private void clear(EntityManagerFactory emf, boolean closeEMs, ClassMetaData... types) {
+    private void clear(EntityManagerFactory emf, boolean closeEMs, 
+    		ClassMetaData... types) {
         if (emf == null || types.length == 0)
             return;
         
