@@ -569,7 +569,10 @@ public class QueryCacheStoreQuery
                 try {
                     // make sure we didn't abort
                     if (_maintainCache) {
-                        QueryResult res = new QueryResult(_qk, _data.values());
+                        QueryResult res = null;
+                        synchronized (this) {
+                            res = new QueryResult(_qk, _data.values());
+                        }
                         _cache.put(_qk, res);
                         abortCaching();
                     }
