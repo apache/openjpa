@@ -701,1004 +701,8 @@ typically won't use these properties unless you are designing your own
 <classname>DBDictionary</classname> for an unsupported database.
             </para>
             <itemizedlist>
-                <listitem id="DBDictionary.DriverVendor">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            JDBC
-                        </primary>
-                        <secondary>
-                            DriverVendor
-                        </secondary>
-                    </indexterm>
-<literal>DriverVendor</literal>: The vendor of the particular JDBC driver you
-are using. Some dictionaries must alter their behavior depending on the driver
-vendor. See the <literal>VENDOR_XXX</literal> constants defined in your
-dictionary's Javadoc for available options.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.CatalogSeparator">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            SQL
-                        </primary>
-                        <secondary>
-                            CatalogSeparator
-                        </secondary>
-                    </indexterm>
-<literal>CatalogSeparator</literal>: The string the database uses to delimit
-between the schema name and the table name. This is typically <literal>"."
-</literal>, which is the default.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.CreatePrimaryKeys">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            CreatePrimaryKeys
-                        </secondary>
-                    </indexterm>
-<literal>CreatePrimaryKeys</literal>: If <literal>false</literal>, then do not
-create database primary keys for identifiers. Defaults to <literal>true
-</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.ConstraintNameMode">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            ConstraintNameMode
-                        </secondary>
-                    </indexterm>
-<literal>ConstraintNameMode</literal>: When creating constraints, whether to
-put the constraint name before the definition (<literal>before</literal>),
-just after the constraint type name (<literal>mid</literal>), or after the
-constraint definition (<literal>after</literal>). Defaults to <literal>before
-</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.MaxTableNameLength">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            MaxTableNameLength
-                        </secondary>
-                    </indexterm>
-<literal>MaxTableNameLength</literal>: The maximum number of characters in a
-table name. Defaults to 128.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.MaxColumnNameLength">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            MaxColumnNameLength
-                        </secondary>
-                    </indexterm>
-<literal>MaxColumnNameLength</literal>: The maximum number of characters in a
-column name. Defaults to 128.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.MaxConstraintNameLength">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            MaxConstraintNameLength
-                        </secondary>
-                    </indexterm>
-<literal>MaxConstraintNameLength</literal>: The maximum number of characters in
-a constraint name. Defaults to 128.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.MaxIndexNameLength">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            MaxIndexNameLength
-                        </secondary>
-                    </indexterm>
-                    <indexterm>
-                        <primary>
-                            indexes
-                        </primary>
-                        <secondary>
-                            MaxIndexNameLength
-                        </secondary>
-                    </indexterm>
-<literal>MaxIndexNameLength</literal>: The maximum number of characters in an
-index name. Defaults to 128.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.MaxAutoAssignNameLength">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            MaxAutoAssignNameLength
-                        </secondary>
-                    </indexterm>
-<literal>MaxAutoAssignNameLength</literal>: Set this property to the maximum
-length of name for sequences used for auto-increment columns. Names longer than
-this value are truncated. Defaults to <literal>31</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.MaxIndexesPerTable">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            indexes
-                        </primary>
-                        <secondary>
-                            MaxIndexesPerTable
-                        </secondary>
-                    </indexterm>
-<literal>MaxIndexesPerTable</literal>: The maximum number of indexes that can
-be placed on a single table. Defaults to no limit.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsForeignKeys">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            foreign keys
-                        </primary>
-                        <secondary>
-                            SupportsForeignKeys
-                        </secondary>
-                    </indexterm>
-<literal>SupportsForeignKeys</literal>: Whether the database supports foreign
-keys. Defaults to true.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsTimestampNanos">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            SupportsTimestampNanos
-                        </primary>
-                    </indexterm>
-<literal>SupportsTimestampNanos</literal>: Whether the database supports nanoseconds with TIMESTAMP columns.  Defaults to true.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsUniqueConstraints">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            unique constraints
-                        </primary>
-                        <secondary>
-                            SupportsUniqueConstraints
-                        </secondary>
-                    </indexterm>
-<literal>SupportsUniqueConstraints</literal>: Whether the database supports
-unique constraints. Defaults to true.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsDeferredConstraints">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            foreign keys
-                        </primary>
-                        <secondary>
-                            SupportsDeferredConstraints
-                        </secondary>
-                    </indexterm>
-<literal>SupportsDeferredConstraints</literal>: Whether the database supports
-deferred constraints. Defaults to true.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsRestrictDeleteAction">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            foreign keys
-                        </primary>
-                        <secondary>
-                            SupportsRestrictDeleteAction
-                        </secondary>
-                    </indexterm>
-<literal>SupportsRestrictDeleteAction</literal>: Whether the database supports
-the RESTRICT foreign key delete action. Defaults to <literal>true</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsCascadeDeleteAction">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            foreign keys
-                        </primary>
-                        <secondary>
-                            SupportsCascadeDeleteAction
-                        </secondary>
-                    </indexterm>
-<literal>SupportsCascadeDeleteAction</literal>: Whether the database supports
-the CASCADE foreign key delete action. Defaults to <literal>true</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsNullDeleteAction">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            foreign keys
-                        </primary>
-                        <secondary>
-                            SupportsNullDeleteAction
-                        </secondary>
-                    </indexterm>
-<literal>SupportsNullDeleteAction</literal>: Whether the database supports the
-SET NULL foreign key delete action. Defaults to <literal>true</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsDefaultDeleteAction">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            foreign keys
-                        </primary>
-                        <secondary>
-                            SupportsDefaultDeleteAction
-                        </secondary>
-                    </indexterm>
-<literal>SupportsDefaultDeleteAction</literal>: Whether the database supports
-the SET DEFAULT foreign key delete action. Defaults to <literal>true</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsAlterTableWithAddColumn">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            SupportsAlterTableWithAddColumn
-                        </secondary>
-                    </indexterm>
-<literal>SupportsAlterTableWithAddColumn</literal>: Whether the database
-supports adding a new column in an ALTER TABLE statement. Defaults to <literal>
-true</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsAlterTableWithDropColumn">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            SupportsAlterTableWithDropColumn
-                        </secondary>
-                    </indexterm>
-<literal>SupportsAlterTableWithDropColumn</literal>: Whether the database
-supports dropping a column in an ALTER TABLE statement. Defaults to <literal>
-true</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.ReservedWords">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            SQL
-                        </primary>
-                        <secondary>
-                            ReservedWords
-                        </secondary>
-                    </indexterm>
-<literal>ReservedWords</literal>: A comma-separated list of reserved words for
-this database, beyond the standard SQL92 keywords.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SelectWords">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            SQL
-                        </primary>
-                        <secondary>
-                            SelectWords
-                        </secondary>
-                    </indexterm>
-<literal>SelectWords</literal>: A comma-separated list of keywords which may be
-used to start a SELECT statement for this database. If an application executes 
-a native SQL statement which begins with SelectWords OpenJPA will treat the 
-statement as a SELECT statement rather than an UPDATE statement. 
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SystemTables">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            schema
-                        </primary>
-                        <secondary>
-                            reflection
-                        </secondary>
-                        <tertiary>
-                            SystemTables
-                        </tertiary>
-                    </indexterm>
-<literal>SystemTables</literal>: A comma-separated list of table names that
-should be ignored.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SystemSchemas">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            schema
-                        </primary>
-                        <secondary>
-                            reflection
-                        </secondary>
-                        <tertiary>
-                            SystemSchemas
-                        </tertiary>
-                    </indexterm>
-<literal>SystemSchemas</literal>: A comma-separated list of schema names that
-should be ignored.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SchemaCase">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            schema
-                        </primary>
-                        <secondary>
-                            reflection
-                        </secondary>
-                        <tertiary>
-                            SchemaCase
-                        </tertiary>
-                    </indexterm>
-<literal>SchemaCase</literal>: The case to use when querying the database
-metadata about schema components. Defaults to making all names upper case.
-Available values are: <literal>upper, lower, preserve</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.ValidationSQL">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            connections
-                        </primary>
-                        <secondary>
-                            ValidationSQL
-                        </secondary>
-                    </indexterm>
-                    <indexterm>
-                        <primary>
-                            SQL
-                        </primary>
-                        <secondary>
-                            ValidationSQL
-                        </secondary>
-                    </indexterm>
-<literal>ValidationSQL</literal>: The SQL used to validate that a connection is
-still in a valid state. For example, " <literal>SELECT SYSDATE FROM DUAL
-</literal> " for Oracle.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.InitializationSQL">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            connections
-                        </primary>
-                        <secondary>
-                            InitializationSQL
-                        </secondary>
-                    </indexterm>
-                    <indexterm>
-                        <primary>
-                            SQL
-                        </primary>
-                        <secondary>
-                            InitializationSQL
-                        </secondary>
-                    </indexterm>
-<literal>InitializationSQL</literal>: A piece of SQL to issue against the
-database whenever a connection is retrieved from the <classname>DataSource
-</classname>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.JoinSyntax">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            joins
-                        </primary>
-                        <secondary>
-                            JoinSyntax
-                        </secondary>
-                    </indexterm>
-<literal>JoinSyntax</literal>: The SQL join syntax to use in select statements.
-See <xref linkend="ref_guide_dbsetup_sql92"/>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.CrossJoinClause">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            joins
-                        </primary>
-                        <secondary>
-                            CrossJoinClause
-                        </secondary>
-                    </indexterm>
-<literal>CrossJoinClause</literal>: The clause to use for a cross join
-(cartesian product). Defaults to <literal>CROSS JOIN</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.InnerJoinClause">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            joins
-                        </primary>
-                        <secondary>
-                            InnerJoinClause
-                        </secondary>
-                    </indexterm>
-<literal>InnerJoinClause</literal>: The clause to use for an inner join.
-Defaults to <literal>INNER JOIN</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.OuterJoinClause">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            joins
-                        </primary>
-                        <secondary>
-                            OuterJoinClause
-                        </secondary>
-                    </indexterm>
-<literal>OuterJoinClause</literal>: The clause to use for an left outer join.
-Defaults to <literal>LEFT OUTER JOIN</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.RequiresConditionForCrossJoin">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            joins
-                        </primary>
-                        <secondary>
-                            RequiresConditionForCrossJoin
-                        </secondary>
-                    </indexterm>
-<literal>RequiresConditionForCrossJoin</literal>: Some databases require that
-there always be a conditional statement for a cross join. If set, this parameter
-ensures that there will always be some condition to the join clause.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.ToUpperCaseFunction">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            SQL
-                        </primary>
-                        <secondary>
-                            ToUpperCaseFunction
-                        </secondary>
-                    </indexterm>
-<literal>ToUpperCaseFunction</literal>: SQL function call for for converting a
-string to upper case. Use the token <literal>{0}</literal> to represent the
-argument.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.ToLowerCaseFunction">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            SQL
-                        </primary>
-                        <secondary>
-                            ToLowerCaseFunction
-                        </secondary>
-                    </indexterm>
-<literal>ToLowerCaseFunction</literal>: Name of the SQL function for converting
-a string to lower case. Use the token <literal>{0}</literal> to represent the
-argument.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.StringLengthFunction">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            SQL
-                        </primary>
-                        <secondary>
-                            StringLengthFunction
-                        </secondary>
-                    </indexterm>
-<literal>StringLengthFunction</literal>: Name of the SQL function for getting
-the length of a string. Use the token <literal>{0}</literal> to represent the
-argument.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SubstringFunctionName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            SQL
-                        </primary>
-                        <secondary>
-                            SubstringFunctionName
-                        </secondary>
-                    </indexterm>
-<literal>SubstringFunctionName</literal>: Name of the SQL function for getting
-the substring of a string.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.DistinctCountColumnSeparator">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            SQL
-                        </primary>
-                        <secondary>
-                            DistinctCountColumnSeparator
-                        </secondary>
-                    </indexterm>
-<literal>DistinctCountColumnSeparator</literal>: The string the database uses
-to delimit between column expressions in a <literal>SELECT COUNT(DISTINCT
-column-list)</literal> clause. Defaults to null for most databases, meaning that
-multiple columns in a distinct COUNT clause are not supported.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.ForUpdateClause">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            SQL
-                        </primary>
-                        <secondary>
-                            ForUpdateClause
-                        </secondary>
-                    </indexterm>
-                    <indexterm>
-                        <primary>
-                            locking
-                        </primary>
-                        <secondary>
-                            ForUpdateClause
-                        </secondary>
-                    </indexterm>
-<literal>ForUpdateClause</literal>: The clause to append to <literal>SELECT
-</literal> statements to issue queries that obtain pessimistic locks. Defaults
-to <literal>FOR UPDATE</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.TableForUpdateClause">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            SQL
-                        </primary>
-                        <secondary>
-                            TableForUpdateClause
-                        </secondary>
-                    </indexterm>
-                    <indexterm>
-                        <primary>
-                            locking
-                        </primary>
-                        <secondary>
-                            TableForUpdateClause
-                        </secondary>
-                    </indexterm>
-<literal>TableForUpdateClause</literal>: The clause to append to the end of
-each table alias in queries that obtain pessimistic locks. Defaults to null.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsSelectForUpdate">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            locking
-                        </primary>
-                        <secondary>
-                            SupportsSelectForUpdate
-                        </secondary>
-                    </indexterm>
-<literal>SupportsSelectForUpdate</literal>: If true, then the database supports
-<literal>SELECT</literal> statements with a pessimistic locking clause. Defaults
-to true.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsLockingWithDistinctClause">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            locking
-                        </primary>
-                        <secondary>
-                            SupportsLockingWithDistinctClause
-                        </secondary>
-                    </indexterm>
-<literal>SupportsLockingWithDistinctClause</literal>: If true, then the
-database supports <literal>FOR UPDATE</literal> select clauses with <literal>
-DISTINCT</literal> clauses.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsLockingWithOuterJoin">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            locking
-                        </primary>
-                        <secondary>
-                            SupportsLockingWithOuterJoin
-                        </secondary>
-                    </indexterm>
-<literal>SupportsLockingWithOuterJoin</literal>: If true, then the database
-supports <literal>FOR UPDATE</literal> select clauses with outer join queries.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsLockingWithInnerJoin">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            locking
-                        </primary>
-                        <secondary>
-                            SupportsLockingWithInnerJoin
-                        </secondary>
-                    </indexterm>
-<literal>SupportsLockingWithInnerJoin</literal>: If true, then the database
-supports <literal>FOR UPDATE</literal> select clauses with inner join queries.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsLockingWithMultipleTables">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            locking
-                        </primary>
-                        <secondary>
-                            SupportsLockingWithMultipleTables
-                        </secondary>
-                    </indexterm>
-<literal>SupportsLockingWithMultipleTables</literal>: If true, then the
-database supports <literal>FOR UPDATE</literal> select clauses that select from
-multiple tables.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsLockingWithOrderClause">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            locking
-                        </primary>
-                        <secondary>
-                            SupportsLockingWithOrderClause
-                        </secondary>
-                    </indexterm>
-<literal>SupportsLockingWithOrderClause</literal>: If true, then the database
-supports <literal>FOR UPDATE</literal> select clauses with <literal>ORDER BY
-</literal> clauses.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsLockingWithSelectRange">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            locking
-                        </primary>
-                        <secondary>
-                            SupportsLockingWithSelectRange
-                        </secondary>
-                    </indexterm>
-<literal>SupportsLockingWithSelectRange</literal>: If true, then the database
-supports <literal>FOR UPDATE</literal> select clauses with queries that select a
-range of data using <literal>LIMIT</literal>, <literal>TOP</literal> or the
-database equivalent. Defaults to true.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SimulateLocking">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            locking
-                        </primary>
-                        <secondary>
-                            SimulateLocking
-                        </secondary>
-                    </indexterm>
-<literal>SimulateLocking</literal>: Some databases do not support pessimistic
-locking, which will result in an exception when you attempt a pessimistic
-transaction. Setting this property to <literal>true</literal> bypasses the
-locking check to allow pessimistic transactions even on databases that do not
-support locking. Defaults to <literal>false</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsQueryTimeout">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            JDBC
-                        </primary>
-                        <secondary>
-                            QueryTimeout
-                        </secondary>
-                        <tertiary>
-                            SupportsQueryTimeout
-                        </tertiary>
-                    </indexterm>
-<literal>SupportsQueryTimeout</literal>: If true, then the JDBC driver supports
-calls to <methodname> java.sql.Statement.setQueryTimeout</methodname>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsHaving">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            aggregates
-                        </primary>
-                        <secondary>
-                            having
-                        </secondary>
-                        <tertiary>
-                            SupportsHaving
-                        </tertiary>
-                    </indexterm>
-<literal>SupportsHaving</literal>: Whether this database supports HAVING
-clauses in selects.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsSelectStartIndex">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            Query
-                        </primary>
-                        <secondary>
-                            result range
-                        </secondary>
-                        <tertiary>
-                            SupportsSelectStartIndex
-                        </tertiary>
-                    </indexterm>
-<literal>SupportsSelectStartIndex</literal>: Whether this database can create a
-select that skips the first N results.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsSelectEndIndex">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            Query
-                        </primary>
-                        <secondary>
-                            result range
-                        </secondary>
-                        <tertiary>
-                            SupportsSelectEndIndex
-                        </tertiary>
-                    </indexterm>
-<literal>SupportsSelectEndIndex</literal>: Whether this database can create a
-select that is limited to the first N results.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsSubselect">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            SQL
-                        </primary>
-                        <secondary>
-                            SupportsSubselect
-                        </secondary>
-                    </indexterm>
-                    <indexterm>
-                        <primary>
-                            JPQL
-                        </primary>
-                        <secondary>
-                            subselects
-                        </secondary>
-                        <tertiary>
-                            SupportsSubselect
-                        </tertiary>
-                    </indexterm>
-<literal>SupportsSubselect</literal>: Whether this database supports subselects
-in queries.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.RequiresAliasForSubselect">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            SQL
-                        </primary>
-                        <secondary>
-                            RequiresAliasForSubselect
-                        </secondary>
-                    </indexterm>
-                    <indexterm>
-                        <primary>
-                            JPQL
-                        </primary>
-                        <secondary>
-                            subselects
-                        </secondary>
-                        <tertiary>
-                            RequiresAliasForSubselect
-                        </tertiary>
-                    </indexterm>
-<literal>RequiresAliasForSubselect</literal>: If true, then the database
-requires that subselects in a FROM clause be assigned an alias.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsMultipleNontransactionalResultSets">
-                    <para>
-<literal>SupportsMultipleNontransactionalResultSets</literal>: If true, then a
-nontransactional connection is capable of having multiple open <classname>
-ResultSet</classname> instances.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.StorageLimitationsFatal">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            persistent fields
-                        </primary>
-                        <secondary>
-                            StorageLimitationsFatal
-                        </secondary>
-                    </indexterm>
-<literal>StorageLimitationsFatal</literal>: If true, then any data
-truncation/rounding that is performed by the dictionary in order to store a
-value in the database will be treated as a fatal error, rather than just issuing
-a warning.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.StoreLargeNumbersAsStrings">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            persistent fields
-                        </primary>
-                        <secondary>
-                            StoreLargeNumbersAsStrings
-                        </secondary>
-                    </indexterm>
-<literal>StoreLargeNumbersAsStrings</literal>: Many databases have limitations
-on the number of digits that can be stored in a numeric field (for example,
-Oracle can only store 38 digits). For applications that operate on very large
-<classname>BigInteger</classname> and <classname>BigDecimal</classname> values,
-it may be necessary to store these objects as string fields rather than the
-database's numeric type. Note that this may prevent meaningful numeric queries
-from being executed against the database. Defaults to <literal>false</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.StoreCharsAsNumbers">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            persistent fields
-                        </primary>
-                        <secondary>
-                            StoreCharsAsNumbers
-                        </secondary>
-                    </indexterm>
-<literal>StoreCharsAsNumbers</literal>: Set this property to <literal>false
-</literal> to store Java <literal>char</literal> fields as <literal>CHAR
-</literal> values rather than numbers. Defaults to <literal>true</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.UseGetBytesForBlobs">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            BLOB
-                        </primary>
-                        <secondary>
-                            UseGetBytesForBlobs
-                        </secondary>
-                    </indexterm>
-<literal>UseGetBytesForBlobs</literal>: If true, then <methodname>
-ResultSet.getBytes</methodname> will be used to obtain blob data rather than
-<methodname>ResultSet.getBinaryStream</methodname>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.UseGetObjectForBlobs">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            BLOB
-                        </primary>
-                        <secondary>
-                            UseGetObjectForBlobs
-                        </secondary>
-                    </indexterm>
-<literal>UseGetObjectForBlobs</literal>: If true, then <methodname>
-ResultSet.getObject</methodname> will be used to obtain blob data rather than
-<methodname>ResultSet.getBinaryStream</methodname>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.UseSetBytesForBlobs">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            BLOB
-                        </primary>
-                        <secondary>
-                            UseSetBytesForBlobs
-                        </secondary>
-                    </indexterm>
-<literal>UseSetBytesForBlobs</literal>: If true, then <methodname>
-PreparedStatement.setBytes</methodname> will be used to set blob data, rather
-than <methodname>PreparedStatement.setBinaryStream</methodname>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.UseGetStringForClobs">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            CLOB
-                        </primary>
-                        <secondary>
-                            UseGetStringForClobs
-                        </secondary>
-                    </indexterm>
-<literal>UseGetStringForClobs</literal>: If true, then <methodname>
-ResultSet.getString</methodname> will be used to obtain clob data rather than
-<methodname>ResultSet.getCharacterStream</methodname>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.UseSetStringForClobs">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            CLOB
-                        </primary>
-                        <secondary>
-                            UseSetStringForClobs
-                        </secondary>
-                    </indexterm>
-<literal>UseSetStringForClobs</literal>: If true, then <methodname>
-PreparedStatement.setString</methodname> will be used to set clob data, rather
-than <methodname>PreparedStatement.setCharacterStream</methodname>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.CharacterColumnSize">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            CharacterColumnSize
-                        </secondary>
-                    </indexterm>
-<literal>CharacterColumnSize</literal>: The default size of <literal>varchar
-</literal> and <literal>char</literal> columns. Typically 255.
-                    </para>
-                </listitem>
+            <!-- Please keep the list of dictionary properties 
+                 in alphabetical order -->
                 <listitem id="DBDictionary.ArrayTypeName">
                     <para>
                     <indexterm>
@@ -1712,610 +716,6 @@ than <methodname>PreparedStatement.setCharacterStream</methodname>.
 <literal>ArrayTypeName</literal>: The overridden default column type for
 <literal>java.sql.Types.ARRAY</literal>. This is only used when the schema is
 generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.BigintTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            BigintTypeName
-                        </secondary>
-                    </indexterm>
-<literal>BigintTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.BIGINT</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.BinaryTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            BinaryTypeName
-                        </secondary>
-                    </indexterm>
-<literal>BinaryTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.BINARY</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.BitTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            BitTypeName
-                        </secondary>
-                    </indexterm>
-<literal>BitTypeName</literal>: The overridden default column type for <literal>
-java.sql.Types.BIT</literal>. This is only used when the schema is generated by
-the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.BlobTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            BlobTypeName
-                        </secondary>
-                    </indexterm>
-                    <indexterm>
-                        <primary>
-                            BLOB
-                        </primary>
-                        <secondary>
-                            BlobTypeName
-                        </secondary>
-                    </indexterm>
-<literal>BlobTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.BLOB</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.CharTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            CharTypeName
-                        </secondary>
-                    </indexterm>
-<literal>CharTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.CHAR</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.ClobTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            ClobTypeName
-                        </secondary>
-                    </indexterm>
-                    <indexterm>
-                        <primary>
-                            CLOB
-                        </primary>
-                        <secondary>
-                            ClobTypeName
-                        </secondary>
-                    </indexterm>
-<literal>ClobTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.CLOB</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.DateTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            DateTypeName
-                        </secondary>
-                    </indexterm>
-<literal>DateTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.DATE</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.DecimalTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            DecimalTypeName
-                        </secondary>
-                    </indexterm>
-<literal>DecimalTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.DECIMAL</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.DistinctTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            DistinctTypeName
-                        </secondary>
-                    </indexterm>
-<literal>DistinctTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.DISTINCT</literal>. This is only used when the schema
-is generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.DoubleTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            DoubleTypeName
-                        </secondary>
-                    </indexterm>
-<literal>DoubleTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.DOUBLE</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.FloatTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            FloatTypeName
-                        </secondary>
-                    </indexterm>
-<literal>FloatTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.FLOAT</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.IntegerTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            IntegerTypeName
-                        </secondary>
-                    </indexterm>
-<literal>IntegerTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.INTEGER</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.JavaObjectTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            JavaObjectTypeName
-                        </secondary>
-                    </indexterm>
-<literal>JavaObjectTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.JAVAOBJECT</literal>. This is only used when the schema
-is generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.LongVarbinaryTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            LongVarbinaryTypeName
-                        </secondary>
-                    </indexterm>
-<literal>LongVarbinaryTypeName</literal>: The overridden default column type
-for <literal>java.sql.Types.LONGVARBINARY</literal>. This is only used when the
-schema is generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.LongVarcharTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            LongVarcharTypeName
-                        </secondary>
-                    </indexterm>
-<literal>LongVarcharTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.LONGVARCHAR</literal>. This is only used when the
-schema is generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.NullTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            NullTypeName
-                        </secondary>
-                    </indexterm>
-<literal>NullTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.NULL</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.NumericTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            NumericTypeName
-                        </secondary>
-                    </indexterm>
-<literal>NumericTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.NUMERIC</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.OtherTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            OtherTypeName
-                        </secondary>
-                    </indexterm>
-<literal>OtherTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.OTHER</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.RealTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            RealTypeName
-                        </secondary>
-                    </indexterm>
-<literal>RealTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.REAL</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.RefTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            RefTypeName
-                        </secondary>
-                    </indexterm>
-<literal>RefTypeName</literal>: The overridden default column type for <literal>
-java.sql.Types.REF</literal>. This is only used when the schema is generated by
-the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SmallintTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            SmallintTypeName
-                        </secondary>
-                    </indexterm>
-<literal>SmallintTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.SMALLINT</literal>. This is only used when the schema
-is generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.StructTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            StructTypeName
-                        </secondary>
-                    </indexterm>
-<literal>StructTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.STRUCT</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.TimeTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            TimeTypeName
-                        </secondary>
-                    </indexterm>
-<literal>TimeTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.TIME</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.TimestampTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            TimestampTypeName
-                        </secondary>
-                    </indexterm>
-<literal>TimestampTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.TIMESTAMP</literal>. This is only used when the schema
-is generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.TinyintTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            TinyintTypeName
-                        </secondary>
-                    </indexterm>
-<literal>TinyintTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.TINYINT</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.VarbinaryTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            VarbinaryTypeName
-                        </secondary>
-                    </indexterm>
-<literal>VarbinaryTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.VARBINARY</literal>. This is only used when the schema
-is generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.VarcharTypeName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            DDL
-                        </primary>
-                        <secondary>
-                            VarcharTypeName
-                        </secondary>
-                    </indexterm>
-<literal>VarcharTypeName</literal>: The overridden default column type for
-<literal>java.sql.Types.VARCHAR</literal>. This is only used when the schema is
-generated by the <literal>mappingtool</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.UseSchemaName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            schema
-                        </primary>
-                        <secondary>
-                            UseSchemaName
-                        </secondary>
-                    </indexterm>
-<literal>UseSchemaName</literal>: If <literal>false</literal>, then avoid
-including the schema name in table name references. Defaults to <literal>true
-</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.TableTypes">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            schema
-                        </primary>
-                        <secondary>
-                            reflection
-                        </secondary>
-                        <tertiary>
-                            TableTypes
-                        </tertiary>
-                    </indexterm>
-<literal>TableTypes</literal>: Comma-separated list of table types to use when
-looking for tables during schema reflection, as defined in the <methodname>
-java.sql.DatabaseMetaData.getTableInfo</methodname> JDBC method. An example is:
-<literal>"TABLE,VIEW,ALIAS"</literal>. Defaults to <literal>"TABLE"</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsSchemaForGetTables">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            schema
-                        </primary>
-                        <secondary>
-                            reflection
-                        </secondary>
-                        <tertiary>
-                            SupportsSchemaForGetTables
-                        </tertiary>
-                    </indexterm>
-<literal>SupportsSchemaForGetTables</literal>: If false, then the database
-driver does not support using the schema name for schema reflection on table
-names.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsSchemaForGetColumns">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            schema
-                        </primary>
-                        <secondary>
-                            reflection
-                        </secondary>
-                        <tertiary>
-                            SupportsSchemaForGetColumns
-                        </tertiary>
-                    </indexterm>
-<literal>SupportsSchemaForGetColumns</literal>: If false, then the database
-driver does not support using the schema name for schema reflection on column
-names.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsNullTableForGetColumns">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            schema
-                        </primary>
-                        <secondary>
-                            reflection
-                        </secondary>
-                        <tertiary>
-                            SupportsNullTableForGetColumns
-                        </tertiary>
-                    </indexterm>
-<literal>SupportsNullTableForGetColumns</literal>: If true, then the database
-supports passing a <literal>null</literal> parameter to <methodname>
-DatabaseMetaData.getColumns</methodname> as an optimization to get information
-about all the tables. Defaults to <literal>true</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsNullTableForGetPrimaryKeys">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            schema
-                        </primary>
-                        <secondary>
-                            reflection
-                        </secondary>
-                        <tertiary>
-                            SupportsNullTableForGetPrimaryKeys
-                        </tertiary>
-                    </indexterm>
-<literal>SupportsNullTableForGetPrimaryKeys</literal>: If true, then the
-database supports passing a <literal>null</literal> parameter to <methodname>
-DatabaseMetaData.getPrimaryKeys</methodname> as an optimization to get
-information about all the tables. Defaults to <literal>false</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsNullTableForGetIndexInfo">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            schema
-                        </primary>
-                        <secondary>
-                            reflection
-                        </secondary>
-                        <tertiary>
-                            SupportsNullTableForGetIndexInfo
-                        </tertiary>
-                    </indexterm>
-<literal>SupportsNullTableForGetIndexInfo</literal>: If true, then the database
-supports passing a <literal>null</literal> parameter to <methodname>
-DatabaseMetaData.getIndexInfo</methodname> as an optimization to get information
-about all the tables. Defaults to <literal>false</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.SupportsNullTableForGetImportedKeys">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            schema
-                        </primary>
-                        <secondary>
-                            reflection
-                        </secondary>
-                        <tertiary>
-                            SupportsNullTableForGetImportedKeys
-                        </tertiary>
-                    </indexterm>
-<literal>SupportsNullTableForGetImportedKeys</literal>: If true, then the
-database supports passing a <literal>null</literal> parameter to <methodname>
-DatabaseMetaData.getImportedKeys</methodname> as an optimization to get
-information about all the tables. Defaults to <literal>false</literal>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.UseGetBestRowIdentifierForPrimaryKeys">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            schema
-                        </primary>
-                        <secondary>
-                            reflection
-                        </secondary>
-                        <tertiary>
-                            UseGetBestRowIdentifierForPrimaryKeys
-                        </tertiary>
-                    </indexterm>
-<literal>UseGetBestRowIdentifierForPrimaryKeys</literal>: If true, then
-metadata queries will use <methodname>DatabaseMetaData.getBestRowIdentifier
-</methodname> to obtain information about primary keys, rather than <methodname>
-DatabaseMetaData.getPrimaryKeys</methodname>.
-                    </para>
-                </listitem>
-                <listitem id="DBDictionary.RequiresAutoCommitForMetadata">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            schema
-                        </primary>
-                        <secondary>
-                            reflection
-                        </secondary>
-                        <tertiary>
-                            RequiresAutoCommitForMetaData
-                        </tertiary>
-                    </indexterm>
-<literal>RequiresAutoCommitForMetadata</literal>: If true, then the JDBC driver
-requires that autocommit be enabled before any schema interrogation operations
-can take place.
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.AutoAssignClause">
@@ -2366,6 +766,436 @@ overridden, and is only used when the schema is generated using the <literal>
 mappingtool</literal>.
                     </para>
                 </listitem>
+                <listitem id="DBDictionary.BigintTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            BigintTypeName
+                        </secondary>
+                    </indexterm>
+<literal>BigintTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.BIGINT</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.BinaryTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            BinaryTypeName
+                        </secondary>
+                    </indexterm>
+<literal>BinaryTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.BINARY</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.BitTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            BitTypeName
+                        </secondary>
+                    </indexterm>
+<literal>BitTypeName</literal>: The overridden default column type for <literal>
+java.sql.Types.BIT</literal>. This is only used when the schema is generated by
+the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.BlobBufferSize">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            BLOB
+                        </primary>
+                        <secondary>
+                            BlobBufferSize
+                        </secondary>
+                    </indexterm>
+<literal>BlobBufferSize</literal>: This property establishes the buffer size in
+the <literal>INSERT/UPDATE</literal> operations with an 
+<literal>java.io.InputStream</literal>This is only used with OpenJPA's
+<xref linkend="ref_guide_streamsupport"/>. Defaults to 50000.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.BlobTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            BlobTypeName
+                        </secondary>
+                    </indexterm>
+                    <indexterm>
+                        <primary>
+                            BLOB
+                        </primary>
+                        <secondary>
+                            BlobTypeName
+                        </secondary>
+                    </indexterm>
+<literal>BlobTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.BLOB</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+***            
+                <listitem id="DBDictionary.CatalogSeparator">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            CatalogSeparator
+                        </secondary>
+                    </indexterm>
+<literal>CatalogSeparator</literal>: The string the database uses to delimit
+between the schema name and the table name. This is typically <literal>"."
+</literal>, which is the default.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.CharTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            CharTypeName
+                        </secondary>
+                    </indexterm>
+<literal>CharTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.CHAR</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.CharacterColumnSize">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            CharacterColumnSize
+                        </secondary>
+                    </indexterm>
+<literal>CharacterColumnSize</literal>: The default size of <literal>varchar
+</literal> and <literal>char</literal> columns. Typically 255.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.ClobBufferSize">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            CLOB
+                        </primary>
+                        <secondary>
+                            ClobBufferSize
+                        </secondary>
+                    </indexterm>
+<literal>ClobBufferSize</literal>: This property establish the buffer size in 
+the <literal>INSERT/UPDATE</literal> operations with a 
+<literal>java.io.Reader</literal>This is only used with OpenJPA's
+<xref linkend="ref_guide_streamsupport"/>. Defaults to 50000.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+                <listitem id="DBDictionary.ClobTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            ClobTypeName
+                        </secondary>
+                    </indexterm>
+                    <indexterm>
+                        <primary>
+                            CLOB
+                        </primary>
+                        <secondary>
+                            ClobTypeName
+                        </secondary>
+                    </indexterm>
+<literal>ClobTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.CLOB</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+***            
+                <listitem id="DBDictionary.ConstraintNameMode">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            ConstraintNameMode
+                        </secondary>
+                    </indexterm>
+<literal>ConstraintNameMode</literal>: When creating constraints, whether to
+put the constraint name before the definition (<literal>before</literal>),
+just after the constraint type name (<literal>mid</literal>), or after the
+constraint definition (<literal>after</literal>). Defaults to <literal>before
+</literal>.
+                    </para>
+                </listitem>
+***            
+                <listitem id="DBDictionary.CreatePrimaryKeys">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            CreatePrimaryKeys
+                        </secondary>
+                    </indexterm>
+<literal>CreatePrimaryKeys</literal>: If <literal>false</literal>, then do not
+create database primary keys for identifiers. Defaults to <literal>true
+</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.CrossJoinClause">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            joins
+                        </primary>
+                        <secondary>
+                            CrossJoinClause
+                        </secondary>
+                    </indexterm>
+<literal>CrossJoinClause</literal>: The clause to use for a cross join
+(cartesian product). Defaults to <literal>CROSS JOIN</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.DateTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            DateTypeName
+                        </secondary>
+                    </indexterm>
+<literal>DateTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.DATE</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.DecimalTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            DecimalTypeName
+                        </secondary>
+                    </indexterm>
+<literal>DecimalTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.DECIMAL</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.DistinctCountColumnSeparator">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            DistinctCountColumnSeparator
+                        </secondary>
+                    </indexterm>
+<literal>DistinctCountColumnSeparator</literal>: The string the database uses
+to delimit between column expressions in a <literal>SELECT COUNT(DISTINCT
+column-list)</literal> clause. Defaults to null for most databases, meaning that
+multiple columns in a distinct COUNT clause are not supported.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.DistinctTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            DistinctTypeName
+                        </secondary>
+                    </indexterm>
+<literal>DistinctTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.DISTINCT</literal>. This is only used when the schema
+is generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.DoubleTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            DoubleTypeName
+                        </secondary>
+                    </indexterm>
+<literal>DoubleTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.DOUBLE</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+***            
+                <listitem id="DBDictionary.DriverVendor">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            JDBC
+                        </primary>
+                        <secondary>
+                            DriverVendor
+                        </secondary>
+                    </indexterm>
+<literal>DriverVendor</literal>: The vendor of the particular JDBC driver you
+are using. Some dictionaries must alter their behavior depending on the driver
+vendor. See the <literal>VENDOR_XXX</literal> constants defined in your
+dictionary's Javadoc for available options.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.FloatTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            FloatTypeName
+                        </secondary>
+                    </indexterm>
+<literal>FloatTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.FLOAT</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.ForUpdateClause">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            ForUpdateClause
+                        </secondary>
+                    </indexterm>
+                    <indexterm>
+                        <primary>
+                            locking
+                        </primary>
+                        <secondary>
+                            ForUpdateClause
+                        </secondary>
+                    </indexterm>
+<literal>ForUpdateClause</literal>: The clause to append to <literal>SELECT
+</literal> statements to issue queries that obtain pessimistic locks. Defaults
+to <literal>FOR UPDATE</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.InitializationSQL">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            connections
+                        </primary>
+                        <secondary>
+                            InitializationSQL
+                        </secondary>
+                    </indexterm>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            InitializationSQL
+                        </secondary>
+                    </indexterm>
+<literal>InitializationSQL</literal>: A piece of SQL to issue against the
+database whenever a connection is retrieved from the <classname>DataSource
+</classname>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.InnerJoinClause">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            joins
+                        </primary>
+                        <secondary>
+                            InnerJoinClause
+                        </secondary>
+                    </indexterm>
+<literal>InnerJoinClause</literal>: The clause to use for an inner join.
+Defaults to <literal>INNER JOIN</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.IntegerTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            IntegerTypeName
+                        </secondary>
+                    </indexterm>
+<literal>IntegerTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.INTEGER</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.JavaObjectTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            JavaObjectTypeName
+                        </secondary>
+                    </indexterm>
+<literal>JavaObjectTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.JAVAOBJECT</literal>. This is only used when the schema
+is generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.JoinSyntax">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            joins
+                        </primary>
+                        <secondary>
+                            JoinSyntax
+                        </secondary>
+                    </indexterm>
+<literal>JoinSyntax</literal>: The SQL join syntax to use in select statements.
+See <xref linkend="ref_guide_dbsetup_sql92"/>.
+                    </para>
+                </listitem>
                 <listitem id="DBDictionary.LastGeneratedKeyQuery">
                     <para>
                     <indexterm>
@@ -2385,6 +1215,131 @@ automatically generated key for an auto-increment column. For example, "
 automatically in the dictionary, and should not need to be overridden.
                     </para>
                 </listitem>
+                <listitem id="DBDictionary.LongVarbinaryTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            LongVarbinaryTypeName
+                        </secondary>
+                    </indexterm>
+<literal>LongVarbinaryTypeName</literal>: The overridden default column type
+for <literal>java.sql.Types.LONGVARBINARY</literal>. This is only used when the
+schema is generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.LongVarcharTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            LongVarcharTypeName
+                        </secondary>
+                    </indexterm>
+<literal>LongVarcharTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.LONGVARCHAR</literal>. This is only used when the
+schema is generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.MaxAutoAssignNameLength">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            MaxAutoAssignNameLength
+                        </secondary>
+                    </indexterm>
+<literal>MaxAutoAssignNameLength</literal>: Set this property to the maximum
+length of name for sequences used for auto-increment columns. Names longer than
+this value are truncated. Defaults to <literal>31</literal>.
+                    </para>
+                </listitem>
+***            
+                <listitem id="DBDictionary.MaxColumnNameLength">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            MaxColumnNameLength
+                        </secondary>
+                    </indexterm>
+<literal>MaxColumnNameLength</literal>: The maximum number of characters in a
+column name. Defaults to 128.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.MaxConstraintNameLength">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            MaxConstraintNameLength
+                        </secondary>
+                    </indexterm>
+<literal>MaxConstraintNameLength</literal>: The maximum number of characters in
+a constraint name. Defaults to 128.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.MaxIndexNameLength">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            MaxIndexNameLength
+                        </secondary>
+                    </indexterm>
+                    <indexterm>
+                        <primary>
+                            indexes
+                        </primary>
+                        <secondary>
+                            MaxIndexNameLength
+                        </secondary>
+                    </indexterm>
+<literal>MaxIndexNameLength</literal>: The maximum number of characters in an
+index name. Defaults to 128.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.MaxIndexesPerTable">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            indexes
+                        </primary>
+                        <secondary>
+                            MaxIndexesPerTable
+                        </secondary>
+                    </indexterm>
+<literal>MaxIndexesPerTable</literal>: The maximum number of indexes that can
+be placed on a single table. Defaults to no limit.
+                    </para>
+                </listitem>
+***            
+                <listitem id="DBDictionary.MaxTableNameLength">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            MaxTableNameLength
+                        </secondary>
+                    </indexterm>
+<literal>MaxTableNameLength</literal>: The maximum number of characters in a
+table name. Defaults to 128.
+                    </para>
+                </listitem>
                 <listitem id="DBDictionary.NextSequenceQuery">
                     <para>
                     <indexterm>
@@ -2400,38 +1355,1095 @@ sequence value. May use a placeholder of <literal>{0}</literal> for the variable
 sequence name. Defaults to a database-appropriate value.
                     </para>
                 </listitem>
-                <listitem id="DBDictionary.BlobBufferSize">
+                <listitem id="DBDictionary.NullTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            NullTypeName
+                        </secondary>
+                    </indexterm>
+<literal>NullTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.NULL</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.NumericTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            NumericTypeName
+                        </secondary>
+                    </indexterm>
+<literal>NumericTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.NUMERIC</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.OtherTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            OtherTypeName
+                        </secondary>
+                    </indexterm>
+<literal>OtherTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.OTHER</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.OuterJoinClause">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            joins
+                        </primary>
+                        <secondary>
+                            OuterJoinClause
+                        </secondary>
+                    </indexterm>
+<literal>OuterJoinClause</literal>: The clause to use for an left outer join.
+Defaults to <literal>LEFT OUTER JOIN</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.RealTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            RealTypeName
+                        </secondary>
+                    </indexterm>
+<literal>RealTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.REAL</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.RefTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            RefTypeName
+                        </secondary>
+                    </indexterm>
+<literal>RefTypeName</literal>: The overridden default column type for <literal>
+java.sql.Types.REF</literal>. This is only used when the schema is generated by
+the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.RequiresAliasForSubselect">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            RequiresAliasForSubselect
+                        </secondary>
+                    </indexterm>
+                    <indexterm>
+                        <primary>
+                            JPQL
+                        </primary>
+                        <secondary>
+                            subselects
+                        </secondary>
+                        <tertiary>
+                            RequiresAliasForSubselect
+                        </tertiary>
+                    </indexterm>
+<literal>RequiresAliasForSubselect</literal>: If true, then the database
+requires that subselects in a FROM clause be assigned an alias.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.RequiresAutoCommitForMetadata">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            schema
+                        </primary>
+                        <secondary>
+                            reflection
+                        </secondary>
+                        <tertiary>
+                            RequiresAutoCommitForMetaData
+                        </tertiary>
+                    </indexterm>
+<literal>RequiresAutoCommitForMetadata</literal>: If true, then the JDBC driver
+requires that autocommit be enabled before any schema interrogation operations
+can take place.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.RequiresConditionForCrossJoin">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            joins
+                        </primary>
+                        <secondary>
+                            RequiresConditionForCrossJoin
+                        </secondary>
+                    </indexterm>
+<literal>RequiresConditionForCrossJoin</literal>: Some databases require that
+there always be a conditional statement for a cross join. If set, this parameter
+ensures that there will always be some condition to the join clause.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.ReservedWords">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            ReservedWords
+                        </secondary>
+                    </indexterm>
+<literal>ReservedWords</literal>: A comma-separated list of reserved words for
+this database, beyond the standard SQL92 keywords.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SchemaCase">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            schema
+                        </primary>
+                        <secondary>
+                            reflection
+                        </secondary>
+                        <tertiary>
+                            SchemaCase
+                        </tertiary>
+                    </indexterm>
+<literal>SchemaCase</literal>: The case to use when querying the database
+metadata about schema components. Defaults to making all names upper case.
+Available values are: <literal>upper, lower, preserve</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SelectWords">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            SelectWords
+                        </secondary>
+                    </indexterm>
+<literal>SelectWords</literal>: A comma-separated list of keywords which may be
+used to start a SELECT statement for this database. If an application executes 
+a native SQL statement which begins with SelectWords OpenJPA will treat the 
+statement as a SELECT statement rather than an UPDATE statement. 
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SimulateLocking">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            locking
+                        </primary>
+                        <secondary>
+                            SimulateLocking
+                        </secondary>
+                    </indexterm>
+<literal>SimulateLocking</literal>: Some databases do not support pessimistic
+locking, which will result in an exception when you attempt a pessimistic
+transaction. Setting this property to <literal>true</literal> bypasses the
+locking check to allow pessimistic transactions even on databases that do not
+support locking. Defaults to <literal>false</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SmallintTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            SmallintTypeName
+                        </secondary>
+                    </indexterm>
+<literal>SmallintTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.SMALLINT</literal>. This is only used when the schema
+is generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.StorageLimitationsFatal">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            persistent fields
+                        </primary>
+                        <secondary>
+                            StorageLimitationsFatal
+                        </secondary>
+                    </indexterm>
+<literal>StorageLimitationsFatal</literal>: If true, then any data
+truncation/rounding that is performed by the dictionary in order to store a
+value in the database will be treated as a fatal error, rather than just issuing
+a warning.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.StoreCharsAsNumbers">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            persistent fields
+                        </primary>
+                        <secondary>
+                            StoreCharsAsNumbers
+                        </secondary>
+                    </indexterm>
+<literal>StoreCharsAsNumbers</literal>: Set this property to <literal>false
+</literal> to store Java <literal>char</literal> fields as <literal>CHAR
+</literal> values rather than numbers. Defaults to <literal>true</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.StoreLargeNumbersAsStrings">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            persistent fields
+                        </primary>
+                        <secondary>
+                            StoreLargeNumbersAsStrings
+                        </secondary>
+                    </indexterm>
+<literal>StoreLargeNumbersAsStrings</literal>: Many databases have limitations
+on the number of digits that can be stored in a numeric field (for example,
+Oracle can only store 38 digits). For applications that operate on very large
+<classname>BigInteger</classname> and <classname>BigDecimal</classname> values,
+it may be necessary to store these objects as string fields rather than the
+database's numeric type. Note that this may prevent meaningful numeric queries
+from being executed against the database. Defaults to <literal>false</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.StringLengthFunction">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            StringLengthFunction
+                        </secondary>
+                    </indexterm>
+<literal>StringLengthFunction</literal>: Name of the SQL function for getting
+the length of a string. Use the token <literal>{0}</literal> to represent the
+argument.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.StructTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            StructTypeName
+                        </secondary>
+                    </indexterm>
+<literal>StructTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.STRUCT</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SubstringFunctionName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            SubstringFunctionName
+                        </secondary>
+                    </indexterm>
+<literal>SubstringFunctionName</literal>: Name of the SQL function for getting
+the substring of a string.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsAlterTableWithAddColumn">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            SupportsAlterTableWithAddColumn
+                        </secondary>
+                    </indexterm>
+<literal>SupportsAlterTableWithAddColumn</literal>: Whether the database
+supports adding a new column in an ALTER TABLE statement. Defaults to <literal>
+true</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsAlterTableWithDropColumn">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            SupportsAlterTableWithDropColumn
+                        </secondary>
+                    </indexterm>
+<literal>SupportsAlterTableWithDropColumn</literal>: Whether the database
+supports dropping a column in an ALTER TABLE statement. Defaults to <literal>
+true</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsCascadeDeleteAction">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            foreign keys
+                        </primary>
+                        <secondary>
+                            SupportsCascadeDeleteAction
+                        </secondary>
+                    </indexterm>
+<literal>SupportsCascadeDeleteAction</literal>: Whether the database supports
+the CASCADE foreign key delete action. Defaults to <literal>true</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsDefaultDeleteAction">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            foreign keys
+                        </primary>
+                        <secondary>
+                            SupportsDefaultDeleteAction
+                        </secondary>
+                    </indexterm>
+<literal>SupportsDefaultDeleteAction</literal>: Whether the database supports
+the SET DEFAULT foreign key delete action. Defaults to <literal>true</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsDeferredConstraints">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            foreign keys
+                        </primary>
+                        <secondary>
+                            SupportsDeferredConstraints
+                        </secondary>
+                    </indexterm>
+<literal>SupportsDeferredConstraints</literal>: Whether the database supports
+deferred constraints. Defaults to true.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsForeignKeys">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            foreign keys
+                        </primary>
+                        <secondary>
+                            SupportsForeignKeys
+                        </secondary>
+                    </indexterm>
+<literal>SupportsForeignKeys</literal>: Whether the database supports foreign
+keys. Defaults to true.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsHaving">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            aggregates
+                        </primary>
+                        <secondary>
+                            having
+                        </secondary>
+                        <tertiary>
+                            SupportsHaving
+                        </tertiary>
+                    </indexterm>
+<literal>SupportsHaving</literal>: Whether this database supports HAVING
+clauses in selects.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsLockingWithDistinctClause">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            locking
+                        </primary>
+                        <secondary>
+                            SupportsLockingWithDistinctClause
+                        </secondary>
+                    </indexterm>
+<literal>SupportsLockingWithDistinctClause</literal>: If true, then the
+database supports <literal>FOR UPDATE</literal> select clauses with <literal>
+DISTINCT</literal> clauses.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsLockingWithInnerJoin">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            locking
+                        </primary>
+                        <secondary>
+                            SupportsLockingWithInnerJoin
+                        </secondary>
+                    </indexterm>
+<literal>SupportsLockingWithInnerJoin</literal>: If true, then the database
+supports <literal>FOR UPDATE</literal> select clauses with inner join queries.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsLockingWithMultipleTables">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            locking
+                        </primary>
+                        <secondary>
+                            SupportsLockingWithMultipleTables
+                        </secondary>
+                    </indexterm>
+<literal>SupportsLockingWithMultipleTables</literal>: If true, then the
+database supports <literal>FOR UPDATE</literal> select clauses that select from
+multiple tables.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsLockingWithOrderClause">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            locking
+                        </primary>
+                        <secondary>
+                            SupportsLockingWithOrderClause
+                        </secondary>
+                    </indexterm>
+<literal>SupportsLockingWithOrderClause</literal>: If true, then the database
+supports <literal>FOR UPDATE</literal> select clauses with <literal>ORDER BY
+</literal> clauses.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsLockingWithOuterJoin">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            locking
+                        </primary>
+                        <secondary>
+                            SupportsLockingWithOuterJoin
+                        </secondary>
+                    </indexterm>
+<literal>SupportsLockingWithOuterJoin</literal>: If true, then the database
+supports <literal>FOR UPDATE</literal> select clauses with outer join queries.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsLockingWithSelectRange">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            locking
+                        </primary>
+                        <secondary>
+                            SupportsLockingWithSelectRange
+                        </secondary>
+                    </indexterm>
+<literal>SupportsLockingWithSelectRange</literal>: If true, then the database
+supports <literal>FOR UPDATE</literal> select clauses with queries that select a
+range of data using <literal>LIMIT</literal>, <literal>TOP</literal> or the
+database equivalent. Defaults to true.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsMultipleNontransactionalResultSets">
+                    <para>
+<literal>SupportsMultipleNontransactionalResultSets</literal>: If true, then a
+nontransactional connection is capable of having multiple open <classname>
+ResultSet</classname> instances.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsNullDeleteAction">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            foreign keys
+                        </primary>
+                        <secondary>
+                            SupportsNullDeleteAction
+                        </secondary>
+                    </indexterm>
+<literal>SupportsNullDeleteAction</literal>: Whether the database supports the
+SET NULL foreign key delete action. Defaults to <literal>true</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsNullTableForGetColumns">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            schema
+                        </primary>
+                        <secondary>
+                            reflection
+                        </secondary>
+                        <tertiary>
+                            SupportsNullTableForGetColumns
+                        </tertiary>
+                    </indexterm>
+<literal>SupportsNullTableForGetColumns</literal>: If true, then the database
+supports passing a <literal>null</literal> parameter to <methodname>
+DatabaseMetaData.getColumns</methodname> as an optimization to get information
+about all the tables. Defaults to <literal>true</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsNullTableForGetImportedKeys">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            schema
+                        </primary>
+                        <secondary>
+                            reflection
+                        </secondary>
+                        <tertiary>
+                            SupportsNullTableForGetImportedKeys
+                        </tertiary>
+                    </indexterm>
+<literal>SupportsNullTableForGetImportedKeys</literal>: If true, then the
+database supports passing a <literal>null</literal> parameter to <methodname>
+DatabaseMetaData.getImportedKeys</methodname> as an optimization to get
+information about all the tables. Defaults to <literal>false</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsNullTableForGetIndexInfo">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            schema
+                        </primary>
+                        <secondary>
+                            reflection
+                        </secondary>
+                        <tertiary>
+                            SupportsNullTableForGetIndexInfo
+                        </tertiary>
+                    </indexterm>
+<literal>SupportsNullTableForGetIndexInfo</literal>: If true, then the database
+supports passing a <literal>null</literal> parameter to <methodname>
+DatabaseMetaData.getIndexInfo</methodname> as an optimization to get information
+about all the tables. Defaults to <literal>false</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsNullTableForGetPrimaryKeys">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            schema
+                        </primary>
+                        <secondary>
+                            reflection
+                        </secondary>
+                        <tertiary>
+                            SupportsNullTableForGetPrimaryKeys
+                        </tertiary>
+                    </indexterm>
+<literal>SupportsNullTableForGetPrimaryKeys</literal>: If true, then the
+database supports passing a <literal>null</literal> parameter to <methodname>
+DatabaseMetaData.getPrimaryKeys</methodname> as an optimization to get
+information about all the tables. Defaults to <literal>false</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsQueryTimeout">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            JDBC
+                        </primary>
+                        <secondary>
+                            QueryTimeout
+                        </secondary>
+                        <tertiary>
+                            SupportsQueryTimeout
+                        </tertiary>
+                    </indexterm>
+<literal>SupportsQueryTimeout</literal>: If true, then the JDBC driver supports
+calls to <methodname> java.sql.Statement.setQueryTimeout</methodname>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsRestrictDeleteAction">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            foreign keys
+                        </primary>
+                        <secondary>
+                            SupportsRestrictDeleteAction
+                        </secondary>
+                    </indexterm>
+<literal>SupportsRestrictDeleteAction</literal>: Whether the database supports
+the RESTRICT foreign key delete action. Defaults to <literal>true</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsSchemaForGetColumns">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            schema
+                        </primary>
+                        <secondary>
+                            reflection
+                        </secondary>
+                        <tertiary>
+                            SupportsSchemaForGetColumns
+                        </tertiary>
+                    </indexterm>
+<literal>SupportsSchemaForGetColumns</literal>: If false, then the database
+driver does not support using the schema name for schema reflection on column
+names.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsSchemaForGetTables">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            schema
+                        </primary>
+                        <secondary>
+                            reflection
+                        </secondary>
+                        <tertiary>
+                            SupportsSchemaForGetTables
+                        </tertiary>
+                    </indexterm>
+<literal>SupportsSchemaForGetTables</literal>: If false, then the database
+driver does not support using the schema name for schema reflection on table
+names.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsSelectEndIndex">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            Query
+                        </primary>
+                        <secondary>
+                            result range
+                        </secondary>
+                        <tertiary>
+                            SupportsSelectEndIndex
+                        </tertiary>
+                    </indexterm>
+<literal>SupportsSelectEndIndex</literal>: Whether this database can create a
+select that is limited to the first N results.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsSelectForUpdate">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            locking
+                        </primary>
+                        <secondary>
+                            SupportsSelectForUpdate
+                        </secondary>
+                    </indexterm>
+<literal>SupportsSelectForUpdate</literal>: If true, then the database supports
+<literal>SELECT</literal> statements with a pessimistic locking clause. Defaults
+to true.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsSelectStartIndex">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            Query
+                        </primary>
+                        <secondary>
+                            result range
+                        </secondary>
+                        <tertiary>
+                            SupportsSelectStartIndex
+                        </tertiary>
+                    </indexterm>
+<literal>SupportsSelectStartIndex</literal>: Whether this database can create a
+select that skips the first N results.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsSubselect">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            SupportsSubselect
+                        </secondary>
+                    </indexterm>
+                    <indexterm>
+                        <primary>
+                            JPQL
+                        </primary>
+                        <secondary>
+                            subselects
+                        </secondary>
+                        <tertiary>
+                            SupportsSubselect
+                        </tertiary>
+                    </indexterm>
+<literal>SupportsSubselect</literal>: Whether this database supports subselects
+in queries.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsTimestampNanos">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SupportsTimestampNanos
+                        </primary>
+                    </indexterm>
+<literal>SupportsTimestampNanos</literal>: Whether the database supports nanoseconds with TIMESTAMP columns.  Defaults to true.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsUniqueConstraints">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            unique constraints
+                        </primary>
+                        <secondary>
+                            SupportsUniqueConstraints
+                        </secondary>
+                    </indexterm>
+<literal>SupportsUniqueConstraints</literal>: Whether the database supports
+unique constraints. Defaults to true.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SystemSchemas">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            schema
+                        </primary>
+                        <secondary>
+                            reflection
+                        </secondary>
+                        <tertiary>
+                            SystemSchemas
+                        </tertiary>
+                    </indexterm>
+<literal>SystemSchemas</literal>: A comma-separated list of schema names that
+should be ignored.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SystemTables">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            schema
+                        </primary>
+                        <secondary>
+                            reflection
+                        </secondary>
+                        <tertiary>
+                            SystemTables
+                        </tertiary>
+                    </indexterm>
+<literal>SystemTables</literal>: A comma-separated list of table names that
+should be ignored.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.TableForUpdateClause">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            TableForUpdateClause
+                        </secondary>
+                    </indexterm>
+                    <indexterm>
+                        <primary>
+                            locking
+                        </primary>
+                        <secondary>
+                            TableForUpdateClause
+                        </secondary>
+                    </indexterm>
+<literal>TableForUpdateClause</literal>: The clause to append to the end of
+each table alias in queries that obtain pessimistic locks. Defaults to null.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.TableTypes">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            schema
+                        </primary>
+                        <secondary>
+                            reflection
+                        </secondary>
+                        <tertiary>
+                            TableTypes
+                        </tertiary>
+                    </indexterm>
+<literal>TableTypes</literal>: Comma-separated list of table types to use when
+looking for tables during schema reflection, as defined in the <methodname>
+java.sql.DatabaseMetaData.getTableInfo</methodname> JDBC method. An example is:
+<literal>"TABLE,VIEW,ALIAS"</literal>. Defaults to <literal>"TABLE"</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.TimeTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            TimeTypeName
+                        </secondary>
+                    </indexterm>
+<literal>TimeTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.TIME</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.TimestampTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            TimestampTypeName
+                        </secondary>
+                    </indexterm>
+<literal>TimestampTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.TIMESTAMP</literal>. This is only used when the schema
+is generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.TinyintTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            TinyintTypeName
+                        </secondary>
+                    </indexterm>
+<literal>TinyintTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.TINYINT</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.ToLowerCaseFunction">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            ToLowerCaseFunction
+                        </secondary>
+                    </indexterm>
+<literal>ToLowerCaseFunction</literal>: Name of the SQL function for converting
+a string to lower case. Use the token <literal>{0}</literal> to represent the
+argument.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.ToUpperCaseFunction">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            ToUpperCaseFunction
+                        </secondary>
+                    </indexterm>
+<literal>ToUpperCaseFunction</literal>: SQL function call for for converting a
+string to upper case. Use the token <literal>{0}</literal> to represent the
+argument.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.UseGetBestRowIdentifierForPrimaryKeys">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            schema
+                        </primary>
+                        <secondary>
+                            reflection
+                        </secondary>
+                        <tertiary>
+                            UseGetBestRowIdentifierForPrimaryKeys
+                        </tertiary>
+                    </indexterm>
+<literal>UseGetBestRowIdentifierForPrimaryKeys</literal>: If true, then
+metadata queries will use <methodname>DatabaseMetaData.getBestRowIdentifier
+</methodname> to obtain information about primary keys, rather than <methodname>
+DatabaseMetaData.getPrimaryKeys</methodname>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.UseGetBytesForBlobs">
                     <para>
                     <indexterm>
                         <primary>
                             BLOB
                         </primary>
                         <secondary>
-                            BlobBufferSize
+                            UseGetBytesForBlobs
                         </secondary>
                     </indexterm>
-<literal>BlobBufferSize</literal>: This property establishes the buffer size in
-the <literal>INSERT/UPDATE</literal> operations with an 
-<literal>java.io.InputStream</literal>This is only used with OpenJPA's
-<xref linkend="ref_guide_streamsupport"/>. Defaults to 50000.
+<literal>UseGetBytesForBlobs</literal>: If true, then <methodname>
+ResultSet.getBytes</methodname> will be used to obtain blob data rather than
+<methodname>ResultSet.getBinaryStream</methodname>.
                     </para>
                 </listitem>
-                <listitem id="DBDictionary.ClobBufferSize">
+                <listitem id="DBDictionary.UseGetObjectForBlobs">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            BLOB
+                        </primary>
+                        <secondary>
+                            UseGetObjectForBlobs
+                        </secondary>
+                    </indexterm>
+<literal>UseGetObjectForBlobs</literal>: If true, then <methodname>
+ResultSet.getObject</methodname> will be used to obtain blob data rather than
+<methodname>ResultSet.getBinaryStream</methodname>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.UseGetStringForClobs">
                     <para>
                     <indexterm>
                         <primary>
                             CLOB
                         </primary>
                         <secondary>
-                            ClobBufferSize
+                            UseGetStringForClobs
                         </secondary>
                     </indexterm>
-<literal>ClobBufferSize</literal>: This property establish the buffer size in 
-the <literal>INSERT/UPDATE</literal> operations with a 
-<literal>java.io.Reader</literal>This is only used with OpenJPA's
-<xref linkend="ref_guide_streamsupport"/>. Defaults to 50000.
+<literal>UseGetStringForClobs</literal>: If true, then <methodname>
+ResultSet.getString</methodname> will be used to obtain clob data rather than
+<methodname>ResultSet.getCharacterStream</methodname>.
                     </para>
                 </listitem>
+                <listitem id="DBDictionary.UseSchemaName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            schema
+                        </primary>
+                        <secondary>
+                            UseSchemaName
+                        </secondary>
+                    </indexterm>
+<literal>UseSchemaName</literal>: If <literal>false</literal>, then avoid
+including the schema name in table name references. Defaults to <literal>true
+</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.UseSetBytesForBlobs">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            BLOB
+                        </primary>
+                        <secondary>
+                            UseSetBytesForBlobs
+                        </secondary>
+                    </indexterm>
+<literal>UseSetBytesForBlobs</literal>: If true, then <methodname>
+PreparedStatement.setBytes</methodname> will be used to set blob data, rather
+than <methodname>PreparedStatement.setBinaryStream</methodname>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.UseSetStringForClobs">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            CLOB
+                        </primary>
+                        <secondary>
+                            UseSetStringForClobs
+                        </secondary>
+                    </indexterm>
+<literal>UseSetStringForClobs</literal>: If true, then <methodname>
+PreparedStatement.setString</methodname> will be used to set clob data, rather
+than <methodname>PreparedStatement.setCharacterStream</methodname>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.ValidationSQL">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            connections
+                        </primary>
+                        <secondary>
+                            ValidationSQL
+                        </secondary>
+                    </indexterm>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            ValidationSQL
+                        </secondary>
+                    </indexterm>
+<literal>ValidationSQL</literal>: The SQL used to validate that a connection is
+still in a valid state. For example, " <literal>SELECT SYSDATE FROM DUAL
+</literal> " for Oracle.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.VarbinaryTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            VarbinaryTypeName
+                        </secondary>
+                    </indexterm>
+<literal>VarbinaryTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.VARBINARY</literal>. This is only used when the schema
+is generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.VarcharTypeName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DDL
+                        </primary>
+                        <secondary>
+                            VarcharTypeName
+                        </secondary>
+                    </indexterm>
+<literal>VarcharTypeName</literal>: The overridden default column type for
+<literal>java.sql.Types.VARCHAR</literal>. This is only used when the schema is
+generated by the <literal>mappingtool</literal>.
+                    </para>
+                </listitem>
+            <!-- Please keep the list of dictionary properties 
+                 in alphabetical order -->
             </itemizedlist>
         </section>
         <section id="ref_guide_dbsetup_dbsupport_mysql">
