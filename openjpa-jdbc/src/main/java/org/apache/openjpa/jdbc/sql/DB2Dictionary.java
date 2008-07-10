@@ -72,8 +72,8 @@ public class DB2Dictionary
     protected static final String useKeepExclusiveLockClause
         = "USE AND KEEP EXCLUSIVE LOCKS";
     protected static final String forReadOnlyClause = "FOR READ ONLY";
-    protected String databaseProductName = null;
-    protected String databaseProductVersion = null;
+    protected String databaseProductName = "";
+    protected String databaseProductVersion = "";
     protected int maj = 0;
     protected int min = 0;
     
@@ -242,8 +242,8 @@ public class DB2Dictionary
     	super.connectedConfiguration(conn);
 
     	DatabaseMetaData metaData = conn.getMetaData();
-        databaseProductName = metaData.getDatabaseProductName();
-        databaseProductVersion = metaData.getDatabaseProductVersion();
+        databaseProductName = nullSafe(metaData.getDatabaseProductName());
+        databaseProductVersion = nullSafe(metaData.getDatabaseProductVersion());
         
         // Determine the type of DB2 database
         // First check for AS/400
@@ -384,51 +384,32 @@ public class DB2Dictionary
     }
 
     public boolean isDB2UDBV82OrLater() {
-        boolean match = false;
-        if (databaseProductName != null &&
-            (databaseProductVersion.indexOf("SQL") != -1
-            || databaseProductName.indexOf("DB2/") != -1)
-            && ((maj == 8 && min >= 2) || (maj >= 9)))
-            match = true;
-        return match;
+        return (databaseProductVersion.indexOf("SQL") != -1
+             || databaseProductName.indexOf("DB2/") != -1)
+             && ((maj == 8 && min >= 2) || (maj >= 9));
     }
 
     public boolean isDB2ZOSV8xOrLater() {
-       boolean match = false;
-       if (databaseProductName != null &&
-           (databaseProductVersion.indexOf("DSN") != -1
-           || databaseProductName.indexOf("DB2/") == -1)
-           && maj >= 8)
-           match = true;
-        return match;
+       return (databaseProductVersion.indexOf("DSN") != -1
+            || databaseProductName.indexOf("DB2/") == -1)
+            && maj >= 8;
+           
     }
 
     public boolean isDB2ISeriesV5R3OrEarlier() {
-       boolean match = false;
-       if (databaseProductName != null &&
-           databaseProductName.indexOf("AS") != -1
-           && ((maj == 5 && min <=3) || maj < 5))
-           match = true;
-       return match;
+       return (databaseProductName.indexOf("AS") != -1
+           && ((maj == 5 && min <=3) || maj < 5));
     }
 
     public boolean isDB2ISeriesV5R4OrLater() {
-       boolean match = false;
-       if (databaseProductName != null &&
-           databaseProductName.indexOf("AS") != -1
-           && (maj >=6 || (maj == 5 && min >=4)))
-           match = true;
-      return match;
+       return databaseProductName.indexOf("AS") != -1
+           && (maj >=6 || (maj == 5 && min >=4));
     }
 
     public boolean isDB2UDBV81OrEarlier() {
-        boolean match = false;
-        if (databaseProductName != null &&
-            (databaseProductVersion.indexOf("SQL") != -1 
-            || databaseProductName.indexOf("DB2/") != -1) &&
-            ((maj == 8 && min <= 1) || maj < 8))
-            match = true;
-        return match;
+        return (databaseProductVersion.indexOf("SQL") != -1 
+            || databaseProductName.indexOf("DB2/") != -1) 
+            && ((maj == 8 && min <= 1) || maj < 8);
     }
 
     /** Get the version Major/Minor for the ISeries
@@ -456,8 +437,7 @@ public class DB2Dictionary
                     String s2 =  stringtokenizer.nextToken();
                     min = Integer.parseInt(s2);
                 }
-            }
-            else {
+            } else {
                 index = databaseProductVersion.indexOf('0');
                 if (index != -1) {
                     String s = databaseProductVersion.substring(index);
@@ -843,5 +823,9 @@ public class DB2Dictionary
             idx.setUnique(true);
             idx.addColumn(pkColumn);
         }
+    }
+    
+    String nullSafe(String s) {
+    	return s == null ? "" : s;
     }
 }
