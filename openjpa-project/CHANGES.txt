@@ -131,10 +131,10 @@ Improvement
     * [OPENJPA-541] - Generate SQL92 JOIN syntax for Oracle 9 or later releases
 
 
-OpenJPA 1.0.2 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.0.2/openjpa-project/CHANGES.txt?view=log
+OpenJPA 1.0.2 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.0.2/openjpa-project/CHANGES.txt?view=markup
 
-OpenJPA 1.0.1 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.0.1/openjpa-project/CHANGES.txt?view=log
+OpenJPA 1.0.1 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.0.1/openjpa-project/CHANGES.txt?view=markup
 
-OpenJPA 1.0.0 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.0.0/openjpa-project/CHANGES.txt?view=log
+OpenJPA 1.0.0 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.0.0/openjpa-project/CHANGES.txt?view=markup
 
 
