@@ -47,6 +47,14 @@ public class StoreException
         super(cause);
     }
 
+    public StoreException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+
+    public StoreException(Message msg, Throwable cause) {
+        super(msg.getMessage(), cause);
+    }
+    
     public int getType() {
         return STORE;
     }
