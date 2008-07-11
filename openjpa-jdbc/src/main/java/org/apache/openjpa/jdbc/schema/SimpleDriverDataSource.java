@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.lib.jdbc.DelegatingDataSource;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.StoreException;
@@ -51,6 +52,8 @@ public class SimpleDriverDataSource
     
     protected static Localizer _loc = 
     	Localizer.forPackage(SimpleDriverDataSource.class);
+    protected static Localizer _eloc = 
+    	Localizer.forPackage(DelegatingDataSource.class);
 
     public Connection getConnection()
         throws SQLException {
@@ -77,8 +80,8 @@ public class SimpleDriverDataSource
         throws SQLException {
     	Connection con = getDriver().connect(_connectionURL, props);
     	if (con == null) {
-        	throw new SQLException(_loc.get("conn-failed",
-        			_connectionDriverName, _connectionURL, props).getMessage());
+        	throw new SQLException(_eloc.get("poolds-null",
+        			_connectionDriverName, _connectionURL).getMessage());
         }
         return con;
     }

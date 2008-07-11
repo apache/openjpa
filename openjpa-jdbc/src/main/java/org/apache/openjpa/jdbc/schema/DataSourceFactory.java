@@ -60,6 +60,8 @@ public class DataSourceFactory {
 
     private static final Localizer _loc = Localizer.forPackage
     	 (DataSourceFactory.class);
+    protected static Localizer _eloc = 
+    	Localizer.forPackage(DelegatingDataSource.class);
 
     /**
      * Create a datasource using the given configuration.
@@ -251,13 +253,11 @@ public class DataSourceFactory {
     
     static OpenJPAException newConnectException(JDBCConfiguration conf, 
     		boolean factory2, Exception cause) {
-    	return new UserException(_loc.get("conn-failed", factory2 
+    	return new UserException(_eloc.get("poolds-null", factory2 
           	  ? new Object[]{conf.getConnection2DriverName(), 
-          			         conf.getConnection2URL(), 
-          			         conf.getConnection2Properties()}
+          			         conf.getConnection2URL()}
           	  : new Object[]{conf.getConnectionDriverName(),
-          		             conf.getConnectionURL(), 
-          		             conf.getConnectionProperties()}),
+          		             conf.getConnectionURL()}),
           		             cause).setFatal(true);
     }
 
