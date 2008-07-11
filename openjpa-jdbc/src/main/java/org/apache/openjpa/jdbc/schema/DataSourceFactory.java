@@ -237,7 +237,14 @@ public class DataSourceFactory {
 
             return ds;
         } catch (Exception e) {
-            throw new StoreException(e).setFatal(true);
+        	throw new StoreException(_loc.get("conn-failed", factory2 
+        	  ? new Object[]{conf.getConnection2DriverName(), 
+        			         conf.getConnection2URL(), 
+        			         conf.getConnection2Properties()}
+        	  : new Object[]{conf.getConnectionDriverName(),
+        		             conf.getConnectionURL(), 
+        		             conf.getConnectionProperties()}),
+        		             e);
         } finally {
             if (conn != null)
                 try {
