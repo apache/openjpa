@@ -77,8 +77,8 @@ public class SimpleDriverDataSource
         throws SQLException {
     	Connection con = getDriver().connect(_connectionURL, props);
     	if (con == null) {
-        	throw new UserException(_loc.get("conn-failed",
-        			_connectionDriverName, _connectionURL, props));
+        	throw new SQLException(_loc.get("conn-failed",
+        			_connectionDriverName, _connectionURL, props).getMessage());
         }
         return con;
     }

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
@@ -45,7 +46,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.OpenJPAException;
-import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -59,7 +59,7 @@ import org.apache.openjpa.util.UserException;
 public class DataSourceFactory {
 
     private static final Localizer _loc = Localizer.forPackage
-        (DataSourceFactory.class);
+    	 (DataSourceFactory.class);
 
     /**
      * Create a datasource using the given configuration.
@@ -120,7 +120,7 @@ public class DataSourceFactory {
         catch (OpenJPAException ke) {
             throw ke;
         } catch (Exception e) {
-            throw new StoreException(e).setFatal(true);
+            throw newConnectException(conf, factory2, e);
         }
 
         // not a driver or a data source; die
@@ -175,7 +175,7 @@ public class DataSourceFactory {
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (Exception e) {
-            throw new StoreException(e).setFatal(true);
+            throw newConnectException(conf, factory2, e);
         }
     }
 
@@ -237,14 +237,7 @@ public class DataSourceFactory {
 
             return ds;
         } catch (Exception e) {
-        	throw new StoreException(_loc.get("conn-failed", factory2 
-        	  ? new Object[]{conf.getConnection2DriverName(), 
-        			         conf.getConnection2URL(), 
-        			         conf.getConnection2Properties()}
-        	  : new Object[]{conf.getConnectionDriverName(),
-        		             conf.getConnectionURL(), 
-        		             conf.getConnectionProperties()}),
-        		             e);
+        	throw newConnectException(conf, factory2, e);
         } finally {
             if (conn != null)
                 try {
@@ -254,6 +247,18 @@ public class DataSourceFactory {
                     // to be used anyway
                 }
         }
+    }
+    
+    static OpenJPAException newConnectException(JDBCConfiguration conf, 
+    		boolean factory2, Exception cause) {
+    	return new UserException(_loc.get("conn-failed", factory2 
+          	  ? new Object[]{conf.getConnection2DriverName(), 
+          			         conf.getConnection2URL(), 
+          			         conf.getConnection2Properties()}
+          	  : new Object[]{conf.getConnectionDriverName(),
+          		             conf.getConnectionURL(), 
+          		             conf.getConnectionProperties()}),
+          		             cause).setFatal(true);
     }
 
     /**
