@@ -2162,7 +2162,7 @@ public class Subscription {
     @Id private long id;
 
     @OneToMany
-    @ElementJoinColumn(name="SUB_ID", target="ID")
+    @ElementJoinColumn(name="SUB_ID", referencedColumnName="ID")
     private Collection&lt;LineItem&gt; items;
 
     ...
