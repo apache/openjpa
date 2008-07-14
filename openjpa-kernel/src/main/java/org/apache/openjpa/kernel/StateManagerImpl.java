@@ -2660,6 +2660,12 @@ public class StateManagerImpl
             for (int i = 0, len = _loaded.length(); i < len; i++)
                 saveField(i);
             _flags &= ~FLAG_SAVE;
+            // OPENJPA-659
+            // record a saved field manager even if no field is currently loaded
+            // as existence of a SaveFieldManager is critical for a dirty check
+            if (_saved == null)
+            	_saved = new SaveFieldManager(this, getPersistenceCapable(), 
+            				_dirty);
         }
     }
 
