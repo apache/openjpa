@@ -470,6 +470,63 @@ public class SelectImpl
             else
                 _joinSyntax = _parent._joinSyntax;
         }
+        
+        if (_parent.getAliases() == null || _subPath == null)
+            return;
+        
+        // resolve aliases for subselect from parent
+        Set entries = _parent.getAliases().entrySet();
+        Iterator it = entries.iterator();
+        while (it.hasNext()) {
+        	Map.Entry entry = (Map.Entry) it.next();
+            Object key = entry.getKey();
+            Integer alias = (Integer) entry.getValue();
+            if (key.toString().indexOf(_subPath) != -1) {
+                if (_aliases == null)
+                    _aliases = new HashMap();
+                _aliases.put(key, alias);
+
+                Object tableString = _parent.getTables().get(alias);
+                if (_tables == null)
+                    _tables = new TreeMap();
+                _tables.put(alias, tableString);
+                
+                _removedAliasFromParent.set(alias.intValue());
+            }
+        }
+        
+        if (_aliases != null) {
+            // aliases moved into subselect should be removed from parent
+            entries = _aliases.entrySet();
+            it = entries.iterator();
+            while (it.hasNext()) {
+            	Map.Entry entry = (Map.Entry) it.next();
+                Object key = entry.getKey();
+                Integer alias = (Integer) entry.getValue();
+                if (key.toString().indexOf(_subPath) != -1) {
+                    _parent.removeAlias(key);
+
+                    Object tableString = _parent.getTables().get(alias);
+                    _parent.removeTable(alias);
+                }
+            }
+        }
+    }
+    
+    public Map getAliases() {
+        return _aliases;
+    }
+    
+    public void removeAlias(Object key) {
+        _aliases.remove(key);
+    }
+    
+    public Map getTables() {
+        return _tables;
+    }
+    
+    public void removeTable(Object key) {
+        _tables.remove(key);
     }
 
     public Select getFromSelect() {
@@ -1492,8 +1549,13 @@ public class SelectImpl
             return;
         if (_parent._joins != null && !_parent._joins.isEmpty()) {
             boolean removed = false;
-            if (!_removedAliasFromParent.isEmpty())
-                removed = _parent._joins.joins().removeAll(pj.joins());
+            if (!_removedAliasFromParent.isEmpty()) {
+                for (Iterator itr = pj.joins().iterator(); itr.hasNext();) {
+                   Join jn = (Join) itr.next();
+                   if (_aliases.containsValue(new Integer(jn.getIndex1())))
+                       removed = _parent._joins.joins().remove(jn);
+                }
+            }
             if (!removed)
                 pj.joins().removeAll(_parent._joins.joins());
         }
