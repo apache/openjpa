@@ -811,7 +811,7 @@ public class StateManagerImpl
     public void dirtyCheck() {
         if (!needsDirtyCheck())
             return;
-
+        
         SaveFieldManager saved = getSaveFieldManager();
         if (saved == null)
             throw new InternalException(_loc.get("no-saved-fields",
@@ -836,6 +836,8 @@ public class StateManagerImpl
         if (isDeleted())
             return false;
         if (isNew() && !isFlushed())
+            return false;
+        if (!isTransactional())
             return false;
         return true;
     }
