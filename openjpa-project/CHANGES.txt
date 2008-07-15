@@ -95,6 +95,8 @@ OpenJPA 1.0.3 Changes
 
     Bugs
 
+    * [OPENJPA-51] - bad sql pushdown, sub select is missing from clause
+    * [OPENJPA-245] - Attach NEW and auto-increment identity
     * [OPENJPA-209] - Query returning 2 entities w/unidir 1-1 relationship gets
         openjpa.persistence.ArgumentException: Address with the same id already
         exists in the L1 cache.
