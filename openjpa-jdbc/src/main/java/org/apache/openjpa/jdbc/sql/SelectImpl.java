@@ -582,7 +582,8 @@ public class SelectImpl
         for (Map.Entry entry : entries) {
             Object key = entry.getKey();
             Integer alias = (Integer) entry.getValue();
-            if (key.toString().indexOf(_subPath) != -1) {
+            if (key.toString().indexOf(_subPath) != -1 ||
+                _parent.findTableAlias(alias) == false) {
                 if (_aliases == null)
                     _aliases = new HashMap();
                 _aliases.put(key, alias);
@@ -602,7 +603,8 @@ public class SelectImpl
             for (Map.Entry entry : entries) {
                 Object key = entry.getKey();
                 Integer alias = (Integer) entry.getValue();
-                if (key.toString().indexOf(_subPath) != -1) {
+                if (key.toString().indexOf(_subPath) != -1 ||
+                    _parent.findTableAlias(alias) == false) {
                     _parent.removeAlias(key);
 
                     Object tableString = _parent.getTables().get(alias);
@@ -610,6 +612,16 @@ public class SelectImpl
                 }
             }
         }
+    }
+    
+    private boolean findTableAlias(Integer alias) {
+        // if alias is defined and referenced, return true.
+        String value = "t" + alias.toString() + ".";
+        if (_tableAliases != null)
+            return _tableAliases.containsValue(value) &&
+               _tables.containsKey(alias);
+        else
+            return true;
     }
     
     public Map getAliases() {
