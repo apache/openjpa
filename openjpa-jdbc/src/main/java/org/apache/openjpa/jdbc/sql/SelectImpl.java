@@ -677,13 +677,13 @@ public class SelectImpl
                 tableAlias = getTableAlias(table, pj).toString();
                 _tableAliases.put(table, tableAlias);
             }
-            return new StringBuilder(tableAlias).append(col).toString();
+            return new StringBuffer(tableAlias).append(col).toString();
         }
         return getTableAlias(table, pj).append(col).toString();
     }
     
-    private StringBuilder getTableAlias(Table table, PathJoins pj) {
-        StringBuilder buf = new StringBuilder();
+    private StringBuffer getTableAlias(Table table, PathJoins pj) {
+        StringBuffer buf = new StringBuffer();
         if (_from != null) {
             String alias = toAlias(_from.getTableIndex(table, pj, true));
             if (_dict.requiresAliasForSubselect)
