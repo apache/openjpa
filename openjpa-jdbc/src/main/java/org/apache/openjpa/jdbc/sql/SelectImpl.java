@@ -118,6 +118,9 @@ public class SelectImpl
     // 'parent.address.street' for the purposes of comparisons
     private Map _aliases = null;
 
+    // to cache table alias using Table as the key
+    private Map _tableAliases = null;
+
     // map of indexes to table aliases like 'TABLENAME t0'
     private SortedMap _tables = null;
 
@@ -481,7 +484,8 @@ public class SelectImpl
         	Map.Entry entry = (Map.Entry) it.next();
             Object key = entry.getKey();
             Integer alias = (Integer) entry.getValue();
-            if (key.toString().indexOf(_subPath) != -1) {
+            if (key.toString().indexOf(_subPath) != -1 ||
+                _parent.findTableAlias(alias) == false) {
                 if (_aliases == null)
                     _aliases = new HashMap();
                 _aliases.put(key, alias);
@@ -503,7 +507,8 @@ public class SelectImpl
             	Map.Entry entry = (Map.Entry) it.next();
                 Object key = entry.getKey();
                 Integer alias = (Integer) entry.getValue();
-                if (key.toString().indexOf(_subPath) != -1) {
+                if (key.toString().indexOf(_subPath) != -1 ||
+                    _parent.findTableAlias(alias) == false) {
                     _parent.removeAlias(key);
 
                     Object tableString = _parent.getTables().get(alias);
@@ -511,6 +516,16 @@ public class SelectImpl
                 }
             }
         }
+    }
+    
+    private boolean findTableAlias(Integer alias) {
+        // if alias is defined and referenced, return true.
+        String value = "t" + alias.toString() + ".";
+        if (_tableAliases != null)
+            return _tableAliases.containsValue(value) &&
+               _tables.containsKey(alias);
+        else
+            return true;
     }
     
     public Map getAliases() {
@@ -653,13 +668,30 @@ public class SelectImpl
      * Return the alias for the given column.
      */
     private String getColumnAlias(String col, Table table, PathJoins pj) {
+        String tableAlias = null;
+        if (pj == null || pj.path() == null) {
+            if (_tableAliases == null)
+                _tableAliases = new HashMap();
+            tableAlias = (String) _tableAliases.get(table);
+            if (tableAlias == null) {
+                tableAlias = getTableAlias(table, pj).toString();
+                _tableAliases.put(table, tableAlias);
+            }
+            return new StringBuilder(tableAlias).append(col).toString();
+        }
+        return getTableAlias(table, pj).append(col).toString();
+    }
+    
+    private StringBuilder getTableAlias(Table table, PathJoins pj) {
+        StringBuilder buf = new StringBuilder();
         if (_from != null) {
             String alias = toAlias(_from.getTableIndex(table, pj, true));
             if (_dict.requiresAliasForSubselect)
-                return FROM_SELECT_ALIAS + "." + alias + "_" + col;
-            return alias + "_" + col;
+                return buf.append(FROM_SELECT_ALIAS).append(".").append(alias).
+                    append("_");
+            return buf.append(alias).append("_");
         }
-        return toAlias(getTableIndex(table, pj, true)) + "." + col;
+        return buf.append(toAlias(getTableIndex(table, pj, true))).append(".");
     }
 
     public boolean isAggregate() {

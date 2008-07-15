@@ -36,6 +36,9 @@ public class TestSubquery
     }
 
     static String[]  querys = new String[] {
+        "select o1.oid from Order o1 where o1.oid in " +
+            " (select distinct o.oid from OrderItem i, Order o" +
+            " where i.quantity > 10 and o.amount > 1000 and i.lid = o.oid)" ,
         "select o.oid from Order o where o.customer.name =" +
             " (select max(o2.customer.name) from Order o2" +
             " where o.customer.cid.id = o2.customer.cid.id)",
