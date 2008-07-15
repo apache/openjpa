@@ -94,6 +94,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         delgentable2.executeUpdate();
         Query delgentable3 = em
                 .createNativeQuery("delete from schema3g.id_gen3");
+        delgentable3.executeUpdate();
         Query delgentable4 = em
                 .createNativeQuery("delete from schema4g.id_gen4");
         delgentable4.executeUpdate();

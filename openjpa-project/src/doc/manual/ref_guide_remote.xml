@@ -195,7 +195,10 @@ attached instance's corresponding fields to null.
                     <para>
 If the instance has a <literal>Version</literal> field,
 OpenJPA will consider the object detached if the version field has a non-default
-value, and new otherwise.
+value, and new otherwise.  Similarly, if the instance has 
+<literal>GeneratedValue</literal> primary key fields, OpenJPA will consider the
+object detached if any of these fields have non-default values, and new 
+otherwise.
                     </para>
                     <para>
 When attaching null fields in these cases, OpenJPA cannot distinguish between a

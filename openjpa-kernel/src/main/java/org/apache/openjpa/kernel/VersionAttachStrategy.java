@@ -69,19 +69,12 @@ class VersionAttachStrategy
     public Object attach(AttachManager manager, Object toAttach,
         ClassMetaData meta, PersistenceCapable into, OpenJPAStateManager owner,
         ValueMetaData ownerMeta, boolean explicit) {
-
-        // VersionAttachStrategy is invoked in the case where no more
-        // intelligent strategy could be found; let's be more lenient
-        // about new vs. detached record determination.
-        if (into == null)
-            into = findFromDatabase(manager, toAttach);
-
         BrokerImpl broker = manager.getBroker();
         PersistenceCapable pc = ImplHelper.toPersistenceCapable(toAttach,
             meta.getRepository().getConfiguration());
 
         boolean embedded = ownerMeta != null && ownerMeta.isEmbeddedPC();
-        boolean isNew = !broker.isDetached(pc) && into == null;
+        boolean isNew = !broker.isDetached(pc);
         Object version = null;
         StateManagerImpl sm;
 
