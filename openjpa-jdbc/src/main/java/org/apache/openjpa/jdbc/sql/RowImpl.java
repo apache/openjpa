@@ -675,8 +675,11 @@ public class RowImpl
         throws SQLException {
         // never set auto increment columns and honor column defaults
         if (_action == ACTION_INSERT) {
-            if (col.isAutoAssigned())
+            if (col.isAutoAssigned()) {
+            	// OPENJPA-349: validate because this can be the only column
+            	setValid(true);
                 return;
+            }
             if (!overrideDefault && val == null 
                 && col.getDefaultString() != null)
                 return;
