@@ -1645,17 +1645,26 @@ suitable for single-JVM environments.
                 </para>
             </listitem>
         </itemizedlist>
-        <para>
+<para>
 You can use JPA <literal>SequenceGenerator</literal>s to describe any built-in
 <classname>Seq</classname>s or your own <classname>Seq</classname>
 implementation. Set the <literal>sequenceName</literal> attribute to a plugin
-string describing your choice. If specifying your own class name, you must
-include parentheses at the end of the class name, even if you have no plugin
-properties to configure.
-(E.g., <literal>sequenceName="com.example.SeqImpl()"</literal>. See
-<xref linkend="jpa_overview_mapping_sequence"/> in the JPA Overview for
+string describing your choice. 
+</para>
+
+<blockquote>
+<para>
+If specifying your own class name, you must include parentheses at the end of 
+the class name, even if you have no plugin properties to configure.
+(E.g., <literal>sequenceName="com.example.SeqImpl()"</literal>. 
+</para>
+</blockquote>
+
+<para>
+See <xref linkend="jpa_overview_mapping_sequence"/> in the JPA Overview for
 details on defining <literal>SequenceGenerator</literal>s.
-        </para>
+</para>
+        
         <para>
 See <xref linkend="ref_guide_conf_plugins"/> for plugin string formatting.
         </para>
