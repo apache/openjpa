@@ -880,6 +880,11 @@ public class FieldMapping
     public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
+    	// OPENJPA-662: Version fields have NoneFieldStrategy -- hence they
+    	// need special treatment
+    	if (isVersion()) {
+    		return getDefiningMapping().getVersion().load(null, store, res);
+    	}
         return assertStrategy().loadProjection(store, fetch, res, joins);
     }
 

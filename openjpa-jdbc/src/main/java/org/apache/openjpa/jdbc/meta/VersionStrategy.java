@@ -53,7 +53,7 @@ public interface VersionStrategy
     /**
      * Load data.
      */
-    public void load(OpenJPAStateManager sm, JDBCStore store, Result res)
+    public Object load(OpenJPAStateManager sm, JDBCStore store, Result res)
         throws SQLException;
 
     /**

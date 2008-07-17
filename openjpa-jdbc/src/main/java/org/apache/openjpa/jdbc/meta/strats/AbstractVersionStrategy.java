@@ -53,8 +53,9 @@ public abstract class AbstractVersionStrategy
         return false;
     }
 
-    public void load(OpenJPAStateManager sm, JDBCStore store, Result res)
+    public Object load(OpenJPAStateManager sm, JDBCStore store, Result res)
         throws SQLException {
+    	return null;
     }
 
     public void afterLoad(OpenJPAStateManager sm, JDBCStore store) {

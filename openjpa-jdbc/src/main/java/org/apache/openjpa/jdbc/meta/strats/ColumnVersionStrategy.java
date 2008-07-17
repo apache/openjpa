@@ -178,13 +178,13 @@ public abstract class ColumnVersionStrategy
         return true;
     }
 
-    public void load(OpenJPAStateManager sm, JDBCStore store, Result res)
+    public Object load(OpenJPAStateManager sm, JDBCStore store, Result res)
         throws SQLException {
         // typically if one version column is in the result, they all are, so
         // optimize by checking for the first one before doing any real work
         Column[] cols = vers.getColumns();
         if (!res.contains(cols[0]))
-            return;
+            return null;
 
         Object version = null;
         if (cols.length > 0)
@@ -192,14 +192,18 @@ public abstract class ColumnVersionStrategy
         Object cur;
         for (int i = 0; i < cols.length; i++) {
             if (i > 0 && !res.contains(cols[i]))
-                return;
+                return null;
             cur = res.getObject(cols[i], -1, null);
             if (cols.length == 1)
                 version = cur;
             else
                 ((Object[]) version)[i] = cur;
         }
-        sm.setVersion(version);
+        // OPENJPA-662 Allow a null StateManager because this method may just be
+        // invoked to get the result of projection query
+        if (sm != null)
+        	sm.setVersion(version);
+        return version;
     }
 
     public boolean checkVersion(OpenJPAStateManager sm, JDBCStore store,

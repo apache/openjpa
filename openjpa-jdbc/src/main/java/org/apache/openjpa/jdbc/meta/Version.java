@@ -338,9 +338,9 @@ public class Version
         return assertStrategy().select(sel, mapping);
     }
 
-    public void load(OpenJPAStateManager sm, JDBCStore store, Result res)
+    public Object load(OpenJPAStateManager sm, JDBCStore store, Result res)
         throws SQLException {
-        assertStrategy().load(sm, store, res);
+        return assertStrategy().load(sm, store, res);
     }
 
     public void afterLoad(OpenJPAStateManager sm, JDBCStore store) {
